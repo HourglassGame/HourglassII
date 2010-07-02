@@ -18,30 +18,82 @@ ObjectList::~ObjectList()
 	switchList.clear();
 }
 
-const ObjectList* ObjectList::operator+(ObjectList* other)
+ObjectList* ObjectList::operator+=(ObjectList* other)
 {
-	ObjectList* result = new ObjectList();
 	
-	// will return a new ObjectList containing all elements of both
+	for (int i = 0; i < other->getGuyList().size(); ++i)
+	{
+		addGuy(other->getGuyList()[i]);
+	}
 
-	return result;
+	for (int i = 0; i < other->getBoxList().size(); ++i)
+	{
+		addBox(other->getBoxList()[i]);
+	}
+
+	return this;
 }	
 
-bool ObjectList::operator==(const ObjectList* other)
+ObjectList* ObjectList::operator+(ObjectList* other)
 {
-	// will compare both ObjectLists and return if all elements are equal
+	ObjectList* result = new ObjectList();
+	result->operator += (this);
+	result->operator += (other);
+	return result;
+}
+	
+
+bool ObjectList::operator==(ObjectList* other)
+{
+
+	if (guyList.size() != other->getGuyList().size() || boxList.size() != other->getBoxList().size() )
+	{
+		return false;
+	}
+
+	for (int i = 0; i < guyList.size(); ++i)
+	{
+		if (guyList[i]->operator != (other->getGuyList()[i]))
+		{
+			return false;
+		}
+	}
+
+	for (int i = 0; i < boxList.size(); ++i)
+	{
+		if (boxList[i]->operator != (other->getBoxList()[i]))
+		{
+			return false;
+		}
+	}
+
 	return true;
 }	
 
+bool ObjectList::operator!=(ObjectList* other)
+{
+	return !(*this == other);
+}
 
 void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int timeDirection, bool boxCarrying, int relativeIndex)
 {
 	guyList.push_back(new Guy(x, y, xspeed, yspeed, timeDirection, boxCarrying, relativeIndex));
 }
 
+void ObjectList::addGuy(Guy* toCopy)
+{
+	guyList.push_back(new Guy(toCopy->getX(), toCopy->getY(), toCopy->getXspeed(), toCopy->getYspeed(), 
+		toCopy->getTimeDirection(), toCopy->getBoxCarrying(), toCopy->getRelativeIndex() ));
+}
+
 void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int timeDirection)
 {
 	boxList.push_back(new Box(x, y, xspeed, yspeed, timeDirection));
+}
+
+void ObjectList::addBox(Box* toCopy)
+{
+	boxList.push_back(new Box(toCopy->getX(), toCopy->getY(), toCopy->getXspeed(), toCopy->getYspeed(), toCopy->getTimeDirection() ));
 }
 
 void ObjectList::addItem(int x, int y, int xspeed, int yspeed, int timeDirection, int type)

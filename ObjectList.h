@@ -28,6 +28,9 @@ public:
 	void addPlatform(int x, int y, int xspeed, int yspeed, int timeDirection, int id);
 	void addSwitch(int x, int y, int type, int platformAttachment, int id); // and lasers
 
+	void addGuy(Guy* toCopy); 
+	void addBox(Box* toCopy); 
+
 	vector<Guy*> getGuyList();
 	vector<Box*> getBoxList();
 	vector<Item*> getItemList();
@@ -35,8 +38,11 @@ public:
 	vector<Platform*> getPlatformList();
 	vector<Switch*> getSwitchList();
 
-	const ObjectList* operator+(ObjectList* other);
-	bool operator==(const ObjectList* other);
+	ObjectList* operator+(ObjectList* other);
+	ObjectList* operator+=(ObjectList* other);
+
+	bool operator==(ObjectList* other);
+	bool operator!=(ObjectList* other);
 
 private:
 

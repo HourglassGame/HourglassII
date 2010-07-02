@@ -9,8 +9,12 @@ public:
     int getY();
     int getXspeed();
     int getYspeed();
+	int getTimeDirection();
 	
 	// exectute physics
+
+	bool operator==(Box* other);
+	bool operator!=(Box* other);
     
 private:
   
