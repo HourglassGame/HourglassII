@@ -19,6 +19,7 @@ class ObjectList
 {
 public:
 	ObjectList();
+	~ObjectList();
 	
 	void addGuy(int x, int y, int xspeed, int yspeed, int timeDirection, bool boxCarrying, int relativeIndex);
 	void addBox(int x, int y, int xspeed, int yspeed, int timeDirection); // I know it's the same as Item but this way is more visible
@@ -27,21 +28,24 @@ public:
 	void addPlatform(int x, int y, int xspeed, int yspeed, int timeDirection, int id);
 	void addSwitch(int x, int y, int type, int platformAttachment, int id); // and lasers
 
-	vector<Guy> getGuyList();
-	vector<Box> getBoxList();
-	vector<Item> getItemList();
-	vector<Pickup> getPickupList();
-	vector<Platform> getPlatformList();
-	vector<Switch> getSwitchList();
+	vector<Guy*> getGuyList();
+	vector<Box*> getBoxList();
+	vector<Item*> getItemList();
+	vector<Pickup*> getPickupList();
+	vector<Platform*> getPlatformList();
+	vector<Switch*> getSwitchList();
+
+	const ObjectList* operator+(ObjectList* other);
+	bool operator==(const ObjectList* other);
 
 private:
 
-	vector<Guy> guyList;
-	vector<Box> boxList;
-	vector<Item> itemList;
-	vector<Pickup> pickupList;
-	vector<Platform> platformList;
-	vector<Switch> switchList;
+	vector<Guy*> guyList;
+	vector<Box*> boxList;
+	vector<Item*> itemList;
+	vector<Pickup*> pickupList;
+	vector<Platform*> platformList;
+	vector<Switch*> switchList;
 
 };
 
