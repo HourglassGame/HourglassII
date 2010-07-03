@@ -13,7 +13,9 @@
 
 #include <deque>
 #include <map>
-#include <boost/thread.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/once.hpp>
 #include <boost/noncopyable.hpp>
 namespace hg {
     //TODO - design a way to turn this functionality on or off at runtime 

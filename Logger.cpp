@@ -26,8 +26,8 @@ void Logger::Log(const std::string& message, loglevel::LogLevel importance)
 {
     //overly conservative lock, could be avoided by locking each 
     //Outlet individually, and allowing simultaneous calls to this function
-    //but not allowing calls to RegisterOutlet() to be simultaneous with either
-    //Log or other RegisterOutlet calls.
+    //but not allowing calls to `RegisterOutlet' to be simultaneous with either
+    //`Log' or `RegisterOutlet' calls.
     boost::lock_guard<boost::mutex> lock(containerLock);
     
     foreach(Outlet& out, outlets) {

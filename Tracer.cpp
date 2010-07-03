@@ -8,8 +8,6 @@
  */
 
 #include "Tracer.h"
-#include <boost/thread.hpp>
-#include <boost/thread/once.hpp>
 #include <boost/bind.hpp>
 #include "HourglassAssert.h"
 using namespace hg;
@@ -43,6 +41,7 @@ const std::deque<std::string>& Tracer::GetBackTrace()
 //but simple enough and gets the job done (I think)
 std::deque<std::string>& Tracer::GetModifiableBackTrace()
 {
+    //Singleton lazy loading
     boost::call_once(InitBackTrace, back_init_flag);
     //Conditionally thread-safe, 
     //as long as the same deque is not returned to two different threads
@@ -79,7 +78,8 @@ void Tracer::EraseTrace(const boost::thread::id whichThread)
     backTrace->erase(whichThread);
 }
 
-void Tracer::InitBackTrace() {
+void Tracer::InitBackTrace()
+{
     mapLock = new boost::mutex();
     backTrace = new std::map<boost::thread::id, std::deque<std::string> >();
 }

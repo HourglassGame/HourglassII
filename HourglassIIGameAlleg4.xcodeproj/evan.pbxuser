@@ -241,6 +241,17 @@
 			208E794311DF17EE00B39F90 /* XCBuildMessageTextBookmark */ = 208E794311DF17EE00B39F90 /* XCBuildMessageTextBookmark */;
 			208E794511DF17EE00B39F90 /* PBXTextBookmark */ = 208E794511DF17EE00B39F90 /* PBXTextBookmark */;
 			208E794711DF17F100B39F90 /* PlistBookmark */ = 208E794711DF17F100B39F90 /* PlistBookmark */;
+			208E794811DF188300B39F90 /* PlistBookmark */ = 208E794811DF188300B39F90 /* PlistBookmark */;
+			208E794911DF188300B39F90 /* PBXTextBookmark */ = 208E794911DF188300B39F90 /* PBXTextBookmark */;
+			208E794A11DF188300B39F90 /* PBXTextBookmark */ = 208E794A11DF188300B39F90 /* PBXTextBookmark */;
+			208E794B11DF188300B39F90 /* PBXTextBookmark */ = 208E794B11DF188300B39F90 /* PBXTextBookmark */;
+			208E794C11DF188300B39F90 /* PBXTextBookmark */ = 208E794C11DF188300B39F90 /* PBXTextBookmark */;
+			208E794F11DF1BA700B39F90 /* PBXTextBookmark */ = 208E794F11DF1BA700B39F90 /* PBXTextBookmark */;
+			208E795011DF1BA700B39F90 /* PBXTextBookmark */ = 208E795011DF1BA700B39F90 /* PBXTextBookmark */;
+			208E795111DF1BA700B39F90 /* PBXTextBookmark */ = 208E795111DF1BA700B39F90 /* PBXTextBookmark */;
+			208E795511DF1BB600B39F90 /* PBXTextBookmark */ = 208E795511DF1BB600B39F90 /* PBXTextBookmark */;
+			208E795611DF1BB600B39F90 /* PBXTextBookmark */ = 208E795611DF1BB600B39F90 /* PBXTextBookmark */;
+			208E795711DF1BB600B39F90 /* PBXTextBookmark */ = 208E795711DF1BB600B39F90 /* PBXTextBookmark */;
 		};
 		sourceControlManager = 207A9F5E11DB783300A60DF2 /* Source Control */;
 		userBuildSettings = {
@@ -344,7 +355,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 64";
 		rLen = 0;
-		rLoc = 2627;
+		rLoc = 2701;
 		rType = 0;
 		vrLen = 639;
 		vrLoc = 0;
@@ -394,7 +405,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 65";
 		rLen = 0;
-		rLoc = 2244;
+		rLoc = 2212;
 		rType = 0;
 		vrLen = 920;
 		vrLoc = 1199;
@@ -567,7 +578,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 64";
 		rLen = 0;
-		rLoc = 2627;
+		rLoc = 2701;
 		rType = 0;
 		vrLen = 619;
 		vrLoc = 20;
@@ -577,7 +588,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 65";
 		rLen = 0;
-		rLoc = 2244;
+		rLoc = 2212;
 		rType = 0;
 		vrLen = 914;
 		vrLoc = 1205;
@@ -597,7 +608,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 53";
 		rLen = 0;
-		rLoc = 1203;
+		rLoc = 1201;
 		rType = 0;
 		vrLen = 784;
 		vrLoc = 171;
@@ -637,7 +648,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 53";
 		rLen = 0;
-		rLoc = 1237;
+		rLoc = 1235;
 		rType = 0;
 		vrLen = 1280;
 		vrLoc = 150;
@@ -763,7 +774,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 49";
 		rLen = 0;
-		rLoc = 1159;
+		rLoc = 1157;
 		rType = 0;
 		vrLen = 754;
 		vrLoc = 919;
@@ -869,7 +880,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 54";
 		rLen = 0;
-		rLoc = 1237;
+		rLoc = 1235;
 		rType = 0;
 		vrLen = 708;
 		vrLoc = 961;
@@ -879,7 +890,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 54";
 		rLen = 0;
-		rLoc = 1237;
+		rLoc = 1235;
 		rType = 0;
 		vrLen = 708;
 		vrLoc = 961;
@@ -889,7 +900,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 54";
 		rLen = 0;
-		rLoc = 1237;
+		rLoc = 1235;
 		rType = 0;
 		vrLen = 708;
 		vrLoc = 961;
@@ -969,7 +980,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 54";
 		rLen = 0;
-		rLoc = 1237;
+		rLoc = 1235;
 		rType = 0;
 		vrLen = 708;
 		vrLoc = 961;
@@ -1039,7 +1050,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 64";
 		rLen = 0;
-		rLoc = 2627;
+		rLoc = 2701;
 		rType = 0;
 		vrLen = 619;
 		vrLoc = 20;
@@ -1049,7 +1060,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 65";
 		rLen = 0;
-		rLoc = 2244;
+		rLoc = 2212;
 		rType = 0;
 		vrLen = 914;
 		vrLoc = 1205;
@@ -1069,7 +1080,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 53";
 		rLen = 0;
-		rLoc = 1203;
+		rLoc = 1201;
 		rType = 0;
 		vrLen = 790;
 		vrLoc = 171;
@@ -1079,7 +1090,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 53";
 		rLen = 0;
-		rLoc = 1203;
+		rLoc = 1201;
 		rType = 0;
 		vrLen = 487;
 		vrLoc = 1182;
@@ -1099,7 +1110,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 33";
 		rLen = 0;
-		rLoc = 950;
+		rLoc = 948;
 		rType = 0;
 		vrLen = 484;
 		vrLoc = 918;
@@ -1119,7 +1130,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 54";
 		rLen = 0;
-		rLoc = 1239;
+		rLoc = 1237;
 		rType = 0;
 		vrLen = 451;
 		vrLoc = 0;
@@ -1239,7 +1250,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 65";
 		rLen = 0;
-		rLoc = 2244;
+		rLoc = 2212;
 		rType = 0;
 		vrLen = 914;
 		vrLoc = 1205;
@@ -1259,7 +1270,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 54";
 		rLen = 0;
-		rLoc = 1239;
+		rLoc = 1237;
 		rType = 0;
 		vrLen = 451;
 		vrLoc = 0;
@@ -1328,7 +1339,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 53";
 		rLen = 0;
-		rLoc = 1237;
+		rLoc = 1235;
 		rType = 0;
 		vrLen = 688;
 		vrLoc = 967;
@@ -1502,7 +1513,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 48";
 		rLen = 56;
-		rLoc = 1074;
+		rLoc = 1072;
 		rType = 0;
 		vrLen = 512;
 		vrLoc = 1143;
@@ -1512,7 +1523,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 79";
 		rLen = 0;
-		rLoc = 3219;
+		rLoc = 3293;
 		rType = 0;
 		vrLen = 1124;
 		vrLoc = 1939;
@@ -1522,7 +1533,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 44";
 		rLen = 0;
-		rLoc = 1310;
+		rLoc = 1278;
 		rType = 0;
 		vrLen = 1016;
 		vrLoc = 868;
@@ -1532,7 +1543,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 47";
 		rLen = 0;
-		rLoc = 1494;
+		rLoc = 1462;
 		rType = 0;
 		vrLen = 986;
 		vrLoc = 1000;
@@ -1602,7 +1613,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 83";
 		rLen = 0;
-		rLoc = 2543;
+		rLoc = 2511;
 		rType = 0;
 		vrLen = 550;
 		vrLoc = 0;
@@ -1612,7 +1623,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 53";
 		rLen = 42;
-		rLoc = 2031;
+		rLoc = 2105;
 		rType = 0;
 		vrLen = 1006;
 		vrLoc = 2222;
@@ -1622,7 +1633,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 81";
 		rLen = 0;
-		rLoc = 3219;
+		rLoc = 3293;
 		rType = 0;
 		vrLen = 809;
 		vrLoc = 2442;
@@ -1632,7 +1643,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 81";
 		rLen = 0;
-		rLoc = 3219;
+		rLoc = 3293;
 		rType = 0;
 		vrLen = 788;
 		vrLoc = 2442;
@@ -1642,7 +1653,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 81";
 		rLen = 0;
-		rLoc = 3219;
+		rLoc = 3293;
 		rType = 0;
 		vrLen = 809;
 		vrLoc = 2442;
@@ -1694,7 +1705,7 @@
 		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
 		name = "Tracer.h: 81";
 		rLen = 22;
-		rLoc = 3198;
+		rLoc = 3272;
 		rType = 0;
 		vrLen = 1168;
 		vrLoc = 2082;
@@ -1704,7 +1715,7 @@
 		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
 		name = "Tracer.cpp: 77";
 		rLen = 0;
-		rLoc = 2397;
+		rLoc = 2365;
 		rType = 0;
 		vrLen = 1113;
 		vrLoc = 1510;
@@ -1714,7 +1725,7 @@
 		fRef = 20CACFE311DC65B800DE923B /* Logger.cpp */;
 		name = "Logger.cpp: 46";
 		rLen = 0;
-		rLoc = 1236;
+		rLoc = 1234;
 		rType = 0;
 		vrLen = 877;
 		vrLoc = 606;
@@ -1766,19 +1777,130 @@
 		rLen = 0;
 		rLoc = 9223372036854775807;
 	};
+	208E794811DF188300B39F90 /* PlistBookmark */ = {
+		isa = PlistBookmark;
+		fRef = 208E78F811DEFECE00B39F90 /* English */;
+		fallbackIsa = PBXBookmark;
+		isK = 0;
+		kPath = (
+		);
+		name = "/Users/evan/Documents/workspace/HourglassMac/HourglassIIGameAlleg4/resources/English.lproj/HourglassII-Info.plist";
+		rLen = 0;
+		rLoc = 9223372036854775807;
+	};
+	208E794911DF188300B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFE211DC65B800DE923B /* Logger.h */;
+		name = "Logger.h: 50";
+		rLen = 0;
+		rLoc = 1053;
+		rType = 0;
+		vrLen = 589;
+		vrLoc = 486;
+	};
+	208E794A11DF188300B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
+		name = "Tracer.h: 81";
+		rLen = 0;
+		rLoc = 3293;
+		rType = 0;
+		vrLen = 713;
+		vrLoc = 2538;
+	};
+	208E794B11DF188300B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
+		name = "Tracer.cpp: 83";
+		rLen = 0;
+		rLoc = 2511;
+		rType = 0;
+		vrLen = 550;
+		vrLoc = 0;
+	};
+	208E794C11DF188300B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
+		name = "Tracer.cpp: 84";
+		rLen = 0;
+		rLoc = 2476;
+		rType = 0;
+		vrLen = 674;
+		vrLoc = 151;
+	};
+	208E794F11DF1BA700B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
+		name = "Tracer.cpp: 84";
+		rLen = 0;
+		rLoc = 2476;
+		rType = 0;
+		vrLen = 550;
+		vrLoc = 0;
+	};
+	208E795011DF1BA700B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
+		name = "Tracer.h: 81";
+		rLen = 0;
+		rLoc = 3293;
+		rType = 0;
+		vrLen = 875;
+		vrLoc = 57;
+	};
+	208E795111DF1BA700B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
+		name = "Tracer.h: 19";
+		rLen = 0;
+		rLoc = 357;
+		rType = 0;
+		vrLen = 745;
+		vrLoc = 57;
+	};
+	208E795511DF1BB600B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBE11DC48FB00DE923B /* Tracer.h */;
+		name = "Tracer.h: 19";
+		rLen = 0;
+		rLoc = 357;
+		rType = 0;
+		vrLen = 758;
+		vrLoc = 44;
+	};
+	208E795611DF1BB600B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
+		name = "Tracer.cpp: 84";
+		rLen = 0;
+		rLoc = 2476;
+		rType = 0;
+		vrLen = 550;
+		vrLoc = 0;
+	};
+	208E795711DF1BB600B39F90 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */;
+		name = "Tracer.cpp: 10";
+		rLen = 0;
+		rLoc = 170;
+		rType = 0;
+		vrLen = 491;
+		vrLoc = 0;
+	};
 	20CACFBE11DC48FB00DE923B /* Tracer.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {712, 1040}}";
-			sepNavSelRange = "{3219, 0}";
-			sepNavVisRange = "{2538, 713}";
+			sepNavIntBoundsRect = "{{0, 0}, {712, 1222}}";
+			sepNavSelRange = "{357, 0}";
+			sepNavVisRange = "{0, 496}";
 			sepNavWindowFrame = "{{38, 23}, {1230, 729}}";
 		};
 	};
 	20CACFBF11DC48FB00DE923B /* Tracer.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1168, 1079}}";
-			sepNavSelRange = "{2397, 0}";
-			sepNavVisRange = "{1510, 1113}";
+			sepNavIntBoundsRect = "{{0, 0}, {712, 1118}}";
+			sepNavSelRange = "{2154, 0}";
+			sepNavVisRange = "{1778, 813}";
 			sepNavWindowFrame = "{{15, 44}, {1230, 729}}";
 		};
 	};
@@ -1806,9 +1928,9 @@
 	};
 	20CACFE311DC65B800DE923B /* Logger.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1168, 728}}";
-			sepNavSelRange = "{1236, 0}";
-			sepNavVisRange = "{606, 877}";
+			sepNavIntBoundsRect = "{{0, 0}, {712, 728}}";
+			sepNavSelRange = "{285, 0}";
+			sepNavVisRange = "{451, 787}";
 		};
 	};
 	20CACFE511DC65D300DE923B /* Outlet.h */ = {
@@ -1820,9 +1942,9 @@
 	};
 	20CACFE611DC65D300DE923B /* Outlet.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1168, 390}}";
-			sepNavSelRange = "{149, 0}";
-			sepNavVisRange = "{0, 589}";
+			sepNavIntBoundsRect = "{{0, 0}, {733, 390}}";
+			sepNavSelRange = "{550, 0}";
+			sepNavVisRange = "{143, 446}";
 		};
 	};
 }
