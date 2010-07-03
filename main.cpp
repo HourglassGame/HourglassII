@@ -8,7 +8,6 @@
  */
 #include <allegro.h>
 
-#include "AllegroEngine.h"
 #include <boost/thread.hpp>
 #include "Tracer.h"
 

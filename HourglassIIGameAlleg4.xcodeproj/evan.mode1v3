@@ -232,6 +232,8 @@
 			<key>Layout</key>
 			<array>
 				<dict>
+					<key>BecomeActive</key>
+					<true/>
 					<key>ContentConfiguration</key>
 					<dict>
 						<key>PBXBottomSmartGroupGIDs</key>
@@ -271,14 +273,15 @@
 								<string>207A9F8811DB7AA100A60DF2</string>
 								<string>207A9F6711DB785800A60DF2</string>
 								<string>1C37FBAC04509CD000000102</string>
+								<string>208E780B11DEB80D00B39F90</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>6</integer>
-									<integer>1</integer>
-									<integer>0</integer>
+									<integer>19</integer>
+									<integer>18</integer>
+									<integer>17</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -301,7 +304,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>888 156 981 596 0 0 1280 778 </string>
+						<string>115 182 981 596 0 0 1280 778 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -312,14 +315,12 @@
 					<key>Dock</key>
 					<array>
 						<dict>
-							<key>BecomeActive</key>
-							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Tracer.cpp</string>
+								<string>HourglassII-Info.plist</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -327,26 +328,26 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>Tracer.cpp</string>
+										<string>HourglassII-Info.plist</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>208E791611DF095600B39F90</string>
+										<string>208E794711DF17F100B39F90</string>
 										<key>history</key>
 										<array>
 											<string>207A9FA011DB7BE900A60DF2</string>
 											<string>207A9FBB11DB7DC500A60DF2</string>
 											<string>208E790611DEFF3100B39F90</string>
-											<string>208E790C11DF095600B39F90</string>
-											<string>208E790D11DF095600B39F90</string>
-											<string>208E790E11DF095600B39F90</string>
 											<string>208E790F11DF095600B39F90</string>
-											<string>208E791011DF095600B39F90</string>
-											<string>208E791111DF095600B39F90</string>
-											<string>208E791211DF095600B39F90</string>
-											<string>208E791311DF095600B39F90</string>
-											<string>208E791411DF095600B39F90</string>
-											<string>208E791511DF095600B39F90</string>
+											<string>208E792911DF16C900B39F90</string>
+											<string>208E792A11DF16C900B39F90</string>
+											<string>208E792B11DF16C900B39F90</string>
+											<string>208E792C11DF16C900B39F90</string>
+											<string>208E792D11DF16C900B39F90</string>
+											<string>208E792E11DF16C900B39F90</string>
+											<string>208E792F11DF16C900B39F90</string>
+											<string>208E793A11DF17D800B39F90</string>
+											<string>208E793B11DF17D800B39F90</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -360,7 +361,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {773, 328}}</string>
 								<key>RubberWindowFrame</key>
-								<string>888 156 981 596 0 0 1280 778 </string>
+								<string>115 182 981 596 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -380,7 +381,7 @@
 								<key>Frame</key>
 								<string>{{0, 333}, {773, 222}}</string>
 								<key>RubberWindowFrame</key>
-								<string>888 156 981 596 0 0 1280 778 </string>
+								<string>115 182 981 596 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -552,7 +553,7 @@
 		<string>/Users/evan/Documents/workspace/HourglassMac/HourglassIIGameAlleg4/HourglassIIGameAlleg4.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>888 156 981 596 0 0 1280 778 </string>
+	<string>115 182 981 596 0 0 1280 778 </string>
 	<key>WindowToolsV3</key>
 	<array>
 		<dict>
@@ -573,7 +574,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CD0528F0623707200166675</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Outlet.cpp</string>
+								<string>Logger.cpp</string>
 								<key>StatusBarVisibility</key>
 								<true/>
 							</dict>
@@ -582,7 +583,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {1229, 420}}</string>
 								<key>RubberWindowFrame</key>
-								<string>407 76 1229 702 0 0 1280 778 </string>
+								<string>51 76 1229 702 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -608,7 +609,7 @@
 								<key>Frame</key>
 								<string>{{0, 425}, {1229, 236}}</string>
 								<key>RubberWindowFrame</key>
-								<string>407 76 1229 702 0 0 1280 778 </string>
+								<string>51 76 1229 702 0 0 1280 778 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXBuildResultsModule</string>
@@ -640,7 +641,7 @@
 			<key>WindowContentMinSize</key>
 			<string>486 300</string>
 			<key>WindowString</key>
-			<string>407 76 1229 702 0 0 1280 778 </string>
+			<string>51 76 1229 702 0 0 1280 778 </string>
 			<key>WindowToolGUID</key>
 			<string>207A9FA411DB7BE900A60DF2</string>
 			<key>WindowToolIsVisible</key>

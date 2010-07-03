@@ -42,7 +42,8 @@ void Logger::RegisterOutlet(std::auto_ptr<Outlet> outlet)
 }
 
 Logger::Logger() :
-outlets(boost::ptr_vector<Outlet>())
+outlets(boost::ptr_vector<Outlet>()),
+containerLock()
 {
 }
 

@@ -74,7 +74,11 @@ namespace hg {
         //helper function for clean-up
         static void EraseTrace(boost::thread::id whichThread);
         
-        static boost::mutex mapLock;
+        static void InitBackTrace();
+        
+        static boost::once_flag back_init_flag;
+        
+        static boost::mutex* mapLock;
     };
 }
 #endif //HG_TRACER_H

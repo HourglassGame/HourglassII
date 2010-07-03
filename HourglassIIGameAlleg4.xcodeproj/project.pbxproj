@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		207A9F7111DB798200A60DF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 207A9F7011DB798200A60DF2 /* main.cpp */; };
 		208E78ED11DEFE9800B39F90 /* HourglassSwirl.ico in Resources */ = {isa = PBXBuildFile; fileRef = 208E78E011DEFE4D00B39F90 /* HourglassSwirl.ico */; };
-		208E78FB11DEFECE00B39F90 /* HourglassII-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 208E78F711DEFECE00B39F90 /* HourglassII-Info.plist */; };
 		208E78FC11DEFECE00B39F90 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 208E78F911DEFECE00B39F90 /* MainMenu.xib */; };
 		20CACFC011DC48FB00DE923B /* Tracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */; };
 		20CACFE011DC5DD900DE923B /* HourglassAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CACFDE11DC5DD900DE923B /* HourglassAssert.cpp */; };
@@ -134,7 +133,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				208E78ED11DEFE9800B39F90 /* HourglassSwirl.ico in Resources */,
-				208E78FB11DEFECE00B39F90 /* HourglassII-Info.plist in Resources */,
 				208E78FC11DEFECE00B39F90 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

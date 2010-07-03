@@ -9,11 +9,14 @@
 
 #include "Tracer.h"
 #include <boost/thread.hpp>
+#include <boost/thread/once.hpp>
 #include <boost/bind.hpp>
 #include "HourglassAssert.h"
 using namespace hg;
 
 std::map<boost::thread::id, std::deque<std::string> >* Tracer::backTrace;
+boost::once_flag Tracer::back_init_flag=BOOST_ONCE_INIT;
+boost::mutex* Tracer::mapLock;
 
 Tracer::Tracer(const char* const functionName) :
 functionName_(functionName)
@@ -40,15 +43,17 @@ const std::deque<std::string>& Tracer::GetBackTrace()
 //but simple enough and gets the job done (I think)
 std::deque<std::string>& Tracer::GetModifiableBackTrace()
 {
+    boost::call_once(InitBackTrace, back_init_flag);
     //Conditionally thread-safe, 
     //as long as the same deque is not returned to two different threads
     //which should never happen, so it's ok.
-    boost::lock_guard<boost::mutex> lock(mapLock);
+    boost::lock_guard<boost::mutex> lock(*mapLock);
     //Singleton lazy loading
+    /*
     if (backTrace == NULL) {
         backTrace = new std::map<boost::thread::id, std::deque<std::string> >();
     }
-    
+    */
     //ensure that map pairs are not kept for dead threads
     
     //mightn't work for the main thread (need to test)
@@ -69,7 +74,12 @@ std::deque<std::string>& Tracer::GetModifiableBackTrace()
 //Erases the trace associted with whichThread.
 void Tracer::EraseTrace(const boost::thread::id whichThread)
 {
-    boost::lock_guard<boost::mutex> lock(mapLock);
+    boost::lock_guard<boost::mutex> lock(*mapLock);
     hg_assert(backTrace != NULL);
     backTrace->erase(whichThread);
+}
+
+void Tracer::InitBackTrace() {
+    mapLock = new boost::mutex();
+    backTrace = new std::map<boost::thread::id, std::deque<std::string> >();
 }
