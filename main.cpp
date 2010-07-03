@@ -20,12 +20,10 @@ int main_();
     int main(const int argc, const char* const* const argv)
     {
         HG_TRACE_FUNCTION
+        //thread test
         boost::thread* forever = new boost::thread(main_);
-       // Init();
-        //engine.getCapabilites();
-        //make new window thread - takes care of all actual drawing,
-        //                      asks view-controller for info every 
-        //                      vertical-refresh.
+       // Init(); - loads program options, 
+        //make new allegro thread - performs ALL allegro calls
         
         //make new view-controller - gets passed 
         //Scene& scene(MAIN_MENU);

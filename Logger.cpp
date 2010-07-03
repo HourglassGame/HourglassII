@@ -33,14 +33,6 @@ void Logger::Log(const std::string& message, loglevel::LogLevel importance)
     foreach(Outlet& out, outlets) {
         out.Log(message, importance);
     }
-     /*
-    for( boost::ptr_vector<Outlet>::iterator it   = outlets.begin(),
-        end = outlets.end();
-        it != end; ++it )
-    {
-        it->Log(message, importance);
-    }
-    */
 }
 
 void Logger::RegisterOutlet(std::auto_ptr<Outlet> outlet)

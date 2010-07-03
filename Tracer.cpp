@@ -38,9 +38,12 @@ const std::deque<std::string>& Tracer::GetBackTrace()
 
 //Perhaps not the fastest or most elegant implementation, 
 //but simple enough and gets the job done (I think)
-//It is possible that this is not thread-safe. (TODO - check/think/readSTLdoco)
 std::deque<std::string>& Tracer::GetModifiableBackTrace()
 {
+    //Conditionally thread-safe, 
+    //as long as the same deque is not returned to two different threads
+    //which should never happen, so it's ok.
+    boost::lock_guard<boost::mutex> lock(mapLock);
     //Singleton lazy loading
     if (backTrace == NULL) {
         backTrace = new std::map<boost::thread::id, std::deque<std::string> >();
@@ -64,7 +67,9 @@ std::deque<std::string>& Tracer::GetModifiableBackTrace()
 }
 
 //Erases the trace associted with whichThread.
-void Tracer::EraseTrace(const boost::thread::id whichThread) {
+void Tracer::EraseTrace(const boost::thread::id whichThread)
+{
+    boost::lock_guard<boost::mutex> lock(mapLock);
     hg_assert(backTrace != NULL);
     backTrace->erase(whichThread);
 }
