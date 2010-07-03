@@ -19,6 +19,7 @@ int main_();
     int main(const int argc, const char* const* const argv)
     {
         HG_TRACE_FUNCTION
+        printf("y1");
         //thread test
         boost::thread* forever = new boost::thread(main_);
        // Init(); - loads program options, 

@@ -63,7 +63,8 @@ std::deque<std::string>& Tracer::GetModifiableBackTrace()
     //if a new thread were able to reuse an old thread's id before the old thread's
     //at_thread_exit functions are called
     if (backTrace->find(boost::this_thread::get_id()) == backTrace->end()) {
-        boost::this_thread::at_thread_exit(boost::bind<void>(EraseTrace, 
+    //Portable syntax used to convince silly old GCC to work.
+        boost::this_thread::at_thread_exit(boost::bind(boost::type<void>(),EraseTrace, 
                                                              boost::this_thread::get_id()));
     }
 
