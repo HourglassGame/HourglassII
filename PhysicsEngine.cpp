@@ -1,7 +1,8 @@
 #include "PhysicsEngine.h"
 
 
-ObjectList* PhysicsEngine::executeFrame(ObjectList* arrivals)
+vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_ptr<ObjectList> arrivals, 
+																  int time, int maxTime, int playerGuyIndex, vector<boost::shared_ptr<InputList>> playerInput)
 {
 
 	// Switch Collisions at this point?
@@ -25,9 +26,16 @@ ObjectList* PhysicsEngine::executeFrame(ObjectList* arrivals)
 	
 	// guys do timetravel-type stuff
 
-	ObjectList* departures = new ObjectList();
+	vector<boost::shared_ptr<ObjectList>> departures(maxTime, boost::shared_ptr<ObjectList>(new ObjectList()));
+
+	departures[time]->addBox(1,2,3,4,1);
 
 	// add data to departures
 
 	return departures;
+}
+
+int PhysicsEngine::getNextPlayerFrame()
+{
+	return nextPlayerFrame;
 }

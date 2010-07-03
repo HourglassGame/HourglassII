@@ -1,6 +1,6 @@
 
-#ifndef INC_OBJECTLIST
-#define INC_OBJECTLIST
+#ifndef INC_OBJECTS
+#define INC_OBJECTS
 
 #include "Guy.h"
 #include "Box.h"
@@ -9,8 +9,9 @@
 #include "Platform.h"
 #include "Switch.h"
 
-#endif // INC_OBJECTLIST
+#endif // INC_OBJECTS
 
+#include <boost/smart_ptr.hpp>
 #include <vector>
 using namespace std;
 
@@ -19,7 +20,6 @@ class ObjectList
 {
 public:
 	ObjectList();
-	~ObjectList();
 	
 	void addGuy(int x, int y, int xspeed, int yspeed, int timeDirection, bool boxCarrying, int relativeIndex);
 	void addBox(int x, int y, int xspeed, int yspeed, int timeDirection); // I know it's the same as Item but this way is more visible
@@ -28,30 +28,32 @@ public:
 	void addPlatform(int x, int y, int xspeed, int yspeed, int timeDirection, int id);
 	void addSwitch(int x, int y, int type, int platformAttachment, int id); // and lasers
 
-	void addGuy(Guy* toCopy); 
-	void addBox(Box* toCopy); 
+	void addGuy(boost::shared_ptr<Guy> toCopy); 
+	void addBox(boost::shared_ptr<Box> toCopy); 
 
-	vector<Guy*> getGuyList();
-	vector<Box*> getBoxList();
-	vector<Item*> getItemList();
-	vector<Pickup*> getPickupList();
-	vector<Platform*> getPlatformList();
-	vector<Switch*> getSwitchList();
+	vector<boost::shared_ptr<Guy>> getGuyList();
+	vector<boost::shared_ptr<Box>> getBoxList();
+	vector<boost::shared_ptr<Item>> getItemList();
+	vector<boost::shared_ptr<Pickup>> getPickupList();
+	vector<boost::shared_ptr<Platform>> getPlatformList();
+	vector<boost::shared_ptr<Switch>> getSwitchList();
 
-	ObjectList* operator+(ObjectList* other);
-	ObjectList* operator+=(ObjectList* other);
+	void add(const boost::shared_ptr<ObjectList> other, int relativeGuyIgnoreIndex);
 
-	bool operator==(ObjectList* other);
-	bool operator!=(ObjectList* other);
+	// call sortElements before comparison for correct comparison
+	// call sortElements before physics step for determination guarantee 
+	// in practise call sortElements after changing the ObjectList
+	void sortElements();
+	bool equals(const boost::shared_ptr<ObjectList> other);
 
 private:
 
-	vector<Guy*> guyList;
-	vector<Box*> boxList;
-	vector<Item*> itemList;
-	vector<Pickup*> pickupList;
-	vector<Platform*> platformList;
-	vector<Switch*> switchList;
+	vector<boost::shared_ptr<Guy>> guyList;
+	vector<boost::shared_ptr<Box>> boxList;
+	vector<boost::shared_ptr<Item>> itemList;
+	vector<boost::shared_ptr<Pickup>> pickupList;
+	vector<boost::shared_ptr<Platform>> platformList;
+	vector<boost::shared_ptr<Switch>> switchList;
 
 };
 

@@ -9,3 +9,4 @@ Pickup::Pickup(int nX, int nY, int nPlatformAttachment, int nTimeDirection, int 
 	platformAttachment = nPlatformAttachment;
 
 }
+

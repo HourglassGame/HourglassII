@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "Guy.h"
 
 Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nTimeDirection, bool nBoxCarrying, int nRelativeIndex)
@@ -12,7 +13,7 @@ Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nTimeDirection, bool nBox
 
 }
 
-bool Guy::operator==(Guy* other)
+bool Guy::equals(boost::shared_ptr<Guy> other)
 {
 	if ( (x == other->getX()) && (y == other->getY()) && (xspeed == other->getXspeed()) && (yspeed == other->getYspeed()) & 
 		(boxCarrying == other->getBoxCarrying()) && (timeDirection == other->getTimeDirection()) && (relativeIndex == other -> getRelativeIndex()) )
@@ -22,11 +23,18 @@ bool Guy::operator==(Guy* other)
 	return false;
 }
 
-bool Guy::operator!=(Guy* other)
+bool Guy::lessThan(boost::shared_ptr<Guy> first , boost::shared_ptr<Guy> second)
 {
-	return !(*this == other);
+	if (first -> getRelativeIndex() == second -> getRelativeIndex())
+	{
+		std::runtime_error( "Attempted to '<' 2 guys with equal relativeIndex");
+		return false;
+	}
+	else
+	{
+		return (first -> getRelativeIndex() < second -> getRelativeIndex());
+	}
 }
-
 
 int Guy::getX()
 {

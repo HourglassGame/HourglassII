@@ -1,3 +1,4 @@
+#include <boost/smart_ptr.hpp>
 
 class Box
 {
@@ -10,12 +11,10 @@ public:
     int getXspeed();
     int getYspeed();
 	int getTimeDirection();
-	
-	// exectute physics
 
-	bool operator==(Box* other);
-	bool operator!=(Box* other);
-    
+	bool equals(boost::shared_ptr<Box> other);
+    static bool lessThan(boost::shared_ptr<Box> first, boost::shared_ptr<Box> second);
+
 private:
   
 	int x;

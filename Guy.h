@@ -1,3 +1,4 @@
+#include <boost/smart_ptr.hpp>
 
 class Guy
 {
@@ -13,13 +14,9 @@ public:
 	bool getBoxCarrying();
 	int getTimeDirection();
 	int getRelativeIndex();
-	
-	// exectute physics
 
-	// execute time things (belts, jumps)
-
-	bool operator==(Guy* other);
-	bool operator!=(Guy* other);
+	bool equals(boost::shared_ptr<Guy> other);
+	static bool lessThan(boost::shared_ptr<Guy> first, boost::shared_ptr<Guy> second);
     
 private:
   

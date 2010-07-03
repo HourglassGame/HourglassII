@@ -1,3 +1,4 @@
+#include <boost/smart_ptr.hpp>
 
 class Switch
 {

@@ -8,42 +8,24 @@ ObjectList::ObjectList()
 	
 }
 
-ObjectList::~ObjectList()
-{
-	guyList.clear();
-	boxList.clear();
-	itemList.clear();
-	pickupList.clear();
-	platformList.clear();
-	switchList.clear();
-}
-
-ObjectList* ObjectList::operator+=(ObjectList* other)
+void ObjectList::add(const boost::shared_ptr<ObjectList> other, int relativeGuyIgnoreIndex)
 {
 	
-	for (int i = 0; i < other->getGuyList().size(); ++i)
+	for (unsigned int i = 0; i < other->getGuyList().size(); ++i)
 	{
-		addGuy(other->getGuyList()[i]);
+		if (other->getGuyList()[i]->getRelativeIndex() < relativeGuyIgnoreIndex)
+		{
+			addGuy(other->getGuyList()[i]);
+		}
 	}
 
-	for (int i = 0; i < other->getBoxList().size(); ++i)
+	for (unsigned int i = 0; i < other->getBoxList().size(); ++i)
 	{
 		addBox(other->getBoxList()[i]);
 	}
-
-	return this;
 }	
 
-ObjectList* ObjectList::operator+(ObjectList* other)
-{
-	ObjectList* result = new ObjectList();
-	result->operator += (this);
-	result->operator += (other);
-	return result;
-}
-	
-
-bool ObjectList::operator==(ObjectList* other)
+bool ObjectList::equals(const boost::shared_ptr<ObjectList> other)
 {
 
 	if (guyList.size() != other->getGuyList().size() || boxList.size() != other->getBoxList().size() )
@@ -51,17 +33,17 @@ bool ObjectList::operator==(ObjectList* other)
 		return false;
 	}
 
-	for (int i = 0; i < guyList.size(); ++i)
+	for (unsigned int i = 0; i < guyList.size(); ++i)
 	{
-		if (guyList[i]->operator != (other->getGuyList()[i]))
+		if (!(guyList[i]->equals(other->getGuyList()[i])))
 		{
 			return false;
 		}
 	}
 
-	for (int i = 0; i < boxList.size(); ++i)
+	for (unsigned int i = 0; i < boxList.size(); ++i)
 	{
-		if (boxList[i]->operator != (other->getBoxList()[i]))
+		if (!(boxList[i]->equals(other->getBoxList()[i])))
 		{
 			return false;
 		}
@@ -70,79 +52,81 @@ bool ObjectList::operator==(ObjectList* other)
 	return true;
 }	
 
-bool ObjectList::operator!=(ObjectList* other)
+void ObjectList::sortElements()
 {
-	return !(*this == other);
+	std::sort(guyList.begin(), guyList.end(), Guy::lessThan);
+	std::sort(boxList.begin(), boxList.end(), Box::lessThan);
 }
 
+// Single Element addition
 void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int timeDirection, bool boxCarrying, int relativeIndex)
 {
-	guyList.push_back(new Guy(x, y, xspeed, yspeed, timeDirection, boxCarrying, relativeIndex));
+	
+	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, timeDirection, boxCarrying, relativeIndex)));
 }
 
-void ObjectList::addGuy(Guy* toCopy)
+void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
 {
-	guyList.push_back(new Guy(toCopy->getX(), toCopy->getY(), toCopy->getXspeed(), toCopy->getYspeed(), 
-		toCopy->getTimeDirection(), toCopy->getBoxCarrying(), toCopy->getRelativeIndex() ));
+	guyList.push_back(toCopy);
 }
 
 void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int timeDirection)
 {
-	boxList.push_back(new Box(x, y, xspeed, yspeed, timeDirection));
+	boxList.push_back(boost::shared_ptr<Box> (new Box(x, y, xspeed, yspeed, timeDirection)));
 }
 
-void ObjectList::addBox(Box* toCopy)
+void ObjectList::addBox(boost::shared_ptr<Box> toCopy)
 {
-	boxList.push_back(new Box(toCopy->getX(), toCopy->getY(), toCopy->getXspeed(), toCopy->getYspeed(), toCopy->getTimeDirection() ));
+	boxList.push_back(toCopy);
 }
 
 void ObjectList::addItem(int x, int y, int xspeed, int yspeed, int timeDirection, int type)
 {
-	itemList.push_back(new Item(x, y, xspeed, yspeed, timeDirection, type));
+	itemList.push_back(boost::shared_ptr<Item> (new Item(x, y, xspeed, yspeed, timeDirection, type)));
 }
 
 void ObjectList::addPickup(int x, int y, int platformAttachment, int timeDirection, int type)
 {
-	pickupList.push_back(new Pickup(x, y, platformAttachment, timeDirection, type));
+	pickupList.push_back(boost::shared_ptr<Pickup> (new Pickup(x, y, platformAttachment, timeDirection, type)));
 }
 
 void ObjectList::addPlatform(int x, int y, int xspeed, int yspeed, int timeDirection, int id)
 {
-	platformList.push_back(new Platform(x, y, xspeed, yspeed, timeDirection, id));
+	platformList.push_back(boost::shared_ptr<Platform> (new Platform(x, y, xspeed, yspeed, timeDirection, id)));
 }
 
 void ObjectList::addSwitch(int x, int y, int type, int platformAttachment, int id)
 {
-	switchList.push_back(new Switch(x, y, type, platformAttachment, id));
+	switchList.push_back(boost::shared_ptr<Switch> (new Switch(x, y, type, platformAttachment, id)));
 }
 
-
-vector<Guy*> ObjectList::getGuyList()
+// Getters
+vector<boost::shared_ptr<Guy>> ObjectList::getGuyList()
 {
 	return guyList;
 }
 
-vector<Box*> ObjectList::getBoxList()
+vector<boost::shared_ptr<Box>> ObjectList::getBoxList()
 {
 	return boxList;
 }
 
-vector<Item*> ObjectList::getItemList()
+vector<boost::shared_ptr<Item>> ObjectList::getItemList()
 {
 	return itemList;
 }
 
-vector<Pickup*> ObjectList::getPickupList()
+vector<boost::shared_ptr<Pickup>> ObjectList::getPickupList()
 {
 	return pickupList;
 }
 
-vector<Platform*> ObjectList::getPlatformList()
+vector<boost::shared_ptr<Platform>> ObjectList::getPlatformList()
 {
 	return platformList;
 }
 
-vector<Switch*> ObjectList::getSwitchList()
+vector<boost::shared_ptr<Switch>> ObjectList::getSwitchList()
 {
 	return switchList;
 }
