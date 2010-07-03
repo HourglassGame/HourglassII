@@ -1,0 +1,352 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		207A9F7111DB798200A60DF2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 207A9F7011DB798200A60DF2 /* main.cpp */; };
+		208E78ED11DEFE9800B39F90 /* HourglassSwirl.ico in Resources */ = {isa = PBXBuildFile; fileRef = 208E78E011DEFE4D00B39F90 /* HourglassSwirl.ico */; };
+		208E78FB11DEFECE00B39F90 /* HourglassII-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 208E78F711DEFECE00B39F90 /* HourglassII-Info.plist */; };
+		208E78FC11DEFECE00B39F90 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 208E78F911DEFECE00B39F90 /* MainMenu.xib */; };
+		20CACFC011DC48FB00DE923B /* Tracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CACFBF11DC48FB00DE923B /* Tracer.cpp */; };
+		20CACFE011DC5DD900DE923B /* HourglassAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CACFDE11DC5DD900DE923B /* HourglassAssert.cpp */; };
+		20CACFE411DC65B800DE923B /* Logger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CACFE311DC65B800DE923B /* Logger.cpp */; };
+		20CACFE711DC65D300DE923B /* Outlet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20CACFE611DC65D300DE923B /* Outlet.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		207A9F6611DB785800A60DF2 /* HourglassII.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassII.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		207A9F7011DB798200A60DF2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		208E78E011DEFE4D00B39F90 /* HourglassSwirl.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; name = HourglassSwirl.ico; path = resources/HourglassSwirl.ico; sourceTree = "<group>"; };
+		208E78F811DEFECE00B39F90 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = English; path = "HourglassII-Info.plist"; sourceTree = "<group>"; };
+		208E78FA11DEFECE00B39F90 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = MainMenu.xib; sourceTree = "<group>"; };
+		20CACFBE11DC48FB00DE923B /* Tracer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tracer.h; sourceTree = "<group>"; };
+		20CACFBF11DC48FB00DE923B /* Tracer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tracer.cpp; sourceTree = "<group>"; };
+		20CACFDE11DC5DD900DE923B /* HourglassAssert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HourglassAssert.cpp; sourceTree = "<group>"; };
+		20CACFDF11DC5DD900DE923B /* HourglassAssert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HourglassAssert.h; sourceTree = "<group>"; };
+		20CACFE211DC65B800DE923B /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		20CACFE311DC65B800DE923B /* Logger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Logger.cpp; sourceTree = "<group>"; };
+		20CACFE511DC65D300DE923B /* Outlet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Outlet.h; sourceTree = "<group>"; };
+		20CACFE611DC65D300DE923B /* Outlet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Outlet.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		207A9F6411DB785800A60DF2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2071D03311DB8FC3008858F5 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				20CACFDF11DC5DD900DE923B /* HourglassAssert.h */,
+				20CACFDE11DC5DD900DE923B /* HourglassAssert.cpp */,
+				207A9F7011DB798200A60DF2 /* main.cpp */,
+				20CACFBE11DC48FB00DE923B /* Tracer.h */,
+				20CACFBF11DC48FB00DE923B /* Tracer.cpp */,
+				20CACFE211DC65B800DE923B /* Logger.h */,
+				20CACFE311DC65B800DE923B /* Logger.cpp */,
+				20CACFE511DC65D300DE923B /* Outlet.h */,
+				20CACFE611DC65D300DE923B /* Outlet.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		207A9F5811DB783300A60DF2 = {
+			isa = PBXGroup;
+			children = (
+				2071D03311DB8FC3008858F5 /* src */,
+				207A9F8811DB7AA100A60DF2 /* Resources */,
+				207A9F6711DB785800A60DF2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		207A9F6711DB785800A60DF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				207A9F6611DB785800A60DF2 /* HourglassII.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		207A9F8811DB7AA100A60DF2 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				208E78F711DEFECE00B39F90 /* HourglassII-Info.plist */,
+				208E78F911DEFECE00B39F90 /* MainMenu.xib */,
+				208E78E011DEFE4D00B39F90 /* HourglassSwirl.ico */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		207A9F6511DB785800A60DF2 /* HourglassII */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 207A9F6C11DB785900A60DF2 /* Build configuration list for PBXNativeTarget "HourglassII" */;
+			buildPhases = (
+				207A9F6211DB785800A60DF2 /* Resources */,
+				207A9F6311DB785800A60DF2 /* Sources */,
+				207A9F6411DB785800A60DF2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HourglassII;
+			productName = HourglassII;
+			productReference = 207A9F6611DB785800A60DF2 /* HourglassII.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		207A9F5A11DB783300A60DF2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Team Causality";
+			};
+			buildConfigurationList = 207A9F5D11DB783300A60DF2 /* Build configuration list for PBXProject "HourglassIIGameAlleg4" */;
+			compatibilityVersion = "Xcode 3.2";
+			hasScannedForEncodings = 0;
+			mainGroup = 207A9F5811DB783300A60DF2;
+			productRefGroup = 207A9F6711DB785800A60DF2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				207A9F6511DB785800A60DF2 /* HourglassII */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		207A9F6211DB785800A60DF2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				208E78ED11DEFE9800B39F90 /* HourglassSwirl.ico in Resources */,
+				208E78FB11DEFECE00B39F90 /* HourglassII-Info.plist in Resources */,
+				208E78FC11DEFECE00B39F90 /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		207A9F6311DB785800A60DF2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				207A9F7111DB798200A60DF2 /* main.cpp in Sources */,
+				20CACFC011DC48FB00DE923B /* Tracer.cpp in Sources */,
+				20CACFE011DC5DD900DE923B /* HourglassAssert.cpp in Sources */,
+				20CACFE411DC65B800DE923B /* Logger.cpp in Sources */,
+				20CACFE711DC65D300DE923B /* Outlet.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		208E78F711DEFECE00B39F90 /* HourglassII-Info.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				208E78F811DEFECE00B39F90 /* English */,
+			);
+			name = "HourglassII-Info.plist";
+			path = resources/English.lproj;
+			sourceTree = "<group>";
+		};
+		208E78F911DEFECE00B39F90 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				208E78FA11DEFECE00B39F90 /* English */,
+			);
+			name = MainMenu.xib;
+			path = resources/English.lproj;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		207A9F5B11DB783300A60DF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		207A9F5C11DB783300A60DF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		207A9F6A11DB785800A60DF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_VERSION = 4.2;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/Users/evan/Programming/clean_boost/,
+					/Users/evan/Programming/allegro_universal/include,
+				);
+				INFOPLIST_FILE = "resources/English.lproj/HourglassII-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					/Users/evan/Programming/boost/boost_1_43_0/stage/lib,
+					/Users/evan/Programming/allegro_universal/lib,
+				);
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-lalleg-main",
+					"-lalleg",
+					"-lboost_thread",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = HourglassII;
+				SDKROOT = macosx10.5;
+				VALID_ARCHS = i386;
+				WARNING_CFLAGS = "-Wall";
+			};
+			name = Debug;
+		};
+		207A9F6B11DB785800A60DF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = 4.2;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					/Users/evan/Programming/clean_boost/,
+					/Users/evan/Programming/allegro_universal/include,
+				);
+				INFOPLIST_FILE = "resources/English.lproj/HourglassII-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					/Users/evan/Programming/boost/boost_1_43_0/stage/lib,
+					/Users/evan/Programming/allegro_universal/lib,
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					Cocoa,
+					"-lalleg-main",
+					"-lalleg",
+					"-lboost_thread",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = HourglassII;
+				SDKROOT = macosx10.5;
+				VALID_ARCHS = i386;
+				WARNING_CFLAGS = "-Wall";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		207A9F5D11DB783300A60DF2 /* Build configuration list for PBXProject "HourglassIIGameAlleg4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				207A9F5B11DB783300A60DF2 /* Debug */,
+				207A9F5C11DB783300A60DF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		207A9F6C11DB785900A60DF2 /* Build configuration list for PBXNativeTarget "HourglassII" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				207A9F6A11DB785800A60DF2 /* Debug */,
+				207A9F6B11DB785800A60DF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 207A9F5A11DB783300A60DF2 /* Project object */;
+}
