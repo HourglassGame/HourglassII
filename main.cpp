@@ -31,7 +31,6 @@ namespace hg {
 }
 //Program options (from command line/config file/wherever) are globally stored.
 //NOTHING ELSE IS, BEFORE YOU ADD ANY MORE GLOBAL STATE ADD IT TO THIS LIST
-<<<<<<< .mine
 int main(const int argc, const char* const* const argv)
 {
     HG_TRACE_FUNCTION
@@ -39,16 +38,6 @@ int main(const int argc, const char* const* const argv)
         hg::LoadProgramOptions(argc,argv);//Loads program options
         hg::EngineThreadMediator mediator;
         hg::StartLogger(mediator); //registers outlets with logger (all earlier logging is done to stdout)
-=======
-    int main(const int argc, const char* const* const argv)
-    {
-        HG_TRACE_FUNCTION
-        printf("y1");
-        //thread test
-        boost::thread* forever = new boost::thread(main_);
-       // Init(); - loads program options, 
-        //make new allegro thread - performs ALL allegro calls
->>>>>>> .r6
         
         //Game Thread
         boost::thread game(boost::bind<void>(hg::RunGame,
