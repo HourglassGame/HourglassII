@@ -46,6 +46,7 @@ public:
 	void sortElements();
 	bool equals(const boost::shared_ptr<ObjectList> other);
 
+	boost::shared_ptr<ObjectList> copy();
 private:
 
 	vector<boost::shared_ptr<Guy>> guyList;

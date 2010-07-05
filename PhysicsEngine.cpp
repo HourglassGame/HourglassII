@@ -1,8 +1,19 @@
 #include "PhysicsEngine.h"
 
 
-vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_ptr<ObjectList> arrivals, 
-																  int time, int maxTime, int playerGuyIndex, vector<boost::shared_ptr<InputList>> playerInput)
+PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<boost::shared_ptr<InputList>> playerInputRef, vector<vector<bool>> newWallmap)
+{
+	
+	timeLineLength = newTimeLineLength;
+
+	playerInput = playerInputRef;
+
+	wallmap = newWallmap;
+
+
+}
+
+vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_ptr<ObjectList> arrivals, int time, int playerGuyIndex)
 {
 
 	// Switch Collisions at this point?
@@ -26,7 +37,7 @@ vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_
 	
 	// guys do timetravel-type stuff
 
-	vector<boost::shared_ptr<ObjectList>> departures(maxTime, boost::shared_ptr<ObjectList>(new ObjectList()));
+	vector<boost::shared_ptr<ObjectList>> departures(timeLineLength, boost::shared_ptr<ObjectList>(new ObjectList()));
 
 	departures[time]->addBox(1,2,3,4,1);
 
@@ -38,4 +49,9 @@ vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_
 int PhysicsEngine::getNextPlayerFrame()
 {
 	return nextPlayerFrame;
+}
+
+int PhysicsEngine::getPlayerDirection()
+{
+	return playerDirection;
 }

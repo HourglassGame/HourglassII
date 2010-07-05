@@ -18,13 +18,25 @@ class PhysicsEngine
 
 public:
 
-	vector<boost::shared_ptr<ObjectList>> executeFrame(boost::shared_ptr<ObjectList> arrivals, int time, int maxTime, 
-		int playerGuyIndex, vector<boost::shared_ptr<InputList>> playerInput); // executes frame and returns departures
+	PhysicsEngine(int newTimeLineLength, vector<boost::shared_ptr<InputList>> playerInputRef, vector<vector<bool>> newWallmap);
+
+	vector<boost::shared_ptr<ObjectList>> executeFrame(boost::shared_ptr<ObjectList> arrivals, int time, int playerGuyIndex); // executes frame and returns departures
 	
+
 	int getNextPlayerFrame();
+	int getPlayerDirection();
 
 private:
 
-	int nextPlayerFrame;
+	void crappyBoxCollisionAlogorithm();
+
+	int timeLineLength;
+	vector<boost::shared_ptr<InputList>> playerInput;
+
+	vector<vector<bool>> wallmap;
+
+	// these are updated from guy with relative index == playerGuyIndex when the frame is executed
+	int nextPlayerFrame; // frame that the player departed for
+	int playerDirection; // time direction of player in frame
 
 };

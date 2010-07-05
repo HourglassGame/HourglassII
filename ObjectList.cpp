@@ -13,7 +13,7 @@ void ObjectList::add(const boost::shared_ptr<ObjectList> other, int relativeGuyI
 	
 	for (unsigned int i = 0; i < other->getGuyList().size(); ++i)
 	{
-		if (other->getGuyList()[i]->getRelativeIndex() < relativeGuyIgnoreIndex)
+		if ((relativeGuyIgnoreIndex == -1) || (other->getGuyList()[i]->getRelativeIndex() < relativeGuyIgnoreIndex))
 		{
 			addGuy(other->getGuyList()[i]);
 		}
@@ -51,6 +51,16 @@ bool ObjectList::equals(const boost::shared_ptr<ObjectList> other)
 
 	return true;
 }	
+
+boost::shared_ptr<ObjectList> ObjectList::copy()
+{
+	boost::shared_ptr<ObjectList> newObjectList = boost::shared_ptr<ObjectList>(new ObjectList());
+	
+	newObjectList->add(boost::shared_ptr<ObjectList>(this),-1);
+
+	return newObjectList;
+}
+
 
 void ObjectList::sortElements()
 {
