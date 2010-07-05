@@ -1,5 +1,5 @@
 /*
- *  AllegroAssert.cpp
+ *  HourglassAssert.cpp
  *  HourglassIIGame
  *
  *  Created by Evan Wallace on 1/06/10.
@@ -10,9 +10,10 @@
 #include "HourglassAssert.h"
 #include <string>
 #include <sstream>
-#include <exception>
+#include "AssertionException.h"
 #include "Tracer.h"
 #include "Logger.h"
+#include "LogLevel.h"
 void boost::assertion_failed(char const * const expr,
                              char const * const function, 
                              char const * const file, const long line) {
@@ -25,5 +26,5 @@ void boost::assertion_failed(char const * const expr,
 	message << "File: " << file << endl;
 	message << "Line: " << line;
     hg::Logger::GetLogger().Log(std::string(message.str()), hg::loglevel::FATAL);
-    throw std::logic_error(expr);
+    throw hg::AssertionException(expr);
 }

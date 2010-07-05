@@ -19,11 +19,3 @@ void Outlet::Log(const std::string& message, const loglevel::LogLevel importance
 {
     Log_(message, importance);
 }
-
-//Needed to use in ptr_container; however, cloning is generally meaningless for outlets, which usually 
-//refer to specific hardware outputs which cannot be programmatically cloned.
-Outlet* new_clone(const Outlet&)
-{
-    hg_assert(false);
-    return 0;
-}

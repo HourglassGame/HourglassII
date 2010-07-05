@@ -10,6 +10,10 @@
 #include "Tracer.h"
 #include <boost/bind.hpp>
 #include "HourglassAssert.h"
+#include <boost/foreach.hpp>
+#include <sstream>
+#define foreach BOOST_FOREACH
+#define reverse_foreach BOOST_REVERSE_FOREACH
 using namespace hg;
 
 std::map<boost::thread::id, std::deque<std::string> >* Tracer::backTrace;
@@ -43,16 +47,12 @@ std::deque<std::string>& Tracer::GetModifiableBackTrace()
 {
     //Singleton lazy loading
     boost::call_once(InitBackTrace, back_init_flag);
-    //Conditionally thread-safe, 
-    //as long as the same deque is not returned to two different threads
+
+    //Thread-safe as long as the same deque 
+    //is not returned to two different threads -
     //which should never happen, so it's ok.
     boost::lock_guard<boost::mutex> lock(*mapLock);
-    //Singleton lazy loading
-    /*
-    if (backTrace == NULL) {
-        backTrace = new std::map<boost::thread::id, std::deque<std::string> >();
-    }
-    */
+
     //ensure that map pairs are not kept for dead threads
     
     //mightn't work for the main thread (need to test)
@@ -79,8 +79,31 @@ void Tracer::EraseTrace(const boost::thread::id whichThread)
     backTrace->erase(whichThread);
 }
 
+void Tracer::DeleteMap()
+{
+    hg_assert(backTrace != NULL);
+    delete backTrace;
+}
+
+void Tracer::DeleteMapLock()
+{
+    delete mapLock;
+}
+
 void Tracer::InitBackTrace()
 {
     mapLock = new boost::mutex();
     backTrace = new std::map<boost::thread::id, std::deque<std::string> >();
+    atexit(DeleteMap);
+    atexit(DeleteMapLock);
+}
+
+const std::string Tracer::GetStringBackTrace()
+{
+    const std::deque<std::string>& trace = GetBackTrace();
+    std::stringstream output;
+    reverse_foreach(const std::string& s, trace) {
+        output << "in: " << s << std::endl;
+    }
+    return output.str();
 }

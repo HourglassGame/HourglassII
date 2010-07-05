@@ -10,7 +10,7 @@
 #include "Logger.h"
 #include <boost/foreach.hpp>
 #include <boost/thread/locks.hpp>
-
+#include "TerminalOutlet.h"
 #define foreach BOOST_FOREACH
 using namespace hg;
 
@@ -35,16 +35,24 @@ void Logger::Log(const std::string& message, loglevel::LogLevel importance)
     }
 }
 
-void Logger::RegisterOutlet(std::auto_ptr<Outlet> outlet)
+void Logger::RegisterOutlet(Outlet* outlet)
 {
+    std::auto_ptr<Outlet> outlet_(outlet);
     boost::lock_guard<boost::mutex> lock(containerLock);
-    outlets.push_back(outlet);
+    static bool firstCall = true;
+    //Remove the default Outlet once another outlet has been specified
+    if (firstCall) {
+        outlets.clear();
+        firstCall = false;
+    }
+    outlets.push_back(outlet_);
 }
 
 Logger::Logger() :
 outlets(boost::ptr_vector<Outlet>()),
 containerLock()
 {
+    outlets.push_back(new TerminalOutlet(loglevel::ALL));
 }
 
 //Possible error if destructor called simultaneously with any other function, 

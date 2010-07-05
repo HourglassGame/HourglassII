@@ -10,7 +10,6 @@
  *
  */
 
-
 #include <deque>
 #include <map>
 #include <boost/thread/thread.hpp>
@@ -32,11 +31,11 @@ namespace hg {
     //but I'm not sure what good that would be.
     
     //THIS CLASS IS ONLY THREAD-SAFE IF THE ONLY THREADS WHICH 
-    //CALL IT ARE (`boost::thread')s or the MAIN THREAD
+    //CALL IT ARE (`boost::thread')s or the MAIN THREAD (unless boost::this_thread is smarter than I think)
     
     //DO NOT PUT `HG_TRACE_FUNCTION' IN CALLBACK FUNCTIONS FROM EXTERNAL LIBRARIES (eg allegro)
     //AS THIS HAS UNDEFINED BEHAVIOUR DEPENDENT ON THE IMPLEMENTATION OF THE CALLBACKS
-    //(it will probably assume the callback functions are at the bottom of the main thread)
+    //(GUESS - it will probably assume the callback functions are at the bottom of the main thread)
     class Tracer : private boost::noncopyable
     {
     public:
@@ -64,6 +63,7 @@ namespace hg {
         //of the functions in the back-trace which have been captured (using HG_TRACE_FUNCTION)
         //ordered from deepest level function to highest
         static const std::deque<std::string>& GetBackTrace();
+        static const std::string GetStringBackTrace();
     private:
         const char* functionName_;
         
@@ -72,15 +72,15 @@ namespace hg {
         
         //Holds the back-trace
         static std::map<boost::thread::id, std::deque<std::string> >*  backTrace;
-        
-        //helper function for clean-up
-        static void EraseTrace(boost::thread::id whichThread);
-        
-        static void InitBackTrace();
-        
-        static boost::once_flag back_init_flag;
-        
+        //Lock for backTrace
         static boost::mutex* mapLock;
+        //helper functions for clean-up
+        static void EraseTrace(boost::thread::id whichThread);
+        static void DeleteMap();
+        static void DeleteMapLock();
+        //Initialisation helpers
+        static boost::once_flag back_init_flag;
+        static void InitBackTrace();
     };
 }
 #endif //HG_TRACER_H

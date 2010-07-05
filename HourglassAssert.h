@@ -1,5 +1,5 @@
 /*
- *  AllegroAssert.h
+ *  HourglassAssert.h
  *  HourglassIIGame
  *
  *  Created by Evan Wallace on 1/06/10.

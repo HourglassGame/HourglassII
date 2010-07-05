@@ -10,21 +10,6 @@
  */
 namespace hg {
     class Logger;
-    namespace loglevel {
-        enum LogLevel
-        {
-            ALL,
-            FINEST,
-            FINER,
-            FINE,
-            CONFIG,
-            INFO,
-            WARNING,
-            SEVERE,
-            FATAL,
-            OFF
-        };
-    }
 }
 
 //Singleton logger
@@ -32,18 +17,21 @@ namespace hg {
 #include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include "HourglassAssert.h"
 #include "Outlet.h"
+#include "LogLevel.h"
+
 namespace hg {
     class Logger : private boost::noncopyable
     {
     public:
         static Logger& GetLogger();
         void Log(const std::string& message, loglevel::LogLevel importance);
-        void RegisterOutlet(std::auto_ptr<Outlet> outlet);
+        void RegisterOutlet(Outlet* outlet);
     private:
         Logger();
         ~Logger();
-        
+
         boost::ptr_vector<Outlet> outlets;
         boost::mutex containerLock;
     };

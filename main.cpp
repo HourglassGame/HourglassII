@@ -7,15 +7,39 @@
  *
  */
 #include <allegro.h>
+#include <iostream>
 
 #include <boost/thread.hpp>
+#include "EngineThreadMediator.h"
 #include "Tracer.h"
+#include <boost/any.hpp>
+#include <boost/bind.hpp>
+#include "Exception.h"
+#include "Logger.h"
+#include "FileOutlet.h"
+#include "PopupOutlet.h"
+#include "LogLevel.h"
+#include "HourglassAssert.h"
+#include "MainEngine.h"
+#include "GameEngine.h"
 
 int main(int argc, const char* const* argv);
-int main_();
-//Program options (from command line/config file/wherever) 
-//and working subsystems are globally stored.
+namespace hg {
+    void LoadProgramOptions(int argc, const char* const* argv);
+    void StartLogger(EngineThreadMediator& engine);
+
+}
+//Program options (from command line/config file/wherever) are globally stored.
 //NOTHING ELSE IS, BEFORE YOU ADD ANY MORE GLOBAL STATE ADD IT TO THIS LIST
+<<<<<<< .mine
+int main(const int argc, const char* const* const argv)
+{
+    HG_TRACE_FUNCTION
+    try {
+        hg::LoadProgramOptions(argc,argv);//Loads program options
+        hg::EngineThreadMediator mediator;
+        hg::StartLogger(mediator); //registers outlets with logger (all earlier logging is done to stdout)
+=======
     int main(const int argc, const char* const* const argv)
     {
         HG_TRACE_FUNCTION
@@ -24,21 +48,46 @@ int main_();
         boost::thread* forever = new boost::thread(main_);
        // Init(); - loads program options, 
         //make new allegro thread - performs ALL allegro calls
+>>>>>>> .r6
         
-        //make new view-controller - gets passed 
-        //Scene& scene(MAIN_MENU);
-        //while (scene != EXIT) {
-        //    scene = scene.run();
-        //};
-        return 0;
+        //Game Thread
+        boost::thread game(boost::bind<void>(hg::RunGame,
+                                             boost::ref(mediator)));
+        
+        //performs ALL allegro calls in main thread (may use helper-threads which don't directly call allegro)
+        hg::RunEngine(mediator);
+        
+        //Perhaps don't have this, dunno? (wait for impl)
+        game.interrupt();
     }
-    END_OF_MAIN()
-int main_()
-{
-    for (;;) {
-        printf("y0");
+    catch (hg::Exception& e) {
+        hg::Logger::GetLogger().Log(hg::Tracer::GetStringBackTrace(), hg::loglevel::SEVERE);
     }
+    catch (std::exception& e) {
+        hg::Logger::GetLogger().Log(hg::Tracer::GetStringBackTrace(), hg::loglevel::SEVERE);
+    }
+    catch (...) {
+        hg::Logger::GetLogger().Log(hg::Tracer::GetStringBackTrace(), hg::loglevel::SEVERE);
+    }
+    
     return 0;
 }
+END_OF_MAIN()
+
 namespace hg {
+    //TODO- Does nothing yet, want to get a prototype working first
+    void LoadProgramOptions(int argc, const char* const* argv)
+    {
+        HG_TRACE_FUNCTION
+    }
+    
+    //Registers a Popup outlet at log level FATAL 
+    //and a File outlet at log level INFO
+    //In final version this would be specified by program options
+    void StartLogger(EngineThreadMediator& engine)
+    {
+        HG_TRACE_FUNCTION
+        Logger::GetLogger().RegisterOutlet(new FileOutlet(loglevel::INFO, std::string("./log.txt")));
+        Logger::GetLogger().RegisterOutlet(new PopupOutlet(engine, loglevel::FATAL));
+    }
 }
