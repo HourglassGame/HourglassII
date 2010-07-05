@@ -40,9 +40,9 @@ int main(const int argc, const char* const* const argv)
         hg::StartLogger(mediator); //registers outlets with logger (all earlier logging is done to stdout)
         
         //Game Thread
-        boost::thread game(boost::bind<void>(hg::RunGame,
+        boost::thread game(boost::bind(boost::type<void>(),hg::RunGame,
                                              boost::ref(mediator)));
-        
+        hg::Logger::GetLogger().Log("h00000", hg::loglevel::SEVERE);
         //performs ALL allegro calls in main thread (may use helper-threads which don't directly call allegro)
         hg::RunEngine(mediator);
         
