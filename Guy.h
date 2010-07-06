@@ -4,12 +4,14 @@ class Guy
 {
 
 public:
-    Guy(int x, int y, int xspeed, int yspeed, int timeDirection, bool boxCarrying, int relativeIndex);
+    Guy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex);
 	
     int getX();
     int getY();
     int getXspeed();
     int getYspeed();
+	int getWidth();
+	int getHeight();
 
 	bool getBoxCarrying();
 	int getTimeDirection();
@@ -24,6 +26,8 @@ private:
 	int y;
 	int xspeed;
 	int yspeed;
+	int width;
+	int height;
 
 	bool boxCarrying;
 	int timeDirection;

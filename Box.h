@@ -4,12 +4,13 @@ class Box
 {
 
 public:
-    Box(int x, int y, int xspeed, int yspeed, int timeDirection);
+    Box(int x, int y, int xspeed, int yspeed, int size, int timeDirection);
 
     int getX();
     int getY();
     int getXspeed();
     int getYspeed();
+	int getSize();
 	int getTimeDirection();
 
 	bool equals(boost::shared_ptr<Box> other);
@@ -21,6 +22,7 @@ private:
 	int y;
 	int xspeed;
 	int yspeed;
+	int size;
 
 	int timeDirection;
      

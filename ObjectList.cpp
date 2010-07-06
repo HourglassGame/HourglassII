@@ -69,10 +69,10 @@ void ObjectList::sortElements()
 }
 
 // Single Element addition
-void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int timeDirection, bool boxCarrying, int relativeIndex)
+void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex)
 {
 	
-	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, timeDirection, boxCarrying, relativeIndex)));
+	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, width, height, timeDirection, boxCarrying, relativeIndex)));
 }
 
 void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
@@ -80,9 +80,9 @@ void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
 	guyList.push_back(toCopy);
 }
 
-void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int timeDirection)
+void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int size, int timeDirection)
 {
-	boxList.push_back(boost::shared_ptr<Box> (new Box(x, y, xspeed, yspeed, timeDirection)));
+	boxList.push_back(boost::shared_ptr<Box> (new Box(x, y, xspeed, yspeed, size, timeDirection)));
 }
 
 void ObjectList::addBox(boost::shared_ptr<Box> toCopy)

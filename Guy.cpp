@@ -1,12 +1,14 @@
 #include <stdexcept>
 #include "Guy.h"
 
-Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nTimeDirection, bool nBoxCarrying, int nRelativeIndex)
+Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int nTimeDirection, bool nBoxCarrying, int nRelativeIndex)
 {
 	x = nX;
 	y = nY;
 	xspeed = nXspeed;
 	yspeed = nYspeed;
+	width = nWidth;
+	height = nHeight;
 	timeDirection = nTimeDirection;
 	boxCarrying = nBoxCarrying;
 	relativeIndex = nRelativeIndex;
@@ -15,7 +17,8 @@ Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nTimeDirection, bool nBox
 
 bool Guy::equals(boost::shared_ptr<Guy> other)
 {
-	if ( (x == other->getX()) && (y == other->getY()) && (xspeed == other->getXspeed()) && (yspeed == other->getYspeed()) & 
+	if ( (x == other->getX()) && (y == other->getY()) && (xspeed == other->getXspeed()) && 
+		(yspeed == other->getYspeed()) && (width == other->getWidth()) && (height == other->getHeight()) &&
 		(boxCarrying == other->getBoxCarrying()) && (timeDirection == other->getTimeDirection()) && (relativeIndex == other -> getRelativeIndex()) )
 	{
 		return true;
@@ -54,6 +57,16 @@ int Guy::getXspeed()
 int Guy::getYspeed()
 {
 	return yspeed;
+}
+
+int Guy::getWidth()
+{
+	return width;
+}
+
+int Guy::getHeight()
+{
+	return height;
 }
 
 bool Guy::getBoxCarrying()
