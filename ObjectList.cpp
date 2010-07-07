@@ -8,34 +8,34 @@ ObjectList::ObjectList()
 	
 }
 
-void ObjectList::add(const boost::shared_ptr<ObjectList> other, int relativeGuyIgnoreIndex)
+void ObjectList::add(const ObjectList& other, int relativeGuyIgnoreIndex)
 {
 	
-	for (unsigned int i = 0; i < other->getGuyList().size(); ++i)
+	for (unsigned int i = 0; i < other.getGuyList().size(); ++i)
 	{
-		if ((relativeGuyIgnoreIndex == -1) || (other->getGuyList()[i]->getRelativeIndex() < relativeGuyIgnoreIndex))
+		if ((relativeGuyIgnoreIndex == -1) || (other.getGuyList()[i]->getRelativeIndex() < relativeGuyIgnoreIndex))
 		{
-			addGuy(other->getGuyList()[i]);
+			addGuy(other.getGuyList()[i]);
 		}
 	}
 
-	for (unsigned int i = 0; i < other->getBoxList().size(); ++i)
+	for (unsigned int i = 0; i < other.getBoxList().size(); ++i)
 	{
-		addBox(other->getBoxList()[i]);
+		addBox(other.getBoxList()[i]);
 	}
 }	
 
-bool ObjectList::equals(const boost::shared_ptr<ObjectList> other)
+bool ObjectList::equals(const ObjectList& other) const
 {
 
-	if (guyList.size() != other->getGuyList().size() || boxList.size() != other->getBoxList().size() )
+	if (guyList.size() != other.getGuyList().size() || boxList.size() != other.getBoxList().size() )
 	{
 		return false;
 	}
 
 	for (unsigned int i = 0; i < guyList.size(); ++i)
 	{
-		if (!(guyList[i]->equals(other->getGuyList()[i])))
+		if (!(guyList[i]->equals(other.getGuyList()[i])))
 		{
 			return false;
 		}
@@ -43,7 +43,7 @@ bool ObjectList::equals(const boost::shared_ptr<ObjectList> other)
 
 	for (unsigned int i = 0; i < boxList.size(); ++i)
 	{
-		if (!(boxList[i]->equals(other->getBoxList()[i])))
+		if (!(boxList[i]->equals(other.getBoxList()[i])))
 		{
 			return false;
 		}
@@ -52,13 +52,9 @@ bool ObjectList::equals(const boost::shared_ptr<ObjectList> other)
 	return true;
 }	
 
-boost::shared_ptr<ObjectList> ObjectList::copy()
+bool ObjectList::isEmpty()
 {
-	boost::shared_ptr<ObjectList> newObjectList = boost::shared_ptr<ObjectList>(new ObjectList());
-	
-	newObjectList->add(boost::shared_ptr<ObjectList>(this),-1);
-
-	return newObjectList;
+	return (guyList.size() == 0 && boxList.size() == 0);
 }
 
 
@@ -69,10 +65,10 @@ void ObjectList::sortElements()
 }
 
 // Single Element addition
-void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarryDirection, int relativeIndex, int subimage)
+void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarrySize, int boxCarryDirection, int relativeIndex, int subimage)
 {
 	
-	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, width, height, timeDirection, boxCarrying, boxCarryDirection, relativeIndex, subimage)));
+	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, width, height, timeDirection, boxCarrying, boxCarrySize, boxCarryDirection, relativeIndex, subimage)));
 }
 
 void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
@@ -111,32 +107,32 @@ void ObjectList::addSwitch(int x, int y, int type, int platformAttachment, int i
 }
 
 // Getters
-vector<boost::shared_ptr<Guy> > ObjectList::getGuyList()
+vector<boost::shared_ptr<Guy> > ObjectList::getGuyList() const
 {
 	return guyList;
 }
 
-vector<boost::shared_ptr<Box> > ObjectList::getBoxList()
+vector<boost::shared_ptr<Box> > ObjectList::getBoxList() const
 {
 	return boxList;
 }
 
-vector<boost::shared_ptr<Item> > ObjectList::getItemList()
+vector<boost::shared_ptr<Item> > ObjectList::getItemList() const
 {
 	return itemList;
 }
 
-vector<boost::shared_ptr<Pickup> > ObjectList::getPickupList()
+vector<boost::shared_ptr<Pickup> > ObjectList::getPickupList() const
 {
 	return pickupList;
 }
 
-vector<boost::shared_ptr<Platform> > ObjectList::getPlatformList()
+vector<boost::shared_ptr<Platform> > ObjectList::getPlatformList() const
 {
 	return platformList;
 }
 
-vector<boost::shared_ptr<Switch> > ObjectList::getSwitchList()
+vector<boost::shared_ptr<Switch> > ObjectList::getSwitchList() const
 {
 	return switchList;
 }

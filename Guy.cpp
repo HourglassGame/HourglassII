@@ -3,7 +3,7 @@
 
 int Guy::animationLength = 13;
 
-Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int nTimeDirection, bool nBoxCarrying, int nBoxCarryDirection, int nRelativeIndex, int nSubimage)
+Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int nTimeDirection, bool nBoxCarrying, int nBoxCarrySize,int nBoxCarryDirection, int nRelativeIndex, int nSubimage)
 {
 	x = nX;
 	y = nY;
@@ -13,6 +13,7 @@ Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int 
 	height = nHeight;
 	timeDirection = nTimeDirection;
 	boxCarrying = nBoxCarrying;
+	boxCarrySize = nBoxCarrySize;
 	boxCarryDirection = nBoxCarryDirection;
 	relativeIndex = nRelativeIndex;
 	subimage = nSubimage;
@@ -24,7 +25,7 @@ bool Guy::equals(boost::shared_ptr<Guy> other)
 	if ( (x == other->getX()) && (y == other->getY()) && (xspeed == other->getXspeed()) && 
 		(yspeed == other->getYspeed()) && (width == other->getWidth()) && (height == other->getHeight()) &&
 		(boxCarrying == other->getBoxCarrying()) && (timeDirection == other->getTimeDirection()) && (relativeIndex == other -> getRelativeIndex()) && 
-		(subimage == other -> getSubimage()) && (boxCarryDirection == other->getBoxCarryDirection()) )
+		(subimage == other -> getSubimage()) && (boxCarryDirection == other->getBoxCarryDirection()) && (boxCarrySize == other->getBoxCarrySize()))
 	{
 		return true;
 	}
@@ -77,6 +78,11 @@ int Guy::getHeight()
 bool Guy::getBoxCarrying()
 {
 	return boxCarrying;
+}
+
+int Guy::getBoxCarrySize()
+{
+	return boxCarrySize;
 }
 
 int Guy::getBoxCarryDirection()

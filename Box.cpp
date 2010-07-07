@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+int normalSize = 1000;
+
 Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, int nTimeDirection)
 {
 	x = nX;

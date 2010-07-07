@@ -4,7 +4,7 @@ class Guy
 {
 
 public:
-    Guy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int nBoxCarryDirection, int relativeIndex, int subimage);
+    Guy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int nBoxCarrySize, int nBoxCarryDirection, int relativeIndex, int subimage);
 	
     int getX();
     int getY();
@@ -14,6 +14,7 @@ public:
 	int getHeight();
 
 	bool getBoxCarrying();
+	int getBoxCarrySize();
 	int getBoxCarryDirection();
 
 	int getTimeDirection();
@@ -35,6 +36,7 @@ private:
 	int height;
 
 	bool boxCarrying;
+	int boxCarrySize;
 	int boxCarryDirection;
 
 	int timeDirection;

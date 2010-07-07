@@ -9,6 +9,11 @@
 #include "InputList.h"
 #endif // INC_INPUTLIST
 
+#ifndef INC_TIMEOBJECTLISTLIST
+#define INC_TIMEOBJECTLISTLIST
+#include "TimeObjectListList.h"
+#endif // INC_TIMEOBJECTLISTLIST
+
 #include <boost/smart_ptr.hpp>
 #include <vector>
 using namespace std;
@@ -20,7 +25,7 @@ public:
 
 	PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity);
 
-	vector<boost::shared_ptr<ObjectList> > executeFrame(boost::shared_ptr<ObjectList> arrivals, int time, int playerGuyIndex, vector<boost::shared_ptr<InputList> > playerInput); // executes frame and returns departures
+	boost::shared_ptr<TimeObjectListList> executeFrame(const ObjectList& arrivals, int time, int playerGuyIndex, vector<boost::shared_ptr<InputList> > playerInput); // executes frame and returns departures
 
 	int getNextPlayerFrame();
 	int getPlayerDirection();
@@ -28,7 +33,9 @@ public:
 private:
 
 	void crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<Box> > oldBoxList);
-	void guyStep(vector<boost::shared_ptr<Guy> > oldGuyListt, int playerGuyIndex, int time, vector<boost::shared_ptr<InputList> > playerInput, vector<boost::shared_ptr<ObjectList> > departures);
+	void guyStep(vector<boost::shared_ptr<Guy> > oldGuyListt, int playerGuyIndex, int time, vector<boost::shared_ptr<InputList> > playerInput, boost::shared_ptr<TimeObjectListList> departures);
+
+	bool wallAt(int x, int y);
 
 	int timeLineLength;
 
@@ -43,7 +50,4 @@ private:
 	vector<boost::shared_ptr<Box> > nextBox;
 	vector<int> nextBoxTime;
 	vector<bool> supportedBox;
-
-	vector<boost::shared_ptr<Guy> > nextGuy;
-	vector<int> nextGuyTime;
 };

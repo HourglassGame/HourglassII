@@ -4,13 +4,20 @@
 #include "PhysicsEngine.h"
 #endif // INC_PHYSICSENGINE
 
+#ifndef INC_TIMEOBJECTLISTLIST
+#define INC_TIMEOBJECTLISTLIST
+#include "TimeObjectListList.h"
+#endif // INC_TIMEOBJECTLISTLIST
+
 #ifndef INC_INPUTLIST
 #define INC_INPUTLIST
 #include "InputList.h"
 #endif // INC_INPUTLIST
 
 #include "UpdateStackMember.h"
+#include "ArrivalDepartureMap.h"
 
+#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/smart_ptr.hpp>
 #include <vector>
 #include <stack>
@@ -35,8 +42,7 @@ private:
 	bool updateFrame(int frameId); 
 	bool executeFrameUpdateStack(); // runs the frame update stack until empty
 
-
-	vector<vector<boost::shared_ptr<ObjectList> > > arrivalDeparturePair; // 2D array of departures(y) and arrival(x)
+	boost::shared_ptr<ArrivalDepartureMap> arrivalDeparturePair; // 2D array of departures(y) and arrival(x)
 	int arrivalFrames; // size of arrival array
 	int departuresFrames; // size of departure array
 

@@ -13,6 +13,8 @@ public:
 	int getSize();
 	int getTimeDirection();
 
+	static int normalSize;
+
 	bool equals(boost::shared_ptr<Box> other);
     static bool lessThan(boost::shared_ptr<Box> first, boost::shared_ptr<Box> second);
 
