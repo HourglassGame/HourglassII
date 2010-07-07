@@ -20,6 +20,7 @@ namespace hg {
 #include "HourglassAssert.h"
 #include "Outlet.h"
 #include "LogLevel.h"
+#include <boost/thread/once.hpp>
 
 namespace hg {
     class Logger : private boost::noncopyable
@@ -31,9 +32,11 @@ namespace hg {
     private:
         Logger();
         ~Logger();
-
+        static void InitInstance();
         boost::ptr_vector<Outlet> outlets;
         boost::mutex containerLock;
+        static boost::once_flag init_flag;
+        static Logger* instance;
     };
 }
 #endif //HG_LOGGER_H

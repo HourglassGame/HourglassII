@@ -10,14 +10,23 @@
 #include "Logger.h"
 #include <boost/foreach.hpp>
 #include <boost/thread/locks.hpp>
+#include <iostream>
 #include "TerminalOutlet.h"
 #define foreach BOOST_FOREACH
 using namespace hg;
 
+boost::once_flag Logger::init_flag=BOOST_ONCE_INIT;
+Logger* Logger::instance;
+
 Logger& Logger::GetLogger()
 {
-    static Logger instance;
-    return instance;
+    boost::call_once(init_flag, InitInstance);
+    return *instance;
+}
+
+void Logger::InitInstance()
+{
+    instance = new Logger();   
 }
 
 //Very simplistic design & implementation, could be made faster and more powerful.
@@ -29,7 +38,6 @@ void Logger::Log(const std::string& message, loglevel::LogLevel importance)
     //but not allowing calls to `RegisterOutlet' to be simultaneous with either
     //`Log' or `RegisterOutlet' calls.
     boost::lock_guard<boost::mutex> lock(containerLock);
-    
     foreach(Outlet& out, outlets) {
         out.Log(message, importance);
     }
@@ -39,12 +47,14 @@ void Logger::RegisterOutlet(Outlet* outlet)
 {
     std::auto_ptr<Outlet> outlet_(outlet);
     boost::lock_guard<boost::mutex> lock(containerLock);
+    
     static bool firstCall = true;
     //Remove the default Outlet once another outlet has been specified
     if (firstCall) {
         outlets.clear();
         firstCall = false;
     }
+    
     outlets.push_back(outlet_);
 }
 

@@ -23,6 +23,7 @@ boost::mutex* Tracer::mapLock;
 Tracer::Tracer(const char* const functionName) :
 functionName_(functionName)
 {
+   // printf("%s%s",functionName,"\n");
 }
 
 //TODO - add code which disables this system and makes a logger message if it runs out of memory
@@ -46,7 +47,7 @@ const std::deque<std::string>& Tracer::GetBackTrace()
 std::deque<std::string>& Tracer::GetModifiableBackTrace()
 {
     //Singleton lazy loading
-    boost::call_once(InitBackTrace, back_init_flag);
+    boost::call_once(back_init_flag, InitBackTrace);
 
     //Thread-safe as long as the same deque 
     //is not returned to two different threads -

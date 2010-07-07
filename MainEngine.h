@@ -10,6 +10,6 @@
  */
 #include "EngineThreadMediator.h"
 namespace hg {
-    void RunEngine(EngineThreadMediator& engineAccess);
+    void RunEngine(EngineThreadMediator& mediator);
 }
 #endif //HG_MAINENGINE_H

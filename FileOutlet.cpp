@@ -29,6 +29,5 @@ void FileOutlet::Log_(const std::string& message, const loglevel::LogLevel impor
         file << importance << ": " << message << std::endl;
         //TODO - file stays open if ^ throws.
         file.close();
-        printf("here");
     }
 }
