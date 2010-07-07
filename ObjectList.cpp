@@ -69,10 +69,10 @@ void ObjectList::sortElements()
 }
 
 // Single Element addition
-void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex, int subimage)
+void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarryDirection, int relativeIndex, int subimage)
 {
 	
-	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, width, height, timeDirection, boxCarrying, relativeIndex, subimage)));
+	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, width, height, timeDirection, boxCarrying, boxCarryDirection, relativeIndex, subimage)));
 }
 
 void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
@@ -111,32 +111,32 @@ void ObjectList::addSwitch(int x, int y, int type, int platformAttachment, int i
 }
 
 // Getters
-vector<boost::shared_ptr<Guy>> ObjectList::getGuyList()
+vector<boost::shared_ptr<Guy> > ObjectList::getGuyList()
 {
 	return guyList;
 }
 
-vector<boost::shared_ptr<Box>> ObjectList::getBoxList()
+vector<boost::shared_ptr<Box> > ObjectList::getBoxList()
 {
 	return boxList;
 }
 
-vector<boost::shared_ptr<Item>> ObjectList::getItemList()
+vector<boost::shared_ptr<Item> > ObjectList::getItemList()
 {
 	return itemList;
 }
 
-vector<boost::shared_ptr<Pickup>> ObjectList::getPickupList()
+vector<boost::shared_ptr<Pickup> > ObjectList::getPickupList()
 {
 	return pickupList;
 }
 
-vector<boost::shared_ptr<Platform>> ObjectList::getPlatformList()
+vector<boost::shared_ptr<Platform> > ObjectList::getPlatformList()
 {
 	return platformList;
 }
 
-vector<boost::shared_ptr<Switch>> ObjectList::getSwitchList()
+vector<boost::shared_ptr<Switch> > ObjectList::getSwitchList()
 {
 	return switchList;
 }

@@ -21,7 +21,7 @@ class ObjectList
 public:
 	ObjectList();
 	
-	void addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex, int subimage);
+	void addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarryDirection, int relativeIndex, int subimage);
 	void addBox(int x, int y, int xspeed, int yspeed, int size, int timeDirection); // I know it's the same as Item but this way is more visible
 	void addItem(int x, int y, int xspeed, int yspeed, int timeDirection, int type); // jetpack, gun
 	void addPickup(int x, int y, int platformAttachment, int timeDirection, int type); // belt, hourglass
@@ -31,12 +31,12 @@ public:
 	void addGuy(boost::shared_ptr<Guy> toCopy); 
 	void addBox(boost::shared_ptr<Box> toCopy); 
 
-	vector<boost::shared_ptr<Guy>> getGuyList();
-	vector<boost::shared_ptr<Box>> getBoxList();
-	vector<boost::shared_ptr<Item>> getItemList();
-	vector<boost::shared_ptr<Pickup>> getPickupList();
-	vector<boost::shared_ptr<Platform>> getPlatformList();
-	vector<boost::shared_ptr<Switch>> getSwitchList();
+	vector<boost::shared_ptr<Guy> > getGuyList();
+	vector<boost::shared_ptr<Box> > getBoxList();
+	vector<boost::shared_ptr<Item> > getItemList();
+	vector<boost::shared_ptr<Pickup> > getPickupList();
+	vector<boost::shared_ptr<Platform> > getPlatformList();
+	vector<boost::shared_ptr<Switch> > getSwitchList();
 
 	void add(const boost::shared_ptr<ObjectList> other, int relativeGuyIgnoreIndex);
 
@@ -49,12 +49,12 @@ public:
 	boost::shared_ptr<ObjectList> copy();
 private:
 
-	vector<boost::shared_ptr<Guy>> guyList;
-	vector<boost::shared_ptr<Box>> boxList;
-	vector<boost::shared_ptr<Item>> itemList;
-	vector<boost::shared_ptr<Pickup>> pickupList;
-	vector<boost::shared_ptr<Platform>> platformList;
-	vector<boost::shared_ptr<Switch>> switchList;
+	vector<boost::shared_ptr<Guy> > guyList;
+	vector<boost::shared_ptr<Box> > boxList;
+	vector<boost::shared_ptr<Item> > itemList;
+	vector<boost::shared_ptr<Pickup> > pickupList;
+	vector<boost::shared_ptr<Platform> > platformList;
+	vector<boost::shared_ptr<Switch> > switchList;
 
 };
 

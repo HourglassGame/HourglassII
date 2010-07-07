@@ -1,7 +1,7 @@
 #include "PhysicsEngine.h"
 
 
-PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool>> newWallmap, int newWallSize, int newGravity)
+PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity)
 {
 	
 	timeLineLength = newTimeLineLength;
@@ -12,7 +12,7 @@ PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool>> newWall
 
 }
 
-vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_ptr<ObjectList> arrivals, int time, int playerGuyIndex, vector<boost::shared_ptr<InputList>> playerInput)
+vector<boost::shared_ptr<ObjectList> > PhysicsEngine::executeFrame(boost::shared_ptr<ObjectList> arrivals, int time, int playerGuyIndex, vector<boost::shared_ptr<InputList> > playerInput)
 {
 	nextBox.clear();
 	nextBoxTime.clear();
@@ -21,7 +21,7 @@ vector<boost::shared_ptr<ObjectList>> PhysicsEngine::executeFrame(boost::shared_
 	nextGuy.clear();
 	nextGuyTime.clear();
 
-	vector<boost::shared_ptr<ObjectList>> departures;
+	vector<boost::shared_ptr<ObjectList> > departures;
 	for (int i = 0; i < timeLineLength; ++i)
 	{
 		departures.push_back(boost::shared_ptr<ObjectList>(new ObjectList()));
@@ -75,7 +75,7 @@ int PhysicsEngine::getPlayerDirection()
 	return playerDirection;
 }
 
-void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playerGuyIndex, int time, vector<boost::shared_ptr<InputList>> playerInput, vector<boost::shared_ptr<ObjectList>> departures)
+void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy> > oldGuyList, int playerGuyIndex, int time, vector<boost::shared_ptr<InputList> > playerInput, vector<boost::shared_ptr<ObjectList> > departures)
 {
 	
 	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
@@ -86,7 +86,6 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 		int yspeed = oldGuyList[i]->getYspeed() + gravity;
 		int width = oldGuyList[i]->getWidth();
 		int height = oldGuyList[i]->getHeight();
-		bool carry = oldGuyList[i]->getBoxCarrying();
 		
 		bool supported = false;
 
@@ -147,19 +146,40 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 			}
 		}
 
+		// jump
 		if (supported && input->getUp())
 		{	
 			yspeed = -800;
 		}
 
+		// box carrying
+		bool carry = oldGuyList[i]->getBoxCarrying();
+		int carryDirection = oldGuyList[i]->getBoxCarryDirection();
+
+		if (input->getDown())
+		{
+			if (carry)
+			{
+
+
+			}
+			else
+			{
+
+			}
+		}
+
+		// update animation frame
 		int nextSubimage = oldGuyList[i]->getSubimage() + 1;
 		if (nextSubimage > Guy::animationLength)
 		{
 			nextSubimage = 0;
 		}
 
-		nextGuy.push_back(boost::shared_ptr<Guy>(new Guy(x, y, xspeed, yspeed, width, height, oldGuyList[i]->getTimeDirection(), carry, relativeIndex+1, nextSubimage)));
+		// add guy to physicsEngine array
+		nextGuy.push_back(boost::shared_ptr<Guy>(new Guy(x, y, xspeed, yspeed, width, height, oldGuyList[i]->getTimeDirection(), carry, carryDirection, relativeIndex+1, nextSubimage)));
 
+		// add departure for guy at the appropriate time
 		int nextTime = time+nextGuy[i]->getTimeDirection();
 		if (nextTime >= 0 && nextTime < timeLineLength)
 		{
@@ -168,8 +188,9 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 		
 		if (playerGuyIndex == relativeIndex)
 		{
-			playerDirection = oldGuyList[i]->getTimeDirection();
-			nextPlayerFrame = nextTime;
+			// this means the player is controlling this guy.
+			playerDirection = oldGuyList[i]->getTimeDirection(); // controls propgation order for time directional symetry 
+			nextPlayerFrame = nextTime; // frame that will be changed by adding input next getPlayerFrame
 		}
 
 		
@@ -177,7 +198,7 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 
 }
 
-void PhysicsEngine::crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<Box>> oldBoxList)
+void PhysicsEngine::crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<Box> > oldBoxList)
 {
 
 	for (unsigned int i = 0; i < oldBoxList.size(); ++i)

@@ -3,7 +3,7 @@
 #include <vector>
 using namespace std;
 
-TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool>> wallmap, int newWallSize, int newGravity)
+TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int newWallSize, int newGravity)
 {
 	playerGuyIndex = -1;
 	currentPlayerFrame = -1;
@@ -84,7 +84,7 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 			}
 
 			// save gamestate
-			vector<vector<boost::shared_ptr<ObjectList>>> tempArrivalDeparturePair;
+			vector<vector<boost::shared_ptr<ObjectList> > > tempArrivalDeparturePair;
 
 			for (int i = 0; i < arrivalFrames; ++i)
 			{
@@ -146,7 +146,7 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 	return true;
 }
 
-vector<boost::shared_ptr<ObjectList>> TimeEngine::getNextPlayerFrame(boost::shared_ptr<InputList> newInputData)
+vector<boost::shared_ptr<ObjectList> > TimeEngine::getNextPlayerFrame(boost::shared_ptr<InputList> newInputData)
 {
 
 	playerInput.push_back(newInputData);
@@ -188,7 +188,7 @@ bool TimeEngine::updateFrame(int frame)
 	}
 
 	// get departures for the frame
-	vector<boost::shared_ptr<ObjectList>> departures = physics->executeFrame(arrivals, frame, playerGuyIndex, playerInput);
+	vector<boost::shared_ptr<ObjectList> > departures = physics->executeFrame(arrivals, frame, playerGuyIndex, playerInput);
 
 	if (frame == currentPlayerFrame)
 	{

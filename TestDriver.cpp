@@ -42,7 +42,7 @@ int main()
 
 	testList4->addBox(500, 440,1,-3,1,-1);
 
-	vector<boost::shared_ptr<Box>> boxOutput = testList->getBoxList();
+	vector<boost::shared_ptr<Box> > boxOutput = testList->getBoxList();
 	
 	std::cout << boxOutput.size() << std::endl;
 	std::cout << boxOutput[1]->getX() << std::endl;
@@ -76,7 +76,7 @@ int main()
 
 	std::cout << std::endl << "**Testing Time Engine**" << std::endl;
 	
-	vector<vector<bool>> wallmap;
+	vector<vector<bool> > wallmap;
 	for (int i = 0; i < 3; ++i)
 	{
 		wallmap.push_back(vector<bool>());
@@ -96,7 +96,7 @@ int main()
 
 	boost::shared_ptr<ObjectList> testEngineObjectList(new ObjectList());
 	testEngineObjectList->addBox(5000, 3400, 0 ,0, 1000, 1);
-	testEngineObjectList->addGuy(5500, 5400, 0, 0, 500, 1000, 1, 0, 0, 0);
+	testEngineObjectList->addGuy(5500, 5400, 0, 0, 500, 1000, 1, false, 1, 0, 0);
 
 	testEngine->checkConstistencyAndPropagateLevel(testEngineObjectList,0);
 
@@ -116,7 +116,7 @@ int main()
 
 	std::cout << std::endl << "**'Gameplay' Test**" << std::endl;
 
-	vector<boost::shared_ptr<ObjectList>> engineReturn;
+	vector<boost::shared_ptr<ObjectList> > engineReturn;
 	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(true,false,false,false,false,false,false,0,0)));
 
 	std::cout << std::endl;
