@@ -17,7 +17,7 @@ TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int new
 
 	for (int i = 0; i < arrivalFrames; ++i)
 	{
-		arrivalDeparturePair.push_back( vector<boost::shared_ptr<ObjectList>>());
+		arrivalDeparturePair.push_back( vector<boost::shared_ptr<ObjectList> >());
 		for (int j = 0; j < departuresFrames; ++j)
 		{
 			arrivalDeparturePair[i].push_back(boost::shared_ptr<ObjectList> (new ObjectList()));
@@ -27,7 +27,7 @@ TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int new
 	for (int i = 0; i < timeLineLength; ++i)
 	{
 		lastArrival.push_back(boost::shared_ptr<ObjectList> (new ObjectList()));
-		previousArrival.push_back(vector<boost::shared_ptr<ObjectList>>());
+		previousArrival.push_back(vector<boost::shared_ptr<ObjectList> >());
 	}
 
 	physics = boost::shared_ptr<PhysicsEngine>(new PhysicsEngine(timeLineLength, wallmap, newWallSize, newGravity));
@@ -88,7 +88,7 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 
 			for (int i = 0; i < arrivalFrames; ++i)
 			{
-				tempArrivalDeparturePair.push_back( vector<boost::shared_ptr<ObjectList>>());
+				tempArrivalDeparturePair.push_back( vector<boost::shared_ptr<ObjectList> >());
 				for (int j = 0; j < departuresFrames; ++j)
 				{
 					tempArrivalDeparturePair[i].push_back(boost::shared_ptr<ObjectList> (arrivalDeparturePair[i][j]));
@@ -162,7 +162,7 @@ vector<boost::shared_ptr<ObjectList> > TimeEngine::getNextPlayerFrame(boost::sha
 	}
 	else // paradox did not occur
 	{
-		return vector<boost::shared_ptr<ObjectList>>(1,currentPlayerFrameData);
+		return vector<boost::shared_ptr<ObjectList> >(1,currentPlayerFrameData);
 	}
 }
 
