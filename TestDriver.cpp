@@ -95,8 +95,8 @@ int main()
 	boost::shared_ptr<TimeEngine> testEngine(new TimeEngine(10,wallmap,3500,100));
 
 	boost::shared_ptr<ObjectList> testEngineObjectList(new ObjectList());
-	testEngineObjectList->addBox(3500, 3400, 0 ,0, 1000, 1);
-	testEngineObjectList->addGuy(3500, 5400, 0, 0, 500, 1000, 1, 0, 0);
+	testEngineObjectList->addBox(5000, 3400, 0 ,0, 1000, 1);
+	testEngineObjectList->addGuy(5500, 5400, 0, 0, 500, 1000, 1, 0, 0, 0);
 
 	testEngine->checkConstistencyAndPropagateLevel(testEngineObjectList,0);
 
@@ -117,7 +117,7 @@ int main()
 	std::cout << std::endl << "**'Gameplay' Test**" << std::endl;
 
 	vector<boost::shared_ptr<ObjectList>> engineReturn;
-	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(false,false,false,false,false,false,false,0,0)));
+	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(true,false,false,false,false,false,false,0,0)));
 
 	std::cout << std::endl;
 	for (unsigned int i = 0; i < engineReturn[0]->getGuyList().size(); ++i)
@@ -162,7 +162,7 @@ int main()
 		std::cout << "Box Position " << engineReturn[0]->getBoxList()[i]->getX() << "," << engineReturn[0]->getBoxList()[i]->getY() << std::endl;
 	}
 
-	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(true,false,false,false,false,false,false,0,0)));
+	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(false,true,false,false,false,false,false,0,0)));
 	std::cout << std::endl;
 	for (unsigned int i = 0; i < engineReturn[0]->getGuyList().size(); ++i)
 	{
@@ -173,7 +173,40 @@ int main()
 		std::cout << "Box Position " << engineReturn[0]->getBoxList()[i]->getX() << "," << engineReturn[0]->getBoxList()[i]->getY() << std::endl;
 	}
 
-	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(true,false,false,false,false,false,false,0,0)));
+	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(false,false,true,false,false,false,false,0,0)));
+	std::cout << std::endl;
+	for (unsigned int i = 0; i < engineReturn[0]->getGuyList().size(); ++i)
+	{
+		std::cout << "Guy Position " << engineReturn[0]->getGuyList()[i]->getX() << "," << engineReturn[0]->getGuyList()[i]->getY() << std::endl;
+	}
+	for (unsigned int i = 0; i < engineReturn[0]->getBoxList().size(); ++i)
+	{
+		std::cout << "Box Position " << engineReturn[0]->getBoxList()[i]->getX() << "," << engineReturn[0]->getBoxList()[i]->getY() << std::endl;
+	}
+
+	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(false,true,false,false,false,false,false,0,0)));
+	std::cout << std::endl;
+	for (unsigned int i = 0; i < engineReturn[0]->getGuyList().size(); ++i)
+	{
+		std::cout << "Guy Position " << engineReturn[0]->getGuyList()[i]->getX() << "," << engineReturn[0]->getGuyList()[i]->getY() << std::endl;
+	}
+	for (unsigned int i = 0; i < engineReturn[0]->getBoxList().size(); ++i)
+	{
+		std::cout << "Box Position " << engineReturn[0]->getBoxList()[i]->getX() << "," << engineReturn[0]->getBoxList()[i]->getY() << std::endl;
+	}
+
+	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(false,true,false,false,false,false,false,0,0)));
+	std::cout << std::endl;
+	for (unsigned int i = 0; i < engineReturn[0]->getGuyList().size(); ++i)
+	{
+		std::cout << "Guy Position " << engineReturn[0]->getGuyList()[i]->getX() << "," << engineReturn[0]->getGuyList()[i]->getY() << std::endl;
+	}
+	for (unsigned int i = 0; i < engineReturn[0]->getBoxList().size(); ++i)
+	{
+		std::cout << "Box Position " << engineReturn[0]->getBoxList()[i]->getX() << "," << engineReturn[0]->getBoxList()[i]->getY() << std::endl;
+	}
+
+	engineReturn = testEngine->getNextPlayerFrame(boost::shared_ptr<InputList>(new InputList(false,true,false,false,false,false,false,0,0)));
 	std::cout << std::endl;
 	for (unsigned int i = 0; i < engineReturn[0]->getGuyList().size(); ++i)
 	{

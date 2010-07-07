@@ -106,15 +106,13 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 			xspeed = 0;
 		}
 
-		x = x + xspeed;
+		//check wall collision in Y direction
 		y = y + yspeed;
 
-		//check wall collision in Y direction
 		if (yspeed > 0) // down
 		{
 			if (wallmap[x/wallSize][(y+height)/wallSize] || (x - (x/wallSize)*wallSize > wallSize-width && wallmap[(x+width)/wallSize][(y+height)/wallSize]))
 			{
-				xspeed = 0;
 				yspeed = 0;
 				y = ((y+height)/wallSize)*wallSize - height;
 				supported = true;
@@ -130,6 +128,8 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 		}
 
 		//check wall collision in X direction
+		x = x + xspeed;
+
 		if (xspeed > 0) // right
 		{
 			if (wallmap[(x+width)/wallSize][y/wallSize] || (y - (y/wallSize)*wallSize > wallSize-height && wallmap[(x+width)/wallSize][(y+height)/wallSize]))
@@ -149,10 +149,16 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy>> oldGuyList, int playe
 
 		if (supported && input->getUp())
 		{	
-			xspeed = -800;
+			yspeed = -800;
 		}
 
-		nextGuy.push_back(boost::shared_ptr<Guy>(new Guy(x, y, xspeed, yspeed, width, height, oldGuyList[i]->getTimeDirection(), carry, relativeIndex+1)));
+		int nextSubimage = oldGuyList[i]->getSubimage() + 1;
+		if (nextSubimage > Guy::animationLength)
+		{
+			nextSubimage = 0;
+		}
+
+		nextGuy.push_back(boost::shared_ptr<Guy>(new Guy(x, y, xspeed, yspeed, width, height, oldGuyList[i]->getTimeDirection(), carry, relativeIndex+1, nextSubimage)));
 
 		int nextTime = time+nextGuy[i]->getTimeDirection();
 		if (nextTime >= 0 && nextTime < timeLineLength)

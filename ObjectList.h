@@ -21,7 +21,7 @@ class ObjectList
 public:
 	ObjectList();
 	
-	void addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex);
+	void addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex, int subimage);
 	void addBox(int x, int y, int xspeed, int yspeed, int size, int timeDirection); // I know it's the same as Item but this way is more visible
 	void addItem(int x, int y, int xspeed, int yspeed, int timeDirection, int type); // jetpack, gun
 	void addPickup(int x, int y, int platformAttachment, int timeDirection, int type); // belt, hourglass

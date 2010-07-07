@@ -4,7 +4,7 @@ class Guy
 {
 
 public:
-    Guy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex);
+    Guy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int relativeIndex, int subimage);
 	
     int getX();
     int getY();
@@ -16,6 +16,9 @@ public:
 	bool getBoxCarrying();
 	int getTimeDirection();
 	int getRelativeIndex();
+	int getSubimage();
+
+	static int animationLength;
 
 	bool equals(boost::shared_ptr<Guy> other);
 	static bool lessThan(boost::shared_ptr<Guy> first, boost::shared_ptr<Guy> second);
@@ -32,5 +35,7 @@ private:
 	bool boxCarrying;
 	int timeDirection;
 	int relativeIndex;
+
+	int subimage;
      
 };

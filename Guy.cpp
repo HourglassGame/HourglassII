@@ -1,7 +1,9 @@
 #include <stdexcept>
 #include "Guy.h"
 
-Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int nTimeDirection, bool nBoxCarrying, int nRelativeIndex)
+int Guy::animationLength = 13;
+
+Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int nTimeDirection, bool nBoxCarrying, int nRelativeIndex, int nSubimage)
 {
 	x = nX;
 	y = nY;
@@ -12,6 +14,7 @@ Guy::Guy(int nX, int nY, int nXspeed, int nYspeed, int nWidth, int nHeight, int 
 	timeDirection = nTimeDirection;
 	boxCarrying = nBoxCarrying;
 	relativeIndex = nRelativeIndex;
+	subimage = nSubimage;
 
 }
 
@@ -19,7 +22,7 @@ bool Guy::equals(boost::shared_ptr<Guy> other)
 {
 	if ( (x == other->getX()) && (y == other->getY()) && (xspeed == other->getXspeed()) && 
 		(yspeed == other->getYspeed()) && (width == other->getWidth()) && (height == other->getHeight()) &&
-		(boxCarrying == other->getBoxCarrying()) && (timeDirection == other->getTimeDirection()) && (relativeIndex == other -> getRelativeIndex()) )
+		(boxCarrying == other->getBoxCarrying()) && (timeDirection == other->getTimeDirection()) && (relativeIndex == other -> getRelativeIndex()) && (subimage == other -> getSubimage()))
 	{
 		return true;
 	}
@@ -82,4 +85,9 @@ int Guy::getTimeDirection()
 int Guy::getRelativeIndex()
 {
 	return relativeIndex;
+}
+
+int Guy::getSubimage()
+{
+	return subimage;
 }
