@@ -24,7 +24,7 @@ using namespace hg;
 void EngineThreadMediator::RequestAction(Action* action)
 {
     std::auto_ptr<Action> action_(action);
-    //HG_TRACE_FUNCTION
+    HG_TRACE_FUNCTION
     boost::unique_lock<boost::mutex> lock(queueLock);
     while (flushingActions) {
         flushingActionsCond.wait(lock);
@@ -37,27 +37,29 @@ void EngineThreadMediator::RequestAction(Action* action)
 //and blocks new requests until finished.
 void EngineThreadMediator::Flush()
 {
-    //HG_TRACE_FUNCTION
+    HG_TRACE_FUNCTION
     boost::lock_guard<boost::mutex> lock(queueLock);
     flushingActions = true;
 }
 
-boost::any EngineThreadMediator::GetResult(DeferredCall* function)
+boost::any EngineThreadMediator::GetResult(boost::shared_ptr<DeferredCall> function)
 {
-    //HG_TRACE_FUNCTION
+    HG_TRACE_FUNCTION
     //Here I wrap the wrapper to make it survive the deletion that occurs to RequestAction things
     DeferredCallWrapper* wrapper = new DeferredCallWrapper(function);
-    RequestAction(wrapper);
-    return function->GetResult();
+    RequestAction(wrapper); //RequestAction eats the wrapper, do not use after this point
+    boost::any result(function->GetResult());
+    hg_assert(!result.empty());
+    return result;
 }
 
 //Causes the main thread to break the next time there are no more actions on the queue
 void EngineThreadMediator::Shutdown()
 {
-    //HG_TRACE_FUNCTION
+    HG_TRACE_FUNCTION
     {
         boost::lock_guard<boost::mutex> lock(queueLock);
-        shutingDown = true;
+        shuttingDown = true;
     }
     hasActionsCond.notify_all();
 }
@@ -65,11 +67,16 @@ void EngineThreadMediator::Shutdown()
 //------------------------------------------------------------------------------
 void EngineThreadMediator::RunNextAction()
 {
-    //HG_TRACE_FUNCTION
+    HG_TRACE_FUNCTION
     {
         boost::unique_lock<boost::mutex> lock(queueLock);
         while (callQueue.empty()) {
-            if (shutingDown) {
+            if (flushingActions) {
+                flushingActions = false;
+                Logger::GetLogger().Log("Flushed",loglevel::FINE);
+                flushingActionsCond.notify_all();
+            }
+            if (shuttingDown) {
                 throw EngineShutDownException();
             }
             hasActionsCond.wait(lock);
@@ -95,7 +102,7 @@ void EngineThreadMediator::RunNextAction()
 EngineThreadMediator::EngineThreadMediator() :
 queueLock(),
 flushingActions(false),
-shutingDown(false),
+shuttingDown(false),
 callQueue(),
 flushingActionsCond(),
 hasActionsCond()

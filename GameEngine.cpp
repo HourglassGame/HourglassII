@@ -154,11 +154,12 @@ namespace hg {
     {
   
         printf("hereBBB");
-        TimeEngine newEngine(1000,wall,3200,100);
+        TimeEngine newEngine(5400,wall,3200,50);
         printf("hereCCC");
         boost::shared_ptr<ObjectList> newObjectList(new ObjectList());
         newObjectList->addBox(6400, 25600, 0 ,0, 3200, 1);
-        newObjectList->addGuy(22000, 6400, 0, 0, 1600, 3200, 1, false, 1, 0, 0);
+        //int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarrySize, int boxCarryDirection, int relativeIndex, int subimage
+        newObjectList->addGuy(22000, 6400, 0, 0, 1600, 3200, 1, false, 0, 0, 0, 0);
         printf("hereDDD");
         std::cout << newEngine.checkConstistencyAndPropagateLevel(newObjectList,0) << std::endl;
         printf("hereEEE");

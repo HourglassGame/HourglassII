@@ -17,7 +17,7 @@ namespace hg {
     //Saves the DeferredCall* from being deleted
     class DeferredCallWrapper : public Action, private boost::noncopyable {
     public:
-        DeferredCallWrapper(DeferredCall* wrapped):
+        DeferredCallWrapper(boost::shared_ptr<DeferredCall> wrapped):
         wrapped_(wrapped)
         {
             HG_TRACE_FUNCTION
@@ -26,6 +26,7 @@ namespace hg {
         virtual ~DeferredCallWrapper()
         {
             HG_TRACE_FUNCTION
+            
         }
         inline void DoCall()
         {
@@ -33,7 +34,7 @@ namespace hg {
             wrapped_->DoCall();
         }
     private:
-        DeferredCall* wrapped_;
+        boost::shared_ptr<DeferredCall> wrapped_;
     };
 }
 

@@ -14,14 +14,15 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition_variable.hpp>
 #include "Tracer.h"
+#include <iostream>
 namespace hg {
     class DeferredCall
     {
     public:
         DeferredCall():
         result_(),
-        HasResultCond(),
-        ResultWaitExcl()
+        hasResultCond(),
+        resultWaitExcl()
         {
             HG_TRACE_FUNCTION
         }
@@ -34,9 +35,9 @@ namespace hg {
         boost::any GetResult()
         {
             HG_TRACE_FUNCTION
-            boost::unique_lock<boost::mutex> lock(ResultWaitExcl);
+            boost::unique_lock<boost::mutex> lock(resultWaitExcl);
             while (result_.empty()) {
-                HasResultCond.wait(lock);
+                hasResultCond.wait(lock);
             }
             hg_assert(!result_.empty());
             return result_;
@@ -46,18 +47,19 @@ namespace hg {
         {
             HG_TRACE_FUNCTION
             {
-                boost::lock_guard<boost::mutex> lock(ResultWaitExcl);
+                boost::lock_guard<boost::mutex> lock(resultWaitExcl);
                 hg_assert(result_.empty());
                 DoCall_();
                 hg_assert(!result_.empty());
             }
-            HasResultCond.notify_all();
+            hasResultCond.notify_all();
+            return;
         }
     protected:
         boost::any result_;
     private:
-        boost::condition_variable HasResultCond;
-        boost::mutex ResultWaitExcl;
+        boost::condition_variable hasResultCond;
+        boost::mutex resultWaitExcl;
 
         virtual void DoCall_() = 0;
     };

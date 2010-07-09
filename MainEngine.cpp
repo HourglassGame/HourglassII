@@ -7,9 +7,8 @@
  *
  */
 
-#include "MainEngine.h"
-#include <allegro.h>
-#include "Logger.h"
+#include "MainEngine.h" #include "Logger.h"
+
 #include "EngineShutDownException.h"
 namespace hg {
     void RunEngine(EngineThreadMediator& mediator)

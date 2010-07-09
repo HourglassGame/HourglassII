@@ -19,6 +19,7 @@
 #include "ActionFromCallable.h"
 #include "DeferredCall.h"
 #include "DeferredCallFromCallable.h"
+#include <boost/shared_ptr.hpp>
 
 #include <boost/noncopyable.hpp>
 namespace hg {
@@ -47,21 +48,24 @@ namespace hg {
         template<class ReturnType,class Callable>
         inline ReturnType GetCallableResult(Callable func)
         {
-            //HG_TRACE_FUNCTION here causes a deadlock!
-            //HG_TRACE_FUNCTION
+            HG_TRACE_FUNCTION
             return boost::any_cast<ReturnType>
             (
                 GetResult
                 (
                  //Here I wrap the Callable to make it useable in my code (ie be an appropriate subclass)
                  //OK to take address here as GetResult blocks this thread until it no longer needs the DeferredFunctionCall
-                    &hg::DeferredCallFromCallable
-                    <
-                        Callable
-                    >
+                    boost::shared_ptr<DeferredCall>
                     (
-                        func
+                        new hg::DeferredCallFromCallable
+                        <
+                            Callable
+                        >
+                        (
+                            func
+                        )
                     )
+                    
                 )
             );
         }
@@ -85,7 +89,7 @@ namespace hg {
         //as it takes control of the main thread
         //Usually you would give a function object to GetCallableResult,
         //but if you want to subclass DeferredCall yourself then you can use this
-        boost::any GetResult(DeferredCall* function);
+        boost::any GetResult(boost::shared_ptr<DeferredCall> function);
 
         //Causes the main thread to break the next time there are no more actions on the queue
         void Shutdown();
@@ -98,7 +102,7 @@ namespace hg {
     private:
         boost::mutex queueLock;
         bool flushingActions;
-        bool shutingDown;
+        bool shuttingDown;
         
         boost::ptr_deque<Action> callQueue;
         boost::condition_variable flushingActionsCond;

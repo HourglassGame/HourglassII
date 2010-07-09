@@ -24,6 +24,8 @@
 		2081D7F811E41CE10010E9DE /* Switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2081D7E911E41CE10010E9DE /* Switch.cpp */; };
 		2081D7FA11E41CE10010E9DE /* TimeEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2081D7EC11E41CE10010E9DE /* TimeEngine.cpp */; };
 		2081D7FB11E41CE10010E9DE /* UpdateStackMember.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2081D7EE11E41CE10010E9DE /* UpdateStackMember.cpp */; };
+		2083B2F711E5ACA100D6064F /* ArrivalDepartureMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2083B2F211E5ACA100D6064F /* ArrivalDepartureMap.cpp */; };
+		2083B2F911E5ACA100D6064F /* TimeObjectListList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2083B2F511E5ACA100D6064F /* TimeObjectListList.cpp */; };
 		208E78FC11DEFECE00B39F90 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 208E78F911DEFECE00B39F90 /* MainMenu.xib */; };
 		20B4746F11E1606B000EDD34 /* AssertionException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20B4746E11E1606B000EDD34 /* AssertionException.cpp */; };
 		20B4747211E16092000EDD34 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20B4747111E16092000EDD34 /* Exception.cpp */; };
@@ -76,6 +78,10 @@
 		2081D7ED11E41CE10010E9DE /* TimeEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeEngine.h; path = ../../HourglassII_2.1/TimeEngine.h; sourceTree = SOURCE_ROOT; };
 		2081D7EE11E41CE10010E9DE /* UpdateStackMember.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UpdateStackMember.cpp; path = ../../HourglassII_2.1/UpdateStackMember.cpp; sourceTree = SOURCE_ROOT; };
 		2081D7EF11E41CE10010E9DE /* UpdateStackMember.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UpdateStackMember.h; path = ../../HourglassII_2.1/UpdateStackMember.h; sourceTree = SOURCE_ROOT; };
+		2083B2F211E5ACA100D6064F /* ArrivalDepartureMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArrivalDepartureMap.cpp; path = ../../HourglassII_2.1/ArrivalDepartureMap.cpp; sourceTree = SOURCE_ROOT; };
+		2083B2F311E5ACA100D6064F /* ArrivalDepartureMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrivalDepartureMap.h; path = ../../HourglassII_2.1/ArrivalDepartureMap.h; sourceTree = SOURCE_ROOT; };
+		2083B2F511E5ACA100D6064F /* TimeObjectListList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimeObjectListList.cpp; path = ../../HourglassII_2.1/TimeObjectListList.cpp; sourceTree = SOURCE_ROOT; };
+		2083B2F611E5ACA100D6064F /* TimeObjectListList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeObjectListList.h; path = ../../HourglassII_2.1/TimeObjectListList.h; sourceTree = SOURCE_ROOT; };
 		208E78F811DEFECE00B39F90 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = English; path = "HourglassII-Info.plist"; sourceTree = "<group>"; };
 		208E78FA11DEFECE00B39F90 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = MainMenu.xib; sourceTree = "<group>"; };
 		20B4746D11E1606B000EDD34 /* AssertionException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssertionException.h; sourceTree = "<group>"; };
@@ -152,6 +158,10 @@
 		2081D7D711E41CC10010E9DE /* TimeEngine */ = {
 			isa = PBXGroup;
 			children = (
+				2083B2F211E5ACA100D6064F /* ArrivalDepartureMap.cpp */,
+				2083B2F311E5ACA100D6064F /* ArrivalDepartureMap.h */,
+				2083B2F511E5ACA100D6064F /* TimeObjectListList.cpp */,
+				2083B2F611E5ACA100D6064F /* TimeObjectListList.h */,
 				2081D7D811E41CE10010E9DE /* Box.cpp */,
 				2081D7D911E41CE10010E9DE /* Box.h */,
 				2081D7DA11E41CE10010E9DE /* Guy.cpp */,
@@ -339,6 +349,8 @@
 				2081D7F811E41CE10010E9DE /* Switch.cpp in Sources */,
 				2081D7FA11E41CE10010E9DE /* TimeEngine.cpp in Sources */,
 				2081D7FB11E41CE10010E9DE /* UpdateStackMember.cpp in Sources */,
+				2083B2F711E5ACA100D6064F /* ArrivalDepartureMap.cpp in Sources */,
+				2083B2F911E5ACA100D6064F /* TimeObjectListList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +468,7 @@
 				GCC_ENABLE_SSE41_EXTENSIONS = YES;
 				GCC_ENABLE_SSE42_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_FEEDBACK_DIRECTED_OPTIMIZATION = UseProfile;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
