@@ -20,6 +20,8 @@
 #include "DeferredCall.h"
 #include "DeferredCallFromCallable.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/utility/result_of.hpp>
+
 
 #include <boost/noncopyable.hpp>
 namespace hg {
@@ -40,21 +42,20 @@ namespace hg {
                     Callable
                 >
                 (
-                    (func)
+                    func
                 )
             );
         }
-        
-        template<class ReturnType,class Callable>
-        inline ReturnType GetCallableResult(Callable func)
+
+        template<class Callable>
+        inline typename boost::result_of<Callable()>::type GetCallableResult(Callable func)
         {
             HG_TRACE_FUNCTION
-            return boost::any_cast<ReturnType>
+            return boost::any_cast<typename boost::result_of<Callable()>::type>
             (
                 GetResult
                 (
-                 //Here I wrap the Callable to make it useable in my code (ie be an appropriate subclass)
-                 //OK to take address here as GetResult blocks this thread until it no longer needs the DeferredFunctionCall
+                    //Here I wrap the Callable to make it useable in my code (ie be an appropriate subclass)
                     boost::shared_ptr<DeferredCall>
                     (
                         new hg::DeferredCallFromCallable
@@ -65,7 +66,6 @@ namespace hg {
                             func
                         )
                     )
-                    
                 )
             );
         }

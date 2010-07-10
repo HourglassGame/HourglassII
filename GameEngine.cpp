@@ -46,16 +46,16 @@ namespace hg {
     
     void RunGame(EngineThreadMediator& mediator)
     {
-        if(mediator.GetCallableResult<int>(boost::bind<int>(install_allegro,SYSTEM_AUTODETECT, &errno,atexit)) != 0) {
+        if(mediator.GetCallableResult(boost::bind<int>(install_allegro,SYSTEM_AUTODETECT, &errno,atexit)) != 0) {
             Logger::GetLogger().Log("Could not initialise Allegro Library",loglevel::FATAL);
         }
-        if(mediator.GetCallableResult<int>(&install_keyboard) < 0) {
+        if(mediator.GetCallableResult(&install_keyboard) < 0) {
             Logger::GetLogger().Log("Could not initialise keyboard",loglevel::FATAL);
         }
-        if(mediator.GetCallableResult<int>(&install_mouse) < 0) {
+        if(mediator.GetCallableResult(&install_mouse) < 0) {
             Logger::GetLogger().Log("Could not initialise mouse",loglevel::FATAL);
         }
-        if(mediator.GetCallableResult<int>(boost::bind<int>(set_gfx_mode, GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0)) < 0) {
+        if(mediator.GetCallableResult(boost::bind(set_gfx_mode, GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0)) < 0) {
             Logger::GetLogger().Log("Could not initialise graphics mode",loglevel::FATAL);
         }
         std::vector<std::vector<bool> > wall(MakeWall());
@@ -64,7 +64,7 @@ namespace hg {
         printf("hereGGG");
         
         boost::posix_time::time_duration stepTime(0,0,0,boost::posix_time::time_duration::ticks_per_second()/60);
-        std::vector<char> keyboardInput(mediator.GetCallableResult<std::vector<char> >(&GetKeyboardState));
+        std::vector<char> keyboardInput(mediator.GetCallableResult(&GetKeyboardState));
         //lol the synchronisation with the other thread happens here, so it can never get out of time.
         while(!(keyboardInput[KEY_ESC])) {
             boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::universal_time());
@@ -73,7 +73,7 @@ namespace hg {
             while (boost::posix_time::microsec_clock::universal_time() - startTime < stepTime) {
                 boost::this_thread::sleep(boost::posix_time::milliseconds(1));
             }
-            keyboardInput = mediator.GetCallableResult<std::vector<char> >(&GetKeyboardState);
+            keyboardInput = mediator.GetCallableResult(&GetKeyboardState);
         }
         mediator.Shutdown();
         
