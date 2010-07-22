@@ -1,90 +1,198 @@
-/*
- *  main.cpp
- *  HourglassIIGameAlleg4
- *
- *  Created by Evan Wallace on 30/06/10.
- *  Copyright 2010 Team Causality. All rights reserved.
- *
- */
-#include <allegro.h>
 
-#include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
+#include <SFML/Graphics.hpp>
+#include <boost/thread.hpp>
+#include "TimeEngine.h"
+#include "Hg_Input.h"
+#include <iostream>
+#include <boost/assign.hpp>
+#include <boost/foreach.hpp>
+#define foreach BOOST_FOREACH
 
-#include "Logger.h"
-#include "Tracer.h"
-#include "HourglassAssert.h"
-
-#include "FileOutlet.h"
-#include "PopupOutlet.h"
-#include "TerminalOutlet.h"
-
-#include "EngineThreadMediator.h"
-#include "Exception.h"
-
-#include "MainEngine.h"
-#include "GameEngine.h"
-
-
-int main(int argc, const char* const* argv);
 namespace hg {
-    void LoadProgramOptions(int argc, const char* const* argv);
-    void StartLogger(EngineThreadMediator& engine);
-
+    void Draw(sf::RenderWindow& target, boost::shared_ptr<ObjectList>& frame, const std::vector<std::vector<bool> >& wall);
+    void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wallData);
+    void DrawBoxes(sf::RenderTarget& target, const vector<boost::shared_ptr<Box> >& boxData);
+    void DrawGuys(sf::RenderTarget& target, const vector<boost::shared_ptr<Guy> >& guyList);
+    
+    std::vector<std::vector<bool> > MakeWall();
+    TimeEngine MakeTimeEngine(std::vector<std::vector<bool> >& wallData);
 }
 
-//Program options (from command line/config file/wherever) are globally stored.
-//NOTHING ELSE IS, BEFORE YOU ADD ANY MORE GLOBAL STATE ADD IT TO THIS LIST
-int main(const int argc, const char* const* const argv)
+////////////////////////////////////////////////////////////
+/// Entry point of application
+///
+/// \return Application exit code
+///
+////////////////////////////////////////////////////////////
+int main()
 {
-    HG_TRACE_FUNCTION
+    // Create main window
+    sf::RenderWindow App(sf::VideoMode(640, 480), "Hourglass II");
     
-    try {
-        hg::LoadProgramOptions(argc,argv);//Loads program options
-        hg::EngineThreadMediator mediator;
-        
-        hg::StartLogger(mediator); //registers outlets with logger (all earlier logging is done to stdout)
-        
-        //Game Thread
-        boost::thread game(boost::bind(boost::type<void>(),hg::RunGame,
-                                             boost::ref(mediator)));
-
-        //performs ALL allegro calls in main thread (may use helper-threads which don't directly call allegro)
-        hg::RunEngine(mediator);
-
-        //Perhaps don't have this, dunno? (wait for impl)
-        game.join();
-    }
-    catch (hg::Exception& e) {
-        //TODO print stack-trace here
-        hg::Logger::GetLogger().Log(hg::Tracer::GetStringBackTrace(), hg::loglevel::SEVERE);
-    }
-    catch (std::exception& e) {
-        hg::Logger::GetLogger().Log(hg::Tracer::GetStringBackTrace(), hg::loglevel::SEVERE);
-    }
-    catch (...) {
-        hg::Logger::GetLogger().Log(hg::Tracer::GetStringBackTrace(), hg::loglevel::SEVERE);
-    }
+    std::vector<std::vector<bool> > wall(hg::MakeWall());
+    TimeEngine timeEngine(hg::MakeTimeEngine(wall));
     
-    return 0;
-}
-END_OF_MAIN()
-
-namespace hg {
-    //TODO- Does nothing yet, want to get a prototype working first
-    void LoadProgramOptions(int argc, const char* const* argv)
+    boost::posix_time::time_duration stepTime(0,0,0,boost::posix_time::time_duration::ticks_per_second()/60);
+    
+    // Start game loop
+    while (App.IsOpened())
     {
-        HG_TRACE_FUNCTION
+        //Wait for step
+        boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::universal_time());
+        
+        //Load up input
+        sf::Event event;
+        while (App.GetEvent(event))
+        {
+            switch (event.Type) {
+                case sf::Event::Closed:
+                    App.Close();
+                    break;
+                default:
+                    break;
+            }
+        }
+        
+        hg::Input input(App.GetInput());
+        
+        //Get result from time-engine
+        vector<boost::shared_ptr<ObjectList> > frame(timeEngine.getNextPlayerFrame(input.AsInputList()));
+        if (frame.size() == 1) {
+            //Draw result
+            hg::Draw(App, frame[0], wall);
+            
+            //Wait for next step
+            while (boost::posix_time::microsec_clock::universal_time() - startTime < stepTime) {
+                boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+            }
+        }
+        else {
+            //PARADOX FOO
+            return EXIT_FAILURE;
+        }
     }
     
-    //Registers a Popup outlet at log level FATAL 
-    //and a File outlet at log level INFO
-    //In final version this would be specified by program options
-    void StartLogger(EngineThreadMediator& engine)
-    {
-        HG_TRACE_FUNCTION
-        Logger::GetLogger().RegisterOutlet(new FileOutlet(loglevel::INFO, std::string("./log.txt")));
-        //Logger::GetLogger().RegisterOutlet(new PopupOutlet(engine, loglevel::FATAL));
-        Logger::GetLogger().RegisterOutlet(new TerminalOutlet(loglevel::ALL));
+    return EXIT_SUCCESS;
+}
+
+void hg::Draw(sf::RenderWindow& target, boost::shared_ptr<ObjectList>& frame, const std::vector<std::vector<bool> >& wallData)
+{
+    hg::DrawWall(target, wallData);
+    hg::DrawBoxes(target, frame->getBoxList());
+    hg::DrawGuys(target, frame->getGuyList());
+    target.Display();
+}
+
+void hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
+{
+    target.Clear(sf::Color(255,255,255));
+    for(unsigned int i = 0; i < wall.size(); ++i) {
+        for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
+            if (wall.at(i).at(j)) {
+                target.Draw(sf::Shape::Rectangle(32*i, 32*j, 32*(i+1), 32*(j+1), sf::Color()));
+            }
+        }
     }
 }
+
+void hg::DrawBoxes(sf::RenderTarget& target, const vector<boost::shared_ptr<Box> >& boxList)
+{
+    foreach(const boost::shared_ptr<Box>& box, boxList) {
+        target.Draw(sf::Shape::Rectangle(box->getX()/100,
+                                         box->getY()/100,
+                                        (box->getX()+ box->getSize())/100,
+                                         (box->getY()+box->getSize())/100,
+                                         sf::Color(150,150,0)));
+    }
+}
+
+void hg::DrawGuys(sf::RenderTarget& target, const vector<boost::shared_ptr<Guy> >& guyList)
+{
+    foreach(const boost::shared_ptr<Guy>& guy, guyList) {
+        target.Draw(sf::Shape::Rectangle(guy->getX()/100,
+                                         guy->getY()/100,
+                                         (guy->getX()+ guy->getWidth())/100,
+                                         (guy->getY()+guy->getHeight())/100,
+                                         sf::Color(150,150,0)));
+    }
+}
+
+
+std::vector<std::vector<bool> > hg::MakeWall()
+{
+    using namespace boost::assign;
+    std::vector<std::vector<bool> > wall;
+    std::vector<bool> row;
+    row += 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1;
+    wall.push_back(row);
+    row.clear();
+    row += 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
+    wall.push_back(row);
+    row.clear();
+    std::vector<std::vector<bool> > actualWall;
+    actualWall.resize(wall.at(0).size());
+    foreach(std::vector<bool>& column, actualWall) {
+        column.resize(wall.size());
+    }
+    for(unsigned int i = 0; i < wall.size(); ++i) {
+        for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
+            actualWall.at(j).at(i) = wall.at(i).at(j);
+        }
+    }
+    //Logger::GetLogger().Log("Made Wall", loglevel::FINE);
+    return actualWall;
+}
+
+TimeEngine hg::MakeTimeEngine(std::vector<std::vector<bool> >& wall)
+{
+    TimeEngine newEngine(5400,wall,3200,50);
+    boost::shared_ptr<ObjectList> newObjectList(new ObjectList());
+    newObjectList->addBox(6400, 25600, 0 ,0, 3200, 1);
+    //int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarrySize, int boxCarryDirection, int relativeIndex, int subimage
+    newObjectList->addGuy(22000, 6400, 0, 0, 1600, 3200, 1, false, 0, 0, 0, 0);
+    std::cout << newEngine.checkConstistencyAndPropagateLevel(newObjectList,0) << std::endl;
+    return newEngine;
+}
+
