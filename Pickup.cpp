@@ -1,6 +1,6 @@
 #include "Pickup.h"
-
-Pickup::Pickup(int nX, int nY, int nPlatformAttachment, int nTimeDirection, int nType)
+using namespace hg;
+Pickup::Pickup(int nX, int nY, hg::TimeDirection nTimeDirection, int nType ,int nPlatformAttachment)
 {
 	x = nX;
 	y = nY;

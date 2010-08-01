@@ -1,22 +1,19 @@
+#ifndef HG_TIME_OBJECT_LIST_LIST_H
+#define HG_TIME_OBJECT_LIST_LIST_H
 
-
-#ifndef INC_OBJECTLIST
-#define INC_OBJECTLIST
 #include "ObjectList.h"
-#endif // INC_OBJECTLIST
-
+#define BOOST_SP_DISABLE_THREADS
 #include <boost/smart_ptr.hpp>
 #include <vector>
-
+namespace hg {
+    
 class TimeObjectListList
 {
-
 public:
-
-	void setObjectList(int time, boost::shared_ptr<ObjectList> newObjectList);
+	void setObjectList(int time, boost::shared_ptr<hg::ObjectList> newObjectList);
 	void clearTime(int time);
 
-	boost::shared_ptr<ObjectList> getObjectListForManipulation(int time);
+	boost::shared_ptr<hg::ObjectList> getObjectListForManipulation(int time);
 
 	void sortObjectLists();
 
@@ -25,18 +22,16 @@ public:
 	struct TimeObjectList 
 	{
 		int time;
-		boost::shared_ptr<ObjectList> objects;
+		boost::shared_ptr<hg::ObjectList> objects;
 	};
 
-	vector<boost::shared_ptr<TimeObjectList> > list;
+
 
 	static bool compareElements(boost::shared_ptr<TimeObjectList> first, boost::shared_ptr<TimeObjectList> second);
 
-	bool equals(boost::shared_ptr<TimeObjectListList> other);
-
-private:
-
-	
-
+    //Should make this able to be const
+	bool equals(hg::TimeObjectListList& other);
+    std::vector<boost::shared_ptr<TimeObjectList> > list;
 };
-
+}
+#endif //HG_TIME_OBJECT_LIST_LIST_H

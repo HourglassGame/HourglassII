@@ -1,5 +1,5 @@
 #include "TimeObjectListList.h"
-
+using namespace hg;
  boost::shared_ptr<ObjectList> TimeObjectListList::getObjectListForManipulation(int time)
 {
 	for (unsigned int i = 0; i < list.size(); ++i)
@@ -50,21 +50,21 @@ bool TimeObjectListList::compareElements(boost::shared_ptr<TimeObjectList> first
 }
 
 
-bool TimeObjectListList::equals(boost::shared_ptr<TimeObjectListList> other)
+bool TimeObjectListList::equals(TimeObjectListList& other)
 {
-	if (list.size() != other->list.size())
+	if (list.size() != other.list.size())
 	{
 		return false;
 	}
 
 	sort();
-	other->sort();
+	other.sort();
 
 	for (unsigned int i = 0; i < list.size(); ++i)
 	{
-		if (list[i]->time == other->list[i]->time)
+		if (list[i]->time == other.list[i]->time)
 		{
-			if (!(list[i]->objects->equals(*(other->list[i]->objects.get()))))
+			if (!(list[i]->objects->equals(*(other.list[i]->objects.get()))))
 			{
 				return false;
 			}

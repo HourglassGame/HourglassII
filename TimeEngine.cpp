@@ -2,21 +2,16 @@
 
 #include <vector>
 using namespace std;
-
-TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int newWallSize, int newGravity)
+using namespace hg;
+TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int newWallSize, int newGravity) :
+timeLineLength(newTimeLength),
+currentPlayerFrame(-1),
+arrivalFrames(newTimeLength),
+departuresFrames(newTimeLength +1),
+permanentDepatureIndex(newTimeLength),
+arrivalDeparturePair(boost::shared_ptr<ArrivalDepartureMap>(new ArrivalDepartureMap(newTimeLength))),
+physics(boost::shared_ptr<PhysicsEngine>(new PhysicsEngine(newTimeLength, wallmap, newWallSize, newGravity)))
 {
-	playerGuyIndex = -1;
-	currentPlayerFrame = -1;
-
-	timeLineLength = newTimeLength;
-
-	arrivalFrames = timeLineLength;
-	departuresFrames = timeLineLength+1; // permanentDeparture
-
-	permanentDepatureIndex = departuresFrames-1;
-
-	arrivalDeparturePair = boost::shared_ptr<ArrivalDepartureMap>(new ArrivalDepartureMap(timeLineLength));
-
 	lastArrival.reserve(arrivalFrames);
 	previousArrival.reserve(arrivalFrames);
 
@@ -25,9 +20,6 @@ TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int new
 		lastArrival.push_back(boost::shared_ptr<ObjectList> (new ObjectList()));
 		previousArrival.push_back(vector<boost::shared_ptr<ObjectList> >());
 	}
-
-	physics = boost::shared_ptr<PhysicsEngine>(new PhysicsEngine(timeLineLength, wallmap, newWallSize, newGravity));
-
 }
 
 bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList> initialObjects, int guyStartTime) // returns if the level creator not a foo
@@ -72,8 +64,8 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 		if (atEnd) // objects created at beginning and end. Propgate from both ends to check consistency
 		{	
 			// propgate from start of time first
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, 0)));
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, timeLineLength-1)));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME, 0));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME, timeLineLength-1));
 			if (executeFrameUpdateStack())
 			{
 				return false;
@@ -86,8 +78,8 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 			arrivalDeparturePair = boost::shared_ptr<ArrivalDepartureMap>(new ArrivalDepartureMap(timeLineLength));
 
 			// propgate from end of time first
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, timeLineLength-1)));
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, 0)));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME, timeLineLength-1));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME, 0));
 			if (executeFrameUpdateStack())
 			{
 				return false;
@@ -101,7 +93,7 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 		}
 		else // only the beginning require propagation
 		{
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, 0)));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME, 0));
 			if (executeFrameUpdateStack())
 			{
 				return false;
@@ -112,7 +104,7 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 	{
 		if (atEnd) // only the end require propagation
 		{
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, timeLineLength-1)));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME, timeLineLength-1));
 			if (executeFrameUpdateStack())
 			{
 				return false;
@@ -123,20 +115,29 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList
 			return true;
 		}
 	}
-
 	return true;
 }
 
-vector<boost::shared_ptr<ObjectList> > TimeEngine::getNextPlayerFrame(boost::shared_ptr<InputList> newInputData)
+std::vector<boost::shared_ptr<ObjectList> > TimeEngine::getNextPlayerFrame(boost::shared_ptr<InputList> newInputData)
 {
 
 	playerInput.push_back(newInputData);
-	++playerGuyIndex;
+	//++playerGuyIndex;
 
 	currentPlayerFrame = nextPlayerFrame;
 
-	frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1, currentPlayerFrame)));
-
+	frameUpdateStack.push_back
+    (
+        UpdateStackMember
+        (
+            UpdateStackMember::EXECUTE_FRAME, currentPlayerFrame
+        )
+    );
+    
+    executeFrameUpdateStack();
+    return std::vector<boost::shared_ptr<ObjectList> >(1,arrivalDeparturePair->getArrivals(currentPlayerFrame, playerInput.size()));
+    /*
+    
 	if (executeFrameUpdateStack()) // paradox occured
 	{
 		return frameArrivalAtUpdate;
@@ -145,12 +146,13 @@ vector<boost::shared_ptr<ObjectList> > TimeEngine::getNextPlayerFrame(boost::sha
 	{
 		return vector<boost::shared_ptr<ObjectList> >(1,currentPlayerFrameData);
 	}
+     */
 }
 
 bool TimeEngine::updateFrame(int frame)
 {
 	// get the arrivals for the physics frame by going across a row 
-	boost::shared_ptr<ObjectList> arrivals = arrivalDeparturePair->getArrivals(frame, playerGuyIndex+1);
+	boost::shared_ptr<ObjectList> arrivals = arrivalDeparturePair->getArrivals(frame, playerInput.size());
 
 	arrivals->sortElements(); // to ensure determinism of input
 	lastArrival[frame] = arrivals;
@@ -166,13 +168,13 @@ bool TimeEngine::updateFrame(int frame)
 	}
 
 	// get departures for the frame
-	boost::shared_ptr<TimeObjectListList> departures = physics->executeFrame(*arrivals.get(), frame, playerGuyIndex, playerInput);
+	boost::shared_ptr<TimeObjectListList> departures = physics->executeFrame(*arrivals.get(), frame, playerInput.size()-1, playerInput);
 
 	if (frame == currentPlayerFrame)
 	{
 		updateStartFirst = (physics->getPlayerDirection() == 1);
 		nextPlayerFrame = physics->getNextPlayerFrame();
-		currentPlayerFrameData = boost::shared_ptr<ObjectList>(arrivals);
+		currentPlayerFrameData = arrivals;
 	}
 	
 
@@ -181,10 +183,10 @@ bool TimeEngine::updateFrame(int frame)
 	vector<int> framesThatNeedUpdating = arrivalDeparturePair->updateDeparturesFromTime(frame, departures);
 
 	// add frames that need updating to execution stack
-	if (framesThatNeedUpdating.size() > 0)
+	if (!framesThatNeedUpdating.empty())
 	{
 		previousArrival[frame].push_back(lastArrival[frame]);
-		frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(0,frame)));
+		frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::CLEAR_PARADOX,frame));
 		// the bottom added frame must remember that it will clear paradox check data from parent frame if it finishes execution
 	}
 
@@ -192,14 +194,14 @@ bool TimeEngine::updateFrame(int frame)
 	{
 		for (int i = framesThatNeedUpdating.size()-1; i >= 0 ; --i)
 		{
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1,framesThatNeedUpdating[i])));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME,framesThatNeedUpdating[i]));
 		}
 	}
 	else
 	{
 		for (unsigned int i = 0; i < framesThatNeedUpdating.size(); ++i)
 		{
-			frameUpdateStack.push_back(boost::shared_ptr<UpdateStackMember>(new UpdateStackMember(1,framesThatNeedUpdating[i])));
+			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME,framesThatNeedUpdating[i]));
 		}
 	}
 	
@@ -208,29 +210,26 @@ bool TimeEngine::updateFrame(int frame)
 
 bool TimeEngine::executeFrameUpdateStack()
 {
-	frameArrivalAtUpdate.clear();
+    // stores the arrival data for the updated frames in order for a single executeFrameUpdateStack()
+	//vector<ObjectList*> frameArrivalAtUpdate;
 
 	while (frameUpdateStack.size() > 0)
 	{
-		int frame = frameUpdateStack.back()->getFrame();
-		int type = frameUpdateStack.back()->getType();
-
+		const UpdateStackMember nextUpdate(frameUpdateStack.back());
 		frameUpdateStack.pop_back();
 
-		if (type == 0) // clear paradox
+		if (nextUpdate.getType() == UpdateStackMember::CLEAR_PARADOX)
 		{
-			previousArrival[frame].clear();
+			previousArrival[nextUpdate.getFrame()].clear();
 		}
-		else if (type == 1) // execute frame
+		else if (nextUpdate.getType() == UpdateStackMember::EXECUTE_FRAME)
 		{
-			if (updateFrame(frame))
-			{
-				return true;
-			}
+            if (updateFrame(nextUpdate.getFrame())) {
+                return true;
+            }
 		}
 	}
-
-	return false;
+    return false;
 }
 
 boost::shared_ptr<ObjectList> TimeEngine::getLastArrival(int time)

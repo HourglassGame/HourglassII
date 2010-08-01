@@ -1,33 +1,45 @@
+#ifndef HG_GUY_H
+#define HG_GUY_H
+#define BOOST_SP_DISABLE_THREADS
 #include <boost/smart_ptr.hpp>
-
+#include "TimeDirection.h"
+namespace hg {
 class Guy
 {
-
 public:
-    Guy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int nBoxCarrySize, int nBoxCarryDirection, int relativeIndex, int subimage);
+    Guy(int x,
+        int y, 
+        int xspeed,
+        int yspeed, 
+        int width, 
+        int height, 
+        hg::TimeDirection timeDirection, 
+        bool boxCarrying, 
+        int nBoxCarrySize, 
+        hg::TimeDirection nBoxCarryDirection, 
+        int relativeIndex, 
+        int subimage);
 	
-    int getX();
-    int getY();
-    int getXspeed();
-    int getYspeed();
-	int getWidth();
-	int getHeight();
+    inline int getX() const {return x;}
+    inline int getY() const {return y;}
+    inline int getXspeed() const {return xspeed;}
+    inline int getYspeed() const {return yspeed;}
+	inline int getWidth() const {return width;}
+	inline int getHeight() const {return height;}
 
-	bool getBoxCarrying();
-	int getBoxCarrySize();
-	int getBoxCarryDirection();
+	inline bool getBoxCarrying() const {return boxCarrying;}
+	inline int getBoxCarrySize() const {return boxCarrySize;}
+	inline hg::TimeDirection getBoxCarryDirection() const {return boxCarryDirection;}
 
-	int getTimeDirection();
-	int getRelativeIndex();
-	int getSubimage();
+	inline hg::TimeDirection getTimeDirection() const {return timeDirection;}
+	inline int getRelativeIndex() const {return relativeIndex;}
+	inline int getSubimage() const {return subimage;}
 
-	static int animationLength;
+	const static int animationLength = 13;
 
-	bool equals(boost::shared_ptr<Guy> other);
+	bool equals(const Guy& other) const;
 	static bool lessThan(boost::shared_ptr<Guy> first, boost::shared_ptr<Guy> second);
-    
 private:
-  
 	int x;
 	int y;
 	int xspeed;
@@ -37,11 +49,12 @@ private:
 
 	bool boxCarrying;
 	int boxCarrySize;
-	int boxCarryDirection;
+    hg::TimeDirection boxCarryDirection;
 
-	int timeDirection;
+    hg::TimeDirection timeDirection;
 	int relativeIndex;
 
 	int subimage;
-     
 };
+}
+#endif //HG_GUY_H

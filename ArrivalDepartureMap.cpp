@@ -1,5 +1,6 @@
 #include "ArrivalDepartureMap.h"
 
+using namespace hg;
 
 ArrivalDepartureMap::ArrivalDepartureMap(int timeLength)
 {
@@ -10,7 +11,7 @@ ArrivalDepartureMap::ArrivalDepartureMap(int timeLength)
 	// (timeLength+1) for permanent departures
 
 	for (int i = 0; i < timeLength; ++i)
-	{
+    {
 		arrivals.push_back(boost::shared_ptr<TimeObjectListList>(new TimeObjectListList()));
 		departures.push_back(boost::shared_ptr<TimeObjectListList>(new TimeObjectListList()));
 	}
@@ -37,7 +38,7 @@ boost::shared_ptr<ObjectList> ArrivalDepartureMap::permanentDepartureObjectList(
 }
 
 // returns which frames are changed
-vector<int> ArrivalDepartureMap::updateDeparturesFromTime(int time, boost::shared_ptr<TimeObjectListList> newDeparture)
+std::vector<int> ArrivalDepartureMap::updateDeparturesFromTime(int time, boost::shared_ptr<TimeObjectListList> newDeparture)
 {
 	newDeparture->sort();
 	departures[time]->sort();
@@ -54,7 +55,7 @@ vector<int> ArrivalDepartureMap::updateDeparturesFromTime(int time, boost::share
 		ni = -1;
 	}
 
-	vector<int> changedTimes; // times that have been changed so require recalculation in TimeEngine
+    std::vector<int> changedTimes; // times that have been changed so require recalculation in TimeEngine
 
 	// check which times have changed
 	while(true)
@@ -163,7 +164,7 @@ bool ArrivalDepartureMap::equals(boost::shared_ptr<ArrivalDepartureMap> other)
 	
 	for (unsigned int i = 0; i < departures.size(); ++i)
 	{
-		if (!(departures[i]->equals(other->departures[i])))
+		if (!(departures[i]->equals(*other->departures[i])))
 		{
 			return false;
 		}
@@ -171,7 +172,7 @@ bool ArrivalDepartureMap::equals(boost::shared_ptr<ArrivalDepartureMap> other)
 
 	for (unsigned int i = 0; i < arrivals.size(); ++i)
 	{
-		if (!(arrivals[i]->equals(other->arrivals[i])))
+		if (!(arrivals[i]->equals(*other->arrivals[i])))
 		{
 			return false;
 		}

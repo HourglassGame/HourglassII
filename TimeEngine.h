@@ -1,48 +1,41 @@
-
-#ifndef INC_PHYSICSENGINE
-#define INC_PHYSICSENGINE
+#ifndef HG_TIME_ENGINE_H
+#define HG_TIME_ENGINE_H
 #include "PhysicsEngine.h"
-#endif // INC_PHYSICSENGINE
-
-#ifndef INC_TIMEOBJECTLISTLIST
-#define INC_TIMEOBJECTLISTLIST
 #include "TimeObjectListList.h"
-#endif // INC_TIMEOBJECTLISTLIST
 
-#ifndef INC_INPUTLIST
-#define INC_INPUTLIST
 #include "InputList.h"
-#endif // INC_INPUTLIST
 
 #include "UpdateStackMember.h"
 #include "ArrivalDepartureMap.h"
 
 #include <boost/ptr_container/ptr_map.hpp>
+#define BOOST_SP_DISABLE_THREADS
 #include <boost/smart_ptr.hpp>
 #include <vector>
 #include <stack>
-using namespace std;
-
+namespace hg {
 class TimeEngine
 {
 
 public:
+	TimeEngine(int newTimeLength, std::vector<std::vector<bool> > wallmap, int newWallSize, int newGravity);
+    // returns if the level creator not a foo
+    // Call before trying to use level
+	bool checkConstistencyAndPropagateLevel(boost::shared_ptr<hg::ObjectList> initialObjects, int guyStartTime);
 
-	TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int newWallSize, int newGravity);
-	bool checkConstistencyAndPropagateLevel(boost::shared_ptr<ObjectList> initialObjects, int guyStartTime); // returns if the level creator not a foo
+    std::vector<boost::shared_ptr<hg::ObjectList> > getNextPlayerFrame(boost::shared_ptr<hg::InputList> newInputData);
 
-	vector<boost::shared_ptr<ObjectList> > getNextPlayerFrame(boost::shared_ptr<InputList> newInputData);
-
-	boost::shared_ptr<ObjectList> getLastArrival(int time); // just for debug I think
-
+	boost::shared_ptr<hg::ObjectList> getLastArrival(int time); // just for debug I think
 	
 private:
 	
 	// updates the frame using new arrivals. departures are checked and added to frameUpdateStack if different
-	bool updateFrame(int frameId); 
-	bool executeFrameUpdateStack(); // runs the frame update stack until empty
-
-	boost::shared_ptr<ArrivalDepartureMap> arrivalDeparturePair; // 2D array of departures(y) and arrival(x)
+	bool updateFrame(int frameId);
+    // runs the frame update stack until empty
+	bool executeFrameUpdateStack();
+    
+    // 2D array of departures(y) and arrival(x)
+	boost::shared_ptr<hg::ArrivalDepartureMap> arrivalDeparturePair;
 	int arrivalFrames; // size of arrival array
 	int departuresFrames; // size of departure array
 
@@ -50,23 +43,29 @@ private:
 
 	int timeLineLength; // size of playable timeline
 
-	int playerGuyIndex; // the relative guy index that most recently recived input
+	//int playerGuyIndex; // the relative guy index that most recently recived input
 	int nextPlayerFrame; // frame that has the next guy index in it
 	int currentPlayerFrame; // frame that has the current guy index in it
 	bool updateStartFirst; // either start from the end or beginning of time for propgation
 	
-	boost::shared_ptr<ObjectList> currentPlayerFrameData; // draw data to be returned by getNextPlayerFrame
+	boost::shared_ptr<hg::ObjectList> currentPlayerFrameData; // draw data to be returned by getNextPlayerFrame
 	
-	vector<boost::shared_ptr<InputList> > playerInput; // stores all player input
+    std::vector<boost::shared_ptr<hg::InputList> > playerInput; // stores all player input
 
-	vector<boost::shared_ptr<ObjectList> > frameArrivalAtUpdate; // stores the arrival data for the updated frames in order for a single executeFrameUpdateStack()
 
-	boost::shared_ptr<PhysicsEngine> physics; // executes physics of a frame and a few extra things
 
-	vector<vector<boost::shared_ptr<ObjectList> > > previousArrival; // previous arrivals for frames, used for paradox checking so may contain nothing
-	vector<boost::shared_ptr<ObjectList> > lastArrival; // the last arrival for frames, always contains 1 object list for each frame
+    // executes physics of a frame and a few extra things
+	boost::shared_ptr<hg::PhysicsEngine> physics;
+    
+    // previous arrivals for frames, used for paradox checking so may contain nothing
+    std::vector<std::vector<boost::shared_ptr<hg::ObjectList> > > previousArrival;
+    
+    // the last arrival for frames, always contains 1 object list for each frame
+    std::vector<boost::shared_ptr<hg::ObjectList> > lastArrival;
 
-	vector<boost::shared_ptr<UpdateStackMember> > frameUpdateStack; // stores frames that require updating in FILO 
+    // stores frames that require updating in FILO
+    std::vector<hg::UpdateStackMember> frameUpdateStack; 
 
 };
-
+}
+#endif //HG_TIME_ENGINE_H

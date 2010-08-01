@@ -2,20 +2,15 @@
 
 #include <vector>
 using namespace std;
-
-ObjectList::ObjectList()
-{
-	
-}
-
+using namespace hg;
 void ObjectList::add(const ObjectList& other, int relativeGuyIgnoreIndex)
 {
 	
-	for (unsigned int i = 0; i < other.getGuyList().size(); ++i)
+	for (unsigned int i = 0; i < other.guyList.size(); ++i)
 	{
-		if ((relativeGuyIgnoreIndex == -1) || (other.getGuyList()[i]->getRelativeIndex() < relativeGuyIgnoreIndex))
+		if ((relativeGuyIgnoreIndex == -1) || (other.guyList[i]->getRelativeIndex() < relativeGuyIgnoreIndex))
 		{
-			addGuy(other.getGuyList()[i]);
+			addGuy(other.guyList[i]);
 		}
 	}
 
@@ -27,15 +22,14 @@ void ObjectList::add(const ObjectList& other, int relativeGuyIgnoreIndex)
 
 bool ObjectList::equals(const ObjectList& other) const
 {
-
-	if (guyList.size() != other.getGuyList().size() || boxList.size() != other.getBoxList().size() )
+	if (guyList.size() != other.guyList.size() || boxList.size() != other.boxList.size() )
 	{
 		return false;
 	}
 
 	for (unsigned int i = 0; i < guyList.size(); ++i)
 	{
-		if (!(guyList[i]->equals(other.getGuyList()[i])))
+		if (!(guyList[i]->equals(*other.guyList[i])))
 		{
 			return false;
 		}
@@ -43,12 +37,11 @@ bool ObjectList::equals(const ObjectList& other) const
 
 	for (unsigned int i = 0; i < boxList.size(); ++i)
 	{
-		if (!(boxList[i]->equals(other.getBoxList()[i])))
+		if (!(boxList[i]->equals(*other.boxList[i])))
 		{
 			return false;
 		}
 	}
-
 	return true;
 }	
 
@@ -65,10 +58,16 @@ void ObjectList::sortElements()
 }
 
 // Single Element addition
-void ObjectList::addGuy(int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarrySize, int boxCarryDirection, int relativeIndex, int subimage)
+void ObjectList::addGuy(int x, int y, int xspeed, int yspeed,
+                        int width, int height, hg::TimeDirection timeDirection,
+                        bool boxCarrying, int boxCarrySize, hg::TimeDirection boxCarryDirection,
+                        int relativeIndex, int subimage)
 {
-	
-	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, width, height, timeDirection, boxCarrying, boxCarrySize, boxCarryDirection, relativeIndex, subimage)));
+	guyList.push_back(boost::shared_ptr<Guy> (new Guy(x, y, xspeed, yspeed, 
+                                                      width, height, 
+                                                      timeDirection,
+                                                      boxCarrying, boxCarrySize, boxCarryDirection, 
+                                                      relativeIndex, subimage)));
 }
 
 void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
@@ -76,7 +75,7 @@ void ObjectList::addGuy(boost::shared_ptr<Guy> toCopy)
 	guyList.push_back(toCopy);
 }
 
-void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int size, int timeDirection)
+void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int size, hg::TimeDirection timeDirection)
 {
 	boxList.push_back(boost::shared_ptr<Box> (new Box(x, y, xspeed, yspeed, size, timeDirection)));
 }
@@ -86,17 +85,17 @@ void ObjectList::addBox(boost::shared_ptr<Box> toCopy)
 	boxList.push_back(toCopy);
 }
 
-void ObjectList::addItem(int x, int y, int xspeed, int yspeed, int timeDirection, int type)
+void ObjectList::addItem(int x, int y, int xspeed, int yspeed, hg::TimeDirection timeDirection, int type)
 {
 	itemList.push_back(boost::shared_ptr<Item> (new Item(x, y, xspeed, yspeed, timeDirection, type)));
 }
 
-void ObjectList::addPickup(int x, int y, int platformAttachment, int timeDirection, int type)
+void ObjectList::addPickup(int x, int y, int platformAttachment, hg::TimeDirection timeDirection, int type)
 {
-	pickupList.push_back(boost::shared_ptr<Pickup> (new Pickup(x, y, platformAttachment, timeDirection, type)));
+	pickupList.push_back(boost::shared_ptr<Pickup> (new Pickup(x, y,timeDirection, platformAttachment, type)));
 }
 
-void ObjectList::addPlatform(int x, int y, int xspeed, int yspeed, int timeDirection, int id)
+void ObjectList::addPlatform(int x, int y, int xspeed, int yspeed, hg::TimeDirection timeDirection, int id)
 {
 	platformList.push_back(boost::shared_ptr<Platform> (new Platform(x, y, xspeed, yspeed, timeDirection, id)));
 }

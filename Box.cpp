@@ -2,101 +2,75 @@
 
 #include <iostream>
 
-int normalSize = 1000;
+using namespace hg;
 
-Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, int nTimeDirection)
+Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection) :
+x(nX),
+y(nY),
+xspeed(nXspeed),
+yspeed(nYspeed),
+size(nSize),
+timeDirection(nTimeDirection)
 {
-	x = nX;
-	y = nY;
-	xspeed = nXspeed;
-	yspeed = nYspeed;
-	size = nSize;
-	timeDirection = nTimeDirection;
 }
 
-bool Box::equals(boost::shared_ptr<Box> other)
+bool Box::equals(const Box& other) const
 {
-	if ( (x == other->getX()) && (y == other->getY()) && (xspeed == other->getXspeed()) && (yspeed == other->getYspeed()) && (timeDirection == other->getTimeDirection()) && (size == other->getSize()) )
+	if ( (x == other.x)
+        && (y == other.y)
+        && (xspeed == other.xspeed) 
+        && (yspeed == other.yspeed)
+        && (timeDirection == other.timeDirection) 
+        && (size == other.size) )
 	{
 		return true;
 	}
 	return false;
-
 }
 
-bool Box::lessThan(boost::shared_ptr<Box> first, boost::shared_ptr<Box> second)
+bool Box::lessThan(boost::shared_ptr<const Box> first, boost::shared_ptr<const Box> second)
 {
-	if (first -> getX() == second -> getX())
+	if (first -> x == second -> x)
 	{
-		if (first -> getY() == second -> getY())
+		if (first -> y == second -> y)
 		{
-			if (first -> getXspeed() == second -> getXspeed())
+			if (first -> xspeed == second -> xspeed)
 			{
-				if (first -> getYspeed() == second -> getYspeed())
+				if (first -> yspeed == second -> yspeed)
 				{
-					if (first -> getTimeDirection() == second -> getTimeDirection())
+					if (first -> timeDirection == second -> timeDirection)
 					{
-						if (first -> getSize() == second -> getSize())
+						if (first -> size == second -> size)
 						{
 							return false;
 						}
 						else
 						{
-							return (first -> getSize() == second -> getSize());
+							return (first -> size < second -> size);
 						}
 					}
 					else
 					{
-						return (first -> getTimeDirection() < second -> getTimeDirection());
+						return (first -> timeDirection < second -> timeDirection);
 					}
 				}
 				else
 				{
-					return (first -> getYspeed() < second -> getYspeed());
+					return (first -> yspeed < second -> yspeed);
 				}
 			}
 			else
 			{
-				return (first -> getXspeed() < second -> getXspeed());
+				return (first -> xspeed < second -> xspeed);
 			}
 		}
 		else
 		{
-			return (first -> getY() < second -> getY());
+			return (first -> y < second -> y);
 		}
 	}
 	else
 	{
-		return (first -> getX() < second -> getX());
+		return (first -> x < second -> x);
 	}
-}
-
-int Box::getX()
-{
-	return x;
-}
-
-int Box::getY()
-{
-	return y;
-}
-
-int Box::getXspeed()
-{
-	return xspeed;
-}
-
-int Box::getYspeed()
-{
-	return yspeed;
-}
-
-int Box::getSize()
-{
-	return size;
-}
-
-int Box::getTimeDirection()
-{
-	return timeDirection;
 }

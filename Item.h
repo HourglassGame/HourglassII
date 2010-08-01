@@ -1,5 +1,7 @@
-#include <boost/smart_ptr.hpp>
-
+#ifndef HG_ITEM_H
+#define HG_ITEM_H
+namespace hg {
+    
 class Item
 {
 
@@ -24,3 +26,5 @@ private:
 	int type;
      
 };
+}
+#endif //HG_ITEM_H

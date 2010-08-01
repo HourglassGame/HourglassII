@@ -1,5 +1,7 @@
-#include <boost/smart_ptr.hpp>
-
+#ifndef HG_SWITCH_H
+#define HG_SWITCH_H
+namespace hg {
+    
 class Switch
 {
 
@@ -23,3 +25,5 @@ private:
 	int id;
      
 };
+}
+#endif //HG_SWITCH_H

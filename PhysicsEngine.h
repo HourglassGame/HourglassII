@@ -1,45 +1,43 @@
-
-#ifndef INC_OBJECTLIST
-#define INC_OBJECTLIST
+#ifndef HG_PHYSICS_ENGINE_H
+#define HG_PHYSICS_ENGINE_H
 #include "ObjectList.h"
-#endif // INC_OBJECTLIST
-
-#ifndef INC_INPUTLIST
-#define INC_INPUTLIST
 #include "InputList.h"
-#endif // INC_INPUTLIST
-
-#ifndef INC_TIMEOBJECTLISTLIST
-#define INC_TIMEOBJECTLISTLIST
 #include "TimeObjectListList.h"
-#endif // INC_TIMEOBJECTLISTLIST
-
+#define BOOST_SP_DISABLE_THREADS
 #include <boost/smart_ptr.hpp>
 #include <vector>
-using namespace std;
-
+namespace hg {
 class PhysicsEngine
 {
 
 public:
 
-	PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity);
+	PhysicsEngine(int newTimeLineLength, 
+                  std::vector<std::vector<bool> > newWallmap,
+                  int newWallSize, 
+                  int newGravity);
 
-	boost::shared_ptr<TimeObjectListList> executeFrame(const ObjectList& arrivals, int time, int playerGuyIndex, vector<boost::shared_ptr<InputList> > playerInput); // executes frame and returns departures
+    // executes frame and returns departures
+	boost::shared_ptr<hg::TimeObjectListList> executeFrame(const hg::ObjectList& arrivals,
+                                                       int time, 
+                                                       int playerGuyIndex, 
+                                                       const std::vector<boost::shared_ptr<hg::InputList> >& playerInput); 
 
-	int getNextPlayerFrame();
-	int getPlayerDirection();
-
+	inline int getNextPlayerFrame() {return nextPlayerFrame;}
+	inline int getPlayerDirection() {return playerDirection;}
 private:
 
-	void crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<Box> > oldBoxList);
-	void guyStep(vector<boost::shared_ptr<Guy> > oldGuyListt, int playerGuyIndex, int time, vector<boost::shared_ptr<InputList> > playerInput, boost::shared_ptr<TimeObjectListList> departures);
+	void crappyBoxCollisionAlogorithm(std::vector<boost::shared_ptr<hg::Box> > oldBoxList);
+	void guyStep(const std::vector<boost::shared_ptr<hg::Guy> >& oldGuyListt, 
+                 int playerGuyIndex, int time, 
+                 const std::vector<boost::shared_ptr<hg::InputList> >& playerInput, 
+                 boost::shared_ptr<hg::TimeObjectListList> departures);
 
 	bool wallAt(int x, int y);
 
 	int timeLineLength;
 
-	vector<vector<bool> > wallmap;
+    std::vector<std::vector<bool> > wallmap;
 
 	// these are updated from guy with relative index == playerGuyIndex when the frame is executed
 	int nextPlayerFrame; // frame that the player departed for
@@ -47,7 +45,9 @@ private:
 	int gravity;
 	int wallSize;
 
-	vector<boost::shared_ptr<Box> > nextBox;
-	vector<int> nextBoxTime;
-	vector<bool> supportedBox;
+    std::vector<boost::shared_ptr<hg::Box> > nextBox;
+    std::vector<int> nextBoxTime;
+    std::vector<bool> supportedBox;
 };
+}
+#endif //HG_PHYSICS_ENGINE_H

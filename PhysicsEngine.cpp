@@ -1,6 +1,7 @@
 #include "PhysicsEngine.h"
-
-
+#include "TimeDirection.h"
+using namespace std;
+using namespace hg;
 PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity)
 {
 	
@@ -12,13 +13,16 @@ PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWal
 
 }
 
-boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectList& arrivals, int time, int playerGuyIndex, vector<boost::shared_ptr<InputList> > playerInput)
+boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectList& arrivals, 
+                                                                  int time, 
+                                                                  int playerGuyIndex, 
+                                                                  const vector<boost::shared_ptr<InputList> >& playerInput)
 {
 	nextBox.clear();
 	nextBoxTime.clear();
 	supportedBox.clear();
 
-	boost::shared_ptr<TimeObjectListList> newDepartures = boost::shared_ptr<TimeObjectListList>(new TimeObjectListList());
+	boost::shared_ptr<TimeObjectListList> newDepartures(new TimeObjectListList());
 
 	// Switch Collisions at this point?
 
@@ -58,16 +62,6 @@ boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectLi
 	return newDepartures;
 }
 
-int PhysicsEngine::getNextPlayerFrame()
-{
-	return nextPlayerFrame;
-}
-
-int PhysicsEngine::getPlayerDirection()
-{
-	return playerDirection;
-}
-
 bool PhysicsEngine::wallAt(int x, int y)
 {
 	if (x < 0 || y < 0)
@@ -88,7 +82,9 @@ bool PhysicsEngine::wallAt(int x, int y)
 	}
 }
 
-void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy> > oldGuyList, int playerGuyIndex, int time, vector<boost::shared_ptr<InputList> > playerInput, boost::shared_ptr<TimeObjectListList> newDepartures)
+void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList, 
+                            int playerGuyIndex, int time, 
+                            const vector<boost::shared_ptr<InputList> >& playerInput, boost::shared_ptr<TimeObjectListList> newDepartures)
 {
 	vector<int> x;
 	vector<int> y;
@@ -173,14 +169,14 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy> > oldGuyList, int play
 
 	vector<bool> carry;
 	vector<int> carrySize;
-	vector<int> carryDirection;
+	vector<hg::TimeDirection> carryDirection;
 	
 	// box carrying
 	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
 	{
 		carry.push_back(oldGuyList[i]->getBoxCarrying());
 		carrySize.push_back(0);
-		carryDirection.push_back(0);
+		carryDirection.push_back(hg::PAUSE);
 
 		int relativeIndex = oldGuyList[i]->getRelativeIndex();
 		boost::shared_ptr<InputList> input = playerInput[relativeIndex];
@@ -197,7 +193,7 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy> > oldGuyList, int play
 				supportedBox.push_back(false);
 				carry[i] = false;
 				carrySize[i] = 0;
-				carryDirection[i] = 0;
+				carryDirection[i] = hg::PAUSE;
 			}
 			else
 			{
@@ -230,7 +226,7 @@ void PhysicsEngine::guyStep(vector<boost::shared_ptr<Guy> > oldGuyList, int play
 			else
 			{
 				carrySize[i] = 0;
-				carryDirection[i] = 0;
+				carryDirection[i] = hg::PAUSE;
 			}
 		}
 	}
