@@ -65,6 +65,7 @@
 		20700DE611F576AB009794E1 /* libboost_thread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_thread.a; path = /Users/evan/Programming/boost/library/lib/libboost_thread.a; sourceTree = "<absolute>"; };
 		20700DF811F578B0009794E1 /* Hg_Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hg_Input.h; sourceTree = "<group>"; };
 		20700DF911F578B0009794E1 /* Hg_Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hg_Input.cpp; sourceTree = "<group>"; };
+		207D22DD1204099E00CC5C54 /* TimeDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeDirection.h; path = ../../HourglassII_2.1/TimeDirection.h; sourceTree = SOURCE_ROOT; };
 		20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ArrivalDepartureMap.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.cpp; sourceTree = "<absolute>"; };
 		20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ArrivalDepartureMap.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.h; sourceTree = "<absolute>"; };
 		20AEAD0211F3DF0A003617DB /* Box.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Box.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Box.cpp; sourceTree = "<absolute>"; };
@@ -119,33 +120,34 @@
 		20AEACFD11F3DEB3003617DB /* TimeEngine */ = {
 			isa = PBXGroup;
 			children = (
-				20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */,
 				20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */,
-				20AEAD0211F3DF0A003617DB /* Box.cpp */,
+				20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */,
 				20AEAD0411F3DF0A003617DB /* Box.h */,
-				20AEAD0611F3DF0A003617DB /* Guy.cpp */,
+				20AEAD0211F3DF0A003617DB /* Box.cpp */,
 				20AEAD0811F3DF0A003617DB /* Guy.h */,
-				20AEAD0A11F3DF0A003617DB /* InputList.cpp */,
+				20AEAD0611F3DF0A003617DB /* Guy.cpp */,
 				20AEAD0C11F3DF0A003617DB /* InputList.h */,
-				20AEAD0E11F3DF0A003617DB /* Item.cpp */,
+				20AEAD0A11F3DF0A003617DB /* InputList.cpp */,
 				20AEAD1011F3DF0A003617DB /* Item.h */,
+				20AEAD0E11F3DF0A003617DB /* Item.cpp */,
 				20AEAD1211F3DF0A003617DB /* ItemType.h */,
-				20AEAD1411F3DF0A003617DB /* ObjectList.cpp */,
 				20AEAD1611F3DF0A003617DB /* ObjectList.h */,
-				20AEAD1811F3DF0B003617DB /* PhysicsEngine.cpp */,
+				20AEAD1411F3DF0A003617DB /* ObjectList.cpp */,
 				20AEAD1A11F3DF0B003617DB /* PhysicsEngine.h */,
-				20AEAD1C11F3DF0B003617DB /* Pickup.cpp */,
+				20AEAD1811F3DF0B003617DB /* PhysicsEngine.cpp */,
 				20AEAD1E11F3DF0B003617DB /* Pickup.h */,
-				20AEAD2011F3DF0B003617DB /* Platform.cpp */,
+				20AEAD1C11F3DF0B003617DB /* Pickup.cpp */,
 				20AEAD2211F3DF0B003617DB /* Platform.h */,
-				20AEAD2411F3DF0B003617DB /* Switch.cpp */,
+				20AEAD2011F3DF0B003617DB /* Platform.cpp */,
 				20AEAD2611F3DF0B003617DB /* Switch.h */,
-				20AEAD2811F3DF0B003617DB /* TimeEngine.cpp */,
+				20AEAD2411F3DF0B003617DB /* Switch.cpp */,
 				20AEAD2A11F3DF0B003617DB /* TimeEngine.h */,
-				20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */,
+				20AEAD2811F3DF0B003617DB /* TimeEngine.cpp */,
 				20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */,
+				20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */,
 				20AEAD3011F3DF0B003617DB /* UpdateStackMember.cpp */,
 				20AEAD3211F3DF0B003617DB /* UpdateStackMember.h */,
+				207D22DD1204099E00CC5C54 /* TimeDirection.h */,
 			);
 			name = TimeEngine;
 			sourceTree = "<group>";
@@ -299,6 +301,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
 			};
 			name = Release;
 		};
@@ -329,11 +332,24 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ALTIVEC_EXTENSIONS = YES;
+				GCC_AUTO_VECTORIZATION = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
+				GCC_FEEDBACK_DIRECTED_OPTIMIZATION = Off;
+				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
 				GCC_MODEL_TUNING = G5;
-				GCC_VERSION = 4.0;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Programming/clean_boost\"";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -342,8 +358,10 @@
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../../Programming/boost/library/lib\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
 				PRODUCT_NAME = HourglassIIGameSFML;
+				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
 				ZERO_LINK = NO;
 			};
 			name = Release;

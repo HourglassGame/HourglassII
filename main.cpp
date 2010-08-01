@@ -2,6 +2,7 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#define BOOST_SP_DISABLE_THREADS
 #include <SFML/Graphics.hpp>
 #include <boost/thread.hpp>
 #include "TimeEngine.h"
@@ -10,12 +11,12 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
-
+using namespace hg;
 namespace hg {
     void Draw(sf::RenderWindow& target, boost::shared_ptr<ObjectList>& frame, const std::vector<std::vector<bool> >& wall);
     void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wallData);
-    void DrawBoxes(sf::RenderTarget& target, const vector<boost::shared_ptr<Box> >& boxData);
-    void DrawGuys(sf::RenderTarget& target, const vector<boost::shared_ptr<Guy> >& guyList);
+    void DrawBoxes(sf::RenderTarget& target, const std::vector<boost::shared_ptr<Box> >& boxData);
+    void DrawGuys(sf::RenderTarget& target, const std::vector<boost::shared_ptr<Guy> >& guyList);
     
     std::vector<std::vector<bool> > MakeWall();
     TimeEngine MakeTimeEngine(std::vector<std::vector<bool> >& wallData);
@@ -59,7 +60,7 @@ int main()
         hg::Input input(App.GetInput());
         
         //Get result from time-engine
-        vector<boost::shared_ptr<ObjectList> > frame(timeEngine.getNextPlayerFrame(input.AsInputList()));
+        std::vector<boost::shared_ptr<ObjectList> > frame(timeEngine.getNextPlayerFrame(input.AsInputList()));
         if (frame.size() == 1) {
             //Draw result
             hg::Draw(App, frame[0], wall);
@@ -98,7 +99,7 @@ void hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> 
     }
 }
 
-void hg::DrawBoxes(sf::RenderTarget& target, const vector<boost::shared_ptr<Box> >& boxList)
+void hg::DrawBoxes(sf::RenderTarget& target, const std::vector<boost::shared_ptr<Box> >& boxList)
 {
     foreach(const boost::shared_ptr<Box>& box, boxList) {
         target.Draw(sf::Shape::Rectangle(box->getX()/100,
@@ -109,7 +110,7 @@ void hg::DrawBoxes(sf::RenderTarget& target, const vector<boost::shared_ptr<Box>
     }
 }
 
-void hg::DrawGuys(sf::RenderTarget& target, const vector<boost::shared_ptr<Guy> >& guyList)
+void hg::DrawGuys(sf::RenderTarget& target, const std::vector<boost::shared_ptr<Guy> >& guyList)
 {
     foreach(const boost::shared_ptr<Guy>& guy, guyList) {
         target.Draw(sf::Shape::Rectangle(guy->getX()/100,
@@ -189,9 +190,9 @@ TimeEngine hg::MakeTimeEngine(std::vector<std::vector<bool> >& wall)
 {
     TimeEngine newEngine(5400,wall,3200,50);
     boost::shared_ptr<ObjectList> newObjectList(new ObjectList());
-    newObjectList->addBox(6400, 25600, 0 ,0, 3200, 1);
+    newObjectList->addBox(6400, 25600, 0 ,0, 3200, FORWARDS);
     //int x, int y, int xspeed, int yspeed, int width, int height, int timeDirection, bool boxCarrying, int boxCarrySize, int boxCarryDirection, int relativeIndex, int subimage
-    newObjectList->addGuy(22000, 6400, 0, 0, 1600, 3200, 1, false, 0, 0, 0, 0);
+    newObjectList->addGuy(22000, 6400, 0, 0, 1600, 3200, FORWARDS, false, 0, PAUSE, 0, 0);
     std::cout << newEngine.checkConstistencyAndPropagateLevel(newObjectList,0) << std::endl;
     return newEngine;
 }

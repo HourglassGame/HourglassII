@@ -14,6 +14,7 @@ namespace hg {
 
 #include <boost/noncopyable.hpp>
 #include <SFML/Window/Input.hpp>
+#define BOOST_SP_DISABLE_THREADS
 #include <boost/smart_ptr/shared_ptr.hpp>
 #ifndef INC_INPUTLIST
 #define INC_INPUTLIST
