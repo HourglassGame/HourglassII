@@ -1,6 +1,7 @@
 #include "TimeEngine.h"
 
 #include <vector>
+#include <iostream>
 using namespace std;
 using namespace hg;
 TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int newWallSize, int newGravity) :
@@ -10,7 +11,9 @@ arrivalFrames(newTimeLength),
 departuresFrames(newTimeLength +1),
 permanentDepatureIndex(newTimeLength),
 arrivalDeparturePair(boost::shared_ptr<ArrivalDepartureMap>(new ArrivalDepartureMap(newTimeLength))),
-physics(boost::shared_ptr<PhysicsEngine>(new PhysicsEngine(newTimeLength, wallmap, newWallSize, newGravity)))
+physics(boost::shared_ptr<PhysicsEngine>(new PhysicsEngine(newTimeLength, wallmap, newWallSize, newGravity))),
+lastArrival(0),
+previousArrival(0)
 {
 	lastArrival.reserve(arrivalFrames);
 	previousArrival.reserve(arrivalFrames);
@@ -192,7 +195,7 @@ bool TimeEngine::updateFrame(int frame)
 
 	if (updateStartFirst)
 	{
-		for (int i = framesThatNeedUpdating.size()-1; i >= 0 ; --i)
+		for (signed int i = framesThatNeedUpdating.size()-1; i >= 0 ; --i)
 		{
 			frameUpdateStack.push_back(UpdateStackMember(UpdateStackMember::EXECUTE_FRAME,framesThatNeedUpdating[i]));
 		}

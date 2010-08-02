@@ -1,7 +1,10 @@
 #include "PhysicsEngine.h"
 #include "TimeDirection.h"
+#include <boost/foreach.hpp>
+#define foreach BOOST_FOREACH
 using namespace std;
 using namespace hg;
+
 PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity)
 {
 	
@@ -18,9 +21,7 @@ boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectLi
                                                                   int playerGuyIndex, 
                                                                   const vector<boost::shared_ptr<InputList> >& playerInput)
 {
-	nextBox.clear();
-	nextBoxTime.clear();
-	supportedBox.clear();
+    std::vector<PhysicsEngine::BoxInfo> nextBox;
 
 	boost::shared_ptr<TimeObjectListList> newDepartures(new TimeObjectListList());
 
@@ -33,13 +34,13 @@ boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectLi
 	// switch position update
 	// pickup position update
 
-	crappyBoxCollisionAlogorithm(arrivals.getBoxList());
+	crappyBoxCollisionAlogorithm(arrivals.getBoxList(), nextBox);
 	// boxes do their crazy wizz-bang collision algorithm
 
 	// item simple collision algorithm
 
 	// guys simple collision algorithm
-	guyStep(arrivals.getGuyList(), playerGuyIndex, time, playerInput, newDepartures);
+	guyStep(arrivals.getGuyList(), playerGuyIndex, time, playerInput, *newDepartures, nextBox);
 
 	// guys pickup pickups
 
@@ -49,11 +50,11 @@ boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectLi
 
 	for (unsigned int i = 0; i < nextBox.size(); ++i)
 	{
-		int nextTime = time+nextBox[i]->getTimeDirection();
+		int nextTime = time+nextBox[i].box->getTimeDirection();
 
 		if (nextTime >= 0 && nextTime < timeLineLength)
 		{
-			newDepartures->getObjectListForManipulation(nextTime)->addBox(nextBox[i]);
+			newDepartures->getObjectListForManipulation(nextTime)->addBox(nextBox[i].box);
 		}
 	}
 
@@ -84,7 +85,8 @@ bool PhysicsEngine::wallAt(int x, int y)
 
 void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList, 
                             int playerGuyIndex, int time, 
-                            const vector<boost::shared_ptr<InputList> >& playerInput, boost::shared_ptr<TimeObjectListList> newDepartures)
+                            const vector<boost::shared_ptr<InputList> >& playerInput, TimeObjectListList& newDepartures,
+                            std::vector<PhysicsEngine::BoxInfo>& nextBox)
 {
 	vector<int> x;
 	vector<int> y;
@@ -159,7 +161,9 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 				x[i] = (x[i]/wallSize + 1)*wallSize;
 			}
 		}
+        
 
+        
 		// jump
 		if (supported && input->getUp())
 		{	
@@ -189,8 +193,26 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 				int height = oldGuyList[i]->getHeight();
 
 				// fixme: needs to check if the box can be dropped
-				nextBox.push_back(boost::shared_ptr<Box>(new Box(x[i] + width/2 - carrySize[i]/2, y[i] - height - carrySize[i], 0, 0, oldGuyList[i]->getBoxCarrySize(), oldGuyList[i]->getBoxCarryDirection())));
-				supportedBox.push_back(false);
+				nextBox.push_back
+                (
+                    PhysicsEngine::BoxInfo
+                    (
+                        boost::shared_ptr<Box>
+                        (
+                            new Box
+                            (
+                                x[i] + width/2 - carrySize[i]/2,
+                                y[i] - height - carrySize[i], 
+                                0,
+                                0,
+                                oldGuyList[i]->getBoxCarrySize(),
+                                oldGuyList[i]->getBoxCarryDirection()
+                             )
+                        ),
+                        false
+                    )
+                );
+				//supportedBox.push_back(false);
 				carry[i] = false;
 				carrySize[i] = 0;
 				carryDirection[i] = hg::PAUSE;
@@ -210,14 +232,14 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 
 				for (unsigned int j = 0; j < nextBox.size(); ++j)
 				{
-					int boxX = nextBox[j]->getX();
-					int boxY = nextBox[j]->getY();
-					int boxSize = nextBox[j]->getSize();
+					int boxX = nextBox[j].box->getX();
+					int boxY = nextBox[j].box->getY();
+					int boxSize = nextBox[j].box->getSize();
 					if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize)&& (y[i]+height > boxY)) 
 					{
 						carry[i] = true;
 						carrySize[i] = boxSize;
-						carryDirection[i] = nextBox[j]->getTimeDirection();
+						carryDirection[i] = nextBox[j].box->getTimeDirection();
 						nextBox.erase(nextBox.begin() + j);
 					}
 				   
@@ -254,7 +276,7 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 		int nextTime = time+oldGuyList[i]->getTimeDirection();
 		if (nextTime >= 0 && nextTime < timeLineLength)
 		{
-			newDepartures->getObjectListForManipulation(nextTime)->addGuy(x[i], y[i], xspeed[i], yspeed[i], oldGuyList[i]->getWidth(), oldGuyList[i]->getHeight(), 
+			newDepartures.getObjectListForManipulation(nextTime)->addGuy(x[i], y[i], xspeed[i], yspeed[i], oldGuyList[i]->getWidth(), oldGuyList[i]->getHeight(), 
 				oldGuyList[i]->getTimeDirection(), carry[i], carrySize[i], carryDirection[i], relativeIndex+1, nextSubimage);
 		}
 		
@@ -267,9 +289,9 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 
 }
 
-void PhysicsEngine::crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<Box> > oldBoxList)
+void PhysicsEngine::crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<hg::Box> > oldBoxList,
+                                                 std::vector<PhysicsEngine::BoxInfo>& nextBox)
 {
-
 	for (unsigned int i = 0; i < oldBoxList.size(); ++i)
 	{
 		int x = oldBoxList[i]->getX();
@@ -321,8 +343,26 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(vector<boost::shared_ptr<Box> >
 			}
 		}
 
-		nextBox.push_back(boost::shared_ptr<Box>(new Box(x, y, xspeed, yspeed, size, oldBoxList[i]->getTimeDirection())));
-		supportedBox.push_back(supported);
+		nextBox.push_back
+        (
+            PhysicsEngine::BoxInfo
+            (
+                boost::shared_ptr<Box>
+                (
+                    new Box
+                    (
+                        x,
+                        y,
+                        xspeed,
+                        yspeed,
+                        size,
+                        oldBoxList[i]->getTimeDirection()
+                    )
+                )
+                ,supported
+            )
+        );
+		//supportedBox.push_back(supported);
 
 		// don't bother checking box collision in crappy step
 

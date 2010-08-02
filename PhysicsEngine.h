@@ -9,7 +9,6 @@
 namespace hg {
 class PhysicsEngine
 {
-
 public:
 
 	PhysicsEngine(int newTimeLineLength, 
@@ -26,28 +25,34 @@ public:
 	inline int getNextPlayerFrame() {return nextPlayerFrame;}
 	inline int getPlayerDirection() {return playerDirection;}
 private:
-
-	void crappyBoxCollisionAlogorithm(std::vector<boost::shared_ptr<hg::Box> > oldBoxList);
-	void guyStep(const std::vector<boost::shared_ptr<hg::Guy> >& oldGuyListt, 
+    struct BoxInfo {
+        BoxInfo(boost::shared_ptr<hg::Box> nbox,
+                bool nsupported) :
+        box(nbox),
+        supported(nsupported)
+        {}
+        boost::shared_ptr<hg::Box> box;
+        bool supported;
+    };
+	void crappyBoxCollisionAlogorithm(std::vector<boost::shared_ptr<hg::Box> > oldBoxList,
+                                      std::vector<PhysicsEngine::BoxInfo>& nextBox);
+	
+    void guyStep(const std::vector<boost::shared_ptr<hg::Guy> >& oldGuyList, 
                  int playerGuyIndex, int time, 
                  const std::vector<boost::shared_ptr<hg::InputList> >& playerInput, 
-                 boost::shared_ptr<hg::TimeObjectListList> departures);
+                 hg::TimeObjectListList& departures, std::vector<PhysicsEngine::BoxInfo>& nextBox);
 
 	bool wallAt(int x, int y);
-
-	int timeLineLength;
-
-    std::vector<std::vector<bool> > wallmap;
 
 	// these are updated from guy with relative index == playerGuyIndex when the frame is executed
 	int nextPlayerFrame; // frame that the player departed for
 	int playerDirection; // time direction of player in frame
+    
+    //map info (not necessecary to be here, but avoids passing it every time)
+    int timeLineLength;
+    std::vector<std::vector<bool> > wallmap;
 	int gravity;
 	int wallSize;
-
-    std::vector<boost::shared_ptr<hg::Box> > nextBox;
-    std::vector<int> nextBoxTime;
-    std::vector<bool> supportedBox;
 };
 }
 #endif //HG_PHYSICS_ENGINE_H
