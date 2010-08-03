@@ -48,7 +48,7 @@ private:
 	int nextPlayerFrame; // frame that the player departed for
 	int playerDirection; // time direction of player in frame
     
-    //map info (not necessecary to be here, but avoids passing it every time)
+    //map info (not necessary to be here, but avoids passing it every time)
     int timeLineLength;
     std::vector<std::vector<bool> > wallmap;
 	int gravity;

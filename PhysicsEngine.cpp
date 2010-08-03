@@ -29,7 +29,7 @@ boost::shared_ptr<TimeObjectListList> PhysicsEngine::executeFrame(const ObjectLi
 
 	// Trigger system execution
 
-	// platforms set their new location and veloctiy from trigger system data (and ofc their physical data)
+	// platforms set their new location and velocity from trigger system data (and ofc their physical data)
 
 	// switch position update
 	// pickup position update
@@ -162,7 +162,7 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 			}
 		}
         
-
+        // box collision
         
 		// jump
 		if (supported && input->getUp())
@@ -241,8 +241,8 @@ void PhysicsEngine::guyStep(const vector<boost::shared_ptr<Guy> >& oldGuyList,
 						carrySize[i] = boxSize;
 						carryDirection[i] = nextBox[j].box->getTimeDirection();
 						nextBox.erase(nextBox.begin() + j);
+                        break;
 					}
-				   
 				}
 			}
 			else
