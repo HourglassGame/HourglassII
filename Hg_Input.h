@@ -25,7 +25,7 @@ namespace hg {
     class Input : private boost::noncopyable {
     public:
         Input(const sf::Input& input);
-        boost::shared_ptr<InputList> AsInputList() const;
+        InputList AsInputList() const;
     private:
         bool left;
         bool right;

@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		20700DFA11F578B0009794E1 /* Hg_Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20700DF911F578B0009794E1 /* Hg_Input.cpp */; };
 		20700E4311F59927009794E1 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20700DE611F576AB009794E1 /* libboost_thread.a */; };
+		2079BC3B120D2E820028D6E2 /* ParadoxException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2079BC31120D2E820028D6E2 /* ParadoxException.cpp */; };
+		2079BC3C120D2E820028D6E2 /* TotalState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2079BC33120D2E820028D6E2 /* TotalState.cpp */; };
+		2079BC3D120D2E820028D6E2 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2079BC35120D2E820028D6E2 /* WorldState.cpp */; };
 		20AEACFF11F3DF0A003617DB /* ArrivalDepartureMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */; };
 		20AEAD0111F3DF0A003617DB /* ArrivalDepartureMap.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */; };
 		20AEAD0311F3DF0A003617DB /* Box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0211F3DF0A003617DB /* Box.cpp */; };
@@ -34,8 +37,8 @@
 		20AEAD2B11F3DF0B003617DB /* TimeEngine.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2A11F3DF0B003617DB /* TimeEngine.h */; };
 		20AEAD2D11F3DF0B003617DB /* TimeObjectListList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */; };
 		20AEAD2F11F3DF0B003617DB /* TimeObjectListList.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */; };
-		20AEAD3111F3DF0B003617DB /* UpdateStackMember.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD3011F3DF0B003617DB /* UpdateStackMember.cpp */; };
-		20AEAD3311F3DF0B003617DB /* UpdateStackMember.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD3211F3DF0B003617DB /* UpdateStackMember.h */; };
+		20D01109120AC2A2008A046E /* TimeDirection.h in Sources */ = {isa = PBXBuildFile; fileRef = 207D22DD1204099E00CC5C54 /* TimeDirection.h */; };
+		20D0110F120AC2A2008A046E /* Hg_Input.h in Sources */ = {isa = PBXBuildFile; fileRef = 20700DF811F578B0009794E1 /* Hg_Input.h */; };
 		A0072ADE0F1D0EC500B4A594 /* sfml-system.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = A01FB6CB0F07CFF2000AAC7B /* sfml-system.framework */; };
 		A0072ADF0F1D0EC500B4A594 /* sfml-window.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = A01FB6CC0F07CFF2000AAC7B /* sfml-window.framework */; };
 		A0072AE00F1D0EC500B4A594 /* sfml-graphics.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = A01FB6CA0F07CFF2000AAC7B /* sfml-graphics.framework */; };
@@ -44,6 +47,17 @@
 		A01FB6CF0F07CFF2000AAC7B /* sfml-system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A01FB6CB0F07CFF2000AAC7B /* sfml-system.framework */; };
 		A01FB6D00F07CFF2000AAC7B /* sfml-window.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A01FB6CC0F07CFF2000AAC7B /* sfml-window.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		20D01103120AC228008A046E /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.gcc;
+			fileType = sourcecode.c;
+			isEditable = 1;
+			outputFiles = (
+			);
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		A0072AF00F1D0EDD00B4A594 /* Copy Frameworks */ = {
@@ -65,6 +79,12 @@
 		20700DE611F576AB009794E1 /* libboost_thread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_thread.a; path = /Users/evan/Programming/boost/library/lib/libboost_thread.a; sourceTree = "<absolute>"; };
 		20700DF811F578B0009794E1 /* Hg_Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hg_Input.h; sourceTree = "<group>"; };
 		20700DF911F578B0009794E1 /* Hg_Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hg_Input.cpp; sourceTree = "<group>"; };
+		2079BC31120D2E820028D6E2 /* ParadoxException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParadoxException.cpp; path = ../../HourglassII_2.1/ParadoxException.cpp; sourceTree = SOURCE_ROOT; };
+		2079BC32120D2E820028D6E2 /* ParadoxException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParadoxException.h; path = ../../HourglassII_2.1/ParadoxException.h; sourceTree = SOURCE_ROOT; };
+		2079BC33120D2E820028D6E2 /* TotalState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TotalState.cpp; path = ../../HourglassII_2.1/TotalState.cpp; sourceTree = SOURCE_ROOT; };
+		2079BC34120D2E820028D6E2 /* TotalState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TotalState.h; path = ../../HourglassII_2.1/TotalState.h; sourceTree = SOURCE_ROOT; };
+		2079BC35120D2E820028D6E2 /* WorldState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WorldState.cpp; path = ../../HourglassII_2.1/WorldState.cpp; sourceTree = SOURCE_ROOT; };
+		2079BC36120D2E820028D6E2 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldState.h; path = ../../HourglassII_2.1/WorldState.h; sourceTree = SOURCE_ROOT; };
 		207D22DD1204099E00CC5C54 /* TimeDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeDirection.h; path = ../../HourglassII_2.1/TimeDirection.h; sourceTree = SOURCE_ROOT; };
 		20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ArrivalDepartureMap.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.cpp; sourceTree = "<absolute>"; };
 		20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ArrivalDepartureMap.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.h; sourceTree = "<absolute>"; };
@@ -91,8 +111,6 @@
 		20AEAD2A11F3DF0B003617DB /* TimeEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeEngine.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeEngine.h; sourceTree = "<absolute>"; };
 		20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TimeObjectListList.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeObjectListList.cpp; sourceTree = "<absolute>"; };
 		20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeObjectListList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeObjectListList.h; sourceTree = "<absolute>"; };
-		20AEAD3011F3DF0B003617DB /* UpdateStackMember.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UpdateStackMember.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/UpdateStackMember.cpp; sourceTree = "<absolute>"; };
-		20AEAD3211F3DF0B003617DB /* UpdateStackMember.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UpdateStackMember.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/UpdateStackMember.h; sourceTree = "<absolute>"; };
 		A01FB6A90F07CF6E000AAC7B /* HourglassIIGameSFML.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassIIGameSFML.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A01FB6AC0F07CF6E000AAC7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A01FB6C80F07CFCE000AAC7B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -120,6 +138,12 @@
 		20AEACFD11F3DEB3003617DB /* TimeEngine */ = {
 			isa = PBXGroup;
 			children = (
+				2079BC31120D2E820028D6E2 /* ParadoxException.cpp */,
+				2079BC32120D2E820028D6E2 /* ParadoxException.h */,
+				2079BC33120D2E820028D6E2 /* TotalState.cpp */,
+				2079BC34120D2E820028D6E2 /* TotalState.h */,
+				2079BC35120D2E820028D6E2 /* WorldState.cpp */,
+				2079BC36120D2E820028D6E2 /* WorldState.h */,
 				20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */,
 				20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */,
 				20AEAD0411F3DF0A003617DB /* Box.h */,
@@ -145,8 +169,6 @@
 				20AEAD2811F3DF0B003617DB /* TimeEngine.cpp */,
 				20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */,
 				20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */,
-				20AEAD3011F3DF0B003617DB /* UpdateStackMember.cpp */,
-				20AEAD3211F3DF0B003617DB /* UpdateStackMember.h */,
 				207D22DD1204099E00CC5C54 /* TimeDirection.h */,
 			);
 			name = TimeEngine;
@@ -208,12 +230,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A01FB6AF0F07CF6F000AAC7B /* Build configuration list for PBXNativeTarget "HourglassIIGameSFML" */;
 			buildPhases = (
-				A01FB6A50F07CF6E000AAC7B /* Resources */,
 				A01FB6A60F07CF6E000AAC7B /* Sources */,
 				A01FB6A70F07CF6E000AAC7B /* Frameworks */,
 				A0072AF00F1D0EDD00B4A594 /* Copy Frameworks */,
 			);
 			buildRules = (
+				20D01103120AC228008A046E /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -240,50 +262,43 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		A01FB6A50F07CF6E000AAC7B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		A01FB6A60F07CF6E000AAC7B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20AEACFF11F3DF0A003617DB /* ArrivalDepartureMap.cpp in Sources */,
 				20AEAD0111F3DF0A003617DB /* ArrivalDepartureMap.h in Sources */,
-				20AEAD0311F3DF0A003617DB /* Box.cpp in Sources */,
+				20AEACFF11F3DF0A003617DB /* ArrivalDepartureMap.cpp in Sources */,
 				20AEAD0511F3DF0A003617DB /* Box.h in Sources */,
-				20AEAD0711F3DF0A003617DB /* Guy.cpp in Sources */,
+				20AEAD0311F3DF0A003617DB /* Box.cpp in Sources */,
 				20AEAD0911F3DF0A003617DB /* Guy.h in Sources */,
-				20AEAD0B11F3DF0A003617DB /* InputList.cpp in Sources */,
+				20AEAD0711F3DF0A003617DB /* Guy.cpp in Sources */,
 				20AEAD0D11F3DF0A003617DB /* InputList.h in Sources */,
-				20AEAD0F11F3DF0A003617DB /* Item.cpp in Sources */,
+				20AEAD0B11F3DF0A003617DB /* InputList.cpp in Sources */,
 				20AEAD1111F3DF0A003617DB /* Item.h in Sources */,
+				20AEAD0F11F3DF0A003617DB /* Item.cpp in Sources */,
 				20AEAD1311F3DF0A003617DB /* ItemType.h in Sources */,
-				20AEAD1511F3DF0A003617DB /* ObjectList.cpp in Sources */,
 				20AEAD1711F3DF0A003617DB /* ObjectList.h in Sources */,
-				20AEAD1911F3DF0B003617DB /* PhysicsEngine.cpp in Sources */,
+				20AEAD1511F3DF0A003617DB /* ObjectList.cpp in Sources */,
 				20AEAD1B11F3DF0B003617DB /* PhysicsEngine.h in Sources */,
-				20AEAD1D11F3DF0B003617DB /* Pickup.cpp in Sources */,
+				20AEAD1911F3DF0B003617DB /* PhysicsEngine.cpp in Sources */,
 				20AEAD1F11F3DF0B003617DB /* Pickup.h in Sources */,
-				20AEAD2111F3DF0B003617DB /* Platform.cpp in Sources */,
+				20AEAD1D11F3DF0B003617DB /* Pickup.cpp in Sources */,
 				20AEAD2311F3DF0B003617DB /* Platform.h in Sources */,
-				20AEAD2511F3DF0B003617DB /* Switch.cpp in Sources */,
+				20AEAD2111F3DF0B003617DB /* Platform.cpp in Sources */,
 				20AEAD2711F3DF0B003617DB /* Switch.h in Sources */,
-				20AEAD2911F3DF0B003617DB /* TimeEngine.cpp in Sources */,
+				20AEAD2511F3DF0B003617DB /* Switch.cpp in Sources */,
 				20AEAD2B11F3DF0B003617DB /* TimeEngine.h in Sources */,
-				20AEAD2D11F3DF0B003617DB /* TimeObjectListList.cpp in Sources */,
+				20AEAD2911F3DF0B003617DB /* TimeEngine.cpp in Sources */,
 				20AEAD2F11F3DF0B003617DB /* TimeObjectListList.h in Sources */,
-				20AEAD3111F3DF0B003617DB /* UpdateStackMember.cpp in Sources */,
-				20AEAD3311F3DF0B003617DB /* UpdateStackMember.h in Sources */,
+				20AEAD2D11F3DF0B003617DB /* TimeObjectListList.cpp in Sources */,
+				20D01109120AC2A2008A046E /* TimeDirection.h in Sources */,
 				A01FB6C90F07CFCE000AAC7B /* main.cpp in Sources */,
+				20D0110F120AC2A2008A046E /* Hg_Input.h in Sources */,
 				20700DFA11F578B0009794E1 /* Hg_Input.cpp in Sources */,
+				2079BC3B120D2E820028D6E2 /* ParadoxException.cpp in Sources */,
+				2079BC3C120D2E820028D6E2 /* TotalState.cpp in Sources */,
+				2079BC3D120D2E820028D6E2 /* WorldState.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

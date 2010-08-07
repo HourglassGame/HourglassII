@@ -25,7 +25,7 @@ mouseY(input.GetMouseY()*100)
     
 }
 
-boost::shared_ptr<InputList> Input::AsInputList() const
+InputList Input::AsInputList() const
 {
-    return boost::shared_ptr<InputList>(new InputList(left, right, up, down, space, mouseLeft, mouseRight, mouseX, mouseY));
+    return InputList(left, right, up, down, space, mouseLeft, mouseRight, mouseX, mouseY);
 }
