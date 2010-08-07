@@ -3,8 +3,6 @@
 #include "ObjectList.h"
 #include "InputList.h"
 #include "TimeObjectListList.h"
-#define BOOST_SP_DISABLE_THREADS
-#include <boost/smart_ptr.hpp>
 #include <vector>
 namespace hg {
 class PhysicsEngine
@@ -16,39 +14,39 @@ public:
                   int newWallSize, 
                   int newGravity);
 
+    
     // executes frame and returns departures
-	boost::shared_ptr<hg::TimeObjectListList> executeFrame(const hg::ObjectList& arrivals,
-                                                       int time, 
-                                                       int playerGuyIndex, 
-                                                       const std::vector<boost::shared_ptr<hg::InputList> >& playerInput); 
-
-	inline int getNextPlayerFrame() {return nextPlayerFrame;}
-	inline int getPlayerDirection() {return playerDirection;}
+	hg::TimeObjectListList executeFrame(const hg::ObjectList& arrivals,
+                                        int time,
+                                        const std::vector<hg::InputList>& playerInput,
+                                        //Filled with the frame which the player departs for 
+                                        //or arrives at if appropriate, otherwise untouched.
+                                        int& currentPlayerFrame,
+                                        int& nextPlayerFrame) const;
+    
 private:
     struct BoxInfo {
-        BoxInfo(boost::shared_ptr<hg::Box> nbox,
+        BoxInfo(hg::Box nbox,
                 bool nsupported) :
         box(nbox),
         supported(nsupported)
         {}
-        boost::shared_ptr<hg::Box> box;
+        hg::Box box;
         bool supported;
     };
-	void crappyBoxCollisionAlogorithm(std::vector<boost::shared_ptr<hg::Box> > oldBoxList,
-                                      std::vector<PhysicsEngine::BoxInfo>& nextBox);
+	void crappyBoxCollisionAlogorithm(const std::vector<hg::Box>& oldBoxList,
+                                      std::vector<PhysicsEngine::BoxInfo>& nextBox) const;
 	
-    void guyStep(const std::vector<boost::shared_ptr<hg::Guy> >& oldGuyList, 
-                 int playerGuyIndex, int time, 
-                 const std::vector<boost::shared_ptr<hg::InputList> >& playerInput, 
-                 hg::TimeObjectListList& departures, std::vector<PhysicsEngine::BoxInfo>& nextBox);
+    void guyStep(const std::vector<Guy>& oldGuyList, int time, 
+                 const std::vector<InputList>& playerInput, TimeObjectListList& newDepartures,
+                 std::vector<PhysicsEngine::BoxInfo>& nextBox,
+                 int& currentPlayerFrame,
+                 int& nextPlayerFrame) const;
 
-	bool wallAt(int x, int y);
-
-	// these are updated from guy with relative index == playerGuyIndex when the frame is executed
-	int nextPlayerFrame; // frame that the player departed for
-	int playerDirection; // time direction of player in frame
+	bool wallAt(int x, int y) const;
     
-    //map info (not necessary to be here, but avoids passing it every time)
+    //map info (keeping it here allows for an optimised representation;
+    //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
     int timeLineLength;
     std::vector<std::vector<bool> > wallmap;
 	int gravity;

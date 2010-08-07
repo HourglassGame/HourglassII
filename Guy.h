@@ -1,7 +1,5 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
-#define BOOST_SP_DISABLE_THREADS
-#include <boost/smart_ptr.hpp>
 #include "TimeDirection.h"
 namespace hg {
 class Guy
@@ -38,7 +36,7 @@ public:
 	const static int animationLength = 13;
 
 	bool equals(const Guy& other) const;
-	static bool lessThan(boost::shared_ptr<Guy> first, boost::shared_ptr<Guy> second);
+	bool operator<(const Guy& second) const;
 private:
 	int x;
 	int y;

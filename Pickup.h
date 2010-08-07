@@ -1,7 +1,5 @@
 #ifndef HG_PICKUP_H
 #define HG_PICKUP_H
-#define BOOST_SP_DISABLE_THREADS
-#include <boost/smart_ptr.hpp>
 #include "TimeDirection.h"
 namespace hg {
 class Pickup

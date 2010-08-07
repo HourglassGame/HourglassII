@@ -2,182 +2,106 @@
 
 using namespace hg;
 
-ArrivalDepartureMap::ArrivalDepartureMap(int timeLength)
+ArrivalDepartureMap::ArrivalDepartureMap(int timeLength) :
+arrivals(timeLength),
+departures(timeLength),
+permanentDepartureIndex(timeLength)
 {
-	arrivals.reserve(timeLength);
-	departures.reserve(timeLength);
-
-	int permanentDepartureIndex = timeLength;
-	// (timeLength+1) for permanent departures
-
-	for (int i = 0; i < timeLength; ++i)
-    {
-		arrivals.push_back(boost::shared_ptr<TimeObjectListList>(new TimeObjectListList()));
-		departures.push_back(boost::shared_ptr<TimeObjectListList>(new TimeObjectListList()));
-	}
 }
 
-void ArrivalDepartureMap::setArrivalDeparturePair(int arrivalTime, int departureTime, boost::shared_ptr<ObjectList> objects)
+ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(int arrivalTime)
 {
-	if (objects->isEmpty())
-	{
-		arrivals[arrivalTime]->clearTime(departureTime);
-		departures[departureTime]->clearTime(arrivalTime);
-	}
-	else
-	{
-		arrivals[arrivalTime]->setObjectList(departureTime, objects);
-		departures[departureTime]->setObjectList(arrivalTime, objects);
-	}
-
+	return arrivals[arrivalTime].getObjectListForManipulation(permanentDepartureIndex);
 }
 
-boost::shared_ptr<ObjectList> ArrivalDepartureMap::permanentDepartureObjectList(int arrivalTime)
+//returns which frames are changed
+std::vector<int> ArrivalDepartureMap::updateDeparturesFromTime(const int time, const TimeObjectListList& newDeparture)
 {
-	return arrivals[arrivalTime]->getObjectListForManipulation(permanentDepartureIndex);
+    std::vector<int> changedTimes;
+    TimeObjectListList::ListType::const_iterator oi(departures[time].list.begin());
+    TimeObjectListList::ListType::const_iterator ni(newDeparture.list.begin());
+    TimeObjectListList::ListType::const_iterator oend(departures[time].list.end());
+    TimeObjectListList::ListType::const_iterator nend(newDeparture.list.end());
+    
+    while (oi != oend) {
+        while (true) {
+            if (ni != nend) {
+                if ((*ni).first < (*oi).first) {
+                    arrivals[(*ni).first].insertObjectList(time, (*ni).second);
+                    changedTimes.push_back((*ni).first);
+                    ++ni;
+                }
+                else if ((*ni).first == (*oi).first) {
+                    arrivals[(*ni).first].list.find(time)->second = (*ni).second;
+                    changedTimes.push_back((*ni).first);
+                    ++ni;
+                    goto bottom;
+                }
+                else {
+                    arrivals[(*oi).first].list.erase(time);
+                    changedTimes.push_back((*oi).first);
+                    goto bottom;
+                }
+            }
+            else {
+                while (oi != oend) {
+                    arrivals[(*oi).first].list.erase(time);
+                    changedTimes.push_back((*oi).first);
+                    ++oi;
+                }
+                goto end;
+            }
+        }
+    bottom:
+        ++oi;
+    }
+    while (ni != nend) {
+        arrivals[(*ni).first].insertObjectList(time, (*ni).second);
+        changedTimes.push_back((*ni).first);
+        ++ni;
+    }
+end:
+    departures[time] = newDeparture;
+    return changedTimes;
 }
 
-// returns which frames are changed
-std::vector<int> ArrivalDepartureMap::updateDeparturesFromTime(int time, boost::shared_ptr<TimeObjectListList> newDeparture)
+ObjectList ArrivalDepartureMap::getArrivals(int time, int guyIgnoreIndex)
 {
-	newDeparture->sort();
-	departures[time]->sort();
+	ObjectList returnList;
 
-	unsigned int oi = 0;
-	unsigned int ni = 0;
-
-	if (oi >= departures[time]->list.size()) 
+	for (TimeObjectListList::ListType::const_iterator it(arrivals[time].list.begin()), end(arrivals[time].list.end());
+         it != end; ++it)
 	{
-		oi = -1;
+		returnList.add(it->second, guyIgnoreIndex);
 	}
-	if (ni >= newDeparture->list.size()) 
-	{
-		ni = -1;
-	}
-
-    std::vector<int> changedTimes; // times that have been changed so require recalculation in TimeEngine
-
-	// check which times have changed
-	while(true)
-	{
-		if (oi == -1)
-		{
-			if (ni == -1)
-			{
-				break; // -1 indicates the end of the vector has been reached
-			}
-			else
-			{
-				// no more old departures so all remaining times are added so different
-				changedTimes.push_back(newDeparture->list[ni]->time); 
-				setArrivalDeparturePair(newDeparture->list[ni]->time, time, newDeparture->list[ni]->objects);
-				++ni;
-				if (ni >= newDeparture->list.size()) 
-				{
-					ni = -1;
-				}
-			}
-		}
-		else
-		{
-			if (ni == -1)
-			{
-				// no more new departures so all remaining times will be erased
-				changedTimes.push_back(departures[time]->list[oi]->time);
-				setArrivalDeparturePair(departures[time]->list[oi]->time, time, boost::shared_ptr<ObjectList>(new ObjectList()));
-				++oi;
-				if (oi >= departures[time]->list.size()) 
-				{
-					oi = -1;
-				}
-			}
-			else
-			{
-				if (newDeparture->list[ni]->time == departures[time]->list[oi]->time) // departure times are equal
-				{
-					if (!(newDeparture->list[ni]->objects->equals( *(departures[time]->list[oi]->objects.get()) )))
-					{
-						// if the object lists are not equal change time
-						setArrivalDeparturePair(newDeparture->list[ni]->time, time, newDeparture->list[ni]->objects);
-						changedTimes.push_back(newDeparture->list[ni]->time);
-					}
-					++oi;
-					if (oi >= departures[time]->list.size()) 
-					{
-						oi = -1;
-					}
-					++ni;
-					if (ni >= newDeparture->list.size()) 
-					{
-						ni = -1;
-					}
-				}
-				else if (newDeparture->list[ni]->time > departures[time]->list[oi]->time) // new departure occurs AFTER old departure
-				{
-					changedTimes.push_back(departures[time]->list[oi]->time);
-					setArrivalDeparturePair(departures[time]->list[oi]->time, time, boost::shared_ptr<ObjectList>(new ObjectList()));
-					++oi;
-					if (oi >= departures[time]->list.size())
-					{
-						oi = -1;
-					}
-				}
-				else // new departure occurs BEFORE old departure
-				{
-					changedTimes.push_back(newDeparture->list[ni]->time);
-					setArrivalDeparturePair(newDeparture->list[ni]->time, time, newDeparture->list[ni]->objects);
-					++ni;
-					if (ni >= newDeparture->list.size()) 
-					{
-						ni = -1;
-					}
-				}
-			}
-		}
-	}
-
-	// overwrite old departures
-	departures[time] = newDeparture;
-
-	return changedTimes;
-}
-
-boost::shared_ptr<ObjectList> ArrivalDepartureMap::getArrivals(int time, int guyIgnoreIndex)
-{
-	boost::shared_ptr<ObjectList> returnList = boost::shared_ptr<ObjectList>(new ObjectList());
-
-	for (unsigned int i = 0; i < arrivals[time]->list.size(); ++i)
-	{
-		returnList->add(*(arrivals[time]->list[i]->objects.get()), guyIgnoreIndex);
-	}
-
+    returnList.sortElements();
 	return returnList;
 }
 
-
-bool ArrivalDepartureMap::equals(boost::shared_ptr<ArrivalDepartureMap> other)
+bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
 {
-	if (permanentDepartureIndex != other->permanentDepartureIndex)
+	if (permanentDepartureIndex != other.permanentDepartureIndex)
 	{
 		return false;
 	}
 	
 	for (unsigned int i = 0; i < departures.size(); ++i)
 	{
-		if (!(departures[i]->equals(*other->departures[i])))
+		if (departures[i] != other.departures[i])
 		{
 			return false;
 		}
 	}
-
+    
 	for (unsigned int i = 0; i < arrivals.size(); ++i)
 	{
-		if (!(arrivals[i]->equals(*other->arrivals[i])))
+		if (arrivals[i] != other.arrivals[i])
 		{
 			return false;
 		}
 	}
-
+    
 	return true;
-
 }
+
+

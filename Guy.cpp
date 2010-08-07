@@ -32,10 +32,9 @@ subimage(nSubimage)
 
 bool Guy::equals(const Guy& other) const
 {
-	if ( (x == other.x) && (y == other.y) && (xspeed == other.xspeed) && 
+	if ((relativeIndex == other.relativeIndex) && (x == other.x) && (y == other.y) && (xspeed == other.xspeed) && 
 		(yspeed == other.yspeed) && (width == other.width) && (height == other.height) &&
-		(boxCarrying == other.boxCarrying) && (timeDirection == other.timeDirection) && 
-        (relativeIndex == other.relativeIndex) && 
+		(boxCarrying == other.boxCarrying) && (timeDirection == other.timeDirection)  && 
 		(subimage == other.subimage) && 
         (boxCarryDirection == other.boxCarryDirection) && 
         (boxCarrySize == other.boxCarrySize))
@@ -45,15 +44,15 @@ bool Guy::equals(const Guy& other) const
 	return false;
 }
 
-bool Guy::lessThan(boost::shared_ptr<Guy> first , boost::shared_ptr<Guy> second)
+bool Guy::operator<(const Guy& second) const
 {
-	if (first -> relativeIndex == second -> relativeIndex)
+	if (relativeIndex == second.relativeIndex)
 	{
-		std::runtime_error( "Attempted to '<' 2 guys with equal relativeIndex");
+		throw std::runtime_error( "Attempted to '<' 2 guys with equal relativeIndex");
 		return false;
 	}
 	else
 	{
-		return (first -> relativeIndex < second -> relativeIndex);
+		return (relativeIndex < second.relativeIndex);
 	}
 }

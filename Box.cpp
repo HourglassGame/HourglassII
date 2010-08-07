@@ -28,49 +28,49 @@ bool Box::equals(const Box& other) const
 	return false;
 }
 
-bool Box::lessThan(boost::shared_ptr<const Box> first, boost::shared_ptr<const Box> second)
+bool Box::operator<(const Box& second) const
 {
-	if (first -> x == second -> x)
+	if (x == second.x)
 	{
-		if (first -> y == second -> y)
+		if (y == second.y)
 		{
-			if (first -> xspeed == second -> xspeed)
+			if (xspeed == second . xspeed)
 			{
-				if (first -> yspeed == second -> yspeed)
+				if (yspeed == second.yspeed)
 				{
-					if (first -> timeDirection == second -> timeDirection)
+					if (timeDirection == second.timeDirection)
 					{
-						if (first -> size == second -> size)
+						if (size == second.size)
 						{
 							return false;
 						}
 						else
 						{
-							return (first -> size < second -> size);
+							return (size < second.size);
 						}
 					}
 					else
 					{
-						return (first -> timeDirection < second -> timeDirection);
+						return (timeDirection < second.timeDirection);
 					}
 				}
 				else
 				{
-					return (first -> yspeed < second -> yspeed);
+					return (yspeed < second.yspeed);
 				}
 			}
 			else
 			{
-				return (first -> xspeed < second -> xspeed);
+				return (xspeed < second.xspeed);
 			}
 		}
 		else
 		{
-			return (first -> y < second -> y);
+			return (y < second.y);
 		}
 	}
 	else
 	{
-		return (first -> x < second -> x);
+		return (x < second.x);
 	}
 }

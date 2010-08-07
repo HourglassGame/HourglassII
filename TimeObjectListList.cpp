@@ -1,70 +1,50 @@
 #include "TimeObjectListList.h"
 using namespace hg;
- boost::shared_ptr<ObjectList> TimeObjectListList::getObjectListForManipulation(int time)
+ObjectList& TimeObjectListList::getObjectListForManipulation(int time)
 {
-	for (unsigned int i = 0; i < list.size(); ++i)
-	{
-		if (list[i]->time == time)
-		{
-			return list[i]->objects;
-		}
-	}
-
-	list.push_back(boost::shared_ptr<TimeObjectList>(new TimeObjectList()));
-	list.back()->time = time;
-	list.back()->objects = boost::shared_ptr<ObjectList>(new ObjectList());
-	return (list.back()->objects);
+    return list[time];
 }
 
-void TimeObjectListList::setObjectList(int time, boost::shared_ptr<ObjectList> newObjectList)
+void TimeObjectListList::setObjectList(int time, ObjectList newObjectList)
 {
-	for (unsigned int i = 0; i < list.size(); ++i)
-	{
-		if (list[i]->time == time)
-		{
-			list[i]->objects = newObjectList;
-			return;
-		}
-	}
-	
-	list.push_back(boost::shared_ptr<TimeObjectList>(new TimeObjectList()));
-	list.back()->time = time;
-	list.back()->objects = newObjectList;
+    list[time] = newObjectList;
+}
+
+//Inserts given object list at given time - noop if an object list already exists at the given time
+void TimeObjectListList::insertObjectList(int time, ObjectList newObjectList)
+{
+    list.insert(ListType::value_type(time,newObjectList));
 }
 
 void TimeObjectListList::clearTime(int time)
 {
-	for (unsigned int i = 0; i < list.size(); ++i)
-	{
-		if (list[i]->time == time)
-		{
-			list.erase(list.begin() + i);
-			return;
-		}
-	}
+    list.erase(time);
 }
 
-bool TimeObjectListList::compareElements(boost::shared_ptr<TimeObjectList> first , boost::shared_ptr<TimeObjectList> second)
+bool TimeObjectListList::operator==(const hg::TimeObjectListList& other) const
 {
-	return (first->time < second->time);
+    return equals(other);
 }
 
+bool TimeObjectListList::operator!=(const hg::TimeObjectListList& other) const
+{
+    return !equals(other);
+}
 
-bool TimeObjectListList::equals(TimeObjectListList& other)
+bool TimeObjectListList::equals(const TimeObjectListList& other) const
 {
 	if (list.size() != other.list.size())
 	{
 		return false;
 	}
-
-	sort();
-	other.sort();
-
-	for (unsigned int i = 0; i < list.size(); ++i)
+    ListType::const_iterator it = list.begin();
+    ListType::const_iterator oit = other.list.begin();
+    ListType::const_iterator end = list.end();
+	while (it != end)
 	{
-		if (list[i]->time == other.list[i]->time)
+		if ((*it).first == (*oit).first)
 		{
-			if (!(list[i]->objects->equals(*(other.list[i]->objects.get()))))
+			if ((*it).second != ((*oit).second))
 			{
 				return false;
 			}
@@ -73,19 +53,16 @@ bool TimeObjectListList::equals(TimeObjectListList& other)
 		{
 			return false;
 		}
+        ++it; 
+        ++oit;
 	}
 	return true;
 }
 
 void TimeObjectListList::sortObjectLists()
 {
-	for (unsigned int i = 0; i < list.size(); ++i)
+	for (ListType::iterator it(list.begin()),  end(list.end()); it != end; ++it)
 	{
-		list[i]->objects->sortElements();
+		(*it).second.sortElements();
 	}
-}
-
-void TimeObjectListList::sort()
-{
-	std::sort(list.begin(), list.end(), TimeObjectListList::compareElements);
 }
