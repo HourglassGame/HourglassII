@@ -30,7 +30,12 @@ subimage(nSubimage)
 {
 }
 
-bool Guy::equals(const Guy& other) const
+bool Guy::operator!=(const Guy& other) const
+{
+    return !(*this==other);
+}
+
+bool Guy::operator==(const Guy& other) const
 {
 	if ((relativeIndex == other.relativeIndex) && (x == other.x) && (y == other.y) && (xspeed == other.xspeed) && 
 		(yspeed == other.yspeed) && (width == other.width) && (height == other.height) &&

@@ -17,7 +17,9 @@ public:
 
 	static const int normalSize = 1000;
 
-	bool equals(const Box& other) const;
+	bool operator==(const Box& other) const;
+    bool operator!=(const Box& other) const;
+    
     bool operator<(const Box& second) const;
 
 private:

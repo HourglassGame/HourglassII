@@ -8,9 +8,8 @@
 #include "ArrivalDepartureMap.h"
 #include "WorldState.h"
 
-#include <boost/ptr_container/ptr_map.hpp>
 #include <vector>
-#include <stack>
+
 namespace hg {
 class TimeEngine
 {
@@ -24,6 +23,9 @@ public:
     hg::ObjectList getNextPlayerFrame(const hg::InputList& newInputData);
 	
 private:
+    hg::WorldState executeFrameUpdateStackNoParadoxCheck(hg::WorldState currentState, 
+                                                                     std::vector<int> frameUpdateStack) const;
+    
     // runs the frame update stack until empty
     hg::WorldState executeFrameUpdateStack(WorldState currentState, 
                                                 std::vector<int> frameUpdateStack) const;

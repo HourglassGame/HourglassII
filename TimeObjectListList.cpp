@@ -5,13 +5,13 @@ ObjectList& TimeObjectListList::getObjectListForManipulation(int time)
     return list[time];
 }
 
-void TimeObjectListList::setObjectList(int time, ObjectList newObjectList)
+void TimeObjectListList::setObjectList(int time, const ObjectList& newObjectList)
 {
     list[time] = newObjectList;
 }
 
 //Inserts given object list at given time - noop if an object list already exists at the given time
-void TimeObjectListList::insertObjectList(int time, ObjectList newObjectList)
+void TimeObjectListList::insertObjectList(int time, const ObjectList& newObjectList)
 {
     list.insert(ListType::value_type(time,newObjectList));
 }
@@ -37,9 +37,9 @@ bool TimeObjectListList::equals(const TimeObjectListList& other) const
 	{
 		return false;
 	}
-    ListType::const_iterator it = list.begin();
-    ListType::const_iterator oit = other.list.begin();
-    ListType::const_iterator end = list.end();
+    ListType::const_iterator it(list.begin());
+    ListType::const_iterator oit(other.list.begin());
+    ListType::const_iterator end(list.end());
 	while (it != end)
 	{
 		if ((*it).first == (*oit).first)
@@ -61,7 +61,7 @@ bool TimeObjectListList::equals(const TimeObjectListList& other) const
 
 void TimeObjectListList::sortObjectLists()
 {
-	for (ListType::iterator it(list.begin()),  end(list.end()); it != end; ++it)
+	for (ListType::iterator it(list.begin()), end(list.end()); it != end; ++it)
 	{
 		(*it).second.sortElements();
 	}

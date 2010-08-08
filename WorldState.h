@@ -1,11 +1,3 @@
-/*
- *  WorldState.h
- *  HourglassIIGameSFML
- *
- *  Created by Evan Wallace on 5/08/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
 #ifndef HG_WORLD_STATE_H
 #define HG_WORLD_STATE_H
 #include <vector>

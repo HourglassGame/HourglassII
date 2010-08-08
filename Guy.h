@@ -35,7 +35,9 @@ public:
 
 	const static int animationLength = 13;
 
-	bool equals(const Guy& other) const;
+    bool operator!=(const Guy& other) const;
+    bool operator==(const Guy& other) const;
+    
 	bool operator<(const Guy& second) const;
 private:
 	int x;

@@ -14,11 +14,13 @@ class ArrivalDepartureMap
 public:
 	ArrivalDepartureMap(int timeLength);
     
+    void setPlayerArrivalDeparture(const hg::Guy& guy, int departureTime, int arrivalTime);
+    
     std::vector<int> updateDeparturesFromTime(int time, const TimeObjectListList& newDeparture);
 
 	ObjectList& permanentDepartureObjectList(int arrivalTime);
 
-	ObjectList getArrivals(int time, int guyIgnoreIndex);
+	ObjectList getArrivals(int time);
 
     bool operator==(const ArrivalDepartureMap& other) const;
     inline bool operator!=(const ArrivalDepartureMap& other) const {

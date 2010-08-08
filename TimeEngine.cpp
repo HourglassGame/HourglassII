@@ -2,7 +2,8 @@
 
 #include "ParadoxException.h"
 #include "TotalState.h"
-
+#include <boost/foreach.hpp>
+#define reverse_foreach BOOST_REVERSE_FOREACH
 #include <vector>
 #include <iostream>
 #include <cassert>
@@ -20,56 +21,49 @@ physics(newTimeLength, wallmap, newWallSize, newGravity)
 bool TimeEngine::checkConstistencyAndPropagateLevel(const ObjectList& initialObjects, int guyStartTime)
 {
 	// boxes
-	for (unsigned int i = 0; i < initialObjects.getBoxListRef().size(); ++i)
+	for (std::vector<hg::Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
+         end(initialObjects.getBoxListRef().end()); it != end; ++it)
 	{
-		if (initialObjects.getBoxListRef()[i].getTimeDirection() == FORWARDS)
+		if (it->getTimeDirection() == FORWARDS)
 		{
-			endOfFrameState.arrivalDepartures.permanentDepartureObjectList(0).addBox(initialObjects.getBoxListRef()[i]);
+			endOfFrameState.arrivalDepartures.permanentDepartureObjectList(0).addBox(*it);
 		}
 		else
 		{
-			endOfFrameState.arrivalDepartures.permanentDepartureObjectList(timeLineLength-1).addBox(initialObjects.getBoxListRef()[i]);
+			endOfFrameState.arrivalDepartures.permanentDepartureObjectList(timeLineLength-1).addBox(*it);
 		}
 	}
     
 	// guys
     endOfFrameState.currentPlayerFrame = -1;
 	endOfFrameState.nextPlayerFrame = guyStartTime;
-	if (initialObjects.getGuyListRef().size() == 1)
+	if (initialObjects.getGuyListRef().size() != 1)
 	{
-		endOfFrameState.arrivalDepartures.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef()[0]);
-	}
-	else
-	{
-		return false; // must have exactly 1 guy in level
-	}
+		return false;
+    }
 
 	//** determine level
-    try
+    
+    // propgate from start of time first
+    std::vector<int> startFirstFrameUpdateStack;
+    startFirstFrameUpdateStack.push_back(0);
+    startFirstFrameUpdateStack.push_back(timeLineLength-1);
+    
+    WorldState startFirstState(executeFrameUpdateStackNoParadoxCheck(endOfFrameState, startFirstFrameUpdateStack));
+
+    // propgate from end of time first
+    std::vector<int> endFirstFrameUpdateStack;
+    endFirstFrameUpdateStack.push_back(timeLineLength-1);
+    endFirstFrameUpdateStack.push_back(0);
+
+    WorldState endFirstState(executeFrameUpdateStackNoParadoxCheck(endOfFrameState, endFirstFrameUpdateStack));
+
+    // compare start first with end first
+    if (startFirstState == endFirstState)
     {
-        // propgate from start of time first
-        std::vector<int> startFirstFrameUpdateStack;
-        startFirstFrameUpdateStack.push_back(0);
-        startFirstFrameUpdateStack.push_back(timeLineLength-1);
-
-        WorldState startFirstState(executeFrameUpdateStack(endOfFrameState, startFirstFrameUpdateStack));
-
-        // propgate from end of time first
-        std::vector<int> endFirstFrameUpdateStack;
-        endFirstFrameUpdateStack.push_back(timeLineLength-1);
-        endFirstFrameUpdateStack.push_back(0);
-
-        WorldState endFirstState(executeFrameUpdateStack(endOfFrameState, endFirstFrameUpdateStack));
-
-        // compare start first with end first
-        if (startFirstState == endFirstState)
-        {
-            endOfFrameState = startFirstState;
-            return true;
-        }
-    }
-    catch (ParadoxException&)
-    {
+        endOfFrameState = startFirstState;
+        endOfFrameState.arrivalDepartures.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef()[0]);
+        return true;
     }
     return false;
 }
@@ -79,9 +73,20 @@ ObjectList TimeEngine::getNextPlayerFrame(const InputList& newInputData)
     playerInput.push_back(newInputData);
     endOfFrameState.currentPlayerFrame = endOfFrameState.nextPlayerFrame;
     endOfFrameState = executeFrameUpdateStack(endOfFrameState, std::vector<int>(1,endOfFrameState.currentPlayerFrame));
-    //Get arrivals at frame where player just arrived. (`playerInput.size()+1' to include player guy)
-    //This is slightly different from before, but I think it makes more sense
-    return endOfFrameState.arrivalDepartures.getArrivals(endOfFrameState.nextPlayerFrame, playerInput.size()+1);
+    //Get arrivals at frame where player just arrived.
+    return endOfFrameState.arrivalDepartures.getArrivals(endOfFrameState.nextPlayerFrame);
+}
+
+WorldState TimeEngine::executeFrameUpdateStackNoParadoxCheck(WorldState currentState, 
+                                               std::vector<int> frameUpdateStack) const
+{
+	while (frameUpdateStack.size() > 0)
+	{
+        const int nextUpdate(frameUpdateStack.back());
+        frameUpdateStack.pop_back();
+        updateFrame(nextUpdate, frameUpdateStack, currentState);
+    }
+    return currentState;
 }
 
 WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, 
@@ -92,6 +97,10 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState,
     
 	while (frameUpdateStack.size() > 0)
 	{
+        std::cout << "frames:" << std::endl;
+        reverse_foreach(int& frameToUpdate, frameUpdateStack) {
+            std::cout << frameToUpdate << std::endl;
+        }
         
         {
             TotalState newState(currentState, frameUpdateStack);
@@ -139,23 +148,30 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState,
 void TimeEngine::updateFrame(int frame, std::vector<int>& frameUpdateStack, WorldState& currentState) const
 {
 	// get the arrivals for the physics frame by going across a row
-	ObjectList arrivals(currentState.arrivalDepartures.getArrivals(frame, playerInput.size()));
+	ObjectList arrivals(currentState.arrivalDepartures.getArrivals(frame));
     
     if (frame == currentState.currentPlayerFrame)
 	{
         assert(arrivals.getGuyListRef().rbegin() != arrivals.getGuyListRef().rend());
-        assert((*(arrivals.getGuyListRef().rbegin())).getRelativeIndex() == playerInput.size()-1
+        assert((*(arrivals.getGuyListRef().rbegin())).getRelativeIndex() == playerInput.size() - 1
                && "arrivals is sorted so last guy should be player guy");
         currentState.updateStartFirst = ((*(arrivals.getGuyListRef().rbegin())).getTimeDirection() == FORWARDS);
 	}
     
-	// get departures for the frame, update currentPlayerFrame and nextPlayerFrame if needed
+	// get departures for the frame, update currentPlayerFrame and nextPlayerFrame
+    // if appropriate
 	TimeObjectListList departures(physics.executeFrame(arrivals, frame, playerInput, 
-                                                       currentState.currentPlayerFrame, currentState.nextPlayerFrame));
-    
+                                                       currentState.currentPlayerFrame,
+                                                       currentState.nextPlayerFrame));
+
 	// update departures from this frame
 	departures.sortObjectLists();
 	vector<int> framesThatNeedUpdating(currentState.arrivalDepartures.updateDeparturesFromTime(frame, departures));
+
+    std::cout << "framesThatNeedUpdating:" << std::endl;
+    reverse_foreach(int& frameToUpdate, framesThatNeedUpdating) {
+        std::cout << frameToUpdate << std::endl;
+    }
     
 	if (currentState.updateStartFirst)
 	{

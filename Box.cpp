@@ -14,7 +14,12 @@ timeDirection(nTimeDirection)
 {
 }
 
-bool Box::equals(const Box& other) const
+bool Box::operator!=(const Box& other) const
+{
+    return !(*this==other);
+}
+
+bool Box::operator==(const Box& other) const
 {
 	if ( (x == other.x)
         && (y == other.y)

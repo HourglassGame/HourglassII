@@ -3,6 +3,7 @@
 #include "ObjectList.h"
 #include "InputList.h"
 #include "TimeObjectListList.h"
+#include "WorldState.h"
 #include <vector>
 namespace hg {
 class PhysicsEngine
@@ -19,8 +20,6 @@ public:
 	hg::TimeObjectListList executeFrame(const hg::ObjectList& arrivals,
                                         int time,
                                         const std::vector<hg::InputList>& playerInput,
-                                        //Filled with the frame which the player departs for 
-                                        //or arrives at if appropriate, otherwise untouched.
                                         int& currentPlayerFrame,
                                         int& nextPlayerFrame) const;
     

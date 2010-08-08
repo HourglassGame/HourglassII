@@ -8,13 +8,13 @@ namespace hg {
 class TimeObjectListList
 {
 public:
-	void setObjectList(int time, hg::ObjectList newObjectList);
+	void setObjectList(int time, const hg::ObjectList& newObjectList);
 	void clearTime(int time);
 
 	hg::ObjectList& getObjectListForManipulation(int time);
     
 	void sortObjectLists();
-    void insertObjectList(int time, ObjectList newObjectList);
+    void insertObjectList(int time, const ObjectList& newObjectList);
     typedef std::map<int,ObjectList> ListType;
 
     //Should make this able to be const

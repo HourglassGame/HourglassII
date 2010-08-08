@@ -1,8 +1,6 @@
 #include "PhysicsEngine.h"
 #include "TimeDirection.h"
-#include <boost/foreach.hpp>
 
-#define foreach BOOST_FOREACH
 using namespace std;
 using namespace hg;
 
@@ -22,8 +20,6 @@ PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWal
 TimeObjectListList PhysicsEngine::executeFrame(const hg::ObjectList& arrivals,
                                                int time,
                                                const std::vector<hg::InputList>& playerInput,
-                                               //Filled with the frame which the player departs for 
-                                               //or arrives at if appropriate, otherwise untouched.
                                                int& currentPlayerFrame,
                                                int& nextPlayerFrame) const
 {
@@ -90,7 +86,7 @@ bool PhysicsEngine::wallAt(int x, int y) const
 	}
 }
 
-void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, int time, 
+void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time, 
                             const vector<InputList>& playerInput, TimeObjectListList& newDepartures,
                             std::vector<PhysicsEngine::BoxInfo>& nextBox,
                             int& currentPlayerFrame,
@@ -279,18 +275,21 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, int time,
 
 		// add departure for guy at the appropriate time
 		int nextTime = time+oldGuyList[i].getTimeDirection();
-		if (nextTime >= 0 && nextTime < timeLineLength)
+        
+        if ((playerInput.size()) != relativeIndex) // this means that this guy has already recieved input and so can have physics
 		{
-			newDepartures.getObjectListForManipulation(nextTime).addGuy(x[i], y[i], xspeed[i], yspeed[i],
+            if (playerInput.size() - 1 == relativeIndex) {
+                currentPlayerFrame = time;
+                nextPlayerFrame = nextTime;
+            }
+            if (nextTime >= 0 && nextTime < timeLineLength)
+            {
+                newDepartures.getObjectListForManipulation(nextTime).addGuy(Guy(x[i], y[i], xspeed[i], yspeed[i],
                                                                         oldGuyList[i].getWidth(), oldGuyList[i].getHeight(), 
                                                                         oldGuyList[i].getTimeDirection(),
                                                                         carry[i], carrySize[i], carryDirection[i],
-                                                                        relativeIndex+1, nextSubimage);
-		}
-		
-		if ((playerInput.size() - 1) == relativeIndex) // this means the player is controlling this guy.
-		{
-			nextPlayerFrame = nextTime; // frame that will be changed by adding input next getPlayerFrame
+                                                                        relativeIndex+1, nextSubimage));
+            }
 		}
 	}
 

@@ -4,21 +4,19 @@
 #include <algorithm>
 using namespace std;
 using namespace hg;
-void ObjectList::add(const ObjectList& other, int relativeGuyIgnoreIndex)
+void ObjectList::add(const ObjectList& other)
 {	
-	for (unsigned int i = 0; i < other.guyList.size(); ++i)
+	for (std::vector<hg::Guy>::const_iterator it(other.guyList.begin()), end(other.guyList.end()); it!=end; ++it)
 	{
-		if ((relativeGuyIgnoreIndex == -1) || (other.guyList[i].getRelativeIndex() < relativeGuyIgnoreIndex))
-		{
-			guyList.push_back(other.guyList[i]);
-		}
+        guyList.push_back(*it);
 	}
 
-	for (unsigned int i = 0; i < other.boxList.size(); ++i)
+	for (std::vector<hg::Box>::const_iterator it(other.boxList.begin()), end(other.boxList.end()); it!=end; ++it)
 	{
-		boxList.push_back(other.boxList[i]);
+        boxList.push_back(*it);
 	}
-}	
+    sortElements();
+}
 
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
@@ -37,17 +35,23 @@ bool ObjectList::equals(const ObjectList& other) const
 		return false;
 	}
     
-	for (unsigned int i = 0; i < guyList.size(); ++i)
+	for (std::vector<hg::Guy>::const_iterator it(guyList.begin()),
+         oit(other.guyList.begin()),end(guyList.end()); 
+         it != end;
+         ++it, ++oit)
 	{
-		if (!(guyList[i].equals(other.guyList[i])))
+		if (*it != *oit)
 		{
 			return false;
 		}
 	}
 
-	for (unsigned int i = 0; i < boxList.size(); ++i)
+	for (std::vector<hg::Box>::const_iterator it(boxList.begin()),
+         oit(other.boxList.begin()),end(boxList.end()); 
+         it != end;
+         ++it, ++oit)
 	{
-		if (!(boxList[i].equals(other.boxList[i])))
+		if (*it != *oit)
 		{
 			return false;
 		}
@@ -68,26 +72,9 @@ void ObjectList::sortElements()
 }
 
 // Single Element addition
-void ObjectList::addGuy(int x, int y, int xspeed, int yspeed,
-                        int width, int height, hg::TimeDirection timeDirection,
-                        bool boxCarrying, int boxCarrySize, hg::TimeDirection boxCarryDirection,
-                        int relativeIndex, int subimage)
-{
-	guyList.push_back(Guy(x, y, xspeed, yspeed, 
-                        width, height, 
-                        timeDirection,
-                        boxCarrying, boxCarrySize, boxCarryDirection, 
-                        relativeIndex, subimage));
-}
-
 void ObjectList::addGuy(const Guy& toCopy)
 {
 	guyList.push_back(toCopy);
-}
-
-void ObjectList::addBox(int x, int y, int xspeed, int yspeed, int size, hg::TimeDirection timeDirection)
-{
-	boxList.push_back(Box(x, y, xspeed, yspeed, size, timeDirection));
 }
 
 void ObjectList::addBox(const Box& toCopy)
