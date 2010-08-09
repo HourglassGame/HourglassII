@@ -1,12 +1,3 @@
-/*
- *  Hg_Input.cpp
- *  HourglassIIGameSFML
- *
- *  Created by Evan Wallace on 20/07/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Hg_Input.h"
 
 using namespace hg;
@@ -22,10 +13,9 @@ mouseRight(input.IsMouseButtonDown(sf::Mouse::Right)),
 mouseX(input.GetMouseX()*100),
 mouseY(input.GetMouseY()*100)
 {
-    
 }
 
-InputList Input::AsInputList() const
+const InputList Input::AsInputList() const
 {
     return InputList(left, right, up, down, space, mouseLeft, mouseRight, mouseX, mouseY);
 }

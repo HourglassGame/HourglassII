@@ -138,12 +138,12 @@
 		20AEACFD11F3DEB3003617DB /* TimeEngine */ = {
 			isa = PBXGroup;
 			children = (
-				2079BC31120D2E820028D6E2 /* ParadoxException.cpp */,
 				2079BC32120D2E820028D6E2 /* ParadoxException.h */,
-				2079BC33120D2E820028D6E2 /* TotalState.cpp */,
+				2079BC31120D2E820028D6E2 /* ParadoxException.cpp */,
 				2079BC34120D2E820028D6E2 /* TotalState.h */,
-				2079BC35120D2E820028D6E2 /* WorldState.cpp */,
+				2079BC33120D2E820028D6E2 /* TotalState.cpp */,
 				2079BC36120D2E820028D6E2 /* WorldState.h */,
+				2079BC35120D2E820028D6E2 /* WorldState.cpp */,
 				20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */,
 				20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */,
 				20AEAD0411F3DF0A003617DB /* Box.h */,
@@ -364,7 +364,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Programming/clean_boost\"";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
