@@ -11,8 +11,8 @@ Guy::Guy(int nX,
          int nHeight,
          bool nBoxCarrying, 
          int nBoxCarrySize,
-         hg::TimeDirection nBoxCarryDirection,
-         hg::TimeDirection nTimeDirection, 
+         TimeDirection nBoxCarryDirection,
+         TimeDirection nTimeDirection, 
          int nRelativeIndex,
          int nSubimage) :
 data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight,
@@ -39,7 +39,7 @@ bool Guy::operator==(const Guy& other) const
         && (data->timeDirection == other.data->timeDirection) 
         && (data->subimage == other.data->subimage)
         && (data->boxCarryDirection == other.data->boxCarryDirection) 
-    && (data->boxCarrySize == other.data->boxCarrySize);
+        && (data->boxCarrySize == other.data->boxCarrySize);
 }
 
 bool Guy::operator<(const Guy& second) const

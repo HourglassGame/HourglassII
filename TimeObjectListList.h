@@ -4,7 +4,6 @@
 #include "ObjectList.h"
 #include <map>
 namespace hg {
-    
 class TimeObjectListList
 {
 public:

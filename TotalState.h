@@ -6,17 +6,17 @@ namespace hg {
     class TotalState {
     public:
         //These parameters must be COPIED
-        TotalState(const hg::WorldState& newWorldState, const std::vector<int>& newStackState) :
+        TotalState(const WorldState& newWorldState, const ::std::vector<int>& newStackState) :
         worldState(newWorldState),
         stackState(newStackState)
         {}
-        bool operator==(const hg::TotalState& other) const 
+        inline bool operator==(const TotalState& other) const 
         {
             return stackState.back() == other.stackState.back()
                     && worldState == other.worldState;
         }
-        hg::WorldState worldState;
-        std::vector<int> stackState;
+        WorldState worldState;
+        ::std::vector<int> stackState;
     };
 }
 #endif //HG_TOTAL_STATE_H

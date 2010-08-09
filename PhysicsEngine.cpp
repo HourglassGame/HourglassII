@@ -1,6 +1,12 @@
-#include "PhysicsEngine.h"
-#include "TimeDirection.h"
+
 #include <iostream>
+
+#include "PhysicsEngine.h"
+
+#include "TimeObjectListList.h"
+#include "ObjectList.h"
+#include "TimeDirection.h"
+
 using namespace std;
 using namespace hg;
 
@@ -17,13 +23,13 @@ PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWal
 
 
 //NOTE - no time travel yet so currentPlayerFrame does not ever change.
-TimeObjectListList PhysicsEngine::executeFrame(const hg::ObjectList& arrivals,
+TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                int time,
-                                               const std::vector<hg::InputList>& playerInput,
+                                               const std::vector<InputList>& playerInput,
                                                int& currentPlayerFrame,
                                                int& nextPlayerFrame) const
 {
-    std::vector<PhysicsEngine::BoxInfo> nextBox;
+    std::vector<BoxInfo> nextBox;
     
 	TimeObjectListList newDepartures;
     
@@ -86,7 +92,7 @@ bool PhysicsEngine::wallAt(int x, int y) const
 
 void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time, 
                             const vector<InputList>& playerInput, TimeObjectListList& newDepartures,
-                            std::vector<PhysicsEngine::BoxInfo>& nextBox,
+                            std::vector<BoxInfo>& nextBox,
                             int& currentPlayerFrame,
                             int& nextPlayerFrame) const
 {
@@ -177,7 +183,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
     
 	vector<bool> carry;
 	vector<int> carrySize;
-	vector<hg::TimeDirection> carryDirection;
+	vector<TimeDirection> carryDirection;
 	
 	// box carrying
 	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
@@ -213,7 +219,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
                       false
                       )
                      );
-                    //supportedBox.push_back(false);
                     carry[i] = false;
                     carrySize[i] = 0;
                     carryDirection[i] = hg::PAUSE;
@@ -285,21 +290,23 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
             }
             if (nextTime >= 0 && nextTime < timeLineLength)
             {
-                newDepartures.getObjectListForManipulation(nextTime).addGuy(Guy(x[i], y[i], xspeed[i], yspeed[i],
-                                                                                oldGuyList[i].getWidth(), oldGuyList[i].getHeight(), 
-                                                                                carry[i], carrySize[i], carryDirection[i],
-                                                                                oldGuyList[i].getTimeDirection(),
-                                                                                relativeIndex+1, nextSubimage));
+                newDepartures.getObjectListForManipulation(nextTime).addGuy
+                (
+                    Guy(x[i], y[i], xspeed[i], yspeed[i],
+                        oldGuyList[i].getWidth(), oldGuyList[i].getHeight(), 
+                        carry[i], carrySize[i], carryDirection[i],
+                        oldGuyList[i].getTimeDirection(),
+                        relativeIndex+1, nextSubimage));
             }
         }
 	}
     
 }
 
-void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<hg::Box>& oldBoxList,
-                                                 std::vector<PhysicsEngine::BoxInfo>& nextBox) const
+void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
+                                                 std::vector<BoxInfo>& nextBox) const
 {
-	for (vector<hg::Box>::const_iterator it(oldBoxList.begin()), end(oldBoxList.end()); it != end; ++it)
+	for (vector<Box>::const_iterator it(oldBoxList.begin()), end(oldBoxList.end()); it != end; ++it)
 	{
 		int x = it->getX();
 		int y = it->getY();
@@ -352,21 +359,20 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<hg::Box>& oldBoxLi
         
 		nextBox.push_back
         (
-         PhysicsEngine::BoxInfo
-         (
-          Box
-          (
-           x,
-           y,
-           xspeed,
-           yspeed,
-           size,
-           it->getTimeDirection()
-           )
-          ,supported
-          )
-         );
-		//supportedBox.push_back(supported);
+            PhysicsEngine::BoxInfo
+            (
+                Box
+                (
+                    x,
+                    y,
+                    xspeed,
+                    yspeed,
+                    size,
+                    it->getTimeDirection()
+                )
+            ,supported
+            )
+        );
         
 		// don't bother checking box collision in crappy step
         

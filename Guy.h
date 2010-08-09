@@ -31,9 +31,9 @@ namespace hg {
         
         inline bool getBoxCarrying() const {return data->boxCarrying;}
         inline int getBoxCarrySize() const {return data->boxCarrySize;}
-        inline hg::TimeDirection getBoxCarryDirection() const {return data->boxCarryDirection;}
+        inline TimeDirection getBoxCarryDirection() const {return data->boxCarryDirection;}
         
-        inline hg::TimeDirection getTimeDirection() const {return data->timeDirection;}
+        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
         inline int getRelativeIndex() const {return data->relativeIndex;}
         inline int getSubimage() const {return data->subimage;}
         
@@ -58,9 +58,9 @@ namespace hg {
                  
                  bool nboxCarrying,
                  int nboxCarrySize,
-                 hg::TimeDirection nboxCarryDirection,
+                 TimeDirection nboxCarryDirection,
                  
-                 hg::TimeDirection ntimeDirection,
+                 TimeDirection ntimeDirection,
                  int nrelativeIndex,
 
                  int nsubimage) :
@@ -91,9 +91,9 @@ namespace hg {
             
             bool boxCarrying;
             int boxCarrySize;
-            hg::TimeDirection boxCarryDirection;
+            TimeDirection boxCarryDirection;
             
-            hg::TimeDirection timeDirection;
+            TimeDirection timeDirection;
             int relativeIndex;
             
             int subimage;

@@ -1,47 +1,52 @@
 #ifndef HG_TIME_ENGINE_H
 #define HG_TIME_ENGINE_H
 #include "PhysicsEngine.h"
-#include "TimeObjectListList.h"
-
-#include "InputList.h"
-
-#include "ArrivalDepartureMap.h"
 #include "WorldState.h"
 
 #include <vector>
 
 namespace hg {
+class InputList;
+class ObjectList;
+class TimeObjectListList;
+class ParadoxException;
+class WorldState;
+    
 class TimeEngine
 {
 
 public:
-	TimeEngine(int newTimeLength, std::vector<std::vector<bool> > wallmap, int newWallSize, int newGravity);
+	TimeEngine(int newTimeLength, ::std::vector< ::std::vector<bool> > wallmap, int newWallSize, int newGravity);
+    
     // returns if the level creator not a foo
     // Call before trying to use level
-	bool checkConstistencyAndPropagateLevel(const hg::ObjectList& initialObjects, int guyStartTime);
+	bool checkConstistencyAndPropagateLevel(const ObjectList& initialObjects, int guyStartTime);
+    
 
-    hg::ObjectList getNextPlayerFrame(const hg::InputList& newInputData);
+    ObjectList getNextPlayerFrame(const InputList& newInputData);
 	
 private:
-    hg::WorldState executeFrameUpdateStackNoParadoxCheck(hg::WorldState currentState, 
-                                                                     std::vector<int> frameUpdateStack) const;
+    WorldState executeFrameUpdateStackNoParadoxCheck(WorldState currentState, 
+                                                     ::std::vector<int> frameUpdateStack) const;
     
-    // runs the frame update stack until empty
-    hg::WorldState executeFrameUpdateStack(WorldState currentState, 
-                                                std::vector<int> frameUpdateStack) const;
+    //runs the frame update stack until empty
+    WorldState executeFrameUpdateStack(WorldState currentState, 
+                                             ::std::vector<int> frameUpdateStack) const;
     
-    // updates the frame using new arrivals. departures are checked and added to frameUpdateStack if different
-	void updateFrame(int frame, std::vector<int>& frameUpdateStack, WorldState& currentState) const;
+    //Gets all arrivals to `frame' using `currentState', applies physics to get departures, 
+    //applies departures to `currentState'. All changed departures are added to frameUpdateStack.
+	void updateFrame(int frame, ::std::vector<int>& frameUpdateStack, WorldState& currentState) const;
     
     //state of world at end of last executed frame
-    hg::WorldState endOfFrameState;
+    WorldState endOfFrameState;
     
 	int timeLineLength; // size of playable timeline
 
-    std::vector<hg::InputList> playerInput; // stores all player input
+    ::std::vector<InputList> playerInput; // stores all player input
 
     //stores the physical properties of the world and uses them to turn arrivals into departures
-    hg::PhysicsEngine physics;
+    PhysicsEngine physics;
 };
 }
+
 #endif //HG_TIME_ENGINE_H

@@ -1,5 +1,5 @@
 #include "TimeObjectListList.h"
-using namespace hg;
+using namespace ::hg;
 ObjectList& TimeObjectListList::getObjectListForManipulation(int time)
 {
     return list[time];
@@ -37,7 +37,7 @@ bool TimeObjectListList::equals(const TimeObjectListList& other) const
 	{
 		return false;
 	}
-    return std::equal(list.begin(),list.end(),other.list.begin());
+    return ::std::equal(list.begin(),list.end(),other.list.begin());
 }
 
 void TimeObjectListList::sortObjectLists()

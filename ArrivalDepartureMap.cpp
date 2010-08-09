@@ -1,8 +1,10 @@
 #include "ArrivalDepartureMap.h"
 #include <algorithm>
 #include <iostream>
-using namespace std;
-using namespace hg;
+using namespace ::std;
+using namespace ::hg;
+
+typedef TimeObjectListList::ListType::const_iterator Iterator;
 
 ArrivalDepartureMap::ArrivalDepartureMap(int timeLength) :
 arrivals(timeLength),
@@ -17,14 +19,14 @@ ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(int arrivalTime)
 }
 
 //returns which frames are changed
-std::vector<int> ArrivalDepartureMap::updateDeparturesFromTime(const int time, const TimeObjectListList& newDeparture)
+vector<int> ArrivalDepartureMap::updateDeparturesFromTime(const int time, const TimeObjectListList& newDeparture)
 {
-    std::vector<int> changedTimes;
-    //departures[time].sortObjectLists();
-    TimeObjectListList::ListType::const_iterator ni(newDeparture.list.begin());
-    const TimeObjectListList::ListType::const_iterator nend(newDeparture.list.end());
-    TimeObjectListList::ListType::const_iterator oi(departures[time].list.begin());
-    const TimeObjectListList::ListType::const_iterator oend(departures[time].list.end());
+    vector<int> changedTimes;
+    
+    Iterator ni(newDeparture.list.begin());
+    const Iterator nend(newDeparture.list.end());
+    Iterator oi(departures[time].list.begin());
+    const Iterator oend(departures[time].list.end());
     
     while (oi != oend) {
         while (true) {
@@ -73,7 +75,7 @@ ObjectList ArrivalDepartureMap::getArrivals(int time)
 {
 	ObjectList returnList;
 
-	for (TimeObjectListList::ListType::const_iterator it(arrivals[time].list.begin()), end(arrivals[time].list.end());
+	for (Iterator it(arrivals[time].list.begin()), end(arrivals[time].list.end());
          it != end; ++it)
 	{
 		returnList.add(it->second);
@@ -93,8 +95,8 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
     assert(departures.size()==other.departures.size());
     assert(arrivals.size()==other.arrivals.size());
     
-    return std::equal(departures.begin(), departures.end(), other.departures.begin())
-    && std::equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
+    return equal(departures.begin(), departures.end(), other.departures.begin())
+    && equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
 }
 
 

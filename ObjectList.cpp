@@ -7,8 +7,8 @@
 //Can't leave the asserts in because I am doing this stuff legitimately in places
 //But ... YOU HAVE BEEN WARNED!
 
-using namespace std;
-using namespace hg;
+using namespace ::std;
+using namespace ::hg;
 
 ObjectList::ObjectList() :
 data(new Data)
@@ -39,8 +39,10 @@ bool ObjectList::equals(const ObjectList& other) const
 	{
 		return false;
 	}
-    return std::equal(data->guyList.begin(), data->guyList.end(), other.data->guyList.begin()) 
-            && std::equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
+    assert(data->guyList.size() == other.data->guyList.size());
+    assert(data->boxList.size() == other.data->boxList.size());
+    return equal(data->guyList.begin(), data->guyList.end(), other.data->guyList.begin()) 
+            && equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
 }
 
 bool ObjectList::isEmpty() const
@@ -53,8 +55,8 @@ void ObjectList::sortElements()
 {
     //assert(data.unique() && "Are you sure you want to be doing this? "
     //    "You could be modifying something in an unrelated part of the programme");
-	std::sort(data->guyList.begin(), data->guyList.end());
-	std::sort(data->boxList.begin(), data->boxList.end());
+	sort(data->guyList.begin(), data->guyList.end());
+	sort(data->boxList.begin(), data->boxList.end());
 }
 
 // Single Element addition

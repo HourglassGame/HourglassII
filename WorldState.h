@@ -5,7 +5,7 @@
 namespace hg {
     class WorldState {
     public:
-        WorldState(const hg::ArrivalDepartureMap& currentArrivalDepartures,
+        WorldState(const ArrivalDepartureMap& currentArrivalDepartures,
                    bool currentUpdateStartFirst,
                    int newCurrentPlayerFrame,
                    int newNextPlayerFrame) :
@@ -25,7 +25,7 @@ namespace hg {
         {
             return !(*this==other);
         }
-        hg::ArrivalDepartureMap arrivalDepartures;
+        ArrivalDepartureMap arrivalDepartures;
         bool updateStartFirst;
         int currentPlayerFrame;
         int nextPlayerFrame;

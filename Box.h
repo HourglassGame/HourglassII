@@ -9,16 +9,14 @@ namespace hg {
     {
         
     public:
-        Box(int x, int y, int xspeed, int yspeed, int size, hg::TimeDirection timeDirection);
+        Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection);
         
         inline int getX() const {return data->x;}
         inline int getY() const {return data->y;}
         inline int getXspeed() const {return data->xspeed;}
         inline int getYspeed() const {return data->yspeed;}
         inline int getSize() const {return data->size;}
-        inline hg::TimeDirection getTimeDirection() const {return data->timeDirection;}
-        
-        static const int normalSize = 1000;
+        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
         
         bool operator==(const Box& other) const;
         bool operator!=(const Box& other) const;
@@ -36,7 +34,7 @@ namespace hg {
                  int nxspeed,
                  int nyspeed,
                  int nsize,
-                 hg::TimeDirection ntimeDirection) :
+                 TimeDirection ntimeDirection) :
             x(nx),
             y(ny),
             xspeed(nxspeed),
@@ -52,7 +50,7 @@ namespace hg {
             int yspeed;
             int size;
             
-            hg::TimeDirection timeDirection;
+            TimeDirection timeDirection;
         };
     };
 }
