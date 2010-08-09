@@ -9,29 +9,11 @@
 
 using namespace std;
 using namespace hg;
-<<<<<<< .mine
-=======
-void ObjectList::add(const ObjectList& other)
-{	
-	for (std::vector<hg::Guy>::const_iterator it(other.guyList.begin()), end(other.guyList.end()); it!=end; ++it)
-	{
-        guyList.push_back(*it);
-	}
->>>>>>> .r93
 
-<<<<<<< .mine
 ObjectList::ObjectList() :
 data(new Data)
 {
 }
-=======
-	for (std::vector<hg::Box>::const_iterator it(other.boxList.begin()), end(other.boxList.end()); it!=end; ++it)
-	{
-        boxList.push_back(*it);
-	}
-    sortElements();
-}
->>>>>>> .r93
 
 void ObjectList::add(const ObjectList& other)
 {	
@@ -57,34 +39,8 @@ bool ObjectList::equals(const ObjectList& other) const
 	{
 		return false;
 	}
-<<<<<<< .mine
     return std::equal(data->guyList.begin(), data->guyList.end(), other.data->guyList.begin()) 
             && std::equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
-=======
-    
-	for (std::vector<hg::Guy>::const_iterator it(guyList.begin()),
-         oit(other.guyList.begin()),end(guyList.end()); 
-         it != end;
-         ++it, ++oit)
-	{
-		if (*it != *oit)
-		{
-			return false;
-		}
-	}
-
-	for (std::vector<hg::Box>::const_iterator it(boxList.begin()),
-         oit(other.boxList.begin()),end(boxList.end()); 
-         it != end;
-         ++it, ++oit)
-	{
-		if (*it != *oit)
-		{
-			return false;
-		}
-	}
-	return true;
->>>>>>> .r93
 }
 
 bool ObjectList::isEmpty() const

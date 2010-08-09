@@ -172,11 +172,6 @@ void TimeEngine::updateFrame(int frame, std::vector<int>& frameUpdateStack, Worl
     reverse_foreach(const int& frameToUpdate, framesThatNeedUpdating) {
         std::cout << frameToUpdate << std::endl;
     }
-
-    std::cout << "framesThatNeedUpdating:" << std::endl;
-    reverse_foreach(int& frameToUpdate, framesThatNeedUpdating) {
-        std::cout << frameToUpdate << std::endl;
-    }
     
 	if (currentState.updateStartFirst)
 	{

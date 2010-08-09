@@ -5,7 +5,6 @@
 #include <boost/shared_ptr.hpp>
 #include "TimeDirection.h"
 namespace hg {
-<<<<<<< .mine
     class Box
     {
         
@@ -56,38 +55,5 @@ namespace hg {
             hg::TimeDirection timeDirection;
         };
     };
-=======
-class Box
-{
-
-public:
-    Box(int x, int y, int xspeed, int yspeed, int size, hg::TimeDirection timeDirection);
-
-    inline int getX() const {return x;}
-    inline int getY() const {return y;}
-    inline int getXspeed() const {return xspeed;}
-    inline int getYspeed() const {return yspeed;}
-	inline int getSize() const {return size;}
-	inline hg::TimeDirection getTimeDirection() const {return timeDirection;}
-
-	static const int normalSize = 1000;
-
-	bool operator==(const Box& other) const;
-    bool operator!=(const Box& other) const;
-    
-    bool operator<(const Box& second) const;
-
-private:
-  
-	int x;
-	int y;
-	int xspeed;
-	int yspeed;
-	int size;
-
-    hg::TimeDirection timeDirection;
-     
-};
->>>>>>> .r93
 }
 #endif //HG_BOX_H

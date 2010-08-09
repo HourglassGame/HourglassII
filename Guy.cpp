@@ -23,25 +23,7 @@ data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight,
 
 bool Guy::operator!=(const Guy& other) const
 {
-<<<<<<< .mine
     return !(*this==other);
-=======
-    return !(*this==other);
-}
-
-bool Guy::operator==(const Guy& other) const
-{
-	if ((relativeIndex == other.relativeIndex) && (x == other.x) && (y == other.y) && (xspeed == other.xspeed) && 
-		(yspeed == other.yspeed) && (width == other.width) && (height == other.height) &&
-		(boxCarrying == other.boxCarrying) && (timeDirection == other.timeDirection)  && 
-		(subimage == other.subimage) && 
-        (boxCarryDirection == other.boxCarryDirection) && 
-        (boxCarrySize == other.boxCarrySize))
-	{
-		return true;
-	}
-	return false;
->>>>>>> .r93
 }
 
 bool Guy::operator==(const Guy& other) const

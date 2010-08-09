@@ -63,7 +63,6 @@ namespace hg {
                  hg::TimeDirection ntimeDirection,
                  int nrelativeIndex,
 
-<<<<<<< .mine
                  int nsubimage) :
             x(nx),
             y(ny),
@@ -100,38 +99,5 @@ namespace hg {
             int subimage;
         };
     };
-=======
-	inline bool getBoxCarrying() const {return boxCarrying;}
-	inline int getBoxCarrySize() const {return boxCarrySize;}
-	inline hg::TimeDirection getBoxCarryDirection() const {return boxCarryDirection;}
-
-	inline hg::TimeDirection getTimeDirection() const {return timeDirection;}
-	inline int getRelativeIndex() const {return relativeIndex;}
-	inline int getSubimage() const {return subimage;}
-
-	const static int animationLength = 13;
-
-    bool operator!=(const Guy& other) const;
-    bool operator==(const Guy& other) const;
-    
-	bool operator<(const Guy& second) const;
-private:
-	int x;
-	int y;
-	int xspeed;
-	int yspeed;
-	int width;
-	int height;
-
-	bool boxCarrying;
-	int boxCarrySize;
-    hg::TimeDirection boxCarryDirection;
-
-    hg::TimeDirection timeDirection;
-	int relativeIndex;
-
-	int subimage;
-};
->>>>>>> .r93
 }
 #endif //HG_GUY_H

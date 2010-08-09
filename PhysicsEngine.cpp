@@ -1,10 +1,6 @@
 #include "PhysicsEngine.h"
 #include "TimeDirection.h"
-<<<<<<< .mine
 #include <iostream>
-=======
-
->>>>>>> .r93
 using namespace std;
 using namespace hg;
 
@@ -270,7 +266,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
 	// write to departure arrays, other little things
 	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
 	{
-<<<<<<< .mine
         if (oldGuyList[i].getRelativeIndex() < playerInput.size()) {
             // animation
             int nextSubimage = oldGuyList[i].getSubimage() + 1;
@@ -297,35 +292,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
                                                                                 relativeIndex+1, nextSubimage));
             }
         }
-=======
-		// animation
-		int nextSubimage = oldGuyList[i].getSubimage() + 1;
-		if (nextSubimage > Guy::animationLength)
-		{
-			nextSubimage = 0;
-		}
-
-		int relativeIndex = oldGuyList[i].getRelativeIndex();
-
-		// add departure for guy at the appropriate time
-		int nextTime = time+oldGuyList[i].getTimeDirection();
-        
-        if ((playerInput.size()) != relativeIndex) // this means that this guy has already recieved input and so can have physics
-		{
-            if (playerInput.size() - 1 == relativeIndex) {
-                currentPlayerFrame = time;
-                nextPlayerFrame = nextTime;
-            }
-            if (nextTime >= 0 && nextTime < timeLineLength)
-            {
-                newDepartures.getObjectListForManipulation(nextTime).addGuy(Guy(x[i], y[i], xspeed[i], yspeed[i],
-                                                                        oldGuyList[i].getWidth(), oldGuyList[i].getHeight(), 
-                                                                        oldGuyList[i].getTimeDirection(),
-                                                                        carry[i], carrySize[i], carryDirection[i],
-                                                                        relativeIndex+1, nextSubimage));
-            }
-		}
->>>>>>> .r93
 	}
     
 }

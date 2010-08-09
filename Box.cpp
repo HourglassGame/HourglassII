@@ -11,7 +11,6 @@ data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection))
 
 bool Box::operator!=(const Box& other) const
 {
-<<<<<<< .mine
     return !(*this==other);
 }
 
@@ -23,19 +22,6 @@ bool Box::operator==(const Box& other) const
         && (data->yspeed == other.data->yspeed)
         && (data->timeDirection == other.data->timeDirection) 
         && (data->size == other.data->size) )
-=======
-    return !(*this==other);
-}
-
-bool Box::operator==(const Box& other) const
-{
-	if ( (x == other.x)
-        && (y == other.y)
-        && (xspeed == other.xspeed) 
-        && (yspeed == other.yspeed)
-        && (timeDirection == other.timeDirection) 
-        && (size == other.size) )
->>>>>>> .r93
 	{
 		return true;
 	}

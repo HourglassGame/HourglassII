@@ -17,11 +17,8 @@ namespace hg {
 class ObjectList  
 {
 public:
-<<<<<<< .mine
     ObjectList();
     
-=======
->>>>>>> .r93
 	void addGuy(const hg::Guy& toCopy); 
 	void addBox(const hg::Box& toCopy); 
     
