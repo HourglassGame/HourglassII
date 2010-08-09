@@ -1,5 +1,7 @@
 #include "ArrivalDepartureMap.h"
-
+#include <algorithm>
+#include <iostream>
+using namespace std;
 using namespace hg;
 
 ArrivalDepartureMap::ArrivalDepartureMap(int timeLength) :
@@ -18,11 +20,22 @@ ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(int arrivalTime)
 std::vector<int> ArrivalDepartureMap::updateDeparturesFromTime(const int time, const TimeObjectListList& newDeparture)
 {
     std::vector<int> changedTimes;
+<<<<<<< .mine
+    //departures[time].sortObjectLists();
+=======
     departures[time].sortObjectLists();
     TimeObjectListList::ListType::const_iterator ni(newDeparture.list.begin());
     const TimeObjectListList::ListType::const_iterator nend(newDeparture.list.end());
     TimeObjectListList::ListType::const_iterator oi(departures[time].list.begin());
+>>>>>>> .r93
+<<<<<<< .mine
+    TimeObjectListList::ListType::const_iterator ni(newDeparture.list.begin());
+    const TimeObjectListList::ListType::const_iterator nend(newDeparture.list.end());
+    TimeObjectListList::ListType::const_iterator oi(departures[time].list.begin());
     const TimeObjectListList::ListType::const_iterator oend(departures[time].list.end());
+=======
+    const TimeObjectListList::ListType::const_iterator oend(departures[time].list.end());
+>>>>>>> .r93
     
     while (oi != oend) {
         while (true) {
@@ -76,6 +89,7 @@ ObjectList ArrivalDepartureMap::getArrivals(int time)
 	{
 		returnList.add(it->second);
 	}
+
     returnList.sortElements();
 	return returnList;
 }
@@ -87,6 +101,10 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
 		return false;
 	}
 	
+<<<<<<< .mine
+    assert(departures.size()==other.departures.size());
+    assert(arrivals.size()==other.arrivals.size());
+=======
     assert(departures.size()==other.departures.size());
     
 	for (std::vector<TimeObjectListList>::const_iterator 
@@ -101,7 +119,12 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
 			return false;
 		}
 	}
+>>>>>>> .r93
     
+<<<<<<< .mine
+    return std::equal(departures.begin(), departures.end(), other.departures.begin())
+    && std::equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
+=======
     assert(arrivals.size()==other.arrivals.size());
     
     for (std::vector<TimeObjectListList>::const_iterator 
@@ -118,6 +141,7 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
 	}
     
 	return true;
+>>>>>>> .r93
 }
 
 

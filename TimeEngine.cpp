@@ -166,7 +166,12 @@ void TimeEngine::updateFrame(int frame, std::vector<int>& frameUpdateStack, Worl
 
 	// update departures from this frame
 	departures.sortObjectLists();
-	vector<int> framesThatNeedUpdating(currentState.arrivalDepartures.updateDeparturesFromTime(frame, departures));
+	const vector<int> framesThatNeedUpdating(currentState.arrivalDepartures.updateDeparturesFromTime(frame, departures));
+
+    std::cout << "framesThatNeedUpdating:" << std::endl;
+    reverse_foreach(const int& frameToUpdate, framesThatNeedUpdating) {
+        std::cout << frameToUpdate << std::endl;
+    }
 
     std::cout << "framesThatNeedUpdating:" << std::endl;
     reverse_foreach(int& frameToUpdate, framesThatNeedUpdating) {
@@ -175,18 +180,10 @@ void TimeEngine::updateFrame(int frame, std::vector<int>& frameUpdateStack, Worl
     
 	if (currentState.updateStartFirst)
 	{
-		for (vector<int>::const_reverse_iterator it(framesThatNeedUpdating.rbegin()), 
-             end(framesThatNeedUpdating.rend()); it != end; ++it)
-		{
-			frameUpdateStack.push_back(*it);
-		}
+        frameUpdateStack.insert(frameUpdateStack.end(),framesThatNeedUpdating.rbegin(),framesThatNeedUpdating.rend());
 	}
 	else
 	{
-		for (vector<int>::const_iterator it(framesThatNeedUpdating.begin()), 
-             end(framesThatNeedUpdating.end()); it != end; ++it)
-		{
-			frameUpdateStack.push_back(*it);
-		}
+        frameUpdateStack.insert(frameUpdateStack.end(),framesThatNeedUpdating.begin(),framesThatNeedUpdating.end());
 	}
 }

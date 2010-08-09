@@ -1,5 +1,9 @@
 #ifndef HG_OBJECT_LIST_H
 #define HG_OBJECT_LIST_H
+
+#define BOOST_SP_DISABLE_THREADS
+#include <boost/shared_ptr.hpp>
+
 #include "Guy.h"
 #include "Box.h"
 #include "Item.h"
@@ -13,14 +17,19 @@ namespace hg {
 class ObjectList  
 {
 public:
+<<<<<<< .mine
+    ObjectList();
+    
+=======
+>>>>>>> .r93
 	void addGuy(const hg::Guy& toCopy); 
 	void addBox(const hg::Box& toCopy); 
-
+    
     inline const std::vector<hg::Guy>& getGuyListRef() const {
-        return guyList;
+        return data->guyList;
     }
     inline const std::vector<hg::Box>& getBoxListRef() const {
-        return boxList;
+        return data->boxList;
     }
     //Add other ref getters as needed
     
@@ -33,12 +42,14 @@ public:
 	bool equals(const hg::ObjectList& other) const;
     bool operator==(const hg::ObjectList& other) const;
     bool operator!=(const hg::ObjectList& other) const;
-	bool isEmpty();
+	bool isEmpty() const;
 private:
-
-	std::vector<hg::Guy> guyList;
-	std::vector<hg::Box> boxList;
-
+    struct Data;
+    ::boost::shared_ptr<Data> data;
+    struct Data {
+        std::vector<hg::Guy> guyList;
+        std::vector<hg::Box> boxList;
+    };
 };
 }
 #endif //HG_OBJECT_LIST_H

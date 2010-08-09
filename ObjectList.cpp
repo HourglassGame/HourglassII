@@ -2,20 +2,43 @@
 
 #include <vector>
 #include <algorithm>
+#include <cassert>
+
+//Can't leave the asserts in because I am doing this stuff legitimately in places
+//But ... YOU HAVE BEEN WARNED!
+
 using namespace std;
 using namespace hg;
+<<<<<<< .mine
+=======
 void ObjectList::add(const ObjectList& other)
 {	
 	for (std::vector<hg::Guy>::const_iterator it(other.guyList.begin()), end(other.guyList.end()); it!=end; ++it)
 	{
         guyList.push_back(*it);
 	}
+>>>>>>> .r93
 
+<<<<<<< .mine
+ObjectList::ObjectList() :
+data(new Data)
+{
+}
+=======
 	for (std::vector<hg::Box>::const_iterator it(other.boxList.begin()), end(other.boxList.end()); it!=end; ++it)
 	{
         boxList.push_back(*it);
 	}
     sortElements();
+}
+>>>>>>> .r93
+
+void ObjectList::add(const ObjectList& other)
+{	
+    //assert(data.unique() && "Are you sure you want to be doing this? "
+    //            "You could be modifying something in an unrelated part of the programme");
+    data->guyList.insert(data->guyList.end(),other.data->guyList.begin(),other.data->guyList.end());
+    data->boxList.insert(data->boxList.end(),other.data->boxList.begin(),other.data->boxList.end());
 }
 
 bool ObjectList::operator==(const hg::ObjectList& other) const
@@ -30,10 +53,14 @@ bool ObjectList::operator!=(const hg::ObjectList& other) const
 
 bool ObjectList::equals(const ObjectList& other) const
 {
-	if (guyList.size() != other.guyList.size() || boxList.size() != other.boxList.size() )
+	if (data->guyList.size() != other.data->guyList.size() || data->boxList.size() != other.data->boxList.size())
 	{
 		return false;
 	}
+<<<<<<< .mine
+    return std::equal(data->guyList.begin(), data->guyList.end(), other.data->guyList.begin()) 
+            && std::equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
+=======
     
 	for (std::vector<hg::Guy>::const_iterator it(guyList.begin()),
          oit(other.guyList.begin()),end(guyList.end()); 
@@ -57,27 +84,35 @@ bool ObjectList::equals(const ObjectList& other) const
 		}
 	}
 	return true;
+>>>>>>> .r93
 }
 
-bool ObjectList::isEmpty()
+bool ObjectList::isEmpty() const
 {
-	return (guyList.size() == 0 && boxList.size() == 0);
+	return data->guyList.empty() && data->boxList.empty();
 }
 
 
 void ObjectList::sortElements()
 {
-	std::sort(guyList.begin(), guyList.end());
-	std::sort(boxList.begin(), boxList.end());
+    //assert(data.unique() && "Are you sure you want to be doing this? "
+    //    "You could be modifying something in an unrelated part of the programme");
+	std::sort(data->guyList.begin(), data->guyList.end());
+	std::sort(data->boxList.begin(), data->boxList.end());
 }
 
 // Single Element addition
 void ObjectList::addGuy(const Guy& toCopy)
 {
-	guyList.push_back(toCopy);
+    //assert(data.unique() && "Are you sure you want to be doing this? "
+    //       "You could be modifying something in an unrelated part of the programme");
+	data->guyList.push_back(toCopy);
 }
 
 void ObjectList::addBox(const Box& toCopy)
 {
-	boxList.push_back(toCopy);
+    //assert(data.unique() && "Are you sure you want to be doing this? "
+    //       "You could be modifying something in an unrelated part of the programme");
+	data->boxList.push_back(toCopy);
 }
+

@@ -37,6 +37,9 @@ bool TimeObjectListList::equals(const TimeObjectListList& other) const
 	{
 		return false;
 	}
+<<<<<<< .mine
+    return std::equal(list.begin(),list.end(),other.list.begin());
+=======
     ListType::const_iterator it(list.begin());
     ListType::const_iterator oit(other.list.begin());
     ListType::const_iterator end(list.end());
@@ -57,6 +60,7 @@ bool TimeObjectListList::equals(const TimeObjectListList& other) const
         ++oit;
 	}
 	return true;
+>>>>>>> .r93
 }
 
 void TimeObjectListList::sortObjectLists()

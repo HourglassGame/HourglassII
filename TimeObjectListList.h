@@ -17,7 +17,6 @@ public:
     void insertObjectList(int time, const ObjectList& newObjectList);
     typedef std::map<int,ObjectList> ListType;
 
-    //Should make this able to be const
 	bool equals(const hg::TimeObjectListList& other) const;
     bool operator==(const hg::TimeObjectListList& other) const;
     bool operator!=(const hg::TimeObjectListList& other) const;
