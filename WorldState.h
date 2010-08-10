@@ -7,13 +7,14 @@ namespace hg {
     public:
         WorldState(const ArrivalDepartureMap& currentArrivalDepartures,
                    bool currentUpdateStartFirst,
-                   int newCurrentPlayerFrame,
-                   int newNextPlayerFrame) :
+                   unsigned int newCurrentPlayerFrame,
+                   unsigned int newNextPlayerFrame) :
         arrivalDepartures(currentArrivalDepartures),
         updateStartFirst(currentUpdateStartFirst),
         currentPlayerFrame(newCurrentPlayerFrame),
         nextPlayerFrame(newNextPlayerFrame)
-        {}
+        {
+        }
         bool operator==(const WorldState& other) const
         {
             return currentPlayerFrame == other.currentPlayerFrame 
@@ -27,8 +28,8 @@ namespace hg {
         }
         ArrivalDepartureMap arrivalDepartures;
         bool updateStartFirst;
-        int currentPlayerFrame;
-        int nextPlayerFrame;
+        unsigned int currentPlayerFrame;
+        unsigned int nextPlayerFrame;
     };
 }
 #endif //HG_WORLD_STATE_H

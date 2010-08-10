@@ -10,24 +10,20 @@
 using namespace std;
 using namespace hg;
 
-PhysicsEngine::PhysicsEngine(int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity)
+PhysicsEngine::PhysicsEngine(unsigned int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity) :
+timeLineLength(newTimeLineLength),
+wallmap(newWallmap),
+gravity(newGravity),
+wallSize(newWallSize)
 {
-	
-	timeLineLength = newTimeLineLength;
-    
-	wallmap = newWallmap;
-	wallSize = newWallSize;
-	gravity = newGravity;
-    
 }
-
 
 //NOTE - no time travel yet so currentPlayerFrame does not ever change.
 TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
-                                               int time,
+                                               unsigned int time,
                                                const std::vector<InputList>& playerInput,
-                                               int& currentPlayerFrame,
-                                               int& nextPlayerFrame) const
+                                               unsigned int& currentPlayerFrame,
+                                               unsigned int& nextPlayerFrame) const
 {
     std::vector<BoxInfo> nextBox;
     
@@ -55,18 +51,16 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	// guys pickup/put down boxes and objects
 	
 	// guys do timetravel-type stuff
-	for (unsigned int i = 0; i < nextBox.size(); ++i)
+	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
-		int nextTime = time+nextBox[i].box.getTimeDirection();
+		unsigned int nextTime(time+nextBox[i].box.getTimeDirection());
         
 		if (nextTime >= 0 && nextTime < timeLineLength)
 		{
 			newDepartures.getObjectListForManipulation(nextTime).addBox(nextBox[i].box);
 		}
 	}
-    
 	// add data to departures
-    
 	return newDepartures;
 }
 
@@ -80,7 +74,7 @@ bool PhysicsEngine::wallAt(int x, int y) const
 	unsigned int aX = x/wallSize;
 	unsigned int aY = y/wallSize;
     
-	if ( aX < wallmap.size() && aY < wallmap[aX].size())
+	if (aX < wallmap.size() && aY < wallmap[aX].size())
 	{
 		return wallmap[aX][aY];
 	}
@@ -90,11 +84,11 @@ bool PhysicsEngine::wallAt(int x, int y) const
 	}
 }
 
-void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time, 
+void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const unsigned int time, 
                             const vector<InputList>& playerInput, TimeObjectListList& newDepartures,
                             std::vector<BoxInfo>& nextBox,
-                            int& currentPlayerFrame,
-                            int& nextPlayerFrame) const
+                            unsigned int& currentPlayerFrame,
+                            unsigned int& nextPlayerFrame) const
 {
 	vector<int> x;
 	vector<int> y;
@@ -102,7 +96,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
 	vector<int> yspeed;
     
 	// position, velocity, collisions
-	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
+	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
         if (oldGuyList[i].getRelativeIndex() < playerInput.size()) {
             x.push_back(oldGuyList[i].getX());
@@ -110,7 +104,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
             xspeed.push_back(0);
             yspeed.push_back(oldGuyList[i].getYspeed() + gravity);
             
-            int relativeIndex = oldGuyList[i].getRelativeIndex();
+            unsigned int relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
             
             int width = oldGuyList[i].getWidth();
@@ -186,14 +180,14 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
 	vector<TimeDirection> carryDirection;
 	
 	// box carrying
-	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
+	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
         if (oldGuyList[i].getRelativeIndex() < playerInput.size()) {
             carry.push_back(oldGuyList[i].getBoxCarrying());
             carrySize.push_back(0);
             carryDirection.push_back(hg::PAUSE);
             
-            int relativeIndex = oldGuyList[i].getRelativeIndex();
+            unsigned int relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
             
             if (carry[i])
@@ -260,16 +254,12 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
             }
         }
 	}
-    
-    
 	// colliding with pickups?
-    
     
 	// shooting, jumping
     
-    
 	// write to departure arrays, other little things
-	for (unsigned int i = 0; i < oldGuyList.size(); ++i)
+	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
         if (oldGuyList[i].getRelativeIndex() < playerInput.size()) {
             // animation
@@ -279,10 +269,10 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const int time,
                 nextSubimage = 0;
             }
             
-            int relativeIndex = oldGuyList[i].getRelativeIndex();
+            unsigned int relativeIndex(oldGuyList[i].getRelativeIndex());
             
             // add departure for guy at the appropriate time
-            int nextTime = time+oldGuyList[i].getTimeDirection();
+            unsigned int nextTime(time+oldGuyList[i].getTimeDirection());
             
             if (playerInput.size() - 1 == relativeIndex) {
                 currentPlayerFrame = time;
@@ -375,7 +365,5 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
         );
         
 		// don't bother checking box collision in crappy step
-        
-	}
-    
+	}    
 }

@@ -13,12 +13,40 @@ Guy::Guy(int nX,
          int nBoxCarrySize,
          TimeDirection nBoxCarryDirection,
          TimeDirection nTimeDirection, 
-         int nRelativeIndex,
+         unsigned int nRelativeIndex,
          int nSubimage) :
+referenceCount(new int(1)),
 data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight,
               nBoxCarrying,nBoxCarrySize,nBoxCarryDirection,
               nTimeDirection,nRelativeIndex,nSubimage))
 {
+}
+Guy::Guy(const Guy& other) :
+referenceCount(&++(*other.referenceCount)),
+data(other.data)
+{
+}
+
+Guy::~Guy()
+{
+    decrementCount();
+}
+
+void Guy::decrementCount()
+{
+    if(--(*referenceCount) == 0) {
+        delete referenceCount;
+        delete data;
+    }
+}
+
+Guy& Guy::operator=(const Guy& other)
+{
+    decrementCount();
+    referenceCount = other.referenceCount;
+    data = other.data;
+    ++(*referenceCount);
+    return *this;
 }
 
 bool Guy::operator!=(const Guy& other) const

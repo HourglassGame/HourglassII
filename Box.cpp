@@ -5,8 +5,37 @@
 using namespace hg;
 
 Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection) :
+referenceCount(new int(1)),
 data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection))
 {
+}
+
+Box::Box(const Box& other) :
+referenceCount(&++(*other.referenceCount)),
+data(other.data)
+{
+}
+
+Box::~Box()
+{
+    decrementCount();
+}
+
+void Box::decrementCount()
+{
+    if(--(*referenceCount) == 0) {
+        delete referenceCount;
+        delete data;
+    }
+}
+
+Box& Box::operator=(const Box& other)
+{
+    decrementCount();
+    referenceCount = other.referenceCount;
+    data = other.data;
+    ++(*referenceCount);
+    return *this;
 }
 
 bool Box::operator!=(const Box& other) const

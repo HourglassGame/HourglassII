@@ -1,31 +1,29 @@
 #ifndef HG_ARRIVAL_DEPARTURE_MAP_H
 #define HG_ARRIVAL_DEPARTURE_MAP_H
 
-#include "ObjectList.h"
+//#include "ObjectList.h"
 #include "TimeObjectListList.h"
 #include <vector>
 
 namespace hg {
+//    class ObjectList;
 class ArrivalDepartureMap
 {
-
 public:
-	ArrivalDepartureMap(int timeLength);
+	ArrivalDepartureMap(unsigned int timeLength);
     
-    void setPlayerArrivalDeparture(const hg::Guy& guy, int departureTime, int arrivalTime);
-    
-    ::std::vector<int> updateDeparturesFromTime(int time, const TimeObjectListList& newDeparture);
+    ::std::vector<unsigned int> updateDeparturesFromTime(unsigned int time, const TimeObjectListList& newDeparture);
 
-	ObjectList& permanentDepartureObjectList(int arrivalTime);
+	ObjectList& permanentDepartureObjectList(unsigned int arrivalTime);
 
-	ObjectList getArrivals(int time);
+	ObjectList getArrivals(unsigned int time);
 
     bool operator==(const ArrivalDepartureMap& other) const;
     inline bool operator!=(const ArrivalDepartureMap& other) const {
         return !(*this==other);
     }
 private:
-	int permanentDepartureIndex;
+	unsigned int permanentDepartureIndex;
     ::std::vector<TimeObjectListList> arrivals;
     ::std::vector<TimeObjectListList> departures;
 };

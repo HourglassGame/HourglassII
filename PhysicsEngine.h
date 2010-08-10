@@ -10,19 +10,17 @@ class TimeObjectListList;
 class PhysicsEngine
 {
 public:
-
-	PhysicsEngine(int newTimeLineLength, 
+	PhysicsEngine(unsigned int newTimeLineLength, 
                   ::std::vector< ::std::vector<bool> > newWallmap,
                   int newWallSize, 
                   int newGravity);
-
     
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                        int time,
+                                        unsigned int time,
                                         const ::std::vector<InputList>& playerInput,
-                                        int& currentPlayerFrame,
-                                        int& nextPlayerFrame) const;
+                                        unsigned int& currentPlayerFrame,
+                                        unsigned int& nextPlayerFrame) const;
     
 private:
     struct BoxInfo {
@@ -37,17 +35,17 @@ private:
 	void crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
                                       ::std::vector<BoxInfo>& nextBox) const;
 	
-    void guyStep(const ::std::vector<Guy>& oldGuyList, int time, 
+    void guyStep(const ::std::vector<Guy>& oldGuyList, unsigned int time, 
                  const ::std::vector<InputList>& playerInput, TimeObjectListList& newDepartures,
                  ::std::vector<BoxInfo>& nextBox,
-                 int& currentPlayerFrame,
-                 int& nextPlayerFrame) const;
+                 unsigned int& currentPlayerFrame,
+                 unsigned int& nextPlayerFrame) const;
 
 	bool wallAt(int x, int y) const;
     
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
-    int timeLineLength;
+    unsigned int timeLineLength;
     ::std::vector< ::std::vector<bool> > wallmap;
 	int gravity;
 	int wallSize;

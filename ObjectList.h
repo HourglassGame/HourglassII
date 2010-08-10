@@ -1,9 +1,6 @@
 #ifndef HG_OBJECT_LIST_H
 #define HG_OBJECT_LIST_H
 
-#define BOOST_SP_DISABLE_THREADS
-#include <boost/shared_ptr.hpp>
-
 #include "Guy.h"
 #include "Box.h"
 
@@ -15,6 +12,10 @@ class ObjectList
 {
 public:
     ObjectList();
+    
+    ~ObjectList();
+    ObjectList(const ObjectList& other);
+    ObjectList& operator=(const ObjectList& other);
     
 	void addGuy(const Guy& toCopy); 
 	void addBox(const Box& toCopy); 
@@ -38,9 +39,17 @@ public:
     bool operator!=(const ObjectList& other) const;
 	bool isEmpty() const;
 private:
+    void decrementCount();
+    
     struct Data;
-    ::boost::shared_ptr<Data> data;
+    int* referenceCount;
+    Data* data;
     struct Data {
+        Data () :
+        guyList(),
+        boxList()
+        {
+        }
         ::std::vector<Guy> guyList;
         ::std::vector<Box> boxList;
     };

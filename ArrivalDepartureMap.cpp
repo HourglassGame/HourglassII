@@ -6,53 +6,53 @@ using namespace ::hg;
 
 typedef TimeObjectListList::ListType::const_iterator Iterator;
 
-ArrivalDepartureMap::ArrivalDepartureMap(int timeLength) :
+ArrivalDepartureMap::ArrivalDepartureMap(unsigned int timeLength) :
+permanentDepartureIndex(timeLength),
 arrivals(timeLength),
-departures(timeLength),
-permanentDepartureIndex(timeLength)
+departures(timeLength)
 {
 }
 
-ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(int arrivalTime)
+ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(unsigned int arrivalTime)
 {
-	return arrivals[arrivalTime].getObjectListForManipulation(permanentDepartureIndex);
+	return arrivals.at(arrivalTime).getObjectListForManipulation(permanentDepartureIndex);
 }
 
 //returns which frames are changed
-vector<int> ArrivalDepartureMap::updateDeparturesFromTime(const int time, const TimeObjectListList& newDeparture)
+vector<unsigned int> ArrivalDepartureMap::updateDeparturesFromTime(const unsigned int time, const TimeObjectListList& newDeparture)
 {
-    vector<int> changedTimes;
+    vector<unsigned int> changedTimes;
     
     Iterator ni(newDeparture.list.begin());
     const Iterator nend(newDeparture.list.end());
-    Iterator oi(departures[time].list.begin());
-    const Iterator oend(departures[time].list.end());
+    Iterator oi(departures.at(time).list.begin());
+    const Iterator oend(departures.at(time).list.end());
     
     while (oi != oend) {
         while (true) {
             if (ni != nend) {
                 if ((*ni).first < (*oi).first) {
-                    arrivals[(*ni).first].insertObjectList(time, (*ni).second);
+                    arrivals.at((*ni).first).insertObjectList(time, (*ni).second);
                     changedTimes.push_back((*ni).first);
                     ++ni;
                 }
                 else if ((*ni).first == (*oi).first) {
                     if ((*ni).second != (*oi).second) {
-                        arrivals[(*ni).first].list.find(time)->second = (*ni).second;
+                        arrivals.at((*ni).first).list.find(time)->second = (*ni).second;
                         changedTimes.push_back((*ni).first);
                     }
                     ++ni;
                     break;
                 }
                 else {
-                    arrivals[(*oi).first].list.erase(time);
+                    arrivals.at((*oi).first).list.erase(time);
                     changedTimes.push_back((*oi).first);
                     break;
                 }
             }
             else {
                 while (oi != oend) {
-                    arrivals[(*oi).first].list.erase(time);
+                    arrivals.at((*oi).first).list.erase(time);
                     changedTimes.push_back((*oi).first);
                     ++oi;
                 }
@@ -62,20 +62,20 @@ vector<int> ArrivalDepartureMap::updateDeparturesFromTime(const int time, const 
         ++oi;
     }
     while (ni != nend) {
-        arrivals[(*ni).first].insertObjectList(time, (*ni).second);
+        arrivals.at((*ni).first).insertObjectList(time, (*ni).second);
         changedTimes.push_back((*ni).first);
         ++ni;
     }
 end:
-    departures[time] = newDeparture;
+    departures.at(time) = newDeparture;
     return changedTimes;
 }
 
-ObjectList ArrivalDepartureMap::getArrivals(int time)
+ObjectList ArrivalDepartureMap::getArrivals(unsigned int time)
 {
 	ObjectList returnList;
 
-	for (Iterator it(arrivals[time].list.begin()), end(arrivals[time].list.end());
+	for (Iterator it(arrivals.at(time).list.begin()), end(arrivals.at(time).list.end());
          it != end; ++it)
 	{
 		returnList.add(it->second);
@@ -98,5 +98,3 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
     return equal(departures.begin(), departures.end(), other.departures.begin())
     && equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
 }
-
-

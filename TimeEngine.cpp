@@ -1,9 +1,9 @@
-#include <vector>
 #include <iostream>
 #include <cassert>
 
 #include "TimeEngine.h"
 
+#include "InvalidLevelException.h"
 #include "ParadoxException.h"
 #include "TotalState.h"
 
@@ -13,17 +13,17 @@
 using namespace ::std;
 using namespace ::hg;
 
-TimeEngine::TimeEngine(int newTimeLength, vector<vector<bool> > wallmap, int newWallSize, int newGravity) :
-timeLineLength(newTimeLength),
-endOfFrameState(ArrivalDepartureMap(newTimeLength),true,-1,-1),
-physics(newTimeLength, wallmap, newWallSize, newGravity)
+TimeEngine::TimeEngine(unsigned int timeLineLength,
+                       vector<vector<bool> > wallmap,
+                       int newWallSize,
+                       int newGravity,
+                       const ObjectList& initialObjects,
+                       unsigned int guyStartTime) :
+endOfFrameState(ArrivalDepartureMap(timeLineLength),true,timeLineLength,guyStartTime),
+playerInput(),
+physics(timeLineLength, wallmap, newWallSize, newGravity)
 {
-}
-
-// returns if the level creator not a foo
-bool TimeEngine::checkConstistencyAndPropagateLevel(const ObjectList& initialObjects, int guyStartTime)
-
-{
+    assert(timeLineLength > 0);
     // boxes
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
@@ -39,24 +39,24 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(const ObjectList& initialObj
     }
     
     // guys
-    endOfFrameState.currentPlayerFrame = -1;
+    endOfFrameState.currentPlayerFrame = timeLineLength;
     endOfFrameState.nextPlayerFrame = guyStartTime;
     if (initialObjects.getGuyListRef().size() != 1)
     {
-        return false;
+        throw InvalidLevelException();
     }
     
     //** determine level
     
     // propgate from start of time first
-    vector<int> startFirstFrameUpdateStack;
+    vector<unsigned int> startFirstFrameUpdateStack;
     startFirstFrameUpdateStack.push_back(0);
     startFirstFrameUpdateStack.push_back(timeLineLength-1);
     
     WorldState startFirstState(executeFrameUpdateStackNoParadoxCheck(endOfFrameState, startFirstFrameUpdateStack));
     
     // propgate from end of time first
-    vector<int> endFirstFrameUpdateStack;
+    vector<unsigned int> endFirstFrameUpdateStack;
     endFirstFrameUpdateStack.push_back(timeLineLength-1);
     endFirstFrameUpdateStack.push_back(0);
     
@@ -67,35 +67,34 @@ bool TimeEngine::checkConstistencyAndPropagateLevel(const ObjectList& initialObj
     {
         endOfFrameState = startFirstState;
         endOfFrameState.arrivalDepartures.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef()[0]);
-        return true;
+        return;
     }
-    return false;
+    throw InvalidLevelException();
 }
 
-
-ObjectList TimeEngine::getNextPlayerFrame(const InputList& newInputData)
+const ObjectList TimeEngine::getNextPlayerFrame(const InputList& newInputData)
 {
     playerInput.push_back(newInputData);
     endOfFrameState.currentPlayerFrame = endOfFrameState.nextPlayerFrame;
-    endOfFrameState = executeFrameUpdateStack(endOfFrameState, vector<int>(1,endOfFrameState.currentPlayerFrame));
+    endOfFrameState = executeFrameUpdateStack(endOfFrameState, vector<unsigned int>(1,endOfFrameState.currentPlayerFrame));
     //Get arrivals at frame where player just arrived.
     return endOfFrameState.arrivalDepartures.getArrivals(endOfFrameState.nextPlayerFrame);
 }
 
 
 WorldState TimeEngine::executeFrameUpdateStackNoParadoxCheck(WorldState currentState, 
-                                                               vector<int> frameUpdateStack) const
+                                                               vector<unsigned int> frameUpdateStack) const
 {
     while (frameUpdateStack.size() > 0)
     {
-        const int nextUpdate(frameUpdateStack.back());
+        const unsigned int nextUpdate(frameUpdateStack.back());
         frameUpdateStack.pop_back();
         updateFrame(nextUpdate, frameUpdateStack, currentState);
     }
     return currentState;
 }
 
-WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<int> frameUpdateStack) const
+WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<unsigned int> frameUpdateStack) const
 {
     //world state in order for a single executeFrameUpdateStack()
     vector<TotalState> previousStates;
@@ -117,7 +116,7 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<i
                 if (*it == newState) {
                     //This is where executeFrameUpdateStack is called many times and the results compared
                     //This bit could easily be done in parallel
-                    vector<int> newFrameUpdateStack(it->stackState);
+                    vector<unsigned int> newFrameUpdateStack(it->stackState);
                     newFrameUpdateStack.pop_back();
                     vector<WorldState> alternateStates;
                     while (it!=end) {
@@ -138,7 +137,7 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<i
             previousStates.push_back(newState);
         }
         
-        const int nextUpdate(frameUpdateStack.back());
+        const unsigned int nextUpdate(frameUpdateStack.back());
         frameUpdateStack.pop_back();
         updateFrame(nextUpdate, frameUpdateStack, currentState);
     }
@@ -146,10 +145,10 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<i
 }
 
 
-void TimeEngine::updateFrame(int frame, vector<int>& frameUpdateStack, WorldState& currentState) const
+void TimeEngine::updateFrame(unsigned int frame, vector<unsigned int>& frameUpdateStack, WorldState& currentState) const
 {
     // get the arrivals for the physics frame by going across a row
-    ObjectList arrivals(currentState.arrivalDepartures.getArrivals(frame));
+    const ObjectList arrivals(currentState.arrivalDepartures.getArrivals(frame));
     
     if (frame == currentState.currentPlayerFrame)
     {
@@ -167,7 +166,7 @@ void TimeEngine::updateFrame(int frame, vector<int>& frameUpdateStack, WorldStat
     
     // update departures from this frame
     departures.sortObjectLists();
-    const vector<int> framesThatNeedUpdating(currentState.arrivalDepartures.updateDeparturesFromTime(frame, departures));
+    const vector<unsigned int> framesThatNeedUpdating(currentState.arrivalDepartures.updateDeparturesFromTime(frame, departures));
     
     if (currentState.updateStartFirst)
     {

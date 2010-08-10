@@ -1,32 +1,38 @@
 #include "TimeObjectListList.h"
 using namespace ::hg;
-ObjectList& TimeObjectListList::getObjectListForManipulation(int time)
+
+TimeObjectListList::TimeObjectListList() :
+list()
+{
+}
+
+ObjectList& TimeObjectListList::getObjectListForManipulation(unsigned int time)
 {
     return list[time];
 }
 
-void TimeObjectListList::setObjectList(int time, const ObjectList& newObjectList)
+void TimeObjectListList::setObjectList(unsigned int time, const ObjectList& newObjectList)
 {
     list[time] = newObjectList;
 }
 
 //Inserts given object list at given time - noop if an object list already exists at the given time
-void TimeObjectListList::insertObjectList(int time, const ObjectList& newObjectList)
+void TimeObjectListList::insertObjectList(unsigned int time, const ObjectList& newObjectList)
 {
     list.insert(ListType::value_type(time,newObjectList));
 }
 
-void TimeObjectListList::clearTime(int time)
+void TimeObjectListList::clearTime(unsigned int time)
 {
     list.erase(time);
 }
 
-bool TimeObjectListList::operator==(const hg::TimeObjectListList& other) const
+bool TimeObjectListList::operator==(const TimeObjectListList& other) const
 {
     return equals(other);
 }
 
-bool TimeObjectListList::operator!=(const hg::TimeObjectListList& other) const
+bool TimeObjectListList::operator!=(const TimeObjectListList& other) const
 {
     return !equals(other);
 }

@@ -1,15 +1,14 @@
 #ifndef HG_BOX_H
 #define HG_BOX_H
-
-#define BOOST_SP_DISABLE_THREADS
-#include <boost/shared_ptr.hpp>
 #include "TimeDirection.h"
 namespace hg {
     class Box
     {
-        
     public:
         Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection);
+        ~Box();
+        Box(const Box& other);
+        Box& operator=(const Box& other);
         
         inline int getX() const {return data->x;}
         inline int getY() const {return data->y;}
@@ -24,9 +23,11 @@ namespace hg {
         bool operator<(const Box& second) const;
         
     private:
-        struct Data;
+        void decrementCount();
         
-        ::boost::shared_ptr<Data> data;
+        struct Data;
+        mutable int* referenceCount;
+        Data* data;
         
         struct Data {
             Data(int nx,

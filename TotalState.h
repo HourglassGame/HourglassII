@@ -5,8 +5,7 @@
 namespace hg {
     class TotalState {
     public:
-        //These parameters must be COPIED
-        TotalState(const WorldState& newWorldState, const ::std::vector<int>& newStackState) :
+        TotalState(const WorldState& newWorldState, const ::std::vector<unsigned int>& newStackState) :
         worldState(newWorldState),
         stackState(newStackState)
         {}
@@ -16,7 +15,7 @@ namespace hg {
                     && worldState == other.worldState;
         }
         WorldState worldState;
-        ::std::vector<int> stackState;
+        ::std::vector<unsigned int> stackState;
     };
 }
 #endif //HG_TOTAL_STATE_H

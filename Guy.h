@@ -1,9 +1,6 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
 
-#define BOOST_SP_DISABLE_THREADS
-#include <boost/shared_ptr.hpp>
-
 #include "TimeDirection.h"
 namespace hg {
     class Guy
@@ -19,8 +16,12 @@ namespace hg {
             int nBoxCarrySize,
             hg::TimeDirection nBoxCarryDirection,
             hg::TimeDirection nTimeDirection, 
-            int nRelativeIndex,
+            unsigned int nRelativeIndex,
             int nSubimage);
+        
+        ~Guy();
+        Guy(const Guy& other);
+        Guy& operator=(const Guy& other);
         
         inline int getX() const {return data->x;}
         inline int getY() const {return data->y;}
@@ -34,7 +35,7 @@ namespace hg {
         inline TimeDirection getBoxCarryDirection() const {return data->boxCarryDirection;}
         
         inline TimeDirection getTimeDirection() const {return data->timeDirection;}
-        inline int getRelativeIndex() const {return data->relativeIndex;}
+        inline unsigned int getRelativeIndex() const {return data->relativeIndex;}
         inline int getSubimage() const {return data->subimage;}
         
         const static int animationLength = 13;
@@ -44,9 +45,11 @@ namespace hg {
         
         bool operator<(const Guy& second) const;
     private:
-        struct Data;
+        void decrementCount();
         
-        ::boost::shared_ptr<Data> data;
+        struct Data;
+        mutable int* referenceCount;
+        Data* data;
         
         struct Data {
             Data(int nx,
@@ -61,7 +64,7 @@ namespace hg {
                  TimeDirection nboxCarryDirection,
                  
                  TimeDirection ntimeDirection,
-                 int nrelativeIndex,
+                 unsigned int nrelativeIndex,
 
                  int nsubimage) :
             x(nx),
@@ -94,7 +97,7 @@ namespace hg {
             TimeDirection boxCarryDirection;
             
             TimeDirection timeDirection;
-            int relativeIndex;
+            unsigned int relativeIndex;
             
             int subimage;
         };
