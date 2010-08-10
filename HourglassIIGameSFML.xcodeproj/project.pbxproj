@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		20700DFA11F578B0009794E1 /* Hg_Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20700DF911F578B0009794E1 /* Hg_Input.cpp */; };
 		20700E4311F59927009794E1 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20700DE611F576AB009794E1 /* libboost_thread.a */; };
-		2079BC3B120D2E820028D6E2 /* ParadoxException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2079BC31120D2E820028D6E2 /* ParadoxException.cpp */; };
-		2079BC3C120D2E820028D6E2 /* TotalState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2079BC33120D2E820028D6E2 /* TotalState.cpp */; };
-		2079BC3D120D2E820028D6E2 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2079BC35120D2E820028D6E2 /* WorldState.cpp */; };
 		20AEACFF11F3DF0A003617DB /* ArrivalDepartureMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */; };
 		20AEAD0111F3DF0A003617DB /* ArrivalDepartureMap.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */; };
 		20AEAD0311F3DF0A003617DB /* Box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0211F3DF0A003617DB /* Box.cpp */; };
@@ -20,19 +17,10 @@
 		20AEAD0911F3DF0A003617DB /* Guy.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0811F3DF0A003617DB /* Guy.h */; };
 		20AEAD0B11F3DF0A003617DB /* InputList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0A11F3DF0A003617DB /* InputList.cpp */; };
 		20AEAD0D11F3DF0A003617DB /* InputList.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0C11F3DF0A003617DB /* InputList.h */; };
-		20AEAD0F11F3DF0A003617DB /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD0E11F3DF0A003617DB /* Item.cpp */; };
-		20AEAD1111F3DF0A003617DB /* Item.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1011F3DF0A003617DB /* Item.h */; };
-		20AEAD1311F3DF0A003617DB /* ItemType.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1211F3DF0A003617DB /* ItemType.h */; };
 		20AEAD1511F3DF0A003617DB /* ObjectList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1411F3DF0A003617DB /* ObjectList.cpp */; };
 		20AEAD1711F3DF0A003617DB /* ObjectList.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1611F3DF0A003617DB /* ObjectList.h */; };
 		20AEAD1911F3DF0B003617DB /* PhysicsEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1811F3DF0B003617DB /* PhysicsEngine.cpp */; };
 		20AEAD1B11F3DF0B003617DB /* PhysicsEngine.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1A11F3DF0B003617DB /* PhysicsEngine.h */; };
-		20AEAD1D11F3DF0B003617DB /* Pickup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1C11F3DF0B003617DB /* Pickup.cpp */; };
-		20AEAD1F11F3DF0B003617DB /* Pickup.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD1E11F3DF0B003617DB /* Pickup.h */; };
-		20AEAD2111F3DF0B003617DB /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2011F3DF0B003617DB /* Platform.cpp */; };
-		20AEAD2311F3DF0B003617DB /* Platform.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2211F3DF0B003617DB /* Platform.h */; };
-		20AEAD2511F3DF0B003617DB /* Switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2411F3DF0B003617DB /* Switch.cpp */; };
-		20AEAD2711F3DF0B003617DB /* Switch.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2611F3DF0B003617DB /* Switch.h */; };
 		20AEAD2911F3DF0B003617DB /* TimeEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2811F3DF0B003617DB /* TimeEngine.cpp */; };
 		20AEAD2B11F3DF0B003617DB /* TimeEngine.h in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2A11F3DF0B003617DB /* TimeEngine.h */; };
 		20AEAD2D11F3DF0B003617DB /* TimeObjectListList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */; };
@@ -79,38 +67,27 @@
 		20700DE611F576AB009794E1 /* libboost_thread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_thread.a; path = /Users/evan/Programming/boost/library/lib/libboost_thread.a; sourceTree = "<absolute>"; };
 		20700DF811F578B0009794E1 /* Hg_Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hg_Input.h; sourceTree = "<group>"; };
 		20700DF911F578B0009794E1 /* Hg_Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hg_Input.cpp; sourceTree = "<group>"; };
-		2079BC31120D2E820028D6E2 /* ParadoxException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParadoxException.cpp; path = ../../HourglassII_2.1/ParadoxException.cpp; sourceTree = SOURCE_ROOT; };
-		2079BC32120D2E820028D6E2 /* ParadoxException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParadoxException.h; path = ../../HourglassII_2.1/ParadoxException.h; sourceTree = SOURCE_ROOT; };
-		2079BC33120D2E820028D6E2 /* TotalState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TotalState.cpp; path = ../../HourglassII_2.1/TotalState.cpp; sourceTree = SOURCE_ROOT; };
-		2079BC34120D2E820028D6E2 /* TotalState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TotalState.h; path = ../../HourglassII_2.1/TotalState.h; sourceTree = SOURCE_ROOT; };
-		2079BC35120D2E820028D6E2 /* WorldState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WorldState.cpp; path = ../../HourglassII_2.1/WorldState.cpp; sourceTree = SOURCE_ROOT; };
-		2079BC36120D2E820028D6E2 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldState.h; path = ../../HourglassII_2.1/WorldState.h; sourceTree = SOURCE_ROOT; };
-		207D22DD1204099E00CC5C54 /* TimeDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeDirection.h; path = ../../HourglassII_2.1/TimeDirection.h; sourceTree = SOURCE_ROOT; };
-		20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ArrivalDepartureMap.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.cpp; sourceTree = "<absolute>"; };
-		20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ArrivalDepartureMap.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.h; sourceTree = "<absolute>"; };
-		20AEAD0211F3DF0A003617DB /* Box.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Box.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Box.cpp; sourceTree = "<absolute>"; };
-		20AEAD0411F3DF0A003617DB /* Box.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Box.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Box.h; sourceTree = "<absolute>"; };
+		2079BC32120D2E820028D6E2 /* ParadoxException.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = ParadoxException.h; path = ../../HourglassII_2.1/ParadoxException.h; sourceTree = SOURCE_ROOT; };
+		2079BC34120D2E820028D6E2 /* TotalState.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = TotalState.h; path = ../../HourglassII_2.1/TotalState.h; sourceTree = SOURCE_ROOT; };
+		2079BC36120D2E820028D6E2 /* WorldState.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = WorldState.h; path = ../../HourglassII_2.1/WorldState.h; sourceTree = SOURCE_ROOT; };
+		207C17F01210FB3F0053C981 /* InvalidLevelException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InvalidLevelException.h; path = ../../HourglassII_2.1/InvalidLevelException.h; sourceTree = SOURCE_ROOT; };
+		207D22DD1204099E00CC5C54 /* TimeDirection.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; name = TimeDirection.h; path = ../../HourglassII_2.1/TimeDirection.h; sourceTree = SOURCE_ROOT; };
+		20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = ArrivalDepartureMap.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.cpp; sourceTree = "<absolute>"; };
+		20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp; name = ArrivalDepartureMap.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ArrivalDepartureMap.h; sourceTree = "<absolute>"; };
+		20AEAD0211F3DF0A003617DB /* Box.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = Box.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Box.cpp; sourceTree = "<absolute>"; };
+		20AEAD0411F3DF0A003617DB /* Box.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = Box.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Box.h; sourceTree = "<absolute>"; };
 		20AEAD0611F3DF0A003617DB /* Guy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Guy.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Guy.cpp; sourceTree = "<absolute>"; };
-		20AEAD0811F3DF0A003617DB /* Guy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Guy.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Guy.h; sourceTree = "<absolute>"; };
+		20AEAD0811F3DF0A003617DB /* Guy.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = Guy.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Guy.h; sourceTree = "<absolute>"; };
 		20AEAD0A11F3DF0A003617DB /* InputList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = InputList.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/InputList.cpp; sourceTree = "<absolute>"; };
-		20AEAD0C11F3DF0A003617DB /* InputList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = InputList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/InputList.h; sourceTree = "<absolute>"; };
-		20AEAD0E11F3DF0A003617DB /* Item.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Item.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Item.cpp; sourceTree = "<absolute>"; };
-		20AEAD1011F3DF0A003617DB /* Item.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Item.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Item.h; sourceTree = "<absolute>"; };
-		20AEAD1211F3DF0A003617DB /* ItemType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ItemType.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ItemType.h; sourceTree = "<absolute>"; };
+		20AEAD0C11F3DF0A003617DB /* InputList.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = InputList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/InputList.h; sourceTree = "<absolute>"; };
 		20AEAD1411F3DF0A003617DB /* ObjectList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = ObjectList.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/ObjectList.cpp; sourceTree = "<absolute>"; };
-		20AEAD1611F3DF0A003617DB /* ObjectList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ObjectList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ObjectList.h; sourceTree = "<absolute>"; };
+		20AEAD1611F3DF0A003617DB /* ObjectList.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = ObjectList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/ObjectList.h; sourceTree = "<absolute>"; };
 		20AEAD1811F3DF0B003617DB /* PhysicsEngine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsEngine.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/PhysicsEngine.cpp; sourceTree = "<absolute>"; };
-		20AEAD1A11F3DF0B003617DB /* PhysicsEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PhysicsEngine.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/PhysicsEngine.h; sourceTree = "<absolute>"; };
-		20AEAD1C11F3DF0B003617DB /* Pickup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Pickup.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Pickup.cpp; sourceTree = "<absolute>"; };
-		20AEAD1E11F3DF0B003617DB /* Pickup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Pickup.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Pickup.h; sourceTree = "<absolute>"; };
-		20AEAD2011F3DF0B003617DB /* Platform.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Platform.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Platform.cpp; sourceTree = "<absolute>"; };
-		20AEAD2211F3DF0B003617DB /* Platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Platform.h; sourceTree = "<absolute>"; };
-		20AEAD2411F3DF0B003617DB /* Switch.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Switch.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/Switch.cpp; sourceTree = "<absolute>"; };
-		20AEAD2611F3DF0B003617DB /* Switch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Switch.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/Switch.h; sourceTree = "<absolute>"; };
+		20AEAD1A11F3DF0B003617DB /* PhysicsEngine.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = PhysicsEngine.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/PhysicsEngine.h; sourceTree = "<absolute>"; };
 		20AEAD2811F3DF0B003617DB /* TimeEngine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TimeEngine.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeEngine.cpp; sourceTree = "<absolute>"; };
-		20AEAD2A11F3DF0B003617DB /* TimeEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeEngine.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeEngine.h; sourceTree = "<absolute>"; };
+		20AEAD2A11F3DF0B003617DB /* TimeEngine.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = TimeEngine.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeEngine.h; sourceTree = "<absolute>"; };
 		20AEAD2C11F3DF0B003617DB /* TimeObjectListList.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = TimeObjectListList.cpp; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeObjectListList.cpp; sourceTree = "<absolute>"; };
-		20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TimeObjectListList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeObjectListList.h; sourceTree = "<absolute>"; };
+		20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; name = TimeObjectListList.h; path = /Users/evan/Documents/workspace/HourglassII_2.1/TimeObjectListList.h; sourceTree = "<absolute>"; };
 		A01FB6A90F07CF6E000AAC7B /* HourglassIIGameSFML.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassIIGameSFML.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A01FB6AC0F07CF6E000AAC7B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A01FB6C80F07CFCE000AAC7B /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -138,12 +115,10 @@
 		20AEACFD11F3DEB3003617DB /* TimeEngine */ = {
 			isa = PBXGroup;
 			children = (
+				207C17F01210FB3F0053C981 /* InvalidLevelException.h */,
 				2079BC32120D2E820028D6E2 /* ParadoxException.h */,
-				2079BC31120D2E820028D6E2 /* ParadoxException.cpp */,
 				2079BC34120D2E820028D6E2 /* TotalState.h */,
-				2079BC33120D2E820028D6E2 /* TotalState.cpp */,
 				2079BC36120D2E820028D6E2 /* WorldState.h */,
-				2079BC35120D2E820028D6E2 /* WorldState.cpp */,
 				20AEAD0011F3DF0A003617DB /* ArrivalDepartureMap.h */,
 				20AEACFE11F3DF0A003617DB /* ArrivalDepartureMap.cpp */,
 				20AEAD0411F3DF0A003617DB /* Box.h */,
@@ -152,19 +127,10 @@
 				20AEAD0611F3DF0A003617DB /* Guy.cpp */,
 				20AEAD0C11F3DF0A003617DB /* InputList.h */,
 				20AEAD0A11F3DF0A003617DB /* InputList.cpp */,
-				20AEAD1011F3DF0A003617DB /* Item.h */,
-				20AEAD0E11F3DF0A003617DB /* Item.cpp */,
-				20AEAD1211F3DF0A003617DB /* ItemType.h */,
 				20AEAD1611F3DF0A003617DB /* ObjectList.h */,
 				20AEAD1411F3DF0A003617DB /* ObjectList.cpp */,
 				20AEAD1A11F3DF0B003617DB /* PhysicsEngine.h */,
 				20AEAD1811F3DF0B003617DB /* PhysicsEngine.cpp */,
-				20AEAD1E11F3DF0B003617DB /* Pickup.h */,
-				20AEAD1C11F3DF0B003617DB /* Pickup.cpp */,
-				20AEAD2211F3DF0B003617DB /* Platform.h */,
-				20AEAD2011F3DF0B003617DB /* Platform.cpp */,
-				20AEAD2611F3DF0B003617DB /* Switch.h */,
-				20AEAD2411F3DF0B003617DB /* Switch.cpp */,
 				20AEAD2A11F3DF0B003617DB /* TimeEngine.h */,
 				20AEAD2811F3DF0B003617DB /* TimeEngine.cpp */,
 				20AEAD2E11F3DF0B003617DB /* TimeObjectListList.h */,
@@ -275,19 +241,10 @@
 				20AEAD0711F3DF0A003617DB /* Guy.cpp in Sources */,
 				20AEAD0D11F3DF0A003617DB /* InputList.h in Sources */,
 				20AEAD0B11F3DF0A003617DB /* InputList.cpp in Sources */,
-				20AEAD1111F3DF0A003617DB /* Item.h in Sources */,
-				20AEAD0F11F3DF0A003617DB /* Item.cpp in Sources */,
-				20AEAD1311F3DF0A003617DB /* ItemType.h in Sources */,
 				20AEAD1711F3DF0A003617DB /* ObjectList.h in Sources */,
 				20AEAD1511F3DF0A003617DB /* ObjectList.cpp in Sources */,
 				20AEAD1B11F3DF0B003617DB /* PhysicsEngine.h in Sources */,
 				20AEAD1911F3DF0B003617DB /* PhysicsEngine.cpp in Sources */,
-				20AEAD1F11F3DF0B003617DB /* Pickup.h in Sources */,
-				20AEAD1D11F3DF0B003617DB /* Pickup.cpp in Sources */,
-				20AEAD2311F3DF0B003617DB /* Platform.h in Sources */,
-				20AEAD2111F3DF0B003617DB /* Platform.cpp in Sources */,
-				20AEAD2711F3DF0B003617DB /* Switch.h in Sources */,
-				20AEAD2511F3DF0B003617DB /* Switch.cpp in Sources */,
 				20AEAD2B11F3DF0B003617DB /* TimeEngine.h in Sources */,
 				20AEAD2911F3DF0B003617DB /* TimeEngine.cpp in Sources */,
 				20AEAD2F11F3DF0B003617DB /* TimeObjectListList.h in Sources */,
@@ -296,9 +253,6 @@
 				A01FB6C90F07CFCE000AAC7B /* main.cpp in Sources */,
 				20D0110F120AC2A2008A046E /* Hg_Input.h in Sources */,
 				20700DFA11F578B0009794E1 /* Hg_Input.cpp in Sources */,
-				2079BC3B120D2E820028D6E2 /* ParadoxException.cpp in Sources */,
-				2079BC3C120D2E820028D6E2 /* TotalState.cpp in Sources */,
-				2079BC3D120D2E820028D6E2 /* WorldState.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -359,12 +313,37 @@
 				GCC_ENABLE_SSE42_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_FEEDBACK_DIRECTED_OPTIMIZATION = Off;
-				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
+				GCC_INPUT_FILETYPE = automatic;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_STRICT_ALIASING = YES;
 				GCC_UNROLL_LOOPS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_GLOBAL_CONSTRUCTORS = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_MULTIPLE_DEFINITION_TYPES_FOR_SELECTOR = NO;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/../../../../Programming/clean_boost\"";
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -377,6 +356,7 @@
 				PREBINDING = NO;
 				PRODUCT_NAME = HourglassIIGameSFML;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				WARNING_CFLAGS = "-Wall";
 				ZERO_LINK = NO;
 			};
 			name = Release;
