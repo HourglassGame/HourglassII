@@ -37,10 +37,12 @@ void ObjectList::decrementCount()
 
 ObjectList& ObjectList::operator=(const ObjectList& other)
 {
-    decrementCount();
-    referenceCount = other.referenceCount;
-    data = other.data;
-    ++(*referenceCount);
+    if (other.data != data) {
+        decrementCount();
+        referenceCount = other.referenceCount;
+        data = other.data;
+        ++(*referenceCount);
+    }
     return *this;
 }
 
@@ -69,7 +71,7 @@ bool ObjectList::equals(const ObjectList& other) const
     assert(data->guyList.size() == other.data->guyList.size());
     assert(data->boxList.size() == other.data->boxList.size());
     return equal(data->guyList.begin(), data->guyList.end(), other.data->guyList.begin()) 
-            && equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
+    && equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
 }
 
 bool ObjectList::isEmpty() const

@@ -31,10 +31,12 @@ void Box::decrementCount()
 
 Box& Box::operator=(const Box& other)
 {
-    decrementCount();
-    referenceCount = other.referenceCount;
-    data = other.data;
-    ++(*referenceCount);
+    if (other.data != data) {
+        decrementCount();
+        referenceCount = other.referenceCount;
+        data = other.data;
+        ++(*referenceCount);
+    }
     return *this;
 }
 

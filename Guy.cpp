@@ -42,10 +42,12 @@ void Guy::decrementCount()
 
 Guy& Guy::operator=(const Guy& other)
 {
-    decrementCount();
-    referenceCount = other.referenceCount;
-    data = other.data;
-    ++(*referenceCount);
+    if (other.data != data) {
+        decrementCount();
+        referenceCount = other.referenceCount;
+        data = other.data;
+        ++(*referenceCount);
+    }
     return *this;
 }
 
@@ -57,17 +59,17 @@ bool Guy::operator!=(const Guy& other) const
 bool Guy::operator==(const Guy& other) const
 {
 	return (data->relativeIndex == other.data->relativeIndex) 
-        && (data->x == other.data->x) 
-        && (data->y == other.data->y) 
-        && (data->xspeed == other.data->xspeed) 
-        && (data->yspeed == other.data->yspeed) 
-        && (data->width == other.data->width) 
-        && (data->height == other.data->height) 
-        && (data->boxCarrying == other.data->boxCarrying) 
-        && (data->timeDirection == other.data->timeDirection) 
-        && (data->subimage == other.data->subimage)
-        && (data->boxCarryDirection == other.data->boxCarryDirection) 
-        && (data->boxCarrySize == other.data->boxCarrySize);
+    && (data->x == other.data->x) 
+    && (data->y == other.data->y) 
+    && (data->xspeed == other.data->xspeed) 
+    && (data->yspeed == other.data->yspeed) 
+    && (data->width == other.data->width) 
+    && (data->height == other.data->height) 
+    && (data->boxCarrying == other.data->boxCarrying) 
+    && (data->timeDirection == other.data->timeDirection) 
+    && (data->subimage == other.data->subimage)
+    && (data->boxCarryDirection == other.data->boxCarryDirection) 
+    && (data->boxCarrySize == other.data->boxCarrySize);
 }
 
 bool Guy::operator<(const Guy& second) const
