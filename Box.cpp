@@ -105,3 +105,9 @@ bool Box::operator<(const Box& second) const
 		return (data->x < second.data->x);
 	}
 }
+
+::std::size_t hg::hash_value(const Box& toHash)
+{
+    assert(toHash.data != NULL && "Shouldn't call hash_value on invalid Box");
+    return toHash.data->hashValue; //Returns pre-cached hash
+}

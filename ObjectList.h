@@ -4,6 +4,7 @@
 #include "Guy.h"
 #include "Box.h"
 
+#include <boost/functional/hash.hpp>
 #include <vector>
 #include "TimeDirection.h"
 namespace hg {
@@ -53,6 +54,8 @@ private:
         ::std::vector<Guy> guyList;
         ::std::vector<Box> boxList;
     };
+    friend ::std::size_t hash_value(const ObjectList& toHash);
 };
+    ::std::size_t hash_value(const ObjectList& toHash);
 }
 #endif //HG_OBJECT_LIST_H

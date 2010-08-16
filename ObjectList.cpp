@@ -96,3 +96,12 @@ void ObjectList::addBox(const Box& toCopy)
 {
 	data->boxList.push_back(toCopy);
 }
+
+::std::size_t hg::hash_value(const ObjectList& toHash)
+{
+    assert(toHash.data != NULL && "should only call hash_value on a valid ObjectList");
+    ::std::size_t seed(0);
+    ::boost::hash_combine(seed, toHash.data->guyList);
+    ::boost::hash_combine(seed, toHash.data->boxList);
+    return seed;
+}

@@ -1,6 +1,7 @@
 #ifndef HG_WORLD_STATE_H
 #define HG_WORLD_STATE_H
 #include <vector>
+#include <boost/functional/hash.hpp>
 #include "ArrivalDepartureMap.h"
 namespace hg {
     class WorldState {
@@ -31,5 +32,7 @@ namespace hg {
         unsigned int currentPlayerFrame;
         unsigned int nextPlayerFrame;
     };
+    
+    ::std::size_t hash_value(const WorldState& toHash);
 }
 #endif //HG_WORLD_STATE_H

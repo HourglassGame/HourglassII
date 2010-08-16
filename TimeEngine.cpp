@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <iterator>
 
 #include "TimeEngine.h"
 
@@ -96,7 +97,7 @@ WorldState TimeEngine::executeFrameUpdateStackNoParadoxCheck(WorldState currentS
 
 WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<unsigned int> frameUpdateStack) const
 {
-    //world state in order for a single executeFrameUpdateStack()
+    //world state hashes in order for a single executeFrameUpdateStack()
     vector<TotalState> previousStates;
     
     while (frameUpdateStack.size() > 0)
@@ -114,24 +115,29 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<u
                  end(previousStates.end());
                  it != end; ++it) {
                 if (*it == newState) {
-                    //This is where executeFrameUpdateStack is called many times and the results compared
-                    //This bit could easily be done in parallel
-                    vector<unsigned int> newFrameUpdateStack(it->stackState);
-                    newFrameUpdateStack.pop_back();
-                    vector<WorldState> alternateStates;
-                    while (it!=end) {
-                        WorldState possibleState(executeFrameUpdateStack(it->worldState, newFrameUpdateStack));
-                        for (vector<WorldState>::iterator stateit(alternateStates.begin()),
-                             stateend(alternateStates.end()); stateit != stateend; ++stateit) {
-                            if (possibleState != *stateit) {
-                                throw ParadoxException();
-                            }
+                    {
+                        //This is where executeFrameUpdateStack is called many times and the results compared
+                        //This bit could easily be done in parallel
+                        vector<unsigned int> newFrameUpdateStack(it->stackState);
+                        newFrameUpdateStack.pop_back();
+                        if (newFrameUpdateStack.empty()) {
+                            throw ParadoxException();
                         }
-                        alternateStates.push_back(possibleState);
-                        ++it;
+                        vector<WorldState> alternateStates;
+                        while (it!=end) {
+                            WorldState possibleState(executeFrameUpdateStack(it->worldState, newFrameUpdateStack));
+                            for (vector<WorldState>::iterator stateit(alternateStates.begin()),
+                                 stateend(alternateStates.end()); stateit != stateend; ++stateit) {
+                                if (possibleState != *stateit) {
+                                    throw ParadoxException();
+                                }
+                            }
+                            alternateStates.push_back(possibleState);
+                            ++it;
+                        }
+                        //Any index would do as they are all the same!
+                        return alternateStates[0];
                     }
-                    //Any index would do as they are all the same!
-                    return alternateStates[0];
                 }
             }
             previousStates.push_back(newState);

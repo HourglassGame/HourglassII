@@ -3,10 +3,10 @@
 
 //#include "ObjectList.h"
 #include "TimeObjectListList.h"
+#include <boost/functional/hash.hpp>
 #include <vector>
 
 namespace hg {
-//    class ObjectList;
 class ArrivalDepartureMap
 {
 public:
@@ -23,9 +23,11 @@ public:
         return !(*this==other);
     }
 private:
+    friend ::std::size_t hash_value(const ArrivalDepartureMap& toHash);
 	unsigned int permanentDepartureIndex;
     ::std::vector<TimeObjectListList> arrivals;
     ::std::vector<TimeObjectListList> departures;
 };
+    ::std::size_t hash_value(const ArrivalDepartureMap& toHash);
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H

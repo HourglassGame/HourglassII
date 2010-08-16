@@ -98,3 +98,12 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
     return equal(departures.begin(), departures.end(), other.departures.begin())
     && equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
 }
+::std::size_t hg::hash_value(const ArrivalDepartureMap& toHash)
+{
+    //PermanentDepartureIndex should be the same throughout the execution of a level, so not hashed.
+    ::std::size_t seed(0);
+    ::boost::hash_combine(seed, toHash.arrivals);
+    ::boost::hash_combine(seed, toHash.departures);
+    return seed;
+}
+

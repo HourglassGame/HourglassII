@@ -2,6 +2,7 @@
 #define HG_TIME_OBJECT_LIST_LIST_H
 
 #include "ObjectList.h"
+#include <boost/functional/hash.hpp>
 #include <map>
 namespace hg {
 class TimeObjectListList
@@ -21,6 +22,8 @@ public:
     bool operator==(const TimeObjectListList& other) const;
     bool operator!=(const TimeObjectListList& other) const;
     ListType list;
+    friend ::std::size_t hash_value(const TimeObjectListList& toHash);
 };
+::std::size_t hash_value(const TimeObjectListList& toHash);
 }
 #endif //HG_TIME_OBJECT_LIST_LIST_H

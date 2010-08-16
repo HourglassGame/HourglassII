@@ -53,3 +53,11 @@ void TimeObjectListList::sortObjectLists()
 		(*it).second.sortElements();
 	}
 }
+
+::std::size_t hg::hash_value(const TimeObjectListList& toHash)
+{
+    //TODO don't use combine!
+    ::std::size_t seed(0);
+    ::boost::hash_combine(seed, toHash.list);
+    return seed;
+}
