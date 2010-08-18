@@ -1,12 +1,14 @@
 #include <iostream>
 #include <cassert>
 #include <iterator>
+#include <algorithm>
 
 #include "TimeEngine.h"
 
 #include "InvalidLevelException.h"
 #include "ParadoxException.h"
 #include "TotalState.h"
+#include "TotalStateHash.h"
 
 #include <boost/foreach.hpp>
 #define reverse_foreach BOOST_REVERSE_FOREACH
@@ -95,15 +97,30 @@ WorldState TimeEngine::executeFrameUpdateStackNoParadoxCheck(WorldState currentS
     return currentState;
 }
 
+TotalState TimeEngine::getNthState(TotalState initialState, unsigned long n) const
+{
+    vector<unsigned int> frameUpdateStack(initialState.stackState);
+    WorldState currentState(initialState.worldState);
+    
+    for (unsigned int i = 0; i < n; ++i) {
+        const unsigned int nextUpdate(frameUpdateStack.back());
+        frameUpdateStack.pop_back();
+        updateFrame(nextUpdate, frameUpdateStack, currentState);
+    }
+    
+    return TotalState(currentState, frameUpdateStack);
+}
+
 WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<unsigned int> frameUpdateStack) const
 {
+    TotalState initialState(currentState, frameUpdateStack);
     //world state hashes in order for a single executeFrameUpdateStack()
-    vector<TotalState> previousStates;
+    vector<TotalStateHash> previousStates;
     
     while (frameUpdateStack.size() > 0)
     {
         {
-            TotalState newState(currentState, frameUpdateStack);
+            TotalStateHash newState(currentState, frameUpdateStack.back());
             
             //If the whole world is in the same state and the same
             //frame is to be updated next then it is a local paradox
@@ -111,32 +128,15 @@ WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<u
             //at point of first instance and check whether the global 
             //state depends on which of the local states is assumed to be true.
             //If it does then it is a paradox
-            for (vector<TotalState>::const_iterator it(previousStates.begin()),
+            for (vector<TotalStateHash>::iterator it(previousStates.begin()),
                  end(previousStates.end());
                  it != end; ++it) {
                 if (*it == newState) {
-                    {
-                        //This is where executeFrameUpdateStack is called many times and the results compared
-                        //This bit could easily be done in parallel
-                        vector<unsigned int> newFrameUpdateStack(it->stackState);
-                        newFrameUpdateStack.pop_back();
-                        if (newFrameUpdateStack.empty()) {
-                            throw ParadoxException();
-                        }
-                        vector<WorldState> alternateStates;
-                        while (it!=end) {
-                            WorldState possibleState(executeFrameUpdateStack(it->worldState, newFrameUpdateStack));
-                            for (vector<WorldState>::iterator stateit(alternateStates.begin()),
-                                 stateend(alternateStates.end()); stateit != stateend; ++stateit) {
-                                if (possibleState != *stateit) {
-                                    throw ParadoxException();
-                                }
-                            }
-                            alternateStates.push_back(possibleState);
-                            ++it;
-                        }
-                        //Any index would do as they are all the same!
-                        return alternateStates[0];
+                    TotalState state(currentState, frameUpdateStack);
+                    if(state == getNthState(initialState, distance(previousStates.begin(), it))) {
+                        //Overdetects paradoxes by assumming that all local paradoxes are global paradoxes
+                        //The old global paradox system was incorrect and implementing a correct one is inordinately hard
+                        throw ParadoxException();
                     }
                 }
             }

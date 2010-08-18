@@ -4,6 +4,7 @@
 
 #include "PhysicsEngine.h"
 #include "WorldState.h"
+#include "TotalState.h"
 
 namespace hg {
 class InputList;
@@ -49,6 +50,8 @@ private:
     //runs the frame update stack until empty
     WorldState executeFrameUpdateStack(WorldState currentState, 
                                              ::std::vector<unsigned int> frameUpdateStack) const;
+    
+    TotalState getNthState(TotalState initialState, unsigned long n) const;
     
     /**********************************************************************************************
      * Gets all arrivals to `frame' using `currentState', applies physics to get departures, 
