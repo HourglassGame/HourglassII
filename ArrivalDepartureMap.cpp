@@ -1,6 +1,7 @@
 #include "ArrivalDepartureMap.h"
 #include <algorithm>
 #include <iostream>
+
 using namespace ::std;
 using namespace ::hg;
 
@@ -13,15 +14,51 @@ departures(timeLength)
 {
 }
 
+ObjectList ArrivalDepartureMap::Frame::getPrePhysics() const
+{
+    return this_.getPrePhysics(time_);
+}
+FrameID ArrivalDepartureMap::Frame::getTime() const
+{
+    return time_;
+}
+
+ArrivalDepartureMap::Frame::Frame(const ArrivalDepartureMap& mapPtr, FrameID time) :
+time_(time),
+this_(mapPtr)
+{
+}
+
+vector<FrameID> ArrivalDepartureMap::updateWithNewDepartures(const map<FrameID, TimeObjectListList>& newDepartures)
+{
+    vector<FrameID> newWaveFrames;
+    for(map<FrameID, TimeObjectListList>::const_iterator
+            it(newDepartures.begin()), end(newDepartures.end());
+            it != end;
+            ++it)
+    {
+        vector<FrameID> temp (updateDeparturesFromTime(it->first, it->second));
+        newWaveFrames.insert(newWaveFrames.end(),temp.begin(), temp.end());
+    }
+    sort(newWaveFrames.begin(), newWaveFrames.end());
+    newWaveFrames.erase(unique(newWaveFrames.begin(), newWaveFrames.end()), newWaveFrames.end());
+    return newWaveFrames;
+}
+
+ArrivalDepartureMap::Frame ArrivalDepartureMap::getFrame(FrameID whichFrame) const
+{
+    return Frame(*this, whichFrame);
+}
+
 ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(unsigned int arrivalTime)
 {
 	return arrivals.at(arrivalTime).getObjectListForManipulation(permanentDepartureIndex);
 }
 
 //returns which frames are changed
-vector<unsigned int> ArrivalDepartureMap::updateDeparturesFromTime(const unsigned int time, const TimeObjectListList& newDeparture)
+vector<FrameID> ArrivalDepartureMap::updateDeparturesFromTime(const FrameID time, const TimeObjectListList& newDeparture)
 {
-    vector<unsigned int> changedTimes;
+    vector<FrameID> changedTimes;
     
     Iterator ni(newDeparture.list.begin());
     const Iterator nend(newDeparture.list.end());
@@ -71,7 +108,21 @@ end:
     return changedTimes;
 }
 
-ObjectList ArrivalDepartureMap::getArrivals(unsigned int time)
+ObjectList ArrivalDepartureMap::getPostPhysics(FrameID time) const
+{
+    ObjectList returnList;
+    
+	for (Iterator it(departures.at(time).list.begin()), end(departures.at(time).list.end());
+         it != end; ++it)
+	{
+		returnList.add(it->second);
+	}
+    
+    returnList.sortElements();
+	return returnList;
+}
+
+ObjectList ArrivalDepartureMap::getPrePhysics(unsigned int time) const
 {
 	ObjectList returnList;
 
@@ -98,12 +149,3 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
     return equal(departures.begin(), departures.end(), other.departures.begin())
     && equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
 }
-::std::size_t hg::hash_value(const ArrivalDepartureMap& toHash)
-{
-    //PermanentDepartureIndex should be the same throughout the execution of a level, so not hashed.
-    ::std::size_t seed(0);
-    ::boost::hash_combine(seed, toHash.arrivals);
-    ::boost::hash_combine(seed, toHash.departures);
-    return seed;
-}
-

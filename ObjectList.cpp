@@ -4,52 +4,38 @@
 #include <algorithm>
 #include <cassert>
 
-//Watch out, this shit is shared and you could end up shooting yourself in the foot really hard
-//It is ok at the moment, and even good in places but... YOU HAVE BEEN WARNED!
-
 using namespace ::std;
 using namespace ::hg;
 
 ObjectList::ObjectList() :
-referenceCount(new int(1)),
-data(new Data)
+guyList(),
+boxList()
 {
 }
 
 ObjectList::ObjectList(const ObjectList& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+guyList(other.guyList),
+boxList(other.boxList)
 {
 }
 
 ObjectList::~ObjectList()
 {
-    decrementCount();
-}
-
-void ObjectList::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 ObjectList& ObjectList::operator=(const ObjectList& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
+    if (this != &other) {
+        guyList = other.guyList;
+        boxList = other.boxList;
     }
     return *this;
 }
 
 void ObjectList::add(const ObjectList& other)
 {
-    data->guyList.insert(data->guyList.end(),other.data->guyList.begin(),other.data->guyList.end());
-    data->boxList.insert(data->boxList.end(),other.data->boxList.begin(),other.data->boxList.end());
+    guyList.insert(guyList.end(),other.guyList.begin(),other.guyList.end());
+    boxList.insert(boxList.end(),other.boxList.begin(),other.boxList.end());
 }
 
 bool ObjectList::operator==(const hg::ObjectList& other) const
@@ -64,44 +50,35 @@ bool ObjectList::operator!=(const hg::ObjectList& other) const
 
 bool ObjectList::equals(const ObjectList& other) const
 {
-	if (data->guyList.size() != other.data->guyList.size() || data->boxList.size() != other.data->boxList.size())
+	if (guyList.size() != other.guyList.size() || boxList.size() != other.boxList.size())
 	{
 		return false;
 	}
-    assert(data->guyList.size() == other.data->guyList.size());
-    assert(data->boxList.size() == other.data->boxList.size());
-    return equal(data->guyList.begin(), data->guyList.end(), other.data->guyList.begin()) 
-    && equal(data->boxList.begin(), data->boxList.end(), other.data->boxList.begin());
+    assert(guyList.size() == other.guyList.size());
+    assert(boxList.size() == other.boxList.size());
+    return equal(guyList.begin(), guyList.end(), other.guyList.begin()) 
+            && equal(boxList.begin(), boxList.end(), other.boxList.begin());
 }
 
 bool ObjectList::isEmpty() const
 {
-	return data->guyList.empty() && data->boxList.empty();
+	return guyList.empty() && boxList.empty();
 }
 
 
 void ObjectList::sortElements()
 {
-	sort(data->guyList.begin(), data->guyList.end());
-	sort(data->boxList.begin(), data->boxList.end());
+	sort(guyList.begin(), guyList.end());
+	sort(boxList.begin(), boxList.end());
 }
 
 // Single Element addition
 void ObjectList::addGuy(const Guy& toCopy)
 {
-	data->guyList.push_back(toCopy);
+	guyList.push_back(toCopy);
 }
 
 void ObjectList::addBox(const Box& toCopy)
 {
-	data->boxList.push_back(toCopy);
-}
-
-::std::size_t hg::hash_value(const ObjectList& toHash)
-{
-    assert(toHash.data != NULL && "should only call hash_value on a valid ObjectList");
-    ::std::size_t seed(0);
-    ::boost::hash_combine(seed, toHash.data->guyList);
-    ::boost::hash_combine(seed, toHash.data->boxList);
-    return seed;
+	boxList.push_back(toCopy);
 }

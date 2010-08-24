@@ -2,7 +2,6 @@
 #define HG_GUY_H
 
 #include "TimeDirection.h"
-#include <boost/functional/hash.hpp>
 namespace hg {
     class Guy
     {
@@ -52,8 +51,6 @@ namespace hg {
         mutable int* referenceCount;
         Data* data;
         
-        friend ::std::size_t hash_value(const Guy& toHash);
-        
         struct Data {
             Data(int nx,
                  int ny,
@@ -84,12 +81,8 @@ namespace hg {
             timeDirection(ntimeDirection),
             relativeIndex(nrelativeIndex),
             
-            subimage(nsubimage),
-            
-            hashValue(0)
+            subimage(nsubimage)
             {
-                //TODO - move to initializer list if possible.
-                hashValue = hash_this();
             }
             
             int x;
@@ -107,28 +100,7 @@ namespace hg {
             unsigned int relativeIndex;
             
             int subimage;
-            
-            ::std::size_t hashValue;
-            
-            ::std::size_t hash_this()
-            {
-                ::std::size_t seed(0);
-                boost::hash_combine(seed, x);
-                boost::hash_combine(seed, y);
-                boost::hash_combine(seed, xspeed);
-                boost::hash_combine(seed, yspeed);
-                boost::hash_combine(seed, width);
-                boost::hash_combine(seed, height);
-                boost::hash_combine(seed, boxCarrying);
-                boost::hash_combine(seed, boxCarrySize);
-                boost::hash_combine(seed, boxCarryDirection);
-                boost::hash_combine(seed, timeDirection);
-                boost::hash_combine(seed, relativeIndex);
-                boost::hash_combine(seed, subimage);
-                return seed;
-            }
         };
     };
-    ::std::size_t hash_value(const Guy& toHash);
 }
 #endif //HG_GUY_H

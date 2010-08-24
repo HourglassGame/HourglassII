@@ -20,10 +20,10 @@ wallSize(newWallSize)
 
 //NOTE - no time travel yet so currentPlayerFrame does not ever change.
 TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
-                                               unsigned int time,
+                                               const FrameID time,
                                                const std::vector<InputList>& playerInput,
-                                               unsigned int& currentPlayerFrame,
-                                               unsigned int& nextPlayerFrame) const
+                                               FrameID& currentPlayerFrame,
+                                               FrameID& nextPlayerFrame) const
 {
     std::vector<BoxInfo> nextBox;
     
@@ -84,11 +84,13 @@ bool PhysicsEngine::wallAt(int x, int y) const
 	}
 }
 
-void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const unsigned int time, 
-                            const vector<InputList>& playerInput, TimeObjectListList& newDepartures,
+void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
+                            const FrameID time,
+                            const vector<InputList>& playerInput,
+                            TimeObjectListList& newDepartures,
                             std::vector<BoxInfo>& nextBox,
-                            unsigned int& currentPlayerFrame,
-                            unsigned int& nextPlayerFrame) const
+                            FrameID& currentPlayerFrame,
+                            FrameID& nextPlayerFrame) const
 {
 	vector<int> x;
 	vector<int> y;
@@ -269,14 +271,13 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const unsigned int ti
                 nextSubimage = 0;
             }
             
-            unsigned int relativeIndex(oldGuyList[i].getRelativeIndex());
+            size_t relativeIndex(oldGuyList[i].getRelativeIndex());
             
             // add departure for guy at the appropriate time
-            unsigned int nextTime(time+oldGuyList[i].getTimeDirection());
+            FrameID nextTime(time+oldGuyList[i].getTimeDirection());
             
             if (playerInput.size() - 1 == relativeIndex) {
                 currentPlayerFrame = time;
-                nextPlayerFrame = nextTime;
             }
             if (nextTime >= 0 && nextTime < timeLineLength)
             {
@@ -289,8 +290,11 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList, const unsigned int ti
                         relativeIndex+1, nextSubimage));
             }
         }
-	}
-    
+        else {
+            assert(oldGuyList[i].getRelativeIndex() == playerInput.size());
+            nextPlayerFrame = time;
+        }
+    }
 }
 
 void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,

@@ -10,12 +10,14 @@
 #include <iostream>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
+#include <boost/tuple/tuple.hpp>
 #define foreach BOOST_FOREACH
 using namespace ::hg;
 using namespace ::std;
 using namespace ::sf;
 namespace hg {
     void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wall);
+    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves);
     void DrawWall(RenderTarget& target, const vector<vector<bool> >& wallData);
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList);
@@ -57,14 +59,15 @@ int main()
         const ::hg::Input input(App.GetInput());
         
         cout << "called from main" << endl;
-        ObjectList frame(timeEngine.getNextPlayerFrame(input.AsInputList()));
+        ::boost::tuple<FrameID, TimeEngine::FrameListList> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
         
-        Draw(App, frame, wall);
-
+        Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall);
+        DrawTimeline(App, waveInfo.get<1>());
+        App.Display();
+        
         while (::boost::posix_time::microsec_clock::universal_time() - startTime < stepTime) {
             ::boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         }
-
     }
     
     return EXIT_SUCCESS;
@@ -75,7 +78,7 @@ void ::hg::Draw(RenderWindow& target, const ObjectList& frame, const vector<vect
     DrawWall(target, wallData);
     DrawBoxes(target, frame.getBoxListRef());
     DrawGuys(target, frame.getGuyListRef());
-    target.Display();
+    //target.Display();
 }
 
 void ::hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
@@ -88,10 +91,10 @@ void ::hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool
                 (
                     Shape::Rectangle
                     (
-                        32*static_cast<unsigned int>(i), 
-                        32*static_cast<unsigned int>(j),
-                        32*(static_cast<unsigned int>(i)+1),
-                        32*(static_cast<unsigned int>(j)+1),
+                        32u*i, 
+                        32u*j,
+                        32u*(i+1),
+                        32u*(j+1),
                         Color()
                     )
                 );
@@ -122,6 +125,20 @@ void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList)
     }
 }
 
+void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves)
+{
+    
+    foreach(const vector<FrameID>& lists, waves) {
+        cout << lists.size() << endl;
+        foreach (FrameID frame, lists) {
+            target.Draw(Shape::Rectangle((frame/5400.f)*640,
+                                         10,
+                                         (frame/5400.f)*640+1,
+                                         25,
+                                         Color(250,0,0)));
+        }
+    }
+}
 
 vector<vector<bool> > hg::MakeWall()
 {
@@ -193,4 +210,3 @@ TimeEngine hg::MakeTimeEngine(vector<vector<bool> >& wall)
     newObjectList.addGuy(Guy(22000, 6400, 0, 0, 1600, 3200, false, 0, PAUSE, FORWARDS, 0, 0));
     return TimeEngine(5400,wall,3200,50,newObjectList,0);
 }
-

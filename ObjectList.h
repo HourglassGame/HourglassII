@@ -4,7 +4,6 @@
 #include "Guy.h"
 #include "Box.h"
 
-#include <boost/functional/hash.hpp>
 #include <vector>
 #include "TimeDirection.h"
 namespace hg {
@@ -22,10 +21,10 @@ public:
 	void addBox(const Box& toCopy); 
     
     inline const ::std::vector<Guy>& getGuyListRef() const {
-        return data->guyList;
+        return guyList;
     }
     inline const ::std::vector<Box>& getBoxListRef() const {
-        return data->boxList;
+        return boxList;
     }
     //Add other ref getters as needed
     
@@ -40,22 +39,8 @@ public:
     bool operator!=(const ObjectList& other) const;
 	bool isEmpty() const;
 private:
-    void decrementCount();
-    
-    struct Data;
-    int* referenceCount;
-    Data* data;
-    struct Data {
-        Data () :
-        guyList(),
-        boxList()
-        {
-        }
-        ::std::vector<Guy> guyList;
-        ::std::vector<Box> boxList;
-    };
-    friend ::std::size_t hash_value(const ObjectList& toHash);
+    ::std::vector<Guy> guyList;
+    ::std::vector<Box> boxList;
 };
-    ::std::size_t hash_value(const ObjectList& toHash);
 }
 #endif //HG_OBJECT_LIST_H

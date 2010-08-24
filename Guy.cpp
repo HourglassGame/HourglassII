@@ -77,8 +77,3 @@ bool Guy::operator<(const Guy& second) const
 	assert(data->relativeIndex != second.data->relativeIndex && "Attempted to '<' 2 guys with equal relativeIndex");
     return (data->relativeIndex < second.data->relativeIndex);
 }
-::std::size_t hg::hash_value(const Guy& toHash)
-{
-    assert(toHash.data != NULL && "Shouldn't call hash_value on invalid Guy");
-    return toHash.data->hashValue; //Returns pre-cached hash
-}

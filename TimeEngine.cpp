@@ -1,32 +1,30 @@
 #include <iostream>
 #include <cassert>
-#include <iterator>
-#include <algorithm>
 
 #include "TimeEngine.h"
 
 #include "InvalidLevelException.h"
 #include "ParadoxException.h"
 #include "TotalState.h"
-#include "TotalStateHash.h"
 
 #include <boost/foreach.hpp>
+#define foreach BOOST_FOREACH
 #define reverse_foreach BOOST_REVERSE_FOREACH
 
 using namespace ::std;
 using namespace ::hg;
+using namespace ::boost;
 
 TimeEngine::TimeEngine(unsigned int timeLineLength,
                        vector<vector<bool> > wallmap,
                        int newWallSize,
                        int newGravity,
                        const ObjectList& initialObjects,
-                       unsigned int guyStartTime) :
-endOfFrameState(ArrivalDepartureMap(timeLineLength),true,timeLineLength,guyStartTime),
+                       FrameID guyStartTime) :
+endOfFrameState(ArrivalDepartureMap(timeLineLength),timeLineLength,guyStartTime),
 playerInput(),
 physics(timeLineLength, wallmap, newWallSize, newGravity)
 {
-    assert(timeLineLength > 0);
     // boxes
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
@@ -40,146 +38,67 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
             endOfFrameState.arrivalDepartures.permanentDepartureObjectList(timeLineLength-1).addBox(*it);
         }
     }
+    assert(initialObjects.getGuyListRef().size() == 1
+           && "This should throw an exception rather than be an assert, but I can't be bothered right now");
+    endOfFrameState.arrivalDepartures.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef().at(0));
+
+    endOfFrameState.frameUpdateList.push_back(0);
+    endOfFrameState.frameUpdateList.push_back(timeLineLength - 1);
     
-    // guys
-    endOfFrameState.currentPlayerFrame = timeLineLength;
-    endOfFrameState.nextPlayerFrame = guyStartTime;
-    if (initialObjects.getGuyListRef().size() != 1)
-    {
-        throw InvalidLevelException();
+    //** run level for a while
+    for (int i = 0; i < timeLineLength; ++i) {
+        executeWorld(endOfFrameState);
     }
-    
-    //** determine level
-    
-    // propgate from start of time first
-    vector<unsigned int> startFirstFrameUpdateStack;
-    startFirstFrameUpdateStack.push_back(0);
-    startFirstFrameUpdateStack.push_back(timeLineLength-1);
-    
-    WorldState startFirstState(executeFrameUpdateStackNoParadoxCheck(endOfFrameState, startFirstFrameUpdateStack));
-    
-    // propgate from end of time first
-    vector<unsigned int> endFirstFrameUpdateStack;
-    endFirstFrameUpdateStack.push_back(timeLineLength-1);
-    endFirstFrameUpdateStack.push_back(0);
-    
-    WorldState endFirstState(executeFrameUpdateStackNoParadoxCheck(endOfFrameState, endFirstFrameUpdateStack));
-    
-    // compare start first with end first
-    if (startFirstState == endFirstState)
-    {
-        endOfFrameState = startFirstState;
-        endOfFrameState.arrivalDepartures.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef()[0]);
-        return;
-    }
-    throw InvalidLevelException();
 }
 
-const ObjectList TimeEngine::getNextPlayerFrame(const InputList& newInputData)
+tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     playerInput.push_back(newInputData);
-    endOfFrameState.currentPlayerFrame = endOfFrameState.nextPlayerFrame;
-    endOfFrameState = executeFrameUpdateStack(endOfFrameState, vector<unsigned int>(1,endOfFrameState.currentPlayerFrame));
-    //Get arrivals at frame where player just arrived.
-    return endOfFrameState.arrivalDepartures.getArrivals(endOfFrameState.nextPlayerFrame);
+    endOfFrameState.frameUpdateList.push_back(endOfFrameState.nextPlayerFrame);
+    FrameListList updatedList;
+    //Leaving out variable speed and frame-specific speed in the interest of getting the initial cut done
+    //Adding it may require significant changes ;_;, but anyway...
+    unsigned const int speedOfTime = 100;
+    for (unsigned int i = 0; i < speedOfTime; ++i) {
+        updatedList.push_back(endOfFrameState.frameUpdateList);
+        executeWorld(endOfFrameState);
+    }
+    return tuple<FrameID, FrameListList>(endOfFrameState.currentPlayerFrame, updatedList);
 }
 
-
-WorldState TimeEngine::executeFrameUpdateStackNoParadoxCheck(WorldState currentState, 
-                                                               vector<unsigned int> frameUpdateStack) const
+void TimeEngine::executeWorld(WorldState& currentState) const
 {
-    while (frameUpdateStack.size() > 0)
-    {
-        const unsigned int nextUpdate(frameUpdateStack.back());
-        frameUpdateStack.pop_back();
-        updateFrame(nextUpdate, frameUpdateStack, currentState);
+    typedef map<FrameID, TimeObjectListList> DepartureMap;
+    DepartureMap changedFrames;
+    //WorldState newWorldState(currentState);
+    foreach (FrameID frame, currentState.frameUpdateList) {
+        pair<DepartureMap::iterator,bool> ret = changedFrames.insert(
+            DepartureMap::value_type (
+                frame,
+                getDeparturesFromFrame(currentState.arrivalDepartures.getFrame(frame), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
+            )
+        );
+        assert(ret.second && "There shouldn't be any duplicates in the frameUpdateList");
     }
-    return currentState;
+    currentState.frameUpdateList = currentState.arrivalDepartures.updateWithNewDepartures(changedFrames);
 }
 
-TotalState TimeEngine::getNthState(TotalState initialState, unsigned long n) const
+ObjectList TimeEngine::getPostPhysics(FrameID whichFrame) const
 {
-    vector<unsigned int> frameUpdateStack(initialState.stackState);
-    WorldState currentState(initialState.worldState);
-    
-    for (unsigned int i = 0; i < n; ++i) {
-        const unsigned int nextUpdate(frameUpdateStack.back());
-        frameUpdateStack.pop_back();
-        updateFrame(nextUpdate, frameUpdateStack, currentState);
-    }
-    
-    return TotalState(currentState, frameUpdateStack);
+    return endOfFrameState.arrivalDepartures.getPostPhysics(whichFrame);
 }
 
-WorldState TimeEngine::executeFrameUpdateStack(WorldState currentState, vector<unsigned int> frameUpdateStack) const
+TimeObjectListList TimeEngine::getDeparturesFromFrame(const ArrivalDepartureMap::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const
 {
-    TotalState initialState(currentState, frameUpdateStack);
-    //world state hashes in order for a single executeFrameUpdateStack()
-    vector<TotalStateHash> previousStates;
-    
-    while (frameUpdateStack.size() > 0)
-    {
-        {
-            TotalStateHash newState(currentState, frameUpdateStack.back());
-            
-            //If the whole world is in the same state and the same
-            //frame is to be updated next then it is a local paradox
-            //To test whether global paradox need to pop out of stack
-            //at point of first instance and check whether the global 
-            //state depends on which of the local states is assumed to be true.
-            //If it does then it is a paradox
-            for (vector<TotalStateHash>::iterator it(previousStates.begin()),
-                 end(previousStates.end());
-                 it != end; ++it) {
-                if (*it == newState) {
-                    TotalState state(currentState, frameUpdateStack);
-                    if(state == getNthState(initialState, distance(previousStates.begin(), it))) {
-                        //Overdetects paradoxes by assumming that all local paradoxes are global paradoxes
-                        //The old global paradox system was incorrect and implementing a correct one is inordinately hard
-                        throw ParadoxException();
-                    }
-                }
-            }
-            previousStates.push_back(newState);
-        }
-        
-        const unsigned int nextUpdate(frameUpdateStack.back());
-        frameUpdateStack.pop_back();
-        updateFrame(nextUpdate, frameUpdateStack, currentState);
-    }
-    return currentState;
-}
-
-
-void TimeEngine::updateFrame(unsigned int frame, vector<unsigned int>& frameUpdateStack, WorldState& currentState) const
-{
-    // get the arrivals for the physics frame by going across a row
-    const ObjectList arrivals(currentState.arrivalDepartures.getArrivals(frame));
-    
-    if (frame == currentState.currentPlayerFrame)
-    {
-        assert(arrivals.getGuyListRef().rbegin() != arrivals.getGuyListRef().rend());
-        assert((*(arrivals.getGuyListRef().rbegin())).getRelativeIndex() == playerInput.size() - 1
-               && "arrivals is sorted so last guy should be player guy");
-        currentState.updateStartFirst = ((*(arrivals.getGuyListRef().rbegin())).getTimeDirection() == FORWARDS);
-    }
-    
-    // get departures for the frame, update currentPlayerFrame and nextPlayerFrame
+    // get departures for the frame, update currentPlayerFrame
     // if appropriate
-    TimeObjectListList departures(physics.executeFrame(arrivals, frame, playerInput, 
-                                                       currentState.currentPlayerFrame,
-                                                       currentState.nextPlayerFrame));
+    TimeObjectListList departures(physics.executeFrame(frame.getPrePhysics(),
+                                                       frame.getTime(),
+                                                       playerInput, 
+                                                       currentPlayerFrame,
+                                                       nextPlayerFrame));
     
     // update departures from this frame
     departures.sortObjectLists();
-    const vector<unsigned int> framesThatNeedUpdating(currentState.arrivalDepartures.updateDeparturesFromTime(frame, departures));
-    
-    if (currentState.updateStartFirst)
-    {
-        frameUpdateStack.insert(frameUpdateStack.end(),framesThatNeedUpdating.rbegin(),framesThatNeedUpdating.rend());
-    }
-    else
-    {
-        frameUpdateStack.insert(frameUpdateStack.end(),framesThatNeedUpdating.begin(),framesThatNeedUpdating.end());
-    }
+    return departures;
 }

@@ -2,16 +2,20 @@
 #define HG_TIME_ENGINE_H
 #include <vector>
 
+#include <boost/tuple/tuple.hpp>
+
 #include "PhysicsEngine.h"
 #include "WorldState.h"
-#include "TotalState.h"
+#include "ArrivalDepartureMap.h"
+
+#include "FrameID.h"
 
 namespace hg {
 class InputList;
 class ObjectList;
 class TimeObjectListList;
 class ParadoxException;
-    
+
 class TimeEngine
 {
 public:
@@ -33,31 +37,12 @@ public:
                const ObjectList& initialObjects,
                unsigned int guyStartTime);
 
-    /**********************************************************************************************
-     * Uses the input to progress the state of the level (the TimeEngine) and returns the arrivals
-     * at the frame in which where the player guy has arrived but has not yet recieved input.
-     * Throws a ParadoxException if a paradox occurs.
-     * Preconditions: checkConsistencyAndPropogateLevel must have been called exactly once and returned true on *this
-     */
-    //Note- this interface may change as the requirements of the front end become better known,
-    //but the basic idea should be the same
-    const ObjectList getNextPlayerFrame(const InputList& newInputData);
-	
+    typedef ::std::vector< ::std::vector<FrameID> > FrameListList;
+    ::boost::tuple<FrameID, FrameListList> runToNextPlayerFrame(const InputList& newInputData);
+    ObjectList getPostPhysics(FrameID whichFrame) const;
 private:
-    WorldState executeFrameUpdateStackNoParadoxCheck(WorldState currentState, 
-                                                     ::std::vector<unsigned int> frameUpdateStack) const;
-    
-    //runs the frame update stack until empty
-    WorldState executeFrameUpdateStack(WorldState currentState, 
-                                             ::std::vector<unsigned int> frameUpdateStack) const;
-    
-    TotalState getNthState(TotalState initialState, unsigned long n) const;
-    
-    /**********************************************************************************************
-     * Gets all arrivals to `frame' using `currentState', applies physics to get departures, 
-     * applies departures to `currentState'. All changed departures are added to frameUpdateStack.
-     */
-	void updateFrame(unsigned int frame, ::std::vector<unsigned int>& frameUpdateStack, WorldState& currentState) const;
+    void executeWorld(WorldState& currentState) const;
+    TimeObjectListList getDeparturesFromFrame(const ArrivalDepartureMap::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const;
     
     //state of world at end of last executed frame
     WorldState endOfFrameState;

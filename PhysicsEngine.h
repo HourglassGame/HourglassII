@@ -3,6 +3,7 @@
 #include "InputList.h"
 #include "Guy.h"
 #include "Box.h"
+#include "FrameID.h"
 #include <vector>
 namespace hg {
 class ObjectList;
@@ -17,10 +18,10 @@ public:
     
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                        unsigned int time,
+                                        FrameID time,
                                         const ::std::vector<InputList>& playerInput,
-                                        unsigned int& currentPlayerFrame,
-                                        unsigned int& nextPlayerFrame) const;
+                                        FrameID& currentPlayerFrame,
+                                        FrameID& nextPlayerFrame) const;
     
 private:
     struct BoxInfo {
@@ -38,8 +39,8 @@ private:
     void guyStep(const ::std::vector<Guy>& oldGuyList, unsigned int time, 
                  const ::std::vector<InputList>& playerInput, TimeObjectListList& newDepartures,
                  ::std::vector<BoxInfo>& nextBox,
-                 unsigned int& currentPlayerFrame,
-                 unsigned int& nextPlayerFrame) const;
+                 FrameID& currentPlayerFrame,
+                 FrameID& nextPlayerFrame) const;
 
 	bool wallAt(int x, int y) const;
     
