@@ -1,4 +1,5 @@
 #include "ArrivalDepartureMap.h"
+#include <cassert>
 #include <algorithm>
 #include <iostream>
 
@@ -59,12 +60,12 @@ ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(unsigned int arriv
 vector<FrameID> ArrivalDepartureMap::updateDeparturesFromTime(const FrameID time, const TimeObjectListList& newDeparture)
 {
     vector<FrameID> changedTimes;
-    
+
     Iterator ni(newDeparture.list.begin());
     const Iterator nend(newDeparture.list.end());
     Iterator oi(departures.at(time).list.begin());
     const Iterator oend(departures.at(time).list.end());
-    
+
     while (oi != oend) {
         while (true) {
             if (ni != nend) {
@@ -111,13 +112,13 @@ end:
 ObjectList ArrivalDepartureMap::getPostPhysics(FrameID time) const
 {
     ObjectList returnList;
-    
+
 	for (Iterator it(departures.at(time).list.begin()), end(departures.at(time).list.end());
          it != end; ++it)
 	{
 		returnList.add(it->second);
 	}
-    
+
     returnList.sortElements();
 	return returnList;
 }
@@ -142,10 +143,10 @@ bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
 	{
 		return false;
 	}
-	
+
     assert(departures.size()==other.departures.size());
     assert(arrivals.size()==other.arrivals.size());
-    
+
     return equal(departures.begin(), departures.end(), other.departures.begin())
     && equal(arrivals.begin(), arrivals.end(), other.arrivals.begin());
 }

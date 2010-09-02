@@ -6,10 +6,8 @@ namespace hg {
 
 #include <boost/noncopyable.hpp>
 #include <SFML/Window/Input.hpp>
-#ifndef INC_INPUTLIST
-#define INC_INPUTLIST
 #include "InputList.h"
-#endif // INC_INPUTLIST
+#include "Ability.h"
 
 namespace hg {
     class Input : private boost::noncopyable {
@@ -20,9 +18,9 @@ namespace hg {
         bool left;
         bool right;
         bool up;
-        bool down;
+        int down;
         bool space;
-        bool mouseLeft;
+        int mouseLeft;
         bool mouseRight;
         int mouseX;
         int mouseY;

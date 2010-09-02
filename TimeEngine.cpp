@@ -44,7 +44,7 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
 
     endOfFrameState.frameUpdateList.push_back(0);
     endOfFrameState.frameUpdateList.push_back(timeLineLength - 1);
-    
+
     //** run level for a while
     for (int i = 0; i < timeLineLength; ++i) {
         executeWorld(endOfFrameState);
@@ -58,7 +58,7 @@ tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const
     FrameListList updatedList;
     //Leaving out variable speed and frame-specific speed in the interest of getting the initial cut done
     //Adding it may require significant changes ;_;, but anyway...
-    unsigned const int speedOfTime = 100;
+    unsigned const int speedOfTime = 3;
     for (unsigned int i = 0; i < speedOfTime; ++i) {
         updatedList.push_back(endOfFrameState.frameUpdateList);
         executeWorld(endOfFrameState);
@@ -94,10 +94,10 @@ TimeObjectListList TimeEngine::getDeparturesFromFrame(const ArrivalDepartureMap:
     // if appropriate
     TimeObjectListList departures(physics.executeFrame(frame.getPrePhysics(),
                                                        frame.getTime(),
-                                                       playerInput, 
+                                                       playerInput,
                                                        currentPlayerFrame,
                                                        nextPlayerFrame));
-    
+
     // update departures from this frame
     departures.sortObjectLists();
     return departures;

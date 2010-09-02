@@ -21,7 +21,7 @@ namespace hg {
     void DrawWall(RenderTarget& target, const vector<vector<bool> >& wallData);
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList);
-    
+
     vector<vector<bool> > MakeWall();
     TimeEngine MakeTimeEngine(vector<vector<bool> >& wallData);
 }
@@ -35,16 +35,16 @@ namespace hg {
 int main()
 {
     RenderWindow App(VideoMode(640, 480), "Hourglass II");
-    
+
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
-    
+
     ::boost::posix_time::time_duration stepTime(0,0,0,boost::posix_time::time_duration::ticks_per_second()/60);
-    
+
     while (App.IsOpened())
     {
         ::boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::universal_time());
-        
+
         Event event;
         while (App.GetEvent(event))
         {
@@ -57,19 +57,19 @@ int main()
             }
         }
         const ::hg::Input input(App.GetInput());
-        
-        cout << "called from main" << endl;
+
+        //cout << "called from main" << endl;
         ::boost::tuple<FrameID, TimeEngine::FrameListList> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-        
+
+        //cout << waveInfo.get<0>() << endl;
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall);
         DrawTimeline(App, waveInfo.get<1>());
         App.Display();
-        
+
         while (::boost::posix_time::microsec_clock::universal_time() - startTime < stepTime) {
             ::boost::this_thread::sleep(boost::posix_time::milliseconds(1));
         }
     }
-    
     return EXIT_SUCCESS;
 }
 
@@ -91,7 +91,7 @@ void ::hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool
                 (
                     Shape::Rectangle
                     (
-                        32u*i, 
+                        32u*i,
                         32u*j,
                         32u*(i+1),
                         32u*(j+1),
@@ -110,7 +110,7 @@ void ::hg::DrawBoxes(RenderTarget& target, const vector<Box>& boxList)
                                          box.getY()/100,
                                         (box.getX()+ box.getSize())/100,
                                          (box.getY()+box.getSize())/100,
-                                         Color(150,150,0)));
+                                         Color(255,0,255)));
     }
 }
 
@@ -122,14 +122,22 @@ void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList)
                                          (guy.getX()+ guy.getWidth())/100,
                                          (guy.getY()+guy.getHeight())/100,
                                          Color(150,150,0)));
+        if (guy.getBoxCarrying())
+        {
+            target.Draw(Shape::Rectangle((guy.getX() + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
+                                         (guy.getY() - guy.getBoxCarrySize())/100,
+                                         (guy.getX() + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
+                                         (guy.getY())/100,
+                                         Color(0,0,255)));
+        }
     }
 }
 
 void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves)
 {
-    
+
     foreach(const vector<FrameID>& lists, waves) {
-        cout << lists.size() << endl;
+        //cout << lists.size() << endl;
         foreach (FrameID frame, lists) {
             target.Draw(Shape::Rectangle((frame/5400.f)*640,
                                          10,
