@@ -22,7 +22,6 @@ TimeEngine::TimeEngine(unsigned int timeLineLength,
                        const ObjectList& initialObjects,
                        FrameID guyStartTime) :
 endOfFrameState(TimelineState(timeLineLength),timeLineLength,guyStartTime),
-playerInput(),
 physics(timeLineLength, wallmap, newWallSize, newGravity)
 {
     // boxes
@@ -53,7 +52,7 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
 
 tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
-    playerInput.push_back(newInputData);
+    endOfFrameState.playerInput.push_back(newInputData);
     endOfFrameState.frameUpdateList.push_back(endOfFrameState.nextPlayerFrame);
     FrameListList updatedList;
     //Leaving out variable speed and frame-specific speed in the interest of getting the initial cut done
@@ -65,9 +64,13 @@ tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const
     }
     return tuple<FrameID, FrameListList>(endOfFrameState.currentPlayerFrame, updatedList);
 }
-
+static bool containsNoDuplicates(::std::vector<FrameID> list) {
+    sort(list.begin(), list.end());
+    return unique(list.begin(), list.end()) == list.end();
+}
 void TimeEngine::executeWorld(WorldState& currentState) const
 {
+    assert(containsNoDuplicates(currentState.frameUpdateList));
     typedef map<FrameID, TimeObjectListList> DepartureMap;
     DepartureMap changedFrames;
     //WorldState newWorldState(currentState);
@@ -94,7 +97,7 @@ TimeObjectListList TimeEngine::getDeparturesFromFrame(const TimelineState::Frame
     // if appropriate
     TimeObjectListList departures(physics.executeFrame(frame.getPrePhysics(),
                                                        frame.getTime(),
-                                                       playerInput,
+                                                       endOfFrameState.playerInput,
                                                        currentPlayerFrame,
                                                        nextPlayerFrame));
 

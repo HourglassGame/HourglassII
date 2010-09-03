@@ -13,18 +13,9 @@ namespace hg {
         timeline(currentTimeline),
         frameUpdateList(),
         nextPlayerFrame(newNextPlayerFrame),
-        currentPlayerFrame(newCurrentPlayerFrame)
+        currentPlayerFrame(newCurrentPlayerFrame),
+        playerInput()
         {
-        }
-        bool operator==(const WorldState& other) const
-        {
-            return currentPlayerFrame == other.currentPlayerFrame 
-            && frameUpdateList == other.frameUpdateList
-            && timeline == other.timeline;
-        }
-        bool operator!=(const WorldState& other) const
-        {
-            return !(*this==other);
         }
         TimelineState timeline;
         ::std::vector<FrameID> frameUpdateList;
@@ -32,6 +23,8 @@ namespace hg {
         FrameID nextPlayerFrame;
         //The frame containing the guy with the largest relative index who has both arrived and departed
         FrameID currentPlayerFrame;
+        // stores all player input
+        ::std::vector<InputList> playerInput;
     };
 }
 #endif //HG_WORLD_STATE_H

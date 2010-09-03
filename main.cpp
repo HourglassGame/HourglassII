@@ -15,6 +15,7 @@
 using namespace ::hg;
 using namespace ::std;
 using namespace ::sf;
+using namespace ::boost;
 namespace hg {
     void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wall);
     void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves);
@@ -39,13 +40,11 @@ int main()
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
 
-    ::boost::posix_time::time_duration stepTime(0,0,0,boost::posix_time::time_duration::ticks_per_second()/60);
-
-    ::hg::Input previousInput;
-    
+    posix_time::time_duration stepTime(0,0,0,posix_time::time_duration::ticks_per_second()/60);
+    ::hg::Input input;
     while (App.IsOpened())
     {
-        ::boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::universal_time());
+        posix_time::ptime startTime(posix_time::microsec_clock::universal_time());
 
         Event event;
         while (App.GetEvent(event))
@@ -58,18 +57,17 @@ int main()
                     break;
             }
         }
-        const ::hg::Input input(App.GetInput(), previousInput);
-        previousInput = input;
-        //cout << "called from main" << endl;
-        ::boost::tuple<FrameID, TimeEngine::FrameListList> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+        
+        input.updateState(App.GetInput());
+        cout << "called from main" << endl;
+        tuple<FrameID, TimeEngine::FrameListList> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
 
-        //cout << waveInfo.get<0>() << endl;
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall);
         DrawTimeline(App, waveInfo.get<1>());
         App.Display();
 
-        while (::boost::posix_time::microsec_clock::universal_time() - startTime < stepTime) {
-            ::boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+        while (posix_time::microsec_clock::universal_time() - startTime < stepTime) {
+            this_thread::sleep(posix_time::milliseconds(1));
         }
     }
     return EXIT_SUCCESS;
@@ -80,7 +78,6 @@ void ::hg::Draw(RenderWindow& target, const ObjectList& frame, const vector<vect
     DrawWall(target, wallData);
     DrawBoxes(target, frame.getBoxListRef());
     DrawGuys(target, frame.getGuyListRef());
-    //target.Display();
 }
 
 void ::hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)

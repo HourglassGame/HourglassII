@@ -1,6 +1,7 @@
-#include <cassert>
-#include "Guy.h"
 
+#include "Guy.h"
+#include <cassert>
+#include <iostream>
 using namespace hg;
 
 Guy::Guy(int nX, 
@@ -75,6 +76,9 @@ bool Guy::operator==(const Guy& other) const
 
 bool Guy::operator<(const Guy& other) const
 {
+    using namespace ::std;
+    
+    cout << "this.relativeIndex: " << data->relativeIndex << " other.relativeIndex: " << other.data->relativeIndex << endl;
     assert(data->relativeIndex != other.data->relativeIndex && "Attempted to '<' 2 guys with equal relativeIndex");
     return (data->relativeIndex < other.data->relativeIndex);
 }

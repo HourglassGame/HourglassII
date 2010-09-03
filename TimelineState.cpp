@@ -118,11 +118,10 @@ ObjectList TimelineState::getPostPhysics(FrameID time) const
 	{
 		returnList.add(it->second);
 	}
-
     returnList.sortElements();
 	return returnList;
 }
-
+//Assertion failure is here.
 ObjectList TimelineState::getPrePhysics(unsigned int time) const
 {
 	ObjectList returnList;

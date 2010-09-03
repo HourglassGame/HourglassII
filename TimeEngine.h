@@ -47,9 +47,6 @@ private:
     //state of world at end of last executed frame
     WorldState endOfFrameState;
     
-    // stores all player input
-    ::std::vector<InputList> playerInput; 
-    
     //stores the physical properties of the world and uses them to turn arrivals into departures
     PhysicsEngine physics;
 };

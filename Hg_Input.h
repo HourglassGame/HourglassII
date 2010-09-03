@@ -13,7 +13,7 @@ namespace hg {
     class Input {
     public:
         Input();
-        Input(const sf::Input& input, const Input& previousInput);
+        void updateState(const sf::Input& input);
         const InputList AsInputList() const;
     private:
         bool left;

@@ -215,7 +215,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 if (input.getDown())
                 {
                     int width = oldGuyList[i].getWidth();
-                    int height = oldGuyList[i].getHeight();
 
                     // fixme: needs to check if the box can be dropped
                     nextBox.push_back
@@ -313,7 +312,8 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                         oldGuyList[i].getWidth(), oldGuyList[i].getHeight(),
                         carry[i], carrySize[i], carryDirection[i],
                         oldGuyList[i].getTimeDirection(),
-                        relativeIndex+1, nextSubimage));
+                        relativeIndex+1, nextSubimage)
+                );
             }
         }
         else
