@@ -58,7 +58,7 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return (data->relativeIndex == other.data->relativeIndex) 
+	return data == other.data || ((data->relativeIndex == other.data->relativeIndex) 
     && (data->x == other.data->x) 
     && (data->y == other.data->y) 
     && (data->xspeed == other.data->xspeed) 
@@ -69,11 +69,99 @@ bool Guy::operator==(const Guy& other) const
     && (data->timeDirection == other.data->timeDirection) 
     && (data->subimage == other.data->subimage)
     && (data->boxCarryDirection == other.data->boxCarryDirection) 
-    && (data->boxCarrySize == other.data->boxCarrySize);
+    && (data->boxCarrySize == other.data->boxCarrySize));
 }
 
-bool Guy::operator<(const Guy& second) const
+bool Guy::operator<(const Guy& other) const
 {
-	assert(data->relativeIndex != second.data->relativeIndex && "Attempted to '<' 2 guys with equal relativeIndex");
-    return (data->relativeIndex < second.data->relativeIndex);
+    if (data != other.data) {
+        if (data->relativeIndex == other.data->relativeIndex)
+        {
+            if (data->x == other.data->x)
+            {
+                if (data->y == other.data->y)
+                {
+                    if (data->xspeed == other.data->xspeed)
+                    {
+                        if (data->yspeed == other.data->yspeed)
+                        {
+                            if (data->width == other.data->width)
+                            {
+                                if (data->height == other.data->height)
+                                {
+                                    if (data->boxCarrying == other.data->boxCarrying)
+                                    {
+                                        if (data->timeDirection == other.data->timeDirection)
+                                        {
+                                            if (data->subimage == other.data->subimage)
+                                            {
+                                                if (data->boxCarryDirection == other.data->boxCarryDirection)
+                                                {
+                                                    if (data->boxCarrySize == other.data->boxCarrySize)
+                                                    {
+                                                        return false;
+                                                    }
+                                                    else
+                                                    {
+                                                        return (data->boxCarrySize < other.data->boxCarrySize);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    return (data->boxCarryDirection < other.data->boxCarryDirection);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                return (data->subimage < other.data->subimage);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            return (data->timeDirection < other.data->timeDirection);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return (data->boxCarrying < other.data->boxCarrying);
+                                    }
+                                }
+                                else
+                                {
+                                    return (data->height < other.data->height);
+                                }
+                            }
+                            else
+                            {
+                                return (data->width < other.data->width);
+                            }
+                        }
+                        else
+                        {
+                            return (data->yspeed < other.data->yspeed);
+                        }
+                    }
+                    else
+                    {
+                        return (data->xspeed < other.data->xspeed);
+                    }
+                }
+                else
+                {
+                    return (data->y < other.data->y);
+                }
+            }
+            else
+            {
+                return (data->x < other.data->x);
+            }
+        }
+        else
+        {
+            return (data->relativeIndex < other.data->relativeIndex);
+        }
+    }
+    else {
+        return false;
+    }
 }

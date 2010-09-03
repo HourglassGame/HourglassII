@@ -46,7 +46,7 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
     endOfFrameState.frameUpdateList.push_back(timeLineLength - 1);
 
     //** run level for a while
-    for (int i = 0; i < timeLineLength; ++i) {
+    for (unsigned int i = 0; i < timeLineLength; ++i) {
         executeWorld(endOfFrameState);
     }
 }
@@ -72,7 +72,7 @@ void TimeEngine::executeWorld(WorldState& currentState) const
     DepartureMap changedFrames;
     //WorldState newWorldState(currentState);
     foreach (FrameID frame, currentState.frameUpdateList) {
-        pair<DepartureMap::iterator,bool> ret = changedFrames.insert(
+        pair<DepartureMap::iterator,bool> ret = changedFrames.insert (
             DepartureMap::value_type (
                 frame,
                 getDeparturesFromFrame(currentState.arrivalDepartures.getFrame(frame), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
