@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 #include "TimeEngine.h"
 
@@ -64,10 +65,13 @@ tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const
     }
     return tuple<FrameID, FrameListList>(endOfFrameState.currentPlayerFrame, updatedList);
 }
-static bool containsNoDuplicates(::std::vector<FrameID> list) {
+
+static bool containsNoDuplicates(::std::vector<FrameID> list)
+{
     sort(list.begin(), list.end());
     return unique(list.begin(), list.end()) == list.end();
 }
+
 void TimeEngine::executeWorld(WorldState& currentState) const
 {
     assert(containsNoDuplicates(currentState.frameUpdateList));

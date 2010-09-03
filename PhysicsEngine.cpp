@@ -19,7 +19,6 @@ wallSize(newWallSize)
 {
 }
 
-//NOTE - no time travel yet so currentPlayerFrame does not ever change.
 TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                const FrameID time,
                                                const std::vector<InputList>& playerInput,
@@ -302,6 +301,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             if (playerInput.size() - 1 == relativeIndex)
             {
                 currentPlayerFrame = time;
+                nextPlayerFrame = nextTime;
             }
 
             if (nextTime >= 0 && nextTime < timeLineLength)
@@ -318,8 +318,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
         }
         else
         {
-            (oldGuyList[i].getRelativeIndex() == playerInput.size());
-            nextPlayerFrame = time;
+            assert(oldGuyList[i].getRelativeIndex() == playerInput.size());
         }
     }
 }
