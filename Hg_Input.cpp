@@ -5,30 +5,45 @@
 
 using namespace hg;
 
-void updatePress(int &var, bool inputState)
+static void updatePress(int &var, bool inputState)
 {
     if (inputState)
-   {
-       if (var == 0)
-       {
+    {
+        if (var == 0)
+        {
             var = 1;
-       }
-       else
-       {
+        }
+        else
+        {
             var = -1;
-       }
-   }
-   else
-   {
-       var = 0;
-   }
+        }
+    }
+    else
+    {
+        var = 0;
+    }
 }
 
-Input::Input(const sf::Input& input) :
+Input::Input() :
+left(false),
+right(false),
+up(false),
+down(0),
+space(false),
+mouseLeft(0),
+mouseRight(false),
+mouseX(0),
+mouseY(0)
+{
+}
+
+Input::Input(const sf::Input& input, const Input& previousInput) :
 left(input.IsKeyDown(sf::Key::Left)),
 right(input.IsKeyDown(sf::Key::Right)),
 up(input.IsKeyDown(sf::Key::Up)),
+down(previousInput.down),
 space(input.IsKeyDown(sf::Key::Space)),
+mouseLeft(previousInput.mouseLeft),
 mouseRight(input.IsMouseButtonDown(sf::Mouse::Right)),
 mouseX(input.GetMouseX()*100),
 mouseY(input.GetMouseY()*100)

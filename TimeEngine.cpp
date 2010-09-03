@@ -5,7 +5,7 @@
 
 #include "InvalidLevelException.h"
 #include "ParadoxException.h"
-#include "TotalState.h"
+#include "ObjectList.h"
 
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
@@ -21,7 +21,7 @@ TimeEngine::TimeEngine(unsigned int timeLineLength,
                        int newGravity,
                        const ObjectList& initialObjects,
                        FrameID guyStartTime) :
-endOfFrameState(ArrivalDepartureMap(timeLineLength),timeLineLength,guyStartTime),
+endOfFrameState(TimelineState(timeLineLength),timeLineLength,guyStartTime),
 playerInput(),
 physics(timeLineLength, wallmap, newWallSize, newGravity)
 {
@@ -31,16 +31,16 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
     {
         if (it->getTimeDirection() == FORWARDS)
         {
-            endOfFrameState.arrivalDepartures.permanentDepartureObjectList(0).addBox(*it);
+            endOfFrameState.timeline.permanentDepartureObjectList(0).addBox(*it);
         }
         else
         {
-            endOfFrameState.arrivalDepartures.permanentDepartureObjectList(timeLineLength-1).addBox(*it);
+            endOfFrameState.timeline.permanentDepartureObjectList(timeLineLength-1).addBox(*it);
         }
     }
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-    endOfFrameState.arrivalDepartures.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef().at(0));
+    endOfFrameState.timeline.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef().at(0));
 
     endOfFrameState.frameUpdateList.push_back(0);
     endOfFrameState.frameUpdateList.push_back(timeLineLength - 1);
@@ -75,20 +75,20 @@ void TimeEngine::executeWorld(WorldState& currentState) const
         pair<DepartureMap::iterator,bool> ret = changedFrames.insert (
             DepartureMap::value_type (
                 frame,
-                getDeparturesFromFrame(currentState.arrivalDepartures.getFrame(frame), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
+                getDeparturesFromFrame(currentState.timeline.getFrame(frame), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
             )
         );
         assert(ret.second && "There shouldn't be any duplicates in the frameUpdateList");
     }
-    currentState.frameUpdateList = currentState.arrivalDepartures.updateWithNewDepartures(changedFrames);
+    currentState.frameUpdateList = currentState.timeline.updateWithNewDepartures(changedFrames);
 }
 
 ObjectList TimeEngine::getPostPhysics(FrameID whichFrame) const
 {
-    return endOfFrameState.arrivalDepartures.getPostPhysics(whichFrame);
+    return endOfFrameState.timeline.getPostPhysics(whichFrame);
 }
 
-TimeObjectListList TimeEngine::getDeparturesFromFrame(const ArrivalDepartureMap::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const
+TimeObjectListList TimeEngine::getDeparturesFromFrame(const TimelineState::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const
 {
     // get departures for the frame, update currentPlayerFrame
     // if appropriate

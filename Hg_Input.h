@@ -10,9 +10,10 @@ namespace hg {
 #include "Ability.h"
 
 namespace hg {
-    class Input : private boost::noncopyable {
+    class Input {
     public:
-        Input(const sf::Input& input);
+        Input();
+        Input(const sf::Input& input, const Input& previousInput);
         const InputList AsInputList() const;
     private:
         bool left;

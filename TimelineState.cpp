@@ -1,4 +1,4 @@
-#include "ArrivalDepartureMap.h"
+#include "TimelineState.h"
 #include <cassert>
 #include <algorithm>
 #include <iostream>
@@ -8,29 +8,29 @@ using namespace ::hg;
 
 typedef TimeObjectListList::ListType::const_iterator Iterator;
 
-ArrivalDepartureMap::ArrivalDepartureMap(unsigned int timeLength) :
+TimelineState::TimelineState(unsigned int timeLength) :
 permanentDepartureIndex(timeLength),
 arrivals(timeLength),
 departures(timeLength)
 {
 }
 
-ObjectList ArrivalDepartureMap::Frame::getPrePhysics() const
+ObjectList TimelineState::Frame::getPrePhysics() const
 {
     return this_.getPrePhysics(time_);
 }
-FrameID ArrivalDepartureMap::Frame::getTime() const
+FrameID TimelineState::Frame::getTime() const
 {
     return time_;
 }
 
-ArrivalDepartureMap::Frame::Frame(const ArrivalDepartureMap& mapPtr, FrameID time) :
+TimelineState::Frame::Frame(const TimelineState& mapPtr, FrameID time) :
 time_(time),
 this_(mapPtr)
 {
 }
 
-vector<FrameID> ArrivalDepartureMap::updateWithNewDepartures(const map<FrameID, TimeObjectListList>& newDepartures)
+vector<FrameID> TimelineState::updateWithNewDepartures(const map<FrameID, TimeObjectListList>& newDepartures)
 {
     vector<FrameID> newWaveFrames;
     for(map<FrameID, TimeObjectListList>::const_iterator
@@ -46,18 +46,18 @@ vector<FrameID> ArrivalDepartureMap::updateWithNewDepartures(const map<FrameID, 
     return newWaveFrames;
 }
 
-ArrivalDepartureMap::Frame ArrivalDepartureMap::getFrame(FrameID whichFrame) const
+TimelineState::Frame TimelineState::getFrame(FrameID whichFrame) const
 {
     return Frame(*this, whichFrame);
 }
 
-ObjectList& ArrivalDepartureMap::permanentDepartureObjectList(unsigned int arrivalTime)
+ObjectList& TimelineState::permanentDepartureObjectList(unsigned int arrivalTime)
 {
 	return arrivals.at(arrivalTime).getObjectListForManipulation(permanentDepartureIndex);
 }
 
 //returns which frames are changed
-vector<FrameID> ArrivalDepartureMap::updateDeparturesFromTime(const FrameID time, const TimeObjectListList& newDeparture)
+vector<FrameID> TimelineState::updateDeparturesFromTime(const FrameID time, const TimeObjectListList& newDeparture)
 {
     vector<FrameID> changedTimes;
 
@@ -109,7 +109,7 @@ end:
     return changedTimes;
 }
 
-ObjectList ArrivalDepartureMap::getPostPhysics(FrameID time) const
+ObjectList TimelineState::getPostPhysics(FrameID time) const
 {
     ObjectList returnList;
 
@@ -123,7 +123,7 @@ ObjectList ArrivalDepartureMap::getPostPhysics(FrameID time) const
 	return returnList;
 }
 
-ObjectList ArrivalDepartureMap::getPrePhysics(unsigned int time) const
+ObjectList TimelineState::getPrePhysics(unsigned int time) const
 {
 	ObjectList returnList;
 
@@ -137,7 +137,7 @@ ObjectList ArrivalDepartureMap::getPrePhysics(unsigned int time) const
 	return returnList;
 }
 
-bool ArrivalDepartureMap::operator==(const ArrivalDepartureMap& other) const
+bool TimelineState::operator==(const TimelineState& other) const
 {
 	if (permanentDepartureIndex != other.permanentDepartureIndex)
 	{

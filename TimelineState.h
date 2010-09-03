@@ -1,18 +1,16 @@
 #ifndef HG_ARRIVAL_DEPARTURE_MAP_H
 #define HG_ARRIVAL_DEPARTURE_MAP_H
 
-//#include "ObjectList.h"
 #include "TimeObjectListList.h"
 #include "FrameID.h"
 #include <vector>
 #include <map>
 
 namespace hg {
-//    class ObjectList;
-class ArrivalDepartureMap
+class TimelineState
 {
 public:
-	ArrivalDepartureMap(unsigned int timeLength);
+	TimelineState(unsigned int timeLength);
     
     ::std::vector<unsigned int> updateDeparturesFromTime(unsigned int time, const TimeObjectListList& newDeparture);
 
@@ -23,8 +21,8 @@ public:
     
     ::std::vector<FrameID> updateWithNewDepartures(const ::std::map<FrameID, TimeObjectListList>& newDepartures);
     
-    bool operator==(const ArrivalDepartureMap& other) const;
-    inline bool operator!=(const ArrivalDepartureMap& other) const {
+    bool operator==(const TimelineState& other) const;
+    inline bool operator!=(const TimelineState& other) const {
         return !(*this==other);
     }
     
@@ -33,10 +31,10 @@ public:
         ObjectList getPrePhysics() const;
         FrameID getTime() const;
     private:
-        friend class ArrivalDepartureMap;
-        Frame(const ArrivalDepartureMap& mapPtr, FrameID time);
+        friend class TimelineState;
+        Frame(const TimelineState& mapPtr, FrameID time);
         FrameID time_;
-        const ArrivalDepartureMap& this_;
+        const TimelineState& this_;
     };
     Frame getFrame(FrameID whichFrame) const;
 private:

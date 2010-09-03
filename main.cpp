@@ -41,6 +41,8 @@ int main()
 
     ::boost::posix_time::time_duration stepTime(0,0,0,boost::posix_time::time_duration::ticks_per_second()/60);
 
+    ::hg::Input previousInput;
+    
     while (App.IsOpened())
     {
         ::boost::posix_time::ptime startTime(boost::posix_time::microsec_clock::universal_time());
@@ -56,8 +58,8 @@ int main()
                     break;
             }
         }
-        const ::hg::Input input(App.GetInput());
-
+        const ::hg::Input input(App.GetInput(), previousInput);
+        previousInput = input;
         //cout << "called from main" << endl;
         ::boost::tuple<FrameID, TimeEngine::FrameListList> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
 

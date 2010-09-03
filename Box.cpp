@@ -56,51 +56,51 @@ bool Box::operator==(const Box& other) const
         && (data->size == other.data->size));
 }
 
-bool Box::operator<(const Box& second) const
+bool Box::operator<(const Box& other) const
 {
     if (data != other.data) {
-        if (data->x == second.data->x)
+        if (data->x == other.data->x)
         {
-            if (data->y == second.data->y)
+            if (data->y == other.data->y)
             {
-                if (data->xspeed == second.data->xspeed)
+                if (data->xspeed == other.data->xspeed)
                 {
-                    if (data->yspeed == second.data->yspeed)
+                    if (data->yspeed == other.data->yspeed)
                     {
-                        if (data->timeDirection == second.data->timeDirection)
+                        if (data->timeDirection == other.data->timeDirection)
                         {
-                            if (data->size == second.data->size)
+                            if (data->size == other.data->size)
                             {
                                 return false;
                             }
                             else
                             {
-                                return (data->size < second.data->size);
+                                return (data->size < other.data->size);
                             }
                         }
                         else
                         {
-                            return (data->timeDirection < second.data->timeDirection);
+                            return (data->timeDirection < other.data->timeDirection);
                         }
                     }
                     else
                     {
-                        return (data->yspeed < second.data->yspeed);
+                        return (data->yspeed < other.data->yspeed);
                     }
                 }
                 else
                 {
-                    return (data->xspeed < second.data->xspeed);
+                    return (data->xspeed < other.data->xspeed);
                 }
             }
             else
             {
-                return (data->y < second.data->y);
+                return (data->y < other.data->y);
             }
         }
         else
         {
-            return (data->x < second.data->x);
+            return (data->x < other.data->x);
         }
     }
     else {

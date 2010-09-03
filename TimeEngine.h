@@ -6,7 +6,7 @@
 
 #include "PhysicsEngine.h"
 #include "WorldState.h"
-#include "ArrivalDepartureMap.h"
+#include "TimelineState.h"
 
 #include "FrameID.h"
 
@@ -42,7 +42,7 @@ public:
     ObjectList getPostPhysics(FrameID whichFrame) const;
 private:
     void executeWorld(WorldState& currentState) const;
-    TimeObjectListList getDeparturesFromFrame(const ArrivalDepartureMap::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const;
+    TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const;
     
     //state of world at end of last executed frame
     WorldState endOfFrameState;

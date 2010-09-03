@@ -1,16 +1,16 @@
 #ifndef HG_WORLD_STATE_H
 #define HG_WORLD_STATE_H
 #include <vector>
-#include "ArrivalDepartureMap.h"
+#include "TimelineState.h"
 #include "FrameID.h"
 namespace hg {
     class WorldState {
     public:
-        WorldState(const ArrivalDepartureMap& currentArrivalDepartures,
+        WorldState(const TimelineState& currentTimeline,
                    //::std::vector<Frame> newFrameUpdateList,
                    FrameID newCurrentPlayerFrame,
                    FrameID newNextPlayerFrame) :
-        arrivalDepartures(currentArrivalDepartures),
+        timeline(currentTimeline),
         frameUpdateList(),
         nextPlayerFrame(newNextPlayerFrame),
         currentPlayerFrame(newCurrentPlayerFrame)
@@ -20,13 +20,13 @@ namespace hg {
         {
             return currentPlayerFrame == other.currentPlayerFrame 
             && frameUpdateList == other.frameUpdateList
-            && arrivalDepartures == other.arrivalDepartures;
+            && timeline == other.timeline;
         }
         bool operator!=(const WorldState& other) const
         {
             return !(*this==other);
         }
-        ArrivalDepartureMap arrivalDepartures;
+        TimelineState timeline;
         ::std::vector<FrameID> frameUpdateList;
         //The frame constaining the guy with the largest overall relative index - who has arrived but not yet departed
         FrameID nextPlayerFrame;
