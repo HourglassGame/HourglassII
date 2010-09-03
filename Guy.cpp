@@ -58,7 +58,8 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return data == other.data || ((data->relativeIndex == other.data->relativeIndex) 
+	return data == other.data || 
+        ((data->relativeIndex == other.data->relativeIndex) 
     && (data->x == other.data->x) 
     && (data->y == other.data->y) 
     && (data->xspeed == other.data->xspeed) 
