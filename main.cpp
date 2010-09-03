@@ -135,7 +135,7 @@ void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList)
 void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves)
 {
 
-    foreach(const vector<FrameID>& lists, waves) {
+    foreach(const FrameUpdateSet& lists, waves) {
         //cout << lists.size() << endl;
         foreach (FrameID frame, lists) {
             target.Draw(Shape::Rectangle((frame/5400.f)*640,

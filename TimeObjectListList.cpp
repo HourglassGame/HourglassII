@@ -39,11 +39,7 @@ bool TimeObjectListList::operator!=(const TimeObjectListList& other) const
 
 bool TimeObjectListList::equals(const TimeObjectListList& other) const
 {
-	if (list.size() != other.list.size())
-	{
-		return false;
-	}
-    return ::std::equal(list.begin(),list.end(),other.list.begin());
+    return list.size() == other.list.size() && ::std::equal(list.begin(),list.end(),other.list.begin());
 }
 
 void TimeObjectListList::sortObjectLists()

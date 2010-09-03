@@ -2,6 +2,7 @@
 #include <cassert>
 #include <algorithm>
 #include <iostream>
+#include "FrameUpdateSet.h"
 
 using namespace ::std;
 using namespace ::hg;
@@ -30,19 +31,16 @@ this_(mapPtr)
 {
 }
 
-vector<FrameID> TimelineState::updateWithNewDepartures(const map<FrameID, TimeObjectListList>& newDepartures)
+FrameUpdateSet TimelineState::updateWithNewDepartures(const map<FrameID, TimeObjectListList>& newDepartures)
 {
-    vector<FrameID> newWaveFrames;
+    FrameUpdateSet newWaveFrames;
     for(map<FrameID, TimeObjectListList>::const_iterator
             it(newDepartures.begin()), end(newDepartures.end());
             it != end;
             ++it)
     {
-        vector<FrameID> temp (updateDeparturesFromTime(it->first, it->second));
-        newWaveFrames.insert(newWaveFrames.end(),temp.begin(), temp.end());
+        newWaveFrames.add(updateDeparturesFromTime(it->first, it->second));
     }
-    sort(newWaveFrames.begin(), newWaveFrames.end());
-    newWaveFrames.erase(unique(newWaveFrames.begin(), newWaveFrames.end()), newWaveFrames.end());
     return newWaveFrames;
 }
 
@@ -57,9 +55,9 @@ ObjectList& TimelineState::permanentDepartureObjectList(unsigned int arrivalTime
 }
 
 //returns which frames are changed
-vector<FrameID> TimelineState::updateDeparturesFromTime(const FrameID time, const TimeObjectListList& newDeparture)
+FrameUpdateSet TimelineState::updateDeparturesFromTime(const FrameID time, const TimeObjectListList& newDeparture)
 {
-    vector<FrameID> changedTimes;
+    FrameUpdateSet changedTimes;
 
     Iterator ni(newDeparture.list.begin());
     const Iterator nend(newDeparture.list.end());
@@ -71,27 +69,27 @@ vector<FrameID> TimelineState::updateDeparturesFromTime(const FrameID time, cons
             if (ni != nend) {
                 if ((*ni).first < (*oi).first) {
                     arrivals.at((*ni).first).insertObjectList(time, (*ni).second);
-                    changedTimes.push_back((*ni).first);
+                    changedTimes.addFrame((*ni).first);
                     ++ni;
                 }
                 else if ((*ni).first == (*oi).first) {
                     if ((*ni).second != (*oi).second) {
                         arrivals.at((*ni).first).list.find(time)->second = (*ni).second;
-                        changedTimes.push_back((*ni).first);
+                        changedTimes.addFrame((*ni).first);
                     }
                     ++ni;
                     break;
                 }
                 else {
                     arrivals.at((*oi).first).list.erase(time);
-                    changedTimes.push_back((*oi).first);
+                    changedTimes.addFrame((*oi).first);
                     break;
                 }
             }
             else {
                 while (oi != oend) {
                     arrivals.at((*oi).first).list.erase(time);
-                    changedTimes.push_back((*oi).first);
+                    changedTimes.addFrame((*oi).first);
                     ++oi;
                 }
                 goto end;
@@ -101,7 +99,7 @@ vector<FrameID> TimelineState::updateDeparturesFromTime(const FrameID time, cons
     }
     while (ni != nend) {
         arrivals.at((*ni).first).insertObjectList(time, (*ni).second);
-        changedTimes.push_back((*ni).first);
+        changedTimes.addFrame((*ni).first);
         ++ni;
     }
 end:

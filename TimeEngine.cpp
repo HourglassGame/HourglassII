@@ -42,8 +42,8 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
     endOfFrameState.timeline.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef().at(0));
 
-    endOfFrameState.frameUpdateList.push_back(0);
-    endOfFrameState.frameUpdateList.push_back(timeLineLength - 1);
+    endOfFrameState.frameUpdateSet.addFrame(0);
+    endOfFrameState.frameUpdateSet.addFrame(timeLineLength - 1);
 
     //** run level for a while
     for (unsigned int i = 0; i < timeLineLength; ++i) {
@@ -54,40 +54,33 @@ physics(timeLineLength, wallmap, newWallSize, newGravity)
 tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     endOfFrameState.playerInput.push_back(newInputData);
-    endOfFrameState.frameUpdateList.push_back(endOfFrameState.nextPlayerFrame);
+    endOfFrameState.frameUpdateSet.addFrame(endOfFrameState.nextPlayerFrame);
     FrameListList updatedList;
     //Leaving out variable speed and frame-specific speed in the interest of getting the initial cut done
     //Adding it may require significant changes ;_;, but anyway...
     unsigned const int speedOfTime = 3;
     for (unsigned int i = 0; i < speedOfTime; ++i) {
-        updatedList.push_back(endOfFrameState.frameUpdateList);
+        updatedList.push_back(endOfFrameState.frameUpdateSet);
         executeWorld(endOfFrameState);
     }
     return tuple<FrameID, FrameListList>(endOfFrameState.currentPlayerFrame, updatedList);
 }
 
-static bool containsNoDuplicates(::std::vector<FrameID> list)
-{
-    sort(list.begin(), list.end());
-    return unique(list.begin(), list.end()) == list.end();
-}
-
 void TimeEngine::executeWorld(WorldState& currentState) const
 {
-    assert(containsNoDuplicates(currentState.frameUpdateList));
     typedef map<FrameID, TimeObjectListList> DepartureMap;
     DepartureMap changedFrames;
-    //WorldState newWorldState(currentState);
-    foreach (FrameID frame, currentState.frameUpdateList) {
+    for (FrameUpdateSet::const_iterator it(currentState.frameUpdateSet.begin()),
+                        end(currentState.frameUpdateSet.end()); it != end; ++it) {
         pair<DepartureMap::iterator,bool> ret = changedFrames.insert (
             DepartureMap::value_type (
-                frame,
-                getDeparturesFromFrame(currentState.timeline.getFrame(frame), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
+                *it,
+                getDeparturesFromFrame(currentState.timeline.getFrame(*it), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
             )
         );
-        assert(ret.second && "There shouldn't be any duplicates in the frameUpdateList");
+        assert(ret.second && "There shouldn't be any duplicates in the frameUpdateSet");
     }
-    currentState.frameUpdateList = currentState.timeline.updateWithNewDepartures(changedFrames);
+    currentState.frameUpdateSet = currentState.timeline.updateWithNewDepartures(changedFrames);
 }
 
 ObjectList TimeEngine::getPostPhysics(FrameID whichFrame) const

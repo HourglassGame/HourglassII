@@ -37,7 +37,7 @@ public:
                const ObjectList& initialObjects,
                unsigned int guyStartTime);
 
-    typedef ::std::vector< ::std::vector<FrameID> > FrameListList;
+    typedef ::std::vector<FrameUpdateSet> FrameListList;
     ::boost::tuple<FrameID, FrameListList> runToNextPlayerFrame(const InputList& newInputData);
     ObjectList getPostPhysics(FrameID whichFrame) const;
 private:
