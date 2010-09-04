@@ -2,20 +2,21 @@
 #define HG_TIME_OBJECT_LIST_LIST_H
 
 #include "ObjectList.h"
+#include "FrameID.h"
 #include <map>
 namespace hg {
 class TimeObjectListList
 {
 public:
     TimeObjectListList();
-	void setObjectList(unsigned int time, const ObjectList& newObjectList);
-	void clearTime(unsigned int time);
+	void setObjectList(FrameID time, const ObjectList& newObjectList);
+	void clearTime(FrameID time);
 
-	ObjectList& getObjectListForManipulation(unsigned int time);
+	ObjectList& getObjectListForManipulation(FrameID time);
     
 	void sortObjectLists();
-    void insertObjectList(unsigned int time, const ObjectList& newObjectList);
-    typedef std::map<unsigned int,ObjectList> ListType;
+    void insertObjectList(FrameID time, const ObjectList& newObjectList);
+    typedef ::std::map<FrameID,ObjectList> ListType;
 
 	bool equals(const TimeObjectListList& other) const;
     bool operator==(const TimeObjectListList& other) const;

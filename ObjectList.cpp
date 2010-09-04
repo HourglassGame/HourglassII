@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 
 using namespace ::std;
 using namespace ::hg;
@@ -65,10 +66,23 @@ bool ObjectList::isEmpty() const
 	return guyList.empty() && boxList.empty();
 }
 
+static bool containsNoGuysWithEqualRelativeIndices(const vector<Guy>& guyList) {
+    vector<size_t> relativeIndices;
+    relativeIndices.reserve(guyList.size());
+    
+    for (vector<Guy>::const_iterator it(guyList.begin()), end(guyList.end()); it != end; ++it) {
+        relativeIndices.push_back(it->getRelativeIndex());
+    }
+    
+    return unique(relativeIndices.begin(), relativeIndices.end()) == relativeIndices.end();
+}
 
 void ObjectList::sortElements()
 {
 	sort(guyList.begin(), guyList.end());
+    assert(containsNoGuysWithEqualRelativeIndices(guyList) && "If the list contains guys with equal relative index then "
+                                                            "the sort order is non-deterministic, potentially leading "
+                                                                "equal objectLists being found to be different");
 	sort(boxList.begin(), boxList.end());
 }
 

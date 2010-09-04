@@ -59,9 +59,8 @@ int main()
         }
         
         input.updateState(App.GetInput());
-        cout << "called from main" << endl;
+        //cout << "called from main" << endl;
         tuple<FrameID, TimeEngine::FrameListList> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall);
         DrawTimeline(App, waveInfo.get<1>());
         App.Display();
@@ -136,11 +135,10 @@ void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves)
 {
 
     foreach(const FrameUpdateSet& lists, waves) {
-        //cout << lists.size() << endl;
         foreach (FrameID frame, lists) {
-            target.Draw(Shape::Rectangle((frame/5400.f)*640,
+            target.Draw(Shape::Rectangle((frame/10800.f)*640,
                                          10,
-                                         (frame/5400.f)*640+1,
+                                         (frame/10800.f)*640+1,
                                          25,
                                          Color(250,0,0)));
         }
@@ -215,5 +213,5 @@ TimeEngine hg::MakeTimeEngine(vector<vector<bool> >& wall)
     ObjectList newObjectList;
     newObjectList.addBox(Box(6400, 25600, 0 ,0, 3200, FORWARDS));
     newObjectList.addGuy(Guy(22000, 6400, 0, 0, 1600, 3200, false, 0, PAUSE, FORWARDS, 0, 0));
-    return TimeEngine(5400,wall,3200,50,newObjectList,0);
+    return TimeEngine(10800,wall,3200,50,newObjectList,0);
 }

@@ -1,5 +1,11 @@
 #include "FrameUpdateSet.h"
 using namespace ::hg;
+
+FrameUpdateSet::FrameUpdateSet() :
+updateSet()
+{
+}
+
 void FrameUpdateSet::addFrame(FrameID frame)
 {
     updateSet.insert(frame);

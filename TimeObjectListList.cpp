@@ -6,7 +6,7 @@ list()
 {
 }
 
-ObjectList& TimeObjectListList::getObjectListForManipulation(unsigned int time)
+ObjectList& TimeObjectListList::getObjectListForManipulation(FrameID time)
 {
     return list[time];
 }

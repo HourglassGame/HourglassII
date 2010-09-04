@@ -45,10 +45,7 @@ private:
     TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const;
     
     //state of world at end of last executed frame
-    WorldState endOfFrameState;
-    
-    //stores the physical properties of the world and uses them to turn arrivals into departures
-    PhysicsEngine physics;
+    WorldState worldState;
 };
 }
 

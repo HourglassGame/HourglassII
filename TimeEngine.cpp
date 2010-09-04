@@ -22,83 +22,34 @@ TimeEngine::TimeEngine(unsigned int timeLineLength,
                        int newGravity,
                        const ObjectList& initialObjects,
                        FrameID guyStartTime) :
-endOfFrameState(TimelineState(timeLineLength),timeLineLength,guyStartTime),
-physics(timeLineLength, wallmap, newWallSize, newGravity)
+worldState(TimelineState(timeLineLength),
+                timeLineLength,
+                guyStartTime,
+                PhysicsEngine(timeLineLength, wallmap, newWallSize, newGravity),
+                initialObjects)
+
 {
-    // boxes
-    for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
-         end(initialObjects.getBoxListRef().end()); it != end; ++it)
-    {
-        if (it->getTimeDirection() == FORWARDS)
-        {
-            endOfFrameState.timeline.permanentDepartureObjectList(0).addBox(*it);
-        }
-        else
-        {
-            endOfFrameState.timeline.permanentDepartureObjectList(timeLineLength-1).addBox(*it);
-        }
-    }
-    assert(initialObjects.getGuyListRef().size() == 1
-           && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-    endOfFrameState.timeline.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef().at(0));
-
-    endOfFrameState.frameUpdateSet.addFrame(0);
-    endOfFrameState.frameUpdateSet.addFrame(timeLineLength - 1);
-
     //** run level for a while
     for (unsigned int i = 0; i < timeLineLength; ++i) {
-        executeWorld(endOfFrameState);
+        worldState.executeWorld();
     }
 }
 
 tuple<FrameID, TimeEngine::FrameListList> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
-    endOfFrameState.playerInput.push_back(newInputData);
-    endOfFrameState.frameUpdateSet.addFrame(endOfFrameState.nextPlayerFrame);
+    worldState.addNewInputData(newInputData);
+    
     FrameListList updatedList;
     //Leaving out variable speed and frame-specific speed in the interest of getting the initial cut done
     //Adding it may require significant changes ;_;, but anyway...
     unsigned const int speedOfTime = 3;
     for (unsigned int i = 0; i < speedOfTime; ++i) {
-        updatedList.push_back(endOfFrameState.frameUpdateSet);
-        executeWorld(endOfFrameState);
+        updatedList.push_back(worldState.executeWorld());
     }
-    return tuple<FrameID, FrameListList>(endOfFrameState.currentPlayerFrame, updatedList);
-}
-
-void TimeEngine::executeWorld(WorldState& currentState) const
-{
-    typedef map<FrameID, TimeObjectListList> DepartureMap;
-    DepartureMap changedFrames;
-    for (FrameUpdateSet::const_iterator it(currentState.frameUpdateSet.begin()),
-                        end(currentState.frameUpdateSet.end()); it != end; ++it) {
-        pair<DepartureMap::iterator,bool> ret = changedFrames.insert (
-            DepartureMap::value_type (
-                *it,
-                getDeparturesFromFrame(currentState.timeline.getFrame(*it), currentState.currentPlayerFrame, currentState.nextPlayerFrame)
-            )
-        );
-        assert(ret.second && "There shouldn't be any duplicates in the frameUpdateSet");
-    }
-    currentState.frameUpdateSet = currentState.timeline.updateWithNewDepartures(changedFrames);
+    return tuple<FrameID, FrameListList>(worldState.getCurrentPlayerFrame(), updatedList);
 }
 
 ObjectList TimeEngine::getPostPhysics(FrameID whichFrame) const
 {
-    return endOfFrameState.timeline.getPostPhysics(whichFrame);
-}
-
-TimeObjectListList TimeEngine::getDeparturesFromFrame(const TimelineState::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const
-{
-    // get departures for the frame, update currentPlayerFrame
-    // if appropriate
-    TimeObjectListList departures(physics.executeFrame(frame.getPrePhysics(),
-                                                       frame.getTime(),
-                                                       endOfFrameState.playerInput,
-                                                       currentPlayerFrame,
-                                                       nextPlayerFrame));
-
-    // update departures from this frame
-    departures.sortObjectLists();
-    return departures;
+    return worldState.getPostPhysics(whichFrame);
 }
