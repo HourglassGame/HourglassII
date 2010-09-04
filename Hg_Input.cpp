@@ -52,9 +52,13 @@ void Input::updateState(const sf::Input& input)
 
 const InputList Input::AsInputList() const
 {
-    if (mouseLeft == 1 or mouseLeft == -1)
+    if (mouseLeft == 1)
     {
         return InputList(left, right, up, (down == 1), space, hg::TIME_JUMP, FrameID(mouseX*10800/64000), 1);
+    }
+    else if (mouseRight == 1)
+    {
+        return InputList(left, right, up, (down == 1), space, hg::TIME_REVERSE, 0, 0);
     }
     else
     {

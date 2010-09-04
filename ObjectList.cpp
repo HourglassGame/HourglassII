@@ -51,13 +51,8 @@ bool ObjectList::operator!=(const hg::ObjectList& other) const
 
 bool ObjectList::equals(const ObjectList& other) const
 {
-	if (guyList.size() != other.guyList.size() || boxList.size() != other.boxList.size())
-	{
-		return false;
-	}
-    assert(guyList.size() == other.guyList.size());
-    assert(boxList.size() == other.boxList.size());
-    return equal(guyList.begin(), guyList.end(), other.guyList.begin()) 
+    return guyList.size() == other.guyList.size() && boxList.size() == other.boxList.size()
+            && equal(guyList.begin(), guyList.end(), other.guyList.begin())
             && equal(boxList.begin(), boxList.end(), other.boxList.begin());
 }
 
@@ -69,11 +64,11 @@ bool ObjectList::isEmpty() const
 static bool containsNoGuysWithEqualRelativeIndices(const vector<Guy>& guyList) {
     vector<size_t> relativeIndices;
     relativeIndices.reserve(guyList.size());
-    
+
     for (vector<Guy>::const_iterator it(guyList.begin()), end(guyList.end()); it != end; ++it) {
         relativeIndices.push_back(it->getRelativeIndex());
     }
-    
+
     return unique(relativeIndices.begin(), relativeIndices.end()) == relativeIndices.end();
 }
 

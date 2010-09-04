@@ -3,7 +3,8 @@
 namespace hg {
 enum Ability {
     NO_ABILITY = 0,
-    TIME_JUMP = 1
+    TIME_JUMP = 1,
+    TIME_REVERSE = 2
 };
 }
 #endif //HG_ABILITY_H

@@ -290,12 +290,18 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             const InputList& input = playerInput[relativeIndex];
 
             // add departure for guy at the appropriate time
-            FrameID nextTime(time+oldGuyList[i].getTimeDirection());
+            TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
+            FrameID nextTime(time+nextTimeDirection);
 
             if (input.getAbility() == hg::TIME_JUMP)
             {
                 nextTime = input.getFrameIdParam(0);
                 //cout << time << endl << nextTime << endl << endl;
+            }
+            else if (input.getAbility() == hg::TIME_REVERSE)
+            {
+                nextTimeDirection *= -1;
+                nextTime = time+nextTimeDirection;
             }
 
             if (playerInput.size() - 1 == relativeIndex)
@@ -311,7 +317,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                     Guy(x[i], y[i], xspeed[i], yspeed[i],
                         oldGuyList[i].getWidth(), oldGuyList[i].getHeight(),
                         carry[i], carrySize[i], carryDirection[i],
-                        oldGuyList[i].getTimeDirection(),
+                        nextTimeDirection,
                         relativeIndex+1, nextSubimage)
                 );
             }
@@ -376,6 +382,23 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 				x = (x/wallSize + 1)*wallSize;
 			}
 		}
+
+		// box collision
+        if (yspeed >= 0) // down
+        {
+            for (unsigned int j = 0; j < nextBox.size(); ++j)
+            {
+                int boxX = nextBox[j].box.getX();
+                int boxY = nextBox[j].box.getY();
+                int boxSize = nextBox[j].box.getSize();
+                if (x <= boxX+boxSize and x+size >= boxX and y+size >= boxY and y-yspeed+size <= boxY)
+                {
+                    supported = true;
+                    yspeed = 0;
+                    y = boxY-size;
+                }
+            }
+        }
 
 		nextBox.push_back
         (
