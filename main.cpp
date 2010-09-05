@@ -8,10 +8,12 @@
 #include <SFML/Graphics.hpp>
 
 #include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 
+#include <sstream>
 #include <iostream>
 
 #define foreach BOOST_FOREACH
@@ -68,11 +70,20 @@ int main()
         tuple<FrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall, waveInfo.get<2>());
         DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
-        App.Display();
+        
 
         while (posix_time::microsec_clock::universal_time() - startTime < stepTime) {
             this_thread::sleep(posix_time::milliseconds(1));
         }
+        {
+            stringstream fpsstring;
+            fpsstring << (1000000000./((posix_time::microsec_clock::universal_time() - startTime).total_nanoseconds()));
+            sf::String fpsglyph(fpsstring.str());
+            fpsglyph.SetPosition(600, 465);
+            fpsglyph.SetSize(8.f);
+            App.Draw(fpsglyph);
+        }
+        App.Display();
     }
     return EXIT_SUCCESS;
 }
