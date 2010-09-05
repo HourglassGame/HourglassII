@@ -45,7 +45,7 @@ void Input::updateState(const sf::Input& input)
     updatePress(down, input.IsKeyDown(sf::Key::Down));
     space = input.IsKeyDown(sf::Key::Space);
     updatePress(mouseLeft, input.IsMouseButtonDown(sf::Mouse::Left));
-    mouseRight = input.IsMouseButtonDown(sf::Mouse::Right);
+    updatePress(mouseRight, input.IsMouseButtonDown(sf::Mouse::Right));
     mouseX = input.GetMouseX()*100;
     mouseY = input.GetMouseY()*100;
 }

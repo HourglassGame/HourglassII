@@ -42,6 +42,7 @@ namespace hg {
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
         FrameID getCurrentPlayerFrame() const;
+        TimeDirection getCurrentPlayerDirection() const;
     private:
         TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame);
 
@@ -50,6 +51,8 @@ namespace hg {
         FrameID nextPlayerFrame_;
         //The frame containing the guy with the largest relative index who has both arrived and departed
         FrameID currentPlayerFrame_;
+        //The time direction of the guy with the largest relative index who has both arrived and departed
+        TimeDirection currentPlayerDirection_;
         // stores all player input
         ::std::vector<InputList> playerInput_;
         //Stores the frames which changed in the most recent call to executeWorld

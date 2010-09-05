@@ -22,7 +22,7 @@ namespace hg {
         int down;
         bool space;
         int mouseLeft;
-        bool mouseRight;
+        int mouseRight;
         int mouseX;
         int mouseY;
     };

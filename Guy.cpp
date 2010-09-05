@@ -4,20 +4,21 @@
 #include <iostream>
 using namespace ::hg;
 
-Guy::Guy(int nX, 
-         int nY, 
-         int nXspeed, 
-         int nYspeed, 
-         int nWidth, 
+Guy::Guy(int nX,
+         int nY,
+         int nXspeed,
+         int nYspeed,
+         int nWidth,
          int nHeight,
-         bool nBoxCarrying, 
+         bool nSupported,
+         bool nBoxCarrying,
          int nBoxCarrySize,
          TimeDirection nBoxCarryDirection,
-         TimeDirection nTimeDirection, 
+         TimeDirection nTimeDirection,
          unsigned int nRelativeIndex,
          int nSubimage) :
 referenceCount(new int(1)),
-data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight,
+data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nSupported,
               nBoxCarrying,nBoxCarrySize,nBoxCarryDirection,
               nTimeDirection,nRelativeIndex,nSubimage))
 {
@@ -59,18 +60,19 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return data == other.data  
-        || ((data->relativeIndex == other.data->relativeIndex) 
-         && (data->x == other.data->x) 
-         && (data->y == other.data->y) 
-         && (data->xspeed == other.data->xspeed) 
-         && (data->yspeed == other.data->yspeed) 
-         && (data->width == other.data->width) 
-         && (data->height == other.data->height) 
-         && (data->boxCarrying == other.data->boxCarrying) 
-         && (data->timeDirection == other.data->timeDirection) 
+	return data == other.data
+        || ((data->relativeIndex == other.data->relativeIndex)
+         && (data->x == other.data->x)
+         && (data->y == other.data->y)
+         && (data->xspeed == other.data->xspeed)
+         && (data->yspeed == other.data->yspeed)
+         && (data->width == other.data->width)
+         && (data->height == other.data->height)
+         && (data->supported == other.data->supported)
+         && (data->boxCarrying == other.data->boxCarrying)
+         && (data->timeDirection == other.data->timeDirection)
          && (data->subimage == other.data->subimage)
-         && (data->boxCarryDirection == other.data->boxCarryDirection) 
+         && (data->boxCarryDirection == other.data->boxCarryDirection)
          && (data->boxCarrySize == other.data->boxCarrySize));
 }
 

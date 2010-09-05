@@ -11,6 +11,7 @@ WorldState::WorldState(const TimelineState& timeline,
 timeline_(timeline),
 nextPlayerFrame_(0),/*zero is filler here, I don't have a reasonable `invalid' number*/
 currentPlayerFrame_(0),/*zero is filler here, I don't have a reasonable `invalid' number*/
+currentPlayerDirection_(PAUSE),/*filler*/
 playerInput_(),
 frameUpdateSet_(),
 physics_(physics)
@@ -29,14 +30,14 @@ physics_(physics)
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
     initialArrivalMap[guyStartTime].addGuy(initialObjects.getGuyListRef().at(0));
-    
+
     TimeObjectListList initialArrivals;
-    
+
     for (map<FrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()), end(initialArrivalMap.end()); it != end; ++it) {
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         initialArrivals.insertObjectList(it->first, ObjectList(it->second));
     }
-    
+
     timeline_.setArrivalsFromPermanentDepartureFrame(initialArrivals);
 
     frameUpdateSet_.addFrame(0);
@@ -49,6 +50,7 @@ TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame
                                  frame.getTime(),
                                  playerInput_,
                                  currentPlayerFrame_,
+                                 currentPlayerDirection_,
                                  nextPlayerFrame_);
 }
 
@@ -81,4 +83,9 @@ void WorldState::addNewInputData(const InputList& newInputData)
 FrameID WorldState::getCurrentPlayerFrame() const
 {
     return currentPlayerFrame_;
+}
+
+TimeDirection WorldState::getCurrentPlayerDirection() const
+{
+    return currentPlayerDirection_;
 }

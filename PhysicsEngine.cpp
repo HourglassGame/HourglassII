@@ -23,6 +23,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                const FrameID time,
                                                const std::vector<InputList>& playerInput,
                                                FrameID& currentPlayerFrame,
+                                               TimeDirection& currentPlayerDirection,
                                                FrameID& nextPlayerFrame) const
 {
     std::vector<BoxInfo> nextBox;
@@ -44,8 +45,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
 	// guys simple collision algorithm
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
-            newDepartures, nextBox, currentPlayerFrame, nextPlayerFrame);
-
+            newDepartures, nextBox, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection);
 	// guys pickup pickups
 
 	// guys pickup/put down boxes and objects
@@ -54,15 +54,15 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
 		FrameID nextTime(time+nextBox[i].box.getTimeDirection());
-        
+
 		if (nextTime >= 0 && nextTime < timeLineLength)
 		{
 			newDepartures[nextTime].addBox(nextBox[i].box);
 		}
 	}
-    
+
     TimeObjectListList returnDepartures;
-    
+
     for (map<FrameID, MutableObjectList>::iterator it(newDepartures.begin()), end(newDepartures.end()); it != end; ++it) {
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         returnDepartures.insertObjectList(it->first, ObjectList(it->second));
@@ -97,18 +97,20 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             map<FrameID, MutableObjectList>& newDepartures,
                             std::vector<BoxInfo>& nextBox,
                             FrameID& currentPlayerFrame,
-                            FrameID& nextPlayerFrame) const
+                            FrameID& nextPlayerFrame,
+                            TimeDirection& currentPlayerDirection) const
 {
 	vector<int> x;
 	vector<int> y;
 	vector<int> xspeed;
 	vector<int> yspeed;
+	vector<bool> supported;
 
     x.reserve(oldGuyList.size());
     y.reserve(oldGuyList.size());
     xspeed.reserve(oldGuyList.size());
     yspeed.reserve(oldGuyList.size());
-    
+
 	// position, velocity, collisions
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
@@ -118,90 +120,105 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             y.push_back(oldGuyList[i].getY());
             xspeed.push_back(0);
             yspeed.push_back(oldGuyList[i].getYspeed() + gravity);
+            supported.push_back(false);
 
             unsigned int relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
 
             int width = oldGuyList[i].getWidth();
             int height = oldGuyList[i].getHeight();
-            bool supported = false;
 
-            if (input.getLeft())
+             // jump
+            if (oldGuyList[i].getSupported() && input.getUp())
             {
-                xspeed[i] = -250;
-            }
-            else if (input.getRight())
-            {
-                xspeed[i] = 250;
-            }
-            else
-            {
-                xspeed[i] = 0;
+                yspeed[i] += -800;
             }
 
             //check wall collision in Y direction
-            y[i] = y[i] + yspeed[i];
+            int newY = y[i] + yspeed[i];
 
             if (yspeed[i] > 0) // down
             {
-                if (wallAt(x[i], y[i]+height) || (x[i] - (x[i]/wallSize)*wallSize > wallSize-width && wallAt(x[i]+width, y[i]+height)))
+                if (wallAt(x[i], newY+height) || (x[i] - (x[i]/wallSize)*wallSize > wallSize-width && wallAt(x[i]+width, newY+height)))
                 {
-                    yspeed[i] = 0;
-                    y[i] = ((y[i]+height)/wallSize)*wallSize - height;
-                    supported = true;
+                    newY = ((newY+height)/wallSize)*wallSize - height;
+                    supported[i] = true;
                 }
             }
             else if (yspeed[i] < 0) // up
             {
-                if  (wallAt(x[i], y[i]) || (x[i] - (x[i]/wallSize)*wallSize > wallSize-width && wallAt(x[i]+width, y[i])))
+                if  (wallAt(x[i], newY) || (x[i] - (x[i]/wallSize)*wallSize > wallSize-width && wallAt(x[i]+width, newY)))
                 {
-                    yspeed[i] = 0;
-                    y[i] = (y[i]/wallSize + 1)*wallSize;
-                }
-            }
-
-            //check wall collision in X direction
-            x[i] = x[i] + xspeed[i];
-
-            if (xspeed[i] > 0) // right
-            {
-                if (wallAt(x[i]+width, y[i]) || (y[i] - (y[i]/wallSize)*wallSize > wallSize-height && wallAt(x[i]+width, y[i]+height)))
-                {
-                    xspeed[i] = 0;
-                    x[i] = (x[i]+width)/wallSize*wallSize - width;
-                }
-            }
-            else if (xspeed[i] < 0) // left
-            {
-                if (wallAt(x[i], y[i]) || (y[i] - (y[i]/wallSize)*wallSize > wallSize-height && wallAt(x[i], y[i]+height)))
-                {
-                    xspeed[i] = 0;
-                    x[i] = (x[i]/wallSize + 1)*wallSize;
+                    newY = (newY/wallSize + 1)*wallSize;
                 }
             }
 
             // box collision
-            if (yspeed[i] >= 0) // down
+            for (unsigned int j = 0; j < nextBox.size(); ++j)
             {
-                for (unsigned int j = 0; j < nextBox.size(); ++j)
+                int boxX = nextBox[j].box.getX();
+                int boxY = nextBox[j].box.getY();
+                int boxXspeed = nextBox[j].box.getXspeed();
+                int boxYspeed = nextBox[j].box.getYspeed();
+                int boxSize = nextBox[j].box.getSize();
+                TimeDirection boxDirection = nextBox[j].box.getTimeDirection();
+                if (x[i] <= boxX+boxSize and x[i]+width >= boxX)
                 {
-                    int boxX = nextBox[j].box.getX();
-                    int boxY = nextBox[j].box.getY();
-                    int boxSize = nextBox[j].box.getSize();
-                    if (x[i] <= boxX+boxSize and x[i]+width >= boxX and y[i]+height >= boxY and y[i]-yspeed[i]+height <= boxY)
+                    if (boxDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE)
                     {
-                        supported = true;
-                        yspeed[i] = 0;
-                        y[i] = boxY-height;
+                        if (newY+height >= boxY-boxYspeed and newY+height-yspeed[i] <= boxY)
+                        {
+                            newY = boxY-height-boxYspeed;
+                            xspeed[i] = -boxXspeed;
+                            supported[i] = true;
+                        }
+
+                    }
+                    else
+                    {
+                        if (newY+height >= boxY and newY-yspeed[i]+height <= boxY-boxYspeed)
+                        {
+                            newY = boxY-height;
+                            xspeed[i] = boxXspeed;
+                            supported[i] = true;
+                        }
                     }
                 }
             }
 
-            // jump
-            if (supported && input.getUp())
+            //check wall collision in X direction
+            int newX = x[i] + xspeed[i];
+
+            if (input.getLeft())
             {
-                yspeed[i] = -800;
+                newX += -250;
             }
+            else if (input.getRight())
+            {
+                newX += 250;
+            }
+
+            if (newX-x[i] > 0) // right
+            {
+                if (wallAt(newX+width, newY) || (newY - (newY/wallSize)*wallSize > wallSize-height && wallAt(newX+width, newY+height)))
+                {
+                    newX = (x[i]+width)/wallSize*wallSize - width;
+                }
+            }
+            else if (newX-x[i] < 0) // left
+            {
+                if (wallAt(newX, newY) || (newY - (newY/wallSize)*wallSize > wallSize-height && wallAt(newX, newY+height)))
+                {
+                    newX = (newX/wallSize + 1)*wallSize;
+                }
+            }
+
+
+            xspeed[i] = newX-x[i];
+            yspeed[i] = newY-y[i];
+
+            x[i] = newX;
+            y[i] = newY;
         }
 	}
 
@@ -319,6 +336,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 
             if (playerInput.size() - 1 == relativeIndex)
             {
+                currentPlayerDirection = oldGuyList[i].getTimeDirection();
                 currentPlayerFrame = time;
                 nextPlayerFrame = nextTime;
             }
@@ -329,6 +347,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 (
                     Guy(x[i], y[i], xspeed[i], yspeed[i],
                         oldGuyList[i].getWidth(), oldGuyList[i].getHeight(),
+                        supported[i],
                         carry[i], carrySize[i], carryDirection[i],
                         nextTimeDirection,
                         relativeIndex+1, nextSubimage)
@@ -355,44 +374,40 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 
 		bool supported = false;
 
-		x += xspeed;
-		y += yspeed;
+        int newY = y + yspeed;
 
 		//check wall collision in Y direction
 		if (yspeed > 0) // down
 		{
-			if (wallmap[x/wallSize][(y+size)/wallSize] || (x - (x/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][(y+size)/wallSize]))
+			if (wallmap[x/wallSize][(newY+size)/wallSize] || (x - (x/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][(newY+size)/wallSize]))
 			{
-				xspeed = 0;
-				yspeed = 0;
-				y = ((y+size)/wallSize)*wallSize - size;
+				newY = ((newY+size)/wallSize)*wallSize - size;
 				supported = true;
 			}
 		}
 		else if (yspeed < 0) // up
 		{
-			if  (wallmap[x/wallSize][y/wallSize] || (x - (x/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][y/wallSize]))
+			if  (wallmap[x/wallSize][newY/wallSize] || (x - (x/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][newY/wallSize]))
 			{
-				yspeed = 0;
-				y = (y/wallSize + 1)*wallSize;
+				newY = (newY/wallSize + 1)*wallSize;
 			}
 		}
+
+        int newX = x + xspeed;
 
 		//check wall collision in X direction
 		if (xspeed > 0) // right
 		{
-			if (wallmap[(x+size)/wallSize][y/wallSize] || (y - (y/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][(y+size)/wallSize]))
+			if (wallmap[(newX+size)/wallSize][newY/wallSize] || (newY - (newY/wallSize)*wallSize > wallSize-size && wallmap[(newX+size)/wallSize][(newY+size)/wallSize]))
 			{
-				xspeed = 0;
-				x = (x+size)/wallSize*wallSize - size;
+				newX = (newX+size)/wallSize*wallSize - size;
 			}
 		}
 		else if (xspeed < 0) // left
 		{
-			if (wallmap[x/wallSize][y/wallSize] || (y - (y/wallSize)*wallSize > wallSize-size && wallmap[x/wallSize][(y+size)/wallSize]))
+			if (wallmap[newX/wallSize][newY/wallSize] || (newY - (newY/wallSize)*wallSize > wallSize-size && wallmap[newX/wallSize][(newY+size)/wallSize]))
 			{
-				xspeed = 0;
-				x = (x/wallSize + 1)*wallSize;
+				newX = (newX/wallSize + 1)*wallSize;
 			}
 		}
 
@@ -404,14 +419,19 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                 int boxX = nextBox[j].box.getX();
                 int boxY = nextBox[j].box.getY();
                 int boxSize = nextBox[j].box.getSize();
-                if (x <= boxX+boxSize and x+size >= boxX and y+size >= boxY and y-yspeed+size <= boxY)
+                if (newX <= boxX+boxSize and newX+size >= boxX and newY+size >= boxY and newY-yspeed+size <= boxY)
                 {
                     supported = true;
-                    yspeed = 0;
-                    y = boxY-size;
+                    newY = boxY-size;
                 }
             }
         }
+
+        xspeed = newX-x;
+        yspeed = newY-y;
+
+        x = newX;
+        y = newY;
 
 		nextBox.push_back
         (

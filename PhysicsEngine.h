@@ -13,18 +13,19 @@ class TimeObjectListList;
 class PhysicsEngine
 {
 public:
-	PhysicsEngine(unsigned int newTimeLineLength, 
+	PhysicsEngine(unsigned int newTimeLineLength,
                   ::std::vector< ::std::vector<bool> > newWallmap,
-                  int newWallSize, 
+                  int newWallSize,
                   int newGravity);
-    
+
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
                                         FrameID time,
                                         const ::std::vector<InputList>& playerInput,
                                         FrameID& currentPlayerFrame,
+                                        TimeDirection& currentPlayerDirection,
                                         FrameID& nextPlayerFrame) const;
-    
+
 private:
     struct BoxInfo {
         BoxInfo(Box nbox,
@@ -37,16 +38,17 @@ private:
     };
 	void crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
                                       ::std::vector<BoxInfo>& nextBox) const;
-	
-    void guyStep(const ::std::vector<Guy>& oldGuyList, unsigned int time, 
-                 const ::std::vector<InputList>& playerInput, 
+
+    void guyStep(const ::std::vector<Guy>& oldGuyList, unsigned int time,
+                 const ::std::vector<InputList>& playerInput,
                  ::std::map<FrameID, MutableObjectList>& newDepartures,
                  ::std::vector<BoxInfo>& nextBox,
                  FrameID& currentPlayerFrame,
-                 FrameID& nextPlayerFrame) const;
+                 FrameID& nextPlayerFrame,
+                 TimeDirection& currentPlayerDirection) const;
 
 	bool wallAt(int x, int y) const;
-    
+
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
     unsigned int timeLineLength;
