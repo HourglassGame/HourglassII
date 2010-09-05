@@ -47,11 +47,11 @@ int main()
 
     int fps = 60;
 
-    posix_time::time_duration stepTime(0,0,0,posix_time::time_duration::ticks_per_second()/fps);
+    float stepTime(1.f/fps);
     ::hg::Input input;
     while (App.IsOpened())
     {
-        posix_time::ptime startTime(posix_time::microsec_clock::universal_time());
+        Clock clock;
 
         Event event;
         while (App.GetEvent(event))
@@ -72,12 +72,12 @@ int main()
         DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
         
 
-        while (posix_time::microsec_clock::universal_time() - startTime < stepTime) {
+        while (clock.GetElapsedTime() < stepTime) {
             this_thread::sleep(posix_time::milliseconds(1));
         }
         {
             stringstream fpsstring;
-            fpsstring << (1000000000./((posix_time::microsec_clock::universal_time() - startTime).total_nanoseconds()));
+            fpsstring << (1./clock.GetElapsedTime());
             sf::String fpsglyph(fpsstring.str());
             fpsglyph.SetPosition(600, 465);
             fpsglyph.SetSize(8.f);
