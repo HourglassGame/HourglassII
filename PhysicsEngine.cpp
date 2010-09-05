@@ -131,7 +131,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
              // jump
             if (oldGuyList[i].getSupported() && input.getUp())
             {
-                yspeed[i] += -800;
+                yspeed[i] = -800;
             }
 
             //check wall collision in Y direction
@@ -202,7 +202,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             {
                 if (wallAt(newX+width, newY) || (newY - (newY/wallSize)*wallSize > wallSize-height && wallAt(newX+width, newY+height)))
                 {
-                    newX = (x[i]+width)/wallSize*wallSize - width;
+                    newX = (newX+width)/wallSize*wallSize - width;
                 }
             }
             else if (newX-x[i] < 0) // left
