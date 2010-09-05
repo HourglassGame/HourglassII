@@ -1,16 +1,19 @@
-
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-
-#include <SFML/Graphics.hpp>
-#include <boost/thread.hpp>
+#include "ObjectList.h"
 #include "TimeEngine.h"
 #include "Hg_Input.h"
-#include <iostream>
+
+#include <SFML/Graphics.hpp>
+
+#include <boost/thread.hpp>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
+
+#include <iostream>
+
 #define foreach BOOST_FOREACH
 using namespace ::hg;
 using namespace ::std;
@@ -133,14 +136,17 @@ void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList)
 
 void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves)
 {
-
+    bool pixelsWhichHaveBeenDrawnIn[640] = {false};
     foreach(const FrameUpdateSet& lists, waves) {
         foreach (FrameID frame, lists) {
-            target.Draw(Shape::Rectangle((frame/10800.f)*640,
-                                         10,
-                                         (frame/10800.f)*640+1,
-                                         25,
-                                         Color(250,0,0)));
+            if (!pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame/10800.f)*640)]) {
+                target.Draw(Shape::Rectangle((frame/10800.f)*640,
+                                             10,
+                                             (frame/10800.f)*640+1,
+                                             25,
+                                             Color(250,0,0)));
+                pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame/10800.f)*640)] = true;
+            }
         }
     }
 }
@@ -210,8 +216,8 @@ vector<vector<bool> > hg::MakeWall()
 
 TimeEngine hg::MakeTimeEngine(vector<vector<bool> >& wall)
 {
-    ObjectList newObjectList;
+    MutableObjectList newObjectList;
     newObjectList.addBox(Box(6400, 25600, 0 ,0, 3200, FORWARDS));
     newObjectList.addGuy(Guy(22000, 6400, 0, 0, 1600, 3200, false, 0, PAUSE, FORWARDS, 0, 0));
-    return TimeEngine(10800,wall,3200,50,newObjectList,0);
+    return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),0);
 }

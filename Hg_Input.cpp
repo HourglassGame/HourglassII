@@ -1,9 +1,9 @@
+#include "Hg_Input.h"
+
 #include <iostream>
 #include <cassert>
 
-#include "Hg_Input.h"
-
-using namespace hg;
+using namespace ::hg;
 
 static void updatePress(int &var, bool inputState)
 {

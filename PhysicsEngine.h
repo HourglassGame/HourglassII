@@ -4,7 +4,9 @@
 #include "Guy.h"
 #include "Box.h"
 #include "FrameID.h"
+#include "ObjectList.h"
 #include <vector>
+#include <map>
 namespace hg {
 class ObjectList;
 class TimeObjectListList;
@@ -37,7 +39,8 @@ private:
                                       ::std::vector<BoxInfo>& nextBox) const;
 	
     void guyStep(const ::std::vector<Guy>& oldGuyList, unsigned int time, 
-                 const ::std::vector<InputList>& playerInput, TimeObjectListList& newDepartures,
+                 const ::std::vector<InputList>& playerInput, 
+                 ::std::map<FrameID, MutableObjectList>& newDepartures,
                  ::std::vector<BoxInfo>& nextBox,
                  FrameID& currentPlayerFrame,
                  FrameID& nextPlayerFrame) const;

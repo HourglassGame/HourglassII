@@ -1,5 +1,7 @@
 #include "ObjectList.h"
 
+#include "ObjectListData.h"
+
 #include <vector>
 #include <algorithm>
 #include <cassert>
@@ -7,16 +9,16 @@
 
 using namespace ::std;
 using namespace ::hg;
+using namespace ::boost;
 
+// ------------ ObjectList functions ---------------
 ObjectList::ObjectList() :
-guyList(),
-boxList()
+data_(new ObjectListData())
 {
 }
 
 ObjectList::ObjectList(const ObjectList& other) :
-guyList(other.guyList),
-boxList(other.boxList)
+data_(other.data_)
 {
 }
 
@@ -27,67 +29,103 @@ ObjectList::~ObjectList()
 ObjectList& ObjectList::operator=(const ObjectList& other)
 {
     if (this != &other) {
-        guyList = other.guyList;
-        boxList = other.boxList;
+        this->data_ = other.data_;
     }
     return *this;
 }
 
-void ObjectList::add(const ObjectList& other)
+ObjectList::ObjectList(const MutableObjectList& other) :
+data_(other.data_)
 {
-    guyList.insert(guyList.end(),other.guyList.begin(),other.guyList.end());
-    boxList.insert(boxList.end(),other.boxList.begin(),other.boxList.end());
+    data_->sortElements();
+}
+
+ObjectList& ObjectList::operator=(const MutableObjectList& other)
+{
+    data_ = other.data_;
+    data_->sortElements();
+    return *this;
+}
+
+const vector<Guy>& ObjectList::getGuyListRef() const
+{
+    return data_->guyList;
+}
+
+const vector<Box>& ObjectList::getBoxListRef() const
+{
+    return data_->boxList;
 }
 
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
-    return equals(other);
+    return data_ == other.data_ || 
+            data_->guyList.size() == other.data_->guyList.size() && data_->boxList.size() == other.data_->boxList.size()
+            && equal(data_->guyList.begin(), data_->guyList.end(), other.data_->guyList.begin())
+            && equal(data_->boxList.begin(), data_->boxList.end(), other.data_->boxList.begin());
 }
 
 bool ObjectList::operator!=(const hg::ObjectList& other) const
 {
-    return !equals(other);
-}
-
-bool ObjectList::equals(const ObjectList& other) const
-{
-    return guyList.size() == other.guyList.size() && boxList.size() == other.boxList.size()
-            && equal(guyList.begin(), guyList.end(), other.guyList.begin())
-            && equal(boxList.begin(), boxList.end(), other.boxList.begin());
+    return !(*this == other);
 }
 
 bool ObjectList::isEmpty() const
 {
-	return guyList.empty() && boxList.empty();
+	return data_->guyList.empty() && data_->boxList.empty();
 }
 
-static bool containsNoGuysWithEqualRelativeIndices(const vector<Guy>& guyList) {
-    vector<size_t> relativeIndices;
-    relativeIndices.reserve(guyList.size());
+// ---------- MutableObjectList functions ------------
 
-    for (vector<Guy>::const_iterator it(guyList.begin()), end(guyList.end()); it != end; ++it) {
-        relativeIndices.push_back(it->getRelativeIndex());
+MutableObjectList::MutableObjectList() :
+data_(new ObjectListData())
+{
+}
+
+MutableObjectList::~MutableObjectList()
+{
+}
+
+MutableObjectList::MutableObjectList(const MutableObjectList& other) :
+data_(other.data_)
+{
+}
+
+MutableObjectList& MutableObjectList::operator=(const MutableObjectList& other)
+{
+    if (this != &other) {
+        data_ = other.data_;
     }
-
-    return unique(relativeIndices.begin(), relativeIndices.end()) == relativeIndices.end();
+    return *this;
 }
 
-void ObjectList::sortElements()
+void MutableObjectList::makeUnique()
 {
-	sort(guyList.begin(), guyList.end());
-    assert(containsNoGuysWithEqualRelativeIndices(guyList) && "If the list contains guys with equal relative index then "
-                                                            "the sort order is non-deterministic, potentially leading "
-                                                                "equal objectLists being found to be different");
-	sort(boxList.begin(), boxList.end());
+    if (!data_.unique()) {
+        data_ = shared_ptr<ObjectListData>(new ObjectListData(*data_));
+    }
 }
 
-// Single Element addition
-void ObjectList::addGuy(const Guy& toCopy)
+void MutableObjectList::addGuy(const Guy& toCopy)
 {
-	guyList.push_back(toCopy);
+    makeUnique();
+	data_->guyList.push_back(toCopy);
 }
 
-void ObjectList::addBox(const Box& toCopy)
+void MutableObjectList::addBox(const Box& toCopy)
 {
-	boxList.push_back(toCopy);
+    makeUnique();
+	data_->boxList.push_back(toCopy);
+}
+
+void MutableObjectList::add(const MutableObjectList& other)
+{
+    makeUnique();
+    data_->add(*other.data_);
+}
+
+void MutableObjectList::add(const ObjectList& other)
+{
+    makeUnique();
+    data_->add(*other.data_);
 }

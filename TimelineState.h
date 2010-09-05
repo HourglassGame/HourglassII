@@ -7,24 +7,20 @@
 
 namespace hg {
 class FrameUpdateSet;
+class DepartureMap;
 class TimelineState
 {
 public:
 	TimelineState(unsigned int timeLength);
     
-    FrameUpdateSet updateDeparturesFromTime(unsigned int time, const TimeObjectListList& newDeparture);
+    FrameUpdateSet updateDeparturesFromTime(FrameID time, const TimeObjectListList& newDeparture);
 
-	ObjectList& permanentDepartureObjectList(unsigned int arrivalTime);
+    void setArrivalsFromPermanentDepartureFrame(TimeObjectListList& initialArrivals);
 
 	ObjectList getPrePhysics(FrameID time) const;
     ObjectList getPostPhysics(FrameID time) const;
     
-    FrameUpdateSet updateWithNewDepartures(const ::std::map<FrameID, TimeObjectListList>& newDepartures);
-    
-    bool operator==(const TimelineState& other) const;
-    inline bool operator!=(const TimelineState& other) const {
-        return !(*this==other);
-    }
+    FrameUpdateSet updateWithNewDepartures(const DepartureMap& newDepartures);
     
     class Frame {
     public:
@@ -38,7 +34,7 @@ public:
     };
     Frame getFrame(FrameID whichFrame) const;
 private:
-	unsigned int permanentDepartureIndex;
+	FrameID permanentDepartureIndex;
     ::std::vector<TimeObjectListList> arrivals;
     ::std::vector<TimeObjectListList> departures;
 };

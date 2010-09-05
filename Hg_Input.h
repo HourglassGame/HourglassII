@@ -4,10 +4,10 @@ namespace hg {
     class Input;
 }
 
-#include <boost/noncopyable.hpp>
-#include <SFML/Window/Input.hpp>
 #include "InputList.h"
 #include "Ability.h"
+#include <boost/noncopyable.hpp>
+#include <SFML/Window/Input.hpp>
 
 namespace hg {
     class Input {

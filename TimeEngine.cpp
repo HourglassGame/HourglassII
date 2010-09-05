@@ -1,7 +1,3 @@
-#include <iostream>
-#include <cassert>
-#include <algorithm>
-
 #include "TimeEngine.h"
 
 #include "InvalidLevelException.h"
@@ -9,6 +5,11 @@
 #include "ObjectList.h"
 
 #include <boost/foreach.hpp>
+
+#include <iostream>
+#include <cassert>
+#include <algorithm>
+
 #define foreach BOOST_FOREACH
 #define reverse_foreach BOOST_REVERSE_FOREACH
 

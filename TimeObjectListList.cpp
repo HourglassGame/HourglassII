@@ -2,50 +2,44 @@
 using namespace ::hg;
 
 TimeObjectListList::TimeObjectListList() :
-list()
+list_()
 {
-}
-
-ObjectList& TimeObjectListList::getObjectListForManipulation(FrameID time)
-{
-    return list[time];
 }
 
 void TimeObjectListList::setObjectList(unsigned int time, const ObjectList& newObjectList)
 {
-    list[time] = newObjectList;
+    list_[time] = newObjectList;
 }
 
 //Inserts given object list at given time - noop if an object list already exists at the given time
 void TimeObjectListList::insertObjectList(unsigned int time, const ObjectList& newObjectList)
 {
-    list.insert(ListType::value_type(time,newObjectList));
+    list_.insert(ListType::value_type(time,newObjectList));
 }
 
-void TimeObjectListList::clearTime(unsigned int time)
+void TimeObjectListList::clearTime(FrameID time)
 {
-    list.erase(time);
+    list_.erase(time);
 }
 
 bool TimeObjectListList::operator==(const TimeObjectListList& other) const
 {
-    return equals(other);
+    return list_.size() == other.list_.size() && ::std::equal(list_.begin(),list_.end(),other.list_.begin());
 }
 
 bool TimeObjectListList::operator!=(const TimeObjectListList& other) const
 {
-    return !equals(other);
+    return !(*this == other);
 }
 
-bool TimeObjectListList::equals(const TimeObjectListList& other) const
+ObjectList TimeObjectListList::getFlattenedVersion() const
 {
-    return list.size() == other.list.size() && ::std::equal(list.begin(),list.end(),other.list.begin());
-}
-
-void TimeObjectListList::sortObjectLists()
-{
-	for (ListType::iterator it(list.begin()), end(list.end()); it != end; ++it)
+    MutableObjectList returnList;
+    
+	for (ListType::const_iterator it(list_.begin()), eend(list_.end()); it != eend; ++it)
 	{
-		(*it).second.sortElements();
+		returnList.add(it->second);
 	}
+    
+	return ObjectList(returnList);
 }

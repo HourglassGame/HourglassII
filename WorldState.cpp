@@ -1,12 +1,5 @@
-/*
- *  WorldState.cpp
- *  HourglassIIGameSFML_Wave
- *
- *  Created by Evan Wallace on 4/09/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
 #include "WorldState.h"
+#include "DepartureMap.h"
 using namespace ::hg;
 using namespace ::std;
 
@@ -22,62 +15,53 @@ playerInput_(),
 frameUpdateSet_(),
 physics_(physics)
 {
-    // boxes
+    map<FrameID, MutableObjectList> initialArrivalMap;
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
-        if (it->getTimeDirection() == FORWARDS)
-        {
-            timeline_.permanentDepartureObjectList(0).addBox(*it);
+        if (it->getTimeDirection() == FORWARDS) {
+            initialArrivalMap[0].addBox(*it);
         }
-        else
-        {
-            timeline_.permanentDepartureObjectList(timelineLength-1).addBox(*it);
+        else {
+            initialArrivalMap[timelineLength-1].addBox(*it);
         }
     }
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-    timeline_.permanentDepartureObjectList(guyStartTime).addGuy(initialObjects.getGuyListRef().at(0));
+    initialArrivalMap[guyStartTime].addGuy(initialObjects.getGuyListRef().at(0));
     
+    TimeObjectListList initialArrivals;
+    
+    for (map<FrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()), end(initialArrivalMap.end()); it != end; ++it) {
+        //Consider adding insertObjectList overload which can take aim for massively increased efficiency
+        initialArrivals.insertObjectList(it->first, ObjectList(it->second));
+    }
+    
+    timeline_.setArrivalsFromPermanentDepartureFrame(initialArrivals);
+
     frameUpdateSet_.addFrame(0);
     frameUpdateSet_.addFrame(timelineLength - 1);
 }
 
 TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame& frame)
 {
-    // get departures for the frame, update currentPlayerFrame
-    // if appropriate 
-    TimeObjectListList departures(physics_.executeFrame(frame.getPrePhysics(),
-                                                       frame.getTime(),
-                                                       playerInput_,
-                                                       currentPlayerFrame_,
-                                                       nextPlayerFrame_));
-    
-    departures.sortObjectLists();
-    
-    return departures;
+    return physics_.executeFrame(frame.getPrePhysics(),
+                                 frame.getTime(),
+                                 playerInput_,
+                                 currentPlayerFrame_,
+                                 nextPlayerFrame_);
 }
 
 
 FrameUpdateSet WorldState::executeWorld()
 {
     FrameUpdateSet returnSet(frameUpdateSet_);
-    typedef map<FrameID, TimeObjectListList> DepartureMap;
     DepartureMap changedFrames;
+    changedFrames.reserve(frameUpdateSet_.size());
     for (FrameUpdateSet::const_iterator it(frameUpdateSet_.begin()),
-         end(frameUpdateSet_.end()); it != end; ++it) {
-        pair<DepartureMap::iterator,bool> ret = changedFrames.insert 
-        (
-            DepartureMap::value_type 
-            (
-                *it,
-                getDeparturesFromFrame
-                (
-                    timeline_.getFrame(*it)
-                )
-            )
-        );
-        assert(ret.second && "There shouldn't be any duplicates in the frameUpdateSet");
+         end(frameUpdateSet_.end()); it != end; ++it)
+    {
+        changedFrames.addDeparture(*it, getDeparturesFromFrame(timeline_.getFrame(*it)));
     }
     frameUpdateSet_ = timeline_.updateWithNewDepartures(changedFrames);
     return returnSet;

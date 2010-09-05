@@ -1,6 +1,5 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
-
 #include "TimeDirection.h"
 namespace hg {
     class Guy

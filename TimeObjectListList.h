@@ -9,19 +9,33 @@ class TimeObjectListList
 {
 public:
     TimeObjectListList();
+    
 	void setObjectList(FrameID time, const ObjectList& newObjectList);
 	void clearTime(FrameID time);
-
-	ObjectList& getObjectListForManipulation(FrameID time);
     
-	void sortObjectLists();
     void insertObjectList(FrameID time, const ObjectList& newObjectList);
-    typedef ::std::map<FrameID,ObjectList> ListType;
-
-	bool equals(const TimeObjectListList& other) const;
+    
     bool operator==(const TimeObjectListList& other) const;
     bool operator!=(const TimeObjectListList& other) const;
-    ListType list;
+    
+    ObjectList getFlattenedVersion() const;
+    
+    typedef ::std::map<FrameID,ObjectList> ListType;
+    
+    //Big and potentially very painful privacy leak here, please fix.
+    typedef ListType::const_iterator const_iterator;
+    
+    const_iterator begin() const
+    {
+        return list_.begin();  
+    }
+    const_iterator end() const
+    {
+        return list_.end();
+    }
+    
+private:
+    ListType list_;
 };
 }
 #endif //HG_TIME_OBJECT_LIST_LIST_H

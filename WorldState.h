@@ -1,12 +1,14 @@
 #ifndef HG_WORLD_STATE_H
 #define HG_WORLD_STATE_H
-#include <vector>
+
 #include "TimelineState.h"
 #include "FrameUpdateSet.h"
 #include "FrameID.h"
 #include "InputList.h"
 #include "PhysicsEngine.h"
 #include "FrameUpdateSet.h"
+
+#include <vector>
 
 namespace hg {
     class WorldState {

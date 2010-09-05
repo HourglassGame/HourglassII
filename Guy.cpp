@@ -1,8 +1,8 @@
-
 #include "Guy.h"
+
 #include <cassert>
 #include <iostream>
-using namespace hg;
+using namespace ::hg;
 
 Guy::Guy(int nX, 
          int nY, 
@@ -59,23 +59,22 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return data == other.data || 
-        ((data->relativeIndex == other.data->relativeIndex) 
-    && (data->x == other.data->x) 
-    && (data->y == other.data->y) 
-    && (data->xspeed == other.data->xspeed) 
-    && (data->yspeed == other.data->yspeed) 
-    && (data->width == other.data->width) 
-    && (data->height == other.data->height) 
-    && (data->boxCarrying == other.data->boxCarrying) 
-    && (data->timeDirection == other.data->timeDirection) 
-    && (data->subimage == other.data->subimage)
-    && (data->boxCarryDirection == other.data->boxCarryDirection) 
-    && (data->boxCarrySize == other.data->boxCarrySize));
+	return data == other.data  
+        || ((data->relativeIndex == other.data->relativeIndex) 
+         && (data->x == other.data->x) 
+         && (data->y == other.data->y) 
+         && (data->xspeed == other.data->xspeed) 
+         && (data->yspeed == other.data->yspeed) 
+         && (data->width == other.data->width) 
+         && (data->height == other.data->height) 
+         && (data->boxCarrying == other.data->boxCarrying) 
+         && (data->timeDirection == other.data->timeDirection) 
+         && (data->subimage == other.data->subimage)
+         && (data->boxCarryDirection == other.data->boxCarryDirection) 
+         && (data->boxCarrySize == other.data->boxCarrySize));
 }
 
 bool Guy::operator<(const Guy& other) const
 {
-    using namespace ::std;
     return data->relativeIndex < other.data->relativeIndex;
 }
