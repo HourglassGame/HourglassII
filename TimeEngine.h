@@ -35,7 +35,7 @@ public:
                int newWallSize,
                int newGravity,
                const ObjectList& initialObjects,
-               unsigned int guyStartTime);
+               SimpleFrameID guyStartTime);
 
     typedef ::std::vector<FrameUpdateSet> FrameListList;
 	/************************
@@ -43,16 +43,15 @@ public:
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
-    ::boost::tuple<FrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
+    ::boost::tuple<SimpleFrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
 	/****************************
     * Returns an object list containing the state of whichFrame after physics was applied.
     * This function is always run after the runToNextPlayerFrame function in order to
     * query the state of particular frames.
     */
-    ObjectList getPostPhysics(FrameID whichFrame) const;
+    ObjectList getPostPhysics(SimpleFrameID whichFrame) const;
 private:
     void executeWorld(WorldState& currentState) const;
-    TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame, FrameID& currentPlayerFrame, FrameID& nextPlayerFrame) const;
 
     //state of world at end of last executed frame
     WorldState worldState;

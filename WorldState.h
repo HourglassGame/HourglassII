@@ -3,7 +3,7 @@
 
 #include "TimelineState.h"
 #include "FrameUpdateSet.h"
-#include "FrameID.h"
+#include "SimpleFrameID.h"
 #include "InputList.h"
 #include "PhysicsEngine.h"
 #include "FrameUpdateSet.h"
@@ -19,7 +19,7 @@ namespace hg {
          */
         WorldState(const TimelineState& timeline,
                    unsigned int timelineLength,
-                   FrameID guyStartTime,
+                   SimpleFrameID guyStartTime,
                    PhysicsEngine physics,
                    const ObjectList& initialObjects);
 
@@ -37,20 +37,20 @@ namespace hg {
         * Returns an object list containing the state of whichFrame after physics was applied
         * in the last call to executeWorld.
         */
-        ObjectList getPostPhysics(FrameID whichFrame) const;
+        ObjectList getPostPhysics(SimpleFrameID whichFrame) const;
         /***********************************************************
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
-        FrameID getCurrentPlayerFrame() const;
+        SimpleFrameID getCurrentPlayerFrame() const;
         TimeDirection getCurrentPlayerDirection() const;
     private:
         TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame);
 
         TimelineState timeline_;
         //The frame constaining the guy with the largest overall relative index - who has arrived but not yet departed
-        FrameID nextPlayerFrame_;
+        SimpleFrameID nextPlayerFrame_;
         //The frame containing the guy with the largest relative index who has both arrived and departed
-        FrameID currentPlayerFrame_;
+        SimpleFrameID currentPlayerFrame_;
         //The time direction of the guy with the largest relative index who has both arrived and departed
         TimeDirection currentPlayerDirection_;
         // stores all player input

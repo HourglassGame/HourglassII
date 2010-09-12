@@ -54,14 +54,14 @@ const InputList Input::AsInputList() const
 {
     if (mouseLeft == 1)
     {
-        return InputList(left, right, up, (down == 1) , space, hg::TIME_JUMP, FrameID(mouseX*10800/64000), 1);
+        return InputList(left, right, up, (down == 1) , space, hg::TIME_JUMP, SimpleFrameID(mouseX*10800/64000, 10800), 1);
     }
     else if (mouseRight == 1)
     {
-        return InputList(left, right, up, (down == 1), space, hg::TIME_REVERSE, 0, 0);
+        return InputList(left, right, up, (down == 1), space, hg::TIME_REVERSE, SimpleFrameID(), 0);
     }
     else
     {
-        return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, 0, 0);
+        return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, SimpleFrameID(), 0);
     }
 }

@@ -5,26 +5,26 @@ using namespace ::std;
 
 WorldState::WorldState(const TimelineState& timeline,
                        unsigned int timelineLength,
-                       FrameID guyStartTime,
+                       SimpleFrameID guyStartTime,
                        PhysicsEngine physics,
                        const ObjectList& initialObjects) :
 timeline_(timeline),
-nextPlayerFrame_(0),/*zero is filler here, I don't have a reasonable `invalid' number*/
-currentPlayerFrame_(0),/*zero is filler here, I don't have a reasonable `invalid' number*/
+nextPlayerFrame_(guyStartTime),
+currentPlayerFrame_(),
 currentPlayerDirection_(PAUSE),/*filler*/
 playerInput_(),
 frameUpdateSet_(),
 physics_(physics)
 {
-    map<FrameID, MutableObjectList> initialArrivalMap;
+    map<SimpleFrameID, MutableObjectList> initialArrivalMap;
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[0].addBox(*it);
+            initialArrivalMap[SimpleFrameID(0, timelineLength)].addBox(*it);
         }
         else {
-            initialArrivalMap[timelineLength-1].addBox(*it);
+            initialArrivalMap[SimpleFrameID(timelineLength-1, timelineLength)].addBox(*it);
         }
     }
     assert(initialObjects.getGuyListRef().size() == 1
@@ -33,15 +33,18 @@ physics_(physics)
 
     TimeObjectListList initialArrivals;
 
-    for (map<FrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()), end(initialArrivalMap.end()); it != end; ++it) {
+    for (map<SimpleFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
+                                                    end(initialArrivalMap.end()); 
+                                                        it != end; 
+                                                        ++it) {
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         initialArrivals.insertObjectList(it->first, ObjectList(it->second));
     }
 
     timeline_.setArrivalsFromPermanentDepartureFrame(initialArrivals);
 
-    frameUpdateSet_.addFrame(0);
-    frameUpdateSet_.addFrame(timelineLength - 1);
+    frameUpdateSet_.addFrame(SimpleFrameID(0, timelineLength));
+    frameUpdateSet_.addFrame(SimpleFrameID(timelineLength - 1, timelineLength));
 }
 
 TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame& frame)
@@ -69,7 +72,7 @@ FrameUpdateSet WorldState::executeWorld()
     return returnSet;
 }
 
-ObjectList WorldState::getPostPhysics(FrameID whichFrame) const
+ObjectList WorldState::getPostPhysics(SimpleFrameID whichFrame) const
 {
     return timeline_.getPostPhysics(whichFrame);
 }
@@ -80,7 +83,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
     frameUpdateSet_.addFrame(nextPlayerFrame_);
 }
 
-FrameID WorldState::getCurrentPlayerFrame() const
+SimpleFrameID WorldState::getCurrentPlayerFrame() const
 {
     return currentPlayerFrame_;
 }

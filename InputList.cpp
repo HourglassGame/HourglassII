@@ -6,7 +6,7 @@ InputList::InputList(bool nLeft,
                      bool nDown,
                      bool nUse,
                      Ability nAbility,
-                     FrameID nFrameIdParams,
+                     SimpleFrameID nFrameIdParams,
                      int nFrameIdParamCount) :
 left(nLeft),
 right(nRight),

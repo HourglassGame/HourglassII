@@ -23,7 +23,7 @@ using namespace ::sf;
 using namespace ::boost;
 namespace hg {
     void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wall, TimeDirection& playerDirection);
-    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameID& playerFrame);
+    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, SimpleFrameID& playerFrame);
     void DrawWall(RenderTarget& target, const vector<vector<bool> >& wallData);
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData, TimeDirection&);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
@@ -67,7 +67,7 @@ int main()
 
         input.updateState(App.GetInput());
         //cout << "called from main" << endl;
-        tuple<FrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+        tuple<SimpleFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall, waveInfo.get<2>());
         DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
 
@@ -182,25 +182,31 @@ void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirect
     }
 }
 
-void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameID& playerFrame)
+void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, SimpleFrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
     foreach(const FrameUpdateSet& lists, waves) {
-        foreach (FrameID frame, lists) {
-            if (!pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame/10800.f)*640)]) {
-                target.Draw(Shape::Rectangle((frame/10800.f)*640,
+        foreach (SimpleFrameID frame, lists) {
+        if (frame.isValidFrame()) {
+            if (!pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)]) {
+                target.Draw(Shape::Rectangle((frame.frame()/10800.f)*640,
                                              10,
-                                             (frame/10800.f)*640+1,
+                                             (frame.frame()/10800.f)*640+1,
                                              25,
                                              Color(250,0,0)));
-                pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame/10800.f)*640)] = true;
+                pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)] = true;
             }
         }
+        else {
+            assert(false && "I don't think that invalid frames can get updated");
+        }
+        }
     }
+    assert(playerFrame.isValidFrame());
 
-    target.Draw(Shape::Rectangle((playerFrame/10800.f)*640-1,
+    target.Draw(Shape::Rectangle((playerFrame.frame()/10800.f)*640-1,
                                              10,
-                                             (playerFrame/10800.f)*640+2,
+                                             (playerFrame.frame()/10800.f)*640+2,
                                              25,
                                              Color(200,200,0)));
 }
@@ -272,7 +278,7 @@ TimeEngine hg::MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
     newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
-     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
+    newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, PAUSE, FORWARDS, 0, 0));
-    return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),0);
+    return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),SimpleFrameID(0,10800));
 }

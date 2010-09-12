@@ -3,7 +3,8 @@
 #include "InputList.h"
 #include "Guy.h"
 #include "Box.h"
-#include "FrameID.h"
+#include "SimpleFrameID.h"
+#include "TimeDirection.h"
 #include "ObjectList.h"
 #include <vector>
 #include <map>
@@ -20,11 +21,11 @@ public:
 
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                        FrameID time,
+                                        SimpleFrameID time,
                                         const ::std::vector<InputList>& playerInput,
-                                        FrameID& currentPlayerFrame,
+                                        SimpleFrameID& currentPlayerFrame,
                                         TimeDirection& currentPlayerDirection,
-                                        FrameID& nextPlayerFrame) const;
+                                        SimpleFrameID& nextPlayerFrame) const;
 
 private:
     struct BoxInfo {
@@ -39,12 +40,13 @@ private:
 	void crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
                                       ::std::vector<BoxInfo>& nextBox) const;
 
-    void guyStep(const ::std::vector<Guy>& oldGuyList, unsigned int time,
+    void guyStep(const ::std::vector<Guy>& oldGuyList, 
+                 SimpleFrameID time,
                  const ::std::vector<InputList>& playerInput,
-                 ::std::map<FrameID, MutableObjectList>& newDepartures,
+                 ::std::map<SimpleFrameID, MutableObjectList>& newDepartures,
                  ::std::vector<BoxInfo>& nextBox,
-                 FrameID& currentPlayerFrame,
-                 FrameID& nextPlayerFrame,
+                 SimpleFrameID& currentPlayerFrame,
+                 SimpleFrameID& nextPlayerFrame,
                  TimeDirection& currentPlayerDirection) const;
 
 	bool wallAt(int x, int y) const;
