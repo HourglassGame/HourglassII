@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cassert>
 #include <map>
+#include <vector>
 
 using namespace ::std;
 using namespace ::hg;
@@ -131,7 +132,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
              // jump
             if (oldGuyList[i].getSupported() && input.getUp())
             {
-                yspeed[i] = -800;
+                yspeed[i] = -700;
             }
 
             //check wall collision in Y direction
@@ -364,17 +365,40 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                                                  std::vector<BoxInfo>& nextBox) const
 {
-	for (vector<Box>::const_iterator it(oldBoxList.begin()), end(oldBoxList.end()); it != end; ++it)
+	for (unsigned int i = 0; i < oldBoxList.size(); ++i)
 	{
-		int x = it->getX();
-		int y = it->getY();
-		int xspeed = it->getXspeed();
-		int yspeed = it->getYspeed() + gravity;
-		int size = it->getSize();
+		int x = oldBoxList[i].getX();
+		int y = oldBoxList[i].getY();
+		int xspeed = oldBoxList[i].getXspeed();
+		int yspeed = oldBoxList[i].getYspeed() + gravity;
+		int size = oldBoxList[i].getSize();
 
 		bool supported = false;
 
+        // ** Y component **
+
         int newY = y + yspeed;
+
+		// box collision
+
+		int yComponent = 0;
+		auto_ptr<vector<int> > colliders = auto_ptr<vector<int> >(new vector<int>());
+        for (unsigned int j = 0; j < oldBoxList.size(); ++j)
+        {
+            if (j != i)
+            {
+                int boxX = oldBoxList[j].getX();
+                int boxY = oldBoxList[j].getY();
+                int boxSize = oldBoxList[j].getSize();
+                if (PhysicsEngine::intersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize))
+                {
+                    colliders->push_back(j);
+                    yComponent += (-(size/2 + boxSize/2 + boxY - y))/100 - (yspeed - oldBoxList[j].getYspeed())/2;
+                }
+            }
+        }
+        newY += yComponent;
+        yspeed += yComponent;
 
 		//check wall collision in Y direction
 		if (yspeed > 0) // down
@@ -393,7 +417,33 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 			}
 		}
 
+        // ** X component **
         int newX = x + xspeed;
+
+        int xComponent = 0;
+        for (int j = oldBoxList.size()-1; j >= 0; --j)
+        {
+            if (j != i)
+            {
+                if (colliders->size() > 0 && colliders->back() == j)
+                {
+                    colliders->pop_back();
+                }
+                else
+                {
+                    int boxX = oldBoxList[j].getX();
+                    int boxY = oldBoxList[j].getY();
+                    int boxSize = oldBoxList[j].getSize();
+                    if (PhysicsEngine::intersectingRectangles(newX, newY+400, size, size-800, boxX, boxY, boxSize, boxSize))
+                    {
+                        xComponent += (-(size/2 + boxSize/2 + boxX - x))/100 - (xspeed - oldBoxList[j].getXspeed())/2;
+                    }
+                }
+            }
+        }
+
+        newX += xComponent;
+        xspeed += xComponent;
 
 		//check wall collision in X direction
 		if (xspeed > 0) // right
@@ -410,22 +460,6 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 				newX = (newX/wallSize + 1)*wallSize;
 			}
 		}
-
-		// box collision
-        if (yspeed >= 0) // down
-        {
-            for (unsigned int j = 0; j < nextBox.size(); ++j)
-            {
-                int boxX = nextBox[j].box.getX();
-                int boxY = nextBox[j].box.getY();
-                int boxSize = nextBox[j].box.getSize();
-                if (newX <= boxX+boxSize and newX+size >= boxX and newY+size >= boxY and newY-yspeed+size <= boxY)
-                {
-                    supported = true;
-                    newY = boxY-size;
-                }
-            }
-        }
 
         xspeed = newX-x;
         yspeed = newY-y;
@@ -444,7 +478,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                     xspeed,
                     yspeed,
                     size,
-                    it->getTimeDirection()
+                    oldBoxList[i].getTimeDirection()
                 )
             ,supported
             )
@@ -452,4 +486,22 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 
 		// don't bother checking box collision in crappy step
 	}
+}
+
+bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) const
+{
+    return
+    (
+        (
+            (x1 <= x2 && x1 + w1 >= x2)
+         ||
+            (x2 <= x1 && x2 + w2 >= x1)
+        )
+     &&
+        (
+            (y1 <= y2 && y1 + h1 >= y2)
+         ||
+            (y2 <= y1 && y2 + h2 >= y1)
+        )
+    );
 }

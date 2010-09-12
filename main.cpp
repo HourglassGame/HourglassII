@@ -70,7 +70,7 @@ int main()
         tuple<FrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall, waveInfo.get<2>());
         DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
-        
+
 
         while (clock.GetElapsedTime() < stepTime) {
             this_thread::sleep(posix_time::milliseconds(1));
@@ -271,7 +271,8 @@ vector<vector<bool> > hg::MakeWall()
 TimeEngine hg::MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
-    newObjectList.addBox(Box(6400, 25600, 0 ,0, 3200, FORWARDS));
+    newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
+     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, PAUSE, FORWARDS, 0, 0));
     return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),0);
 }
