@@ -72,26 +72,6 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	return returnDepartures;
 }
 
-bool PhysicsEngine::wallAt(int x, int y) const
-{
-	if (x < 0 || y < 0)
-	{
-		return true;
-	}
-
-	unsigned int aX = x/wallSize;
-	unsigned int aY = y/wallSize;
-
-	if (aX < wallmap.size() && aY < wallmap[aX].size())
-	{
-		return wallmap[aX][aY];
-	}
-	else
-	{
-		return true;
-	}
-}
-
 void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             const FrameID time,
                             const vector<InputList>& playerInput,
@@ -241,31 +221,52 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 
             if (carry[i])
             {
+                bool droppable = false;
                 if (input.getDown())
                 {
                     int width = oldGuyList[i].getWidth();
+                    int dropX = x[i] + width/2 - oldGuyList[i].getBoxCarrySize()/2;
+                    int dropY = y[i] - oldGuyList[i].getBoxCarrySize();
+                    int dropSize = oldGuyList[i].getBoxCarrySize();
 
-                    // fixme: needs to check if the box can be dropped
-                    nextBox.push_back
-                    (
-                     PhysicsEngine::BoxInfo
-                     (
-                      Box(
-                          x[i] + width/2 - oldGuyList[i].getBoxCarrySize()/2,
-                          y[i] - oldGuyList[i].getBoxCarrySize(),
-                          0,
-                          0,
-                          oldGuyList[i].getBoxCarrySize(),
-                          oldGuyList[i].getBoxCarryDirection()
-                          ),
-                      false
-                      )
-                     );
-                    carry[i] = false;
-                    carrySize[i] = 0;
-                    carryDirection[i] = hg::PAUSE;
+                    if (!wallAt(dropX, dropY, dropSize, dropSize))
+                    {
+                        droppable = true;
+                        for (unsigned int j = 0; j < nextBox.size(); ++j)
+                        {
+                            if (intersectingRectangles(nextBox[i].box.getX(), nextBox[i].box.getY(), nextBox[i].box.getSize(), nextBox[i].box.getSize(),
+                                                      dropX, dropY, dropSize, dropSize, false))
+                            {
+                                cout << "not droppable" << endl;
+                                droppable = false;
+                                break;
+                            }
+                        }
+                        if (droppable)
+                        {
+                            nextBox.push_back
+                            (
+                             PhysicsEngine::BoxInfo
+                             (
+                                Box(
+                                    dropX,
+                                    dropY,
+                                    0,
+                                    0,
+                                    dropSize,
+                                    oldGuyList[i].getBoxCarryDirection()
+                                  ),
+                              false
+                              )
+                             );
+                            carry[i] = false;
+                            carrySize[i] = 0;
+                            carryDirection[i] = hg::PAUSE;
+                        }
+                    }
                 }
-                else
+
+                if (!droppable)
                 {
                     carrySize[i] = oldGuyList[i].getBoxCarrySize();
                     carryDirection[i] = oldGuyList[i].getBoxCarryDirection();
@@ -382,7 +383,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		// box collision
 
 		int yComponent = 0;
-		auto_ptr<vector<int> > colliders = auto_ptr<vector<int> >(new vector<int>());
+		vector<int> colliders = vector<int>();
         for (unsigned int j = 0; j < oldBoxList.size(); ++j)
         {
             if (j != i)
@@ -390,9 +391,9 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                 int boxX = oldBoxList[j].getX();
                 int boxY = oldBoxList[j].getY();
                 int boxSize = oldBoxList[j].getSize();
-                if (PhysicsEngine::intersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize))
+                if (PhysicsEngine::intersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize, true))
                 {
-                    colliders->push_back(j);
+                    colliders.push_back(j);
                     yComponent += (-(size/2 + boxSize/2 + boxY - y))/100 - (yspeed - oldBoxList[j].getYspeed())/2;
                 }
             }
@@ -425,16 +426,16 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
         {
             if (j != i)
             {
-                if (colliders->size() > 0 && colliders->back() == j)
+                if (colliders.size() > 0 && colliders.back() == j)
                 {
-                    colliders->pop_back();
+                    colliders.pop_back();
                 }
                 else
                 {
                     int boxX = oldBoxList[j].getX();
                     int boxY = oldBoxList[j].getY();
                     int boxSize = oldBoxList[j].getSize();
-                    if (PhysicsEngine::intersectingRectangles(newX, newY+400, size, size-800, boxX, boxY, boxSize, boxSize))
+                    if (PhysicsEngine::intersectingRectangles(newX, newY+400, size, size-800, boxX, boxY, boxSize, boxSize, true))
                     {
                         xComponent += (-(size/2 + boxSize/2 + boxX - x))/100 - (xspeed - oldBoxList[j].getXspeed())/2;
                     }
@@ -488,20 +489,71 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 	}
 }
 
-bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2) const
+bool PhysicsEngine::wallAt(int x, int y) const
 {
-    return
-    (
+	if (x < 0 || y < 0)
+	{
+		return true;
+	}
+
+	unsigned int aX = x/wallSize;
+	unsigned int aY = y/wallSize;
+
+	if (aX < wallmap.size() && aY < wallmap[aX].size())
+	{
+		return wallmap[aX][aY];
+	}
+	else
+	{
+		return true;
+	}
+}
+
+bool PhysicsEngine::wallAt(int x, int y, int w, int h) const
+{
+	return wallAt(x, y) || wallAt(x+w, y) || wallAt(x, y+h) || wallAt(x+w, y+h);
+}
+
+
+bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const
+{
+    if (inclusive)
+    {
+        return
         (
-            (x1 <= x2 && x1 + w1 >= x2)
-         ||
-            (x2 <= x1 && x2 + w2 >= x1)
-        )
-     &&
+            (
+                (x1 <= x2 && x1 + w1 >= x2)
+             ||
+                (x2 <= x1 && x2 + w2 >= x1)
+            )
+         &&
+            (
+                (y1 <= y2 && y1 + h1 >= y2)
+             ||
+                (y2 <= y1 && y2 + h2 >= y1)
+            )
+        );
+    }
+    else
+    {
+        return
         (
-            (y1 <= y2 && y1 + h1 >= y2)
-         ||
-            (y2 <= y1 && y2 + h2 >= y1)
-        )
-    );
+            (
+                (x1 < x2 && x1 + w1 > x2)
+             ||
+                (x2 < x1 && x2 + w2 > x1)
+             ||
+                (x1 == x2)
+            )
+         &&
+            (
+                (y1 < y2 && y1 + h1 > y2)
+             ||
+                (y2 < y1 && y2 + h2 > y1)
+             ||
+                (y1 == y2)
+            )
+        );
+    }
+
 }
