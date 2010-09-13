@@ -3,7 +3,7 @@
 #include "InputList.h"
 #include "Guy.h"
 #include "Box.h"
-#include "SimpleFrameID.h"
+#include "NewFrameID.h"
 #include "TimeDirection.h"
 #include "ObjectList.h"
 #include <vector>
@@ -21,11 +21,11 @@ public:
 
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                        SimpleFrameID time,
+                                        NewFrameID time,
                                         const ::std::vector<InputList>& playerInput,
-                                        SimpleFrameID& currentPlayerFrame,
+                                        NewFrameID& currentPlayerFrame,
                                         TimeDirection& currentPlayerDirection,
-                                        SimpleFrameID& nextPlayerFrame) const;
+                                        NewFrameID& nextPlayerFrame) const;
 
 private:
     struct BoxInfo {
@@ -41,12 +41,12 @@ private:
                                       ::std::vector<BoxInfo>& nextBox) const;
 
     void guyStep(const ::std::vector<Guy>& oldGuyList, 
-                 SimpleFrameID time,
+                 NewFrameID time,
                  const ::std::vector<InputList>& playerInput,
-                 ::std::map<SimpleFrameID, MutableObjectList>& newDepartures,
+                 ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                  ::std::vector<BoxInfo>& nextBox,
-                 SimpleFrameID& currentPlayerFrame,
-                 SimpleFrameID& nextPlayerFrame,
+                 NewFrameID& currentPlayerFrame,
+                 NewFrameID& nextPlayerFrame,
                  TimeDirection& currentPlayerDirection) const;
 
 	bool wallAt(int x, int y) const;

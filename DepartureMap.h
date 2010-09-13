@@ -7,7 +7,7 @@
 namespace hg {
     class DepartureMap {
     public:
-        typedef ::std::pair<SimpleFrameID, TimeObjectListList> ValueType;
+        typedef ::std::pair<NewFrameID, TimeObjectListList> ValueType;
         typedef ::std::vector<ValueType> MapType;
         
         //BIG privacy leak here, it is incorrect to use DepartureMap::const_iterator as anything but a forward_iterator
@@ -22,7 +22,7 @@ namespace hg {
         {
             map_.reserve(toReseve);
         }
-        void addDeparture(SimpleFrameID time, TimeObjectListList departingObjects)
+        void addDeparture(NewFrameID time, TimeObjectListList departingObjects)
         {
             map_.push_back(ValueType(time, departingObjects));
         }

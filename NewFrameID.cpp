@@ -14,12 +14,12 @@ NewFrameID::NewFrameID(unsigned int time, const UniverseID& universe) :
 frame_(time),
 universe_(universe)
 {
-    assert(!isNullFrame());
+    assert(isValidFrame());
 }
 
 NewFrameID NewFrameID::nextFrame(TimeDirection direction) const
 {
-    if (isNullFrame()) {
+    if (!isValidFrame()) {
         return NewFrameID();
     }
     else if (nextFrameInUniverse(direction)) {
@@ -37,7 +37,7 @@ NewFrameID NewFrameID::operator+(TimeDirection direction) const
 
 bool NewFrameID::nextFrameInUniverse(TimeDirection direction) const
 {
-    assert(!isNullFrame());
+    assert(isValidFrame());
     return !(direction == REVERSE && frame_ == 0 
              || direction == FORWARDS && frame_ == universe_.timelineLength());
 }
@@ -79,17 +79,23 @@ bool NewFrameID::operator==(const NewFrameID& other) const
 
 bool NewFrameID::operator<(const NewFrameID& other) const
 {
-    return universe_ < other.universe_ && frame_ < other.frame_;
+    if (universe_ == other.universe_) {
+        return frame_ < other.frame_;
+    }
+    else {
+        return universe_ < other.universe_;
+    }
+
 }
 
-bool NewFrameID::isNullFrame() const
+bool NewFrameID::isValidFrame() const
 {
-    if (frame_ > universe_.timelineLength()) {
+    if (universe_.timelineLength() < frame_) {
         assert(frame_ == ::std::numeric_limits<unsigned int>::max());
         assert(universe_.timelineLength() == 0);
-        return true;
+        return false;
     }
-    return false;
+    return true;
 }
 
 ::std::size_t hg::hash_value(const NewFrameID& toHash)

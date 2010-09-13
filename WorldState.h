@@ -19,7 +19,7 @@ namespace hg {
          */
         WorldState(const TimelineState& timeline,
                    unsigned int timelineLength,
-                   SimpleFrameID guyStartTime,
+                   NewFrameID guyStartTime,
                    PhysicsEngine physics,
                    const ObjectList& initialObjects);
 
@@ -37,20 +37,20 @@ namespace hg {
         * Returns an object list containing the state of whichFrame after physics was applied
         * in the last call to executeWorld.
         */
-        ObjectList getPostPhysics(SimpleFrameID whichFrame) const;
+        ObjectList getPostPhysics(NewFrameID whichFrame) const;
         /***********************************************************
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
-        SimpleFrameID getCurrentPlayerFrame() const;
+        NewFrameID getCurrentPlayerFrame() const;
         TimeDirection getCurrentPlayerDirection() const;
     private:
         TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame);
 
         TimelineState timeline_;
         //The frame constaining the guy with the largest overall relative index - who has arrived but not yet departed
-        SimpleFrameID nextPlayerFrame_;
+        NewFrameID nextPlayerFrame_;
         //The frame containing the guy with the largest relative index who has both arrived and departed
-        SimpleFrameID currentPlayerFrame_;
+        NewFrameID currentPlayerFrame_;
         //The time direction of the guy with the largest relative index who has both arrived and departed
         TimeDirection currentPlayerDirection_;
         // stores all player input

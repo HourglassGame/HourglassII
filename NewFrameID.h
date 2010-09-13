@@ -48,9 +48,12 @@ public:
         
     bool operator<(const NewFrameID& other) const;
         
-    bool isNullFrame() const;
+    bool isValidFrame() const;
         
-    unsigned int frame() const { return frame_; }
+    unsigned int frame() const {
+        assert (isValidFrame());
+        return frame_;
+    }
         
 private:
     friend ::std::size_t hash_value(const NewFrameID& toHash);

@@ -2,7 +2,7 @@
 #define HG_TIME_OBJECT_LIST_LIST_H
 
 #include "ObjectList.h"
-#include "SimpleFrameID.h"
+#include "NewFrameID.h"
 #include <map>
 namespace hg {
 class TimeObjectListList
@@ -10,17 +10,17 @@ class TimeObjectListList
 public:
     TimeObjectListList();
     
-	void setObjectList(const SimpleFrameID& time, const ObjectList& newObjectList);
-	void clearTime(SimpleFrameID time);
+	void setObjectList(const NewFrameID& time, const ObjectList& newObjectList);
+	void clearTime(NewFrameID time);
     
-    void insertObjectList(const SimpleFrameID& time, const ObjectList& newObjectList);
+    void insertObjectList(const NewFrameID& time, const ObjectList& newObjectList);
     
     bool operator==(const TimeObjectListList& other) const;
     bool operator!=(const TimeObjectListList& other) const;
     
     ObjectList getFlattenedVersion() const;
     
-    typedef ::std::map<SimpleFrameID,ObjectList> ListType;
+    typedef ::std::map<NewFrameID,ObjectList> ListType;
     
     //Big and potentially very painful privacy leak here, please fix.
     typedef ListType::const_iterator const_iterator;

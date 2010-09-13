@@ -6,18 +6,18 @@ list_()
 {
 }
 
-void TimeObjectListList::setObjectList(const SimpleFrameID& time, const ObjectList& newObjectList)
+void TimeObjectListList::setObjectList(const NewFrameID& time, const ObjectList& newObjectList)
 {
     list_[time] = newObjectList;
 }
 
 //Inserts given object list at given time - noop if an object list already exists at the given time
-void TimeObjectListList::insertObjectList(const SimpleFrameID& time, const ObjectList& newObjectList)
+void TimeObjectListList::insertObjectList(const NewFrameID& time, const ObjectList& newObjectList)
 {
     list_.insert(ListType::value_type(time,newObjectList));
 }
 
-void TimeObjectListList::clearTime(SimpleFrameID time)
+void TimeObjectListList::clearTime(NewFrameID time)
 {
     list_.erase(time);
 }

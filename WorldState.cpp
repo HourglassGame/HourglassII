@@ -5,7 +5,7 @@ using namespace ::std;
 
 WorldState::WorldState(const TimelineState& timeline,
                        unsigned int timelineLength,
-                       SimpleFrameID guyStartTime,
+                       NewFrameID guyStartTime,
                        PhysicsEngine physics,
                        const ObjectList& initialObjects) :
 timeline_(timeline),
@@ -16,15 +16,16 @@ playerInput_(),
 frameUpdateSet_(),
 physics_(physics)
 {
-    map<SimpleFrameID, MutableObjectList> initialArrivalMap;
+    assert(nextPlayerFrame_.isValidFrame());
+    map<NewFrameID, MutableObjectList> initialArrivalMap;
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[SimpleFrameID(0, timelineLength)].addBox(*it);
+            initialArrivalMap[NewFrameID(0, timelineLength)].addBox(*it);
         }
         else {
-            initialArrivalMap[SimpleFrameID(timelineLength-1, timelineLength)].addBox(*it);
+            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addBox(*it);
         }
     }
     assert(initialObjects.getGuyListRef().size() == 1
@@ -33,7 +34,7 @@ physics_(physics)
 
     TimeObjectListList initialArrivals;
 
-    for (map<SimpleFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
+    for (map<NewFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
                                                     end(initialArrivalMap.end()); 
                                                         it != end; 
                                                         ++it) {
@@ -43,8 +44,8 @@ physics_(physics)
 
     timeline_.setArrivalsFromPermanentDepartureFrame(initialArrivals);
 
-    frameUpdateSet_.addFrame(SimpleFrameID(0, timelineLength));
-    frameUpdateSet_.addFrame(SimpleFrameID(timelineLength - 1, timelineLength));
+    frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
+    frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
 }
 
 TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame& frame)
@@ -72,7 +73,7 @@ FrameUpdateSet WorldState::executeWorld()
     return returnSet;
 }
 
-ObjectList WorldState::getPostPhysics(SimpleFrameID whichFrame) const
+ObjectList WorldState::getPostPhysics(NewFrameID whichFrame) const
 {
     return timeline_.getPostPhysics(whichFrame);
 }
@@ -80,10 +81,11 @@ ObjectList WorldState::getPostPhysics(SimpleFrameID whichFrame) const
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
+    assert(nextPlayerFrame_.isValidFrame());
     frameUpdateSet_.addFrame(nextPlayerFrame_);
 }
 
-SimpleFrameID WorldState::getCurrentPlayerFrame() const
+NewFrameID WorldState::getCurrentPlayerFrame() const
 {
     return currentPlayerFrame_;
 }

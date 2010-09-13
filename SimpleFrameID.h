@@ -50,4 +50,5 @@ private:
 };
 ::std::size_t hash_value(const SimpleFrameID& toHash);
 }//namespace hg
+
 #endif //HG_SIMPLE_FRAME_ID_H

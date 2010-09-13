@@ -1,4 +1,4 @@
-#include "SimpleFrameID.h"
+#include "NewFrameID.h"
 #include "Ability.h"
 #include <cassert>
 #include <iostream>
@@ -16,17 +16,17 @@ public:
               bool down,
               bool use,
               Ability ability,
-              SimpleFrameID abilityParams,
+              NewFrameID abilityParams,
               int frameIdParamCount);
 
-    inline bool getLeft() const {return left;}
-	inline bool getRight() const {return right;}
-	inline bool getUp() const {return up;}
-	inline bool getDown() const {return down;}
-	inline bool getUse() const {return use;}
-	inline Ability getAbility() const {return ability;}
+    bool getLeft() const {return left;}
+	bool getRight() const {return right;}
+	bool getUp() const {return up;}
+	bool getDown() const {return down;}
+	bool getUse() const {return use;}
+	Ability getAbility() const {return ability;}
 
-	inline SimpleFrameID getFrameIdParam(int param) const
+	NewFrameID getFrameIdParam(int param) const
     {
         if (param >= 0 and param < frameIdParamCount)
         {
@@ -34,7 +34,7 @@ public:
         }
         // throw exception here.
         assert(false);
-        return SimpleFrameID();
+        return NewFrameID();
     }
 
 private:
@@ -46,7 +46,7 @@ private:
 	bool use;
 
 	Ability ability;
-	SimpleFrameID frameIdParams;
+	NewFrameID frameIdParams;
 	int frameIdParamCount;
 
 };

@@ -21,15 +21,15 @@ wallSize(newWallSize)
 }
 
 TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
-                                               const SimpleFrameID time,
+                                               const NewFrameID time,
                                                const std::vector<InputList>& playerInput,
-                                               SimpleFrameID& currentPlayerFrame,
+                                               NewFrameID& currentPlayerFrame,
                                                TimeDirection& currentPlayerDirection,
-                                               SimpleFrameID& nextPlayerFrame) const
+                                               NewFrameID& nextPlayerFrame) const
 {
     std::vector<BoxInfo> nextBox;
 
-	map<SimpleFrameID, MutableObjectList> newDepartures;
+	map<NewFrameID, MutableObjectList> newDepartures;
 
 	// Switch Collisions at this point?
 
@@ -54,7 +54,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	// guys do timetravel-type stuff
 	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
-		SimpleFrameID nextTime(time+nextBox[i].box.getTimeDirection());
+		NewFrameID nextTime(time+nextBox[i].box.getTimeDirection());
 
 		if (nextTime.isValidFrame())
 		{
@@ -64,7 +64,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
     TimeObjectListList returnDepartures;
 
-    for (map<SimpleFrameID, MutableObjectList>::iterator it(newDepartures.begin()), end(newDepartures.end()); it != end; ++it) {
+    for (map<NewFrameID, MutableObjectList>::iterator it(newDepartures.begin()), end(newDepartures.end()); it != end; ++it) {
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         returnDepartures.insertObjectList(it->first, ObjectList(it->second));
     }
@@ -73,12 +73,12 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 }
 
 void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
-                            const SimpleFrameID time,
+                            const NewFrameID time,
                             const vector<InputList>& playerInput,
-                            map<SimpleFrameID, MutableObjectList>& newDepartures,
+                            map<NewFrameID, MutableObjectList>& newDepartures,
                             std::vector<BoxInfo>& nextBox,
-                            SimpleFrameID& currentPlayerFrame,
-                            SimpleFrameID& nextPlayerFrame,
+                            NewFrameID& currentPlayerFrame,
+                            NewFrameID& nextPlayerFrame,
                             TimeDirection& currentPlayerDirection) const
 {
 	vector<int> x;
@@ -322,7 +322,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 
             // add departure for guy at the appropriate time
             TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
-            SimpleFrameID nextTime(time+nextTimeDirection);
+            NewFrameID nextTime(time+nextTimeDirection);
             assert(nextTime.isValidFrame());
             assert(time.isValidFrame());
             if (input.getAbility() == hg::TIME_JUMP)
@@ -342,6 +342,8 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 currentPlayerDirection = oldGuyList[i].getTimeDirection();
                 currentPlayerFrame = time;
                 nextPlayerFrame = nextTime;
+                cout << "setting current player frame" << endl;
+                assert(nextPlayerFrame.isValidFrame());
             }
 
             if (nextTime.isValidFrame())
