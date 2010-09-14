@@ -21,7 +21,7 @@ using namespace ::hg;
 using namespace ::std;
 using namespace ::sf;
 using namespace ::boost;
-namespace hg {
+namespace {
     void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wall, TimeDirection& playerDirection);
     void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame);
     void DrawWall(RenderTarget& target, const vector<vector<bool> >& wallData);
@@ -45,9 +45,7 @@ int main()
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
 
-    int fps = 60;
-
-    float stepTime(1.f/fps);
+    float stepTime(1.f/60);
     ::hg::Input input;
     while (App.IsOpened())
     {
@@ -88,14 +86,15 @@ int main()
     return EXIT_SUCCESS;
 }
 
-void ::hg::Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wallData, TimeDirection& playerDirection)
+namespace  {
+void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wallData, TimeDirection& playerDirection)
 {
     DrawWall(target, wallData);
     DrawBoxes(target, frame.getBoxListRef(), playerDirection);
     DrawGuys(target, frame.getGuyListRef(), playerDirection);
 }
 
-void ::hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
+void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
 {
     target.Clear(Color(255,255,255));
     for(unsigned int i = 0; i < wall.size(); ++i) {
@@ -117,7 +116,7 @@ void ::hg::DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool
     }
 }
 
-void ::hg::DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& playerDirection)
+void DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& playerDirection)
 {
     foreach(const Box& box, boxList) {
         if (playerDirection == box.getTimeDirection())
@@ -142,7 +141,7 @@ void ::hg::DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirec
     }
 }
 
-void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& playerDirection)
+void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& playerDirection)
 {
     foreach(const Guy& guy, guyList) {
          if (playerDirection == guy.getTimeDirection())
@@ -182,7 +181,7 @@ void ::hg::DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirect
     }
 }
 
-void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
+void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
     foreach(const FrameUpdateSet& lists, waves) {
@@ -211,7 +210,7 @@ void ::hg::DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, 
                                              Color(200,200,0)));
 }
 
-vector<vector<bool> > hg::MakeWall()
+vector<vector<bool> > MakeWall()
 {
     using namespace ::boost::assign;
     vector<vector<bool> > wall;
@@ -274,11 +273,12 @@ vector<vector<bool> > hg::MakeWall()
     return actualWall;
 }
 
-TimeEngine hg::MakeTimeEngine(vector<vector<bool> >& wall)
+TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
     newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, PAUSE, FORWARDS, 0, 0));
     return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800));
+}
 }

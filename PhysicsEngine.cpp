@@ -237,7 +237,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             if (intersectingRectangles(nextBox[j].box.getX(), nextBox[j].box.getY(), nextBox[j].box.getSize(), nextBox[j].box.getSize(),
                                                       dropX, dropY, dropSize, dropSize, false))
                             {
-                                cout << "not droppable" << endl;
+                                //cout << "not droppable" << endl;
                                 droppable = false;
                                 break;
                             }
@@ -342,7 +342,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 currentPlayerDirection = oldGuyList[i].getTimeDirection();
                 currentPlayerFrame = time;
                 nextPlayerFrame = nextTime;
-                cout << "setting current player frame" << endl;
                 assert(nextPlayerFrame.isValidFrame());
             }
 
