@@ -22,7 +22,7 @@ bool ::hg::operator<(const SubUniverse& lhs, const SubUniverse& rhs)
         return lhs.pauseInitiatorID_ < rhs.pauseInitiatorID_;
     }
     else {
-        lhs.initiatorFrame_ < rhs.initiatorFrame_;
+        return lhs.initiatorFrame_ < rhs.initiatorFrame_;
     }
 }
 
@@ -75,8 +75,7 @@ unsigned int UniverseID::timelineLength() const
 bool UniverseID::operator==(const UniverseID& other) const
 {
     return timelineLength_ == other.timelineLength_
-        && nestTrain_.size() == other.nestTrain_.size()
-        && equal(nestTrain_.begin(), nestTrain_.end(), other.nestTrain_.begin());
+            && nestTrain_ == other.nestTrain_;
 }
 
 bool UniverseID::operator<(const UniverseID& other) const

@@ -24,7 +24,7 @@ void TimeObjectListList::clearTime(NewFrameID time)
 
 bool TimeObjectListList::operator==(const TimeObjectListList& other) const
 {
-    return list_.size() == other.list_.size() && ::std::equal(list_.begin(),list_.end(),other.list_.begin());
+    return list_ == other.list_;
 }
 
 bool TimeObjectListList::operator!=(const TimeObjectListList& other) const

@@ -60,9 +60,8 @@ const vector<Box>& ObjectList::getBoxListRef() const
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
     return data_ == other.data_ ||
-            (data_->guyList.size() == other.data_->guyList.size() && data_->boxList.size() == other.data_->boxList.size()
-            && equal(data_->guyList.begin(), data_->guyList.end(), other.data_->guyList.begin())
-            && equal(data_->boxList.begin(), data_->boxList.end(), other.data_->boxList.begin()));
+            data_->guyList == other.data_->guyList
+            && data_->boxList == other.data_->boxList;
 }
 
 bool ObjectList::operator!=(const hg::ObjectList& other) const
