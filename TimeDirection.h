@@ -4,7 +4,7 @@
 namespace hg {
 enum TimeDirection {
     FORWARDS = 1,
-    PAUSE = 0,
+    INVALID = 0,
     REVERSE = -1
 };
 

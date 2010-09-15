@@ -278,7 +278,7 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     MutableObjectList newObjectList;
     newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
-    newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, PAUSE, FORWARDS, 0, 0));
+    newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, FORWARDS, 0, 0));
     return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800));
 }
 }

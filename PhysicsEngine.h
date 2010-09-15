@@ -14,8 +14,7 @@ class TimeObjectListList;
 class PhysicsEngine
 {
 public:
-	PhysicsEngine(unsigned int newTimeLineLength,
-                  ::std::vector< ::std::vector<bool> > newWallmap,
+	PhysicsEngine(::std::vector< ::std::vector<bool> > newWallmap,
                   int newWallSize,
                   int newGravity);
 
@@ -56,7 +55,6 @@ private:
 
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
-    unsigned int timeLineLength;
     ::std::vector< ::std::vector<bool> > wallmap;
 	int gravity;
 	int wallSize;

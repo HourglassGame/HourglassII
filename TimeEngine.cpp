@@ -26,7 +26,7 @@ TimeEngine::TimeEngine(unsigned int timeLineLength,
 worldState(TimelineState(timeLineLength),
                 timeLineLength,
                 guyStartTime,
-                PhysicsEngine(timeLineLength, wallmap, newWallSize, newGravity),
+                PhysicsEngine(wallmap, newWallSize, newGravity),
                 initialObjects)
 
 {

@@ -12,8 +12,9 @@
 using namespace ::std;
 using namespace ::hg;
 
-PhysicsEngine::PhysicsEngine(unsigned int newTimeLineLength, vector<vector<bool> > newWallmap, int newWallSize, int newGravity) :
-timeLineLength(newTimeLineLength),
+PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap, 
+                             int newWallSize, 
+                             int newGravity) :
 wallmap(newWallmap),
 gravity(newGravity),
 wallSize(newWallSize)
@@ -214,7 +215,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
         {
             carry.push_back(oldGuyList[i].getBoxCarrying());
             carrySize.push_back(0);
-            carryDirection.push_back(hg::PAUSE);
+            carryDirection.push_back(hg::INVALID);
 
             unsigned int relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
@@ -261,7 +262,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                              );
                             carry[i] = false;
                             carrySize[i] = 0;
-                            carryDirection[i] = hg::PAUSE;
+                            carryDirection[i] = hg::INVALID;
                         }
                     }
                 }
@@ -298,7 +299,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 else
                 {
                     carrySize[i] = 0;
-                    carryDirection[i] = hg::PAUSE;
+                    carryDirection[i] = hg::INVALID;
                 }
             }
         }
@@ -424,7 +425,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
         int newX = x + xspeed;
 
         int xComponent = 0;
-        for (int j = oldBoxList.size()-1; j >= 0; --j)
+        for (signed int j = oldBoxList.size()-1; j >= 0; --j)
         {
             if (j != i)
             {
@@ -557,5 +558,4 @@ bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x
             )
         );
     }
-
 }

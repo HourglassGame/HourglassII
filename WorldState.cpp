@@ -11,7 +11,7 @@ WorldState::WorldState(const TimelineState& timeline,
 timeline_(timeline),
 nextPlayerFrame_(guyStartTime),
 currentPlayerFrame_(),
-currentPlayerDirection_(PAUSE),/*filler*/
+currentPlayerDirection_(INVALID),/*filler*/
 playerInput_(),
 frameUpdateSet_(),
 physics_(physics)
