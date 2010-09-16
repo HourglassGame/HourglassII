@@ -12,8 +12,8 @@
 using namespace ::std;
 using namespace ::hg;
 
-PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap, 
-                             int newWallSize, 
+PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap,
+                             int newWallSize,
                              int newGravity) :
 wallmap(newWallmap),
 gravity(newGravity),
@@ -55,7 +55,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	// guys do timetravel-type stuff
 	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
-		NewFrameID nextTime(time+nextBox[i].box.getTimeDirection());
+		NewFrameID nextTime(time.nextFrame(nextBox[i].box.getTimeDirection()));
 
 		if (nextTime.isValidFrame())
 		{
@@ -238,7 +238,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             if (intersectingRectangles(nextBox[j].box.getX(), nextBox[j].box.getY(), nextBox[j].box.getSize(), nextBox[j].box.getSize(),
                                                       dropX, dropY, dropSize, dropSize, false))
                             {
-                                //cout << "not droppable" << endl;
                                 droppable = false;
                                 break;
                             }
@@ -323,18 +322,17 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 
             // add departure for guy at the appropriate time
             TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
-            NewFrameID nextTime(time+nextTimeDirection);
+            NewFrameID nextTime(time.nextFrame(nextTimeDirection));
             assert(nextTime.isValidFrame());
             assert(time.isValidFrame());
             if (input.getAbility() == hg::TIME_JUMP)
             {
                 nextTime = input.getFrameIdParam(0);
-                //cout << time << endl << nextTime << endl << endl;
             }
             else if (input.getAbility() == hg::TIME_REVERSE)
             {
                 nextTimeDirection *= -1;
-                nextTime = time+nextTimeDirection;
+                nextTime = time.nextFrame(nextTimeDirection);
                 carryDirection[i] *= -1;
             }
 
@@ -380,12 +378,9 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		bool supported = false;
 
         // ** Y component **
-
         int newY = y + yspeed;
 
 		// box collision
-
-		int yComponent = 0;
 		vector<int> colliders;
         for (unsigned int j = 0; j < oldBoxList.size(); ++j)
         {
@@ -396,13 +391,18 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                 int boxSize = oldBoxList[j].getSize();
                 if (PhysicsEngine::intersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize, true))
                 {
-                    colliders.push_back(j);
-                    yComponent += (-(size/2 + boxSize/2 + boxY - y))/100 - (yspeed - oldBoxList[j].getYspeed())/2;
+                    if (newY + size/2 < boxY + boxSize/2)
+                    {
+                        newY = boxY - size;
+                    }
+                    else
+                    {
+                        newY = boxY + boxSize;
+                    }
                 }
             }
         }
-        newY += yComponent;
-        yspeed += yComponent;
+        yspeed = newY - y;
 
 		//check wall collision in Y direction
 		if (yspeed > 0) // down
@@ -424,7 +424,6 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
         // ** X component **
         int newX = x + xspeed;
 
-        int xComponent = 0;
         for (signed int j = oldBoxList.size()-1; j >= 0; --j)
         {
             if (j != i)
@@ -438,16 +437,21 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                     int boxX = oldBoxList[j].getX();
                     int boxY = oldBoxList[j].getY();
                     int boxSize = oldBoxList[j].getSize();
-                    if (PhysicsEngine::intersectingRectangles(newX, newY+400, size, size-800, boxX, boxY, boxSize, boxSize, true))
+                    if (PhysicsEngine::intersectingRectangles(newX, newY, size, size, boxX, boxY, boxSize, boxSize, true))
                     {
-                        xComponent += (-(size/2 + boxSize/2 + boxX - x))/100 - (xspeed - oldBoxList[j].getXspeed())/2;
+                        if (newX + size/2 < boxX + boxSize/2)
+                        {
+                            newX = x;//boxX - size;
+                        }
+                        else
+                        {
+                            newX = x;//boxX + boxSize;
+                        }
                     }
                 }
             }
         }
-
-        newX += xComponent;
-        xspeed += xComponent;
+        xspeed = newX - x;
 
 		//check wall collision in X direction
 		if (xspeed > 0) // right

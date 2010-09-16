@@ -8,7 +8,7 @@ namespace hg {
 class Frame;
 class FramePtr;
 class Universe;
-//Wrapper around Frame* to give extra saftey (assert ptr before dereferencing, 
+//Wrapper around Frame* to give extra saftey (assert ptr before dereferencing,
 //    also allows shared syntax with FrameID for ease of changing).
 class FramePtr {
 public:
@@ -20,45 +20,42 @@ public:
     FramePtr(const FramePtr& other);
     // returns the normal next frame for things moving in direction TimeDirection
     FramePtr nextFrame(TimeDirection direction) const;
-    
-    //Wrapper for nextFrame to allow existing code to work without change. Remove if you don't feel the need.
-    FramePtr operator+(TimeDirection direction) const;
-    
+
     // returns if the next frame for things moving in direction TimeDirection
     //is part of the same pause time universe as the frame
     bool nextFrameInUniverse(TimeDirection direction) const;
-    
-    // returns a frameID using frameNumber as 'distance' from the start of the universe in  
+
+    // returns a frameID using frameNumber as 'distance' from the start of the universe in
     FramePtr arbitraryFrameInUniverse(unsigned int frameNumber) const;
-    
+
     // returns the frame that spawned the universe that this frame is in
     FramePtr parentFrame() const;
-    
-    // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as 
+
+    // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
     //'distance' from the start of the universe This function cannot return nullFrame,
     //place assert to assure frameNumber is never greater pauseLength
     FramePtr arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int pauseLength, unsigned int frameNumber) const;
-    
+
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
-    //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the 
+    //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
     //universe cannot return nullFrame,
     FramePtr entryChildFrame(const PauseInitiatorID& initatorID, unsigned int pauseLength, TimeDirection direction) const;
-    
+
     bool operator==(const FramePtr& other);
-    
+
     bool operator<(const FramePtr& other);
 private:
     friend ::std::size_t hash_value(const FramePtr& toHash);
     friend class Universe;
-    
+
     //constructs a FramePtr for the frame at time in the universe given by Universe
     FramePtr(unsigned int time, const Universe& universe);
-    
+
     Frame* framePtr_;
 };
 //Only one frame per frame. Referenced by frame pointers and contained in universes.
 //Tim's idea for FrameID
-//A system like this could also put the arrivals and departures in Frames 
+//A system like this could also put the arrivals and departures in Frames
 //and so avoid the arrival-departure-map system altogether
 class Frame {
     unsigned int frameNumber_;
