@@ -41,16 +41,14 @@ namespace {
 int main()
 {
     RenderWindow App(VideoMode(640, 480), "Hourglass II");
-
+    App.UseVerticalSync(true);
+    App.SetFramerateLimit(60);
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
 
-    float stepTime(1.f/60);
     ::hg::Input input;
     while (App.IsOpened())
     {
-        Clock clock;
-
         Event event;
         while (App.GetEvent(event))
         {
@@ -69,13 +67,9 @@ int main()
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall, waveInfo.get<2>());
         DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
 
-
-        while (clock.GetElapsedTime() < stepTime) {
-            this_thread::sleep(posix_time::milliseconds(1));
-        }
         {
             stringstream fpsstring;
-            fpsstring << (1./clock.GetElapsedTime());
+            fpsstring << (1./App.GetFrameTime());
             sf::String fpsglyph(fpsstring.str());
             fpsglyph.SetPosition(600, 465);
             fpsglyph.SetSize(8.f);
