@@ -411,6 +411,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 			{
 				newY = ((newY+size)/wallSize)*wallSize - size;
 				supported = true;
+				xspeed = 0;
 			}
 		}
 		else if (yspeed < 0) // up
@@ -441,11 +442,11 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                     {
                         if (newX + size/2 < boxX + boxSize/2)
                         {
-                            newX = x;//boxX - size;
+                            newX = x + oldBoxList[j].getXspeed()/10;//boxX - size;
                         }
                         else
                         {
-                            newX = x;//boxX + boxSize;
+                            newX = x + oldBoxList[j].getXspeed()/10;//boxX + boxSize;
                         }
                     }
                 }
