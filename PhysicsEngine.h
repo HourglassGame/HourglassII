@@ -36,10 +36,15 @@ private:
         Box box;
         bool supported;
     };
+
+    void buttonChecks(const ::std::vector<Box>& oldBoxList,
+                    const ::std::vector<Guy>& oldGuyList,
+                    const ::std::vector<Button>& oldButtonList,
+                    ::std::map<NewFrameID, MutableObjectList>& newDepartures, NewFrameID time) const;
+
 	void crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
                                       ::std::vector<BoxInfo>& nextBox) const;
-
-    void guyStep(const ::std::vector<Guy>& oldGuyList, 
+    void guyStep(const ::std::vector<Guy>& oldGuyList,
                  NewFrameID time,
                  const ::std::vector<InputList>& playerInput,
                  ::std::map<NewFrameID, MutableObjectList>& newDepartures,

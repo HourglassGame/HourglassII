@@ -27,6 +27,7 @@ namespace {
     void DrawWall(RenderTarget& target, const vector<vector<bool> >& wallData);
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData, TimeDirection&);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
+    void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection);
 
     vector<vector<bool> > MakeWall();
     TimeEngine MakeTimeEngine(vector<vector<bool> >& wallData);
@@ -86,6 +87,7 @@ void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<boo
     DrawWall(target, wallData);
     DrawBoxes(target, frame.getBoxListRef(), playerDirection);
     DrawGuys(target, frame.getGuyListRef(), playerDirection);
+    DrawButtons(target, frame.getButtonListRef(), playerDirection);
 }
 
 void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
@@ -188,6 +190,30 @@ void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& p
     }
 }
 
+void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection)
+{
+     foreach(const Button& button, buttonList)
+     {
+        Color buttonColor;
+        if (button.getState())
+        {
+            buttonColor = Color(150,255,150);
+        }
+        else
+        {
+            buttonColor = Color(255,150,150);
+        }
+
+        target.Draw(Shape::Rectangle(
+            (button.getX())/100,
+            (button.getY())/100,
+            (button.getX()+3200)/100,
+            (button.getY()+800)/100,
+            buttonColor)
+        );
+     }
+}
+
 void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
@@ -286,6 +312,7 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, FORWARDS, 0, 0));
+    newObjectList.addButton(Button(8700, 37600, 0, 0, false, FORWARDS));
     return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800));
 }
 }
