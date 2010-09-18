@@ -28,6 +28,18 @@ physics_(physics)
             initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addBox(*it);
         }
     }
+
+    for (vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
+         end(initialObjects.getButtonListRef().end()); it != end; ++it)
+    {
+        if (it->getTimeDirection() == FORWARDS) {
+            initialArrivalMap[NewFrameID(0, timelineLength)].addButton(*it);
+        }
+        else {
+            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addButton(*it);
+        }
+    }
+
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
     initialArrivalMap[guyStartTime].addGuy(initialObjects.getGuyListRef().at(0));
@@ -35,8 +47,8 @@ physics_(physics)
     TimeObjectListList initialArrivals;
 
     for (map<NewFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
-                                                    end(initialArrivalMap.end()); 
-                                                        it != end; 
+                                                    end(initialArrivalMap.end());
+                                                        it != end;
                                                         ++it) {
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         initialArrivals.insertObjectList(it->first, ObjectList(it->second));

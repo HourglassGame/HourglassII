@@ -57,6 +57,11 @@ const vector<Box>& ObjectList::getBoxListRef() const
     return data_->boxList;
 }
 
+const vector<Button>& ObjectList::getButtonListRef() const
+{
+    return data_->buttonList;
+}
+
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
     return data_ == other.data_ ||
@@ -115,6 +120,12 @@ void MutableObjectList::addBox(const Box& toCopy)
 {
     makeUnique();
 	data_->boxList.push_back(toCopy);
+}
+
+void MutableObjectList::addButton(const Button& toCopy)
+{
+    makeUnique();
+	data_->buttonList.push_back(toCopy);
 }
 
 void MutableObjectList::add(const MutableObjectList& other)

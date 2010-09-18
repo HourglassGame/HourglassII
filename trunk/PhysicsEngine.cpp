@@ -29,6 +29,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                NewFrameID& nextPlayerFrame) const
 {
     std::vector<BoxInfo> nextBox;
+    std::vector<Button> nextButton;
 
 	map<NewFrameID, MutableObjectList> newDepartures;
 
@@ -38,7 +39,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
 	// platforms set their new location and velocity from trigger system data (and ofc their physical data)
 
-	// switch position update
+	buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), newDepartures, time);
 	// pickup position update
 	crappyBoxCollisionAlogorithm(arrivals.getBoxListRef(), nextBox);
 	// boxes do their crazy wizz-bang collision algorithm
@@ -48,9 +49,8 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	// guys simple collision algorithm
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
             newDepartures, nextBox, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection);
-	// guys pickup pickups
 
-	// guys pickup/put down boxes and objects
+
 
 	// guys do timetravel-type stuff
 	for (size_t i = 0; i < nextBox.size(); ++i)
@@ -512,7 +512,42 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
             ,supported
             )
         );
-		// don't bother checking box collision in crappy step
+
+	}
+}
+
+void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList, const ::std::vector<Guy>& oldGuyList,
+                                 const ::std::vector<Button>& oldButtonList, ::std::map<NewFrameID, MutableObjectList>& newDepartures, NewFrameID time) const
+{
+    for (unsigned int i = 0; i < oldButtonList.size(); ++i)
+	{
+	    int x = oldButtonList[i].getX();
+	    int y = oldButtonList[i].getY();
+	    int w = 3200;
+	    int h = 800;
+
+	    bool state = false;
+
+	    for (unsigned int j = 0; !state && j < oldBoxList.size(); ++j)
+        {
+            state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldBoxList[j].getX(), oldBoxList[j].getY(), oldBoxList[j].getSize(), oldBoxList[j].getSize(), true);
+        }
+
+         for (unsigned int j = 0; !state && j < oldGuyList.size(); ++j)
+        {
+            state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldGuyList[j].getX(), oldGuyList[j].getY(), oldGuyList[j].getWidth(), oldGuyList[j].getHeight(), true);
+        }
+
+        NewFrameID nextTime(time.nextFrame(oldButtonList[i].getTimeDirection()));
+
+        if (nextTime.isValidFrame())
+        {
+            newDepartures[nextTime].addButton
+            (
+                Button(x,y, 0, 0, state, oldButtonList[i].getTimeDirection())
+            );
+        }
+
 	}
 }
 
