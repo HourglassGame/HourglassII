@@ -2,7 +2,7 @@
 using namespace ::hg;
 bool ::hg::operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
 {
-    return lhs.type_ == rhs.type_ 
+    return lhs.type_ == rhs.type_
         && lhs.ID_ == rhs.ID_
         && lhs.timelineLength_ == rhs.timelineLength_;
 }
@@ -14,11 +14,11 @@ bool ::hg::operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
             return lhs.timelineLength_ < rhs.timelineLength_;
         }
         else {
-            lhs.ID_ < rhs.ID_;
+            return lhs.ID_ < rhs.ID_;
         }
     }
     else {
-        lhs.type_ < rhs.type_;
+        return lhs.type_ < rhs.type_;
     }
 }
 
