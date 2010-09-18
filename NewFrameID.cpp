@@ -1,4 +1,7 @@
 #include "NewFrameID.h"
+
+#include <boost/functional/hash.hpp>
+
 #include <limits>
 #include <cassert>
 

@@ -13,12 +13,12 @@ namespace hg
         Button(const Button& other);
         Button& operator=(const Button& other);
 
-        inline int getX() const {return data->x;}
-        inline int getY() const {return data->y;}
-        inline int getAttachment() const {return data->attachment;}
-        inline int getIndex() const {return data->index;}
-        inline bool getState() const {return data->state;}
-        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
+        int getX() const {return data->x;}
+        int getY() const {return data->y;}
+        int getAttachment() const {return data->attachment;}
+        int getIndex() const {return data->index;}
+        bool getState() const {return data->state;}
+        TimeDirection getTimeDirection() const {return data->timeDirection;}
 
         bool operator==(const Button& other) const;
         bool operator!=(const Button& other) const;

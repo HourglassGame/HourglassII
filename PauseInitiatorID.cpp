@@ -1,4 +1,6 @@
 #include "PauseInitiatorID.h"
+#include <boost/functional/hash.hpp>
+
 using namespace ::hg;
 bool ::hg::operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
 {

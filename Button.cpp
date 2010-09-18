@@ -1,7 +1,5 @@
 #include "Button.h"
 
-#include <iostream>
-
 using namespace ::hg;
 
 Button::Button(int nX, int nY, int attachment, int index, bool state, hg::TimeDirection nTimeDirection) :
@@ -56,5 +54,5 @@ bool Button::operator==(const Button& other) const
 
 bool Button::operator<(const Button& other) const
 {
-    return (data->y < other.data->index);
+    return data->y < other.data->index;
 }

@@ -3,8 +3,7 @@
 
 #include "TimeDirection.h"
 
-#include <boost/functional/hash.hpp>
-
+#include <cstring>
 #include <cassert>
 
 namespace hg {

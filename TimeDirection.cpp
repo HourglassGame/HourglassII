@@ -1,4 +1,5 @@
 #include "TimeDirection.h"
+#include <cassert>
 void ::hg::operator*=(::hg::TimeDirection& receiver, int multiple)
 {
     assert(multiple == -1 || multiple == 1);

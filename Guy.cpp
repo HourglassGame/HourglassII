@@ -1,7 +1,5 @@
 #include "Guy.h"
 
-#include <cassert>
-#include <iostream>
 using namespace ::hg;
 
 Guy::Guy(int nX,
@@ -15,7 +13,7 @@ Guy::Guy(int nX,
          int nBoxCarrySize,
          TimeDirection nBoxCarryDirection,
          TimeDirection nTimeDirection,
-         unsigned int nRelativeIndex,
+         size_t nRelativeIndex,
          int nSubimage) :
 referenceCount(new int(1)),
 data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nSupported,

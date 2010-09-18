@@ -1,6 +1,6 @@
 #ifndef HG_PAUSE_INITIATOR_ID
 #define HG_PAUSE_INITIATOR_ID
-#include <boost/functional/hash.hpp>
+#include <cstring>
 
 namespace hg {
     namespace pauseinitiatortype {

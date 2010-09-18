@@ -104,7 +104,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             yspeed.push_back(oldGuyList[i].getYspeed() + gravity);
             supported.push_back(false);
 
-            unsigned int relativeIndex = oldGuyList[i].getRelativeIndex();
+            size_t relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
 
             int width = oldGuyList[i].getWidth();
@@ -217,7 +217,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             carrySize.push_back(0);
             carryDirection.push_back(hg::INVALID);
 
-            unsigned int relativeIndex = oldGuyList[i].getRelativeIndex();
+            size_t relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
 
             if (carry[i])

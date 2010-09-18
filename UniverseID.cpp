@@ -1,6 +1,8 @@
 #include "UniverseID.h"
 #include "NewFrameID.h"
 
+#include <boost/functional/hash.hpp>
+
 using namespace ::hg;
 using namespace ::std;
 
