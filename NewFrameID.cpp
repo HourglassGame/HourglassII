@@ -33,8 +33,8 @@ NewFrameID NewFrameID::nextFrame(TimeDirection direction) const
 bool NewFrameID::nextFrameInUniverse(TimeDirection direction) const
 {
     assert(isValidFrame());
-    return !(direction == REVERSE && frame_ == 0
-             || direction == FORWARDS && frame_ == universe_.timelineLength());
+    return !((direction == REVERSE && frame_ == 0)
+             || (direction == FORWARDS && frame_ == universe_.timelineLength()));
 }
 
 NewFrameID NewFrameID::arbitraryFrameInUniverse(unsigned int frameNumber) const

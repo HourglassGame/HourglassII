@@ -65,8 +65,8 @@ const vector<Button>& ObjectList::getButtonListRef() const
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
     return data_ == other.data_ ||
-            data_->guyList == other.data_->guyList
-            && data_->boxList == other.data_->boxList;
+            (data_->guyList == other.data_->guyList
+            && data_->boxList == other.data_->boxList);
 }
 
 bool ObjectList::operator!=(const hg::ObjectList& other) const
