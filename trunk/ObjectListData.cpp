@@ -1,5 +1,6 @@
 #include "ObjectListData.h"
 #include <algorithm>
+#include <cassert>
 using namespace ::hg;
 using namespace ::std;
 ObjectListData::ObjectListData() :
