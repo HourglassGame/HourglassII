@@ -3,7 +3,7 @@
 
 #include "TimeDirection.h"
 #include "UniverseID.h"
-#include <boost/functional/hash.hpp>
+#include <cstring>
 
 namespace hg {
 //Class following original intention of FrameID. May be too slow for back-end use,

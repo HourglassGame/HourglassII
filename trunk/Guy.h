@@ -1,6 +1,7 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
 #include "TimeDirection.h"
+#include <cstring>
 namespace hg {
     class Guy
     {
@@ -16,28 +17,28 @@ namespace hg {
             int nBoxCarrySize,
             hg::TimeDirection nBoxCarryDirection,
             hg::TimeDirection nTimeDirection,
-            unsigned int nRelativeIndex,
+            size_t nRelativeIndex,
             int nSubimage);
 
         ~Guy();
         Guy(const Guy& other);
         Guy& operator=(const Guy& other);
 
-        inline int getX() const {return data->x;}
-        inline int getY() const {return data->y;}
-        inline int getXspeed() const {return data->xspeed;}
-        inline int getYspeed() const {return data->yspeed;}
-        inline int getWidth() const {return data->width;}
-        inline int getHeight() const {return data->height;}
-        inline int getSupported() const {return data->supported;}
+        int getX() const {return data->x;}
+        int getY() const {return data->y;}
+        int getXspeed() const {return data->xspeed;}
+        int getYspeed() const {return data->yspeed;}
+        int getWidth() const {return data->width;}
+        int getHeight() const {return data->height;}
+        int getSupported() const {return data->supported;}
 
-        inline bool getBoxCarrying() const {return data->boxCarrying;}
-        inline int getBoxCarrySize() const {return data->boxCarrySize;}
-        inline TimeDirection getBoxCarryDirection() const {return data->boxCarryDirection;}
+        bool getBoxCarrying() const {return data->boxCarrying;}
+        int getBoxCarrySize() const {return data->boxCarrySize;}
+        TimeDirection getBoxCarryDirection() const {return data->boxCarryDirection;}
 
-        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
-        inline unsigned int getRelativeIndex() const {return data->relativeIndex;}
-        inline int getSubimage() const {return data->subimage;}
+        TimeDirection getTimeDirection() const {return data->timeDirection;}
+        size_t getRelativeIndex() const {return data->relativeIndex;}
+        int getSubimage() const {return data->subimage;}
 
         const static int animationLength = 13;
 
@@ -66,7 +67,7 @@ namespace hg {
                  TimeDirection nboxCarryDirection,
 
                  TimeDirection ntimeDirection,
-                 unsigned int nrelativeIndex,
+                 size_t nrelativeIndex,
 
                  int nsubimage) :
             x(nx),
@@ -101,7 +102,7 @@ namespace hg {
             TimeDirection boxCarryDirection;
 
             TimeDirection timeDirection;
-            unsigned int relativeIndex;
+            size_t relativeIndex;
 
             int subimage;
         };

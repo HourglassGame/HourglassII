@@ -1,7 +1,5 @@
 #include "Box.h"
 
-#include <iostream>
-
 using namespace ::hg;
 
 Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection) :

@@ -10,12 +10,12 @@ namespace hg {
         Box(const Box& other);
         Box& operator=(const Box& other);
         
-        inline int getX() const {return data->x;}
-        inline int getY() const {return data->y;}
-        inline int getXspeed() const {return data->xspeed;}
-        inline int getYspeed() const {return data->yspeed;}
-        inline int getSize() const {return data->size;}
-        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
+        int getX() const {return data->x;}
+        int getY() const {return data->y;}
+        int getXspeed() const {return data->xspeed;}
+        int getYspeed() const {return data->yspeed;}
+        int getSize() const {return data->size;}
+        TimeDirection getTimeDirection() const {return data->timeDirection;}
         
         bool operator==(const Box& other) const;
         bool operator!=(const Box& other) const;

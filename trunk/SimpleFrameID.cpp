@@ -1,4 +1,7 @@
 #include "SimpleFrameID.h"
+
+#include <boost/functional/hash.hpp>
+
 #include <limits>
 using namespace ::hg;
 SimpleFrameID::SimpleFrameID() :

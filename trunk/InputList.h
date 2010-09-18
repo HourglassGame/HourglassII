@@ -1,7 +1,6 @@
 #include "NewFrameID.h"
 #include "Ability.h"
 #include <cassert>
-#include <iostream>
 
 #ifndef HG_INPUT_LIST_H
 #define HG_INPUT_LIST_H
