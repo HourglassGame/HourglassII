@@ -30,15 +30,10 @@ NewFrameID NewFrameID::nextFrame(TimeDirection direction) const
     }
 }
 
-NewFrameID NewFrameID::operator+(TimeDirection direction) const
-{
-    return nextFrame(direction);
-}
-
 bool NewFrameID::nextFrameInUniverse(TimeDirection direction) const
 {
     assert(isValidFrame());
-    return !(direction == REVERSE && frame_ == 0 
+    return !(direction == REVERSE && frame_ == 0
              || direction == FORWARDS && frame_ == universe_.timelineLength());
 }
 
@@ -69,7 +64,7 @@ NewFrameID NewFrameID::entryChildFrame(const PauseInitiatorID& initatorID,
 {
     assert(initatorID.timelineLength_ != 0);
     return NewFrameID(direction == FORWARDS ? 0 : initatorID.timelineLength_ - 1,
-                      universe_.getSubUniverse(SubUniverse(frame_, initatorID)));    
+                      universe_.getSubUniverse(SubUniverse(frame_, initatorID)));
 }
 
 bool NewFrameID::operator==(const NewFrameID& other) const
