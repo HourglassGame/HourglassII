@@ -115,21 +115,25 @@ void DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& 
     foreach(const Box& box, boxList) {
         if (playerDirection == box.getTimeDirection())
         {
-             target.Draw(Shape::Rectangle(box.getX()/100,
-                                         box.getY()/100,
-                                        (box.getX()+ box.getSize())/100,
-                                         (box.getY()+box.getSize())/100,
-                                         Color(255,0,255)));
+             target.Draw(Shape::Rectangle(
+                box.getX()/100,
+                box.getY()/100,
+                (box.getX()+ box.getSize())/100,
+                (box.getY()+box.getSize())/100,
+                Color(255,0,255))
+            );
         }
         else
         {
             int x = box.getX()-box.getXspeed();
             int y = box.getY()-box.getYspeed();
-            target.Draw(Shape::Rectangle(x/100,
-                                         y/100,
-                                        (x+ box.getSize())/100,
-                                         (y+box.getSize())/100,
-                                         Color(255,0,255)));
+            target.Draw(Shape::Rectangle(
+                x/100,
+                y/100,
+                (x+ box.getSize())/100,
+                (y+box.getSize())/100,
+                Color(0,255,0))
+            );
         }
 
     }
@@ -138,39 +142,48 @@ void DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& 
 void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& playerDirection)
 {
     foreach(const Guy& guy, guyList) {
-         if (playerDirection == guy.getTimeDirection())
-         {
-            target.Draw(Shape::Rectangle(guy.getX()/100,
-                                         guy.getY()/100,
-                                         (guy.getX()+ guy.getWidth())/100,
-                                         (guy.getY()+guy.getHeight())/100,
-                                         Color(150,150,0)));
-            if (guy.getBoxCarrying())
-            {
-                target.Draw(Shape::Rectangle((guy.getX() + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
-                                             (guy.getY() - guy.getBoxCarrySize())/100,
-                                             (guy.getX() + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
-                                             (guy.getY())/100,
-                                             Color(0,0,255)));
-            }
+        int x,y;
+        Color guyColor;
+        if (playerDirection == guy.getTimeDirection())
+        {
+            x = guy.getX();
+            y = guy.getY();
+            guyColor = Color(150,150,0);
         }
         else
         {
-            int x = guy.getX()-guy.getXspeed();
-            int y = guy.getY()-guy.getYspeed();
-            target.Draw(Shape::Rectangle(x/100,
-                                         y/100,
-                                         (x+ guy.getWidth())/100,
-                                         (y+guy.getHeight())/100,
-                                         Color(150,150,0)));
-            if (guy.getBoxCarrying())
+            x = guy.getX()-guy.getXspeed();
+            y = guy.getY()-guy.getYspeed();
+            guyColor = Color(0,0,150);
+        }
+
+        target.Draw(Shape::Rectangle(
+            x/100,
+            y/100,
+            (x+ guy.getWidth())/100,
+            (y+guy.getHeight())/100,
+            guyColor)
+        );
+
+        if (guy.getBoxCarrying())
+        {
+            Color boxColor;
+            if (playerDirection == guy.getBoxCarryDirection())
             {
-                target.Draw(Shape::Rectangle((x + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
-                                             (y - guy.getBoxCarrySize())/100,
-                                             (x + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
-                                             y/100,
-                                             Color(0,0,255)));
+                boxColor = Color(150,0,150);
             }
+            else
+            {
+                boxColor = Color(0,150,0);
+            }
+
+            target.Draw(Shape::Rectangle(
+                (x + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
+                (y - guy.getBoxCarrySize())/100,
+                (x + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
+                y/100,
+                boxColor)
+            );
         }
     }
 }

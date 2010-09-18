@@ -376,6 +376,26 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		int size = oldBoxList[i].getSize();
 
 		bool supported = false;
+		bool exploded = false;
+
+        for (unsigned int j = 0; j < oldBoxList.size(); ++j)
+        {
+            if (j != i)
+            {
+                int boxX = oldBoxList[j].getX();
+                int boxY = oldBoxList[j].getY();
+                int boxSize = oldBoxList[j].getSize();
+                if (PhysicsEngine::intersectingRectangles(x, y, size, size, boxX, boxY, boxSize, boxSize, false))
+                {
+                    exploded = true;
+                    continue;
+                }
+            }
+        }
+        if (exploded)
+        {
+            continue;
+        }
 
         // ** Y component **
         int newY = y + yspeed;
@@ -492,7 +512,6 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
             ,supported
             )
         );
-
 		// don't bother checking box collision in crappy step
 	}
 }
