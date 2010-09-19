@@ -8,16 +8,21 @@
 #include <cassert>
 #include <map>
 #include <vector>
+#include <math.h>
 
 using namespace ::std;
 using namespace ::hg;
 
 PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap,
                              int newWallSize,
-                             int newGravity) :
+                             int newGravity,
+                             AttachmentMap nAttachmentMap,
+                             TriggerSystem nTriggerSystem) :
 wallmap(newWallmap),
 gravity(newGravity),
-wallSize(newWallSize)
+wallSize(newWallSize),
+attachmentMap(nAttachmentMap),
+triggerSystem(nTriggerSystem)
 {
 }
 
@@ -29,20 +34,22 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                NewFrameID& nextPlayerFrame) const
 {
     std::vector<BoxInfo> nextBox;
-    std::vector<Button> nextButton;
-
+    std::vector<PlatformDestination> platformDesinations;
 	map<NewFrameID, MutableObjectList> newDepartures;
 
-	// Switch Collisions at this point?
-
 	// Trigger system execution
+    triggerSystem.getPlatformDestinations(arrivals.getButtonListRef(), platformDesinations);
 
 	// platforms set their new location and velocity from trigger system data (and ofc their physical data)
+	platformStep(arrivals.getPlatformListRef(), platformDesinations, newDepartures, time);
 
+    // button state and position update
 	buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), newDepartures, time);
-	// pickup position update
-	crappyBoxCollisionAlogorithm(arrivals.getBoxListRef(), nextBox);
+
+	// pickup position update from platform
+
 	// boxes do their crazy wizz-bang collision algorithm
+    crappyBoxCollisionAlogorithm(arrivals.getBoxListRef(), nextBox, newDepartures);
 
 	// item simple collision algorithm
 
@@ -50,9 +57,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
             newDepartures, nextBox, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection);
 
-
-
-	// guys do timetravel-type stuff
+    // build departures for boxes
 	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
 		NewFrameID nextTime(time.nextFrame(nextBox[i].box.getTimeDirection()));
@@ -63,6 +68,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 		}
 	}
 
+    // compile all departures
     TimeObjectListList returnDepartures;
 
     for (map<NewFrameID, MutableObjectList>::iterator it(newDepartures.begin()), end(newDepartures.end()); it != end; ++it) {
@@ -365,7 +371,8 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 }
 
 void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
-                                                 std::vector<BoxInfo>& nextBox) const
+                                                 std::vector<BoxInfo>& nextBox,
+                                                 const ::std::map<NewFrameID, MutableObjectList>& newDepartures) const
 {
 	for (vector<Box>::const_iterator i(oldBoxList.begin()), iend(oldBoxList.end()); i != iend; ++i)
 	{
@@ -512,8 +519,64 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 	}
 }
 
-void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList, const ::std::vector<Guy>& oldGuyList,
-                                 const ::std::vector<Button>& oldButtonList, ::std::map<NewFrameID, MutableObjectList>& newDepartures, NewFrameID time) const
+void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
+                      const std::vector<PlatformDestination>& platformDestinations,
+                      ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                      const NewFrameID& time) const
+{
+
+    for (int i = 0; i < oldPlatformList.size(); ++i)
+    {
+        int x = oldPlatformList[i].getX();
+		int y = oldPlatformList[i].getY();
+		int xspeed = oldPlatformList[i].getXspeed();
+		int yspeed = oldPlatformList[i].getYspeed();
+
+        if (platformDestinations[i].getX() != x) //|| platformDestinations[i].getY() != y)
+        {
+            int scale = sqrt(pow(x - platformDestinations[i].getX(),2) + pow(y - platformDestinations[i].getY(),2));
+            int xComp = (platformDestinations[i].getX() - x)*1000/scale;
+            int yComp = (platformDestinations[i].getY() - y)*1000/scale;
+
+            if (abs(platformDestinations[i].getX() - x) > pow(xspeed,3)/(4*platformDestinations[i].getAccel()*xComp/1000))
+            {
+                xspeed += platformDestinations[i].getAccel()*xComp/1000;
+            }
+            else
+            {
+                xspeed -= platformDestinations[i].getAccel()*xComp/1000;
+            }
+
+            if (abs(platformDestinations[i].getY() - y) > pow(yspeed,3)/(4*platformDestinations[i].getAccel()*yComp/1000))
+            {
+                yspeed += platformDestinations[i].getAccel()*yComp/1000;
+            }
+            else
+            {
+                yspeed -= platformDestinations[i].getAccel()*yComp/1000;
+            }
+        }
+
+        x += xspeed;
+        y += yspeed;
+
+        NewFrameID nextTime(time.nextFrame(oldPlatformList[i].getTimeDirection()));
+
+        if (nextTime.isValidFrame())
+        {
+            newDepartures[nextTime].addPlatform
+            (
+                Platform(x, y, xspeed, yspeed, oldPlatformList[i].getWidth(), oldPlatformList[i].getHeight(), oldPlatformList[i].getIndex(), oldPlatformList[i].getTimeDirection())
+            );
+        }
+    }
+}
+
+void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
+                                 const ::std::vector<Guy>& oldGuyList,
+                                 const ::std::vector<Button>& oldButtonList,
+                                 ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                                 NewFrameID time) const
 {
     for (unsigned int i = 0; i < oldButtonList.size(); ++i)
 	{
@@ -540,7 +603,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList, const ::s
         {
             newDepartures[nextTime].addButton
             (
-                Button(x,y, 0, 0, state, oldButtonList[i].getTimeDirection())
+                Button(x,y, 0, state, oldButtonList[i].getTimeDirection())
             );
         }
 
@@ -571,7 +634,6 @@ bool PhysicsEngine::wallAt(int x, int y, int w, int h) const
 {
 	return wallAt(x, y) || wallAt(x+w, y) || wallAt(x, y+h) || wallAt(x+w, y+h);
 }
-
 
 bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const
 {

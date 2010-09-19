@@ -6,6 +6,8 @@
 #include "NewFrameID.h"
 #include "TimeDirection.h"
 #include "ObjectList.h"
+#include "AttachmentMap.h"
+#include "TriggerSystem.h"
 #include <vector>
 #include <map>
 namespace hg {
@@ -14,9 +16,11 @@ class TimeObjectListList;
 class PhysicsEngine
 {
 public:
-	PhysicsEngine(::std::vector< ::std::vector<bool> > newWallmap,
-                  int newWallSize,
-                  int newGravity);
+	PhysicsEngine(  ::std::vector< ::std::vector<bool> > newWallmap,
+                    int newWallSize,
+                    int newGravity,
+                    AttachmentMap nAttachmentMap,
+                    TriggerSystem nTriggerSystem);
 
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
@@ -37,13 +41,21 @@ private:
         bool supported;
     };
 
+    void platformStep(const ::std::vector<Platform>& oldPlatformList,
+                      const std::vector<PlatformDestination>& platformDestinations,
+                      ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                      const NewFrameID& time) const;
+
     void buttonChecks(const ::std::vector<Box>& oldBoxList,
                     const ::std::vector<Guy>& oldGuyList,
                     const ::std::vector<Button>& oldButtonList,
-                    ::std::map<NewFrameID, MutableObjectList>& newDepartures, NewFrameID time) const;
+                    ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                    NewFrameID time) const;
 
 	void crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
-                                      ::std::vector<BoxInfo>& nextBox) const;
+                                      ::std::vector<BoxInfo>& nextBox,
+                                      const ::std::map<NewFrameID, MutableObjectList>& newDepartures) const;
+
     void guyStep(const ::std::vector<Guy>& oldGuyList,
                  NewFrameID time,
                  const ::std::vector<InputList>& playerInput,
@@ -63,6 +75,8 @@ private:
     ::std::vector< ::std::vector<bool> > wallmap;
 	int gravity;
 	int wallSize;
+	AttachmentMap attachmentMap;
+	TriggerSystem triggerSystem;
 };
 }
 #endif //HG_PHYSICS_ENGINE_H

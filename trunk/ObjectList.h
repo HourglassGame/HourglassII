@@ -30,6 +30,7 @@ public:
     const ::std::vector<Guy>& getGuyListRef() const;
     const ::std::vector<Box>& getBoxListRef() const;
     const ::std::vector<Button>& getButtonListRef() const;
+    const ::std::vector<Platform>& getPlatformListRef() const;
     //Add other ref getters as needed
 
     bool operator==(const ObjectList& other) const;
@@ -50,6 +51,7 @@ public:
 	void addGuy(const Guy& toCopy);
 	void addBox(const Box& toCopy);
 	void addButton(const Button& toCopy);
+	void addPlatform(const Platform& toCopy);
 
     void add(const MutableObjectList& other);
     void add(const ObjectList& other);

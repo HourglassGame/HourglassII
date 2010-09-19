@@ -34,7 +34,9 @@ public:
                int newWallSize,
                int newGravity,
                const ObjectList& initialObjects,
-               NewFrameID guyStartTime);
+               NewFrameID guyStartTime,
+               AttachmentMap nAttachmentMap,
+               TriggerSystem nTriggerSystem);
 
     typedef ::std::vector<FrameUpdateSet> FrameListList;
 	/************************

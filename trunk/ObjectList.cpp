@@ -62,11 +62,18 @@ const vector<Button>& ObjectList::getButtonListRef() const
     return data_->buttonList;
 }
 
+const vector<Platform>& ObjectList::getPlatformListRef() const
+{
+    return data_->platformList;
+}
+
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
     return data_ == other.data_ ||
             (data_->guyList == other.data_->guyList
-            && data_->boxList == other.data_->boxList);
+            && data_->boxList == other.data_->boxList
+            && data_->buttonList == other.data_->buttonList
+            && data_->platformList == other.data_->platformList);
 }
 
 bool ObjectList::operator!=(const hg::ObjectList& other) const
@@ -76,7 +83,7 @@ bool ObjectList::operator!=(const hg::ObjectList& other) const
 
 bool ObjectList::isEmpty() const
 {
-	return data_->guyList.empty() && data_->boxList.empty();
+	return data_->guyList.empty() && data_->boxList.empty() && data_->buttonList.empty() && data_->platformList.empty();
 }
 
 // ---------- MutableObjectList functions ------------
@@ -126,6 +133,12 @@ void MutableObjectList::addButton(const Button& toCopy)
 {
     makeUnique();
 	data_->buttonList.push_back(toCopy);
+}
+
+void MutableObjectList::addPlatform(const Platform& toCopy)
+{
+    makeUnique();
+	data_->platformList.push_back(toCopy);
 }
 
 void MutableObjectList::add(const MutableObjectList& other)

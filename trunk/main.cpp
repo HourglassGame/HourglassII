@@ -28,6 +28,7 @@ namespace {
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData, TimeDirection&);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
     void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection);
+    void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection);
 
     vector<vector<bool> > MakeWall();
     TimeEngine MakeTimeEngine(vector<vector<bool> >& wallData);
@@ -88,6 +89,7 @@ void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<boo
     DrawBoxes(target, frame.getBoxListRef(), playerDirection);
     DrawGuys(target, frame.getGuyListRef(), playerDirection);
     DrawButtons(target, frame.getButtonListRef(), playerDirection);
+    DrawPlatforms(target, frame.getPlatformListRef(), playerDirection);
 }
 
 void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
@@ -214,6 +216,35 @@ void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDir
      }
 }
 
+void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection)
+{
+     foreach(const Platform& platform, platformList)
+     {
+        int x,y;
+        Color platformColor;
+        if (playerDirection == platform.getTimeDirection())
+        {
+            x = platform.getX();
+            y = platform.getY();
+            platformColor = Color(50,0,0);
+        }
+        else
+        {
+            x = platform.getX()-platform.getXspeed();
+            y = platform.getY()-platform.getYspeed();
+            platformColor = Color(0,0,50);
+        }
+
+        target.Draw(Shape::Rectangle(
+            x/100,
+            y/100,
+            (x+platform.getWidth())/100,
+            (y+platform.getHeight())/100,
+            platformColor)
+        );
+     }
+}
+
 void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
@@ -312,7 +343,13 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, FORWARDS, 0, 0));
-    newObjectList.addButton(Button(8700, 37600, 0, 0, false, FORWARDS));
-    return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800));
+    newObjectList.addButton(Button(8700, 37600, 0, false, FORWARDS));
+    newObjectList.addPlatform(Platform(10700, 38400, 0, 0, 6400, 1600, 0, FORWARDS));
+
+    return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800),
+    AttachmentMap(::std::vector< ::boost::tuple<int, int, int> >()),
+    TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(0,0,500,20,20)), ::std::vector<PlatformDestination>(1, PlatformDestination(30000,30000,500,20,20))));
 }
+
+
 }
