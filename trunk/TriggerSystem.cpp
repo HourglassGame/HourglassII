@@ -30,6 +30,7 @@ offDestinations(noffDestinations)
         if (triggerInputs[i])
         {
             platformDesinations.push_back(onDestinations[i]);
+
         }
         else
         {

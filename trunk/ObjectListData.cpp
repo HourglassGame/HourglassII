@@ -38,6 +38,7 @@ void ObjectListData::sortElements()
                                                                      "equal objectLists being found to be different");
 	sort(boxList.begin(), boxList.end());
 	sort(buttonList.begin(), buttonList.end());
+	sort(platformList.begin(), platformList.end());
 }
 
 void ObjectListData::add(const ObjectListData& other)

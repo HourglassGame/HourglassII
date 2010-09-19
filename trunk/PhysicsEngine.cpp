@@ -44,9 +44,6 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	// platforms set their new location and velocity from trigger system data (and ofc their physical data)
 	platformStep(arrivals.getPlatformListRef(), nextPlatform, platformDesinations, newDepartures, time);
 
-    // button state and position update
-	buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextPlatform, newDepartures, time);
-
 	// pickup position update from platform
 
 	// boxes do their crazy wizz-bang collision algorithm
@@ -57,6 +54,9 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	// guys simple collision algorithm
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
             newDepartures, nextBox, nextPlatform, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection);
+
+    // button state and position update
+	buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextPlatform, newDepartures, time);
 
     // build departures for boxes
 	for (size_t i = 0; i < nextBox.size(); ++i)
@@ -162,7 +162,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                     if (newY+height/2 < pY+pHeight/2)
                     {
                         newY = pY-height;
-                        xspeed[i] = nextPlatform[j].getXspeed();
+                        xspeed[i] = pDirection*oldGuyList[i].getTimeDirection()*nextPlatform[j].getXspeed();
                         supported[i] = true;
                     }
                     else
@@ -232,6 +232,32 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 }
             }
 
+            // platform collision
+            for (unsigned int j = 0; j < nextPlatform.size(); ++j)
+            {
+                int pX = nextPlatform[j].getX();
+                int pY = nextPlatform[j].getY();
+                TimeDirection pDirection = nextPlatform[j].getTimeDirection();
+                if (pDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE)
+                {
+                    pX -= nextPlatform[j].getXspeed();
+                    pY -= nextPlatform[j].getYspeed();
+                }
+                int pWidth = nextPlatform[j].getWidth();
+                int pHeight = nextPlatform[j].getHeight();
+
+                if (intersectingRectangles(newX, newY, width, height, pX, pY, pWidth, pHeight, false))
+                {
+                    if (newX+width/2 < pX+pWidth/2)
+                    {
+                        newX = pX-width;
+                    }
+                    else
+                    {
+                        newX = pX+pWidth;
+                    }
+                }
+            }
 
             xspeed[i] = newX-x[i];
             yspeed[i] = newY-y[i];
@@ -270,9 +296,18 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                     if (!wallAt(dropX, dropY, dropSize, dropSize))
                     {
                         droppable = true;
-                        for (unsigned int j = 0; j < nextBox.size(); ++j)
+                        for (unsigned int j = 0; droppable && j < nextBox.size(); ++j)
                         {
                             if (intersectingRectangles(nextBox[j].box.getX(), nextBox[j].box.getY(), nextBox[j].box.getSize(), nextBox[j].box.getSize(),
+                                                      dropX, dropY, dropSize, dropSize, false))
+                            {
+                                droppable = false;
+                            }
+                        }
+                        for (unsigned int j = 0; droppable && j < nextPlatform.size(); ++j)
+                        {
+                            if (intersectingRectangles(nextPlatform[j].getX(), nextPlatform[j].getY(),
+                                                       nextPlatform[j].getWidth(), nextPlatform[j].getHeight(),
                                                       dropX, dropY, dropSize, dropSize, false))
                             {
                                 droppable = false;
@@ -415,28 +450,37 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		int size = i->getSize();
 
 		bool supported = false;
-        {
-            bool exploded = false;
 
-            for (vector<Box>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
+        bool exploded = false;
+
+        for (vector<Box>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
+        {
+            if (j != i)
             {
-                if (j != i)
+                int boxX = j->getX();
+                int boxY = j->getY();
+                int boxSize = j->getSize();
+                if (PhysicsEngine::intersectingRectangles(x, y, size, size, boxX, boxY, boxSize, boxSize, false))
                 {
-                    int boxX = j->getX();
-                    int boxY = j->getY();
-                    int boxSize = j->getSize();
-                    if (PhysicsEngine::intersectingRectangles(x, y, size, size, boxX, boxY, boxSize, boxSize, false))
-                    {
-                        exploded = true;
-                        continue;
-                    }
+                    exploded = true;
+                    continue;
                 }
             }
-            if (exploded)
+        }
+        /*
+        for (vector<Platform>::const_iterator j(nextPlatform.begin()), jend(nextPlatform.end()); j != jend; ++j)
+        {
+            if (PhysicsEngine::intersectingRectangles(x, y, size, size, j->getX(), j->getY(), j->getHeight(), j->getWidth(), false))
             {
+                exploded = true;
                 continue;
             }
-		}
+        }
+        */
+        if (exploded)
+        {
+            continue;
+        }
 
         // ** Y component **
         int newY = y + yspeed;
@@ -482,6 +526,35 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 			}
 		}
 
+		// platform collision
+        for (unsigned int j = 0; j < nextPlatform.size(); ++j)
+        {
+            int pX = nextPlatform[j].getX();
+            int pY = nextPlatform[j].getY();
+            TimeDirection pDirection = nextPlatform[j].getTimeDirection();
+            if (pDirection*i->getTimeDirection() == hg::REVERSE)
+            {
+                pX -= nextPlatform[j].getXspeed();
+                pY -= nextPlatform[j].getYspeed();
+            }
+            int pWidth = nextPlatform[j].getWidth();
+            int pHeight = nextPlatform[j].getHeight();
+
+            if (intersectingRectangles(x, newY, size, size, pX, pY, pWidth, pHeight, false))
+            {
+                if (newY+size/2 < pY+pHeight/2)
+                {
+                    newY = pY-size;
+                    xspeed = pDirection*i->getTimeDirection()*nextPlatform[j].getXspeed();
+                    supported = true;
+                }
+                else
+                {
+                    newY = pY+pHeight;
+                }
+            }
+        }
+
         // ** X component **
         int newX = x + xspeed;
 
@@ -525,6 +598,33 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 			}
 		}
 
+		// platform collision
+        for (unsigned int j = 0; j < nextPlatform.size(); ++j)
+        {
+            int pX = nextPlatform[j].getX();
+            int pY = nextPlatform[j].getY();
+            TimeDirection pDirection = nextPlatform[j].getTimeDirection();
+            if (pDirection*i->getTimeDirection() == hg::REVERSE)
+            {
+                pX -= nextPlatform[j].getXspeed();
+                pY -= nextPlatform[j].getYspeed();
+            }
+            int pWidth = nextPlatform[j].getWidth();
+            int pHeight = nextPlatform[j].getHeight();
+
+            if (intersectingRectangles(newX, newY, size, size, pX, pY, pWidth, pHeight, false))
+            {
+                if (newX+size/2 < pX+pWidth/2)
+                {
+                    newX = pX-size;
+                }
+                else
+                {
+                    newX = pX+pWidth;
+                }
+            }
+        }
+
         xspeed = newX-x;
         yspeed = newY-y;
 
@@ -553,7 +653,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 
 void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
                                  ::std::vector<Platform>& nextPlatform,
-                                 const std::vector<PlatformDestination>& platformDestinations,
+                                 const std::vector<PlatformDestination>& pd,
                                  ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                                  const NewFrameID& time) const
 {
@@ -565,47 +665,125 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
 		int xspeed = oldPlatformList[i].getXspeed();
 		int yspeed = oldPlatformList[i].getYspeed();
 
-        if (platformDestinations[i].getX() != x || platformDestinations[i].getY() != y)
+        // X component
+        if (pd[i].getX() != x)
         {
-            int scale = sqrt(pow(x - platformDestinations[i].getX(),2) + pow(y - platformDestinations[i].getY(),2));
-            int xComp = (platformDestinations[i].getX() - x)*1000/scale;
-            int yComp = (platformDestinations[i].getY() - y)*1000/scale;
-
-            if (abs(platformDestinations[i].getX() - x) <= abs(xspeed)*3 && abs(xspeed) <= platformDestinations[i].getDeccel()*3)
+            if (abs(pd[i].getX() - x) <= abs(xspeed) && abs(xspeed) <= pd[i].getXdeccel())
             {
-                xspeed = platformDestinations[i].getX() - x;
-            }
-            else if (abs(platformDestinations[i].getX() - x) > pow(xspeed,3)/(4*platformDestinations[i].getDeccel()*xComp/1000))
-            {
-                xspeed += platformDestinations[i].getAccel()*xComp/1000;
+                xspeed = pd[i].getX() - x;
             }
             else
             {
-                xspeed -= platformDestinations[i].getDeccel()*xComp/1000;
-            }
+                int direction = abs(x - pd[i].getX())/(x - pd[i].getX());
 
-            if (abs(platformDestinations[i].getY() - y) <= abs(yspeed)*3 && abs(yspeed) <= platformDestinations[i].getDeccel()*3)
-            {
-                yspeed = platformDestinations[i].getY() - y;
-            }
-            else if (abs(platformDestinations[i].getY() - y) > pow(yspeed,3)/(4*platformDestinations[i].getDeccel()*yComp/1000))
-            {
-                yspeed += platformDestinations[i].getAccel()*yComp/1000;
-            }
-            else
-            {
-                yspeed -= platformDestinations[i].getDeccel()*yComp/1000;
+                if (xspeed*direction >= 0)
+                {
+                    xspeed -= direction*pd[i].getXdeccel();
+                    if (xspeed*direction < 0)
+                    {
+                        xspeed = 0;
+                    }
+                }
+                else
+                {
+                    // if the platform can still stop if it fully accelerates
+                    if (abs(x - pd[i].getX()) > ((int)pow(xspeed - direction*pd[i].getXaccel(),2))*3/(2*pd[i].getXdeccel()))
+                    {
+                        // fully accelerate
+                        xspeed -= direction*pd[i].getXaccel();
+                    }
+                    // if the platform can stop if it doesn't accelerate
+                    else if (abs(x - pd[i].getX()) > ((int)pow(xspeed,2))*3/(2*pd[i].getXdeccel()))
+                    {
+                        // set speed to required speed
+                        xspeed = -direction*floor(sqrt(abs(x - pd[i].getX())*pd[i].getXdeccel()*2/3));
+                    }
+                    else
+                    {
+                        xspeed += direction*pd[i].getXdeccel();
+                    }
+                }
             }
         }
         else
         {
-            xspeed = 0;
-            yspeed = 0;
+            if (abs(xspeed) <= pd[i].getXdeccel())
+            {
+                xspeed = 0;
+            }
+            else
+            {
+                xspeed += abs(xspeed)/xspeed*pd[i].getXdeccel();
+            }
         }
 
-        x += xspeed;
+        if (abs(xspeed) > pd[i].getXspeed())
+        {
+            xspeed = abs(xspeed)/xspeed*pd[i].getXspeed();
+        }
+
+		x += xspeed;
+
+        // Y component
+        if (pd[i].getY() != y)
+        {
+            if (abs(pd[i].getY() - y) <= abs(yspeed) && abs(yspeed) <= pd[i].getYdeccel())
+            {
+                yspeed = pd[i].getY() - y;
+            }
+            else
+            {
+                int direction = abs(y - pd[i].getY())/(y - pd[i].getY());
+
+                if (yspeed*direction > 0)
+                {
+                    yspeed -= direction*pd[i].getYdeccel();
+                    if (yspeed*direction < 0)
+                    {
+                        yspeed = 0;
+                    }
+                }
+                else
+                {
+                    // if the platform can still stop if it fully accelerates
+                    if (abs(y - pd[i].getY()) > ((int)pow(yspeed - direction*pd[i].getYaccel(),2))*3/(2*pd[i].getYdeccel()))
+                    {
+                        // fully accelerate
+                        yspeed -= direction*pd[i].getYaccel();
+                    }
+                    // if the platform can stop if it doesn't accelerate
+                    else if (abs(y - pd[i].getY()) > ((int)pow(yspeed,2))*3/(2*pd[i].getYdeccel()))
+                    {
+                        // set speed to required speed
+                        yspeed = -direction*floor(sqrt(abs(y - pd[i].getY())*pd[i].getYdeccel()*2/3));
+                    }
+                    else
+                    {
+                        yspeed += direction*pd[i].getYdeccel();
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (abs(yspeed) <= pd[i].getYdeccel())
+            {
+                yspeed = 0;
+            }
+            else
+            {
+                yspeed += abs(yspeed)/yspeed*pd[i].getYdeccel();
+            }
+        }
+
+        if (abs(yspeed) > pd[i].getYspeed())
+        {
+            yspeed = abs(yspeed)/yspeed*pd[i].getYspeed();
+        }
+
         y += yspeed;
 
+		// send information
         nextPlatform.push_back(Platform(x, y, xspeed, yspeed, oldPlatformList[i].getWidth(), oldPlatformList[i].getHeight(), oldPlatformList[i].getIndex(), oldPlatformList[i].getTimeDirection()));
 
         NewFrameID nextTime(time.nextFrame(oldPlatformList[i].getTimeDirection()));
@@ -627,12 +805,30 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
                                  ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                                  NewFrameID time) const
 {
+    ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getButtonAttachmentRef();
+
     for (unsigned int i = 0; i < oldButtonList.size(); ++i)
 	{
 	    int x = oldButtonList[i].getX();
 	    int y = oldButtonList[i].getY();
 	    int w = 3200;
 	    int h = 800;
+
+	    if (attachments[i].get<0>() != -1)
+	    {
+	        int pid = attachments[i].get<0>();
+
+	        if (nextPlatform[pid].getTimeDirection()*oldButtonList[i].getTimeDirection() == hg::FORWARDS)
+	        {
+	            x = nextPlatform[pid].getX()+attachments[i].get<1>();
+                y = nextPlatform[pid].getY()+attachments[i].get<2>();
+	        }
+	        else
+	        {
+	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[i].get<1>();
+                y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[i].get<2>();
+	        }
+	    }
 
 	    bool state = false;
 
@@ -652,7 +848,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
         {
             newDepartures[nextTime].addButton
             (
-                Button(x,y, 0, state, oldButtonList[i].getTimeDirection())
+                Button(x, y, x-oldButtonList[i].getX(), y-oldButtonList[i].getY(),0, state, oldButtonList[i].getTimeDirection())
             );
         }
 

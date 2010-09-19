@@ -206,11 +206,23 @@ void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDir
             buttonColor = Color(255,150,150);
         }
 
+        int x,y;
+        if (playerDirection == button.getTimeDirection())
+        {
+            x = button.getX();
+            y = button.getY();
+        }
+        else
+        {
+            x = button.getX()-button.getXspeed();
+            y = button.getY()-button.getYspeed();
+        }
+
         target.Draw(Shape::Rectangle(
-            (button.getX())/100,
-            (button.getY())/100,
-            (button.getX()+3200)/100,
-            (button.getY()+800)/100,
+            x/100,
+            y/100,
+            (x+3200)/100,
+            (y+800)/100,
             buttonColor)
         );
      }
@@ -236,7 +248,7 @@ void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, T
             y = platform.getY()-platform.getYspeed();
             platformColor = Color(0,0,50);
         }
-         cout << x << " " << y << " " << platform.getXspeed() << " " << platform.getYspeed() << endl;
+        //cout << x << " " << y << " " << platform.getXspeed() << " " << platform.getYspeed() << endl;
 
         target.Draw(Shape::Rectangle(
             x/100,
@@ -346,12 +358,12 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
     newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, FORWARDS, 0, 0));
-    newObjectList.addButton(Button(8700, 37600, 0, false, FORWARDS));
-    newObjectList.addPlatform(Platform(10700, 38400, 0, 0, 6400, 1600, 0, FORWARDS));
+    newObjectList.addButton(Button(12000, 37600, 0, 0, 0, false, FORWARDS));
+    newObjectList.addPlatform(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS));
 
-    return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800),
-    AttachmentMap(::std::vector< ::boost::tuple<int, int, int> >()),
-    TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(0,0,500,20,100)), ::std::vector<PlatformDestination>(1, PlatformDestination(30000,30000,500,20,100))));
+    return TimeEngine(3,10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800),
+    AttachmentMap(::std::vector< ::boost::tuple<int, int, int> >(1, ::boost::tuple<int, int, int>(0,3200,-800))),
+    TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(38400,0,0,0,32000,300,50,50)), ::std::vector<PlatformDestination>(1, PlatformDestination(38400,0,0,0,43800,300,20,20))));
 }
 
 
