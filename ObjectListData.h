@@ -3,6 +3,7 @@
 #include "Guy.h"
 #include "Box.h"
 #include "Button.h"
+#include "Platform.h"
 #include <vector>
 namespace hg {
 struct ObjectListData {
@@ -15,6 +16,7 @@ struct ObjectListData {
     ::std::vector<Guy> guyList;
     ::std::vector<Box> boxList;
     ::std::vector<Button> buttonList;
+    ::std::vector<Platform> platformList;
 };
 }
 #endif //HG_OBJECT_LIST_DATA_H

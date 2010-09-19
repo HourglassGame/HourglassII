@@ -22,11 +22,13 @@ TimeEngine::TimeEngine(unsigned int timeLineLength,
                        int newWallSize,
                        int newGravity,
                        const ObjectList& initialObjects,
-                       NewFrameID guyStartTime) :
+                       NewFrameID guyStartTime,
+                       AttachmentMap nAttachmentMap,
+                       TriggerSystem nTriggerSystem) :
 worldState(TimelineState(timeLineLength),
                 timeLineLength,
                 guyStartTime,
-                PhysicsEngine(wallmap, newWallSize, newGravity),
+                PhysicsEngine(wallmap, newWallSize, newGravity, nAttachmentMap, nTriggerSystem),
                 initialObjects)
 
 {

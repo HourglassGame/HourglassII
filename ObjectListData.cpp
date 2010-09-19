@@ -6,14 +6,16 @@ using namespace ::std;
 ObjectListData::ObjectListData() :
 guyList(),
 boxList(),
-buttonList()
+buttonList(),
+platformList()
 {
 }
 
 ObjectListData::ObjectListData(const ObjectListData& other) :
 guyList(other.guyList),
 boxList(other.boxList),
-buttonList(other.buttonList)
+buttonList(other.buttonList),
+platformList(other.platformList)
 {
 }
 
@@ -43,4 +45,5 @@ void ObjectListData::add(const ObjectListData& other)
     guyList.insert(guyList.end(),other.guyList.begin(),other.guyList.end());
     boxList.insert(boxList.end(),other.boxList.begin(),other.boxList.end());
     buttonList.insert(buttonList.end(),other.buttonList.begin(),other.buttonList.end());
+    platformList.insert(platformList.end(),other.platformList.begin(),other.platformList.end());
 }

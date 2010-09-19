@@ -2,9 +2,9 @@
 
 using namespace ::hg;
 
-Button::Button(int nX, int nY, int attachment, int index, bool state, hg::TimeDirection nTimeDirection) :
+Button::Button(int nX, int nY, int index, bool state, hg::TimeDirection nTimeDirection) :
 referenceCount(new int(1)),
-data(new Data(nX, nY, attachment, index, state, nTimeDirection))
+data(new Data(nX, nY, index, state, nTimeDirection))
 {
 }
 
@@ -45,11 +45,7 @@ bool Button::operator!=(const Button& other) const
 
 bool Button::operator==(const Button& other) const
 {
-	return data == other.data ||
-        ((data->x == other.data->x)
-        && (data->y == other.data->y)
-        && (data->index == other.data->index)
-        && (data->timeDirection == other.data->timeDirection));
+	return data->index == other.data->index;
 }
 
 bool Button::operator<(const Button& other) const

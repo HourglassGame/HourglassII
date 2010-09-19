@@ -8,17 +8,16 @@ namespace hg
 
     public:
 
-        Button(int x, int y, int attachment, int index, bool state, TimeDirection timeDirection);
+        Button(int x, int y, int index, bool state, TimeDirection timeDirection);
         ~Button();
         Button(const Button& other);
         Button& operator=(const Button& other);
 
-        int getX() const {return data->x;}
-        int getY() const {return data->y;}
-        int getAttachment() const {return data->attachment;}
-        int getIndex() const {return data->index;}
-        bool getState() const {return data->state;}
-        TimeDirection getTimeDirection() const {return data->timeDirection;}
+        inline int getX() const {return data->x;}
+        inline int getY() const {return data->y;}
+        inline int getIndex() const {return data->index;}
+        inline bool getState() const {return data->state;}
+        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
 
         bool operator==(const Button& other) const;
         bool operator!=(const Button& other) const;
@@ -35,13 +34,11 @@ namespace hg
         struct Data {
             Data(int nx,
                  int ny,
-                 int nattachment,
                  int nindex,
                  bool nstate,
                  TimeDirection ntimeDirection) :
             x(nx),
             y(ny),
-            attachment(nattachment),
             index(nindex),
             state(nstate),
             timeDirection(ntimeDirection)
@@ -50,7 +47,6 @@ namespace hg
 
             int x;
             int y;
-            int attachment;
             int index;
             bool state;
             TimeDirection timeDirection;

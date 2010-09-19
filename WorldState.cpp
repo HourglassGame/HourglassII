@@ -40,6 +40,17 @@ physics_(physics)
         }
     }
 
+    for (vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
+         end(initialObjects.getPlatformListRef().end()); it != end; ++it)
+    {
+        if (it->getTimeDirection() == FORWARDS) {
+            initialArrivalMap[NewFrameID(0, timelineLength)].addPlatform(*it);
+        }
+        else {
+            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addPlatform(*it);
+        }
+    }
+
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
     initialArrivalMap[guyStartTime].addGuy(initialObjects.getGuyListRef().at(0));
