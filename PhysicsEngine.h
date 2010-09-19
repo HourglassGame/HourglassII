@@ -42,28 +42,32 @@ private:
     };
 
     void platformStep(const ::std::vector<Platform>& oldPlatformList,
+                      ::std::vector<Platform>& nextPlatform,
                       const std::vector<PlatformDestination>& platformDestinations,
                       ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                       const NewFrameID& time) const;
 
-    void buttonChecks(const ::std::vector<Box>& oldBoxList,
-                    const ::std::vector<Guy>& oldGuyList,
-                    const ::std::vector<Button>& oldButtonList,
+    void buttonChecks(  const ::std::vector<Box>& oldBoxList,
+                        const ::std::vector<Guy>& oldGuyList,
+                        const ::std::vector<Button>& oldButtonList,
+                        const ::std::vector<Platform>& nextPlatform,
+                        ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                        NewFrameID time) const;
+
+	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
+                                        ::std::vector<BoxInfo>& nextBox,
+                                        const ::std::vector<Platform>& nextPlatform,
+                                        const ::std::map<NewFrameID, MutableObjectList>& newDepartures) const;
+
+    void guyStep(   const ::std::vector<Guy>& oldGuyList,
+                    NewFrameID time,
+                    const ::std::vector<InputList>& playerInput,
                     ::std::map<NewFrameID, MutableObjectList>& newDepartures,
-                    NewFrameID time) const;
-
-	void crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
-                                      ::std::vector<BoxInfo>& nextBox,
-                                      const ::std::map<NewFrameID, MutableObjectList>& newDepartures) const;
-
-    void guyStep(const ::std::vector<Guy>& oldGuyList,
-                 NewFrameID time,
-                 const ::std::vector<InputList>& playerInput,
-                 ::std::map<NewFrameID, MutableObjectList>& newDepartures,
-                 ::std::vector<BoxInfo>& nextBox,
-                 NewFrameID& currentPlayerFrame,
-                 NewFrameID& nextPlayerFrame,
-                 TimeDirection& currentPlayerDirection) const;
+                    ::std::vector<BoxInfo>& nextBox,
+                    const ::std::vector<Platform>& nextPlatform,
+                    NewFrameID& currentPlayerFrame,
+                    NewFrameID& nextPlayerFrame,
+                    TimeDirection& currentPlayerDirection) const;
 
 	bool wallAt(int x, int y) const;
 	bool wallAt(int x, int y, int w, int h) const;

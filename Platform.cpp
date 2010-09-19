@@ -54,7 +54,13 @@ bool Platform::operator!=(const Platform& other) const
 
 bool Platform::operator==(const Platform& other) const
 {
-	return data->index == other.data->index;
+	return data->index == other.data->index
+            && (data->x == other.data->x)
+            && (data->y == other.data->y)
+            && (data->xspeed == other.data->xspeed)
+            && (data->yspeed == other.data->yspeed)
+            && (data->width == other.data->width)
+            && (data->height == other.data->height);
 }
 
 bool Platform::operator<(const Platform& other) const

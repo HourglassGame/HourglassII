@@ -218,9 +218,11 @@ void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDir
 
 void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection)
 {
+
      foreach(const Platform& platform, platformList)
      {
         int x,y;
+
         Color platformColor;
         if (playerDirection == platform.getTimeDirection())
         {
@@ -234,6 +236,7 @@ void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, T
             y = platform.getY()-platform.getYspeed();
             platformColor = Color(0,0,50);
         }
+         cout << x << " " << y << " " << platform.getXspeed() << " " << platform.getYspeed() << endl;
 
         target.Draw(Shape::Rectangle(
             x/100,
@@ -348,7 +351,7 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
 
     return TimeEngine(10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800),
     AttachmentMap(::std::vector< ::boost::tuple<int, int, int> >()),
-    TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(0,0,500,20,20)), ::std::vector<PlatformDestination>(1, PlatformDestination(30000,30000,500,20,20))));
+    TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(0,0,500,20,100)), ::std::vector<PlatformDestination>(1, PlatformDestination(30000,30000,500,20,100))));
 }
 
 
