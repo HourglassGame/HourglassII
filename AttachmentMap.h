@@ -12,7 +12,7 @@ namespace hg
         {
         }
 
-        const ::std::vector< ::boost::tuple<int, int, int> >& getButtonAttachmentRef() {return buttonAttachments;}
+        const ::std::vector< ::boost::tuple<int, int, int> >& getButtonAttachmentRef() const {return buttonAttachments;}
 
     private:
         ::std::vector< ::boost::tuple<int, int, int> > buttonAttachments;

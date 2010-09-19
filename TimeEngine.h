@@ -29,7 +29,8 @@ public:
      * A correct level has exacty one guy.
      * A consistent level has a state which does not depend on the direction in which it is propogated
      */
-	TimeEngine(unsigned int timeLineLength,
+	TimeEngine(unsigned int speedOfTime,
+               unsigned int timeLineLength,
                ::std::vector< ::std::vector<bool> > wallmap,
                int newWallSize,
                int newGravity,
@@ -53,7 +54,7 @@ public:
     ObjectList getPostPhysics(NewFrameID whichFrame) const;
 private:
     void executeWorld(WorldState& currentState) const;
-
+    unsigned int speedOfTime;
     //state of world at end of last executed frame
     WorldState worldState;
 };

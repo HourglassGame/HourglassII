@@ -9,31 +9,45 @@ namespace hg
         public:
             PlatformDestination(
                     int nx,
+                    int nxspeed,
+                    int nxaccel,
+                    int nxdeccel,
                     int ny,
-                    int nspeed,
-                    int naccel,
-                    int ndeccel) :
+                    int nyspeed,
+                    int nyaccel,
+                    int nydeccel) :
             x(nx),
+            xspeed(nxspeed),
+            xaccel(nxaccel),
+            xdeccel(nxdeccel),
+
             y(ny),
-            speed(nspeed),
-            accel(naccel),
-            deccel(ndeccel)
+            yspeed(nyspeed),
+            yaccel(nyaccel),
+            ydeccel(nydeccel)
             {
             }
 
             int getX() const {return x;}
+            int getXspeed() const {return xspeed;}
+            int getXaccel() const {return xaccel;}
+            int getXdeccel() const {return xdeccel;}
+
             int getY() const {return y;}
-            int getSpeed() const {return speed;}
-            int getAccel() const {return accel;}
-            int getDeccel() const {return deccel;}
+            int getYspeed() const {return yspeed;}
+            int getYaccel() const {return yaccel;}
+            int getYdeccel() const {return ydeccel;}
 
         private:
             int x;
+            int xspeed;
+            int xaccel;
+            int xdeccel;
+
             int y;
-            int speed;
             int yspeed;
-            int accel;
-            int deccel;
+            int yaccel;
+            int ydeccel;
     };
 }
 

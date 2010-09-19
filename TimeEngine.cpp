@@ -17,7 +17,8 @@ using namespace ::std;
 using namespace ::hg;
 using namespace ::boost;
 
-TimeEngine::TimeEngine(unsigned int timeLineLength,
+TimeEngine::TimeEngine(unsigned int nspeedOfTime,
+                       unsigned int timeLineLength,
                        vector<vector<bool> > wallmap,
                        int newWallSize,
                        int newGravity,
@@ -25,6 +26,7 @@ TimeEngine::TimeEngine(unsigned int timeLineLength,
                        NewFrameID guyStartTime,
                        AttachmentMap nAttachmentMap,
                        TriggerSystem nTriggerSystem) :
+speedOfTime(nspeedOfTime),
 worldState(TimelineState(timeLineLength),
                 timeLineLength,
                 guyStartTime,
@@ -43,7 +45,6 @@ tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNex
     worldState.addNewInputData(newInputData);
 
     FrameListList updatedList;
-    unsigned const int speedOfTime = 3; // speed at which waves propagate in frames per step.
     for (unsigned int i = 0; i < speedOfTime; ++i) {
         updatedList.push_back(worldState.executeWorld());
     }
