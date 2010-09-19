@@ -27,7 +27,7 @@ public:
 
 	NewFrameID getFrameIdParam(int param) const
     {
-        if (param >= 0 and param < frameIdParamCount)
+        if (param >= 0 && param < frameIdParamCount)
         {
             return frameIdParams;
         }

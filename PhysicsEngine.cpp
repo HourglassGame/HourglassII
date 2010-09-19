@@ -181,11 +181,11 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 int boxYspeed = nextBox[j].box.getYspeed();
                 int boxSize = nextBox[j].box.getSize();
                 TimeDirection boxDirection = nextBox[j].box.getTimeDirection();
-                if (x[i] <= boxX+boxSize and x[i]+width >= boxX)
+                if (x[i] <= boxX+boxSize && x[i]+width >= boxX)
                 {
                     if (boxDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE)
                     {
-                        if (newY+height >= boxY-boxYspeed and newY+height-yspeed[i] <= boxY)
+                        if (newY+height >= boxY-boxYspeed && newY+height-yspeed[i] <= boxY)
                         {
                             newY = boxY-height-boxYspeed;
                             xspeed[i] = -boxXspeed;
@@ -195,7 +195,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                     }
                     else
                     {
-                        if (newY+height >= boxY and newY-yspeed[i]+height <= boxY-boxYspeed)
+                        if (newY+height >= boxY && newY-yspeed[i]+height <= boxY-boxYspeed)
                         {
                             newY = boxY-height;
                             xspeed[i] = boxXspeed;
@@ -687,16 +687,16 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
                 else
                 {
                     // if the platform can still stop if it fully accelerates
-                    if (abs(x - pd[i].getX()) > ((int)pow(xspeed - direction*pd[i].getXaccel(),2))*3/(2*pd[i].getXdeccel()))
+                    if (abs(x - pd[i].getX()) > ((int)pow((double)xspeed - direction*pd[i].getXaccel(),2))*3/(2*pd[i].getXdeccel()))
                     {
                         // fully accelerate
                         xspeed -= direction*pd[i].getXaccel();
                     }
                     // if the platform can stop if it doesn't accelerate
-                    else if (abs(x - pd[i].getX()) > ((int)pow(xspeed,2))*3/(2*pd[i].getXdeccel()))
+                    else if (abs(x - pd[i].getX()) > ((int)pow((double)xspeed,2))*3/(2*pd[i].getXdeccel()))
                     {
                         // set speed to required speed
-                        xspeed = -direction*floor(sqrt(abs(x - pd[i].getX())*pd[i].getXdeccel()*2/3));
+                        xspeed = -direction*floor(sqrt((double)abs(x - pd[i].getX())*pd[i].getXdeccel()*2/3));
                     }
                     else
                     {
@@ -746,16 +746,16 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
                 else
                 {
                     // if the platform can still stop if it fully accelerates
-                    if (abs(y - pd[i].getY()) > ((int)pow(yspeed - direction*pd[i].getYaccel(),2))*3/(2*pd[i].getYdeccel()))
+                    if (abs(y - pd[i].getY()) > ((int)pow((double)yspeed - direction*pd[i].getYaccel(),2))*3/(2*pd[i].getYdeccel()))
                     {
                         // fully accelerate
                         yspeed -= direction*pd[i].getYaccel();
                     }
                     // if the platform can stop if it doesn't accelerate
-                    else if (abs(y - pd[i].getY()) > ((int)pow(yspeed,2))*3/(2*pd[i].getYdeccel()))
+                    else if (abs(y - pd[i].getY()) > ((int)pow((double)yspeed,2))*3/(2*pd[i].getYdeccel()))
                     {
                         // set speed to required speed
-                        yspeed = -direction*floor(sqrt(abs(y - pd[i].getY())*pd[i].getYdeccel()*2/3));
+                        yspeed = -direction*floor(sqrt((double)abs(y - pd[i].getY())*pd[i].getYdeccel()*2/3));
                     }
                     else
                     {

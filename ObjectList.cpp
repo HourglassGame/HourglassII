@@ -113,7 +113,7 @@ MutableObjectList& MutableObjectList::operator=(const MutableObjectList& other)
 void MutableObjectList::makeUnique()
 {
     if (!data_.unique()) {
-        data_ = shared_ptr<ObjectListData>(new ObjectListData(*data_));
+        data_ = boost::shared_ptr<ObjectListData>(new ObjectListData(*data_));
     }
 }
 

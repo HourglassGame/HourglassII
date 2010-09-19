@@ -60,7 +60,7 @@ namespace hg {
                  int nyspeed,
                  int nwidth,
                  int nheight,
-                 int nsupported,
+                 bool nsupported,
 
                  bool nboxCarrying,
                  int nboxCarrySize,
