@@ -28,7 +28,7 @@ public:
      * This should only be called once.
      */
      //Consider moving this into constructor
-    void setArrivalsFromPermanentDepartureFrame(const TimeObjectListList& initialArrivals);
+    void addArrivalsFromPermanentDepartureFrame(const TimeObjectListList& initialArrivals);
 
     /*****************************************************
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.

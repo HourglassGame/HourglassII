@@ -34,10 +34,7 @@ worldState(TimelineState(timeLineLength),
                 initialObjects)
 
 {
-    //** run level for a while
-    for (unsigned int i = 0; i < timeLineLength; ++i) {
-        worldState.executeWorld();
-    }
+
 }
 
 tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)

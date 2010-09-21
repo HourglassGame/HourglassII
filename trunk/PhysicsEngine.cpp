@@ -817,7 +817,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
 	    if (attachments[i].get<0>() != -1)
 	    {
 	        int pid = attachments[i].get<0>();
-
+/*
 	        if (nextPlatform[pid].getTimeDirection()*oldButtonList[i].getTimeDirection() == hg::FORWARDS)
 	        {
 	            x = nextPlatform[pid].getX()+attachments[i].get<1>();
@@ -827,7 +827,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
 	        {
 	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[i].get<1>();
                 y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[i].get<2>();
-	        }
+	        }*/
 	    }
 
 	    bool state = false;

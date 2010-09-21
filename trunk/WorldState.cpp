@@ -1,5 +1,7 @@
 #include "WorldState.h"
 #include "DepartureMap.h"
+#include <iostream>
+
 using namespace ::hg;
 using namespace ::std;
 
@@ -17,7 +19,41 @@ frameUpdateSet_(),
 physics_(physics)
 {
     assert(nextPlayerFrame_.isValidFrame());
-    map<NewFrameID, MutableObjectList> initialArrivalMap;
+    map<NewFrameID, MutableObjectList> initialPlatformArrivalMap;
+
+    for (vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
+         end(initialObjects.getPlatformListRef().end()); it != end; ++it)
+    {
+        if (it->getTimeDirection() == FORWARDS) {
+            initialPlatformArrivalMap[NewFrameID(0, timelineLength)].addPlatform(*it);
+        }
+        else {
+            initialPlatformArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addPlatform(*it);
+        }
+    }
+
+    TimeObjectListList initialPlatformArrivals;
+
+    for (map<NewFrameID, MutableObjectList>::iterator it(initialPlatformArrivalMap.begin()),
+                                                    end(initialPlatformArrivalMap.end());
+                                                        it != end;
+                                                        ++it) {
+        //Consider adding insertObjectList overload which can take aim for massively increased efficiency
+        initialPlatformArrivals.insertObjectList(it->first, ObjectList(it->second));
+    }
+
+    timeline_.addArrivalsFromPermanentDepartureFrame(initialPlatformArrivals);
+    cout << "1" << endl;
+    frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
+    frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
+
+    //** run level for a while
+    for (unsigned int i = 0; i < timelineLength; ++i) {
+        executeWorld();
+    }
+
+     map<NewFrameID, MutableObjectList> initialArrivalMap;
+
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
@@ -40,22 +76,11 @@ physics_(physics)
         }
     }
 
-    for (vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
-         end(initialObjects.getPlatformListRef().end()); it != end; ++it)
-    {
-        if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[NewFrameID(0, timelineLength)].addPlatform(*it);
-        }
-        else {
-            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addPlatform(*it);
-        }
-    }
+    TimeObjectListList initialArrivals;
 
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
     initialArrivalMap[guyStartTime].addGuy(initialObjects.getGuyListRef().at(0));
-
-    TimeObjectListList initialArrivals;
 
     for (map<NewFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
                                                     end(initialArrivalMap.end());
@@ -65,10 +90,15 @@ physics_(physics)
         initialArrivals.insertObjectList(it->first, ObjectList(it->second));
     }
 
-    timeline_.setArrivalsFromPermanentDepartureFrame(initialArrivals);
+    timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
 
     frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
     frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
+
+    //** run level for a while
+    for (unsigned int i = 0; i < timelineLength; ++i) {
+        executeWorld();
+    }
 }
 
 TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame& frame)
