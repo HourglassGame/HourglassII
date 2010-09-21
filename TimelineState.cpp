@@ -52,7 +52,7 @@ TimelineState::Frame TimelineState::getFrame(NewFrameID whichFrame) const
     return Frame(*this, whichFrame);
 }
 
-void TimelineState::setArrivalsFromPermanentDepartureFrame(const TimeObjectListList& initialArrivals)
+void TimelineState::addArrivalsFromPermanentDepartureFrame(const TimeObjectListList& initialArrivals)
 {
     for (TimeObjectListList::const_iterator it(initialArrivals.begin()), end(initialArrivals.end()); it != end; ++it) {
         arrivals[it->first].insertObjectList(NewFrameID(), it->second);
