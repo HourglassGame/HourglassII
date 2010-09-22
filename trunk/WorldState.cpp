@@ -136,9 +136,13 @@ ObjectList WorldState::getPostPhysics(NewFrameID whichFrame) const
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
-    assert(nextPlayerFrame_.isValidFrame());
-    frameUpdateSet_.addFrame(nextPlayerFrame_);
-    //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
+    if (nextPlayerFrame_.isValidFrame()) {
+        frameUpdateSet_.addFrame(nextPlayerFrame_);
+        //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
+    }
+    currentPlayerDirection_ = INVALID;
+    currentPlayerFrame_ = NewFrameID();
+    nextPlayerFrame_ = NewFrameID();
 }
 
 NewFrameID WorldState::getCurrentPlayerFrame() const

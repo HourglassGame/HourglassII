@@ -395,7 +395,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             // add departure for guy at the appropriate time
             TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
             NewFrameID nextTime(time.nextFrame(nextTimeDirection));
-            assert(nextTime.isValidFrame());
             assert(time.isValidFrame());
             if (input.getAbility() == hg::TIME_JUMP)
             {
@@ -414,7 +413,6 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 currentPlayerFrame = time;
                 nextPlayerFrame = nextTime;
                 //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "\n";
-                assert(nextPlayerFrame.isValidFrame());
             }
 
             if (nextTime.isValidFrame())
@@ -659,7 +657,7 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
                                  const NewFrameID& time) const
 {
 
-    for (int i = 0; i < oldPlatformList.size(); ++i)
+    for (unsigned int i = 0; i < oldPlatformList.size(); ++i)
     {
         int x = oldPlatformList[i].getX();
 		int y = oldPlatformList[i].getY();
@@ -688,16 +686,16 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
                 else
                 {
                     // if the platform can still stop if it fully accelerates
-                    if (abs(x - pd[i].getX()) > ((int)pow((double)xspeed - direction*pd[i].getXaccel(),2))*3/(2*pd[i].getXdeccel()))
+                    if (abs(x - pd[i].getX()) > ((int)(pow((double)(xspeed - direction*pd[i].getXaccel()),2))*3/(2*pd[i].getXdeccel())))
                     {
                         // fully accelerate
                         xspeed -= direction*pd[i].getXaccel();
                     }
                     // if the platform can stop if it doesn't accelerate
-                    else if (abs(x - pd[i].getX()) > ((int)pow((double)xspeed,2))*3/(2*pd[i].getXdeccel()))
+                    else if (abs(x - pd[i].getX()) > ((int)(pow((double)(xspeed),2))*3/(2*pd[i].getXdeccel())))
                     {
                         // set speed to required speed
-                        xspeed = -direction*floor(sqrt((double)abs(x - pd[i].getX())*pd[i].getXdeccel()*2/3));
+                        xspeed = -direction*(int)(floor((double)(abs(x - pd[i].getX())*pd[i].getXdeccel()*2/3)));
                     }
                     else
                     {
@@ -756,7 +754,7 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
                     else if (abs(y - pd[i].getY()) > ((int)pow((double)yspeed,2))*3/(2*pd[i].getYdeccel()))
                     {
                         // set speed to required speed
-                        yspeed = -direction*floor(sqrt((double)abs(y - pd[i].getY())*pd[i].getYdeccel()*2/3));
+                        yspeed = -direction*(int)floor(sqrt((double)abs(y - pd[i].getY())*pd[i].getYdeccel()*2/3));
                     }
                     else
                     {
@@ -817,7 +815,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
 
 	    if (attachments[i].get<0>() != -1)
 	    {
-	        int pid = attachments[i].get<0>();
+	   //     int pid = attachments[i].get<0>();
 /*
 	        if (nextPlatform[pid].getTimeDirection()*oldButtonList[i].getTimeDirection() == hg::FORWARDS)
 	        {
@@ -838,7 +836,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
             state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldBoxList[j].getX(), oldBoxList[j].getY(), oldBoxList[j].getSize(), oldBoxList[j].getSize(), true);
         }
 
-         for (unsigned int j = 0; !state && j < oldGuyList.size(); ++j)
+        for (unsigned int j = 0; !state && j < oldGuyList.size(); ++j)
         {
             state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldGuyList[j].getX(), oldGuyList[j].getY(), oldGuyList[j].getWidth(), oldGuyList[j].getHeight(), true);
         }
