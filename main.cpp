@@ -16,6 +16,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <cmath>
+
 #define foreach BOOST_FOREACH
 using namespace ::hg;
 using namespace ::std;
@@ -42,42 +44,44 @@ namespace {
 ////////////////////////////////////////////////////////////
 int main()
 {
-    RenderWindow App(VideoMode(640, 480), "Hourglass II");
-    App.UseVerticalSync(true);
-    App.SetFramerateLimit(60);
+    RenderWindow app(VideoMode(640, 480), "Hourglass II");
+    app.UseVerticalSync(true);
+    app.SetFramerateLimit(60);
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
 
     ::hg::Input input;
-    while (App.IsOpened())
+    while (app.IsOpened())
     {
         Event event;
-        while (App.GetEvent(event))
+        while (app.GetEvent(event))
         {
             switch (event.Type) {
                 case sf::Event::Closed:
-                    App.Close();
+                    app.Close();
                     break;
                 default:
                     break;
             }
         }
 
-        input.updateState(App.GetInput());
-        cout << "called from main" << endl;
+        input.updateState(app.GetInput());
+        //cout << "called from main" << endl;
         tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-        Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall, waveInfo.get<2>());
-        DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
+        
+        
+        Draw(app, timeEngine.getPostPhysics(waveInfo.get<0>().isValidFrame()?waveInfo.get<0>():NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800)), wall, waveInfo.get<2>());
+        DrawTimeline(app, waveInfo.get<1>(), waveInfo.get<0>());
 
         {
             stringstream fpsstring;
-            fpsstring << (1./App.GetFrameTime());
+            fpsstring << (1./app.GetFrameTime());
             sf::String fpsglyph(fpsstring.str());
             fpsglyph.SetPosition(600, 465);
             fpsglyph.SetSize(8.f);
-            App.Draw(fpsglyph);
+            app.Draw(fpsglyph);
         }
-        App.Display();
+        app.Display();
     }
     return EXIT_SUCCESS;
 }
@@ -280,13 +284,13 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFra
             }
         }
     }
-    assert(playerFrame.isValidFrame());
-
-    target.Draw(Shape::Rectangle((playerFrame.frame()/10800.f)*640-1,
+    if(playerFrame.isValidFrame()) {
+        target.Draw(Shape::Rectangle((playerFrame.frame()/10800.f)*640-1,
                                              10,
                                              (playerFrame.frame()/10800.f)*640+2,
                                              25,
                                              Color(200,200,0)));
+    }
 }
 
 vector<vector<bool> > MakeWall()
