@@ -97,6 +97,11 @@ MutableObjectList::~MutableObjectList()
 {
 }
 
+MutableObjectList::MutableObjectList(const ObjectList& other) :
+data_(other.data_)
+{
+}
+
 MutableObjectList::MutableObjectList(const MutableObjectList& other) :
 data_(other.data_)
 {

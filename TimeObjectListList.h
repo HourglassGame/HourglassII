@@ -15,6 +15,10 @@ public:
     
     void insertObjectList(const NewFrameID& time, const ObjectList& newObjectList);
     
+    //puts into time a new Object list which contains all the objects in newObjectList
+    //and all the objects already in the list at that time
+    void addObjectList(const NewFrameID& time, const ObjectList& newObjectList);
+    
     bool operator==(const TimeObjectListList& other) const;
     bool operator!=(const TimeObjectListList& other) const;
     
