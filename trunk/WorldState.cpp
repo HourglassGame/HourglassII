@@ -18,6 +18,7 @@ playerInput_(),
 frameUpdateSet_(),
 physics_(physics)
 {
+    
     assert(nextPlayerFrame_.isValidFrame());
     map<NewFrameID, MutableObjectList> initialPlatformArrivalMap;
 
@@ -43,7 +44,6 @@ physics_(physics)
     }
 
     timeline_.addArrivalsFromPermanentDepartureFrame(initialPlatformArrivals);
-    cout << "1" << endl;
     frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
     frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
 
@@ -52,7 +52,7 @@ physics_(physics)
         executeWorld();
     }
 
-     map<NewFrameID, MutableObjectList> initialArrivalMap;
+    map<NewFrameID, MutableObjectList> initialArrivalMap;
 
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
@@ -114,12 +114,14 @@ TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame
 
 FrameUpdateSet WorldState::executeWorld()
 {
+    //cout << "executeWorld\n";
     FrameUpdateSet returnSet(frameUpdateSet_);
     DepartureMap changedFrames;
     changedFrames.reserve(frameUpdateSet_.size());
     for (FrameUpdateSet::const_iterator it(frameUpdateSet_.begin()),
          end(frameUpdateSet_.end()); it != end; ++it)
     {
+    //    cout << "executing frame: " << it->frame() << "\n";
         changedFrames.addDeparture(*it, getDeparturesFromFrame(timeline_.getFrame(*it)));
     }
     frameUpdateSet_ = timeline_.updateWithNewDepartures(changedFrames);
@@ -136,6 +138,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
     playerInput_.push_back(newInputData);
     assert(nextPlayerFrame_.isValidFrame());
     frameUpdateSet_.addFrame(nextPlayerFrame_);
+    //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
 }
 
 NewFrameID WorldState::getCurrentPlayerFrame() const

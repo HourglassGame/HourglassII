@@ -1,4 +1,5 @@
 #include "TimeObjectListList.h"
+#include "ObjectList.h"
 using namespace ::hg;
 
 TimeObjectListList::TimeObjectListList() :
@@ -15,6 +16,13 @@ void TimeObjectListList::setObjectList(const NewFrameID& time, const ObjectList&
 void TimeObjectListList::insertObjectList(const NewFrameID& time, const ObjectList& newObjectList)
 {
     list_.insert(ListType::value_type(time,newObjectList));
+}
+
+void TimeObjectListList::addObjectList(const NewFrameID& time, const ObjectList& newObjectList)
+{
+    MutableObjectList sum(newObjectList);
+    sum.add(list_[time]);
+    list_[time] = ObjectList(sum);
 }
 
 void TimeObjectListList::clearTime(NewFrameID time)

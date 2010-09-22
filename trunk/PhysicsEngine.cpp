@@ -413,6 +413,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 currentPlayerDirection = oldGuyList[i].getTimeDirection();
                 currentPlayerFrame = time;
                 nextPlayerFrame = nextTime;
+                //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "\n";
                 assert(nextPlayerFrame.isValidFrame());
             }
 

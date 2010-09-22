@@ -45,6 +45,7 @@ class MutableObjectList {
 public:
     MutableObjectList();
     ~MutableObjectList();
+    MutableObjectList(const ObjectList& other);
     MutableObjectList(const MutableObjectList& other);
     MutableObjectList& operator=(const MutableObjectList& other);
 

@@ -64,7 +64,7 @@ int main()
         }
 
         input.updateState(App.GetInput());
-        //cout << "called from main" << endl;
+        cout << "called from main" << endl;
         tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
         Draw(App, timeEngine.getPostPhysics(waveInfo.get<0>()), wall, waveInfo.get<2>());
         DrawTimeline(App, waveInfo.get<1>(), waveInfo.get<0>());
@@ -265,19 +265,19 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFra
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
     foreach(const FrameUpdateSet& lists, waves) {
         foreach (NewFrameID frame, lists) {
-        if (frame.isValidFrame()) {
-            if (!pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)]) {
-                target.Draw(Shape::Rectangle((frame.frame()/10800.f)*640,
-                                             10,
-                                             (frame.frame()/10800.f)*640+1,
-                                             25,
-                                             Color(250,0,0)));
-                pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)] = true;
+            if (frame.isValidFrame()) {
+                if (!pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)]) {
+                    target.Draw(Shape::Rectangle((frame.frame()/10800.f)*640,
+                                                10,
+                                                (frame.frame()/10800.f)*640+1,
+                                                25,
+                                                Color(250,0,0)));
+                    pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)] = true;
+                }
             }
-        }
-        else {
-            assert(false && "I don't think that invalid frames can get updated");
-        }
+            else {
+                assert(false && "I don't think that invalid frames can get updated");
+            }
         }
     }
     assert(playerFrame.isValidFrame());
@@ -366,6 +366,4 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     AttachmentMap(::std::vector< ::boost::tuple<int, int, int> >(1, ::boost::tuple<int, int, int>(0,3200,-800))),
     TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(38400,0,0,0,32000,300,50,50)), ::std::vector<PlatformDestination>(1, PlatformDestination(38400,0,0,0,43800,300,20,20))));
 }
-
-
 }
