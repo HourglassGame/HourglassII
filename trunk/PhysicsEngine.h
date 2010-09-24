@@ -28,7 +28,8 @@ public:
                                         const ::std::vector<InputList>& playerInput,
                                         NewFrameID& currentPlayerFrame,
                                         TimeDirection& currentPlayerDirection,
-                                        NewFrameID& nextPlayerFrame) const;
+                                        NewFrameID& nextPlayerFrame,
+                                        NewFrameID& winFrame) const;
 
 private:
     struct BoxInfo {

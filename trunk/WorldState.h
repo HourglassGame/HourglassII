@@ -59,6 +59,8 @@ namespace hg {
         FrameUpdateSet frameUpdateSet_;
         //stores the physical properties of the world and uses them to turn arrivals into departures
         PhysicsEngine physics_;
+        //holds the frame in which the player won, or nullFrame if the player has not won at all.
+        NewFrameID currentWinFrame_;
     };
 }
 #endif //HG_WORLD_STATE_H
