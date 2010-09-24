@@ -15,7 +15,8 @@ currentPlayerFrame_(),
 currentPlayerDirection_(INVALID),/*filler*/
 playerInput_(),
 frameUpdateSet_(),
-physics_(physics)
+physics_(physics),
+currentWinFrame_()
 {
     
     assert(nextPlayerFrame_.isValidFrame());
@@ -102,12 +103,16 @@ physics_(physics)
 
 TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame& frame)
 {
+    if (frame.getTime() == currentWinFrame_) {
+        currentWinFrame_ == NewFrameID();
+    }
     return physics_.executeFrame(frame.getPrePhysics(),
                                  frame.getTime(),
                                  playerInput_,
                                  currentPlayerFrame_,
                                  currentPlayerDirection_,
-                                 nextPlayerFrame_);
+                                 nextPlayerFrame_,
+                                 currentWinFrame_);
 }
 
 

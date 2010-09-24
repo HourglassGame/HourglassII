@@ -143,7 +143,6 @@ void DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& 
                 Color(0,255,0))
             );
         }
-
     }
 }
 
@@ -359,8 +358,8 @@ vector<vector<bool> > MakeWall()
 TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
-    //newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
-    //newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
+    newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS));
+    newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS));
     newObjectList.addBox(Box(56400, 15600, 0, 0, 3200, FORWARDS));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, FORWARDS, 0, 0));
     newObjectList.addButton(Button(30400, 44000, 0, 0, 0, false, REVERSE));
