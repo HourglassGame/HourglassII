@@ -8,9 +8,8 @@
 #include <iostream>
 
 using namespace ::std;
-using namespace ::hg;
 using namespace ::boost;
-
+namespace hg {
 // ------------ ObjectList functions ---------------
 ObjectList::ObjectList() :
 data_(new ObjectListData())
@@ -157,3 +156,4 @@ void MutableObjectList::add(const ObjectList& other)
     makeUnique();
     data_->add(*other.data_);
 }
+}//namespace hg

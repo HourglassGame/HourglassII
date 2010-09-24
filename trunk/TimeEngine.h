@@ -59,5 +59,4 @@ private:
     WorldState worldState;
 };
 }
-
 #endif //HG_TIME_ENGINE_H

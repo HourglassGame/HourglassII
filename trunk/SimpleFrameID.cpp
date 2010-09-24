@@ -3,7 +3,7 @@
 #include <boost/functional/hash.hpp>
 
 #include <limits>
-using namespace ::hg;
+namespace hg {
 SimpleFrameID::SimpleFrameID() :
 frame_(::std::numeric_limits<unsigned int>::max()),
 timelineLength_(0)
@@ -68,10 +68,11 @@ bool SimpleFrameID::isValidFrame() const
     return true;
 }
 
-::std::size_t hg::hash_value(const SimpleFrameID& toHash)
+::std::size_t hash_value(const SimpleFrameID& toHash)
 {
     ::std::size_t seed(0);
     ::boost::hash_combine(seed, toHash.frame_);
     ::boost::hash_combine(seed, toHash.timelineLength_);
     return seed;
 }
+}//namespace hg

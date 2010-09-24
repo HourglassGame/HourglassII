@@ -1,7 +1,6 @@
 #include "TimeObjectListList.h"
 #include "ObjectList.h"
-using namespace ::hg;
-
+namespace hg {
 TimeObjectListList::TimeObjectListList() :
 list_()
 {
@@ -51,3 +50,4 @@ ObjectList TimeObjectListList::getFlattenedVersion() const
     
 	return ObjectList(returnList);
 }
+}//namespace hg

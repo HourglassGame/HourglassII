@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <iostream>
-using namespace ::hg;
 
+namespace hg {
 Platform::Platform(int nX,
          int nY,
          int nXspeed,
@@ -66,4 +66,5 @@ bool Platform::operator==(const Platform& other) const
 bool Platform::operator<(const Platform& other) const
 {
     return data->index < other.data->index;
+}
 }

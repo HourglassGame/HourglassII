@@ -1,8 +1,9 @@
 #include "ObjectListData.h"
 #include <algorithm>
 #include <cassert>
-using namespace ::hg;
+
 using namespace ::std;
+namespace hg {
 ObjectListData::ObjectListData() :
 guyList(),
 boxList(),
@@ -48,3 +49,4 @@ void ObjectListData::add(const ObjectListData& other)
     buttonList.insert(buttonList.end(),other.buttonList.begin(),other.buttonList.end());
     platformList.insert(platformList.end(),other.platformList.begin(),other.platformList.end());
 }
+}//namespace hg

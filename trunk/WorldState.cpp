@@ -2,9 +2,8 @@
 #include "DepartureMap.h"
 #include <iostream>
 
-using namespace ::hg;
 using namespace ::std;
-
+namespace hg {
 WorldState::WorldState(const TimelineState& timeline,
                        unsigned int timelineLength,
                        NewFrameID guyStartTime,
@@ -154,3 +153,4 @@ TimeDirection WorldState::getCurrentPlayerDirection() const
 {
     return currentPlayerDirection_;
 }
+}//namespace hg

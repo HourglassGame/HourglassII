@@ -1,7 +1,6 @@
 #include "Box.h"
 
-using namespace ::hg;
-
+namespace hg {
 Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection) :
 referenceCount(new int(1)),
 data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection))
@@ -105,3 +104,4 @@ bool Box::operator<(const Box& other) const
         return false;
     }
 }
+}//namespace hg

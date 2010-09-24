@@ -8,8 +8,7 @@
 #include <iostream>
 
 using namespace ::std;
-using namespace ::hg;
-
+namespace hg {
 typedef TimeObjectListList::ListType::const_iterator Iterator;
 
 TimelineState::TimelineState(unsigned int timeLength) :
@@ -72,29 +71,29 @@ FrameUpdateSet TimelineState::updateDeparturesFromTime(const NewFrameID time, co
     while (oi != oend) {
         while (true) {
             if (ni != nend) {
-                if ((*ni).first < (*oi).first) {
-                    arrivals.at((*ni).first).insertObjectList(time, (*ni).second);
-                    changedTimes.addFrame((*ni).first);
+                if (ni->first < oi->first) {
+                    arrivals.at(ni->first).insertObjectList(time, ni->second);
+                    changedTimes.addFrame(ni->first);
                     ++ni;
                 }
-                else if ((*ni).first == (*oi).first) {
-                    if ((*ni).second != (*oi).second) {
-                        arrivals[(*ni).first].setObjectList(time, (*ni).second);
-                        changedTimes.addFrame((*ni).first);
+                else if (ni->first == oi->first) {
+                    if (ni->second != oi->second) {
+                        arrivals[ni->first].setObjectList(time, ni->second);
+                        changedTimes.addFrame(ni->first);
                     }
                     ++ni;
                     break;
                 }
                 else {
-                    arrivals[(*oi).first].clearTime(time);
-                    changedTimes.addFrame((*oi).first);
+                    arrivals[oi->first].clearTime(time);
+                    changedTimes.addFrame(oi->first);
                     break;
                 }
             }
             else {
                 while (oi != oend) {
-                    arrivals[(*oi).first].clearTime(time);
-                    changedTimes.addFrame((*oi).first);
+                    arrivals[oi->first].clearTime(time);
+                    changedTimes.addFrame(oi->first);
                     ++oi;
                 }
                 goto end;
@@ -103,8 +102,8 @@ FrameUpdateSet TimelineState::updateDeparturesFromTime(const NewFrameID time, co
         ++oi;
     }
     while (ni != nend) {
-        arrivals[(*ni).first].insertObjectList(time, (*ni).second);
-        changedTimes.addFrame((*ni).first);
+        arrivals[ni->first].insertObjectList(time, ni->second);
+        changedTimes.addFrame(ni->first);
         ++ni;
     }
 end:
@@ -133,3 +132,4 @@ ObjectList TimelineState::getPrePhysics(NewFrameID time) const
         return ObjectList();
     }
 }
+}//namespace hg

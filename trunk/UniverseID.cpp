@@ -3,22 +3,21 @@
 
 #include <boost/functional/hash.hpp>
 
-using namespace ::hg;
 using namespace ::std;
-
+namespace hg {
 SubUniverse::SubUniverse(unsigned int initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
 initiatorFrame_(initiatorFrame),
 pauseInitiatorID_(pauseInitiatorID)
 {
 }
 
-bool ::hg::operator==(const SubUniverse& lhs, const SubUniverse& rhs)
+bool operator==(const SubUniverse& lhs, const SubUniverse& rhs)
 {
     return lhs.initiatorFrame_ == rhs.initiatorFrame_ 
             && lhs.pauseInitiatorID_ == rhs.pauseInitiatorID_;
 }
 
-bool ::hg::operator<(const SubUniverse& lhs, const SubUniverse& rhs)
+bool operator<(const SubUniverse& lhs, const SubUniverse& rhs)
 {
     if (lhs.initiatorFrame_ == rhs.initiatorFrame_) {
         return lhs.pauseInitiatorID_ < rhs.pauseInitiatorID_;
@@ -28,7 +27,7 @@ bool ::hg::operator<(const SubUniverse& lhs, const SubUniverse& rhs)
     }
 }
 
-::std::size_t hg::hash_value(const SubUniverse& toHash)
+::std::size_t hash_value(const SubUniverse& toHash)
 {
     size_t seed(0);
     ::boost::hash_combine(seed, toHash.initiatorFrame_);
@@ -103,10 +102,12 @@ UniverseID UniverseID::getSubUniverse(const SubUniverse& newestNest) const
     return UniverseID(timelineLength_, newNestTrain);
 }
 
-::std::size_t hg::hash_value(const UniverseID& toHash)
+::std::size_t hash_value(const UniverseID& toHash)
 {
     size_t seed(0);
     ::boost::hash_combine(seed, toHash.timelineLength_);
     ::boost::hash_combine(seed, toHash.nestTrain_);
     return seed;
 }
+}
+
