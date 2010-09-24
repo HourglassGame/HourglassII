@@ -5,7 +5,7 @@
 #include <limits>
 #include <cassert>
 
-using namespace ::hg;
+namespace hg {
 
 NewFrameID::NewFrameID() :
 frame_(::std::numeric_limits<unsigned int>::max()),
@@ -96,10 +96,11 @@ bool NewFrameID::isValidFrame() const
     return true;
 }
 
-::std::size_t hg::hash_value(const NewFrameID& toHash)
+::std::size_t hash_value(const NewFrameID& toHash)
 {
     ::std::size_t seed(0);
     ::boost::hash_combine(seed, toHash.frame_);
     ::boost::hash_combine(seed, toHash.universe_);
     return seed;
+}
 }

@@ -4,19 +4,13 @@
 #include "ParadoxException.h"
 #include "ObjectList.h"
 
-#include <boost/foreach.hpp>
-
 #include <iostream>
 #include <cassert>
 #include <algorithm>
 
-#define foreach BOOST_FOREACH
-#define reverse_foreach BOOST_REVERSE_FOREACH
-
 using namespace ::std;
-using namespace ::hg;
 using namespace ::boost;
-
+namespace hg {
 TimeEngine::TimeEngine(unsigned int nspeedOfTime,
                        unsigned int timeLineLength,
                        vector<vector<bool> > wallmap,
@@ -52,3 +46,4 @@ ObjectList TimeEngine::getPostPhysics(NewFrameID whichFrame) const
 {
     return worldState.getPostPhysics(whichFrame);
 }
+}//namespace hg

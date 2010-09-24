@@ -1,7 +1,6 @@
 #include "Guy.h"
 
-using namespace ::hg;
-
+namespace hg{
 Guy::Guy(int nX,
          int nY,
          int nXspeed,
@@ -78,3 +77,4 @@ bool Guy::operator<(const Guy& other) const
 {
     return data->relativeIndex < other.data->relativeIndex;
 }
+}//namespace hg

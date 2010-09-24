@@ -1,15 +1,15 @@
 #include "PauseInitiatorID.h"
 #include <boost/functional/hash.hpp>
 
-using namespace ::hg;
-bool ::hg::operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
+namespace hg {
+bool operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
 {
     return lhs.type_ == rhs.type_
         && lhs.ID_ == rhs.ID_
         && lhs.timelineLength_ == rhs.timelineLength_;
 }
 
-bool ::hg::operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
+bool operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
 {
     if (lhs.type_ == rhs.type_) {
         if (lhs.ID_ == rhs.ID_) {
@@ -24,7 +24,7 @@ bool ::hg::operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
     }
 }
 
-::std::size_t hg::hash_value(const PauseInitiatorID& toHash)
+::std::size_t hash_value(const PauseInitiatorID& toHash)
 {
     ::std::size_t seed(0);
     ::boost::hash_combine(seed, toHash.type_);
@@ -32,3 +32,4 @@ bool ::hg::operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
     ::boost::hash_combine(seed, toHash.timelineLength_);
     return seed;
 }
+}//namespace hg

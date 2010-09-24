@@ -5,13 +5,14 @@
 #include "TimeDirection.h"
 
 #include <iostream>
-#include <cassert>
 #include <map>
 #include <vector>
-#include <math.h>
+
+#include <cassert>
+#include <cmath>
 
 using namespace ::std;
-using namespace ::hg;
+namespace hg {
 
 PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap,
                              int newWallSize,
@@ -920,3 +921,4 @@ bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x
         );
     }
 }
+} //namespace hg

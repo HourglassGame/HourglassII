@@ -1,7 +1,6 @@
 #include "Button.h"
 
-using namespace ::hg;
-
+namespace hg {
 Button::Button(int nX, int nY, int nxspeed, int nyspeed, int index, bool state, hg::TimeDirection nTimeDirection) :
 referenceCount(new int(1)),
 data(new Data(nX, nY, nxspeed, nyspeed, index, state, nTimeDirection))
@@ -58,4 +57,5 @@ bool Button::operator==(const Button& other) const
 bool Button::operator<(const Button& other) const
 {
     return data->y < other.data->index;
+}
 }

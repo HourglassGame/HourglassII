@@ -270,7 +270,7 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFra
     foreach(const FrameUpdateSet& lists, waves) {
         foreach (NewFrameID frame, lists) {
             if (frame.isValidFrame()) {
-                if (!pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)]) {
+                if (!pixelsWhichHaveBeenDrawnIn[static_cast<unsigned int> ((frame.frame()/10800.f)*640)]) {
                     target.Draw(Shape::Rectangle((frame.frame()/10800.f)*640,
                                                 10,
                                                 (frame.frame()/10800.f)*640+1,
@@ -366,8 +366,50 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     newObjectList.addButton(Button(30400, 44000, 0, 0, 0, false, REVERSE));
     newObjectList.addPlatform(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS));
 
-    return TimeEngine(3,10800,wall,3200,50,ObjectList(newObjectList),NewFrameID(0,10800),
-    AttachmentMap(::std::vector< ::boost::tuple<int, int, int> >(1, ::boost::tuple<int, int, int>(0,3200,-800))),
-    TriggerSystem(::std::vector<int>(1, 0) , 1, 1, ::std::vector<PlatformDestination>(1, PlatformDestination(38400,0,0,0,32000,300,50,50)), ::std::vector<PlatformDestination>(1, PlatformDestination(38400,0,0,0,43800,300,20,20))));
+    return TimeEngine
+           (
+                3,
+                10800,
+                wall,
+                3200,
+                50,
+                ObjectList(newObjectList),
+                NewFrameID(0,10800),
+                AttachmentMap
+                (
+                    ::std::vector< ::boost::tuple<int, int, int> >(1,::boost::tuple<int, int, int>(0,3200,-800))),
+                    TriggerSystem
+                    (
+                        ::std::vector<int>(1, 0),
+                        1,
+                        1,
+                        ::std::vector<PlatformDestination>
+                        (
+                            1,
+                            PlatformDestination
+                            (
+                                38400,
+                                0,
+                                0,
+                                0,
+                                32000,
+                                300,
+                                50,
+                                50
+                            )
+                        ),
+                        ::std::vector<PlatformDestination>
+                        (
+                            1,
+                            PlatformDestination
+                            (
+                                38400,
+                                0,
+                                0,
+                                0,
+                                43800,
+                                300,
+                                20,
+                                20))));
 }
 }
