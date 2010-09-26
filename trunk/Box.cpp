@@ -1,9 +1,9 @@
 #include "Box.h"
 
 namespace hg {
-Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection) :
+Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection, int nPauseLevel) :
 referenceCount(new int(1)),
-data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection))
+data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection, nPauseLevel))
 {
 }
 
@@ -47,10 +47,11 @@ bool Box::operator==(const Box& other) const
 	return data == other.data ||
         ((data->x == other.data->x)
         && (data->y == other.data->y)
-        && (data->xspeed == other.data->xspeed) 
+        && (data->xspeed == other.data->xspeed)
         && (data->yspeed == other.data->yspeed)
-        && (data->timeDirection == other.data->timeDirection) 
-        && (data->size == other.data->size));
+        && (data->timeDirection == other.data->timeDirection)
+        && (data->size == other.data->size)
+        && (data->pauseLevel == other.data->pauseLevel));
 }
 
 bool Box::operator<(const Box& other) const
@@ -68,7 +69,14 @@ bool Box::operator<(const Box& other) const
                         {
                             if (data->size == other.data->size)
                             {
-                                return false;
+                                if (data->pauseLevel == other.data->pauseLevel)
+                                {
+                                    return false;
+                                }
+                                else
+                                {
+                                    return (data->pauseLevel < other.data->pauseLevel);
+                                }
                             }
                             else
                             {

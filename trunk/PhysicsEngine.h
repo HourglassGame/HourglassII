@@ -42,41 +42,59 @@ private:
         bool supported;
     };
 
+    struct GuyInfo {
+        GuyInfo(Guy nGuy,
+                NewFrameID nTime) :
+        guy(nGuy),
+        time(nTime)
+        {}
+        Guy guy;
+        NewFrameID time;
+    };
+
     void platformStep(const ::std::vector<Platform>& oldPlatformList,
                       ::std::vector<Platform>& nextPlatform,
                       const std::vector<PlatformDestination>& platformDestinations,
-                      ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                       const NewFrameID& time) const;
 
     void buttonChecks(  const ::std::vector<Platform>& oldPlatformList,
                         const ::std::vector<Box>& oldBoxList,
                         const ::std::vector<Guy>& oldGuyList,
                         const ::std::vector<Button>& oldButtonList,
-                        ::std::vector<bool>& nextButton,
+                        ::std::vector<bool>& nextButtonState,
                         NewFrameID time) const;
+
+    void buildDepartures(const ::std::vector<BoxInfo>& nextBox,
+                        const ::std::vector<Platform>& nextPlatform,
+                        const ::std::vector<Button>& nextButton,
+                        const ::std::vector<GuyInfo>& nextGuy,
+                        ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                        const NewFrameID time,
+                        const std::vector<PauseInitiatorID>& pauseTimes
+                        ) const;
 
     void buttonPositionUpdate(
         const ::std::vector<Platform>& nextPlatform,
-        const ::std::vector<bool>& nextButton,
+        const ::std::vector<bool>& nextButtonState,
         const ::std::vector<Button>& oldButtonList,
-        ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+        ::std::vector<Button>& nextButton,
         NewFrameID time
     ) const;
 
 	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
                                         ::std::vector<BoxInfo>& nextBox,
-                                        const ::std::vector<Platform>& nextPlatform,
-                                        const ::std::map<NewFrameID, MutableObjectList>& newDepartures) const;
+                                        const ::std::vector<Platform>& nextPlatform) const;
 
     void guyStep(   const ::std::vector<Guy>& oldGuyList,
                     NewFrameID time,
                     const ::std::vector<InputList>& playerInput,
-                    ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                    ::std::vector<GuyInfo>& nextGuy,
                     ::std::vector<BoxInfo>& nextBox,
                     const ::std::vector<Platform>& nextPlatform,
                     NewFrameID& currentPlayerFrame,
                     NewFrameID& nextPlayerFrame,
-                    TimeDirection& currentPlayerDirection) const;
+                    TimeDirection& currentPlayerDirection,
+                    std::vector<PauseInitiatorID>& pauseTimes) const;
 
 	bool wallAt(int x, int y) const;
 	bool wallAt(int x, int y, int w, int h) const;

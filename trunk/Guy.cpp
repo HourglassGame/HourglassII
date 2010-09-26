@@ -11,13 +11,15 @@ Guy::Guy(int nX,
          bool nBoxCarrying,
          int nBoxCarrySize,
          TimeDirection nBoxCarryDirection,
+         int nBoxPauseLevel,
          TimeDirection nTimeDirection,
+         int nPauseLevel,
          size_t nRelativeIndex,
          int nSubimage) :
 referenceCount(new int(1)),
 data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nSupported,
-              nBoxCarrying,nBoxCarrySize,nBoxCarryDirection,
-              nTimeDirection,nRelativeIndex,nSubimage))
+              nBoxCarrying,nBoxCarrySize,nBoxCarryDirection, nBoxPauseLevel,
+              nTimeDirection,nPauseLevel,nRelativeIndex,nSubimage))
 {
 }
 Guy::Guy(const Guy& other) :
