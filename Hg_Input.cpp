@@ -33,7 +33,8 @@ space(false),
 mouseLeft(0),
 mouseRight(false),
 mouseX(0),
-mouseY(0)
+mouseY(0),
+pause(0)
 {
 }
 
@@ -48,6 +49,7 @@ void Input::updateState(const sf::Input& input)
     updatePress(mouseRight, input.IsMouseButtonDown(sf::Mouse::Right));
     mouseX = input.GetMouseX()*100;
     mouseY = input.GetMouseY()*100;
+    updatePress(pause, input.IsKeyDown(sf::Key::P));
 }
 
 const InputList Input::AsInputList() const
@@ -56,12 +58,16 @@ const InputList Input::AsInputList() const
     {
         return InputList(left, right, up, (down == 1) , space, hg::TIME_JUMP, NewFrameID(mouseX*10800/64000, 10800), 1);
     }
-    else if (mouseRight == 1)
+
+    if (mouseRight == 1)
     {
         return InputList(left, right, up, (down == 1), space, hg::TIME_REVERSE, NewFrameID(), 0);
     }
-    else
+
+    if (pause == 1)
     {
-        return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, NewFrameID(), 0);
+        return InputList(left, right, up, (down == 1), space, hg::PAUSE_TIME, NewFrameID(), 0);
     }
+
+     return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, NewFrameID(), 0);
 }

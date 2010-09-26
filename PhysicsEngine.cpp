@@ -47,7 +47,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	map<NewFrameID, MutableObjectList> newDepartures;
 
     // button state update
-    buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextButtonState, time);
+    buttonChecks(arrivals.getPlatformListRef(), arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextButtonState, time);
 
 	// Trigger system execution
     triggerSystem.getPlatformDestinations(nextButtonState, platformDesinations);
@@ -416,6 +416,11 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 nextTimeDirection *= -1;
                 nextTime = time.nextFrame(nextTimeDirection);
                 carryDirection[i] *= -1;
+            }
+            else if (input.getAbility() == hg::PAUSE_TIME)
+            {
+                PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
+                nextTime = time.entryChildFrame(pauseID, 500, oldGuyList[i].getTimeDirection());
             }
 
             if (playerInput.size() - 1 == relativeIndex)
@@ -857,13 +862,15 @@ void PhysicsEngine::buttonPositionUpdate(
 }
 
 
-void PhysicsEngine::buttonChecks(  const ::std::vector<Box>& oldBoxList,
-                        const ::std::vector<Guy>& oldGuyList,
-                        const ::std::vector<Button>& oldButtonList,
-                        ::std::vector<bool>& nextButton,
-                        NewFrameID time) const
+void PhysicsEngine::buttonChecks(const ::std::vector<Platform>& oldPlatformList,
+                                 const ::std::vector<Box>& oldBoxList,
+                                const ::std::vector<Guy>& oldGuyList,
+                                const ::std::vector<Button>& oldButtonList,
+                                ::std::vector<bool>& nextButton,
+                                NewFrameID time) const
 {
 
+    ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getButtonAttachmentRef();
 
     for (unsigned int i = 0; i < oldButtonList.size(); ++i)
 	{
@@ -872,6 +879,24 @@ void PhysicsEngine::buttonChecks(  const ::std::vector<Box>& oldBoxList,
 	    int w = 3200;
 	    int h = 800;
 	    bool state = false;
+
+	    int index = oldButtonList[i].getIndex();
+
+	    if (attachments[index].get<0>() != -1)
+	    {
+	        int pid = attachments[index].get<0>();
+
+	        if (oldPlatformList[pid].getTimeDirection()*oldButtonList[index].getTimeDirection() == hg::FORWARDS)
+	        {
+	            x = oldPlatformList[pid].getX()+attachments[index].get<1>();
+                y = oldPlatformList[pid].getY()+attachments[index].get<2>();
+	        }
+	        else
+	        {
+	            x = oldPlatformList[pid].getX()-oldPlatformList[pid].getXspeed()+attachments[index].get<1>();
+                y = oldPlatformList[pid].getY()-oldPlatformList[pid].getYspeed()+attachments[index].get<2>();
+	        }
+	    }
 
 	    for (unsigned int j = 0; !state && j < oldBoxList.size(); ++j)
         {
