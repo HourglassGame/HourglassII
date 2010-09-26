@@ -16,7 +16,9 @@ namespace hg {
             bool nBoxCarrying,
             int nBoxCarrySize,
             hg::TimeDirection nBoxCarryDirection,
+            int boxPauseLevel,
             hg::TimeDirection nTimeDirection,
+            int pauseLevel,
             size_t nRelativeIndex,
             int nSubimage);
 
@@ -35,8 +37,10 @@ namespace hg {
         bool getBoxCarrying() const {return data->boxCarrying;}
         int getBoxCarrySize() const {return data->boxCarrySize;}
         TimeDirection getBoxCarryDirection() const {return data->boxCarryDirection;}
+        int getBoxPauseLevel() const {return data->boxPauseLevel;}
 
         TimeDirection getTimeDirection() const {return data->timeDirection;}
+        int getPauseLevel() const {return data->pauseLevel;}
         size_t getRelativeIndex() const {return data->relativeIndex;}
         int getSubimage() const {return data->subimage;}
 
@@ -65,8 +69,10 @@ namespace hg {
                  bool nboxCarrying,
                  int nboxCarrySize,
                  TimeDirection nboxCarryDirection,
+                 int nboxPauseLevel,
 
                  TimeDirection ntimeDirection,
+                 int npauseLevel,
                  size_t nrelativeIndex,
 
                  int nsubimage) :
@@ -81,8 +87,10 @@ namespace hg {
             boxCarrying(nboxCarrying),
             boxCarrySize(nboxCarrySize),
             boxCarryDirection(nboxCarryDirection),
+            boxPauseLevel(nboxPauseLevel),
 
             timeDirection(ntimeDirection),
+            pauseLevel(npauseLevel),
             relativeIndex(nrelativeIndex),
 
             subimage(nsubimage)
@@ -100,8 +108,10 @@ namespace hg {
             bool boxCarrying;
             int boxCarrySize;
             TimeDirection boxCarryDirection;
+            int boxPauseLevel;
 
             TimeDirection timeDirection;
+            int pauseLevel;
             size_t relativeIndex;
 
             int subimage;
