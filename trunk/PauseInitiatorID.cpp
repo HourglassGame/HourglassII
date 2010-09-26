@@ -2,6 +2,15 @@
 #include <boost/functional/hash.hpp>
 
 namespace hg {
+PauseInitiatorID::PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
+                                   unsigned int ID,
+                                   unsigned int timelineLength) :
+type_(type),
+ID_(ID),
+timelineLength_(timelineLength)
+{
+}
+
 bool operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
 {
     return lhs.type_ == rhs.type_
