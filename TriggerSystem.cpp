@@ -2,11 +2,13 @@
 
 namespace hg {
 TriggerSystem::TriggerSystem(::std::vector<int> nPlatformsTriggeredByButton,
-                            unsigned int nTriggerCount, 
+                            unsigned int nButtonCount,
+                            unsigned int nTriggerCount,
                             unsigned int nPlatformCount,
-                            ::std::vector<PlatformDestination> nonDestinations, 
+                            ::std::vector<PlatformDestination> nonDestinations,
                             ::std::vector<PlatformDestination> noffDestinations) :
 platformsTriggeredByButton(nPlatformsTriggeredByButton),
+buttonCount(nButtonCount),
 triggerCount(nTriggerCount),
 platformCount(nPlatformCount),
 onDestinations(nonDestinations),
@@ -14,14 +16,14 @@ offDestinations(noffDestinations)
 {
 }
 
-::std::vector<PlatformDestination>& TriggerSystem::getPlatformDestinations(const ::std::vector<Button>& oldButtonList,
+::std::vector<PlatformDestination>& TriggerSystem::getPlatformDestinations(const ::std::vector<bool>& buttonState,
                                                                            std::vector<PlatformDestination>& platformDesinations) const
 {
 
     std::vector<bool> triggerInputs(triggerCount, false);
-    for (unsigned int i = 0; i < oldButtonList.size(); ++i)
+    for (unsigned int i = 0; i < buttonCount; ++i)
     {
-        triggerInputs[oldButtonList[i].getIndex()] = oldButtonList[i].getState();
+        triggerInputs[i] = buttonState[i];
     }
 
     platformDesinations.reserve(platformCount);

@@ -36,12 +36,21 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                NewFrameID& winFrame) const
 {
     std::vector<BoxInfo> nextBox;
+
+
     std::vector<Platform> nextPlatform;
+    nextPlatform.reserve(triggerSystem.getPlatformCount());
     std::vector<PlatformDestination> platformDesinations;
+
+    std::vector<bool> nextButtonState = std::vector<bool>(triggerSystem.getButtonCount(), false);
+
 	map<NewFrameID, MutableObjectList> newDepartures;
 
+    // button state update
+    buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextButtonState, time);
+
 	// Trigger system execution
-    triggerSystem.getPlatformDestinations(arrivals.getButtonListRef(), platformDesinations);
+    triggerSystem.getPlatformDestinations(nextButtonState, platformDesinations);
 
 	// platforms set their new location and velocity from trigger system data (and ofc their physical data)
 	platformStep(arrivals.getPlatformListRef(), nextPlatform, platformDesinations, newDepartures, time);
@@ -57,8 +66,8 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
             newDepartures, nextBox, nextPlatform, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection);
 
-    // button state and position update
-	buttonChecks(arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextPlatform, newDepartures, time);
+    // button position update
+    buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), newDepartures, time);
 
     // build departures for boxes
 	for (size_t i = 0; i < nextBox.size(); ++i)
@@ -799,14 +808,62 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
     }
 }
 
-void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
-                                 const ::std::vector<Guy>& oldGuyList,
-                                 const ::std::vector<Button>& oldButtonList,
-                                 const ::std::vector<Platform>& nextPlatform,
-                                 ::std::map<NewFrameID, MutableObjectList>& newDepartures,
-                                 NewFrameID time) const
+void PhysicsEngine::buttonPositionUpdate(
+        const ::std::vector<Platform>& nextPlatform,
+        const ::std::vector<bool>& nextButton,
+        const ::std::vector<Button>& oldButtonList,
+        ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+        NewFrameID time
+    ) const
 {
+
     ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getButtonAttachmentRef();
+
+
+    for (unsigned int i = 0; i < oldButtonList.size(); ++i)
+	{
+	    int x = oldButtonList[i].getX();
+	    int y = oldButtonList[i].getY();
+
+	    int index = oldButtonList[i].getIndex();
+
+	    if (attachments[index].get<0>() != -1)
+	    {
+	        int pid = attachments[index].get<0>();
+
+	        if (nextPlatform[pid].getTimeDirection()*oldButtonList[index].getTimeDirection() == hg::FORWARDS)
+	        {
+	            x = nextPlatform[pid].getX()+attachments[index].get<1>();
+                y = nextPlatform[pid].getY()+attachments[index].get<2>();
+	        }
+	        else
+	        {
+	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[index].get<1>();
+                y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[index].get<2>();
+	        }
+	    }
+
+        NewFrameID nextTime(time.nextFrame(oldButtonList[i].getTimeDirection()));
+
+        if (nextTime.isValidFrame())
+        {
+            newDepartures[nextTime].addButton
+            (
+                Button(x, y, x-oldButtonList[i].getX(), y-oldButtonList[i].getY(), index, nextButton[i], oldButtonList[index].getTimeDirection())
+            );
+        }
+
+	}
+}
+
+
+void PhysicsEngine::buttonChecks(  const ::std::vector<Box>& oldBoxList,
+                        const ::std::vector<Guy>& oldGuyList,
+                        const ::std::vector<Button>& oldButtonList,
+                        ::std::vector<bool>& nextButton,
+                        NewFrameID time) const
+{
+
 
     for (unsigned int i = 0; i < oldButtonList.size(); ++i)
 	{
@@ -814,23 +871,6 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
 	    int y = oldButtonList[i].getY();
 	    int w = 3200;
 	    int h = 800;
-
-	    if (attachments[i].get<0>() != -1)
-	    {
-	        int pid = attachments[i].get<0>();
-
-	        if (nextPlatform[pid].getTimeDirection()*oldButtonList[i].getTimeDirection() == hg::FORWARDS)
-	        {
-	            x = nextPlatform[pid].getX()+attachments[i].get<1>();
-                y = nextPlatform[pid].getY()+attachments[i].get<2>();
-	        }
-	        else
-	        {
-	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[i].get<1>();
-                y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[i].get<2>();
-	        }
-	    }
-
 	    bool state = false;
 
 	    for (unsigned int j = 0; !state && j < oldBoxList.size(); ++j)
@@ -843,16 +883,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Box>& oldBoxList,
             state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldGuyList[j].getX(), oldGuyList[j].getY(), oldGuyList[j].getWidth(), oldGuyList[j].getHeight(), true);
         }
 
-        NewFrameID nextTime(time.nextFrame(oldButtonList[i].getTimeDirection()));
-
-        if (nextTime.isValidFrame())
-        {
-            newDepartures[nextTime].addButton
-            (
-                Button(x, y, x-oldButtonList[i].getX(), y-oldButtonList[i].getY(),0, state, oldButtonList[i].getTimeDirection())
-            );
-        }
-
+        nextButton[oldButtonList[i].getIndex()] = state;
 	}
 }
 

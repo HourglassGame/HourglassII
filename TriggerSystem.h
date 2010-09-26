@@ -10,19 +10,24 @@ namespace hg
     class TriggerSystem
     {
         public:
-            TriggerSystem(::std::vector<int> platformsTriggeredByButton, 
+            TriggerSystem(::std::vector<int> platformsTriggeredByButton,
+                          unsigned int buttonCount,
                           unsigned int triggerCount,
                           unsigned int platformCount,
                           ::std::vector<PlatformDestination> onDestinations,
                           ::std::vector<PlatformDestination> offDestinations);
 
             ::std::vector<PlatformDestination>& getPlatformDestinations(
-                const ::std::vector<Button>& oldButtonList, 
+                const ::std::vector<bool>& buttonState,
                 std::vector<PlatformDestination>& platformDesinations
             ) const;
 
+            unsigned int getPlatformCount() const {return platformCount;};
+            unsigned int getButtonCount() const {return buttonCount;};
+
         private:
             ::std::vector<int> platformsTriggeredByButton;
+            unsigned int buttonCount;
             unsigned int triggerCount;
             unsigned int platformCount;
             ::std::vector<PlatformDestination> onDestinations;
