@@ -51,9 +51,16 @@ private:
     void buttonChecks(  const ::std::vector<Box>& oldBoxList,
                         const ::std::vector<Guy>& oldGuyList,
                         const ::std::vector<Button>& oldButtonList,
-                        const ::std::vector<Platform>& nextPlatform,
-                        ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                        ::std::vector<bool>& nextButton,
                         NewFrameID time) const;
+
+    void buttonPositionUpdate(
+        const ::std::vector<Platform>& nextPlatform,
+        const ::std::vector<bool>& nextButton,
+        const ::std::vector<Button>& oldButtonList,
+        ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+        NewFrameID time
+    ) const;
 
 	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
                                         ::std::vector<BoxInfo>& nextBox,

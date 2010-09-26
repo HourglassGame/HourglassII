@@ -68,8 +68,8 @@ int main()
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-        
-        
+
+
         Draw(app, timeEngine.getPostPhysics(waveInfo.get<0>().isValidFrame()?waveInfo.get<0>():NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800)), wall, waveInfo.get<2>());
         DrawTimeline(app, waveInfo.get<1>(), waveInfo.get<0>());
 
@@ -380,6 +380,7 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
                     TriggerSystem
                     (
                         ::std::vector<int>(1, 0),
+                        1,
                         1,
                         1,
                         ::std::vector<PlatformDestination>
