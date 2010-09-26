@@ -1,5 +1,6 @@
 #include "WorldState.h"
 #include "DepartureMap.h"
+#include "PlayerVictoryException.h"
 #include <iostream>
 
 using namespace ::std;
@@ -18,7 +19,7 @@ frameUpdateSet_(),
 physics_(physics),
 currentWinFrame_()
 {
-    
+
     assert(nextPlayerFrame_.isValidFrame());
     map<NewFrameID, MutableObjectList> initialPlatformArrivalMap;
 
@@ -104,7 +105,7 @@ currentWinFrame_()
 TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame& frame)
 {
     if (frame.getTime() == currentWinFrame_) {
-        currentWinFrame_ == NewFrameID();
+        currentWinFrame_ = NewFrameID();
     }
     return physics_.executeFrame(frame.getPrePhysics(),
                                  frame.getTime(),
@@ -129,6 +130,9 @@ FrameUpdateSet WorldState::executeWorld()
         changedFrames.addDeparture(*it, getDeparturesFromFrame(timeline_.getFrame(*it)));
     }
     frameUpdateSet_ = timeline_.updateWithNewDepartures(changedFrames);
+    if (frameUpdateSet_.begin() == frameUpdateSet_.end() && currentWinFrame_.isValidFrame()) {
+        throw PlayerVictoryException();
+    }
     return returnSet;
 }
 
