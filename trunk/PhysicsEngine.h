@@ -48,7 +48,8 @@ private:
                       ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                       const NewFrameID& time) const;
 
-    void buttonChecks(  const ::std::vector<Box>& oldBoxList,
+    void buttonChecks(  const ::std::vector<Platform>& oldPlatformList,
+                        const ::std::vector<Box>& oldBoxList,
                         const ::std::vector<Guy>& oldGuyList,
                         const ::std::vector<Button>& oldButtonList,
                         ::std::vector<bool>& nextButton,
