@@ -3,6 +3,7 @@
 ////////////////////////////////////////////////////////////
 #include "ObjectList.h"
 #include "TimeEngine.h"
+#include "PlayerVictoryException.h"
 #include "Hg_Input.h"
 
 #include <SFML/Graphics.hpp>
@@ -67,11 +68,19 @@ int main()
 
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
-        tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-
-
-        Draw(app, timeEngine.getPostPhysics(waveInfo.get<0>().isValidFrame()?waveInfo.get<0>():NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800)), wall, waveInfo.get<2>());
-        DrawTimeline(app, waveInfo.get<1>(), waveInfo.get<0>());
+        try{
+            tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+            Draw(app, timeEngine.getPostPhysics(waveInfo.get<0>().isValidFrame()
+                                                ?
+                                                    waveInfo.get<0>()
+                                                    :
+                                                    NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800)), wall, waveInfo.get<2>());
+            DrawTimeline(app, waveInfo.get<1>(), waveInfo.get<0>());
+        }
+        catch (hg::PlayerVictoryException& playerWon) {
+            cout << "Congratulations, a winner is you!\n";
+            return EXIT_SUCCESS;
+        }
 
         {
             stringstream fpsstring;
