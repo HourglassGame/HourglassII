@@ -5,6 +5,7 @@
 namespace hg {
     namespace pauseinitiatortype {
         enum PauseInitiatorType {
+            INVALID,
             GUY,
             TRIGGER
         };

@@ -103,7 +103,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 	{
 		NewFrameID nextTime(time.nextFrame(nextBox[i].box.getTimeDirection()));
 
-		if (nextTime.isValidFrame() && (nextBox[i].box.getPauseLevel() == 0 || time.nextFrameInUniverse(nextBox[i].box.getTimeDirection())))
+		if (nextTime.isValidFrame() && (nextBox[i].box.getPauseLevel() == 0 || (time.nextFrameInUniverse(nextBox[i].box.getTimeDirection())==0)))
 		{
 			newDepartures[nextTime].addBox(nextBox[i].box);
 		}

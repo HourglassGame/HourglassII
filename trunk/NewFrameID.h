@@ -26,7 +26,7 @@ public:
 
     // returns if the next frame for things moving in direction TimeDirection
     //is part of the same pause time universe as the frame
-    bool nextFrameInUniverse(TimeDirection direction) const;
+    unsigned int nextFrameInUniverse(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
     NewFrameID arbitraryFrameInUniverse(unsigned int frameNumber) const;
@@ -54,11 +54,16 @@ public:
         assert (isValidFrame());
         return frame_;
     }
+    
+    const UniverseID& universe() const {
+        return universe_;
+    }
 
 private:
     friend ::std::size_t hash_value(const NewFrameID& toHash);
     unsigned int frame_;
     UniverseID universe_;
+    unsigned int nextFrameInUniverseAux(unsigned int depthAccumulator, TimeDirection direction) const;
 };
 //Returns a size_t based on toHash such that two NewFrameIDs for which operator== returns true give the same size_t value;
 ::std::size_t hash_value(const NewFrameID& toHash);

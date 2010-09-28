@@ -13,9 +13,9 @@ universe_(0)
 {
 }
 
-NewFrameID::NewFrameID(unsigned int time, const UniverseID& universe) :
+NewFrameID::NewFrameID(unsigned int time, const UniverseID& nuniverse) :
 frame_(time),
-universe_(universe)
+universe_(nuniverse)
 {
     assert(isValidFrame());
 }
@@ -25,7 +25,7 @@ NewFrameID NewFrameID::nextFrame(TimeDirection direction) const
     if (!isValidFrame()) {
         return NewFrameID();
     }
-    else if (nextFrameInUniverse(direction)) {
+    else if (nextFrameInUniverse(direction) == 0) {
         return NewFrameID(frame_ + direction, universe_);
     }
     else {
@@ -33,11 +33,25 @@ NewFrameID NewFrameID::nextFrame(TimeDirection direction) const
     }
 }
 
-bool NewFrameID::nextFrameInUniverse(TimeDirection direction) const
+unsigned int NewFrameID::nextFrameInUniverse(TimeDirection direction) const
 {
     assert(isValidFrame());
-    return !((direction == REVERSE && frame_ == 0)
-             || (direction == FORWARDS && frame_ == universe_.timelineLength()));
+    return nextFrameInUniverseAux(0, direction);
+
+}
+//Probably won't be recursive in final version, but it seemed the easiest way.
+unsigned int NewFrameID::nextFrameInUniverseAux(unsigned int depthAccumulator, TimeDirection direction) const 
+{
+    if (        !isValidFrame()
+        ||
+                !((direction == REVERSE && frame_ == 0)
+            || 
+                (direction == FORWARDS && frame_ == universe_.timelineLength()))) {
+        return depthAccumulator;
+    }
+    else {
+        return universe_.parentFrame().nextFrameInUniverseAux(depthAccumulator + 1, direction);
+    }
 }
 
 NewFrameID NewFrameID::arbitraryFrameInUniverse(unsigned int frameNumber) const
@@ -92,7 +106,9 @@ bool NewFrameID::isValidFrame() const
         assert(universe_.timelineLength() == 0);
         return false;
     }
-    return true;
+    else {
+        return true;
+    }
 }
 
 ::std::size_t hash_value(const NewFrameID& toHash)
