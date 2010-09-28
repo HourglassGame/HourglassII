@@ -69,13 +69,28 @@ int main()
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         try{
-            tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-            Draw(app, timeEngine.getPostPhysics(waveInfo.get<0>().isValidFrame()
-                                                ?
-                                                    waveInfo.get<0>()
-                                                    :
-                                                    NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800)), wall, waveInfo.get<2>());
-            DrawTimeline(app, waveInfo.get<1>(), waveInfo.get<0>());
+            tuple<NewFrameID, NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+            if (waveInfo.get<0>().isValidFrame()) {
+                Draw
+                (
+                    app, 
+                    timeEngine.getPostPhysics
+                    (
+                        waveInfo.get<0>(),
+                        waveInfo.get<1>().universe().pauseDepth() == waveInfo.get<0>().universe().pauseDepth()
+                            ?
+                            PauseInitiatorID(pauseinitiatortype::INVALID,0,0)
+                            :
+                            waveInfo.get<1>().universe().initiatorID()
+                    ),
+                    wall,
+                    waveInfo.get<3>()
+                );
+            }
+            else {
+                Draw(app, timeEngine.getPostPhysics(NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
+            }
+            DrawTimeline(app, waveInfo.get<2>(), waveInfo.get<0>());
         }
         catch (hg::PlayerVictoryException& playerWon) {
             cout << "Congratulations, a winner is you!\n";

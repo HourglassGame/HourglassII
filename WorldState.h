@@ -37,10 +37,11 @@ namespace hg {
         * Returns an object list containing the state of whichFrame after physics was applied
         * in the last call to executeWorld.
         */
-        ObjectList getPostPhysics(NewFrameID whichFrame) const;
+        ObjectList getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
         /***********************************************************
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
+        NewFrameID getNextPlayerFrame() const { return nextPlayerFrame_; }
         NewFrameID getCurrentPlayerFrame() const;
         TimeDirection getCurrentPlayerDirection() const;
     private:

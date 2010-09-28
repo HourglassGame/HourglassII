@@ -33,12 +33,12 @@ public:
     /*****************************************************
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
-	ObjectList getPrePhysics(NewFrameID time) const;
+	ObjectList getPrePhysics(const NewFrameID& time) const;
 
     /*****************************************************
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
      */
-    ObjectList getPostPhysics(NewFrameID time) const;
+    ObjectList getPostPhysics(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const;
 
     /**********************
      * A convenience class to represent a single frame of the timeline.
