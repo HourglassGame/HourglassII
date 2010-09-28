@@ -108,7 +108,8 @@ bool Box::operator<(const Box& other) const
             return (data->x < other.data->x);
         }
     }
-    else {
+    else
+    {
         return false;
     }
 }

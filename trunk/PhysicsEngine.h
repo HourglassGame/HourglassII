@@ -3,11 +3,14 @@
 #include "InputList.h"
 #include "Guy.h"
 #include "Box.h"
+#include "Button.h"
+#include "Platform.h"
 #include "NewFrameID.h"
 #include "TimeDirection.h"
 #include "ObjectList.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
+#include "DepartureThief.cpp"
 #include <vector>
 #include <map>
 namespace hg {
@@ -68,9 +71,11 @@ private:
                         const ::std::vector<Platform>& nextPlatform,
                         const ::std::vector<Button>& nextButton,
                         const ::std::vector<GuyInfo>& nextGuy,
+                        const ::std::vector<DepartureThief<Guy> >& guyThief,
+                        const ::std::vector<DepartureThief<Box> >& boxThief,
                         ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                         const NewFrameID time,
-                        const std::vector<PauseInitiatorID>& pauseTimes
+                        std::vector<PauseInitiatorID>& pauseTimes
                         ) const;
 
     void buttonPositionUpdate(
@@ -91,6 +96,7 @@ private:
                     ::std::vector<GuyInfo>& nextGuy,
                     ::std::vector<BoxInfo>& nextBox,
                     const ::std::vector<Platform>& nextPlatform,
+                    ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                     NewFrameID& currentPlayerFrame,
                     NewFrameID& nextPlayerFrame,
                     TimeDirection& currentPlayerDirection,

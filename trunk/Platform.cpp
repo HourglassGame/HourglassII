@@ -11,9 +11,10 @@ Platform::Platform(int nX,
          int nWidth,
          int nHeight,
          int nIndex,
-         TimeDirection nTimeDirection) :
+         TimeDirection nTimeDirection,
+         int nPauseLevel) :
 referenceCount(new int(1)),
-data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nIndex,nTimeDirection))
+data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nIndex,nTimeDirection, nPauseLevel))
 {
 }
 
@@ -60,7 +61,8 @@ bool Platform::operator==(const Platform& other) const
             && (data->xspeed == other.data->xspeed)
             && (data->yspeed == other.data->yspeed)
             && (data->width == other.data->width)
-            && (data->height == other.data->height);
+            && (data->height == other.data->height)
+            && (data->pauseLevel == other.data->pauseLevel);
 }
 
 bool Platform::operator<(const Platform& other) const

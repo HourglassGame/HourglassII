@@ -8,7 +8,9 @@ ObjectListData::ObjectListData() :
 guyList(),
 boxList(),
 buttonList(),
-platformList()
+platformList(),
+guyThiefList(),
+boxThiefList()
 {
 }
 
@@ -16,7 +18,9 @@ ObjectListData::ObjectListData(const ObjectListData& other) :
 guyList(other.guyList),
 boxList(other.boxList),
 buttonList(other.buttonList),
-platformList(other.platformList)
+platformList(other.platformList),
+guyThiefList(other.guyThiefList),
+boxThiefList(other.boxThiefList)
 {
 }
 
@@ -40,6 +44,8 @@ void ObjectListData::sortElements()
 	sort(boxList.begin(), boxList.end());
 	sort(buttonList.begin(), buttonList.end());
 	sort(platformList.begin(), platformList.end());
+	sort(guyThiefList.begin(), guyThiefList.end());
+	sort(boxThiefList.begin(), boxThiefList.end());
 }
 
 void ObjectListData::add(const ObjectListData& other)
@@ -48,5 +54,7 @@ void ObjectListData::add(const ObjectListData& other)
     boxList.insert(boxList.end(),other.boxList.begin(),other.boxList.end());
     buttonList.insert(buttonList.end(),other.buttonList.begin(),other.buttonList.end());
     platformList.insert(platformList.end(),other.platformList.begin(),other.platformList.end());
+    guyThiefList.insert(guyThiefList.end(),other.guyThiefList.begin(),other.guyThiefList.end());
+    boxThiefList.insert(boxThiefList.end(),other.boxThiefList.begin(),other.boxThiefList.end());
 }
 }//namespace hg

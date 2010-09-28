@@ -4,6 +4,7 @@
 #include "Box.h"
 #include "Button.h"
 #include "Platform.h"
+#include "DepartureThief.cpp"
 #include <vector>
 namespace hg {
 struct ObjectListData {
@@ -17,6 +18,8 @@ struct ObjectListData {
     ::std::vector<Box> boxList;
     ::std::vector<Button> buttonList;
     ::std::vector<Platform> platformList;
+    ::std::vector<DepartureThief<Guy> > guyThiefList;
+    ::std::vector<DepartureThief<Box> > boxThiefList;
 };
 }
 #endif //HG_OBJECT_LIST_DATA_H
