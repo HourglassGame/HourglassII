@@ -42,7 +42,7 @@ public:
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
     //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
     //universe cannot return nullFrame,
-    NewFrameID entryChildFrame(const PauseInitiatorID& initatorID, unsigned int pauseLength, TimeDirection direction) const;
+    NewFrameID entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const;
 
     bool operator==(const NewFrameID& other) const;
 

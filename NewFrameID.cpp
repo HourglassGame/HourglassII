@@ -62,7 +62,6 @@ NewFrameID NewFrameID::arbitraryChildFrame(const PauseInitiatorID& initatorID,
 }
 
 NewFrameID NewFrameID::entryChildFrame(const PauseInitiatorID& initatorID,
-                                       unsigned int pauseLength,
                                        TimeDirection direction) const
 {
     assert(initatorID.timelineLength_ != 0);
