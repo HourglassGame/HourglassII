@@ -112,8 +112,6 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
     // build departures for boxes
 	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
-	    buildNextBox:
-
 		NewFrameID nextTime(time.nextFrame(nextBox[i].box.getTimeDirection()));
 
 		for (size_t t = 0; t < boxThief.size(); ++t)
@@ -146,7 +144,6 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 
                     if (pauseTimes[j] == boxThief[t].getOrigin())
                     {
-                        ++i;
                         goto buildNextBox; // double break then continue
                     }
                 }
@@ -167,6 +164,8 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                    nextBox[i].box.getSize(), nextBox[i].box.getTimeDirection(), nextBox[i].box.getPauseLevel()+1)
             );
 		}
+        buildNextBox:
+        ;
 	}
 
 	// build departures for platforms

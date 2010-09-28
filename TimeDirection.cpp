@@ -1,15 +1,15 @@
 #include "TimeDirection.h"
 #include <cassert>
 namespace hg {
-    void operator*=(::hg::TimeDirection& receiver, int multiple)
+    void operator*=(TimeDirection& receiver, int multiple)
     {
         assert(multiple == -1 || multiple == 1);
-        receiver = static_cast< ::hg::TimeDirection>(receiver*multiple);
+        receiver = static_cast<TimeDirection>(receiver*multiple);
     }
     
-    void operator*=(::hg::TimeDirection& receiver, ::hg::TimeDirection multiple)
+    void operator*=(TimeDirection& receiver, TimeDirection multiple)
     {
         assert(multiple == REVERSE || multiple == FORWARDS);
-        receiver = static_cast< ::hg::TimeDirection>(receiver*multiple);
+        receiver = static_cast<TimeDirection>(receiver*multiple);
     }
 }
