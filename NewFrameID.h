@@ -45,6 +45,7 @@ public:
     NewFrameID entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const;
 
     bool operator==(const NewFrameID& other) const;
+    bool operator!=(const NewFrameID& other) const;
 
     bool operator<(const NewFrameID& other) const;
 
@@ -54,7 +55,7 @@ public:
         assert (isValidFrame());
         return frame_;
     }
-    
+
     const UniverseID& universe() const {
         return universe_;
     }

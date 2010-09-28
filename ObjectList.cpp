@@ -66,13 +66,25 @@ const vector<Platform>& ObjectList::getPlatformListRef() const
     return data_->platformList;
 }
 
+const vector<DepartureThief<Guy> >& ObjectList::getGuyThiefListRef() const
+{
+    return data_->guyThiefList;
+}
+
+const vector<DepartureThief<Box> >& ObjectList::getBoxThiefListRef() const
+{
+    return data_->boxThiefList;
+}
+
 bool ObjectList::operator==(const hg::ObjectList& other) const
 {
     return data_ == other.data_ ||
             (data_->guyList == other.data_->guyList
             && data_->boxList == other.data_->boxList
             && data_->buttonList == other.data_->buttonList
-            && data_->platformList == other.data_->platformList);
+            && data_->platformList == other.data_->platformList
+            && data_->guyThiefList == other.data_->guyThiefList
+            && data_->boxThiefList == other.data_->boxThiefList);
 }
 
 bool ObjectList::operator!=(const hg::ObjectList& other) const
@@ -82,7 +94,12 @@ bool ObjectList::operator!=(const hg::ObjectList& other) const
 
 bool ObjectList::isEmpty() const
 {
-	return data_->guyList.empty() && data_->boxList.empty() && data_->buttonList.empty() && data_->platformList.empty();
+	return  data_->guyList.empty() &&
+            data_->boxList.empty() &&
+            data_->buttonList.empty() &&
+            data_->platformList.empty() &&
+            data_->guyThiefList.empty() &&
+            data_->boxThiefList.empty();
 }
 
 // ---------- MutableObjectList functions ------------
@@ -143,6 +160,18 @@ void MutableObjectList::addPlatform(const Platform& toCopy)
 {
     makeUnique();
 	data_->platformList.push_back(toCopy);
+}
+
+void MutableObjectList::addGuyThief(const DepartureThief<Guy>& toCopy)
+{
+    makeUnique();
+	data_->guyThiefList.push_back(toCopy);
+}
+
+void MutableObjectList::addBoxThief(const DepartureThief<Box>& toCopy)
+{
+    makeUnique();
+	data_->boxThiefList.push_back(toCopy);
 }
 
 void MutableObjectList::add(const MutableObjectList& other)

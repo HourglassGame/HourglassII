@@ -8,7 +8,7 @@ namespace hg
 
     public:
 
-        Platform(int x, int y, int xspeed, int yspeed, int width, int height, int index, TimeDirection timeDirection);
+        Platform(int x, int y, int xspeed, int yspeed, int width, int height, int index, TimeDirection timeDirection, int pauseLevel);
         ~Platform();
         Platform(const Platform& other);
         Platform& operator=(const Platform& other);
@@ -21,6 +21,7 @@ namespace hg
         inline int getHeight() const {return data->height;}
         inline int getIndex() const {return data->index;}
         inline TimeDirection getTimeDirection() const {return data->timeDirection;}
+        inline int getPauseLevel() const {return data->pauseLevel;}
 
         bool operator==(const Platform& other) const;
         bool operator!=(const Platform& other) const;
@@ -43,7 +44,8 @@ namespace hg
                 int nWidth,
                 int nHeight,
                 int nIndex,
-                TimeDirection nTimeDirection) :
+                TimeDirection nTimeDirection,
+                int npauseLevel) :
             x(nx),
             y(ny),
             xspeed(nXspeed),
@@ -51,7 +53,8 @@ namespace hg
             width(nWidth),
             height(nHeight),
             index(nIndex),
-            timeDirection(nTimeDirection)
+            timeDirection(nTimeDirection),
+            pauseLevel(npauseLevel)
             {
             }
 
@@ -63,6 +66,7 @@ namespace hg
             int height;
             int index;
             TimeDirection timeDirection;
+            int pauseLevel;
         };
     };
 }

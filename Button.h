@@ -8,7 +8,7 @@ namespace hg
 
     public:
 
-        Button(int x, int y, int xspeed, int yspeed, int index, bool state, TimeDirection timeDirection);
+        Button(int x, int y, int xspeed, int yspeed, int index, bool state, TimeDirection timeDirection, int pauseLevel);
         ~Button();
         Button(const Button& other);
         Button& operator=(const Button& other);
@@ -20,6 +20,7 @@ namespace hg
         inline int getIndex() const {return data->index;}
         inline bool getState() const {return data->state;}
         inline TimeDirection getTimeDirection() const {return data->timeDirection;}
+        inline int getPauseLevel() const {return data->pauseLevel;}
 
         bool operator==(const Button& other) const;
         bool operator!=(const Button& other) const;
@@ -34,20 +35,23 @@ namespace hg
         Data* data;
 
         struct Data {
-            Data(int nx,
-                 int ny,
-                 int nxspeed,
-                 int nyspeed,
-                 int nindex,
-                 bool nstate,
-                 TimeDirection ntimeDirection) :
+            Data(
+                int nx,
+                int ny,
+                int nxspeed,
+                int nyspeed,
+                int nindex,
+                bool nstate,
+                TimeDirection ntimeDirection,
+                int npauseLevel) :
             x(nx),
             y(ny),
             xspeed(nxspeed),
             yspeed(nyspeed),
             index(nindex),
             state(nstate),
-            timeDirection(ntimeDirection)
+            timeDirection(ntimeDirection),
+            pauseLevel(npauseLevel)
             {
             }
 
@@ -58,6 +62,7 @@ namespace hg
             int index;
             bool state;
             TimeDirection timeDirection;
+            int pauseLevel;
         };
     };
 }

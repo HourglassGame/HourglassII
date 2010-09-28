@@ -40,12 +40,12 @@ unsigned int NewFrameID::nextFrameInUniverse(TimeDirection direction) const
 
 }
 //Probably won't be recursive in final version, but it seemed the easiest way.
-unsigned int NewFrameID::nextFrameInUniverseAux(unsigned int depthAccumulator, TimeDirection direction) const 
+unsigned int NewFrameID::nextFrameInUniverseAux(unsigned int depthAccumulator, TimeDirection direction) const
 {
     if (        !isValidFrame()
         ||
                 !((direction == REVERSE && frame_ == 0)
-            || 
+            ||
                 (direction == FORWARDS && frame_ == universe_.timelineLength()))) {
         return depthAccumulator;
     }
@@ -86,6 +86,11 @@ NewFrameID NewFrameID::entryChildFrame(const PauseInitiatorID& initatorID,
 bool NewFrameID::operator==(const NewFrameID& other) const
 {
     return frame_ == other.frame_ && universe_ == other.universe_;
+}
+
+bool NewFrameID::operator!=(const NewFrameID& other) const
+{
+    return !(*this==other);
 }
 
 bool NewFrameID::operator<(const NewFrameID& other) const
