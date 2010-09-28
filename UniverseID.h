@@ -30,7 +30,11 @@ bool operator<(const SubUniverse& lhs, const SubUniverse& rhs);
 struct UniverseID {
     //lower level universeID
     UniverseID(unsigned int timelineLength, ::std::vector<SubUniverse> nestTrain = ::std::vector<SubUniverse>());
-      
+    
+    PauseInitiatorID initiatorID() const;
+    
+    ::std::size_t pauseDepth() const;
+    
     //returns the frame in which the lowest level of this universe exists. NullFrame if this is a top-level universe.
     NewFrameID parentFrame() const;
     //returns the length of the lowest level of this universe

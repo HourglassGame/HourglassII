@@ -109,5 +109,20 @@ UniverseID UniverseID::getSubUniverse(const SubUniverse& newestNest) const
     ::boost::hash_combine(seed, toHash.nestTrain_);
     return seed;
 }
+
+PauseInitiatorID UniverseID::initiatorID() const
+{
+    if (!nestTrain_.empty()) {
+        return nestTrain_.rbegin()->pauseInitiatorID_;
+    }
+    else {
+        return PauseInitiatorID(pauseinitiatortype::INVALID,0,0);
+    }
+
+}
+size_t UniverseID::pauseDepth() const
+{
+    return nestTrain_.size();
+}
 }
 

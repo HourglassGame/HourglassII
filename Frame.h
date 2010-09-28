@@ -8,8 +8,8 @@ namespace hg {
 class Frame;
 class FramePtr;
 class Universe;
-//Wrapper around Frame* to give extra saftey (assert ptr before dereferencing,
-//    also allows shared syntax with FrameID for ease of changing).
+//Wrapper around Frame* to give extra safety (assert ptr before dereferencing,
+//    also allows shared syntax with NewFrameID for ease of changing).
 class FramePtr {
 public:
     //NullFrame construction
