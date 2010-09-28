@@ -34,12 +34,12 @@ public:
     // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
     //'distance' from the start of the universe This function cannot return nullFrame,
     //place assert to assure frameNumber is never greater pauseLength
-    FramePtr arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int pauseLength, unsigned int frameNumber) const;
+    FramePtr arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int frameNumber) const;
 
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
     //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
     //universe cannot return nullFrame,
-    FramePtr entryChildFrame(const PauseInitiatorID& initatorID, unsigned int pauseLength, TimeDirection direction) const;
+    FramePtr entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const;
 
     bool operator==(const FramePtr& other);
 

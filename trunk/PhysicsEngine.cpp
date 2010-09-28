@@ -110,7 +110,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 
 		for (size_t j = 0; j < pauseTimes.size(); ++j)
 		{
-		    newDepartures[time.entryChildFrame(pauseTimes[j],pauseTimes[j].timelineLength_, nextBox[i].box.getTimeDirection())].addBox
+		    newDepartures[time.entryChildFrame(pauseTimes[j], nextBox[i].box.getTimeDirection())].addBox
                 (
                     Box(nextBox[i].box.getX(), nextBox[i].box.getY(), nextBox[i].box.getXspeed(), nextBox[i].box.getYspeed(),
                        nextBox[i].box.getSize(), nextBox[i].box.getTimeDirection(), nextBox[i].box.getPauseLevel()+1)
@@ -484,7 +484,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             else if (input.getAbility() == hg::PAUSE_TIME)
             {
                 PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
-                nextTime = time.entryChildFrame(pauseID, 500, oldGuyList[i].getTimeDirection());
+                nextTime = time.entryChildFrame(pauseID, oldGuyList[i].getTimeDirection());
 
                 pauseTimes.push_back(pauseID);
             }
