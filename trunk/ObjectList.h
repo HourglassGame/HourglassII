@@ -3,8 +3,7 @@
 #include "Guy.h"
 #include "Box.h"
 #include "Button.h"
-#include "ObjectListData.h"
-#include "TimeDirection.h"
+#include "Platform.h"
 
 #include <boost/shared_ptr.hpp>
 
