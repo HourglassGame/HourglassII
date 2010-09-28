@@ -136,9 +136,9 @@ FrameUpdateSet WorldState::executeWorld()
     return returnSet;
 }
 
-ObjectList WorldState::getPostPhysics(NewFrameID whichFrame) const
+ObjectList WorldState::getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const
 {
-    return timeline_.getPostPhysics(whichFrame);
+    return timeline_.getPostPhysics(whichFrame, whichPrePause);
 }
 
 void WorldState::addNewInputData(const InputList& newInputData)

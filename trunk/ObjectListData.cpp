@@ -1,6 +1,13 @@
 #include "ObjectListData.h"
+
+#include <boost/foreach.hpp>
+
+#include <iostream>
 #include <algorithm>
+
 #include <cassert>
+
+#define foreach BOOST_FOREACH
 
 using namespace ::std;
 namespace hg {
@@ -31,7 +38,6 @@ static bool containsNoGuysWithEqualRelativeIndices(const vector<Guy>& guyList) {
     for (vector<Guy>::const_iterator it(guyList.begin()), end(guyList.end()); it != end; ++it) {
         relativeIndices.push_back(it->getRelativeIndex());
     }
-
     return unique(relativeIndices.begin(), relativeIndices.end()) == relativeIndices.end();
 }
 

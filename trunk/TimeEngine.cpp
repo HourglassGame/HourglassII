@@ -31,7 +31,7 @@ worldState(TimelineState(timeLineLength),
 
 }
 
-tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
+tuple<NewFrameID,NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
 
@@ -39,11 +39,11 @@ tuple<NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNex
     for (unsigned int i = 0; i < speedOfTime; ++i) {
         updatedList.push_back(worldState.executeWorld());
     }
-    return tuple<NewFrameID, FrameListList, TimeDirection>(worldState.getCurrentPlayerFrame(), updatedList, worldState.getCurrentPlayerDirection());
+    return tuple<NewFrameID, NewFrameID, FrameListList, TimeDirection>(worldState.getCurrentPlayerFrame(), worldState.getNextPlayerFrame(), updatedList, worldState.getCurrentPlayerDirection());
 }
 
-ObjectList TimeEngine::getPostPhysics(NewFrameID whichFrame) const
+ObjectList TimeEngine::getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const
 {
-    return worldState.getPostPhysics(whichFrame);
+    return worldState.getPostPhysics(whichFrame, whichPrePause);
 }
 }//namespace hg

@@ -23,6 +23,8 @@ public:
     bool operator!=(const TimeObjectListList& other) const;
     
     ObjectList getFlattenedVersion() const;
+    ObjectList getFlattenedVersion(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const;
+    
     
     typedef ::std::map<NewFrameID,ObjectList> ListType;
     

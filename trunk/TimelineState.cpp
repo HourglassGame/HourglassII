@@ -111,18 +111,18 @@ end:
     return changedTimes;
 }
 
-ObjectList TimelineState::getPostPhysics(NewFrameID time) const
+ObjectList TimelineState::getPostPhysics(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const
 {
     ::boost::unordered_map<NewFrameID, TimeObjectListList>::const_iterator it(departures.find(time));
     if (it != departures.end()) {
-        return it->second.getFlattenedVersion();
+        return it->second.getFlattenedVersion(time, whichPrePause);
     }
     else {
         return ObjectList();
     }
 }
 
-ObjectList TimelineState::getPrePhysics(NewFrameID time) const
+ObjectList TimelineState::getPrePhysics(const NewFrameID& time) const
 {
     ::boost::unordered_map<NewFrameID, TimeObjectListList>::const_iterator it(arrivals.find(time));
     if (it != arrivals.end()) {

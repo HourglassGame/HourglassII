@@ -45,13 +45,13 @@ public:
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
-    ::boost::tuple<NewFrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
+    ::boost::tuple<NewFrameID, NewFrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
 	/****************************
     * Returns an object list containing the state of whichFrame after physics was applied.
     * This function is always run after the runToNextPlayerFrame function in order to
     * query the state of particular frames.
     */
-    ObjectList getPostPhysics(NewFrameID whichFrame) const;
+    ObjectList getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
 private:
     void executeWorld(WorldState& currentState) const;
     unsigned int speedOfTime;

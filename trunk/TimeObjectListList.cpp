@@ -50,4 +50,27 @@ ObjectList TimeObjectListList::getFlattenedVersion() const
     
 	return ObjectList(returnList);
 }
+ObjectList TimeObjectListList::getFlattenedVersion(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const
+{
+    size_t decisionDepth(time.universe().pauseDepth() + 1);
+    MutableObjectList returnList;
+    if (whichPrePause.type_==pauseinitiatortype::INVALID) {
+        for (ListType::const_iterator it(list_.begin()), eend(list_.end()); it != eend; ++it)
+        {
+            if (it->first.universe().pauseDepth() < decisionDepth) {
+                returnList.add(it->second);
+            }
+        }
+    }
+    else {
+      	for (ListType::const_iterator it(list_.begin()), eend(list_.end()); it != eend; ++it)
+        {
+            if (it->first.universe().pauseDepth() == decisionDepth && it->first.universe().initiatorID() == whichPrePause) {
+                returnList.add(it->second);
+            }
+        }  
+    }
+
+	return ObjectList(returnList);
+}
 }//namespace hg
