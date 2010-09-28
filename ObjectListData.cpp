@@ -38,6 +38,7 @@ static bool containsNoGuysWithEqualRelativeIndices(const vector<Guy>& guyList) {
     for (vector<Guy>::const_iterator it(guyList.begin()), end(guyList.end()); it != end; ++it) {
         relativeIndices.push_back(it->getRelativeIndex());
     }
+    
     return unique(relativeIndices.begin(), relativeIndices.end()) == relativeIndices.end();
 }
 
