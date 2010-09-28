@@ -27,7 +27,7 @@ NewFrameID TimelineState::Frame::getTime() const
     return time_;
 }
 
-TimelineState::Frame::Frame(const TimelineState& mapPtr, NewFrameID time) :
+TimelineState::Frame::Frame(const TimelineState& mapPtr, const NewFrameID& time) :
 time_(time),
 this_(mapPtr)
 {
@@ -46,7 +46,7 @@ FrameUpdateSet TimelineState::updateWithNewDepartures(const DepartureMap& newDep
     return newWaveFrames;
 }
 
-TimelineState::Frame TimelineState::getFrame(NewFrameID whichFrame) const
+TimelineState::Frame TimelineState::getFrame(const NewFrameID& whichFrame) const
 {
     return Frame(*this, whichFrame);
 }
@@ -59,7 +59,7 @@ void TimelineState::addArrivalsFromPermanentDepartureFrame(const TimeObjectListL
 }
 
 //returns which frames are changed
-FrameUpdateSet TimelineState::updateDeparturesFromTime(const NewFrameID time, const TimeObjectListList& newDeparture)
+FrameUpdateSet TimelineState::updateDeparturesFromTime(const NewFrameID& time, const TimeObjectListList& newDeparture)
 {
     FrameUpdateSet changedTimes;
 

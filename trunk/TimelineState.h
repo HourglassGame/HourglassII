@@ -57,7 +57,7 @@ public:
         NewFrameID getTime() const;
     private:
         friend class TimelineState;
-        Frame(const TimelineState& mapPtr, NewFrameID time);
+        Frame(const TimelineState& mapPtr, const NewFrameID& time);
         NewFrameID time_;
         const TimelineState& this_;
     };
@@ -65,13 +65,13 @@ public:
     /***************************************
      * Returns a Frame for whichFrame.
      */
-    Frame getFrame(NewFrameID whichFrame) const;
+    Frame getFrame(const NewFrameID& whichFrame) const;
 private:
 	//SimpleFrameID permanentDepartureIndex;
     ::boost::unordered_map<NewFrameID, TimeObjectListList> arrivals;
     ::boost::unordered_map<NewFrameID, TimeObjectListList> departures;
 
-    FrameUpdateSet updateDeparturesFromTime(NewFrameID time, const TimeObjectListList& newDeparture);
+    FrameUpdateSet updateDeparturesFromTime(const NewFrameID& time, const TimeObjectListList& newDeparture);
 };
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H
