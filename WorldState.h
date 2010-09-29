@@ -44,6 +44,8 @@ namespace hg {
         NewFrameID getNextPlayerFrame() const { return nextPlayerFrame_; }
         NewFrameID getCurrentPlayerFrame() const;
         TimeDirection getCurrentPlayerDirection() const;
+        
+        ::std::vector<InputList> getReplayData() const {return playerInput_;};
     private:
         TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame);
 

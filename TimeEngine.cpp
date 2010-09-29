@@ -46,4 +46,9 @@ ObjectList TimeEngine::getPostPhysics(NewFrameID whichFrame, const PauseInitiato
 {
     return worldState.getPostPhysics(whichFrame, whichPrePause);
 }
+    
+::std::vector<InputList> TimeEngine::getReplayData() const
+{
+    return worldState.getReplayData();
+}
 }//namespace hg

@@ -65,6 +65,14 @@ private:
     unsigned int frame_;
     UniverseID universe_;
     unsigned int nextFrameInUniverseAux(unsigned int depthAccumulator, TimeDirection direction) const;
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & frame_;
+        ar & universe_;
+    }
 };
 //Returns a size_t based on toHash such that two NewFrameIDs for which operator== returns true give the same size_t value;
 ::std::size_t hash_value(const NewFrameID& toHash);
