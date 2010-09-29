@@ -1,5 +1,6 @@
 #ifndef HG_PAUSE_INITIATOR_ID
 #define HG_PAUSE_INITIATOR_ID
+#include <boost/serialization/nvp.hpp>
 #include <cstring>
 namespace boost {
 namespace serialization {
@@ -33,9 +34,9 @@ namespace hg {
     template<class Archive>
     void serialize(Archive &ar, const unsigned int /*version*/)
     {
-        ar & type_;
-        ar & ID_;
-        ar & timelineLength_;
+        ar & BOOST_SERIALIZATION_NVP(type_);
+        ar & BOOST_SERIALIZATION_NVP(ID_);
+        ar & BOOST_SERIALIZATION_NVP(timelineLength_);
     }
     };
 

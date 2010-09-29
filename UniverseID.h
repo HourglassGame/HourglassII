@@ -3,6 +3,8 @@
 
 #include "PauseInitiatorID.h"
 
+#include <boost/serialization/nvp.hpp>
+
 #include <vector>
 namespace hg {
 class NewFrameID;
@@ -23,8 +25,8 @@ struct SubUniverse {
     template<class Archive>
     void serialize(Archive &ar, const unsigned int /*version*/)
     {
-        ar & initiatorFrame_;
-        ar & pauseInitiatorID_;
+        ar & BOOST_SERIALIZATION_NVP(initiatorFrame_);
+        ar & BOOST_SERIALIZATION_NVP(pauseInitiatorID_);
     }
 };
 bool operator==(const SubUniverse& lhs, const SubUniverse& rhs);
@@ -67,8 +69,8 @@ private:
     template<class Archive>
     void serialize(Archive &ar, const unsigned int /*version*/)
     {
-        ar & timelineLength_;
-        ar & nestTrain_;
+        ar & BOOST_SERIALIZATION_NVP(timelineLength_);
+        ar & BOOST_SERIALIZATION_NVP(nestTrain_);
     }
 };
 ::std::size_t hash_value(const UniverseID& toHash);
