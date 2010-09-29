@@ -13,7 +13,11 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
+#include <fstream>
 #include <sstream>
 #include <iostream>
 
@@ -45,6 +49,7 @@ namespace {
 ////////////////////////////////////////////////////////////
 int main()
 {
+{
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
@@ -65,7 +70,14 @@ int main()
                     break;
             }
         }
-
+        if (app.GetInput().IsKeyDown(sf::Key::S)) {
+            const vector<InputList> replay(timeEngine.getReplayData());
+            std::ofstream ofs("replay");
+            {   
+                boost::archive::text_oarchive out(ofs);
+                out << replay;
+            }
+        }
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         try{
@@ -106,6 +118,77 @@ int main()
             app.Draw(fpsglyph);
         }
         app.Display();
+    }
+    }
+    {
+    RenderWindow app(VideoMode(640, 480), "Hourglass II");
+    app.UseVerticalSync(true);
+    app.SetFramerateLimit(60);
+    vector<vector<bool> > wall(MakeWall());
+    TimeEngine timeEngine(MakeTimeEngine(wall));
+
+    vector<InputList> input;
+    {
+        // create and open an archive for input
+        std::ifstream ifs("replay");
+        boost::archive::text_iarchive ia(ifs);
+        // read class state from archive
+        ia >> input;
+        // archive and stream closed when destructors are called
+    }
+    foreach(const InputList& inputpart, input)
+    {
+        Event event;
+        while (app.GetEvent(event))
+        {
+            switch (event.Type) {
+                case sf::Event::Closed:
+                    app.Close();
+                    break;
+                default:
+                    break;
+            }
+        }
+        //cout << "called from main" << endl;
+        try{
+            tuple<NewFrameID, NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(inputpart));
+            if (waveInfo.get<0>().isValidFrame()) {
+                Draw
+                (
+                    app, 
+                    timeEngine.getPostPhysics
+                    (
+                        waveInfo.get<0>(),
+                        waveInfo.get<1>().universe().pauseDepth() == waveInfo.get<0>().universe().pauseDepth()
+                            ?
+                            PauseInitiatorID(pauseinitiatortype::INVALID,0,0)
+                            :
+                            waveInfo.get<1>().universe().initiatorID()
+                    ),
+                    wall,
+                    waveInfo.get<3>()
+                );
+            }
+            else {
+                Draw(app, timeEngine.getPostPhysics(NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
+            }
+            DrawTimeline(app, waveInfo.get<2>(), waveInfo.get<0>());
+        }
+        catch (hg::PlayerVictoryException& playerWon) {
+            cout << "Congratulations, a winner is you!\n";
+            return EXIT_SUCCESS;
+        }
+
+        {
+            stringstream fpsstring;
+            fpsstring << (1./app.GetFrameTime());
+            sf::String fpsglyph(fpsstring.str());
+            fpsglyph.SetPosition(600, 465);
+            fpsglyph.SetSize(8.f);
+            app.Draw(fpsglyph);
+        }
+        app.Display();
+    }
     }
     return EXIT_SUCCESS;
 }

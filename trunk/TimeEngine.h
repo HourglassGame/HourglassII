@@ -52,6 +52,8 @@ public:
     * query the state of particular frames.
     */
     ObjectList getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
+    
+    ::std::vector<InputList> getReplayData() const;
 private:
     void executeWorld(WorldState& currentState) const;
     unsigned int speedOfTime;

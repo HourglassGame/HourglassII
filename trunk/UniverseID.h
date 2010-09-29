@@ -13,6 +13,16 @@ struct SubUniverse {
     SubUniverse(unsigned int initiatorFrame, const PauseInitiatorID& pauseInitiatorID);
     unsigned int initiatorFrame_;
     PauseInitiatorID pauseInitiatorID_;
+    private:
+    
+    SubUniverse(){}
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & initiatorFrame_;
+        ar & pauseInitiatorID_;
+    }
 };
 bool operator==(const SubUniverse& lhs, const SubUniverse& rhs);
 inline bool operator!=(const SubUniverse& lhs, const SubUniverse& rhs)
@@ -49,6 +59,14 @@ private:
     unsigned int timelineLength_;
     //nestTrain_[0] is the least nested SubUniverse, and nestTrain_[nestTrain_.size()-1] is the most nested (bottom level)
     ::std::vector<SubUniverse> nestTrain_;
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & timelineLength_;
+        ar & nestTrain_;
+    }
 };
 ::std::size_t hash_value(const UniverseID& toHash);
 }

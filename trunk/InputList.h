@@ -9,6 +9,8 @@ class InputList
 {
 
 public:
+
+
 	InputList(bool left,
               bool right,
               bool up,
@@ -37,7 +39,7 @@ public:
     }
 
 private:
-
+InputList(){}
 	bool left;
 	bool right;
 	bool up;
@@ -47,6 +49,21 @@ private:
 	Ability ability;
 	NewFrameID frameIdParams;
 	int frameIdParamCount;
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        printf("y0");
+        ar & left;
+        ar & right;
+        ar & up;
+        ar & down;
+        ar & use;
+
+        ar & ability;
+        ar & frameIdParams;
+        ar & frameIdParamCount;
+    }
 
 };
 }
