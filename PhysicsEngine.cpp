@@ -210,10 +210,6 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 		}
 	}
 
-	if (nextGuy.size() != 0)
-    {
-        cout << "** " << time.frame() << endl;
-    }
 
 	// build departures for guys
 	for (size_t i = 0; i < nextGuy.size(); ++i)
@@ -223,14 +219,12 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 	    if (nextTime.isValidFrame() && (nextGuy[i].guy.getPauseLevel() == 0 || time.nextFrameInUniverse(nextGuy[i].guy.getTimeDirection()) == 0))
 		{
             newDepartures[nextGuy[i].time].addGuy(nextGuy[i].guy);
-            cout << nextTime.frame() << "  " << nextGuy[i].guy.getRelativeIndex() << endl;
 		}
 
         if (nextGuy[i].time.parentFrame() != time)
         {
             for (size_t j = 0; j < pauseTimes.size(); ++j)
             {
-                cout << time.entryChildFrame(pauseTimes[j], nextGuy[i].guy.getTimeDirection()).frame() << "  " << nextGuy[i].guy.getRelativeIndex() << endl;
                 newDepartures[time.entryChildFrame(pauseTimes[j], nextGuy[i].guy.getTimeDirection())].addGuy
                 (
                     Guy(nextGuy[i].guy.getX(), nextGuy[i].guy.getY(), nextGuy[i].guy.getXspeed(), nextGuy[i].guy.getYspeed(),

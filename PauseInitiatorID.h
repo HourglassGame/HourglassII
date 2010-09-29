@@ -31,7 +31,7 @@ namespace hg {
         unsigned int timelineLength_;
         friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
+    void serialize(Archive &ar, const unsigned int /*version*/)
     {
         ar & type_;
         ar & ID_;
