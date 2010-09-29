@@ -15,10 +15,13 @@ struct SubUniverse {
     PauseInitiatorID pauseInitiatorID_;
     private:
     
-    SubUniverse(){}
+    SubUniverse():
+    initiatorFrame_(0),
+    pauseInitiatorID_()
+    {}
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
+    void serialize(Archive &ar, const unsigned int /*version*/)
     {
         ar & initiatorFrame_;
         ar & pauseInitiatorID_;
@@ -62,7 +65,7 @@ private:
     
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
+    void serialize(Archive &ar, const unsigned int /*version*/)
     {
         ar & timelineLength_;
         ar & nestTrain_;

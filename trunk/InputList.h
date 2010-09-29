@@ -39,7 +39,17 @@ public:
     }
 
 private:
-InputList(){}
+    InputList() :
+    left(false),
+	right(false),
+	up(false),
+	down(false),
+	use(false),
+    ability(NO_ABILITY),
+    frameIdParams(),
+    frameIdParamCount(0)
+    {
+    }
 	bool left;
 	bool right;
 	bool up;
@@ -51,9 +61,8 @@ InputList(){}
 	int frameIdParamCount;
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
+    void serialize(Archive &ar, const unsigned int /*version*/)
     {
-        printf("y0");
         ar & left;
         ar & right;
         ar & up;
