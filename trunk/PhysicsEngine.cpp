@@ -82,6 +82,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
     buildDepartures(nextBox, nextPlatform, nextButton, nextGuy,
                     arrivals.getGuyThiefListRef(), arrivals.getBoxThiefListRef(),
+                    arrivals.getGuyExtraListRef(), arrivals.getBoxExtraListRef(),
                     newDepartures, time, pauseTimes);
 
     // compile all departures
@@ -99,72 +100,208 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                                     const vector<Platform>& nextPlatform,
                                     const vector<Button>& nextButton,
                                     const vector<GuyInfo>& nextGuy,
-                                    const vector<DepartureThief<Guy> >& guyThief,
-                                    const vector<DepartureThief<Box> >& boxThief,
+                                    const vector<RemoteDepartureEdit<Guy> >& guyThief,
+                                    const vector<RemoteDepartureEdit<Box> >& boxThief,
+                                    const vector<RemoteDepartureEdit<Guy> >& guyExtra,
+                                    const vector<RemoteDepartureEdit<Box> >& boxExtra,
                                     map<NewFrameID, MutableObjectList>& newDepartures,
                                     const NewFrameID time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const
 {
 
+    // pause times initiated in the frame must be sorted
     sort(pauseTimes.begin(), pauseTimes.end());
 
-    // build departures for boxes
+    // build departures for boxes - boxes that were paused or unpaused and in the frame
 	for (size_t i = 0; i < nextBox.size(); ++i)
 	{
-		NewFrameID nextTime(time.nextFrame(nextBox[i].box.getTimeDirection()));
+	    Box box = nextBox[i].box;
 
+	    // the index of the next normal departure for a box
+		NewFrameID nextTime(time.nextFrame(box.getTimeDirection()));
+
+        // check if the departure is to be stolen
 		for (size_t t = 0; t < boxThief.size(); ++t)
 		{
-		    if (boxThief[t].getDeparture() == nextBox[i].box)
+		    if (boxThief[t].getDeparture() == box)
 		    {
-                if (nextBox[i].box.getPauseLevel() != 0)
+		        // by now the departure is known to be stolen
+		        // if the departure is a pause departure the departure a level up must also be stolen
+                if (box.getPauseLevel() != 0)
                 {
                     newDepartures[time.parentFrame()].addBoxThief
                     (
-                        DepartureThief<Box>
+                        RemoteDepartureEdit<Box>
                         (
                             time.universe().initiatorID(),
                             Box
                             (
-                                nextBox[i].box.getX(), nextBox[i].box.getY(), nextBox[i].box.getXspeed(), nextBox[i].box.getYspeed(),
-                                nextBox[i].box.getSize(), nextBox[i].box.getTimeDirection(), nextBox[i].box.getPauseLevel()-1
-                            )
+                                box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                                box.getSize(), box.getTimeDirection(), box.getPauseLevel()-1
+                            ),
+                            true
                         )
                     );
                 }
 
+                // adds pause time departures to pause times before this one
+                // also adds pause time departure to the pause time that stole the departue
                 for (size_t j = 0; j < pauseTimes.size(); ++j)
                 {
-                    newDepartures[time.entryChildFrame(pauseTimes[j], nextBox[i].box.getTimeDirection())].addBox
+                    newDepartures[time.entryChildFrame(pauseTimes[j], box.getTimeDirection())].addBox
                     (
-                        Box(nextBox[i].box.getX(), nextBox[i].box.getY(), nextBox[i].box.getXspeed(), nextBox[i].box.getYspeed(),
-                           nextBox[i].box.getSize(), nextBox[i].box.getTimeDirection(), nextBox[i].box.getPauseLevel()+1)
+                        Box(box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                           box.getSize(), box.getTimeDirection(), box.getPauseLevel()+1)
                     );
 
                     if (pauseTimes[j] == boxThief[t].getOrigin())
                     {
-                        goto buildNextBox; // double break then continue
+                        // the box is finished, goto next one
+                        goto buildNextBox;
                     }
                 }
                 assert(false && "pauseTimes must have a element that is equal to thief origin");
 		    }
 		}
 
-		if (nextTime.isValidFrame() && (nextBox[i].box.getPauseLevel() == 0 || time.nextFrameInUniverse(nextBox[i].box.getTimeDirection()) == 0))
+        // the depature is not stolen for this box
+
+        // if the box is a pause time box and this is the end of the universe do not depart
+        if (box.getPauseLevel() != 0 && time.nextFrameInUniverse(box.getTimeDirection()) != 0)
+        {
+            // adds an extra box to parent frame so that pause times in the same parent frame but after this one
+            // see this potentially new pause time box location in their pause time
+            newDepartures[time.parentFrame()].addBoxExtra
+            (
+                RemoteDepartureEdit<Box>
+                (
+                    time.universe().initiatorID(),
+                    Box
+                    (
+                        box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                        box.getSize(), box.getTimeDirection(), box.getPauseLevel()-1
+                    ),
+                    false
+                )
+            );
+        }
+		else if (nextTime.isValidFrame())
 		{
-			newDepartures[nextTime].addBox(nextBox[i].box);
+		    // simply depart to next frame
+			newDepartures[nextTime].addBox(box);
 		}
 
+        // add pause time departure to all spawned pause times
 		for (size_t j = 0; j < pauseTimes.size(); ++j)
 		{
-		    newDepartures[time.entryChildFrame(pauseTimes[j], nextBox[i].box.getTimeDirection())].addBox
+		    newDepartures[time.entryChildFrame(pauseTimes[j], box.getTimeDirection())].addBox
             (
-                Box(nextBox[i].box.getX(), nextBox[i].box.getY(), nextBox[i].box.getXspeed(), nextBox[i].box.getYspeed(),
-                   nextBox[i].box.getSize(), nextBox[i].box.getTimeDirection(), nextBox[i].box.getPauseLevel()+1)
+                Box(box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                   box.getSize(), box.getTimeDirection(), box.getPauseLevel()+1)
             );
 		}
         buildNextBox:
+        ;
+	}
+
+	// special departures for boxes, from pause time
+	// these boxes are pause time boxes that have changed location in pause time
+	for (size_t i = 0; i < boxExtra.size(); ++i)
+	{
+	    Box box = boxExtra[i].getDeparture();
+
+	    // the index of the next normal departure for a box
+		NewFrameID nextTime(time.nextFrame(box.getTimeDirection()));
+
+        // check if the departure is to be stolen
+		for (size_t t = 0; t < boxThief.size(); ++t)
+		{
+		    if (boxThief[t].getDeparture() == box)
+		    {
+		        // by now the departure is known to be stolen
+		        // if the departure is a pause departure the departure a level up must also be stolen
+                if (box.getPauseLevel() != 0)
+                {
+                    newDepartures[time.parentFrame()].addBoxThief
+                    (
+                        RemoteDepartureEdit<Box>
+                        (
+                            time.universe().initiatorID(),
+                            Box
+                            (
+                                box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                                box.getSize(), box.getTimeDirection(), box.getPauseLevel()-1
+                            ),
+                            true
+                        )
+                    );
+                }
+
+                // adds pause time departures to pause times before this one
+                // also adds pause time departure to the pause time that stole the departue
+                // CHANGE FROM NORMAL BOX: only add to pause times that occur after the extra box pause time
+                for (size_t j = 0; j < pauseTimes.size(); ++j)
+                {
+                    if (pauseTimes[j] < boxExtra[i].getOrigin())
+                    {
+                        newDepartures[time.entryChildFrame(pauseTimes[j], box.getTimeDirection())].addBox
+                        (
+                            Box(box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                               box.getSize(), box.getTimeDirection(), box.getPauseLevel()+1)
+                        );
+                    }
+
+                    if (pauseTimes[j] == boxThief[t].getOrigin())
+                    {
+                        // the box is finished, goto next one
+                        goto buildNextExtraBox;
+                    }
+                }
+                assert(false && "pauseTimes must have a element that is equal to thief origin");
+		    }
+		}
+
+        // the depature is not stolen for this box
+
+        // if the box is a pause time box and this is the end of the universe do not depart
+        if (box.getPauseLevel() != 0 && time.nextFrameInUniverse(box.getTimeDirection()) != 0)
+        {
+            // adds an extra box to parent frame so that pause times in the same parent frame but after this one
+            // see this potentially new pause time box location in their pause time
+            newDepartures[time.parentFrame()].addBoxExtra
+            (
+                RemoteDepartureEdit<Box>
+                (
+                    time.universe().initiatorID(),
+                    Box
+                    (
+                        box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                        box.getSize(), box.getTimeDirection(), box.getPauseLevel()-1
+                    ),
+                    false
+                )
+            );
+        }
+		else if (nextTime.isValidFrame() && boxExtra[i].getPropIntoNormal())
+		{
+		    // simply depart to next frame
+			newDepartures[nextTime].addBox(box);
+		}
+
+        // CHANGE FROM NORMAL BOX: add pause time departure to pause times after the current one
+		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		{
+		    if (pauseTimes[j] < boxExtra[i].getOrigin())
+            {
+                newDepartures[time.entryChildFrame(pauseTimes[j], box.getTimeDirection())].addBox
+                (
+                    Box(box.getX(), box.getY(), box.getXspeed(), box.getYspeed(),
+                       box.getSize(), box.getTimeDirection(), box.getPauseLevel()+1)
+                );
+            }
+		}
+        buildNextExtraBox:
         ;
 	}
 
@@ -210,6 +347,10 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 		}
 	}
 
+	if (nextGuy.size() != 0)
+    {
+        //cout << "** " << time.frame() << endl;
+    }
 
 	// build departures for guys
 	for (size_t i = 0; i < nextGuy.size(); ++i)
@@ -219,12 +360,14 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 	    if (nextTime.isValidFrame() && (nextGuy[i].guy.getPauseLevel() == 0 || time.nextFrameInUniverse(nextGuy[i].guy.getTimeDirection()) == 0))
 		{
             newDepartures[nextGuy[i].time].addGuy(nextGuy[i].guy);
+            //cout << nextTime.frame() << "  " << nextGuy[i].guy.getRelativeIndex() << endl;
 		}
 
-        if (nextGuy[i].time.parentFrame() != time)
+        /*if (nextGuy[i].time.parentFrame() != time)
         {
             for (size_t j = 0; j < pauseTimes.size(); ++j)
             {
+                //cout << time.entryChildFrame(pauseTimes[j], nextGuy[i].guy.getTimeDirection()).frame() << "  " << nextGuy[i].guy.getRelativeIndex() << endl;
                 newDepartures[time.entryChildFrame(pauseTimes[j], nextGuy[i].guy.getTimeDirection())].addGuy
                 (
                     Guy(nextGuy[i].guy.getX(), nextGuy[i].guy.getY(), nextGuy[i].guy.getXspeed(), nextGuy[i].guy.getYspeed(),
@@ -236,7 +379,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                     )
                 );
             }
-        }
+        }*/
 
 	}
 
@@ -500,16 +643,22 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                                 )
                             );
 
-                            if (carryPauseLevel[i] != 0)
+                            if (oldGuyList[i].getBoxPauseLevel() != 0)
                             {
-                                newDepartures[time.parentFrame()].addBox
+                                newDepartures[time.parentFrame()].addBoxExtra
                                 (
-                                    Box
+                                    RemoteDepartureEdit<Box>
                                     (
-                                        dropX, dropY, 0, 0,
-                                        dropSize, oldGuyList[i].getBoxCarryDirection(),
-                                        oldGuyList[i].getBoxPauseLevel()-1
+                                        time.universe().initiatorID(),
+                                        Box
+                                        (
+                                            dropX, dropY, 0, 0,
+                                            dropSize, oldGuyList[i].getBoxCarryDirection(),
+                                            oldGuyList[i].getBoxPauseLevel()-1
+                                        ),
+                                        true
                                     )
+
                                 );
                             }
 
@@ -550,14 +699,15 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             {
                                 newDepartures[time.parentFrame()].addBoxThief
                                 (
-                                    DepartureThief<Box>
+                                    RemoteDepartureEdit<Box>
                                     (
                                         time.universe().initiatorID(),
                                         Box
                                         (
                                             boxX, boxY, nextBox[j].box.getXspeed(), nextBox[j].box.getYspeed(),
                                             boxSize, carryDirection[i], carryPauseLevel[i]-1
-                                        )
+                                        ),
+                                        true
                                     )
                                 );
                             }

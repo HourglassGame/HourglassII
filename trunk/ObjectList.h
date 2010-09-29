@@ -4,7 +4,7 @@
 #include "Box.h"
 #include "Button.h"
 #include "Platform.h"
-#include "DepartureThief.cpp"
+#include "RemoteDepartureEdit.cpp"
 #include "TimeDirection.h"
 
 #include <boost/shared_ptr.hpp>
@@ -32,8 +32,10 @@ public:
     const ::std::vector<Box>& getBoxListRef() const;
     const ::std::vector<Button>& getButtonListRef() const;
     const ::std::vector<Platform>& getPlatformListRef() const;
-    const ::std::vector<DepartureThief<Guy> >& getGuyThiefListRef() const;
-    const ::std::vector<DepartureThief<Box> >& getBoxThiefListRef() const;
+    const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyThiefListRef() const;
+    const ::std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
+    const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
+    const ::std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
     //Add other ref getters as needed
 
     bool operator==(const ObjectList& other) const;
@@ -56,8 +58,10 @@ public:
 	void addBox(const Box& toCopy);
 	void addButton(const Button& toCopy);
 	void addPlatform(const Platform& toCopy);
-	void addGuyThief(const DepartureThief<Guy>& toCopy);
-	void addBoxThief(const DepartureThief<Box>& toCopy);
+	void addGuyThief(const RemoteDepartureEdit<Guy>& toCopy);
+	void addBoxThief(const RemoteDepartureEdit<Box>& toCopy);
+	void addGuyExtra(const RemoteDepartureEdit<Guy>& toCopy);
+	void addBoxExtra(const RemoteDepartureEdit<Box>& toCopy);
 
     void add(const MutableObjectList& other);
     void add(const ObjectList& other);

@@ -10,7 +10,7 @@
 #include "ObjectList.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
-#include "DepartureThief.cpp"
+#include "RemoteDepartureEdit.cpp"
 #include <vector>
 #include <map>
 namespace hg {
@@ -71,8 +71,10 @@ private:
                         const ::std::vector<Platform>& nextPlatform,
                         const ::std::vector<Button>& nextButton,
                         const ::std::vector<GuyInfo>& nextGuy,
-                        const ::std::vector<DepartureThief<Guy> >& guyThief,
-                        const ::std::vector<DepartureThief<Box> >& boxThief,
+                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyThief,
+                        const ::std::vector<RemoteDepartureEdit<Box> >& boxThief,
+                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyExtra,
+                        const ::std::vector<RemoteDepartureEdit<Box> >& boxExtra,
                         ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                         const NewFrameID time,
                         std::vector<PauseInitiatorID>& pauseTimes
