@@ -645,21 +645,32 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 
                             if (oldGuyList[i].getBoxPauseLevel() != 0)
                             {
-                                newDepartures[time.parentFrame()].addBoxExtra
-                                (
-                                    RemoteDepartureEdit<Box>
+                                int pauseLevel = oldGuyList[i].getBoxPauseLevel();
+                                NewFrameID parTime = time.parentFrame();
+                                PauseInitiatorID parInit = time.universe().initiatorID();
+                                int pauseLevelChange = 1;
+                                while (pauseLevel > 0)
+                                {
+                                    newDepartures[parTime].addBoxExtra
                                     (
-                                        time.universe().initiatorID(),
-                                        Box
+                                        RemoteDepartureEdit<Box>
                                         (
-                                            dropX, dropY, 0, 0,
-                                            dropSize, oldGuyList[i].getBoxCarryDirection(),
-                                            oldGuyList[i].getBoxPauseLevel()-1
-                                        ),
-                                        true
-                                    )
+                                            parInit,
+                                            Box
+                                            (
+                                                dropX, dropY, 0, 0,
+                                                dropSize, oldGuyList[i].getBoxCarryDirection(),
+                                                oldGuyList[i].getBoxPauseLevel()-pauseLevelChange
+                                            ),
+                                            true
+                                        )
 
-                                );
+                                    );
+                                    --pauseLevel;
+                                    ++pauseLevelChange;
+                                    parInit = parTime.universe().initiatorID();
+                                    parTime = parTime.parentFrame();
+                                }
                             }
 
                             carry[i] = false;
