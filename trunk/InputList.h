@@ -1,5 +1,8 @@
 #include "NewFrameID.h"
 #include "Ability.h"
+
+#include <boost/serialization/nvp.hpp>
+
 #include <cassert>
 
 #ifndef HG_INPUT_LIST_H
@@ -63,15 +66,15 @@ private:
     template<class Archive>
     void serialize(Archive &ar, const unsigned int /*version*/)
     {
-        ar & left;
-        ar & right;
-        ar & up;
-        ar & down;
-        ar & use;
+        ar & BOOST_SERIALIZATION_NVP(left);
+        ar & BOOST_SERIALIZATION_NVP(right);
+        ar & BOOST_SERIALIZATION_NVP(up);
+        ar & BOOST_SERIALIZATION_NVP(down);
+        ar & BOOST_SERIALIZATION_NVP(use);
 
-        ar & ability;
-        ar & frameIdParams;
-        ar & frameIdParamCount;
+        ar & BOOST_SERIALIZATION_NVP(ability);
+        ar & BOOST_SERIALIZATION_NVP(frameIdParams);
+        ar & BOOST_SERIALIZATION_NVP(frameIdParamCount);
     }
 
 };

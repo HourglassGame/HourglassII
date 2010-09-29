@@ -13,9 +13,10 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/nvp.hpp>
 
 #include <fstream>
 #include <sstream>
@@ -74,8 +75,9 @@ int main()
             const vector<InputList> replay(timeEngine.getReplayData());
             std::ofstream ofs("replay");
             {   
-                boost::archive::text_oarchive out(ofs);
-                out << replay;
+                boost::archive::binary_oarchive out(ofs);
+                out << BOOST_SERIALIZATION_NVP(replay);
+;
             }
         }
         input.updateState(app.GetInput());
@@ -131,9 +133,9 @@ int main()
     {
         // create and open an archive for input
         std::ifstream ifs("replay");
-        boost::archive::text_iarchive ia(ifs);
+        boost::archive::binary_iarchive ia(ifs);
         // read class state from archive
-        ia >> input;
+        ia >> BOOST_SERIALIZATION_NVP(input);
         // archive and stream closed when destructors are called
     }
     foreach(const InputList& inputpart, input)

@@ -4,6 +4,8 @@
 #include "TimeDirection.h"
 #include "UniverseID.h"
 
+#include <boost/serialization/nvp.hpp>
+
 #include <cstring>
 #include <cassert>
 
@@ -68,10 +70,10 @@ private:
     
     friend class boost::serialization::access;
     template<class Archive>
-    void serialize(Archive &ar, const unsigned int version)
+    void serialize(Archive &ar, const unsigned int /*version*/)
     {
-        ar & frame_;
-        ar & universe_;
+        ar & BOOST_SERIALIZATION_NVP(frame_);
+        ar & BOOST_SERIALIZATION_NVP(universe_);
     }
 };
 //Returns a size_t based on toHash such that two NewFrameIDs for which operator== returns true give the same size_t value;
