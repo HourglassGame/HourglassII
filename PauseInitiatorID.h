@@ -40,9 +40,9 @@ namespace hg {
     };
 
     bool operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs);
-    
+
     bool operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs);
-    
+
     ::std::size_t hash_value(const PauseInitiatorID& toHash);
 }
 #endif //HG_PAUSE_INITIATOR_ID

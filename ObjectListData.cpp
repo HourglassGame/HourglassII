@@ -17,7 +17,9 @@ boxList(),
 buttonList(),
 platformList(),
 guyThiefList(),
-boxThiefList()
+boxThiefList(),
+guyExtraList(),
+boxExtraList()
 {
 }
 
@@ -27,7 +29,9 @@ boxList(other.boxList),
 buttonList(other.buttonList),
 platformList(other.platformList),
 guyThiefList(other.guyThiefList),
-boxThiefList(other.boxThiefList)
+boxThiefList(other.boxThiefList),
+guyExtraList(other.guyExtraList),
+boxExtraList(other.boxExtraList)
 {
 }
 
@@ -38,7 +42,7 @@ static bool containsNoGuysWithEqualRelativeIndices(const vector<Guy>& guyList) {
     for (vector<Guy>::const_iterator it(guyList.begin()), end(guyList.end()); it != end; ++it) {
         relativeIndices.push_back(it->getRelativeIndex());
     }
-    
+
     return unique(relativeIndices.begin(), relativeIndices.end()) == relativeIndices.end();
 }
 
@@ -53,6 +57,8 @@ void ObjectListData::sortElements()
 	sort(platformList.begin(), platformList.end());
 	sort(guyThiefList.begin(), guyThiefList.end());
 	sort(boxThiefList.begin(), boxThiefList.end());
+	sort(guyExtraList.begin(), guyExtraList.end());
+	sort(boxExtraList.begin(), boxExtraList.end());
 }
 
 void ObjectListData::add(const ObjectListData& other)
@@ -63,5 +69,7 @@ void ObjectListData::add(const ObjectListData& other)
     platformList.insert(platformList.end(),other.platformList.begin(),other.platformList.end());
     guyThiefList.insert(guyThiefList.end(),other.guyThiefList.begin(),other.guyThiefList.end());
     boxThiefList.insert(boxThiefList.end(),other.boxThiefList.begin(),other.boxThiefList.end());
+    guyExtraList.insert(guyExtraList.end(),other.guyExtraList.begin(),other.guyExtraList.end());
+    boxExtraList.insert(boxExtraList.end(),other.boxExtraList.begin(),other.boxExtraList.end());
 }
 }//namespace hg
