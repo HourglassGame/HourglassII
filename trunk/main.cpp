@@ -21,6 +21,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 
 #include <cmath>
 
@@ -77,7 +78,6 @@ int main()
             {   
                 boost::archive::binary_oarchive out(ofs);
                 out << BOOST_SERIALIZATION_NVP(replay);
-;
             }
         }
         input.updateState(app.GetInput());
@@ -123,9 +123,7 @@ int main()
     }
     }
     {
-    RenderWindow app(VideoMode(640, 480), "Hourglass II");
-    app.UseVerticalSync(true);
-    app.SetFramerateLimit(60);
+    
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
 
@@ -138,6 +136,11 @@ int main()
         ia >> BOOST_SERIALIZATION_NVP(input);
         // archive and stream closed when destructors are called
     }
+    vector<double> fpses;
+    fpses.reserve(input.size());
+    RenderWindow app(VideoMode(640, 480), "Hourglass II");
+    app.UseVerticalSync(true);
+    app.SetFramerateLimit(60);
     foreach(const InputList& inputpart, input)
     {
         Event event;
@@ -181,9 +184,12 @@ int main()
             return EXIT_SUCCESS;
         }
 
-        {
+        if (app.GetFrameTime() != 0) {
             stringstream fpsstring;
-            fpsstring << (1./app.GetFrameTime());
+            double fps(1./app.GetFrameTime());
+            cout << fps << "\n";
+            fpses.push_back(fps);
+            fpsstring << fps;
             sf::String fpsglyph(fpsstring.str());
             fpsglyph.SetPosition(600, 465);
             fpsglyph.SetSize(8.f);
@@ -191,6 +197,14 @@ int main()
         }
         app.Display();
     }
+    double mean(0);
+    foreach(double fps, fpses) {
+        mean += fps;
+    }
+    mean /= fpses.size();
+    cout << "mean fps: " << mean << "\n";
+    cout << "best fps: " << *max_element(fpses.begin(), fpses.end()) << "\n";
+    cout << "worst fps: " << *min_element(fpses.begin(), fpses.end()) << "\n";
     }
     return EXIT_SUCCESS;
 }
