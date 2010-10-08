@@ -3,6 +3,7 @@
 #include "InvalidLevelException.h"
 #include "ParadoxException.h"
 #include "ObjectList.h"
+#include "Level.h"
 
 #include <iostream>
 #include <cassert>
@@ -11,21 +12,13 @@
 using namespace ::std;
 using namespace ::boost;
 namespace hg {
-TimeEngine::TimeEngine(unsigned int nspeedOfTime,
-                       unsigned int timeLineLength,
-                       vector<vector<bool> > wallmap,
-                       int newWallSize,
-                       int newGravity,
-                       const ObjectList& initialObjects,
-                       NewFrameID guyStartTime,
-                       AttachmentMap nAttachmentMap,
-                       TriggerSystem nTriggerSystem) :
-speedOfTime(nspeedOfTime),
-worldState(TimelineState(timeLineLength),
-                timeLineLength,
-                guyStartTime,
-                PhysicsEngine(wallmap, newWallSize, newGravity, nAttachmentMap, nTriggerSystem),
-                initialObjects)
+TimeEngine::TimeEngine(const Level& level) :
+speedOfTime(level.speedOfTime),
+worldState(TimelineState(level.timeLineLength),
+                level.timeLineLength,
+                level.guyStartTime,
+                PhysicsEngine(level.wallmap, level.wallSize, level.gravity, level.attachmentMap, level.triggerSystem),
+                level.initialObjects)
 
 {
 

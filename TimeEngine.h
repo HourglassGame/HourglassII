@@ -14,7 +14,7 @@ class InputList;
 class ObjectList;
 class TimeObjectListList;
 class ParadoxException;
-
+class Level;
 class TimeEngine
 {
 public:
@@ -29,15 +29,7 @@ public:
      * A correct level has exacty one guy.
      * A consistent level has a state which does not depend on the direction in which it is propogated
      */
-	TimeEngine(unsigned int speedOfTime,
-               unsigned int timeLineLength,
-               ::std::vector< ::std::vector<bool> > wallmap,
-               int newWallSize,
-               int newGravity,
-               const ObjectList& initialObjects,
-               NewFrameID guyStartTime,
-               AttachmentMap nAttachmentMap,
-               TriggerSystem nTriggerSystem);
+	TimeEngine(const Level& level);
 
     typedef ::std::vector<FrameUpdateSet> FrameListList;
 	/************************
