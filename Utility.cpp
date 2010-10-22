@@ -4,7 +4,9 @@
 #include "Window.h"
 #include <SFML/Graphics/String.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-
+using ::sf::VideoMode;
+using ::sf::Sprite;
+using ::sf::String;
 namespace hg {
 
     void initialiseNormalWindow(Window& window, const Options& options)
@@ -14,87 +16,87 @@ namespace hg {
             window.GetHeight() != options.height || 
             window.windowStyle != options.windowStyle) {
             if (options.windowStyle & sf::Style::Fullscreen) {
-                window.Create(::sf::VideoMode::GetDesktopMode(),"Hourglass II", options.windowStyle);
+                window.Create(VideoMode::GetDesktopMode(),"Hourglass II", options.windowStyle);
             }
             else {
-                window.Create(::sf::VideoMode(options.width, options.height),"Hourglass II", options.windowStyle);
+                window.Create(VideoMode(options.width, options.height),"Hourglass II", options.windowStyle);
             }
         }
     }
 
 //perhaps make these template specialisations of a static member function (is that possible) 
 //to improve inlining and help the compiler/code eliminate the tag objects
-    float centrePosition(const ::sf::String& /*toSetCentre*/, horizontalposition::LEFT)
+    float centrePosition(const String& /*toSetCentre*/, horizontalposition::LEFT)
     {
         return 0.f;
     }
-    float centrePosition(const ::sf::Sprite& /*toSetCentre*/, horizontalposition::LEFT)
+    float centrePosition(const Sprite& /*toSetCentre*/, horizontalposition::LEFT)
     {
         return 0.f;
     }
-    float centrePosition(const ::sf::String& toSetCentre, horizontalposition::MIDDLE)
+    float centrePosition(const String& toSetCentre, horizontalposition::MIDDLE)
     {
         return toSetCentre.GetRect().GetWidth()/2.f;
     }
-    float centrePosition(const ::sf::Sprite& toSetCentre, horizontalposition::MIDDLE)
+    float centrePosition(const Sprite& toSetCentre, horizontalposition::MIDDLE)
     {
         return toSetCentre.GetSubRect().GetWidth()/2.f;
     }
-    float centrePosition(const ::sf::String& toSetCentre, horizontalposition::RIGHT)
+    float centrePosition(const String& toSetCentre, horizontalposition::RIGHT)
     {
         return toSetCentre.GetRect().GetWidth();
     }
-    float centrePosition(const ::sf::Sprite& toSetCentre, horizontalposition::RIGHT)
+    float centrePosition(const Sprite& toSetCentre, horizontalposition::RIGHT)
     {
         return toSetCentre.GetSubRect().GetWidth();
     }
-    float centrePosition(const ::sf::String& /*toSetCentre*/, verticalposition::TOP)
+    float centrePosition(const String& /*toSetCentre*/, verticalposition::TOP)
     {
         return 0.f;
     }
-    float centrePosition(const ::sf::Sprite& /*toSetCentre*/, verticalposition::TOP)
+    float centrePosition(const Sprite& /*toSetCentre*/, verticalposition::TOP)
     {
         return 0.f;
     }
-    float centrePosition(const ::sf::String& toSetCentre, verticalposition::MIDDLE)
+    float centrePosition(const String& toSetCentre, verticalposition::MIDDLE)
     {
         return toSetCentre.GetRect().GetHeight()/2.f;
     }
-    float centrePosition(const ::sf::Sprite& toSetCentre, verticalposition::MIDDLE)
+    float centrePosition(const Sprite& toSetCentre, verticalposition::MIDDLE)
     {
         return toSetCentre.GetSubRect().GetHeight()/2.f;
     }
-    float centrePosition(const ::sf::String& toSetCentre, verticalposition::BOTTOM)
+    float centrePosition(const String& toSetCentre, verticalposition::BOTTOM)
     {
         return toSetCentre.GetRect().GetHeight();
     }
-    float centrePosition(const ::sf::Sprite& toSetCentre, verticalposition::BOTTOM)
+    float centrePosition(const Sprite& toSetCentre, verticalposition::BOTTOM)
     {
         return toSetCentre.GetSubRect().GetHeight();
     }
     
-    void setCentre(::sf::String& toSetCentre, float x, float y)
+    void setCentre(String& toSetCentre, float x, float y)
     {
         toSetCentre.SetCenter(toSetCentre.GetRect().GetWidth()*x, toSetCentre.GetRect().GetHeight()*y);
     }
-    void setCentre(::sf::Sprite& toSetCentre, float x, float y)
+    void setCentre(Sprite& toSetCentre, float x, float y)
     {
          toSetCentre.SetCenter(toSetCentre.GetSubRect().GetWidth()*x,toSetCentre.GetSubRect().GetHeight()*y);
     }
 
-    float getXSize(const ::sf::String& toGetXSize)
+    float getXSize(const String& toGetXSize)
     {
         return toGetXSize.GetRect().GetWidth();
     }
-    float getYSize(const ::sf::String& toGetYSize)
+    float getYSize(const String& toGetYSize)
     {
         return toGetYSize.GetRect().GetHeight();
     }
-    float getXSize(const ::sf::Sprite& toGetXSize)
+    float getXSize(const Sprite& toGetXSize)
     {
         return toGetXSize.GetSubRect().GetWidth() * toGetXSize.GetScale().x;
     }
-    float getYSize(const ::sf::Sprite& toGetYSize)
+    float getYSize(const Sprite& toGetYSize)
     {
         return toGetYSize.GetSubRect().GetHeight() * toGetYSize.GetScale().y;
     }

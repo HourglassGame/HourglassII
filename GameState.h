@@ -6,7 +6,6 @@
 #include "Level.h"
 #include <memory>
 namespace hg {
-
 class GameState : public State {
 public:
 GameState(GameEngine& engine, const Level& nlevel);

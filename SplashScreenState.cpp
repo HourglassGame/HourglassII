@@ -7,7 +7,14 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/String.hpp>
-using namespace ::sf;
+using ::sf::String;
+using ::sf::Sprite;
+using ::sf::Event;
+using ::sf::Sleep;
+using ::sf::Image;
+using ::sf::VideoMode;
+using namespace ::sf::Style;
+using ::sf::Font;
 namespace hg {
 SplashScreenState::SplashScreenState(GameEngine& engine) :
 engine_(engine),
@@ -19,11 +26,11 @@ void SplashScreenState::init()
     Image splashImage(loadImageAcceptFail("splashscreen.png", 640, 480));
     Sprite splash(splashImage);
 
-    engine_.window.Create(VideoMode((int)splash.GetSize().x, (int)splash.GetSize().y),"",Style::None);
+    engine_.window.Create(VideoMode((int)splash.GetSize().x, (int)splash.GetSize().y),"",None);
     engine_.window.Clear();
     engine_.window.Draw(splash);
     {
-            sf::String pressAnyKey("Press any Key...");
+            String pressAnyKey("Press any Key...");
             Font ruritania(loadFontAcceptFail("Ruritania.ttf"));
             pressAnyKey.SetFont(ruritania);
             pressAnyKey.SetSize(20.f);

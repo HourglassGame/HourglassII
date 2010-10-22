@@ -2,8 +2,10 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <iostream>
-using namespace ::sf;
-using namespace ::std;
+using ::sf::Image;
+using ::sf::Color;
+using ::sf::Font;
+using ::std::string;
 namespace hg {
     Image loadImageAcceptFail(string filename, int widthOnFail, int heightOnFail)
     {
