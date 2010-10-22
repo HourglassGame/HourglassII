@@ -1,7 +1,7 @@
 #include "StateManager.h"
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
-using namespace ::std;
+using ::std::auto_ptr;
 namespace hg {
 StateManager::StateManager() :
 stateStack(),

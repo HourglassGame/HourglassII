@@ -2,7 +2,6 @@
 #include "Loaders.h"
 #include "SplashScreenState.h"
 #include "MainMenuState.h"
-using namespace ::sf;
 namespace hg {
 GameEngine::GameEngine() :
 stateManager(),

@@ -1,11 +1,12 @@
 #include "GameEngine.h"
 #include <iostream>
 #include <exception>
-using namespace ::hg;
-using namespace ::std;
+using ::hg::GameEngine;
+using ::std::exception;
+using ::std::cout;
 namespace {
-    bool parseOptions(int argc, char** argv, hg::GameEngine& engine);
-    bool parseOptions(int /*argc*/, char** /*argv*/, hg::GameEngine& /*engine*/)
+    bool parseOptions(int argc, char** argv, ::hg::GameEngine& engine);
+    bool parseOptions(int /*argc*/, char** /*argv*/, ::hg::GameEngine& /*engine*/)
     {
         // parses command line and config file options and gives engine appropriate settings
         // Precedence: command line > player options > config > default
@@ -34,7 +35,7 @@ int main(int argc, char** argv)
             engine.go();
         }
     }
-    catch (std::exception& e) {
+    catch (exception& e) {
         cout << "ERROR - uncaught standard exception: " << e.what() << "\n";
         cout << "Aborting" << "\n";
         return EXIT_FAILURE;

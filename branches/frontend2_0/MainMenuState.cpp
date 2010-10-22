@@ -6,7 +6,12 @@
 #include <boost/bind.hpp>
 #include <algorithm>
 #include <iostream>
-using namespace ::sf;
+using ::sf::Event;
+using ::sf::RenderTarget;
+using ::sf::String;
+using ::std::string;
+using ::std::max;
+using ::boost::bind;
 namespace {
     void noop() {}
 }
@@ -20,11 +25,11 @@ ruritania(loadFontAcceptFail("Ruritania.ttf")),
 menu()
 {
     //addItem deletes on fail
-    menu.addItem(makeItem("Play", ::boost::bind(&MainMenuState::play, ::boost::ref(*this))));
+    menu.addItem(makeItem("Play", bind(&MainMenuState::play, ::boost::ref(*this))));
     menu.addItem(makeItem("View Replays", &noop));
     menu.addItem(makeItem("Run Benchmark", &noop));
     menu.addItem(makeItem("Preferences", &noop));
-    menu.addItem(makeItem("Exit", ::boost::bind(&MainMenuState::exit, ::boost::ref(*this))));
+    menu.addItem(makeItem("Exit", bind(&MainMenuState::exit, ::boost::ref(*this))));
 }
 void MainMenuState::exit() {
     engine_.stateManager.popAll();
@@ -76,7 +81,7 @@ void MainMenuState::update()
 }
 void MainMenuState::scaleBackgroundSprite()
 {
-    float scaleFactor(::std::max(engine_.window.GetWidth()/(1.f*background.GetWidth()),
+    float scaleFactor(max(engine_.window.GetWidth()/(1.f*background.GetWidth()),
                                  engine_.window.GetHeight()/(1.f*background.GetHeight())));
     backgroundSprite.SetScaleX(scaleFactor);
     backgroundSprite.SetScaleY(scaleFactor);
@@ -84,10 +89,11 @@ void MainMenuState::scaleBackgroundSprite()
     backgroundSprite.SetPosition(engine_.window.GetDefaultView().GetCenter());
 }
 template <typename BoundActionType>
-ActiveMenuItem< ::sf::RenderTarget, ::sf::String, BoundActionType>* MainMenuState::makeItem(::std::string labelString, const BoundActionType& action) const
+ActiveMenuItem<RenderTarget, String, BoundActionType>* MainMenuState::makeItem(string labelString,
+                                                                                const BoundActionType& action) const
 {
     sf::String label(labelString);
     label.SetFont(ruritania);
-    return new ActiveMenuItem< ::sf::RenderTarget, ::sf::String, BoundActionType>(label, action);
+    return new ActiveMenuItem<RenderTarget, String, BoundActionType>(label, action);
 }
 }
