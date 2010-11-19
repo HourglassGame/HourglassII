@@ -49,7 +49,7 @@ void Input::updateState(const sf::Input& input)
     updatePress(mouseRight, input.IsMouseButtonDown(sf::Mouse::Right));
     mouseX = input.GetMouseX()*100;
     mouseY = input.GetMouseY()*100;
-    updatePress(pause, input.IsKeyDown(sf::Key::P));
+    pause = input.IsKeyDown(sf::Key::P);//updatePress(pause, input.IsKeyDown(sf::Key::P));
 }
 
 const InputList Input::AsInputList() const
