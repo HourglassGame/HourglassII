@@ -75,7 +75,7 @@ int main()
         if (app.GetInput().IsKeyDown(sf::Key::S)) {
             const vector<InputList> replay(timeEngine.getReplayData());
             std::ofstream ofs("replay");
-            {   
+            {
                 boost::archive::binary_oarchive out(ofs);
                 out << BOOST_SERIALIZATION_NVP(replay);
             }
@@ -87,7 +87,7 @@ int main()
             if (waveInfo.get<0>().isValidFrame()) {
                 Draw
                 (
-                    app, 
+                    app,
                     timeEngine.getPostPhysics
                     (
                         waveInfo.get<0>(),
@@ -123,7 +123,7 @@ int main()
     }
     }
     {
-    
+
     vector<vector<bool> > wall(MakeWall());
     TimeEngine timeEngine(MakeTimeEngine(wall));
 
@@ -160,7 +160,7 @@ int main()
             if (waveInfo.get<0>().isValidFrame()) {
                 Draw
                 (
-                    app, 
+                    app,
                     timeEngine.getPostPhysics
                     (
                         waveInfo.get<0>(),
@@ -413,6 +413,11 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFra
                                              25,
                                              Color(200,200,0)));
     }
+     target.Draw(Shape::Rectangle((3000.f/10800.f)*640-1,
+                                             10,
+                                             (3000.f/10800.f)*640+2,
+                                             25,
+                                             Color(0,255,0)));
 }
 
 vector<vector<bool> > MakeWall()
@@ -481,9 +486,10 @@ vector<vector<bool> > MakeWall()
 TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
-    newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
-    newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
-    newObjectList.addBox(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
+    newObjectList.addBox(Box(32000, 15600, 0, 0, 3200, FORWARDS, 0));
+    //newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
+    //newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
+    //newObjectList.addBox(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
     newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, 0, FORWARDS, 0, 0, 0));
     newObjectList.addButton(Button(30400, 44000, 0, 0, 0, false, REVERSE, 0));
     newObjectList.addPlatform(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
@@ -494,7 +500,7 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
         10800,
         wall,
         3200,
-        50,
+        30,
         ObjectList(newObjectList),
         NewFrameID(0,10800),
         AttachmentMap

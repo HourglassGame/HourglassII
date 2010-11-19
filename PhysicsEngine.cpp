@@ -170,8 +170,12 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
         // if the box is a pause time box and this is the end of the universe do not depart
         if (box.getPauseLevel() != 0 && time.nextFrameInUniverse(box.getTimeDirection()) != 0)
         {
+            /*
+            // WRONG BITS:
             // adds an extra box to parent frame so that pause times in the same parent frame but after this one
             // see this potentially new pause time box location in their pause time
+            // REASON:
+            // when something is changed the box send a position update to the parent frame, the parent then updates sub universes
             newDepartures[time.parentFrame()].addBoxExtra
             (
                 RemoteDepartureEdit<Box>
@@ -184,7 +188,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                     ),
                     false
                 )
-            );
+            );*/
         }
 		else if (nextTime.isValidFrame())
 		{
@@ -292,7 +296,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
         // CHANGE FROM NORMAL BOX: add pause time departure to pause times after the current one
 		for (size_t j = 0; j < pauseTimes.size(); ++j)
 		{
-		    if (pauseTimes[j] < boxExtra[i].getOrigin())
+		    if (boxExtra[i].getOrigin() < pauseTimes[j])
             {
                 newDepartures[time.entryChildFrame(pauseTimes[j], box.getTimeDirection())].addBox
                 (
@@ -428,7 +432,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
              // jump
             if (oldGuyList[i].getSupported() && input.getUp())
             {
-                yspeed[i] = -700;
+                yspeed[i] = -550;
             }
 
             //check wall collision in Y direction
@@ -490,7 +494,16 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 TimeDirection boxDirection = nextBox[j].box.getTimeDirection();
                 if (x[i] <= boxX+boxSize && x[i]+width >= boxX)
                 {
-                    if (boxDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE)
+                    if (nextBox[j].box.getPauseLevel() > 0)
+                    {
+                        if (newY+height >= boxY && newY+height-yspeed[i] <= boxY)
+                        {
+                            newY = boxY-height;
+                            xspeed[i] = 0;
+                            supported[i] = true;
+                        }
+                    }
+                    else if (boxDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE)
                     {
                         if (newY+height >= boxY-boxYspeed && newY+height-yspeed[i] <= boxY)
                         {
@@ -787,7 +800,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                     }
                 }
             }
-            else if (input.getAbility() == hg::PAUSE_TIME)
+            else if (input.getAbility() == hg::PAUSE_TIME and time.frame() == 3000) // FOR TESTING, REMOVE
             {
                 PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
                 nextTime = time.entryChildFrame(pauseID, oldGuyList[i].getTimeDirection());
@@ -865,7 +878,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		bool supported = false;
 
         bool exploded = false;
-
+        /*
         for (vector<Box>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
         {
             if (j != i)
@@ -880,6 +893,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                 }
             }
         }
+        */
         /*
         for (vector<Platform>::const_iterator j(nextPlatform.begin()), jend(nextPlatform.end()); j != jend; ++j)
         {
@@ -914,7 +928,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                     }
                     else
                     {
-                        newY = boxY + boxSize;
+                        //newY = boxY + boxSize;
                     }
                 }
             }
@@ -945,7 +959,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
             int pX = nextPlatform[j].getX();
             int pY = nextPlatform[j].getY();
             TimeDirection pDirection = nextPlatform[j].getTimeDirection();
-            if (pDirection*i->getTimeDirection() == hg::REVERSE)
+            if (pDirection*i->getPauseLevel() == 0 && pDirection*i->getTimeDirection() == hg::REVERSE)
             {
                 pX -= nextPlatform[j].getXspeed();
                 pY -= nextPlatform[j].getYspeed();
