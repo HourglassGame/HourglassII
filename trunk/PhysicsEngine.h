@@ -37,21 +37,24 @@ public:
 private:
     struct BoxInfo {
         BoxInfo(Box nbox,
+                NewFrameID nTime,
                 bool nsupported) :
-        box(nbox),
+        info(nbox),
+        time(nTime),
         supported(nsupported)
         {}
-        Box box;
+        Box info;
+        NewFrameID time;
         bool supported;
     };
 
     struct GuyInfo {
         GuyInfo(Guy nGuy,
                 NewFrameID nTime) :
-        guy(nGuy),
+        info(nGuy),
         time(nTime)
         {}
-        Guy guy;
+        Guy info;
         NewFrameID time;
     };
 
@@ -66,6 +69,15 @@ private:
                         const ::std::vector<Button>& oldButtonList,
                         ::std::vector<bool>& nextButtonState,
                         NewFrameID time) const;
+
+    template <class Type, class TypeInfo> void BuildDepartureForComplexEntities(
+                                    const ::std::vector<TypeInfo>& next,
+                                    const ::std::vector<RemoteDepartureEdit<Type> >& thief,
+                                    const ::std::vector<RemoteDepartureEdit<Type> >& extra,
+                                    ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                                    const NewFrameID time,
+                                    std::vector<PauseInitiatorID>& pauseTimes
+                                    ) const;
 
     void buildDepartures(const ::std::vector<BoxInfo>& nextBox,
                         const ::std::vector<Platform>& nextPlatform,
@@ -90,7 +102,9 @@ private:
 
 	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
                                         ::std::vector<BoxInfo>& nextBox,
-                                        const ::std::vector<Platform>& nextPlatform) const;
+                                        const ::std::vector<Platform>& nextPlatform,
+                                        const NewFrameID time
+                                        ) const;
 
     void guyStep(   const ::std::vector<Guy>& oldGuyList,
                     NewFrameID time,

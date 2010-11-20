@@ -22,6 +22,15 @@ data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nSupported,
               nTimeDirection,nPauseLevel,nRelativeIndex,nSubimage))
 {
 }
+
+Guy::Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel) :
+referenceCount(new int(1)),
+data(new Data(other.getX(),other.getY(),other.getXspeed(),other.getYspeed(),other.getWidth(),other.getHeight(), other.getSupported(),
+              other.getBoxCarrying(),other.getBoxCarrySize(),other.getBoxCarryDirection(), other.getBoxPauseLevel(),
+              nTimeDirection,nPauseLevel,other.getRelativeIndex(),other.getSubimage()))
+{
+}
+
 Guy::Guy(const Guy& other) :
 referenceCount(&++(*other.referenceCount)),
 data(other.data)

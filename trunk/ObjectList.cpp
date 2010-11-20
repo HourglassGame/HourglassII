@@ -152,49 +152,49 @@ void MutableObjectList::makeUnique()
     }
 }
 
-void MutableObjectList::addGuy(const Guy& toCopy)
+void MutableObjectList::add(const Guy& toCopy)
 {
     makeUnique();
 	data_->guyList.push_back(toCopy);
 }
 
-void MutableObjectList::addBox(const Box& toCopy)
+void MutableObjectList::add(const Box& toCopy)
 {
     makeUnique();
 	data_->boxList.push_back(toCopy);
 }
 
-void MutableObjectList::addButton(const Button& toCopy)
+void MutableObjectList::add(const Button& toCopy)
 {
     makeUnique();
 	data_->buttonList.push_back(toCopy);
 }
 
-void MutableObjectList::addPlatform(const Platform& toCopy)
+void MutableObjectList::add(const Platform& toCopy)
 {
     makeUnique();
 	data_->platformList.push_back(toCopy);
 }
 
-void MutableObjectList::addGuyThief(const RemoteDepartureEdit<Guy>& toCopy)
+void MutableObjectList::addThief(const RemoteDepartureEdit<Guy>& toCopy)
 {
     makeUnique();
 	data_->guyThiefList.push_back(toCopy);
 }
 
-void MutableObjectList::addBoxThief(const RemoteDepartureEdit<Box>& toCopy)
+void MutableObjectList::addThief(const RemoteDepartureEdit<Box>& toCopy)
 {
     makeUnique();
 	data_->boxThiefList.push_back(toCopy);
 }
 
-void MutableObjectList::addGuyExtra(const RemoteDepartureEdit<Guy>& toCopy)
+void MutableObjectList::addExtra(const RemoteDepartureEdit<Guy>& toCopy)
 {
     makeUnique();
 	data_->guyExtraList.push_back(toCopy);
 }
 
-void MutableObjectList::addBoxExtra(const RemoteDepartureEdit<Box>& toCopy)
+void MutableObjectList::addExtra(const RemoteDepartureEdit<Box>& toCopy)
 {
     makeUnique();
 	data_->boxExtraList.push_back(toCopy);

@@ -486,13 +486,12 @@ vector<vector<bool> > MakeWall()
 TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
-    newObjectList.addBox(Box(32000, 15600, 0, 0, 3200, FORWARDS, 0));
-    //newObjectList.addBox(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
-    //newObjectList.addBox(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
-    //newObjectList.addBox(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
-    newObjectList.addGuy(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, 0, FORWARDS, 0, 0, 0));
-    newObjectList.addButton(Button(30400, 44000, 0, 0, 0, false, REVERSE, 0));
-    newObjectList.addPlatform(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
+    //newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
+    //newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
+    //newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, 0, FORWARDS, 0, 0, 0));
+    newObjectList.add(Button(30400, 44000, 0, 0, 0, false, REVERSE, 0));
+    newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
 
     return TimeEngine
     (

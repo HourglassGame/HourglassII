@@ -27,10 +27,10 @@ currentWinFrame_()
          end(initialObjects.getPlatformListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialPlatformArrivalMap[NewFrameID(0, timelineLength)].addPlatform(*it);
+            initialPlatformArrivalMap[NewFrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialPlatformArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addPlatform(*it);
+            initialPlatformArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
@@ -59,10 +59,10 @@ currentWinFrame_()
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[NewFrameID(0, timelineLength)].addBox(*it);
+            initialArrivalMap[NewFrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addBox(*it);
+            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
@@ -70,10 +70,10 @@ currentWinFrame_()
          end(initialObjects.getButtonListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[NewFrameID(0, timelineLength)].addButton(*it);
+            initialArrivalMap[NewFrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].addButton(*it);
+            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
@@ -81,7 +81,7 @@ currentWinFrame_()
 
     assert(initialObjects.getGuyListRef().size() == 1
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-    initialArrivalMap[guyStartTime].addGuy(initialObjects.getGuyListRef().at(0));
+    initialArrivalMap[guyStartTime].add(initialObjects.getGuyListRef().at(0));
 
     for (map<NewFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
                                                     end(initialArrivalMap.end());
