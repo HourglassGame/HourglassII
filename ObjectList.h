@@ -54,14 +54,14 @@ public:
     MutableObjectList(const MutableObjectList& other);
     MutableObjectList& operator=(const MutableObjectList& other);
 
-	void addGuy(const Guy& toCopy);
-	void addBox(const Box& toCopy);
-	void addButton(const Button& toCopy);
-	void addPlatform(const Platform& toCopy);
-	void addGuyThief(const RemoteDepartureEdit<Guy>& toCopy);
-	void addBoxThief(const RemoteDepartureEdit<Box>& toCopy);
-	void addGuyExtra(const RemoteDepartureEdit<Guy>& toCopy);
-	void addBoxExtra(const RemoteDepartureEdit<Box>& toCopy);
+	void add(const Guy& toCopy);
+	void add(const Box& toCopy);
+	void add(const Button& toCopy);
+	void add(const Platform& toCopy);
+	void addThief(const RemoteDepartureEdit<Guy>& toCopy);
+	void addThief(const RemoteDepartureEdit<Box>& toCopy);
+	void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
+	void addExtra(const RemoteDepartureEdit<Box>& toCopy);
 
     void add(const MutableObjectList& other);
     void add(const ObjectList& other);

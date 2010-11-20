@@ -7,6 +7,12 @@ data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection, nPauseLevel))
 {
 }
 
+Box::Box(const Box& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
+referenceCount(new int(1)),
+data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getSize(), nTimeDirection, nPauseLevel))
+{
+}
+
 Box::Box(const Box& other) :
 referenceCount(&++(*other.referenceCount)),
 data(other.data)

@@ -23,6 +23,7 @@ namespace hg {
             int nSubimage);
 
         ~Guy();
+        Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel);
         Guy(const Guy& other);
         Guy& operator=(const Guy& other);
 
