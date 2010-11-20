@@ -8,15 +8,15 @@
 namespace hg {
 class Universe {
 public:
-    //creates a top level universe
+    ///creates a top level universe
     Universe(unsigned int timelineLength);
-    //creates a lower level universe
+    ///creates a lower level universe
     Universe(FramePtr initiatorFrame, unsigned int timelineLength);
-    //returns initiatorFrame_
+    ///returns initiatorFrame_
     FramePtr getInitiatorFrame() const;
     FramePtr getEntryFrame(TimeDirection direction) const;
     FramePtr getArbitraryFrame(unsigned int frameNumber) const;
-    //returns the length of this Universe's timeline
+    ///returns the length of this Universe's timeline
     unsigned int getTimelineLength() const;
 private:
     FramePtr initiatorFrame_;

@@ -7,6 +7,7 @@
 #include <SFML/Graphics/String.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics.hpp>
 namespace hg {
     class GameEngine;
     class MainMenuState : public State {

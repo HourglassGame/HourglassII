@@ -13,7 +13,7 @@
 namespace hg {
     class WorldState {
     public:
-        /******************
+        /**
          * Creates a new world state.
          * Throws an exception if the world state is not consistent.
          */
@@ -23,22 +23,22 @@ namespace hg {
                    PhysicsEngine physics,
                    const ObjectList& initialObjects);
 
-        /***************************************
+        /**
          * Updates the state of the world once.
          */
         FrameUpdateSet executeWorld();
 
-        /*******************************
+        /**
          * Stores the given input data, allowing the player to exist for another step.
          */
         void addNewInputData(const InputList& newInputData);
 
-        /******************************************************************************
+        /**
         * Returns an object list containing the state of whichFrame after physics was applied
         * in the last call to executeWorld.
         */
         ObjectList getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
-        /***********************************************************
+        /**
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
         NewFrameID getNextPlayerFrame() const { return nextPlayerFrame_; }
