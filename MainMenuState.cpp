@@ -2,6 +2,7 @@
 #include "Loaders.h"
 #include "GameEngine.h"
 #include "Utility.h"
+#include "GameState.h"
 #include <SFML/System.hpp>
 #include <boost/bind.hpp>
 #include <algorithm>
@@ -13,7 +14,9 @@ using ::std::string;
 using ::std::max;
 using ::boost::bind;
 namespace {
-    void noop() {}
+    struct Noop {
+        void operator()(){}
+    };
 }
 namespace hg {
 MainMenuState::MainMenuState(GameEngine& engine) :
@@ -26,9 +29,9 @@ menu()
 {
     //addItem deletes on fail
     menu.addItem(makeItem("Play", bind(&MainMenuState::play, ::boost::ref(*this))));
-    menu.addItem(makeItem("View Replays", &noop));
-    menu.addItem(makeItem("Run Benchmark", &noop));
-    menu.addItem(makeItem("Preferences", &noop));
+    menu.addItem(makeItem("View Replays", Noop()));
+    menu.addItem(makeItem("Run Benchmark", Noop()));
+    menu.addItem(makeItem("Preferences", Noop()));
     menu.addItem(makeItem("Exit", bind(&MainMenuState::exit, ::boost::ref(*this))));
 }
 void MainMenuState::exit() {
@@ -36,6 +39,7 @@ void MainMenuState::exit() {
 }
 void MainMenuState::play()
 {
+    engine_.stateManager.push(new GameState(engine_, loadLevelAcceptFail("")));
 }
 void MainMenuState::init()
 {
@@ -75,6 +79,7 @@ void MainMenuState::update()
         engine_.window.Draw(backgroundSprite);
         menu.draw(engine_.window);
         engine_.window.Display();
+        std::cout << glGetString(GL_VERSION) << std::endl;
         needsUpdate = false;
     }
     ::sf::Sleep(0.25f);

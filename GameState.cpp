@@ -1,10 +1,13 @@
 #include "GameState.h"
 #include "Utility.h"
+#include "PlayingGameState.h"
+#include "SplashScreenState.h"
+#include <iostream>
 namespace hg {
 GameState::GameState(GameEngine& engine, const Level& nlevel) :
 engine_(engine),
 level(nlevel),
-currentState(0/*new PlayingGameState(currentState, engine, level)*/)
+currentState(new PlayingGameState(currentState, engine, level))
 {
 }
 

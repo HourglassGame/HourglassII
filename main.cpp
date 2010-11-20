@@ -1,9 +1,7 @@
 #include "GameEngine.h"
 #include <iostream>
 #include <exception>
-using ::hg::GameEngine;
-using ::std::exception;
-using ::std::cout;
+
 namespace {
     bool parseOptions(int argc, char** argv, ::hg::GameEngine& engine);
     bool parseOptions(int /*argc*/, char** /*argv*/, ::hg::GameEngine& /*engine*/)
@@ -29,6 +27,9 @@ namespace {
 
 int main(int argc, char** argv)
 {
+    using ::hg::GameEngine;
+    using ::std::exception;
+    using ::std::cout;
     try {
         GameEngine engine;
         if (parseOptions(argc, argv, engine)) {

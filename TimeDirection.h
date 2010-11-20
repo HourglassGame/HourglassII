@@ -6,7 +6,6 @@ namespace hg {
         INVALID = 0,
         REVERSE = -1
     };
-    
     void operator*=(TimeDirection& receiver, int multiple);
     void operator*=(TimeDirection& receiver, TimeDirection multiple);
 }

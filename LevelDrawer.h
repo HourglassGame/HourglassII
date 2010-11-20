@@ -17,7 +17,6 @@ class Level;
         //so keeping it like this until some sort of performance issues arise
         //Investigate adding a percentage blend mode
         void draw(::sf::RenderTarget& target, const ObjectList& objectList, TimeDirection viewDirection);
-        void drawWall(::sf::RenderTarget& target);
     private:
         //Acts as a reference for the wall map to use, as well as holding the bitmaps and sounds and other resources
         //for the level
