@@ -17,10 +17,8 @@ void update();
 ~GameState(){}
 private:
 GameEngine& engine_;
-public:
-Level level;
-::std::auto_ptr<State> currentState;
-private:
+Level level_;
+::std::auto_ptr<State> currentState_;
 
 //Intentionally undefined
 GameState(const GameState& other);
