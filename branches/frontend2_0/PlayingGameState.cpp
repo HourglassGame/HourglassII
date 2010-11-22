@@ -24,19 +24,19 @@ void PlayingGameState::init()
     engine_.window.UseVerticalSync(true);
     engine_.window.SetFramerateLimit(60);
 }
-static void drawTimeline(sf::RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
+static void drawTimeline(sf::RenderTarget& target, RunResult::FrameListList& waves, NewFrameID& playerFrame, int timeLineLength)
 {
-    bool pixelsWhichHaveBeenDrawnIn[640] = {false};
+    std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetWidth(), false);
     foreach(const FrameUpdateSet& lists, waves) {
         foreach (NewFrameID frame, lists) {
             if (frame.isValidFrame()) {
-                if (!pixelsWhichHaveBeenDrawnIn[static_cast<unsigned int> ((frame.frame()/10800.f)*640)]) {
-                    target.Draw(sf::Shape::Rectangle((frame.frame()/10800.f)*640,
+                if (!pixelsWhichHaveBeenDrawnIn.at(static_cast<unsigned int> ((frame.frame()/static_cast<float>(timeLineLength))*target.GetWidth()))) {
+                    target.Draw(sf::Shape::Rectangle((frame.frame()/static_cast<float>(timeLineLength))*target.GetWidth(),
                                                 10,
-                                                (frame.frame()/10800.f)*640+1,
+                                                (frame.frame()/static_cast<float>(timeLineLength))*target.GetWidth()+1,
                                                 25,
                                                 sf::Color(250,0,0)));
-                    pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)] = true;
+                    pixelsWhichHaveBeenDrawnIn.at(static_cast<int> ((frame.frame()/static_cast<float>(timeLineLength))*target.GetWidth())) = true;
                 }
             }
             else {
@@ -45,9 +45,9 @@ static void drawTimeline(sf::RenderTarget& target, TimeEngine::FrameListList& wa
         }
     }
     if(playerFrame.isValidFrame()) {
-        target.Draw(sf::Shape::Rectangle((playerFrame.frame()/10800.f)*640-1,
+        target.Draw(sf::Shape::Rectangle((playerFrame.frame()/static_cast<float>(timeLineLength))*target.GetWidth()-1,
                                              10,
-                                             (playerFrame.frame()/10800.f)*640+2,
+                                             (playerFrame.frame()/static_cast<float>(timeLineLength))*target.GetWidth()+2,
                                              25,
                                              sf::Color(200,200,0)));
     }
@@ -71,6 +71,13 @@ void PlayingGameState::update()
             //Seems like this has a bit too much power. Should look into a more abstract interface
                 engine_.stateManager.popAll();
                 return;
+            case sf::Event::KeyPressed:
+                if (event.Key.Code == sf::Key::Escape) {
+                    currentState_.release();
+                    return;
+                }
+                break;
+
             default:
             //should also check for window resizes and so on, but that can wait
                 break;
@@ -87,30 +94,46 @@ void PlayingGameState::update()
     }
     #endif
     input_.updateState(engine_.window.GetInput());
-    using boost::tuple;
+    //using boost::tuple;
     //cout << "called from main" << endl;
     try{
-        tuple<NewFrameID, NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine_.runToNextPlayerFrame(input_.AsInputList()));
-        if (waveInfo.get<0>().isValidFrame()) {
+        RunResult waveInfo(timeEngine_.runToNextPlayerFrame(input_.AsInputList()));
+        if (waveInfo.currentPlayerFrame.isValidFrame()) {
             levelDrawer_.draw
             (
              engine_.window, 
              timeEngine_.getPostPhysics
              (
-              waveInfo.get<0>(),
-              waveInfo.get<1>().universe().pauseDepth() == waveInfo.get<0>().universe().pauseDepth()
+              waveInfo.currentPlayerFrame,
+              waveInfo.nextPlayerFrame.universe().pauseDepth() == waveInfo.currentPlayerFrame.universe().pauseDepth()
               ?
               PauseInitiatorID(pauseinitiatortype::INVALID,0,0)
               :
-              waveInfo.get<1>().universe().initiatorID()
+              waveInfo.nextPlayerFrame.universe().initiatorID()
               ),
-             waveInfo.get<3>()
+             waveInfo.currentPlayerDirection
              );
         }
         else {
-            levelDrawer_.draw(engine_.window, timeEngine_.getPostPhysics(NewFrameID(abs((engine_.window.GetInput().GetMouseX()*level_.timeLineLength/640)%level_.timeLineLength),level_.timeLineLength),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), waveInfo.get<3>());
+            levelDrawer_.draw
+            (
+                engine_.window, 
+                timeEngine_.getPostPhysics
+                (
+                    NewFrameID
+                    (
+                        abs
+                        (
+                            (engine_.window.GetInput().GetMouseX()*level_.timeLineLength/engine_.window.GetWidth())%level_.timeLineLength
+                        ),
+                        level_.timeLineLength
+                    ),
+                    PauseInitiatorID(pauseinitiatortype::INVALID,0,0)
+                ),
+                waveInfo.currentPlayerDirection
+            );
         }
-        drawTimeline(engine_.window, waveInfo.get<2>(), waveInfo.get<0>());
+        //drawTimeline(engine_.window, waveInfo.updatedList, waveInfo.currentPlayerFrame, level_.timeLineLength);
     }
     catch (PlayerVictoryException& playerWon) {
         std::cout << "Congratulations, a winner is you!\n";
