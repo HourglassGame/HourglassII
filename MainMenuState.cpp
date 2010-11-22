@@ -79,7 +79,6 @@ void MainMenuState::update()
         engine_.window.Draw(backgroundSprite);
         menu.draw(engine_.window);
         engine_.window.Display();
-        std::cout << glGetString(GL_VERSION) << std::endl;
         needsUpdate = false;
     }
     ::sf::Sleep(0.25f);

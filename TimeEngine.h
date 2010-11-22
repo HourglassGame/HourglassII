@@ -5,7 +5,7 @@
 #include "WorldState.h"
 #include "TimelineState.h"
 
-#include <boost/tuple/tuple.hpp>
+//#include <boost/tuple/tuple.hpp>
 
 #include <vector>
 
@@ -15,6 +15,23 @@ class ObjectList;
 class TimeObjectListList;
 class ParadoxException;
 class Level;
+struct RunResult {
+    typedef ::std::vector<FrameUpdateSet> FrameListList;
+    RunResult(const NewFrameID& ncurrentPlayerFrame,
+    const NewFrameID& nnextPlayerFrame,
+    const FrameListList& nupdatedList,
+    TimeDirection ncurrentPlayerDirection) :
+    currentPlayerFrame(ncurrentPlayerFrame),
+    nextPlayerFrame(nnextPlayerFrame),
+    updatedList(nupdatedList),
+    currentPlayerDirection(ncurrentPlayerDirection)
+    {
+    }
+    NewFrameID currentPlayerFrame;
+    NewFrameID nextPlayerFrame;
+    FrameListList updatedList;
+    TimeDirection currentPlayerDirection;
+};
 class TimeEngine
 {
 public:
@@ -31,13 +48,13 @@ public:
      */
 	TimeEngine(const Level& level);
 
-    typedef ::std::vector<FrameUpdateSet> FrameListList;
+
    /**
     * Takes the new input data and uses that to update the state of the world and returns the current player frame
     * and a list of the frames which were updated in each propagation round. The current player frame is the last
     * in which the player had input.
     */
-    ::boost::tuple<NewFrameID, NewFrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
+    /*::boost::tuple<NewFrameID, NewFrameID, FrameListList, TimeDirection>*/ RunResult runToNextPlayerFrame(const InputList& newInputData);
    /**
     * Returns an object list containing the state of whichFrame after physics was applied.
     * This function is always run after the runToNextPlayerFrame function in order to

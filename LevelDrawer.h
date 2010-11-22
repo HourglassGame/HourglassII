@@ -1,7 +1,7 @@
 #ifndef HG_LEVEL_DRAWER_H
 #define HG_LEVEL_DRAWER_H
 #include "TimeDirection.h"
-#include <SFML/Graphics/Image.hpp>
+
 namespace sf {
     class RenderTarget;
 }
