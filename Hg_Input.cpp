@@ -1,10 +1,9 @@
 #include "Hg_Input.h"
-
+#include <SFML/Window/Input.hpp>
 #include <iostream>
 #include <cassert>
 
-using namespace ::hg;
-
+namespace hg {
 static void updatePress(int &var, bool inputState)
 {
     if (inputState)
@@ -70,4 +69,5 @@ const InputList Input::AsInputList() const
     }
 
      return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, NewFrameID(), 0);
+}
 }

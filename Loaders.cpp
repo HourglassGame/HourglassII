@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Font.hpp>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
+#include <boost/multi_array.hpp>
 #include <iostream>
 #include <cassert>
 #define foreach BOOST_FOREACH
@@ -80,14 +81,10 @@ namespace hg {
         row += 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
         wall.push_back(row);
         row.clear();
-        vector<vector<bool> > actualWall;
-        actualWall.resize(wall.at(0).size());
-        foreach(vector<bool>& column, actualWall) {
-            column.resize(wall.size());
-        }
+        boost::multi_array<bool, 2> actualWall(boost::extents[wall.at(0).size()][wall.size()]);
         for(unsigned int i = 0; i < wall.size(); ++i) {
             for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
-                actualWall.at(j).at(i) = wall.at(i).at(j);
+                actualWall[j][i] = wall.at(i).at(j);
             }
         }
         

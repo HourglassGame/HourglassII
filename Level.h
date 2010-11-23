@@ -4,7 +4,7 @@
 #include "NewFrameID.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
-#include <vector>
+#include <boost/multi_array.hpp>
 
 namespace hg {
 class Level {
@@ -12,7 +12,7 @@ class Level {
 public:
 Level(unsigned int nspeedOfTime,
     unsigned int ntimeLineLength,
-    const ::std::vector< ::std::vector<bool> >& nwallmap,
+    const ::boost::multi_array<bool, 2>& nwallmap,
     int nwallSize,
     int ngravity,
     const ObjectList& ninitialObjects,
@@ -22,7 +22,7 @@ Level(unsigned int nspeedOfTime,
 public:
     unsigned int speedOfTime;
     unsigned int timeLineLength;
-    ::std::vector< ::std::vector<bool> > wallmap;
+    ::boost::multi_array<bool, 2> wallmap;
     int wallSize;
     int gravity;
     ObjectList initialObjects;

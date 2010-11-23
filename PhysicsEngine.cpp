@@ -14,7 +14,7 @@
 using namespace ::std;
 namespace hg {
 
-PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap,
+PhysicsEngine::PhysicsEngine(const ::boost::multi_array<bool, 2>& newWallmap,
                              int newWallSize,
                              int newGravity,
                              AttachmentMap nAttachmentMap,
@@ -1314,7 +1314,7 @@ bool PhysicsEngine::wallAt(int x, int y) const
 	unsigned int aX = x/wallSize;
 	unsigned int aY = y/wallSize;
 
-	if (aX < wallmap.size() && aY < wallmap[aX].size())
+	if (aX < wallmap.shape()[0] && aY < wallmap.shape()[1])
 	{
 		return wallmap[aX][aY];
 	}

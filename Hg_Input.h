@@ -1,13 +1,11 @@
 #ifndef HG_INPUT_H
 #define HG_INPUT_H
-namespace hg {
-    class Input;
-}
-
 #include "InputList.h"
 #include "Ability.h"
 #include <boost/noncopyable.hpp>
-#include <SFML/Window/Input.hpp>
+namespace sf {
+    class Input;
+}
 
 namespace hg {
     class Input {

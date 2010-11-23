@@ -6,6 +6,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <boost/foreach.hpp>
+#include <boost/multi_array.hpp>
 #include <vector>
 #define foreach BOOST_FOREACH
 namespace hg {
@@ -13,12 +14,12 @@ LevelDrawer::LevelDrawer(const Level& nlevel) :
 level(nlevel)
 {
 }
-static void drawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
+static void drawWall(sf::RenderTarget& target, const boost::multi_array<bool, 2>& wall)
 {
     target.Clear(sf::Color(255,255,255));
-    for(unsigned int i = 0; i < wall.size(); ++i) {
-        for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
-            if (wall.at(i).at(j)) {
+    for(unsigned int i = 0; i < wall.shape()[0]; ++i) {
+        for(unsigned int j = 0; j < wall.shape()[1]; ++j) {
+            if (wall[i][j]) {
                 target.Draw
                 (
                     sf::Shape::Rectangle
