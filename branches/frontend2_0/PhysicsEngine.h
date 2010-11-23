@@ -11,6 +11,7 @@
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
 #include "RemoteDepartureEdit.cpp"
+#include <boost/multi_array.hpp>
 #include <vector>
 #include <map>
 namespace hg {
@@ -19,7 +20,7 @@ class TimeObjectListList;
 class PhysicsEngine
 {
 public:
-	PhysicsEngine(  ::std::vector< ::std::vector<bool> > newWallmap,
+	PhysicsEngine(  const ::boost::multi_array<bool, 2>& newWallmap,
                     int newWallSize,
                     int newGravity,
                     AttachmentMap nAttachmentMap,
@@ -111,7 +112,7 @@ private:
 
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
-    ::std::vector< ::std::vector<bool> > wallmap;
+    ::boost::multi_array<bool, 2> wallmap;
 	int gravity;
 	int wallSize;
 	AttachmentMap attachmentMap;

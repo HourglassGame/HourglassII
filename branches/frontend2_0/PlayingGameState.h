@@ -21,6 +21,7 @@ namespace hg {
         GameEngine& engine_;
         TimeEngine timeEngine_;
         LevelDrawer levelDrawer_;
+        //LevelView view_;
         Input input_; //Should be `InputTranslator' which gets initialised with the user's preferences
         ~PlayingGameState(){}
         //Intentionally undefined

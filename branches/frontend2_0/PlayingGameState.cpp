@@ -63,6 +63,7 @@ void PlayingGameState::update()
     // draw results
     //Very very basic for now, but no worse than the other version.
     //this new system is however much more extendable
+    
     sf::Event event;
     while (engine_.window.GetEvent(event))
     {
