@@ -1,8 +1,8 @@
 #ifndef HG_STATE_MANAGER_H
 #define HG_STATE_MANAGER_H
 #include <vector>
-#include "State.h"
 namespace hg {
+class State;
 class StateManager {
 public:
 StateManager();

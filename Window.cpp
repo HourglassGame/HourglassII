@@ -19,6 +19,8 @@ namespace hg {
                 unsigned long nwindowStyle,
                 const ::sf::WindowSettings& params)
     {
+        title = ntitle;
+        windowStyle = nwindowStyle;
         ::sf::RenderWindow::Create(mode, ntitle, nwindowStyle, params);
     }
 }

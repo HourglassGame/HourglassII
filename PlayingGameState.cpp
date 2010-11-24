@@ -20,7 +20,6 @@ input_()
 }
 void PlayingGameState::init()
 {
-    assert(this == currentState_.get() && "pretty sure it's being used wrong if this is not the case at any stage after construction");
     engine_.window.UseVerticalSync(true);
     engine_.window.SetFramerateLimit(60);
 }

@@ -34,7 +34,7 @@ void SplashScreenState::init()
             Font ruritania(loadFontAcceptFail("Ruritania.ttf"));
             pressAnyKey.SetFont(ruritania);
             pressAnyKey.SetSize(20.f);
-            setCentre(pressAnyKey, horizontalposition::MIDDLE(),verticalposition::MIDDLE());
+            setCentre(pressAnyKey,horizontalposition::MIDDLE(),verticalposition::MIDDLE());
             pressAnyKey.SetPosition(engine_.window.GetWidth()/2, engine_.window.GetHeight()-40);
             engine_.window.Draw(pressAnyKey);
     }
