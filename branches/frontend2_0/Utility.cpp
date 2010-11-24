@@ -4,6 +4,7 @@
 #include "Window.h"
 #include <SFML/Graphics/String.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <iostream>
 using ::sf::VideoMode;
 using ::sf::Sprite;
 using ::sf::String;
@@ -19,6 +20,12 @@ namespace hg {
                 window.Create(VideoMode::GetDesktopMode(),"Hourglass II", options.windowStyle);
             }
             else {
+                using std::cout;
+                using std::endl;
+                cout << "Creating New window" << endl;
+                cout << "window.GetWidth(): " << window.GetWidth() << " options.width: " << options.width << endl;
+                cout << "window.GetHeight(): " << window.GetHeight() << " options.height: " << options.height << endl;
+                cout << "window.windowStyle: " << window.windowStyle << " options.windowStyle: " << options.windowStyle << endl;
                 window.Create(VideoMode(options.width, options.height),"Hourglass II", options.windowStyle);
             }
         }

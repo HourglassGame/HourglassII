@@ -25,6 +25,8 @@ namespace hg {
 
     void initialiseNormalWindow(Window& window, const Options& options);
 
+    //template <class ToFindCentre, > float centrePosition(const sf toSetCentre, <#horizontalposition LEFT#>)
+
     float centrePosition(const ::sf::String& toSetCentre, horizontalposition::LEFT);
     float centrePosition(const ::sf::Sprite& toSetCentre, horizontalposition::LEFT);
     float centrePosition(const ::sf::String& toSetCentre, horizontalposition::MIDDLE);
@@ -80,5 +82,10 @@ namespace hg {
     {
        target.Draw(toDraw);
     }
+    
+    template <class HorizontalPositionPolicy, class VerticalPositionPolicy, class ScalingPolicy>
+    struct PositionObject {
+        template <class Object> void operator()(Object& toPosition, int viewWidth, int viewHeight){}
+    };
 }
 #endif //HG_UTILITY_H

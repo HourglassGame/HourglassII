@@ -61,8 +61,8 @@ void MainMenuState::update()
                 engine_.window.GetDefaultView().SetFromRect(::sf::FloatRect(0,0,event.Size.Width, event.Size.Height));
                 scaleBackgroundSprite();
                 menu.updatePositions(engine_.window.GetHeight(), engine_.window.GetWidth());
-                engine_.options.width = engine_.window.GetHeight();
-                engine_.options.height = engine_.window.GetWidth();
+                engine_.options.width = engine_.window.GetWidth();
+                engine_.options.height = engine_.window.GetHeight();
                 needsUpdate = true;
                 break;
             case Event::MouseButtonPressed:

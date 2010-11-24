@@ -1,4 +1,5 @@
 #include "StateManager.h"
+#include "State.h"
 #include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
 using ::std::auto_ptr;
@@ -21,8 +22,6 @@ void StateManager::set(State* state)
 void StateManager::push(State* state)
 {
     auto_ptr<State> stateContainer(state);
-    //This could throw. state would then leak. Not exception safe.
-    //TODO - fix exception saftey issue here.
     stateStack.push_back(state);
     currentStateInitialised = false;
     stateContainer.release();
