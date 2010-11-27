@@ -10,22 +10,20 @@ using ::sf::Sprite;
 using ::sf::String;
 namespace hg {
 
-    void initialiseNormalWindow(Window& window, const Options& options)
+    void initialiseNormalWindow(Window& window, Options& options)
     {
         //set icon? Want to do/test that on windows, because SFML does not actually set the icon on OSX
         if (window.GetWidth() != options.width || 
             window.GetHeight() != options.height || 
             window.windowStyle != options.windowStyle) {
             if (options.windowStyle & sf::Style::Fullscreen) {
-                window.Create(VideoMode::GetDesktopMode(),"Hourglass II", options.windowStyle);
+                VideoMode desktopMode(VideoMode::GetDesktopMode());
+                options.width = desktopMode.Width;
+                options.height = desktopMode.Height;
+                window.Create(desktopMode,"Hourglass II", options.windowStyle);
             }
             else {
-                using std::cout;
-                using std::endl;
-                cout << "Creating New window" << endl;
-                cout << "window.GetWidth(): " << window.GetWidth() << " options.width: " << options.width << endl;
-                cout << "window.GetHeight(): " << window.GetHeight() << " options.height: " << options.height << endl;
-                cout << "window.windowStyle: " << window.windowStyle << " options.windowStyle: " << options.windowStyle << endl;
+
                 window.Create(VideoMode(options.width, options.height),"Hourglass II", options.windowStyle);
             }
         }

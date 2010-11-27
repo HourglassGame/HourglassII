@@ -23,7 +23,7 @@ namespace hg {
         struct RIGHT;
     }
 
-    void initialiseNormalWindow(Window& window, const Options& options);
+    void initialiseNormalWindow(Window& window, Options& options);
 
     //template <class ToFindCentre, > float centrePosition(const sf toSetCentre, <#horizontalposition LEFT#>)
 

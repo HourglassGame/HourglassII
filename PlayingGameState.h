@@ -4,6 +4,7 @@
 #include "TimeEngine.h"
 #include "Hg_Input.h"
 #include "LevelDrawer.h"
+#include "UIManager.h"
 #include <memory>
 namespace hg {
     class GameEngine;
@@ -21,6 +22,7 @@ namespace hg {
         GameEngine& engine_;
         TimeEngine timeEngine_;
         LevelDrawer levelDrawer_;
+        //UIManager UIManager_;
         //LevelView view_;
         Input input_; //Should be `InputTranslator' which gets initialised with the user's preferences
         ~PlayingGameState(){}
