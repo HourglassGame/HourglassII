@@ -19,7 +19,7 @@ namespace hg {
             int boxPauseLevel,
             hg::TimeDirection nTimeDirection,
             int pauseLevel,
-            size_t nRelativeIndex,
+            int nRelativeIndex,
             int nSubimage);
 
         ~Guy();
@@ -42,7 +42,7 @@ namespace hg {
 
         TimeDirection getTimeDirection() const {return data->timeDirection;}
         int getPauseLevel() const {return data->pauseLevel;}
-        size_t getRelativeIndex() const {return data->relativeIndex;}
+        int getRelativeIndex() const {return data->relativeIndex;}
         int getSubimage() const {return data->subimage;}
 
         const static int animationLength = 13;
@@ -74,7 +74,7 @@ namespace hg {
 
                  TimeDirection ntimeDirection,
                  int npauseLevel,
-                 size_t nrelativeIndex,
+                 int nrelativeIndex,
 
                  int nsubimage) :
             x(nx),
@@ -113,7 +113,7 @@ namespace hg {
 
             TimeDirection timeDirection;
             int pauseLevel;
-            size_t relativeIndex;
+            int relativeIndex;
 
             int subimage;
         };

@@ -83,10 +83,9 @@ private:
                         const ::std::vector<Platform>& nextPlatform,
                         const ::std::vector<Button>& nextButton,
                         const ::std::vector<GuyInfo>& nextGuy,
-                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyThief,
                         const ::std::vector<RemoteDepartureEdit<Box> >& boxThief,
-                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyExtra,
                         const ::std::vector<RemoteDepartureEdit<Box> >& boxExtra,
+                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyExtra,
                         ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                         const NewFrameID time,
                         std::vector<PauseInitiatorID>& pauseTimes
