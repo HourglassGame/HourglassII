@@ -66,24 +66,19 @@ const vector<Platform>& ObjectList::getPlatformListRef() const
     return data_->platformList;
 }
 
-const vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyThiefListRef() const
-{
-    return data_->guyThiefList;
-}
-
 const vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
 {
     return data_->boxThiefList;
 }
 
-const vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyExtraListRef() const
-{
-    return data_->guyExtraList;
-}
-
 const vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxExtraListRef() const
 {
     return data_->boxExtraList;
+}
+
+const vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyExtraListRef() const
+{
+    return data_->guyExtraList;
 }
 
 bool ObjectList::operator==(const hg::ObjectList& other) const
@@ -93,7 +88,6 @@ bool ObjectList::operator==(const hg::ObjectList& other) const
             && data_->boxList == other.data_->boxList
             && data_->buttonList == other.data_->buttonList
             && data_->platformList == other.data_->platformList
-            && data_->guyThiefList == other.data_->guyThiefList
             && data_->boxThiefList == other.data_->boxThiefList
             && data_->guyExtraList == other.data_->guyExtraList
             && data_->boxExtraList == other.data_->boxExtraList);
@@ -110,7 +104,6 @@ bool ObjectList::isEmpty() const
             data_->boxList.empty() &&
             data_->buttonList.empty() &&
             data_->platformList.empty() &&
-            data_->guyThiefList.empty() &&
             data_->boxThiefList.empty() &&
             data_->guyExtraList.empty() &&
             data_->boxExtraList.empty();
@@ -176,28 +169,22 @@ void MutableObjectList::add(const Platform& toCopy)
 	data_->platformList.push_back(toCopy);
 }
 
-void MutableObjectList::addThief(const RemoteDepartureEdit<Guy>& toCopy)
-{
-    makeUnique();
-	data_->guyThiefList.push_back(toCopy);
-}
-
 void MutableObjectList::addThief(const RemoteDepartureEdit<Box>& toCopy)
 {
     makeUnique();
 	data_->boxThiefList.push_back(toCopy);
 }
 
-void MutableObjectList::addExtra(const RemoteDepartureEdit<Guy>& toCopy)
-{
-    makeUnique();
-	data_->guyExtraList.push_back(toCopy);
-}
-
 void MutableObjectList::addExtra(const RemoteDepartureEdit<Box>& toCopy)
 {
     makeUnique();
 	data_->boxExtraList.push_back(toCopy);
+}
+
+void MutableObjectList::addExtra(const RemoteDepartureEdit<Guy>& toCopy)
+{
+    makeUnique();
+	data_->guyExtraList.push_back(toCopy);
 }
 
 void MutableObjectList::add(const MutableObjectList& other)

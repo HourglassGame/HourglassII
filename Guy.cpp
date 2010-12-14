@@ -14,7 +14,7 @@ Guy::Guy(int nX,
          int nBoxPauseLevel,
          TimeDirection nTimeDirection,
          int nPauseLevel,
-         size_t nRelativeIndex,
+         int nRelativeIndex,
          int nSubimage) :
 referenceCount(new int(1)),
 data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nSupported,

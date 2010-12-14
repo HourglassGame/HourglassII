@@ -32,10 +32,9 @@ public:
     const ::std::vector<Box>& getBoxListRef() const;
     const ::std::vector<Button>& getButtonListRef() const;
     const ::std::vector<Platform>& getPlatformListRef() const;
-    const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyThiefListRef() const;
     const ::std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
-    const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
     const ::std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
+    const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
     //Add other ref getters as needed
 
     bool operator==(const ObjectList& other) const;
@@ -58,10 +57,9 @@ public:
 	void add(const Box& toCopy);
 	void add(const Button& toCopy);
 	void add(const Platform& toCopy);
-	void addThief(const RemoteDepartureEdit<Guy>& toCopy);
 	void addThief(const RemoteDepartureEdit<Box>& toCopy);
-	void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
 	void addExtra(const RemoteDepartureEdit<Box>& toCopy);
+	void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
 
     void add(const MutableObjectList& other);
     void add(const ObjectList& other);

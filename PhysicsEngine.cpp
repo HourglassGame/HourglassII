@@ -81,8 +81,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
 
     buildDepartures(nextBox, nextPlatform, nextButton, nextGuy,
-                    arrivals.getGuyThiefListRef(), arrivals.getBoxThiefListRef(),
-                    arrivals.getGuyExtraListRef(), arrivals.getBoxExtraListRef(),
+                    arrivals.getBoxThiefListRef(), arrivals.getBoxExtraListRef(), arrivals.getGuyExtraListRef(),
                     newDepartures, time, pauseTimes);
 
     // compile all departures
@@ -105,7 +104,6 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const
 {
-
     // builds departures for something that can move in complex ways throughout pause frames
 	// adding, removal etc... things like guys and boxes
 	for (size_t i = 0; i < next.size(); ++i)
@@ -117,18 +115,8 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 
         if (next[i].time != nextTime)
         {
-            if (next[i].time.parentFrame() != time)
-            {
-                // the thing jumps to a different time that is not a pause time in this frame
-                // it will not appear in this frames pause times
-                newDepartures[next[i].time].add(thing);
-                goto buildNext;
-            }
-            else
-            {
-
-
-            }
+            newDepartures[next[i].time].add(thing);
+            goto buildNext;
         }
 
         // check if the departure is to be stolen
@@ -173,9 +161,9 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
         // the depature is not stolen for this thing
 
         // if the this is a pause time thing and this is the end of the universe do not depart
-        if (thing.getPauseLevel() != 0 && time.nextFrameInUniverse(thing.getTimeDirection()) != 0)
+        if (time.nextFrameInUniverse(thing.getTimeDirection()) != 0 && thing.getPauseLevel() != 0)
         {
-            // things might go here but don't currently
+
         }
 		else if (nextTime.isValidFrame())
 		{
@@ -229,7 +217,7 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
                 // CHANGE FROM NORMAL THING HANDLING: only add to pause times that occur after the extra thing pause time
                 for (size_t j = 0; j < pauseTimes.size(); ++j)
                 {
-                    if (pauseTimes[j] < extra[i].getOrigin())
+                    if (extra[i].getOrigin() < pauseTimes[j])
                     {
                         newDepartures[time.entryChildFrame(pauseTimes[j], thing.getTimeDirection())].add
                         (
@@ -237,7 +225,7 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
                         );
                     }
 
-                    if (pauseTimes[j] == thief[t].getOrigin())
+                    if (thief[t].getOrigin() == pauseTimes[j])
                     {
                         // the thing is finished, goto next one
                         goto buildNextExtra;
@@ -246,7 +234,6 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
                 assert(false && "pauseTimes must have a element that is equal to thief origin");
 		    }
 		}
-
         // the depature is not stolen for this thing
 
         // if the thing is a pause time thing and this is the end of the universe do not depart
@@ -281,10 +268,9 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                                     const vector<Platform>& nextPlatform,
                                     const vector<Button>& nextButton,
                                     const vector<GuyInfo>& nextGuy,
-                                    const vector<RemoteDepartureEdit<Guy> >& guyThief,
                                     const vector<RemoteDepartureEdit<Box> >& boxThief,
-                                    const vector<RemoteDepartureEdit<Guy> >& guyExtra,
                                     const vector<RemoteDepartureEdit<Box> >& boxExtra,
+                                    const vector<RemoteDepartureEdit<Guy> >& guyExtra,
                                     map<NewFrameID, MutableObjectList>& newDepartures,
                                     const NewFrameID time,
                                     std::vector<PauseInitiatorID>& pauseTimes
@@ -294,9 +280,119 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
     // pause times initiated in the frame must be sorted
     sort(pauseTimes.begin(), pauseTimes.end());
 
-	//BuildDepartureForComplexEntities<Box,BoxInfo>(nextBox, boxThief, boxExtra, newDepartures, time, pauseTimes);
+	BuildDepartureForComplexEntities<Box,BoxInfo>(nextBox, boxThief, boxExtra, newDepartures, time, pauseTimes);
 
-	BuildDepartureForComplexEntities<Guy,GuyInfo>(nextGuy, guyThief, guyExtra, newDepartures, time, pauseTimes);
+    // build departures for guys
+	for (size_t i = 0; i < nextGuy.size(); ++i)
+	{
+	    Guy guyData = nextGuy[i].info;
+
+		NewFrameID nextTime(time.nextFrame(guyData.getTimeDirection()));
+
+        // Depart to next frame but do not depart if the guy is paused and it is the end of a pause time
+        if (nextGuy[i].time == nextTime)
+        {
+            if (nextTime.isValidFrame() && (guyData.getPauseLevel() == 0 || time.nextFrameInUniverse(guyData.getTimeDirection()) == 0))
+            {
+                newDepartures[nextTime].add(guyData);
+            }
+        }
+        else
+        {
+            newDepartures[nextGuy[i].time].add(guyData);
+        }
+
+        // Add extra departures if departing from pause time so that subsequent pause times in the same parent frame see
+        // this guy's state at the end of it's pause time. Pause times are ordered.
+        if (time.nextFrameInUniverse(guyData.getTimeDirection()) != 0 and guyData.getPauseLevel() == 0 )
+        {
+            int universes = time.nextFrameInUniverse(guyData.getTimeDirection());
+            NewFrameID parTime = time;
+            do
+            {
+                PauseInitiatorID parInit = parTime.universe().initiatorID();
+                parTime = parTime.parentFrame();
+                // This should be the ONLY place extra guys are added.
+                // REMEMBER: PAUSE TIME GUNS DO NOT WORK
+                newDepartures[parTime].addExtra
+                (
+                    RemoteDepartureEdit<Guy>
+                    (
+                        parInit,
+                        Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
+                            guyData.getWidth(),guyData.getHeight(), guyData.getSupported(),
+                            guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
+                            guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
+                            guyData.getTimeDirection(), guyData.getPauseLevel()+1,
+                            -1, guyData.getSubimage()
+                        ),
+                        false
+                    )
+
+                );
+                universes--;
+            }
+            while (universes > 0);
+        }
+
+
+        if (nextGuy[i].time.parentFrame() == time)
+        {
+            // if the guy is departing to paused don't add it to pause times after this one
+            PauseInitiatorID pauseID = nextGuy[i].time.universe().initiatorID();
+            for (size_t j = 0; j < pauseTimes.size(); ++j)
+            {
+                if (pauseID == pauseTimes[j])
+                {
+                    break;
+                }
+                newDepartures[time.entryChildFrame(pauseTimes[j], guyData.getTimeDirection())].add
+                (
+                    Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
+                        guyData.getWidth(),guyData.getHeight(), guyData.getSupported(),
+                        guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
+                        guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
+                        guyData.getTimeDirection(), guyData.getPauseLevel()+1,
+                        -1, guyData.getSubimage()
+                    )
+                );
+            }
+        }
+        else
+        {
+            // add pause guy to every pause time universe from this frame
+            for (size_t j = 0; j < pauseTimes.size(); ++j)
+            {
+                newDepartures[time.entryChildFrame(pauseTimes[j], guyData.getTimeDirection())].add
+                (
+                    Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
+                        guyData.getWidth(),guyData.getHeight(), guyData.getSupported(),
+                        guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
+                        guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
+                        guyData.getTimeDirection(), guyData.getPauseLevel()+1,
+                        -1, guyData.getSubimage()
+                    )
+                );
+            }
+        }
+	}
+
+	// build departure for extra guys (purely graphical things to do with pause order)
+	for (size_t i = 0; i < guyExtra.size(); ++i)
+	{
+        // add pause time departure to pause times after the current one
+		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		{
+		    if (guyExtra[i].getOrigin() < pauseTimes[j])
+            {
+                newDepartures[time.entryChildFrame(pauseTimes[j], guyExtra[i].getDeparture().getTimeDirection())].add
+                (
+                    Guy(guyExtra[i].getDeparture())
+                );
+            }
+		}
+
+	}
 
 	// build departures for platforms
 	for (size_t i = 0; i < nextPlatform.size(); ++i)

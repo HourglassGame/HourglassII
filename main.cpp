@@ -486,6 +486,7 @@ vector<vector<bool> > MakeWall()
 TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
 {
     MutableObjectList newObjectList;
+    newObjectList.add(Box(32400, 10000, 0, 0, 3200, FORWARDS, 0));
     //newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
