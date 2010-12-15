@@ -137,7 +137,8 @@ private:
 	bool wallAt(int x, int y) const;
 	bool wallAt(int x, int y, int w, int h) const;
 
-    bool intersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const;
+    bool PointInRectangle(int px, int py, int x, int y, int w, int h, bool inclusive) const;
+    bool IntersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const;
 
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
