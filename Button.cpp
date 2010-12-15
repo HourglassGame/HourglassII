@@ -7,6 +7,12 @@ data(new Data(nX, nY, nxspeed, nyspeed, index, state, nTimeDirection, npauseLeve
 {
 }
 
+Button::Button(const Button& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
+referenceCount(new int(1)),
+data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getIndex(), other.getState(), nTimeDirection, nPauseLevel))
+{
+}
+
 Button::Button(const Button& other) :
 referenceCount(&++(*other.referenceCount)),
 data(other.data)

@@ -4,6 +4,7 @@
 #include "Box.h"
 #include "Button.h"
 #include "Platform.h"
+#include "Portal.h"
 #include "RemoteDepartureEdit.cpp"
 #include "TimeDirection.h"
 
@@ -32,6 +33,7 @@ public:
     const ::std::vector<Box>& getBoxListRef() const;
     const ::std::vector<Button>& getButtonListRef() const;
     const ::std::vector<Platform>& getPlatformListRef() const;
+    const ::std::vector<Portal>& getPortalListRef() const;
     const ::std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
     const ::std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
     const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
@@ -57,6 +59,7 @@ public:
 	void add(const Box& toCopy);
 	void add(const Button& toCopy);
 	void add(const Platform& toCopy);
+	void add(const Portal& toCopy);
 	void addThief(const RemoteDepartureEdit<Box>& toCopy);
 	void addExtra(const RemoteDepartureEdit<Box>& toCopy);
 	void addExtra(const RemoteDepartureEdit<Guy>& toCopy);

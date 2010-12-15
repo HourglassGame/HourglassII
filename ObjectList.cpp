@@ -66,6 +66,11 @@ const vector<Platform>& ObjectList::getPlatformListRef() const
     return data_->platformList;
 }
 
+const vector<Portal>& ObjectList::getPortalListRef() const
+{
+    return data_->portalList;
+}
+
 const vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
 {
     return data_->boxThiefList;
@@ -88,6 +93,7 @@ bool ObjectList::operator==(const hg::ObjectList& other) const
             && data_->boxList == other.data_->boxList
             && data_->buttonList == other.data_->buttonList
             && data_->platformList == other.data_->platformList
+            && data_->portalList == other.data_->portalList
             && data_->boxThiefList == other.data_->boxThiefList
             && data_->guyExtraList == other.data_->guyExtraList
             && data_->boxExtraList == other.data_->boxExtraList);
@@ -104,6 +110,7 @@ bool ObjectList::isEmpty() const
             data_->boxList.empty() &&
             data_->buttonList.empty() &&
             data_->platformList.empty() &&
+            data_->portalList.empty() &&
             data_->boxThiefList.empty() &&
             data_->guyExtraList.empty() &&
             data_->boxExtraList.empty();
@@ -167,6 +174,12 @@ void MutableObjectList::add(const Platform& toCopy)
 {
     makeUnique();
 	data_->platformList.push_back(toCopy);
+}
+
+void MutableObjectList::add(const Portal& toCopy)
+{
+    makeUnique();
+	data_->portalList.push_back(toCopy);
 }
 
 void MutableObjectList::addThief(const RemoteDepartureEdit<Box>& toCopy)

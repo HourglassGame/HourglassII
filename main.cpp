@@ -38,6 +38,7 @@ namespace {
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
     void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection);
     void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection);
+    void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDirection& playerDirection);
 
     vector<vector<bool> > MakeWall();
     TimeEngine MakeTimeEngine(vector<vector<bool> >& wallData);
@@ -213,10 +214,12 @@ namespace  {
 void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wallData, TimeDirection& playerDirection)
 {
     DrawWall(target, wallData);
+    DrawPortals(target, frame.getPortalListRef(), playerDirection);
     DrawBoxes(target, frame.getBoxListRef(), playerDirection);
     DrawGuys(target, frame.getGuyListRef(), playerDirection);
     DrawButtons(target, frame.getButtonListRef(), playerDirection);
     DrawPlatforms(target, frame.getPlatformListRef(), playerDirection);
+
 }
 
 void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
@@ -386,6 +389,37 @@ void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, T
      }
 }
 
+void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDirection& playerDirection)
+{
+
+     foreach(const Portal& portal, portalList)
+     {
+        int x,y;
+
+        Color portalColor;
+        if (playerDirection == portal.getTimeDirection())
+        {
+            x = portal.getX();
+            y = portal.getY();
+            portalColor = Color(120,120,120);
+        }
+        else
+        {
+            x = portal.getX()-portal.getXspeed();
+            y = portal.getY()-portal.getYspeed();
+            portalColor = Color(120,120,120);
+        }
+
+        target.Draw(Shape::Rectangle(
+            x/100,
+            y/100,
+            (x+portal.getWidth())/100,
+            (y+portal.getHeight())/100,
+            portalColor)
+        );
+     }
+}
+
 void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
@@ -490,9 +524,10 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     //newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, false, false, 0, INVALID, 0, FORWARDS, 0, 0, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, INVALID, 0, FORWARDS, 0, 0, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
+    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false));
 
     return TimeEngine
     (
@@ -505,7 +540,8 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
         NewFrameID(0,10800),
         AttachmentMap
         (
-            ::std::vector< ::boost::tuple<int, int, int> >(1,::boost::tuple<int, int, int>(0,3200,-800))
+            ::std::vector< ::boost::tuple<int, int, int> >(1,::boost::tuple<int, int, int>(0,3200,-800)),
+            ::std::vector< ::boost::tuple<int, int, int> >(1,::boost::tuple<int, int, int>(0,-4200,-3200))
         ),
         TriggerSystem
         (

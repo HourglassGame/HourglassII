@@ -18,6 +18,12 @@ data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nIndex,nTimeDirection, nPaus
 {
 }
 
+Platform::Platform(const Platform& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
+referenceCount(new int(1)),
+data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getWidth(), other.getHeight(), other.getIndex(), nTimeDirection, nPauseLevel))
+{
+}
+
 Platform::Platform(const Platform& other) :
 referenceCount(&++(*other.referenceCount)),
 data(other.data)

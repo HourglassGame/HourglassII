@@ -16,6 +16,7 @@ guyList(),
 boxList(),
 buttonList(),
 platformList(),
+portalList(),
 guyThiefList(),
 boxThiefList(),
 guyExtraList(),
@@ -28,7 +29,7 @@ guyList(other.guyList),
 boxList(other.boxList),
 buttonList(other.buttonList),
 platformList(other.platformList),
-guyThiefList(other.guyThiefList),
+portalList(other.portalList),
 boxThiefList(other.boxThiefList),
 guyExtraList(other.guyExtraList),
 boxExtraList(other.boxExtraList)
@@ -58,7 +59,7 @@ void ObjectListData::sortElements()
 	sort(boxList.begin(), boxList.end());
 	sort(buttonList.begin(), buttonList.end());
 	sort(platformList.begin(), platformList.end());
-	sort(guyThiefList.begin(), guyThiefList.end());
+	sort(portalList.begin(), portalList.end());
 	sort(boxThiefList.begin(), boxThiefList.end());
 	sort(guyExtraList.begin(), guyExtraList.end());
 	sort(boxExtraList.begin(), boxExtraList.end());
@@ -70,7 +71,7 @@ void ObjectListData::add(const ObjectListData& other)
     boxList.insert(boxList.end(),other.boxList.begin(),other.boxList.end());
     buttonList.insert(buttonList.end(),other.buttonList.begin(),other.buttonList.end());
     platformList.insert(platformList.end(),other.platformList.begin(),other.platformList.end());
-    guyThiefList.insert(guyThiefList.end(),other.guyThiefList.begin(),other.guyThiefList.end());
+    portalList.insert(portalList.end(),other.portalList.begin(),other.portalList.end());
     boxThiefList.insert(boxThiefList.end(),other.boxThiefList.begin(),other.boxThiefList.end());
     guyExtraList.insert(guyExtraList.end(),other.guyExtraList.begin(),other.guyExtraList.end());
     boxExtraList.insert(boxExtraList.end(),other.boxExtraList.begin(),other.boxExtraList.end());

@@ -12,6 +12,7 @@ namespace hg {
             int nYspeed,
             int nWidth,
             int nHeight,
+            int nrelativeToPortal,
             bool nSupported,
             bool nBoxCarrying,
             int nBoxCarrySize,
@@ -33,6 +34,8 @@ namespace hg {
         int getYspeed() const {return data->yspeed;}
         int getWidth() const {return data->width;}
         int getHeight() const {return data->height;}
+
+        int getRelativeToPortal() const {return data->relativeToPortal;}
         int getSupported() const {return data->supported;}
 
         bool getBoxCarrying() const {return data->boxCarrying;}
@@ -65,6 +68,8 @@ namespace hg {
                  int nyspeed,
                  int nwidth,
                  int nheight,
+
+                 int nrelativeToPortal,
                  bool nsupported,
 
                  bool nboxCarrying,
@@ -83,6 +88,8 @@ namespace hg {
             yspeed(nyspeed),
             width(nwidth),
             height(nheight),
+
+            relativeToPortal(nrelativeToPortal),
             supported(nsupported),
 
             boxCarrying(nboxCarrying),
@@ -104,6 +111,8 @@ namespace hg {
             int yspeed;
             int width;
             int height;
+
+            int relativeToPortal;
             bool supported;
 
             bool boxCarrying;

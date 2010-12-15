@@ -5,6 +5,7 @@
 #include "Box.h"
 #include "Button.h"
 #include "Platform.h"
+#include "Portal.h"
 #include "NewFrameID.h"
 #include "TimeDirection.h"
 #include "ObjectList.h"
@@ -79,8 +80,16 @@ private:
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const;
 
+    template <class Type> void BuildDepartureForReallySimpleThing(
+                                    const ::std::vector<Type>& next,
+                                    ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                                    const NewFrameID time,
+                                    std::vector<PauseInitiatorID>& pauseTimes
+                                    ) const;
+
     void buildDepartures(const ::std::vector<BoxInfo>& nextBox,
                         const ::std::vector<Platform>& nextPlatform,
+                        const ::std::vector<Portal>& nextPortal,
                         const ::std::vector<Button>& nextButton,
                         const ::std::vector<GuyInfo>& nextGuy,
                         const ::std::vector<RemoteDepartureEdit<Box> >& boxThief,
@@ -99,6 +108,13 @@ private:
         NewFrameID time
     ) const;
 
+    void portalPositionUpdate(
+        const ::std::vector<Platform>& nextPlatform,
+        const ::std::vector<Portal>& oldPortalList,
+        ::std::vector<Portal>& nextPortal,
+        NewFrameID time
+    ) const;
+
 	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
                                         ::std::vector<BoxInfo>& nextBox,
                                         const ::std::vector<Platform>& nextPlatform,
@@ -111,6 +127,7 @@ private:
                     ::std::vector<GuyInfo>& nextGuy,
                     ::std::vector<BoxInfo>& nextBox,
                     const ::std::vector<Platform>& nextPlatform,
+                    const ::std::vector<Portal>& nextPortal,
                     ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                     NewFrameID& currentPlayerFrame,
                     NewFrameID& nextPlayerFrame,
