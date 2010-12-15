@@ -391,7 +391,6 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                 );
             }
 		}
-
 	}
 
 	// build departures for platforms
@@ -463,14 +462,14 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 	// position, velocity, collisions
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
+        x.push_back(oldGuyList[i].getX());
+        y.push_back(oldGuyList[i].getY());
+        xspeed.push_back(0);
+        yspeed.push_back(oldGuyList[i].getYspeed() + gravity);
+        supported.push_back(false);
+
         if (oldGuyList[i].getRelativeIndex() < playerInput.size() && oldGuyList[i].getPauseLevel() == 0)
         {
-            x.push_back(oldGuyList[i].getX());
-            y.push_back(oldGuyList[i].getY());
-            xspeed.push_back(0);
-            yspeed.push_back(oldGuyList[i].getYspeed() + gravity);
-            supported.push_back(false);
-
             size_t relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
 
@@ -573,6 +572,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 }
             }
 
+
             //check wall collision in X direction
             int newX = x[i] + xspeed[i];
 
@@ -643,12 +643,14 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 	// box carrying
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
+
+		carry.push_back(oldGuyList[i].getBoxCarrying());
+		carrySize.push_back(0);
+		carryDirection.push_back(hg::INVALID);
+		carryPauseLevel.push_back(0);
+
         if (oldGuyList[i].getRelativeIndex() < playerInput.size() && oldGuyList[i].getPauseLevel() == 0)
         {
-            carry.push_back(oldGuyList[i].getBoxCarrying());
-            carrySize.push_back(0);
-            carryDirection.push_back(hg::INVALID);
-            carryPauseLevel.push_back(0);
 
             size_t relativeIndex = oldGuyList[i].getRelativeIndex();
             const InputList& input = playerInput[relativeIndex];
@@ -805,7 +807,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 	{
         if (oldGuyList[i].getPauseLevel() != 0)
 	    {
-	        nextGuy.push_back
+            nextGuy.push_back
             (
                 PhysicsEngine::GuyInfo
                 (
@@ -873,7 +875,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 currentPlayerDirection = oldGuyList[i].getTimeDirection();
                 currentPlayerFrame = time;
                 nextPlayerFrame = nextTime;
-                //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "\n";
+                //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
 
             if (nextTime.isValidFrame())
