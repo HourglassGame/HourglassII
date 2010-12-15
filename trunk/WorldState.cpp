@@ -21,6 +21,8 @@ currentWinFrame_()
 {
 
     assert(nextPlayerFrame_.isValidFrame());
+
+    //*** Add Portals to world ***
     map<NewFrameID, MutableObjectList> initialPlatformArrivalMap;
 
     for (vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
@@ -45,6 +47,8 @@ currentWinFrame_()
     }
 
     timeline_.addArrivalsFromPermanentDepartureFrame(initialPlatformArrivals);
+
+    // run level from both ends, portals can be the ONLY objects in the world at this point as attachment must always have a target
     frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
     frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
 
@@ -53,8 +57,10 @@ currentWinFrame_()
         executeWorld();
     }
 
+    //** Add everything else apart from guys **
     map<NewFrameID, MutableObjectList> initialArrivalMap;
 
+    // boxes
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
@@ -66,6 +72,19 @@ currentWinFrame_()
         }
     }
 
+    // portals
+    for (vector<Portal>::const_iterator it(initialObjects.getPortalListRef().begin()),
+         end(initialObjects.getPortalListRef().end()); it != end; ++it)
+    {
+        if (it->getTimeDirection() == FORWARDS) {
+            initialArrivalMap[NewFrameID(0, timelineLength)].add(*it);
+        }
+        else {
+            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
+        }
+    }
+
+    // buttons
     for (vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
          end(initialObjects.getButtonListRef().end()); it != end; ++it)
     {

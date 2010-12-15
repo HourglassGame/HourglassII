@@ -44,6 +44,9 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
     std::vector<Button> nextButton;
     nextButton.reserve(triggerSystem.getButtonCount());
 
+    std::vector<Portal> nextPortal;
+    nextPortal.reserve(arrivals.getPortalListRef().size());
+
     std::vector<PlatformDestination> platformDesinations;
 
     std::vector<bool> nextButtonState = std::vector<bool>(triggerSystem.getButtonCount(), false);
@@ -71,16 +74,17 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
 	// item simple collision algorithm
 
+    // portal position update
+    portalPositionUpdate(nextPlatform, arrivals.getPortalListRef(), nextPortal, time);
+
 	// guys simple collision algorithm
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
-            nextGuy, nextBox, nextPlatform, newDepartures, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection, pauseTimes);
+            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection, pauseTimes);
 
     // button position update
     buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton, time);
 
-
-
-    buildDepartures(nextBox, nextPlatform, nextButton, nextGuy,
+    buildDepartures(nextBox, nextPlatform, nextPortal, nextButton, nextGuy,
                     arrivals.getBoxThiefListRef(), arrivals.getBoxExtraListRef(), arrivals.getGuyExtraListRef(),
                     newDepartures, time, pauseTimes);
 
@@ -264,8 +268,36 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 
 }
 
+template <class Type> void PhysicsEngine::BuildDepartureForReallySimpleThing(
+                                    const vector<Type>& next,
+                                    map<NewFrameID, MutableObjectList>& newDepartures,
+                                    const NewFrameID time,
+                                    std::vector<PauseInitiatorID>& pauseTimes
+                                    ) const
+{
+    for (size_t i = 0; i < next.size(); ++i)
+	{
+		NewFrameID nextTime(time.nextFrame(next[i].getTimeDirection()));
+
+		if (nextTime.isValidFrame() && (next[i].getPauseLevel() == 0 || time.nextFrameInUniverse(next[i].getTimeDirection()) == 0))
+		{
+			newDepartures[nextTime].add(next[i]);
+		}
+
+		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		{
+		    newDepartures[time.entryChildFrame(pauseTimes[j], next[i].getTimeDirection())].add
+            (
+                Type(next[i], next[i].getTimeDirection(), next[i].getPauseLevel()+1)
+            );
+		}
+	}
+}
+
+
 void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                                     const vector<Platform>& nextPlatform,
+                                    const vector<Portal>& nextPortal,
                                     const vector<Button>& nextButton,
                                     const vector<GuyInfo>& nextGuy,
                                     const vector<RemoteDepartureEdit<Box> >& boxThief,
@@ -320,7 +352,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                     (
                         parInit,
                         Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
-                            guyData.getWidth(),guyData.getHeight(), guyData.getSupported(),
+                            guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
                             guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                             guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                             guyData.getTimeDirection(), guyData.getPauseLevel()+1,
@@ -349,7 +381,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                 newDepartures[time.entryChildFrame(pauseTimes[j], guyData.getTimeDirection())].add
                 (
                     Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
-                        guyData.getWidth(),guyData.getHeight(), guyData.getSupported(),
+                        guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
                         guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                         guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                         guyData.getTimeDirection(), guyData.getPauseLevel()+1,
@@ -366,7 +398,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                 newDepartures[time.entryChildFrame(pauseTimes[j], guyData.getTimeDirection())].add
                 (
                     Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
-                        guyData.getWidth(),guyData.getHeight(), guyData.getSupported(),
+                        guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
                         guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                         guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                         guyData.getTimeDirection(), guyData.getPauseLevel()+1,
@@ -393,47 +425,10 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
 		}
 	}
 
-	// build departures for platforms
-	for (size_t i = 0; i < nextPlatform.size(); ++i)
-	{
-		NewFrameID nextTime(time.nextFrame(nextPlatform[i].getTimeDirection()));
-
-		if (nextTime.isValidFrame() && (nextPlatform[i].getPauseLevel() == 0 || time.nextFrameInUniverse(nextPlatform[i].getTimeDirection()) == 0))
-		{
-			newDepartures[nextTime].add(nextPlatform[i]);
-		}
-
-		for (size_t j = 0; j < pauseTimes.size(); ++j)
-		{
-		    newDepartures[time.entryChildFrame(pauseTimes[j], nextPlatform[i].getTimeDirection())].add
-            (
-                Platform(nextPlatform[i].getX(), nextPlatform[i].getY(), nextPlatform[i].getXspeed(), nextPlatform[i].getYspeed(),
-                         nextPlatform[i].getWidth(), nextPlatform[i].getHeight(), nextPlatform[i].getIndex(),
-                         nextPlatform[i].getTimeDirection(), nextPlatform[i].getPauseLevel()+1)
-            );
-		}
-	}
-
-	// build departures for buttons
-	for (size_t i = 0; i < nextButton.size(); ++i)
-	{
-		NewFrameID nextTime(time.nextFrame(nextButton[i].getTimeDirection()));
-
-		if (nextTime.isValidFrame() && (nextButton[i].getPauseLevel() == 0 || time.nextFrameInUniverse(nextButton[i].getTimeDirection()) == 0))
-		{
-			newDepartures[nextTime].add(nextButton[i]);
-		}
-
-		for (size_t j = 0; j < pauseTimes.size(); ++j)
-		{
-		    newDepartures[time.entryChildFrame(pauseTimes[j], nextButton[i].getTimeDirection())].add
-            (
-                Button(nextButton[i].getX(), nextButton[i].getY(), nextButton[i].getXspeed(), nextButton[i].getYspeed(),
-                        nextButton[i].getIndex(), nextButton[i].getState(),
-                        nextButton[i].getTimeDirection(), nextButton[i].getPauseLevel()+1)
-            );
-		}
-	}
+	// simple things
+    BuildDepartureForReallySimpleThing<Platform>(nextPlatform, newDepartures, time, pauseTimes);
+    BuildDepartureForReallySimpleThing<Button>(nextButton, newDepartures, time, pauseTimes);
+    BuildDepartureForReallySimpleThing<Portal>(nextPortal, newDepartures, time, pauseTimes);
 }
 
 void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
@@ -442,6 +437,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             ::std::vector<GuyInfo>& nextGuy,
                             std::vector<BoxInfo>& nextBox,
                             const ::std::vector<Platform>& nextPlatform,
+                            const ::std::vector<Portal>& nextPortal,
                             ::std::map<NewFrameID, MutableObjectList>& newDepartures,
                             NewFrameID& currentPlayerFrame,
                             NewFrameID& nextPlayerFrame,
@@ -462,8 +458,17 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
 	// position, velocity, collisions
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
-        x.push_back(oldGuyList[i].getX());
-        y.push_back(oldGuyList[i].getY());
+	    if (oldGuyList[i].getRelativeToPortal() == -1)
+	    {
+            x.push_back(oldGuyList[i].getX());
+            y.push_back(oldGuyList[i].getY());
+	    }
+	    else
+	    {
+	        Portal relativePortal(nextPortal[oldGuyList[i].getRelativeToPortal()]);
+            x.push_back(relativePortal.getX() + oldGuyList[i].getX());
+            y.push_back(relativePortal.getY() + oldGuyList[i].getY());
+	    }
         xspeed.push_back(0);
         yspeed.push_back(oldGuyList[i].getYspeed() + gravity);
         supported.push_back(false);
@@ -827,6 +832,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             size_t relativeIndex(oldGuyList[i].getRelativeIndex());
             const InputList& input = playerInput[relativeIndex];
             int nextCarryPauseLevel = carryPauseLevel[i];
+            int relativeToPortal = -1;
 
             // add departure for guy at the appropriate time
             TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
@@ -884,7 +890,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 (
                     GuyInfo(Guy(x[i], y[i], xspeed[i], yspeed[i],
                         oldGuyList[i].getWidth(), oldGuyList[i].getHeight(),
-                        supported[i],
+                        relativeToPortal, supported[i],
                         carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
                         nextTimeDirection, 0,
                         relativeIndex+1, nextSubimage),
@@ -1276,6 +1282,53 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
     }
 }
 
+void PhysicsEngine::portalPositionUpdate(
+        const ::std::vector<Platform>& nextPlatform,
+        const ::std::vector<Portal>& oldPortalList,
+        vector<Portal>& nextPortal,
+        NewFrameID time
+    ) const
+{
+    ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getPortalAttachmentRef();
+
+    for (unsigned int i = 0; i < oldPortalList.size(); ++i)
+	{
+	    Portal data(oldPortalList[i]);
+
+	    if (data.getPauseLevel() != 0)
+	    {
+	        nextPortal.push_back(data);
+	        continue;
+	    }
+
+	    int x = data.getX();
+	    int y = data.getY();
+
+	    int index = data.getIndex();
+
+	    if (attachments[index].get<0>() != -1)
+	    {
+	        int pid = attachments[index].get<0>();
+
+	        if (nextPlatform[pid].getTimeDirection()*data.getTimeDirection() == hg::FORWARDS)
+	        {
+	            x = nextPlatform[pid].getX()+attachments[index].get<1>();
+                y = nextPlatform[pid].getY()+attachments[index].get<2>();
+	        }
+	        else
+	        {
+	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[index].get<1>();
+                y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[index].get<2>();
+	        }
+	    }
+
+        nextPortal.push_back(Portal(x, y, x-data.getX(), y-data.getY(),  data.getWidth() , data.getHeight() , index, data.getTimeDirection(), data.getPauseLevel(),
+                                    data.getCharges(), data.getActive(), data.getXdestination(), data.getYdestination(), data.getDestinationIndex(),
+                                    data.getTimeDestination(), data.getRelativeTime() ));
+	}
+
+}
+
 void PhysicsEngine::buttonPositionUpdate(
         const ::std::vector<Platform>& nextPlatform,
         const ::std::vector<bool>& nextButtonState,
@@ -1317,7 +1370,7 @@ void PhysicsEngine::buttonPositionUpdate(
 	        }
 	    }
 
-        nextButton.push_back(Button(x, y, x-oldButtonList[i].getX(), y-oldButtonList[i].getY(), index, nextButtonState[i], oldButtonList[index].getTimeDirection(), 0));
+        nextButton.push_back(Button(x, y, x-oldButtonList[i].getX(), y-oldButtonList[i].getY(), index, nextButtonState[i], oldButtonList[i].getTimeDirection(), 0));
 	}
 }
 

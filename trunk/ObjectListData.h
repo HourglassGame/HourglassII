@@ -4,6 +4,7 @@
 #include "Box.h"
 #include "Button.h"
 #include "Platform.h"
+#include "Portal.h"
 #include "RemoteDepartureEdit.cpp"
 #include <vector>
 namespace hg {
@@ -18,6 +19,7 @@ struct ObjectListData {
     ::std::vector<Box> boxList;
     ::std::vector<Button> buttonList;
     ::std::vector<Platform> platformList;
+    ::std::vector<Portal> portalList;
     ::std::vector<RemoteDepartureEdit<Guy> > guyThiefList;
     ::std::vector<RemoteDepartureEdit<Box> > boxThiefList;
     ::std::vector<RemoteDepartureEdit<Guy> > guyExtraList;
