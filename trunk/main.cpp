@@ -275,48 +275,51 @@ void DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& 
 void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& playerDirection)
 {
     foreach(const Guy& guy, guyList) {
-        int x,y;
-        Color guyColor;
-        if (playerDirection == guy.getTimeDirection())
+        if (guy.getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
         {
-            x = guy.getX();
-            y = guy.getY();
-            guyColor = Color(150,150,0);
-        }
-        else
-        {
-            x = guy.getX()-guy.getXspeed();
-            y = guy.getY()-guy.getYspeed();
-            guyColor = Color(0,0,150);
-        }
-
-        target.Draw(Shape::Rectangle(
-            x/100,
-            y/100,
-            (x+ guy.getWidth())/100,
-            (y+guy.getHeight())/100,
-            guyColor)
-        );
-
-        if (guy.getBoxCarrying())
-        {
-            Color boxColor;
-            if (playerDirection == guy.getBoxCarryDirection())
+            int x,y;
+            Color guyColor;
+            if (playerDirection == guy.getTimeDirection())
             {
-                boxColor = Color(150,0,150);
+                x = guy.getX();
+                y = guy.getY();
+                guyColor = Color(150,150,0);
             }
             else
             {
-                boxColor = Color(0,150,0);
+                x = guy.getX()-guy.getXspeed();
+                y = guy.getY()-guy.getYspeed();
+                guyColor = Color(0,0,150);
             }
 
             target.Draw(Shape::Rectangle(
-                (x + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
-                (y - guy.getBoxCarrySize())/100,
-                (x + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
+                x/100,
                 y/100,
-                boxColor)
+                (x+ guy.getWidth())/100,
+                (y+guy.getHeight())/100,
+                guyColor)
             );
+
+            if (guy.getBoxCarrying())
+            {
+                Color boxColor;
+                if (playerDirection == guy.getBoxCarryDirection())
+                {
+                    boxColor = Color(150,0,150);
+                }
+                else
+                {
+                    boxColor = Color(0,150,0);
+                }
+
+                target.Draw(Shape::Rectangle(
+                    (x + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
+                    (y - guy.getBoxCarrySize())/100,
+                    (x + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
+                    y/100,
+                    boxColor)
+                );
+            }
         }
     }
 }

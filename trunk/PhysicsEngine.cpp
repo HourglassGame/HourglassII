@@ -520,7 +520,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 int pWidth = nextPlatform[j].getWidth();
                 int pHeight = nextPlatform[j].getHeight();
 
-                if (intersectingRectangles(x[i], newY, width, height, pX, pY, pWidth, pHeight, false))
+                if (IntersectingRectangles(x[i], newY, width, height, pX, pY, pWidth, pHeight, false))
                 {
                     if (newY+height/2 < pY+pHeight/2)
                     {
@@ -619,7 +619,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                 int pWidth = nextPlatform[j].getWidth();
                 int pHeight = nextPlatform[j].getHeight();
 
-                if (intersectingRectangles(newX, newY, width, height, pX, pY, pWidth, pHeight, false))
+                if (IntersectingRectangles(newX, newY, width, height, pX, pY, pWidth, pHeight, false))
                 {
                     if (newX+width/2 < pX+pWidth/2)
                     {
@@ -675,7 +675,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                         droppable = true;
                         for (unsigned int j = 0; droppable && j < nextBox.size(); ++j)
                         {
-                            if (intersectingRectangles(nextBox[j].info.getX(), nextBox[j].info.getY(), nextBox[j].info.getSize(), nextBox[j].info.getSize(),
+                            if (IntersectingRectangles(nextBox[j].info.getX(), nextBox[j].info.getY(), nextBox[j].info.getSize(), nextBox[j].info.getSize(),
                                                       dropX, dropY, dropSize, dropSize, false))
                             {
                                 droppable = false;
@@ -683,7 +683,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                         }
                         for (unsigned int j = 0; droppable && j < nextPlatform.size(); ++j)
                         {
-                            if (intersectingRectangles(nextPlatform[j].getX(), nextPlatform[j].getY(),
+                            if (IntersectingRectangles(nextPlatform[j].getX(), nextPlatform[j].getY(),
                                                        nextPlatform[j].getWidth(), nextPlatform[j].getHeight(),
                                                       dropX, dropY, dropSize, dropSize, false))
                             {
@@ -838,12 +838,17 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
             NewFrameID nextTime(time.nextFrame(nextTimeDirection));
             assert(time.isValidFrame());
+
+            bool normalDeparture = true;
+
             if (input.getAbility() == hg::TIME_JUMP)
             {
                 nextTime = input.getFrameIdParam(0);
+                normalDeparture = false;
             }
             else if (input.getAbility() == hg::TIME_REVERSE)
             {
+                normalDeparture = false;
                 nextTimeDirection *= -1;
                 nextTime = time.nextFrame(nextTimeDirection);
                 carryDirection[i] *= -1;
@@ -859,12 +864,47 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             }
             else if (input.getAbility() == hg::PAUSE_TIME and time.frame() == 3000) // FOR TESTING, REMOVE
             {
+                normalDeparture = false;
                 PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
                 nextTime = time.entryChildFrame(pauseID, oldGuyList[i].getTimeDirection());
 
                 pauseTimes.push_back(pauseID);
             }
-            else
+            else if (input.getUse() == true)
+            {
+                int mx = x[i] + oldGuyList[i].getWidth();
+                int my = y[i] + oldGuyList[i].getHeight();
+                for (unsigned int j = 0; j < nextPortal.size(); ++j)
+                {
+                    int px = nextPortal[j].getX();
+                    int py = nextPortal[j].getY();
+                    int pw = nextPortal[j].getWidth();
+                    int ph = nextPortal[j].getHeight();
+                    if (PointInRectangle(mx, my, px, py, pw, ph, true) && nextPortal[j].getPauseLevel() == 0 &&
+                        nextPortal[j].getActive() && nextPortal[j].getCharges() != 0) // charges not fully implemented
+                    {
+                        NewFrameID portalTime;
+                        if (nextPortal[j].getRelativeTime() == true)
+                        {
+                            portalTime = NewFrameID(time.frame() + nextPortal[j].getTimeDestination(), 10800);
+                        }
+                        else
+                        {
+                            portalTime = NewFrameID(nextPortal[j].getTimeDestination(), 10800);
+                        }
+                        if (portalTime.isValidFrame())
+                        {
+                            nextTime = portalTime;
+                            normalDeparture = false;
+                            relativeToPortal = nextPortal[j].getDestinationIndex();
+                            x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+                            y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+                        }
+                    }
+                }
+            }
+
+            if (normalDeparture)
             {
                 if (time.nextFrameInUniverse(nextTimeDirection) != 0)
                 {
@@ -946,7 +986,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                 int boxX = j->getX();
                 int boxY = j->getY();
                 int boxSize = j->getSize();
-                if (PhysicsEngine::intersectingRectangles(x, y, size, size, boxX, boxY, boxSize, boxSize, false))
+                if (PhysicsEngine::IntersectingRectangles(x, y, size, size, boxX, boxY, boxSize, boxSize, false))
                 {
                     exploded = true;
                     continue;
@@ -957,7 +997,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
         /*
         for (vector<Platform>::const_iterator j(nextPlatform.begin()), jend(nextPlatform.end()); j != jend; ++j)
         {
-            if (PhysicsEngine::intersectingRectangles(x, y, size, size, j->getX(), j->getY(), j->getHeight(), j->getWidth(), false))
+            if (PhysicsEngine::IntersectingRectangles(x, y, size, size, j->getX(), j->getY(), j->getHeight(), j->getWidth(), false))
             {
                 exploded = true;
                 continue;
@@ -980,7 +1020,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                 int boxX = j->getX();
                 int boxY = j->getY();
                 int boxSize = j->getSize();
-                if (PhysicsEngine::intersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize, true))
+                if (PhysicsEngine::IntersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize, true))
                 {
                     if (newY + size/2 < boxY + boxSize/2)
                     {
@@ -1027,7 +1067,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
             int pWidth = nextPlatform[j].getWidth();
             int pHeight = nextPlatform[j].getHeight();
 
-            if (intersectingRectangles(x, newY, size, size, pX, pY, pWidth, pHeight, false))
+            if (IntersectingRectangles(x, newY, size, size, pX, pY, pWidth, pHeight, false))
             {
                 if (newY+size/2 < pY+pHeight/2)
                 {
@@ -1053,7 +1093,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
                     int boxX = j->getX();
                     int boxY = j->getY();
                     int boxSize = j->getSize();
-                    if (PhysicsEngine::intersectingRectangles(newX, newY, size, size, boxX, boxY, boxSize, boxSize, true))
+                    if (PhysicsEngine::IntersectingRectangles(newX, newY, size, size, boxX, boxY, boxSize, boxSize, true))
                     {
                         if (newX + size/2 < boxX + boxSize/2)
                         {
@@ -1099,7 +1139,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
             int pWidth = nextPlatform[j].getWidth();
             int pHeight = nextPlatform[j].getHeight();
 
-            if (intersectingRectangles(newX, newY, size, size, pX, pY, pWidth, pHeight, false))
+            if (IntersectingRectangles(newX, newY, size, size, pX, pY, pWidth, pHeight, false))
             {
                 if (newX+size/2 < pX+pWidth/2)
                 {
@@ -1414,12 +1454,12 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Platform>& oldPlatformList,
 
 	    for (unsigned int j = 0; !state && j < oldBoxList.size(); ++j)
         {
-            state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldBoxList[j].getX(), oldBoxList[j].getY(), oldBoxList[j].getSize(), oldBoxList[j].getSize(), true);
+            state = PhysicsEngine::IntersectingRectangles(x, y, w, h, oldBoxList[j].getX(), oldBoxList[j].getY(), oldBoxList[j].getSize(), oldBoxList[j].getSize(), true);
         }
 
         for (unsigned int j = 0; !state && j < oldGuyList.size(); ++j)
         {
-            state = PhysicsEngine::intersectingRectangles(x, y, w, h, oldGuyList[j].getX(), oldGuyList[j].getY(), oldGuyList[j].getWidth(), oldGuyList[j].getHeight(), true);
+            state = PhysicsEngine::IntersectingRectangles(x, y, w, h, oldGuyList[j].getX(), oldGuyList[j].getY(), oldGuyList[j].getWidth(), oldGuyList[j].getHeight(), true);
         }
 
         nextButton[oldButtonList[i].getIndex()] = state;
@@ -1451,7 +1491,29 @@ bool PhysicsEngine::wallAt(int x, int y, int w, int h) const
 	return wallAt(x, y) || wallAt(x+w, y) || wallAt(x, y+h) || wallAt(x+w, y+h);
 }
 
-bool PhysicsEngine::intersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const
+bool PhysicsEngine::PointInRectangle(int px, int py, int x, int y, int w, int h, bool inclusive) const
+{
+     if (inclusive)
+    {
+        return
+        (
+            (px <= x + w && px >= x)
+         &&
+            (py <= y + h && py >= y)
+        );
+    }
+    else
+    {
+        return
+        (
+            (px < x + w && px > x)
+         &&
+            (py < y + h && py > y)
+        );
+    }
+}
+
+bool PhysicsEngine::IntersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const
 {
     if (inclusive)
     {
