@@ -3,6 +3,8 @@
 #include "TimeObjectListList.h"
 #include "ObjectList.h"
 #include "TimeDirection.h"
+#include "ConcurrentTimeMap.h"
+#include "ConcurrentTimeSet.h"
 
 #include <iostream>
 #include <map>
@@ -14,12 +16,12 @@
 using namespace ::std;
 namespace hg {
 
-PhysicsEngine::PhysicsEngine(vector<vector<bool> > newWallmap,
-                             int newWallSize,
-                             int newGravity,
-                             AttachmentMap nAttachmentMap,
-                             TriggerSystem nTriggerSystem) :
-wallmap(newWallmap),
+PhysicsEngine::PhysicsEngine(const ::boost::multi_array<bool, 2>& nwallmap,
+                    int newWallSize,
+                    int newGravity,
+                    const AttachmentMap& nAttachmentMap,
+                    const TriggerSystem& nTriggerSystem) :
+wallmap(nwallmap),
 gravity(newGravity),
 wallSize(newWallSize),
 attachmentMap(nAttachmentMap),
@@ -30,10 +32,9 @@ triggerSystem(nTriggerSystem)
 TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
                                                const NewFrameID time,
                                                const std::vector<InputList>& playerInput,
-                                               NewFrameID& currentPlayerFrame,
-                                               TimeDirection& currentPlayerDirection,
-                                               NewFrameID& nextPlayerFrame,
-                                               NewFrameID& winFrame) const
+                                               ConcurrentTimeMap& currentPlayerFramesAndDirections,
+                                               ConcurrentTimeSet& nextPlayerFrames,
+                                               ConcurrentTimeSet& winFrames) const
 {
     std::vector<BoxInfo> nextBox;
     std::vector<GuyInfo> nextGuy;
@@ -79,7 +80,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
 	// guys simple collision algorithm
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
-            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFrame, nextPlayerFrame, currentPlayerDirection, pauseTimes);
+            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFramesAndDirections, nextPlayerFrames, pauseTimes);
 
     // button position update
     buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton, time);
@@ -95,6 +96,10 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         returnDepartures.insertObjectList(it->first, ObjectList(it->second));
     }
+    
+    //Guys cannot win (ATM)
+    winFrames.remove(time);
+    
 	// add data to departures
 	return returnDepartures;
 }
@@ -439,9 +444,8 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
                             const ::std::vector<Platform>& nextPlatform,
                             const ::std::vector<Portal>& nextPortal,
                             ::std::map<NewFrameID, MutableObjectList>& newDepartures,
-                            NewFrameID& currentPlayerFrame,
-                            NewFrameID& nextPlayerFrame,
-                            TimeDirection& currentPlayerDirection,
+                            ConcurrentTimeMap& currentPlayerFramesAndDirections,
+                            ConcurrentTimeSet& nextPlayerFrames,
                             std::vector<PauseInitiatorID>& pauseTimes) const
 {
 	vector<int> x;
@@ -806,8 +810,10 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
         }
 	}
 	// colliding with pickups?
-
 	// time travel
+    bool currentPlayerInFrame(false);
+    TimeDirection currentPlayerDirection(INVALID);
+    bool nextPlayerInFrame(false);
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
         if (oldGuyList[i].getPauseLevel() != 0)
@@ -919,8 +925,7 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
             if (playerInput.size() - 1 == relativeIndex)
             {
                 currentPlayerDirection = oldGuyList[i].getTimeDirection();
-                currentPlayerFrame = time;
-                nextPlayerFrame = nextTime;
+                currentPlayerInFrame = true;
                 //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
 
@@ -942,8 +947,21 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
         else
         {
             assert(oldGuyList[i].getRelativeIndex() == playerInput.size());
+            nextPlayerInFrame = true;
         }
     }
+    if (currentPlayerInFrame) {
+        currentPlayerFramesAndDirections.add(time, currentPlayerDirection);
+    }
+    else {
+        currentPlayerFramesAndDirections.remove(time);
+    }
+    if (nextPlayerInFrame) {
+        nextPlayerFrames.add(time);
+    }
+    else {
+        nextPlayerFrames.remove(time);
+    }    
 }
 
 void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,

@@ -5,9 +5,10 @@
 #include "TimeEngine.h"
 #include "PlayerVictoryException.h"
 #include "Hg_Input.h"
-
+#include "Level.h"
 #include <SFML/Graphics.hpp>
 
+#include <boost/multi_array.hpp>
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/assign.hpp>
@@ -31,17 +32,17 @@ using namespace ::std;
 using namespace ::sf;
 using namespace ::boost;
 namespace {
-    void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wall, TimeDirection& playerDirection);
+    void Draw(RenderWindow& target, const ObjectList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection);
     void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame);
-    void DrawWall(RenderTarget& target, const vector<vector<bool> >& wallData);
+    void DrawWall(RenderTarget& target, const ::boost::multi_array<bool, 2>& wallData);
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData, TimeDirection&);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
     void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection);
     void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection);
     void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDirection& playerDirection);
 
-    vector<vector<bool> > MakeWall();
-    TimeEngine MakeTimeEngine(vector<vector<bool> >& wallData);
+    ::boost::multi_array<bool, 2> MakeWall();
+    Level MakeLevel(const ::boost::multi_array<bool, 2>& wallData);
 }
 
 ////////////////////////////////////////////////////////////
@@ -56,8 +57,8 @@ int main()
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
-    vector<vector<bool> > wall(MakeWall());
-    TimeEngine timeEngine(MakeTimeEngine(wall));
+    ::boost::multi_array<bool, 2> wall(MakeWall());
+    TimeEngine timeEngine(MakeLevel(wall));
 
     ::hg::Input input;
     while (app.IsOpened())
@@ -125,8 +126,8 @@ int main()
     }
     {
 
-    vector<vector<bool> > wall(MakeWall());
-    TimeEngine timeEngine(MakeTimeEngine(wall));
+    ::boost::multi_array<bool, 2> wall(MakeWall());
+    TimeEngine timeEngine(MakeLevel(wall));
 
     vector<InputList> input;
     {
@@ -211,9 +212,9 @@ int main()
 }
 
 namespace  {
-void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<bool> >& wallData, TimeDirection& playerDirection)
+void Draw(RenderWindow& target, const ObjectList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection)
 {
-    DrawWall(target, wallData);
+    DrawWall(target, wall);
     DrawPortals(target, frame.getPortalListRef(), playerDirection);
     DrawBoxes(target, frame.getBoxListRef(), playerDirection);
     DrawGuys(target, frame.getGuyListRef(), playerDirection);
@@ -222,12 +223,12 @@ void Draw(RenderWindow& target, const ObjectList& frame, const vector<vector<boo
 
 }
 
-void DrawWall(sf::RenderTarget& target, const std::vector<std::vector<bool> >& wall)
+void DrawWall(sf::RenderTarget& target, const ::boost::multi_array<bool, 2>& wall)
 {
     target.Clear(Color(255,255,255));
-    for(unsigned int i = 0; i < wall.size(); ++i) {
-        for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
-            if (wall.at(i).at(j)) {
+    for(unsigned int i = 0; i < wall.shape()[0]; ++i) {
+        for(unsigned int j = 0; j < wall.shape()[1]; ++j) {
+            if (wall[i][j]) {
                 target.Draw
                 (
                     Shape::Rectangle
@@ -457,7 +458,7 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFra
                                              Color(0,255,0)));
 }
 
-vector<vector<bool> > MakeWall()
+::boost::multi_array<bool, 2> MakeWall()
 {
     using namespace ::boost::assign;
     vector<vector<bool> > wall;
@@ -507,20 +508,16 @@ vector<vector<bool> > MakeWall()
     row += 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
     wall.push_back(row);
     row.clear();
-    vector<vector<bool> > actualWall;
-    actualWall.resize(wall.at(0).size());
-    foreach(vector<bool>& column, actualWall) {
-        column.resize(wall.size());
-    }
+    boost::multi_array<bool, 2> actualWall(boost::extents[wall.at(0).size()][wall.size()]);
     for(unsigned int i = 0; i < wall.size(); ++i) {
         for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
-            actualWall.at(j).at(i) = wall.at(i).at(j);
+            actualWall[j][i] = wall.at(i).at(j);
         }
     }
     return actualWall;
 }
 
-TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
+Level MakeLevel(const ::boost::multi_array<bool, 2>& wall)
 {
     MutableObjectList newObjectList;
     newObjectList.add(Box(32400, 10000, 0, 0, 3200, FORWARDS, 0));
@@ -532,8 +529,8 @@ TimeEngine MakeTimeEngine(vector<vector<bool> >& wall)
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
     newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false));
 
-    return TimeEngine
-    (
+    return 
+        Level(
         3,
         10800,
         wall,
