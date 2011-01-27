@@ -33,7 +33,7 @@ public:
     
     const_iterator begin() const
     {
-        return list_.begin();  
+        return list_.begin();
     }
     const_iterator end() const
     {

@@ -12,28 +12,30 @@
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
 #include "RemoteDepartureEdit.cpp"
+#include <boost/multi_array.hpp>
 #include <vector>
 #include <map>
 namespace hg {
 class ObjectList;
 class TimeObjectListList;
+class ConcurrentTimeMap;
+class ConcurrentTimeSet;
 class PhysicsEngine
 {
 public:
-	PhysicsEngine(  ::std::vector< ::std::vector<bool> > newWallmap,
+	PhysicsEngine(  const ::boost::multi_array<bool, 2>& nwallmap,
                     int newWallSize,
                     int newGravity,
-                    AttachmentMap nAttachmentMap,
-                    TriggerSystem nTriggerSystem);
+                    const AttachmentMap& nAttachmentMap,
+                    const TriggerSystem& nTriggerSystem);
 
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                        NewFrameID time,
-                                        const ::std::vector<InputList>& playerInput,
-                                        NewFrameID& currentPlayerFrame,
-                                        TimeDirection& currentPlayerDirection,
-                                        NewFrameID& nextPlayerFrame,
-                                        NewFrameID& winFrame) const;
+                                    NewFrameID time,
+                                    const ::std::vector<InputList>& playerInput,
+                                    ConcurrentTimeMap& currentPlayerFramesAndDirections,
+                                    ConcurrentTimeSet& nextPlayerFrames,
+                                    ConcurrentTimeSet& winFrames) const;
 
 private:
     struct BoxInfo {
@@ -129,9 +131,8 @@ private:
                     const ::std::vector<Platform>& nextPlatform,
                     const ::std::vector<Portal>& nextPortal,
                     ::std::map<NewFrameID, MutableObjectList>& newDepartures,
-                    NewFrameID& currentPlayerFrame,
-                    NewFrameID& nextPlayerFrame,
-                    TimeDirection& currentPlayerDirection,
+                    ConcurrentTimeMap& currentPlayerFramesAndDirections,
+                    ConcurrentTimeSet& nextPlayerFrames,
                     std::vector<PauseInitiatorID>& pauseTimes) const;
 
 	bool wallAt(int x, int y) const;
@@ -142,7 +143,7 @@ private:
 
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
-    ::std::vector< ::std::vector<bool> > wallmap;
+    ::boost::multi_array<bool, 2> wallmap;
 	int gravity;
 	int wallSize;
 	AttachmentMap attachmentMap;

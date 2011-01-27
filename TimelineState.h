@@ -14,7 +14,7 @@ public:
     /**************
      * Constructs a time line state of length timeLength containing no arrivals or departures.
      */
-	TimelineState(unsigned int timeLength);
+	TimelineState();
 
     /********************
      * Updates the timeline with new departures and returns the set of frames

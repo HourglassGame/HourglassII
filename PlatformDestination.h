@@ -3,7 +3,6 @@
 
 namespace hg
 {
-
     class PlatformDestination
     {
         public:

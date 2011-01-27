@@ -2,6 +2,9 @@
 #define HG_DEPARTURE_MAP_H
 #include "FrameID.h"
 #include "TimeObjectListList.h"
+#include "FrameUpdateSet.h"
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/locks.hpp>
 #include <vector>
 
 namespace hg {
@@ -15,6 +18,7 @@ namespace hg {
         typedef MapType::const_iterator const_iterator;
         
         DepartureMap() :
+        mutex_(),
         map_()
         {
         }
@@ -22,8 +26,16 @@ namespace hg {
         {
             map_.reserve(toReseve);
         }
+        void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)
+        {
+            //Could remove the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
+            //CBF ATM.
+            //instead I do this:
+            map_.reserve(toMakeSpaceFor.size());
+        }
         void addDeparture(NewFrameID time, TimeObjectListList departingObjects)
         {
+            boost::lock_guard<boost::mutex> lock(mutex_);
             map_.push_back(ValueType(time, departingObjects));
         }
         const_iterator begin() const
@@ -35,6 +47,7 @@ namespace hg {
             return map_.end();
         }
     private:
+        boost::mutex mutex_;
         MapType map_;
     };
 }
