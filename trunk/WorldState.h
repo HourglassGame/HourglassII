@@ -27,7 +27,7 @@ namespace hg {
         /***************************************
          * Updates the state of the world once.
          */
-        FrameUpdateSet executeWorld();
+        std::vector<NewFrameID> executeWorld();
 
         /*******************************
          * Stores the given input data, allowing the player to exist for another step.

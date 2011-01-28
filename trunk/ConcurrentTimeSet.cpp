@@ -9,22 +9,21 @@ set_()
 void ConcurrentTimeSet::add(const NewFrameID& toAdd)
 {
     {
-        boost::upgrade_lock<boost::shared_mutex> shared(mutex_);
+        boost::shared_lock<boost::shared_mutex> shared(mutex_);
         if (set_.find(toAdd) == set_.end()) {
-            boost::upgrade_to_unique_lock<boost::shared_mutex> unique(shared);
+            shared.unlock();
+            boost::lock_guard<boost::shared_mutex> unique(mutex_);
             set_.insert(toAdd);
         }
     }
 }
 void ConcurrentTimeSet::remove(const NewFrameID& toRemove)
 {
-    {
-        boost::upgrade_lock<boost::shared_mutex> shared(mutex_);
-        iterator it(set_.find(toRemove));
-        if (it != set_.end()) {
-            boost::upgrade_to_unique_lock<boost::shared_mutex> unique(shared);
-            set_.quick_erase(it);
-        }
+    boost::shared_lock<boost::shared_mutex> shared(mutex_);
+    if (set_.find(toRemove) != set_.end()) {
+        shared.unlock();
+        boost::lock_guard<boost::shared_mutex> unique(mutex_);
+        set_.quick_erase(set_.find(toRemove));
     }
 }
 }

@@ -5,38 +5,27 @@
 #include "FrameUpdateSet.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/locks.hpp>
-#include <vector>
+#include <boost/unordered_map.hpp>
 
 namespace hg {
     class DepartureMap {
     public:
-        typedef ::std::pair<NewFrameID, TimeObjectListList> ValueType;
-        typedef ::std::vector<ValueType> MapType;
         
+        typedef ::boost::unordered_map<NewFrameID, TimeObjectListList> MapType;
+        typedef MapType::value_type ValueType;
         //BIG privacy leak here, it is incorrect to use DepartureMap::const_iterator as anything but a forward_iterator
         //To fix make new iterator class, but that would take effort...
         typedef MapType::const_iterator const_iterator;
         
         DepartureMap() :
-        mutex_(),
         map_()
         {
         }
-        void reserve(size_t toReseve)
-        {
-            map_.reserve(toReseve);
-        }
-        void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)
-        {
-            //Could remove the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
-            //CBF ATM.
-            //instead I do this:
-            map_.reserve(toMakeSpaceFor.size());
-        }
+        //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
+        void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor);
         void addDeparture(NewFrameID time, TimeObjectListList departingObjects)
         {
-            boost::lock_guard<boost::mutex> lock(mutex_);
-            map_.push_back(ValueType(time, departingObjects));
+            swap(map_[time],departingObjects);
         }
         const_iterator begin() const
         {
@@ -47,7 +36,6 @@ namespace hg {
             return map_.end();
         }
     private:
-        boost::mutex mutex_;
         MapType map_;
     };
 }

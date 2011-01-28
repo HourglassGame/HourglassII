@@ -16,14 +16,15 @@ namespace hg {
             }
         }
         
-        void add(const FrameUpdateSet& other) { 
+        void add(const FrameUpdateSet& other) {
             updateSet_.insert(other.updateSet_.begin(), other.updateSet_.end());
         }
-        
+        typedef ::std::set<NewFrameID> SetType;
+        typedef SetType::const_iterator const_iterator;
         //Privacy leak here, it is an error to use FrameUpdateSet::const_iterator as anything more than a ForwardIterator
         //I should define my own iterator class, but I can't be bothered right now
-        typedef ::std::set<NewFrameID>::const_iterator const_iterator;
-        typedef ::std::set<NewFrameID>::iterator iterator;
+        //typedef ::std::set<NewFrameID>::const_iterator const_iterator;
+        //typedef ::std::set<NewFrameID>::iterator iterator;
         typedef NewFrameID value_type;
         const_iterator begin() const { return updateSet_.begin(); }
         const_iterator end() const { return updateSet_.end(); }
@@ -32,7 +33,7 @@ namespace hg {
         size_t size() const { return updateSet_.size(); }
         bool empty() const { return updateSet_.empty(); }
     private:
-        ::std::set<NewFrameID> updateSet_;
+        SetType updateSet_;
     };
 }
 #endif //HG_FRAME_UPDATE_SET_H

@@ -50,11 +50,11 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 
     std::vector<PlatformDestination> platformDesinations;
 
-    std::vector<bool> nextButtonState = std::vector<bool>(triggerSystem.getButtonCount(), false);
+    std::vector<char> nextButtonState(triggerSystem.getButtonCount(), false);
 
     std::vector<PauseInitiatorID> pauseTimes;
-
-    map<NewFrameID, MutableObjectList> newDepartures;
+    
+    NewDeparturesT newDepartures;
 
     if (time.parentFrame() == NewFrameID())
     {
@@ -92,7 +92,7 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
     // compile all departures
     TimeObjectListList returnDepartures;
 
-    for (map<NewFrameID, MutableObjectList>::iterator it(newDepartures.begin()), end(newDepartures.end()); it != end; ++it) {
+    for (NewDeparturesT::iterator it(newDepartures.begin()), end(newDepartures.end()); it != end; ++it) {
         //Consider adding insertObjectList overload which can take aim for massively increased efficiency
         returnDepartures.insertObjectList(it->first, ObjectList(it->second));
     }
@@ -105,10 +105,10 @@ TimeObjectListList PhysicsEngine::executeFrame(const ObjectList& arrivals,
 }
 
 template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForComplexEntities(
-                                    const vector<TypeInfo>& next,
-                                    const vector<RemoteDepartureEdit<Type> >& thief,
-                                    const vector<RemoteDepartureEdit<Type> >& extra,
-                                    map<NewFrameID, MutableObjectList>& newDepartures,
+                                    const ::std::vector<TypeInfo>& next,
+                                    const ::std::vector<RemoteDepartureEdit<Type> >& thief,
+                                    const ::std::vector<RemoteDepartureEdit<Type> >& extra,
+                                    NewDeparturesT& newDepartures,
                                     const NewFrameID time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const
@@ -274,8 +274,8 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 }
 
 template <class Type> void PhysicsEngine::BuildDepartureForReallySimpleThing(
-                                    const vector<Type>& next,
-                                    map<NewFrameID, MutableObjectList>& newDepartures,
+                                    const ::std::vector<Type>& next,
+                                    NewDeparturesT& newDepartures,
                                     const NewFrameID time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const
@@ -300,7 +300,19 @@ template <class Type> void PhysicsEngine::BuildDepartureForReallySimpleThing(
 }
 
 
-void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
+void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
+                        const ::std::vector<Platform>& nextPlatform,
+                        const ::std::vector<Portal>& nextPortal,
+                        const ::std::vector<Button>& nextButton,
+                        const ::std::vector<GuyInfo>& nextGuy,
+                        const ::std::vector<RemoteDepartureEdit<Box> >& boxThief,
+                        const ::std::vector<RemoteDepartureEdit<Box> >& boxExtra,
+                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyExtra,
+                        NewDeparturesT& newDepartures,
+                        const NewFrameID time,
+                        std::vector<PauseInitiatorID>& pauseTimes
+
+                                    /*const vector<BoxInfo>& nextBox,
                                     const vector<Platform>& nextPlatform,
                                     const vector<Portal>& nextPortal,
                                     const vector<Button>& nextButton,
@@ -310,7 +322,7 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
                                     const vector<RemoteDepartureEdit<Guy> >& guyExtra,
                                     map<NewFrameID, MutableObjectList>& newDepartures,
                                     const NewFrameID time,
-                                    std::vector<PauseInitiatorID>& pauseTimes
+                                    std::vector<PauseInitiatorID>& pauseTimes*/
                                     ) const
 {
 
@@ -436,28 +448,30 @@ void PhysicsEngine::buildDepartures(const vector<BoxInfo>& nextBox,
     BuildDepartureForReallySimpleThing<Portal>(nextPortal, newDepartures, time, pauseTimes);
 }
 
-void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
-                            const NewFrameID time,
-                            const vector<InputList>& playerInput,
-                            ::std::vector<GuyInfo>& nextGuy,
-                            std::vector<BoxInfo>& nextBox,
+void PhysicsEngine::guyStep(const ::std::vector<Guy>& oldGuyList,
+                            NewFrameID time,
+                            const ::std::vector<InputList>& playerInput,
+                            std::vector<GuyInfo>& nextGuy,
+                            ::std::vector<BoxInfo>& nextBox,
                             const ::std::vector<Platform>& nextPlatform,
                             const ::std::vector<Portal>& nextPortal,
-                            ::std::map<NewFrameID, MutableObjectList>& newDepartures,
+                            NewDeparturesT& newDepartures,
                             ConcurrentTimeMap& currentPlayerFramesAndDirections,
                             ConcurrentTimeSet& nextPlayerFrames,
-                            std::vector<PauseInitiatorID>& pauseTimes) const
+                            std::vector<PauseInitiatorID>& pauseTimes
+                            ) const
 {
 	vector<int> x;
 	vector<int> y;
 	vector<int> xspeed;
 	vector<int> yspeed;
-	vector<bool> supported;
+	vector<char> supported;
 
     x.reserve(oldGuyList.size());
     y.reserve(oldGuyList.size());
     xspeed.reserve(oldGuyList.size());
     yspeed.reserve(oldGuyList.size());
+    supported.reserve(oldGuyList.size());
 
 	// position, velocity, collisions
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
@@ -644,11 +658,14 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
         }
 	}
 
-	vector<bool> carry;
+	vector<char> carry;
 	vector<int> carrySize;
 	vector<TimeDirection> carryDirection;
 	vector<int> carryPauseLevel;
-
+    carry.reserve(oldGuyList.size());
+    carrySize.reserve(oldGuyList.size());
+    carryDirection.reserve(oldGuyList.size());
+    carryPauseLevel.reserve(oldGuyList.size());
 	// box carrying
 	for (size_t i = 0; i < oldGuyList.size(); ++i)
 	{
@@ -964,10 +981,10 @@ void PhysicsEngine::guyStep(const vector<Guy>& oldGuyList,
     }    
 }
 
-void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
-                                                 std::vector<BoxInfo>& nextBox,
-                                                 const ::std::vector<Platform>& nextPlatform,
-												 const NewFrameID time) const
+void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<Box>& oldBoxList,
+                                                ::std::vector<BoxInfo>& nextBox,
+                                                std::vector<Platform>& nextPlatform,
+                                                const NewFrameID time) const
 {
 	for (vector<Box>::const_iterator i(oldBoxList.begin()), iend(oldBoxList.end()); i != iend; ++i)
 	{
@@ -1056,7 +1073,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		//check wall collision in Y direction
 		if (yspeed > 0) // down
 		{
-			if (wallmap[x/wallSize][(newY+size)/wallSize] || (x - (x/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][(newY+size)/wallSize]))
+			if (wallAt(x, newY+size)/*wallmap[x/wallSize][(newY+size)/wallSize]*/ || (x - (x/wallSize)*wallSize > wallSize-size && wallAt(x+size,newY+size)/*wallmap[(x+size)/wallSize][(newY+size)/wallSize]*/))
 			{
 				newY = ((newY+size)/wallSize)*wallSize - size;
 				supported = true;
@@ -1065,7 +1082,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 		}
 		else if (yspeed < 0) // up
 		{
-			if  (wallmap[x/wallSize][newY/wallSize] || (x - (x/wallSize)*wallSize > wallSize-size && wallmap[(x+size)/wallSize][newY/wallSize]))
+			if  (wallAt(x, newY)/*wallmap[x/wallSize][newY/wallSize]*/ || (x - (x/wallSize)*wallSize > wallSize-size && wallAt(x+size, newY) /*wallmap[(x+size)/wallSize][newY/wallSize]*/))
 			{
 				newY = (newY/wallSize + 1)*wallSize;
 			}
@@ -1199,9 +1216,9 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const vector<Box>& oldBoxList,
 }
 
 void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
-                                 ::std::vector<Platform>& nextPlatform,
-                                 const std::vector<PlatformDestination>& pd,
-                                 const NewFrameID& time) const
+                                  std::vector<Platform>& nextPlatform,
+                                  const std::vector<PlatformDestination>& pd,
+                                  const NewFrameID& time) const
 {
 
     for (unsigned int i = 0; i < oldPlatformList.size(); ++i)
@@ -1341,13 +1358,13 @@ void PhysicsEngine::platformStep(const ::std::vector<Platform>& oldPlatformList,
 }
 
 void PhysicsEngine::portalPositionUpdate(
-        const ::std::vector<Platform>& nextPlatform,
+        const std::vector<Platform>& nextPlatform,
         const ::std::vector<Portal>& oldPortalList,
-        vector<Portal>& nextPortal,
+        std::vector<Portal>& nextPortal,
         NewFrameID time
     ) const
 {
-    ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getPortalAttachmentRef();
+    const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getPortalAttachmentRef());
 
     for (unsigned int i = 0; i < oldPortalList.size(); ++i)
 	{
@@ -1389,14 +1406,14 @@ void PhysicsEngine::portalPositionUpdate(
 
 void PhysicsEngine::buttonPositionUpdate(
         const ::std::vector<Platform>& nextPlatform,
-        const ::std::vector<bool>& nextButtonState,
+        const ::std::vector<char>& nextButtonState,
         const ::std::vector<Button>& oldButtonList,
-        vector<Button>& nextButton,
+        ::std::vector<Button>& nextButton,
         NewFrameID time
     ) const
 {
 
-    ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getButtonAttachmentRef();
+    const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getButtonAttachmentRef());
 
 
     for (unsigned int i = 0; i < oldButtonList.size(); ++i)
@@ -1437,11 +1454,11 @@ void PhysicsEngine::buttonChecks(const ::std::vector<Platform>& oldPlatformList,
                                  const ::std::vector<Box>& oldBoxList,
                                 const ::std::vector<Guy>& oldGuyList,
                                 const ::std::vector<Button>& oldButtonList,
-                                ::std::vector<bool>& nextButton,
+                                std::vector<char>& nextButton,
                                 NewFrameID time) const
 {
 
-    ::std::vector< ::boost::tuple<int, int, int> > attachments = attachmentMap.getButtonAttachmentRef();
+    const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getButtonAttachmentRef());
 
     for (unsigned int i = 0; i < oldButtonList.size(); ++i)
 	{

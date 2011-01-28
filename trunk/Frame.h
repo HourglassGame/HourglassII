@@ -3,7 +3,9 @@
 
 #include "TimeDirection.h"
 #include "PauseInitiatorID.h"
+#include "ObjectList.h"
 #include <boost/unordered_map.hpp>
+#include <map>
 namespace hg {
 class Frame;
 class FramePtr;
@@ -44,6 +46,11 @@ public:
     bool operator==(const FramePtr& other);
 
     bool operator<(const FramePtr& other);
+    
+    operator Frame*()
+    {
+        return framePtr_;
+    }
 private:
     friend ::std::size_t hash_value(const FramePtr& toHash);
     friend class Universe;
@@ -59,11 +66,10 @@ private:
 //and so avoid the arrival-departure-map system altogether
 class Frame {
     unsigned int frameNumber_;
+    //back-link to universe in which this frame is
     Universe* universe_;
-    //Here UniverseID has:
-    //InitiatorID
-    //Universe has:
-    //a container of Frames - the Frames in that universe
+    std::map<Frame*, ObjectList> departures_;
+    std::map<Frame*, ObjectList*> arrivals_;
     ::boost::unordered_map<PauseInitiatorID, Universe> subUniverses_;
 };
 }
