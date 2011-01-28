@@ -959,7 +959,6 @@ void PhysicsEngine::guyStep(const ::std::vector<Guy>& oldGuyList,
                     nextTime)
                 );
             }
-
         }
         else
         {
