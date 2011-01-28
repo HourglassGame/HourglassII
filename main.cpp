@@ -427,7 +427,7 @@ void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDir
 void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
-    foreach(const FrameUpdateSet& lists, waves) {
+    foreach(const std::vector<NewFrameID>& lists, waves) {
         foreach (NewFrameID frame, lists) {
             if (frame.isValidFrame()) {
                 if (!pixelsWhichHaveBeenDrawnIn[static_cast<unsigned int> ((frame.frame()/10800.f)*640)]) {

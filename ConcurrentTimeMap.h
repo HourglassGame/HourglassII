@@ -10,7 +10,8 @@ namespace hg {
         public:
         ConcurrentTimeMap();
         //Must never try to add or remove a particular frame concurrently,
-        //only has safe concurrent access when called with different frames
+        //only has safe concurrent access when each thread is calling 
+        //add or remove with different Frame parameters
         void add(const NewFrameID& toAdd, TimeDirection direction);
         void remove(const NewFrameID& toRemove);
         void clear() { map_.clear(); }

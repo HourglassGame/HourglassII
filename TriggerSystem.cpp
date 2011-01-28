@@ -16,8 +16,8 @@ offDestinations(noffDestinations)
 {
 }
 
-::std::vector<PlatformDestination>& TriggerSystem::getPlatformDestinations(const ::std::vector<bool>& buttonState,
-                                                                           std::vector<PlatformDestination>& platformDesinations) const
+void TriggerSystem::getPlatformDestinations(const std::vector<char>& buttonState,
+                                            std::vector<PlatformDestination>& platformDesinations) const
 {
 
     std::vector<bool> triggerInputs(triggerCount, false);
@@ -40,6 +40,5 @@ offDestinations(noffDestinations)
             platformDesinations.push_back(offDestinations[i]);
         }
     }
-    return platformDesinations;
 }
 }//namespace hg

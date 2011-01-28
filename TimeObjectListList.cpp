@@ -73,4 +73,9 @@ ObjectList TimeObjectListList::getFlattenedVersion(const NewFrameID& time, const
 
 	return ObjectList(returnList);
 }
+void swap(TimeObjectListList& l, TimeObjectListList& r)
+{
+    swap(l.list_, r.list_);
+}
+
 }//namespace hg

@@ -31,7 +31,7 @@ public:
      */
 	TimeEngine(const Level& level);
 
-    typedef ::std::vector<FrameUpdateSet> FrameListList;
+    typedef ::std::vector<std::vector<NewFrameID> > FrameListList;
 	/************************
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
      * and a list of the frames which were updated in each propagation round. The current player frame is the last

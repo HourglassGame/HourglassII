@@ -9,20 +9,19 @@ namespace hg {
 class Universe {
 public:
     //creates a top level universe
-    Universe(unsigned int timelineLength);
-    //creates a lower level universe
-    Universe(FramePtr initiatorFrame, unsigned int timelineLength);
+    explicit Universe(unsigned int timelineLength);
     //returns initiatorFrame_
-    FramePtr getInitiatorFrame() const;
-    FramePtr getEntryFrame(TimeDirection direction) const;
-    FramePtr getArbitraryFrame(unsigned int frameNumber) const;
+    Frame* getInitiatorFrame() const;
+    Frame* getEntryFrame(TimeDirection direction);
+    Frame* getArbitraryFrame(unsigned int frameNumber);
     //returns the length of this Universe's timeline
     unsigned int getTimelineLength() const;
 private:
-    FramePtr initiatorFrame_;
-    ::std::vector<Frame> frames;
+    friend class Frame;
+    //creates a lower level universe
+    Universe(Frame* initiatorFrame, unsigned int timelineLength);
+    Frame* initiatorFrame_;
+    ::std::vector<Frame> frames_;
 };
-
-::std::size_t hash_value(const Universe& toHash);
 }
 #endif //HG_UNIVERSE_H

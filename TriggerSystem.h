@@ -17,8 +17,8 @@ namespace hg
                           ::std::vector<PlatformDestination> onDestinations,
                           ::std::vector<PlatformDestination> offDestinations);
 
-            ::std::vector<PlatformDestination>& getPlatformDestinations(
-                const ::std::vector<bool>& buttonState,
+            void getPlatformDestinations(
+                const std::vector<char>& buttonState,
                 std::vector<PlatformDestination>& platformDesinations
             ) const;
 

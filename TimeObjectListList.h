@@ -41,7 +41,9 @@ public:
     }
     
 private:
+    friend void swap(TimeObjectListList& l, TimeObjectListList& r);
     ListType list_;
 };
+void swap(TimeObjectListList& l, TimeObjectListList& r);
 }
 #endif //HG_TIME_OBJECT_LIST_LIST_H

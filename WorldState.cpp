@@ -1,8 +1,8 @@
 #include "WorldState.h"
 #include "DepartureMap.h"
 #include "PlayerVictoryException.h"
-//#include "ParallelForEach.h"
-#include <boost/range/algorithm/for_each.hpp>
+#include "ParallelForEach.h"
+//#include <boost/range/algorithm/for_each.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
 #define foreach BOOST_FOREACH
@@ -152,14 +152,16 @@ TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame
                                  currentWinFrames_);
 }
 
-FrameUpdateSet WorldState::executeWorld()
+std::vector<NewFrameID> WorldState::executeWorld()
 {
     //cout << "executeWorld\n";
-    FrameUpdateSet returnSet(frameUpdateSet_);
+    //Make parallel_for_each compatible type, also save result for return
+    //(I don't really understand the mechanism, but tbb::parallel_for_each doesn't work for FrameUpdatSets, but does for vectors)
+    std::vector<NewFrameID> returnSet(frameUpdateSet_.begin(), frameUpdateSet_.end());
     DepartureMap changedFrames;
     changedFrames.makeSpaceFor(frameUpdateSet_);
-    //parallel_for_each(frameUpdateSet_, ExecuteFrame(*this, changedFrames));
-    boost::for_each(frameUpdateSet_, ExecuteFrame(*this, changedFrames));
+    parallel_for_each(returnSet, ExecuteFrame(*this, changedFrames));
+    //boost::for_each(frameUpdateSet_, ExecuteFrame(*this, changedFrames));
     frameUpdateSet_ = timeline_.updateWithNewDepartures(changedFrames);
     if (frameUpdateSet_.empty() && currentWinFrames_.size() == 1) {
         throw PlayerVictoryException();
