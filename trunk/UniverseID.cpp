@@ -1,5 +1,5 @@
 #include "UniverseID.h"
-#include "NewFrameID.h"
+#include "FrameID.h"
 
 #include <boost/functional/hash.hpp>
 
@@ -41,13 +41,13 @@ nestTrain_(nestTrain)
 {
 }
 
-NewFrameID UniverseID::parentFrame() const
+FrameID UniverseID::parentFrame() const
 {
     if (nestTrain_.empty()) {
-        return NewFrameID();
+        return FrameID();
     }
     else {
-        return NewFrameID
+        return FrameID
                (
                    nestTrain_.rbegin()->initiatorFrame_,
                    UniverseID

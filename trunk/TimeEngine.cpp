@@ -21,7 +21,7 @@ worldState(level.timeLineLength,
 {
 }
 
-tuple<NewFrameID,NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
+tuple<FrameID,FrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
 
@@ -29,10 +29,10 @@ tuple<NewFrameID,NewFrameID, TimeEngine::FrameListList, TimeDirection> TimeEngin
     for (unsigned int i = 0; i < speedOfTime; ++i) {
         updatedList.push_back(worldState.executeWorld());
     }
-    return tuple<NewFrameID, NewFrameID, FrameListList, TimeDirection>(worldState.getCurrentPlayerFrame(), worldState.getNextPlayerFrame(), updatedList, worldState.getCurrentPlayerDirection());
+    return tuple<FrameID, FrameID, FrameListList, TimeDirection>(worldState.getCurrentPlayerFrame(), worldState.getNextPlayerFrame(), updatedList, worldState.getCurrentPlayerDirection());
 }
 
-ObjectList TimeEngine::getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const
+ObjectList TimeEngine::getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const
 {
     return worldState.getPostPhysics(whichFrame, whichPrePause);
 }

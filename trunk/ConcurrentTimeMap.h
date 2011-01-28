@@ -2,18 +2,18 @@
 #define HG_CONCURRENT_TIME_MAP_H
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/unordered_map.hpp>
-#include "NewFrameID.h"
+#include "FrameID.h"
 #include "TimeDirection.h"
 namespace hg {
     class ConcurrentTimeMap {
-        typedef boost::unordered_map<NewFrameID, TimeDirection> MapType;
+        typedef boost::unordered_map<FrameID, TimeDirection> MapType;
         public:
         ConcurrentTimeMap();
         //Must never try to add or remove a particular frame concurrently,
         //only has safe concurrent access when each thread is calling 
         //add or remove with different Frame parameters
-        void add(const NewFrameID& toAdd, TimeDirection direction);
-        void remove(const NewFrameID& toRemove);
+        void add(const FrameID& toAdd, TimeDirection direction);
+        void remove(const FrameID& toRemove);
         void clear() { map_.clear(); }
         bool empty() const { return map_.empty(); }
         size_t size() const { return map_.size(); }

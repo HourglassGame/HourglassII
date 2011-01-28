@@ -6,7 +6,7 @@
 #include "Button.h"
 #include "Platform.h"
 #include "Portal.h"
-#include "NewFrameID.h"
+#include "FrameID.h"
 #include "TimeDirection.h"
 #include "ObjectList.h"
 #include "AttachmentMap.h"
@@ -31,62 +31,62 @@ public:
 
     // executes frame and returns departures
 	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                    NewFrameID time,
+                                    FrameID time,
                                     const ::std::vector<InputList>& playerInput,
                                     ConcurrentTimeMap& currentPlayerFramesAndDirections,
                                     ConcurrentTimeSet& nextPlayerFrames,
                                     ConcurrentTimeSet& winFrames) const;
 
 private:
-    typedef std::map<NewFrameID, MutableObjectList> NewDeparturesT;
+    typedef std::map<FrameID, MutableObjectList> NewDeparturesT;
     struct BoxInfo {
         BoxInfo(Box nbox,
-                NewFrameID nTime,
+                FrameID nTime,
                 bool nsupported) :
         info(nbox),
         time(nTime),
         supported(nsupported)
         {}
         Box info;
-        NewFrameID time;
+        FrameID time;
         bool supported;
     };
 
     struct GuyInfo {
         GuyInfo(Guy nGuy,
-                NewFrameID nTime) :
+                FrameID nTime) :
         info(nGuy),
         time(nTime)
         {}
         Guy info;
-        NewFrameID time;
+        FrameID time;
     };
 
     void platformStep(const ::std::vector<Platform>& oldPlatformList,
                       std::vector<Platform>& nextPlatform,
                       const std::vector<PlatformDestination>& platformDestinations,
-                      const NewFrameID& time) const;
+                      const FrameID& time) const;
 
     void buttonChecks(  const ::std::vector<Platform>& oldPlatformList,
                         const ::std::vector<Box>& oldBoxList,
                         const ::std::vector<Guy>& oldGuyList,
                         const ::std::vector<Button>& oldButtonList,
                         std::vector<char>& nextButtonState,
-                        NewFrameID time) const;
+                        FrameID time) const;
 
     template <class Type, class TypeInfo> void BuildDepartureForComplexEntities(
                                     const ::std::vector<TypeInfo>& next,
                                     const ::std::vector<RemoteDepartureEdit<Type> >& thief,
                                     const ::std::vector<RemoteDepartureEdit<Type> >& extra,
                                     NewDeparturesT& newDepartures,
-                                    const NewFrameID time,
+                                    const FrameID time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const;
 
     template <class Type> void BuildDepartureForReallySimpleThing(
                                     const ::std::vector<Type>& next,
                                     NewDeparturesT& newDepartures,
-                                    const NewFrameID time,
+                                    const FrameID time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const;
 
@@ -99,7 +99,7 @@ private:
                         const ::std::vector<RemoteDepartureEdit<Box> >& boxExtra,
                         const ::std::vector<RemoteDepartureEdit<Guy> >& guyExtra,
                         NewDeparturesT& newDepartures,
-                        const NewFrameID time,
+                        const FrameID time,
                         std::vector<PauseInitiatorID>& pauseTimes
                         ) const;
 
@@ -108,24 +108,24 @@ private:
         const ::std::vector<char>& nextButtonState,
         const ::std::vector<Button>& oldButtonList,
         ::std::vector<Button>& nextButton,
-        NewFrameID time
+        FrameID time
     ) const;
 
     void portalPositionUpdate(
         const std::vector<Platform>& nextPlatform,
         const ::std::vector<Portal>& oldPortalList,
         std::vector<Portal>& nextPortal,
-        NewFrameID time
+        FrameID time
     ) const;
 
 	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
                                         ::std::vector<BoxInfo>& nextBox,
                                         std::vector<Platform>& nextPlatform,
-                                        const NewFrameID time
+                                        const FrameID time
                                         ) const;
 
     void guyStep(   const ::std::vector<Guy>& oldGuyList,
-                    NewFrameID time,
+                    FrameID time,
                     const ::std::vector<InputList>& playerInput,
                     std::vector<GuyInfo>& nextGuy,
                     ::std::vector<BoxInfo>& nextBox,

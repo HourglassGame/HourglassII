@@ -31,19 +31,19 @@ public:
      */
 	TimeEngine(const Level& level);
 
-    typedef ::std::vector<std::vector<NewFrameID> > FrameListList;
+    typedef ::std::vector<std::vector<FrameID> > FrameListList;
 	/************************
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
-    ::boost::tuple<NewFrameID, NewFrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
+    ::boost::tuple<FrameID, FrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
 	/****************************
     * Returns an object list containing the state of whichFrame after physics was applied.
     * This function is always run after the runToNextPlayerFrame function in order to
     * query the state of particular frames.
     */
-    ObjectList getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
+    ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
     
     ::std::vector<InputList> getReplayData() const;
 private:

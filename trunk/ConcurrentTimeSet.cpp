@@ -6,7 +6,7 @@ mutex_(),
 set_()
 {
 }
-void ConcurrentTimeSet::add(const NewFrameID& toAdd)
+void ConcurrentTimeSet::add(const FrameID& toAdd)
 {
     {
         boost::shared_lock<boost::shared_mutex> shared(mutex_);
@@ -17,7 +17,7 @@ void ConcurrentTimeSet::add(const NewFrameID& toAdd)
         }
     }
 }
-void ConcurrentTimeSet::remove(const NewFrameID& toRemove)
+void ConcurrentTimeSet::remove(const FrameID& toRemove)
 {
     boost::shared_lock<boost::shared_mutex> shared(mutex_);
     if (set_.find(toRemove) != set_.end()) {

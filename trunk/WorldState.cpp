@@ -16,7 +16,7 @@ struct ExecuteFrame
     departuremap_(departuremap)
     {
     }
-    void operator()(const NewFrameID& time) const
+    void operator()(const FrameID& time) const
     {
         departuremap_.addDeparture(time, thisptr_.getDeparturesFromFrame(thisptr_.timeline_.getFrame(time)));
     }
@@ -28,7 +28,7 @@ struct ExecuteFrame
 
 
 WorldState::WorldState(unsigned int timelineLength,
-                       NewFrameID guyStartTime,
+                       FrameID guyStartTime,
                        PhysicsEngine physics,
                        const ObjectList& initialObjects) :
 timeline_(),
@@ -43,22 +43,22 @@ currentWinFrames_()
     assert(guyStartTime.isValidFrame());
     nextPlayerFrames_.add(guyStartTime);
     //*** Add Platforms to world ***
-    map<NewFrameID, MutableObjectList> initialPlatformArrivalMap;
+    map<FrameID, MutableObjectList> initialPlatformArrivalMap;
 
     for (vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
          end(initialObjects.getPlatformListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialPlatformArrivalMap[NewFrameID(0, timelineLength)].add(*it);
+            initialPlatformArrivalMap[FrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialPlatformArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
+            initialPlatformArrivalMap[FrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
     TimeObjectListList initialPlatformArrivals;
 
-    for (map<NewFrameID, MutableObjectList>::iterator it(initialPlatformArrivalMap.begin()),
+    for (map<FrameID, MutableObjectList>::iterator it(initialPlatformArrivalMap.begin()),
                                                     end(initialPlatformArrivalMap.end());
                                                         it != end;
                                                         ++it) {
@@ -69,8 +69,8 @@ currentWinFrames_()
     timeline_.addArrivalsFromPermanentDepartureFrame(initialPlatformArrivals);
 
     // run level from both ends, platforms can be the ONLY objects in the world at this point as attachment must always have a target
-    frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
-    frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
+    frameUpdateSet_.addFrame(FrameID(0, timelineLength));
+    frameUpdateSet_.addFrame(FrameID(timelineLength - 1, timelineLength));
 
     //** run level for a while
     for (unsigned int i = 0; i < timelineLength; ++i) {
@@ -78,17 +78,17 @@ currentWinFrames_()
     }
 
     //** Add everything else apart from guys **
-    map<NewFrameID, MutableObjectList> initialArrivalMap;
+    map<FrameID, MutableObjectList> initialArrivalMap;
 
     // boxes
     for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
          end(initialObjects.getBoxListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[NewFrameID(0, timelineLength)].add(*it);
+            initialArrivalMap[FrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
+            initialArrivalMap[FrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
@@ -97,10 +97,10 @@ currentWinFrames_()
          end(initialObjects.getPortalListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[NewFrameID(0, timelineLength)].add(*it);
+            initialArrivalMap[FrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
+            initialArrivalMap[FrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
@@ -109,10 +109,10 @@ currentWinFrames_()
          end(initialObjects.getButtonListRef().end()); it != end; ++it)
     {
         if (it->getTimeDirection() == FORWARDS) {
-            initialArrivalMap[NewFrameID(0, timelineLength)].add(*it);
+            initialArrivalMap[FrameID(0, timelineLength)].add(*it);
         }
         else {
-            initialArrivalMap[NewFrameID(timelineLength-1, timelineLength)].add(*it);
+            initialArrivalMap[FrameID(timelineLength-1, timelineLength)].add(*it);
         }
     }
 
@@ -122,7 +122,7 @@ currentWinFrames_()
            && "This should throw an exception rather than be an assert, but I can't be bothered right now");
     initialArrivalMap[guyStartTime].add(initialObjects.getGuyListRef().at(0));
 
-    for (map<NewFrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
+    for (map<FrameID, MutableObjectList>::iterator it(initialArrivalMap.begin()),
                                                     end(initialArrivalMap.end());
                                                         it != end;
                                                         ++it) {
@@ -132,8 +132,8 @@ currentWinFrames_()
 
     timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
 
-    frameUpdateSet_.addFrame(NewFrameID(0, timelineLength));
-    frameUpdateSet_.addFrame(NewFrameID(timelineLength - 1, timelineLength));
+    frameUpdateSet_.addFrame(FrameID(0, timelineLength));
+    frameUpdateSet_.addFrame(FrameID(timelineLength - 1, timelineLength));
     //Guys without input can still affect stuff, and so must be run
     frameUpdateSet_.addFrame(guyStartTime);
     //** run level for a while
@@ -152,12 +152,12 @@ TimeObjectListList WorldState::getDeparturesFromFrame(const TimelineState::Frame
                                  currentWinFrames_);
 }
 
-std::vector<NewFrameID> WorldState::executeWorld()
+std::vector<FrameID> WorldState::executeWorld()
 {
     //cout << "executeWorld\n";
     //Make parallel_for_each compatible type, also save result for return
     //(I don't really understand the mechanism, but tbb::parallel_for_each doesn't work for FrameUpdatSets, but does for vectors)
-    std::vector<NewFrameID> returnSet(frameUpdateSet_.begin(), frameUpdateSet_.end());
+    std::vector<FrameID> returnSet(frameUpdateSet_.begin(), frameUpdateSet_.end());
     DepartureMap changedFrames;
     changedFrames.makeSpaceFor(frameUpdateSet_);
     parallel_for_each(returnSet, ExecuteFrame(*this, changedFrames));
@@ -169,7 +169,7 @@ std::vector<NewFrameID> WorldState::executeWorld()
     return returnSet;
 }
 
-ObjectList WorldState::getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const
+ObjectList WorldState::getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const
 {
     return timeline_.getPostPhysics(whichFrame, whichPrePause);
 }
@@ -197,7 +197,7 @@ ObjectList WorldState::getPostPhysics(NewFrameID whichFrame, const PauseInitiato
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
-    foreach(const NewFrameID& frame, nextPlayerFrames_) {
+    foreach(const FrameID& frame, nextPlayerFrames_) {
         frameUpdateSet_.addFrame(frame);
         //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
     }
@@ -220,13 +220,13 @@ void WorldState::addNewInputData(const InputList& newInputData)
     nextPlayerFrames_.clear();
 }
 
-NewFrameID WorldState::getCurrentPlayerFrame() const
+FrameID WorldState::getCurrentPlayerFrame() const
 {
     assert(currentPlayerFramesAndDirections_.size() == 1);
     return currentPlayerFramesAndDirections_.begin()->first;
 }
 
-NewFrameID WorldState::getNextPlayerFrame() const
+FrameID WorldState::getNextPlayerFrame() const
 {
     assert(nextPlayerFrames_.size() == 1);
     return *(nextPlayerFrames_.begin());

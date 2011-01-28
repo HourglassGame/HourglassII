@@ -6,7 +6,7 @@ Level::Level(unsigned int nspeedOfTime,
              int nwallSize,
              int ngravity,
              const ObjectList& ninitialObjects,
-             const NewFrameID& nguyStartTime,
+             const FrameID& nguyStartTime,
              const AttachmentMap& nattachmentMap,
              const TriggerSystem& ntriggerSystem) :
     speedOfTime(nspeedOfTime),

@@ -6,7 +6,7 @@ mutex_(),
 map_()
 {
 }
-void ConcurrentTimeMap::add(const NewFrameID& toAdd, TimeDirection direction)
+void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
 {
     boost::shared_lock<boost::shared_mutex> shared(mutex_);
     if (map_.find(toAdd) == map_.end()) {
@@ -15,7 +15,7 @@ void ConcurrentTimeMap::add(const NewFrameID& toAdd, TimeDirection direction)
         map_.insert(MapType::value_type(toAdd, direction));
     }
 }
-void ConcurrentTimeMap::remove(const NewFrameID& toRemove)
+void ConcurrentTimeMap::remove(const FrameID& toRemove)
 {
     boost::shared_lock<boost::shared_mutex> shared(mutex_);
     if (map_.find(toRemove) != map_.end()) {
@@ -23,7 +23,7 @@ void ConcurrentTimeMap::remove(const NewFrameID& toRemove)
         shared.unlock();
         //Cannot use iterator from earlier, as may be invalidated by another write.
         //However, finding it again is safe because it is against the interface of these functions to 
-        //call them with the same NewFrameID concurrently (so this element could not have been removed by another thread)
+        //call them with the same FrameID concurrently (so this element could not have been removed by another thread)
         boost::lock_guard<boost::shared_mutex> unique(mutex_);
         map_.quick_erase(map_.find(toRemove));
     }

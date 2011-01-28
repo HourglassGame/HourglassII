@@ -1,7 +1,7 @@
 #ifndef HG_LEVEL_H
 #define HG_LEVEL_H
 #include "ObjectList.h"
-#include "NewFrameID.h"
+#include "FrameID.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
 #include <boost/multi_array.hpp>
@@ -16,7 +16,7 @@ Level(unsigned int nspeedOfTime,
     int nwallSize,
     int ngravity,
     const ObjectList& ninitialObjects,
-    const NewFrameID& nguyStartTime,
+    const FrameID& nguyStartTime,
     const AttachmentMap& nattachmentMap,
     const TriggerSystem& ntriggerSystem);
 public:
@@ -26,7 +26,7 @@ public:
     int wallSize;
     int gravity;
     ObjectList initialObjects;
-    NewFrameID guyStartTime;
+    FrameID guyStartTime;
     AttachmentMap attachmentMap;
     TriggerSystem triggerSystem;
 };
