@@ -3,7 +3,6 @@
 
 #include "TimelineState.h"
 #include "FrameUpdateSet.h"
-#include "SimpleFrameID.h"
 #include "InputList.h"
 #include "PhysicsEngine.h"
 #include "FrameUpdateSet.h"
@@ -20,14 +19,14 @@ namespace hg {
          * Throws an exception if the world state is not consistent.
          */
         WorldState(unsigned int timelineLength,
-                   NewFrameID guyStartTime,
+                   FrameID guyStartTime,
                    PhysicsEngine physics,
                    const ObjectList& initialObjects);
 
         /***************************************
          * Updates the state of the world once.
          */
-        std::vector<NewFrameID> executeWorld();
+        std::vector<FrameID> executeWorld();
 
         /*******************************
          * Stores the given input data, allowing the player to exist for another step.
@@ -38,12 +37,12 @@ namespace hg {
         * Returns an object list containing the state of whichFrame after physics was applied
         * in the last call to executeWorld.
         */
-        ObjectList getPostPhysics(NewFrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
+        ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
         /***********************************************************
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
-        NewFrameID getNextPlayerFrame() const;
-        NewFrameID getCurrentPlayerFrame() const;
+        FrameID getNextPlayerFrame() const;
+        FrameID getCurrentPlayerFrame() const;
         TimeDirection getCurrentPlayerDirection() const;
         
         ::std::vector<InputList> getReplayData() const {return playerInput_;};

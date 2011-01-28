@@ -6,25 +6,25 @@ list_()
 {
 }
 
-void TimeObjectListList::setObjectList(const NewFrameID& time, const ObjectList& newObjectList)
+void TimeObjectListList::setObjectList(const FrameID& time, const ObjectList& newObjectList)
 {
     list_[time] = newObjectList;
 }
 
 //Inserts given object list at given time - noop if an object list already exists at the given time
-void TimeObjectListList::insertObjectList(const NewFrameID& time, const ObjectList& newObjectList)
+void TimeObjectListList::insertObjectList(const FrameID& time, const ObjectList& newObjectList)
 {
     list_.insert(ListType::value_type(time,newObjectList));
 }
 
-void TimeObjectListList::addObjectList(const NewFrameID& time, const ObjectList& newObjectList)
+void TimeObjectListList::addObjectList(const FrameID& time, const ObjectList& newObjectList)
 {
     MutableObjectList sum(newObjectList);
     sum.add(list_[time]);
     list_[time] = ObjectList(sum);
 }
 
-void TimeObjectListList::clearTime(NewFrameID time)
+void TimeObjectListList::clearTime(FrameID time)
 {
     list_.erase(time);
 }
@@ -50,7 +50,7 @@ ObjectList TimeObjectListList::getFlattenedVersion() const
     
 	return ObjectList(returnList);
 }
-ObjectList TimeObjectListList::getFlattenedVersion(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const
+ObjectList TimeObjectListList::getFlattenedVersion(const FrameID& time, const PauseInitiatorID& whichPrePause) const
 {
     size_t decisionDepth(time.universe().pauseDepth() + 1);
     MutableObjectList returnList;

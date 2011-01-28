@@ -7,7 +7,7 @@
 
 #include <vector>
 namespace hg {
-class NewFrameID;
+class FrameID;
 //Identifies the position of a SubUniverse, 
 //this includes the frame in which is exists, as well as the ID of the initiator of the universe 
 //(which includes the timelineLength of the subuniverse)
@@ -51,7 +51,7 @@ struct UniverseID {
     ::std::size_t pauseDepth() const;
     
     //returns the frame in which the lowest level of this universe exists. NullFrame if this is a top-level universe.
-    NewFrameID parentFrame() const;
+    FrameID parentFrame() const;
     //returns the length of the lowest level of this universe
     unsigned int timelineLength() const;
     

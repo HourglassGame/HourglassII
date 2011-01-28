@@ -2,7 +2,7 @@
 #define HG_ARRIVAL_DEPARTURE_MAP_H
 
 #include "TimeObjectListList.h"
-#include "NewFrameID.h"
+#include "FrameID.h"
 #include <boost/unordered_map.hpp>
 
 namespace hg {
@@ -33,12 +33,12 @@ public:
     /*****************************************************
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
-	ObjectList getPrePhysics(const NewFrameID& time) const;
+	ObjectList getPrePhysics(const FrameID& time) const;
 
     /*****************************************************
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
      */
-    ObjectList getPostPhysics(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const;
+    ObjectList getPostPhysics(const FrameID& time, const PauseInitiatorID& whichPrePause) const;
 
     /**********************
      * A convenience class to represent a single frame of the timeline.
@@ -54,24 +54,24 @@ public:
     /*****************************************************
      * Returns the ID for the frame that this Frame represents.
      */
-        NewFrameID getTime() const;
+        FrameID getTime() const;
     private:
         friend class TimelineState;
-        Frame(const TimelineState& mapPtr, const NewFrameID& time);
-        NewFrameID time_;
+        Frame(const TimelineState& mapPtr, const FrameID& time);
+        FrameID time_;
         const TimelineState& this_;
     };
 
     /***************************************
      * Returns a Frame for whichFrame.
      */
-    Frame getFrame(const NewFrameID& whichFrame) const;
+    Frame getFrame(const FrameID& whichFrame) const;
 private:
 	//SimpleFrameID permanentDepartureIndex;
-    ::boost::unordered_map<NewFrameID, TimeObjectListList> arrivals;
-    ::boost::unordered_map<NewFrameID, TimeObjectListList> departures;
+    ::boost::unordered_map<FrameID, TimeObjectListList> arrivals;
+    ::boost::unordered_map<FrameID, TimeObjectListList> departures;
 
-    FrameUpdateSet updateDeparturesFromTime(const NewFrameID& time, const TimeObjectListList& newDeparture);
+    FrameUpdateSet updateDeparturesFromTime(const FrameID& time, const TimeObjectListList& newDeparture);
 };
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H

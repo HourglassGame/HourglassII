@@ -11,7 +11,7 @@ class Frame;
 class FramePtr;
 class Universe;
 //Wrapper around Frame* to give extra safety (assert ptr before dereferencing,
-//    also allows shared syntax with NewFrameID for ease of changing).
+//    also allows shared syntax with FrameID for ease of changing).
 /*
 class FramePtr {
 public:
@@ -46,10 +46,10 @@ public:
 
     // returns if the next frame for things moving in direction TimeDirection
     //is part of the same pause time universe as the frame
-    bool nextFrameInUniverse(TimeDirection direction) const
+    bool nextFramePauseLevelDifference(TimeDirection direction) const
     {
         assert(framePtr_);
-        return framePtr_->nextFrameInUniverse(direction);
+        return framePtr_->nextFramePauseLevelDifference(direction);
     }
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
@@ -124,36 +124,30 @@ class Frame {
     {
     }
     //assignment
-    Frame& operator=(const FramePtr& other)
-    {
-        framePtr_ = other.framePtr_;
-        return *this;
-    }
+    Frame& operator=(const FramePtr& other);
     
     //copy-construction
-    Frame(const FramePtr& other) :
-    framePtr_(other.framePtr_)
-    {
-    }
-    
-    FramePtr(const Frame* ptr) :
-    framePtr_(ptr)
+    Frame(const Frame& other) :
+    frameNumber_(other.frameNumber_),
+    universe_(other.universe_),
+    departures_(other.departures_),
+    arrivals_(other.arrivals_),
+    subUniverses_(other.subUniverses_)
     {
     }
     
     // returns the normal next frame for things moving in direction TimeDirection
-    FramePtr nextFrame(TimeDirection direction) const
+    Frame* nextFrame(TimeDirection direction) const
     {
-        assert(framePtr_);
-        return framePtr_->nextFrame(direction);
+        return nextFramePauseLevelDifference(direction) == 0
     }
 
     // returns if the next frame for things moving in direction TimeDirection
     //is part of the same pause time universe as the frame
-    bool nextFrameInUniverse(TimeDirection direction) const
+    bool nextFramePauseLevelDifference(TimeDirection direction) const
     {
         assert(framePtr_);
-        return framePtr_->nextFrameInUniverse(direction);
+        return framePtr_->nextFramePauseLevelDifference(direction);
     }
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in

@@ -1,4 +1,4 @@
-#include "NewFrameID.h"
+#include "FrameID.h"
 #include "Ability.h"
 
 #include <boost/serialization/nvp.hpp>
@@ -20,7 +20,7 @@ public:
               bool down,
               bool use,
               Ability ability,
-              NewFrameID abilityParams,
+              FrameID abilityParams,
               int frameIdParamCount);
 
     bool getLeft() const {return left;}
@@ -30,7 +30,7 @@ public:
 	bool getUse() const {return use;}
 	Ability getAbility() const {return ability;}
 
-	NewFrameID getFrameIdParam(int param) const
+	FrameID getFrameIdParam(int param) const
     {
         if (param >= 0 && param < frameIdParamCount)
         {
@@ -38,7 +38,7 @@ public:
         }
         // throw exception here.
         assert(false);
-        return NewFrameID();
+        return FrameID();
     }
 
 private:
@@ -60,7 +60,7 @@ private:
 	bool use;
 
 	Ability ability;
-	NewFrameID frameIdParams;
+	FrameID frameIdParams;
 	int frameIdParamCount;
     friend class boost::serialization::access;
     template<class Archive>

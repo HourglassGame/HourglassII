@@ -33,7 +33,7 @@ using namespace ::sf;
 using namespace ::boost;
 namespace {
     void Draw(RenderWindow& target, const ObjectList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection);
-    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame);
+    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameID& playerFrame);
     void DrawWall(RenderTarget& target, const ::boost::multi_array<bool, 2>& wallData);
     void DrawBoxes(RenderTarget& target, const vector<Box>& boxData, TimeDirection&);
     void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
@@ -85,7 +85,7 @@ int main()
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         try{
-            tuple<NewFrameID, NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+            tuple<FrameID, FrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
             if (waveInfo.get<0>().isValidFrame()) {
                 Draw
                 (
@@ -104,7 +104,7 @@ int main()
                 );
             }
             else {
-                Draw(app, timeEngine.getPostPhysics(NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
+                Draw(app, timeEngine.getPostPhysics(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
             }
             DrawTimeline(app, waveInfo.get<2>(), waveInfo.get<0>());
         }
@@ -158,7 +158,7 @@ int main()
         }
         //cout << "called from main" << endl;
         try{
-            tuple<NewFrameID, NewFrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(inputpart));
+            tuple<FrameID, FrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(inputpart));
             if (waveInfo.get<0>().isValidFrame()) {
                 Draw
                 (
@@ -177,7 +177,7 @@ int main()
                 );
             }
             else {
-                Draw(app, timeEngine.getPostPhysics(NewFrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
+                Draw(app, timeEngine.getPostPhysics(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
             }
             DrawTimeline(app, waveInfo.get<2>(), waveInfo.get<0>());
         }
@@ -424,11 +424,11 @@ void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDir
      }
 }
 
-void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, NewFrameID& playerFrame)
+void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameID& playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
-    foreach(const std::vector<NewFrameID>& lists, waves) {
-        foreach (NewFrameID frame, lists) {
+    foreach(const std::vector<FrameID>& lists, waves) {
+        foreach (FrameID frame, lists) {
             if (frame.isValidFrame()) {
                 if (!pixelsWhichHaveBeenDrawnIn[static_cast<unsigned int> ((frame.frame()/10800.f)*640)]) {
                     target.Draw(Shape::Rectangle((frame.frame()/10800.f)*640,
@@ -537,7 +537,7 @@ Level MakeLevel(const ::boost::multi_array<bool, 2>& wall)
         3200,
         30,
         ObjectList(newObjectList),
-        NewFrameID(0,10800),
+        FrameID(0,10800),
         AttachmentMap
         (
             ::std::vector< ::boost::tuple<int, int, int> >(1,::boost::tuple<int, int, int>(0,3200,-800)),

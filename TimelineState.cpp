@@ -22,12 +22,12 @@ ObjectList TimelineState::Frame::getPrePhysics() const
 {
     return this_.getPrePhysics(time_);
 }
-NewFrameID TimelineState::Frame::getTime() const
+FrameID TimelineState::Frame::getTime() const
 {
     return time_;
 }
 
-TimelineState::Frame::Frame(const TimelineState& mapPtr, const NewFrameID& time) :
+TimelineState::Frame::Frame(const TimelineState& mapPtr, const FrameID& time) :
 time_(time),
 this_(mapPtr)
 {
@@ -46,7 +46,7 @@ FrameUpdateSet TimelineState::updateWithNewDepartures(const DepartureMap& newDep
     return newWaveFrames;
 }
 
-TimelineState::Frame TimelineState::getFrame(const NewFrameID& whichFrame) const
+TimelineState::Frame TimelineState::getFrame(const FrameID& whichFrame) const
 {
     return Frame(*this, whichFrame);
 }
@@ -54,12 +54,12 @@ TimelineState::Frame TimelineState::getFrame(const NewFrameID& whichFrame) const
 void TimelineState::addArrivalsFromPermanentDepartureFrame(const TimeObjectListList& initialArrivals)
 {
     for (TimeObjectListList::const_iterator it(initialArrivals.begin()), end(initialArrivals.end()); it != end; ++it) {
-        arrivals[it->first].addObjectList(NewFrameID(), it->second);
+        arrivals[it->first].addObjectList(FrameID(), it->second);
     }
 }
 
 //returns which frames are changed
-FrameUpdateSet TimelineState::updateDeparturesFromTime(const NewFrameID& time, const TimeObjectListList& newDeparture)
+FrameUpdateSet TimelineState::updateDeparturesFromTime(const FrameID& time, const TimeObjectListList& newDeparture)
 {
     FrameUpdateSet changedTimes;
 
@@ -111,9 +111,9 @@ end:
     return changedTimes;
 }
 
-ObjectList TimelineState::getPostPhysics(const NewFrameID& time, const PauseInitiatorID& whichPrePause) const
+ObjectList TimelineState::getPostPhysics(const FrameID& time, const PauseInitiatorID& whichPrePause) const
 {
-    ::boost::unordered_map<NewFrameID, TimeObjectListList>::const_iterator it(departures.find(time));
+    ::boost::unordered_map<FrameID, TimeObjectListList>::const_iterator it(departures.find(time));
     if (it != departures.end()) {
         return it->second.getFlattenedVersion(time, whichPrePause);
     }
@@ -122,9 +122,9 @@ ObjectList TimelineState::getPostPhysics(const NewFrameID& time, const PauseInit
     }
 }
 
-ObjectList TimelineState::getPrePhysics(const NewFrameID& time) const
+ObjectList TimelineState::getPrePhysics(const FrameID& time) const
 {
-    ::boost::unordered_map<NewFrameID, TimeObjectListList>::const_iterator it(arrivals.find(time));
+    ::boost::unordered_map<FrameID, TimeObjectListList>::const_iterator it(arrivals.find(time));
     if (it != arrivals.end()) {
         return it->second.getFlattenedVersion();
     }

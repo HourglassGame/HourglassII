@@ -6,7 +6,7 @@ namespace hg {
                          bool nDown,
                          bool nUse,
                          Ability nAbility,
-                         NewFrameID nFrameIdParams,
+                         FrameID nFrameIdParams,
                          int nFrameIdParamCount) :
     left(nLeft),
     right(nRight),
