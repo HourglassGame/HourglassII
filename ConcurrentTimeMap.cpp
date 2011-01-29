@@ -2,11 +2,10 @@
 #include <boost/thread/locks.hpp>
 namespace hg {
 ConcurrentTimeMap::ConcurrentTimeMap() :
-mutex_(),
 map_()
 {
 }
-/*
+
 void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
 {
     MapType::accessor acc;
@@ -17,8 +16,13 @@ void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
 void ConcurrentTimeMap::remove(const FrameID& toRemove)
 {
     map_.erase(toRemove);
-}*/
-
+}
+/*
+ConcurrentTimeMap::ConcurrentTimeMap() :
+mutex_(),
+map_()
+{
+}
 void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
 {
     boost::shared_lock<boost::shared_mutex> shared(mutex_);
@@ -47,5 +51,5 @@ void ConcurrentTimeMap::remove(const FrameID& toRemove)
         boost::lock_guard<boost::shared_mutex> unique(mutex_);
         map_.quick_erase(map_.find(toRemove));
     }
-}
+}*/
 }

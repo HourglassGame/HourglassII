@@ -4,6 +4,7 @@
 #include "TimeDirection.h"
 #include "PauseInitiatorID.h"
 #include "ObjectList.h"
+#include <tbb/concurrent_hash_map.h>
 #include <boost/unordered_map.hpp>
 #include <map>
 namespace hg {
@@ -196,7 +197,7 @@ private:
     //back-link to universe in which this frame is
     Universe* universe_;
     std::map<Frame*, ObjectList> departures_;
-    std::map<Frame*, ObjectList*> arrivals_;
+    tbb::concurrent_hash_map<Frame*, ObjectList*> arrivals_;
     ::boost::unordered_map<PauseInitiatorID, Universe> subUniverses_;*/
 };
 /*
