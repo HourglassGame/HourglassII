@@ -6,13 +6,33 @@ mutex_(),
 map_()
 {
 }
+/*
+void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
+{
+    MapType::accessor acc;
+    if (!map_.insert(acc, MapType::value_type(toAdd, direction))) {
+        acc->second = direction;
+    }
+}
+void ConcurrentTimeMap::remove(const FrameID& toRemove)
+{
+    map_.erase(toRemove);
+}*/
+
 void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
 {
     boost::shared_lock<boost::shared_mutex> shared(mutex_);
-    if (map_.find(toAdd) == map_.end()) {
+    iterator it(map_.find(toAdd));
+    if (it == map_.end()) {
         shared.unlock();
         boost::lock_guard<boost::shared_mutex> unique(mutex_);
         map_.insert(MapType::value_type(toAdd, direction));
+    }
+    else if (it->second != direction){
+        it->second != direction;
+        shared.unlock();
+        boost::lock_guard<boost::shared_mutex> unique(mutex_);
+        map_[toAdd] = direction;
     }
 }
 void ConcurrentTimeMap::remove(const FrameID& toRemove)

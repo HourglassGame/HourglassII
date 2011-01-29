@@ -139,15 +139,19 @@ class Frame {
     // returns the normal next frame for things moving in direction TimeDirection
     Frame* nextFrame(TimeDirection direction) const
     {
-        return nextFramePauseLevelDifference(direction) == 0
+        if(frameNumber_ + direction >= 0) {
+            return universe->getArbitraryFrame(frameNumber_ + direction);
+        }
+        else {
+            return 0;
+        }
     }
 
     // returns if the next frame for things moving in direction TimeDirection
     //is part of the same pause time universe as the frame
     bool nextFramePauseLevelDifference(TimeDirection direction) const
     {
-        assert(framePtr_);
-        return framePtr_->nextFramePauseLevelDifference(direction);
+        
     }
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
@@ -181,6 +185,11 @@ class Frame {
         assert(framePtr_);
         return framePtr_->entryChildFrame(initatorID,direction);
     }
+    //returns the frames whose arrivals are changed
+    //newDeparture may get its contents pilfered
+    template<typename Funcs>
+    FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture, Funcs changeArrivalFunc);
+    
 private:
     FramePtr& operator=(const FramePtr& other)
     unsigned int frameNumber_;
@@ -190,5 +199,64 @@ private:
     std::map<Frame*, ObjectList*> arrivals_;
     ::boost::unordered_map<PauseInitiatorID, Universe> subUniverses_;*/
 };
+/*
+template<typename Funcs>
+inline FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture, Funcs changeArrivalFuncs);
+{
+    FrameUpdateSet changedTimes;
+
+    Iterator ni(newDeparture.begin());
+    const Iterator nend(newDeparture.end());
+    Iterator oi(departures_.begin());
+    const Iterator oend(departures_.end());
+
+    while (oi != oend) {
+        while (true) {
+            if (ni != nend) {
+                if (ni->first < oi->first) {
+                    Funcs.insert(ni->first, make_pair(this, &ni->second));
+                    //arrivals.at(ni->first).insertObjectList(time, ni->second);
+                    changedTimes.addFrame(ni->first);
+                    ++ni;
+                }
+                else if (ni->first == oi->first) {
+                    if (ni->second != oi->second) {
+                        Funcs.change(ni->first, make_pair(this, &ni->second));
+                        //arrivals[ni->first].setObjectList(time, ni->second);
+                        changedTimes.addFrame(ni->first);
+                    }
+                    ++ni;
+                    break;
+                }
+                else {
+                    Funcs.clear(oi->first, this);
+                    //arrivals[oi->first].clearTime(time);
+                    changedTimes.addFrame(oi->first);
+                    break;
+                }
+            }
+            else {
+                while (oi != oend) {
+                    Funcs.clear(oi->first, this);
+                    //arrivals[oi->first].clearTime(time);
+                    changedTimes.addFrame(oi->first);
+                    ++oi;
+                }
+                goto end;
+            }
+        }
+        ++oi;
+    }
+    while (ni != nend) {
+        Funcs.insert(ni->first, make_pair(this, &ni->second));
+        //arrivals[ni->first].insertObjectList(time, ni->second);
+        changedTimes.addFrame(ni->first);
+        ++ni;
+    }
+end:
+    departures[time].swap(newDeparture);
+    return changedTimes;
+}
+*/
 }
 #endif //HG_FRAME_H
