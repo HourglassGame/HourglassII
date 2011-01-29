@@ -1284,7 +1284,7 @@ int mspace_mallopt(int, int);
 #ifndef LACKS_STDLIB_H
 #include <stdlib.h>      /* for abort() */
 #endif /* LACKS_STDLIB_H */
-#ifdef DEBUG
+#if DEBUG
 #if ABORT_ON_ASSERT_FAILURE
 #define assert(x) if(!(x)) ABORT
 #else /* ABORT_ON_ASSERT_FAILURE */

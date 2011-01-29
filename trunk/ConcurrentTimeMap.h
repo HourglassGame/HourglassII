@@ -1,16 +1,15 @@
 #ifndef HG_CONCURRENT_TIME_MAP_H
 #define HG_CONCURRENT_TIME_MAP_H
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/unordered_map.hpp>
-//#include <tbb/concurrent_hash_map.h>
-//#include "BoostHashCompare.h"
+//#include <boost/thread/shared_mutex.hpp>
+//#include <boost/unordered_map.hpp>
+#include <tbb/concurrent_hash_map.h>
+#include "BoostHashCompare.h"
 #include "FrameID.h"
 #include "TimeDirection.h"
 namespace hg {
-
+/*
     class ConcurrentTimeMap {
         typedef boost::unordered_map<FrameID, TimeDirection> MapType;
-        //typedef tbb::concurrent_hash_map<FrameID, TimeDirection, BoostHashCompare<FrameID> > MapType;
         public:
         ConcurrentTimeMap();
         //Must never try to add or remove a particular frame concurrently,
@@ -30,10 +29,9 @@ namespace hg {
         private:
         boost::shared_mutex mutex_;
         MapType map_;
-    };
-/*
+    };*/
+
     class ConcurrentTimeMap {
-        //typedef boost::unordered_map<FrameID, TimeDirection> MapType;
         typedef tbb::concurrent_hash_map<FrameID, TimeDirection, BoostHashCompare<FrameID> > MapType;
         public:
         ConcurrentTimeMap();
@@ -52,8 +50,7 @@ namespace hg {
         iterator end() { return map_.end(); }
         const_iterator end() const { return map_.end(); }
         private:
-        //boost::shared_mutex mutex_;
         MapType map_;
-    };*/
+    };
 }
 #endif //HG_CONCURRENT_TIME_MAP_H

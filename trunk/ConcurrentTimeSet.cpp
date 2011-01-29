@@ -1,11 +1,10 @@
 #include "ConcurrentTimeSet.h"
-#include <boost/thread/locks.hpp>
+//#include <boost/thread/locks.hpp>
 namespace hg {
 ConcurrentTimeSet::ConcurrentTimeSet() :
-mutex_(),
 set_()
 {
-}/*
+}
 void ConcurrentTimeSet::add(const FrameID& toAdd)
 {
     set_.insert(SetType::value_type(toAdd, 0));
@@ -14,8 +13,13 @@ void ConcurrentTimeSet::remove(const FrameID& toRemove)
 {
     set_.erase(toRemove);
 }
-*/
 
+/*
+ConcurrentTimeSet::ConcurrentTimeSet() :
+mutex_(),
+set_()
+{
+}
 void ConcurrentTimeSet::add(const FrameID& toAdd)
 {
     {
@@ -35,5 +39,5 @@ void ConcurrentTimeSet::remove(const FrameID& toRemove)
         boost::lock_guard<boost::shared_mutex> unique(mutex_);
         set_.quick_erase(set_.find(toRemove));
     }
-}
+}*/
 }
