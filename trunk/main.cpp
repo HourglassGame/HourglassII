@@ -25,6 +25,72 @@
 #include <algorithm>
 
 #include <cmath>
+#include "nedmalloc.c"
+#include <new>
+
+void *operator new(size_t size) throw(std::bad_alloc)
+{
+    while (true) {
+        void* pointer(nedalloc::nedmalloc(size));
+        if (pointer) {
+            return pointer;
+        }
+        else if (std::new_handler handler = std::set_new_handler(0)) {
+            std::set_new_handler(handler);
+            (*handler)();
+        }
+        else {
+            throw std::bad_alloc();
+        }
+    }
+}
+
+void operator delete(void *p) throw()
+{
+    nedalloc::nedfree(p);
+}
+
+void *operator new(size_t size, const std::nothrow_t &) throw()
+{
+    while (true) {
+        void* pointer(nedalloc::nedmalloc(size));
+        if (pointer) {
+            return pointer;
+        }
+        else if (std::new_handler handler = std::set_new_handler(0)) {
+            std::set_new_handler(handler);
+            (*handler)();
+        }
+        else {
+            throw 0;
+        }
+    }
+}
+
+void operator delete(void *p, const std::nothrow_t &) throw()
+{
+    nedalloc::nedfree(p);
+}
+
+void *operator new[](size_t size) throw(std::bad_alloc)
+{
+    return ::operator new(size);
+}
+
+void operator delete[](void *p) throw()
+{
+    nedalloc::nedfree(p);
+}
+
+void *operator new[](size_t size, const std::nothrow_t & nothrow) throw()
+{
+   return ::operator new(size, nothrow);
+}
+
+void operator delete[](void *p, const std::nothrow_t &) throw()
+{
+    nedalloc::nedfree(p);
+}
 
 #define foreach BOOST_FOREACH
 using namespace ::hg;

@@ -5,7 +5,17 @@ ConcurrentTimeSet::ConcurrentTimeSet() :
 mutex_(),
 set_()
 {
+}/*
+void ConcurrentTimeSet::add(const FrameID& toAdd)
+{
+    set_.insert(SetType::value_type(toAdd, 0));
 }
+void ConcurrentTimeSet::remove(const FrameID& toRemove)
+{
+    set_.erase(toRemove);
+}
+*/
+
 void ConcurrentTimeSet::add(const FrameID& toAdd)
 {
     {
