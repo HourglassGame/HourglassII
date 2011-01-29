@@ -28,7 +28,7 @@
 #include "nedmalloc.c"
 #include <new>
 
-void *operator new(size_t size) throw(std::bad_alloc)
+void* operator new(size_t size) throw(std::bad_alloc)
 {
     while (true) {
         void* pointer(nedalloc::nedmalloc(size));
@@ -50,7 +50,7 @@ void operator delete(void *p) throw()
     nedalloc::nedfree(p);
 }
 
-void *operator new(size_t size, const std::nothrow_t &) throw()
+void* operator new(size_t size, const std::nothrow_t &) throw()
 {
     while (true) {
         void* pointer(nedalloc::nedmalloc(size));
@@ -72,24 +72,24 @@ void operator delete(void *p, const std::nothrow_t &) throw()
     nedalloc::nedfree(p);
 }
 
-void *operator new[](size_t size) throw(std::bad_alloc)
+void* operator new[](size_t size) throw(std::bad_alloc)
 {
     return ::operator new(size);
 }
 
 void operator delete[](void *p) throw()
 {
-    nedalloc::nedfree(p);
+    ::operator delete(p);
 }
 
-void *operator new[](size_t size, const std::nothrow_t & nothrow) throw()
+void* operator new[](size_t size, const std::nothrow_t & nothrow) throw()
 {
    return ::operator new(size, nothrow);
 }
 
-void operator delete[](void *p, const std::nothrow_t &) throw()
+void operator delete[](void *p, const std::nothrow_t & nothrow) throw()
 {
-    nedalloc::nedfree(p);
+    ::operator delete(p, nothrow);
 }
 
 #define foreach BOOST_FOREACH
