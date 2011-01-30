@@ -115,7 +115,8 @@ private:
 //and so avoid the arrival-departure-map system altogether
 class Frame {
 /*
-    //NullFrame construction
+    typedef ::boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
+
     Frame(unsigned int frameNumber, Universe* universe):
     frameNumber_(frameNumber),
     universe_(universe),
@@ -140,7 +141,12 @@ class Frame {
     // returns the normal next frame for things moving in direction TimeDirection
     Frame* nextFrame(TimeDirection direction) const
     {
-        if(frameNumber_ + direction >= 0) {
+        if(frameNumber_ == 0 && direction == REVERSE)
+        {
+        
+        }
+        else if (frameNumber_ == universe_->)
+        if() {
             return universe->getArbitraryFrame(frameNumber_ + direction);
         }
         else {
@@ -150,59 +156,69 @@ class Frame {
 
     // returns if the next frame for things moving in direction TimeDirection
     //is part of the same pause time universe as the frame
-    bool nextFramePauseLevelDifference(TimeDirection direction) const
+    unsigned int nextFramePauseLevelDifference(TimeDirection direction) const
     {
         
     }
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    FramePtr arbitraryFrameInUniverse(unsigned int frameNumber) const
+    Frame* arbitraryFrameInUniverse(unsigned int frameNumber) const
     {
-        assert(framePtr_);
-        return framePtr_->arbitraryFrameInUniverse(frameNumber);
+        return universe_->getArbitraryFrame(frameNumber);
     }
 
     // returns the frame that spawned the universe that this frame is in
-    FramePtr parentFrame() const
+    Frame* parentFrame() const
     {
-        assert(framePtr_);
-        return framePtr_->parentFrame();
+        return universe_.getInitiatorFrame();
     }
 
     // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
     //'distance' from the start of the universe This function cannot return nullFrame,
     //place assert to assure frameNumber is never greater pauseLength
-    FramePtr arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int frameNumber) const
+    Frame* arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int frameNumber) const
     {
-        assert(framePtr_);
-        return framePtr_->arbitraryChildFrame(initatorID,direction);
+        assert(initiatorID.timelineLength_ > frameNumber);
+        SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
+        if(it == subUniverses_.end())
+        {
+            it = subUniverses.insert(SubUniverseT::value_type(initiatorID, Universe())).first;
+            it->second.construct(this, initiatorID.timelineLendth_);
+        }
+        return it->getArbitraryFrame(frameNumber);
     }
 
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
     //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
     //universe cannot return nullFrame,
-    FramePtr entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const
+    Frame* entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const
     {
-        assert(framePtr_);
-        return framePtr_->entryChildFrame(initatorID,direction);
+        SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
+        if(it == subUniverses_.end())
+        {
+            it = subUniverses.insert(SubUniverseT::value_type(initiatorID, Universe())).first;
+            it->second.construct(this, initiatorID.timelineLendth_);
+        }
+        return it->getEntryFrame(direction);
     }
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
-    template<typename Funcs>
-    FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture, Funcs changeArrivalFunc);
+    FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
     
 private:
+    void insertArrival();
+    void changeArrival();
+    void clearArrival();
     FramePtr& operator=(const FramePtr& other)
     unsigned int frameNumber_;
     //back-link to universe in which this frame is
     Universe* universe_;
     std::map<Frame*, ObjectList> departures_;
     tbb::concurrent_hash_map<Frame*, ObjectList*> arrivals_;
-    ::boost::unordered_map<PauseInitiatorID, Universe> subUniverses_;*/
+    SubUniverseMap subUniverses_;*/
 };
 /*
-template<typename Funcs>
-inline FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture, Funcs changeArrivalFuncs);
+inline FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
 {
     FrameUpdateSet changedTimes;
 
@@ -215,17 +231,19 @@ inline FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectLis
         while (true) {
             if (ni != nend) {
                 if (ni->first < oi->first) {
-                    Funcs.insert(ni->first, make_pair(this, &ni->second));
+                    ni->first.insert(make_pair(this, &ni->second));
                     //arrivals.at(ni->first).insertObjectList(time, ni->second);
                     changedTimes.addFrame(ni->first);
                     ++ni;
                 }
                 else if (ni->first == oi->first) {
                     if (ni->second != oi->second) {
-                        Funcs.change(ni->first, make_pair(this, &ni->second));
+                        //Funcs.change(ni->first, make_pair(this, &ni->second));
                         //arrivals[ni->first].setObjectList(time, ni->second);
                         changedTimes.addFrame(ni->first);
                     }
+                    //Always change because old pointer will become invalid
+                    Funcs.change(ni->first, make_pair(this, &ni->second));
                     ++ni;
                     break;
                 }
