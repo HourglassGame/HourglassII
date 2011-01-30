@@ -8,6 +8,7 @@
 namespace hg {
 class Universe {
 public:
+    Universe(const Universe& other);
     //creates a top level universe
     explicit Universe(unsigned int timelineLength);
     //returns initiatorFrame_
@@ -20,6 +21,13 @@ private:
     friend class Frame;
     //creates a lower level universe
     Universe(Frame* initiatorFrame, unsigned int timelineLength);
+    
+    //workaround until I have a compiler which supports emplace
+    //First build the universe and copy it in to place.
+    Universe();
+    Universe& operator=(const Universe&);
+    //then call construct.
+    void construct(Frame* initiatorFrame, unsigned int timelineLength);
     Frame* initiatorFrame_;
     ::std::vector<Frame> frames_;
 };
