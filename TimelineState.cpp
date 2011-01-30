@@ -11,7 +11,7 @@ using namespace ::std;
 namespace hg {
 typedef TimeObjectListList::ListType::const_iterator Iterator;
 
-TimelineState::TimelineState() :
+TimelineState::TimelineState(unsigned int timelineLength) :
 //permanentDepartureIndex(timeLength),
 arrivals(),
 departures()
