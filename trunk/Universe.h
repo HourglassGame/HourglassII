@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace hg {
+class Frame;
 class Universe {
 public:
     Universe(const Universe& other);

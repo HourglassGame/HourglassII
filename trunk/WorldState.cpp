@@ -31,7 +31,7 @@ WorldState::WorldState(unsigned int timelineLength,
                        FrameID guyStartTime,
                        PhysicsEngine physics,
                        const ObjectList& initialObjects) :
-timeline_(),
+timeline_(timelineLength),
 playerInput_(),
 frameUpdateSet_(),
 physics_(physics),
@@ -228,8 +228,15 @@ FrameID WorldState::getCurrentPlayerFrame() const
 
 FrameID WorldState::getNextPlayerFrame() const
 {
-    assert(nextPlayerFrames_.size() == 1);
-    return *(nextPlayerFrames_.begin());
+    if (!nextPlayerFrames_.empty()) {
+        assert(nextPlayerFrames_.size() == 1);
+        return *(nextPlayerFrames_.begin());
+    }
+    else {
+        return FrameID();
+    }
+
+    
 }
 
 TimeDirection WorldState::getCurrentPlayerDirection() const

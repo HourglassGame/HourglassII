@@ -1,6 +1,10 @@
 #include "Universe.h"
 namespace hg {
-#if 0
+Universe::Universe() :
+initiatorFrame_(0),
+frames_()
+{
+}
 Universe::Universe(const Universe& other) :
 initiatorFrame_(0),
 frames_()
@@ -15,15 +19,17 @@ initiatorFrame_(0),
 frames_()
 {
     assert(timelineLength > 0);
-    construct(initiatorFrame, timelineLength);
+    construct(initiatorFrame_, timelineLength);
 }
 //returns initiatorFrame_
 Frame* Universe::getInitiatorFrame() const
 {
+    assert(!frames_.empty());
     return initiatorFrame_;
 }
 Frame* Universe::getEntryFrame(TimeDirection direction)
 {
+    assert(!frames_.empty());
     switch (direction) {
         case FORWARDS:
             return &(*frames_.begin());
@@ -35,6 +41,7 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
 }
 Frame* Universe::getArbitraryFrame(unsigned int frameNumber)
 {
+    assert(!frames_.empty());
     if (frameNumber < frames_.size()) {
         return &frames_[frameNumber];
     }
@@ -43,6 +50,7 @@ Frame* Universe::getArbitraryFrame(unsigned int frameNumber)
 //returns the length of this Universe's timeline
 unsigned int Universe::getTimelineLength() const
 {
+    assert(!frames_.empty());
     return frames_.size();
 }
 Universe::Universe(Frame* initiatorFrame, unsigned int timelineLength) :
@@ -59,8 +67,7 @@ void Universe::construct(Frame* initiatorFrame, unsigned int timelineLength)
     frames_.reserve(timelineLength);
     for (unsigned int i(0); i < timelineLength; ++i)
     {
-        frames_.push_back(i, this);
+        frames_.push_back(Frame(i, this));
     }
 }
-#endif 0
 }

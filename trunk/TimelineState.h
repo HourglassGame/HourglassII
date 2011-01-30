@@ -12,9 +12,9 @@ class TimelineState
 {
 public:
     /**************
-     * Constructs a time line state of length timeLength containing no arrivals or departures.
+     * Constructs a timeline state of length timeLength containing no arrivals or departures.
      */
-	TimelineState();
+	TimelineState(unsigned int timelineLength);
 
     /********************
      * Updates the timeline with new departures and returns the set of frames
