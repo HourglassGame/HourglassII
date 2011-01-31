@@ -19,6 +19,10 @@ namespace hg {
         void add(const FrameUpdateSet& other) {
             updateSet_.insert(other.updateSet_.begin(), other.updateSet_.end());
         }
+        void swap(FrameUpdateSet& other) {
+            updateSet_.swap(other.updateSet_);
+        }
+        
         typedef ::std::set<Frame*> SetType;
         typedef SetType::const_iterator const_iterator;
         //Privacy leak here, it is an error to use FrameUpdateSet::const_iterator as anything more than a ForwardIterator

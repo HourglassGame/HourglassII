@@ -4,31 +4,29 @@
 #define foreach BOOST_FOREACH
 namespace hg {
 ConcurrentFrameUpdateSet::ConcurrentFrameUpdateSet() :
-threadLocalMap_(),
-mutex_()
+threadLocalMap_()
 {
 }
 void ConcurrentFrameUpdateSet::add(const FrameUpdateSet& toAdd)
 {
-    boost::shared_lock<boost::shared_mutex> lock(mutex_);
-    const boost::thread::id threadID(boost::this_thread::get_id());
-    MapType::iterator it(threadLocalMap_.find(threadID));
-    if (it != threadLocalMap_.end()) {
-        it->second.add(toAdd);
-    }
-    else {
-        lock.unlock();
-        boost::lock_guard<boost::shared_mutex> lock(mutex_);
-        threadLocalMap_.insert(MapType::value_type(threadID, toAdd));
-    }
+    threadLocalMap_.local().add(toAdd);
 }
+struct FrameUpdateSetCombiner
+{
+    FrameUpdateSetCombiner(FrameUpdateSet& taker) :
+    taker_(taker)
+    {
+    }
+    void operator()(const FrameUpdateSet& toAdd) const
+    {
+        taker_.add(toAdd);
+    }
+    FrameUpdateSet& taker_;
+};
 FrameUpdateSet ConcurrentFrameUpdateSet::merge()
 {
     FrameUpdateSet retv;
-    foreach(const MapType::value_type& value, threadLocalMap_)
-    {
-        retv.add(value.second);
-    }
+    threadLocalMap_.combine_each(FrameUpdateSetCombiner(retv));
     return retv;
 }
 }

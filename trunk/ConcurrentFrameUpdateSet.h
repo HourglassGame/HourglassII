@@ -7,6 +7,9 @@
 #include <boost/lexical_cast.hpp>
 #include "FrameUpdateSet.h"
 #include "BoostThreadHash.h"
+#include "BoostHashCompare.h"
+#include <tbb/compat/thread>
+#include <tbb/enumerable_thread_specific.h>
 namespace hg {
 
     class ConcurrentFrameUpdateSet {
@@ -15,9 +18,7 @@ namespace hg {
         void add(const FrameUpdateSet& toAdd);
         FrameUpdateSet merge();
     private:
-        typedef boost::unordered_map<boost::thread::id, FrameUpdateSet> MapType;
-        MapType threadLocalMap_;
-        boost::shared_mutex mutex_;
+        tbb::enumerable_thread_specific<FrameUpdateSet> threadLocalMap_;
     };
 }
 #endif //HG_CONCURRENT_FRAME_UPDATE_SET_H
