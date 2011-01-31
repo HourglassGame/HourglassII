@@ -1,45 +1,52 @@
 #include "Box.h"
 
 namespace hg {
-Box::Box(int nX, int nY, int nXspeed, int nYspeed, int nSize, hg::TimeDirection nTimeDirection, int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(nX, nY, nXspeed, nYspeed, nSize, nTimeDirection, nPauseLevel))
+Box::Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection, int pauseLevel) :
+x_(x),
+y_(y),
+xspeed_(xspeed),
+yspeed_(yspeed),
+size_(size),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel)
 {
 }
 
-Box::Box(const Box& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getSize(), nTimeDirection, nPauseLevel))
+Box::Box(const Box& other, hg::TimeDirection timeDirection, int pauseLevel) :
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+size_(other.size_),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel)
 {
 }
 
 Box::Box(const Box& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+size_(other.size_),
+timeDirection_(other.timeDirection_),
+pauseLevel_(other.pauseLevel_)
 {
 }
 
 Box::~Box()
 {
-    decrementCount();
-}
-
-void Box::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 Box& Box::operator=(const Box& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
-    }
+    x_ = other.x_;
+    y_ = other.y_;
+    xspeed_ = other.xspeed_;
+    yspeed_ = other.yspeed_;
+    size_ = other.size_;
+    timeDirection_ = other.timeDirection_;
+    pauseLevel_ = other.pauseLevel_;
     return *this;
 }
 
@@ -50,73 +57,66 @@ bool Box::operator!=(const Box& other) const
 
 bool Box::operator==(const Box& other) const
 {
-	return data == other.data ||
-        ((data->x == other.data->x)
-        && (data->y == other.data->y)
-        && (data->xspeed == other.data->xspeed)
-        && (data->yspeed == other.data->yspeed)
-        && (data->timeDirection == other.data->timeDirection)
-        && (data->size == other.data->size)
-        && (data->pauseLevel == other.data->pauseLevel));
+	return (x_ == other.x_)
+        && (y_ == other.y_)
+        && (xspeed_ == other.xspeed_)
+        && (yspeed_ == other.yspeed_)
+        && (timeDirection_ == other.timeDirection_)
+        && (pauseLevel_ == other.pauseLevel_)
+        && (size_ == other.size_);
 }
 
 bool Box::operator<(const Box& other) const
 {
-    if (data != other.data) {
-        if (data->x == other.data->x)
+    if (x_ == other.x_)
+    {
+        if (y_ == other.y_)
         {
-            if (data->y == other.data->y)
+            if (xspeed_ == other.xspeed_)
             {
-                if (data->xspeed == other.data->xspeed)
+                if (yspeed_ == other.yspeed_)
                 {
-                    if (data->yspeed == other.data->yspeed)
+                    if (timeDirection_ == other.timeDirection_)
                     {
-                        if (data->timeDirection == other.data->timeDirection)
+                        if (size_ == other.size_)
                         {
-                            if (data->size == other.data->size)
+                            if (pauseLevel_ == other.pauseLevel_)
                             {
-                                if (data->pauseLevel == other.data->pauseLevel)
-                                {
-                                    return false;
-                                }
-                                else
-                                {
-                                    return (data->pauseLevel < other.data->pauseLevel);
-                                }
+                                return false;
                             }
                             else
                             {
-                                return (data->size < other.data->size);
+                                return pauseLevel_ < other.pauseLevel_;
                             }
                         }
                         else
                         {
-                            return (data->timeDirection < other.data->timeDirection);
+                            return size_ < other.size_;
                         }
                     }
                     else
                     {
-                        return (data->yspeed < other.data->yspeed);
+                        return timeDirection_ < other.timeDirection_;
                     }
                 }
                 else
                 {
-                    return (data->xspeed < other.data->xspeed);
+                    return yspeed_ < other.yspeed_;
                 }
             }
             else
             {
-                return (data->y < other.data->y);
+                return xspeed_ < other.xspeed_;
             }
         }
         else
         {
-            return (data->x < other.data->x);
+            return y_ < other.y_;
         }
     }
     else
     {
-        return false;
+        return x_ < other.x_;
     }
 }
 }//namespace hg

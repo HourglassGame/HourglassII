@@ -1,64 +1,113 @@
 #include "Guy.h"
 
 namespace hg{
-Guy::Guy(int nX,
-         int nY,
-         int nXspeed,
-         int nYspeed,
-         int nWidth,
-         int nHeight,
-         int nrelativeToPortal,
-         bool nSupported,
-         bool nBoxCarrying,
-         int nBoxCarrySize,
-         TimeDirection nBoxCarryDirection,
-         int nBoxPauseLevel,
-         TimeDirection nTimeDirection,
-         int nPauseLevel,
-         int nRelativeIndex,
-         int nSubimage) :
-referenceCount(new int(1)),
-data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nrelativeToPortal, nSupported,
-              nBoxCarrying,nBoxCarrySize,nBoxCarryDirection, nBoxPauseLevel,
-              nTimeDirection,nPauseLevel,nRelativeIndex,nSubimage))
+Guy::Guy(int x,
+         int y,
+         int xspeed,
+         int yspeed,
+         int width,
+         int height,
+
+         int relativeToPortal,
+         bool supported,
+
+         bool boxCarrying,
+         int boxCarrySize,
+         TimeDirection boxCarryDirection,
+         int boxPauseLevel,
+
+         TimeDirection timeDirection,
+         int pauseLevel,
+         int relativeIndex) :
+x_(x),
+y_(y),
+xspeed_(xspeed),
+yspeed_(yspeed),
+width_(width),
+height_(height),
+
+relativeToPortal_(relativeToPortal),
+supported_(supported),
+
+boxCarrying_(boxCarrying),
+boxCarrySize_(boxCarrySize),
+boxCarryDirection_(boxCarryDirection),
+boxPauseLevel_(boxPauseLevel),
+
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel),
+relativeIndex_(relativeIndex)
 {
 }
 
-Guy::Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(other.getX(),other.getY(),other.getXspeed(),other.getYspeed(),other.getWidth(),other.getHeight(), other.getRelativeToPortal(), other.getSupported(),
-              other.getBoxCarrying(),other.getBoxCarrySize(),other.getBoxCarryDirection(), other.getBoxPauseLevel(),
-              nTimeDirection,nPauseLevel,other.getRelativeIndex(),other.getSubimage()))
+Guy::Guy(const Guy& other, TimeDirection timeDirection, int pauseLevel) :
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+width_(other.width_),
+height_(other.height_),
+
+relativeToPortal_(other.relativeToPortal_),
+supported_(other.supported_),
+
+boxCarrying_(other.boxCarrying_),
+boxCarrySize_(other.boxCarrySize_),
+boxCarryDirection_(other.boxCarryDirection_),
+boxPauseLevel_(other.boxPauseLevel_),
+
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel),
+relativeIndex_(other.relativeIndex_)
 {
 }
 
 Guy::Guy(const Guy& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+width_(other.width_),
+height_(other.height_),
+
+relativeToPortal_(other.relativeToPortal_),
+supported_(other.supported_),
+
+boxCarrying_(other.boxCarrying_),
+boxCarrySize_(other.boxCarrySize_),
+boxCarryDirection_(other.boxCarryDirection_),
+boxPauseLevel_(other.boxPauseLevel_),
+
+timeDirection_(other.timeDirection_),
+pauseLevel_(other.pauseLevel_),
+relativeIndex_(other.relativeIndex_)
 {
 }
 
 Guy::~Guy()
 {
-    decrementCount();
-}
-
-void Guy::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 Guy& Guy::operator=(const Guy& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
-    }
+    x_ = other.x_;
+    y_ = other.y_;
+    xspeed_ = other.xspeed_;
+    yspeed_ = other.yspeed_;
+    width_ = other.width_;
+    height_ = other.height_;
+
+    relativeToPortal_ = other.relativeToPortal_;
+    supported_ = other.supported_;
+
+    boxCarrying_ = other.boxCarrying_;
+    boxCarrySize_ = other.boxCarrySize_;
+    boxCarryDirection_ = other.boxCarryDirection_;
+    boxPauseLevel_ = other.boxPauseLevel_;
+
+    timeDirection_ = other.timeDirection_;
+    pauseLevel_ = other.pauseLevel_;
+    relativeIndex_ = other.relativeIndex_;
     return *this;
 }
 
@@ -69,25 +118,23 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return data == other.data
-            || ((data->relativeIndex == other.data->relativeIndex)
-            && (data->x == other.data->x)
-            && (data->y == other.data->y)
-            && (data->xspeed == other.data->xspeed)
-            && (data->yspeed == other.data->yspeed)
-            && (data->width == other.data->width)
-            && (data->height == other.data->height)
-            && (data->relativeToPortal == other.data->relativeToPortal)
-            && (data->supported == other.data->supported)
-            && (data->boxCarrying == other.data->boxCarrying)
-            && (data->timeDirection == other.data->timeDirection)
-            && (data->subimage == other.data->subimage)
-            && (data->boxCarryDirection == other.data->boxCarryDirection)
-            && (data->boxCarrySize == other.data->boxCarrySize));
+	return  (relativeIndex_ == other.relativeIndex_)
+            && (x_ == other.x_)
+            && (y_ == other.y_)
+            && (xspeed_ == other.xspeed_)
+            && (yspeed_ == other.yspeed_)
+            && (relativeToPortal_ == other.relativeToPortal_)
+            && (supported_ == other.supported_)
+            && (boxCarrying_ == other.boxCarrying_)
+            && (timeDirection_ == other.timeDirection_)
+            && (boxCarryDirection_ == other.boxCarryDirection_)
+            && (boxCarrySize_ == other.boxCarrySize_)
+            && (width_ == other.width_)
+            && (height_ == other.height_);
 }
 
 bool Guy::operator<(const Guy& other) const
 {
-    return data->relativeIndex < other.data->relativeIndex;
+    return relativeIndex_ < other.relativeIndex_;
 }
 }//namespace hg

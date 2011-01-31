@@ -4,7 +4,7 @@
 //#include <boost/unordered_map.hpp>
 #include <tbb/concurrent_hash_map.h>
 #include "BoostHashCompare.h"
-#include "FrameID.h"
+#include "Frame.h"
 #include "TimeDirection.h"
 namespace hg {
 /*
@@ -32,14 +32,14 @@ namespace hg {
     };*/
 
     class ConcurrentTimeMap {
-        typedef tbb::concurrent_hash_map<FrameID, TimeDirection, BoostHashCompare<FrameID> > MapType;
+        typedef tbb::concurrent_hash_map<Frame*, TimeDirection, BoostHashCompare<Frame*> > MapType;
         public:
         ConcurrentTimeMap();
         //Must never try to add or remove a particular frame concurrently,
         //only has safe concurrent access when each thread is calling 
         //add or remove with different Frame parameters
-        void add(const FrameID& toAdd, TimeDirection direction);
-        void remove(const FrameID& toRemove);
+        void add(Frame* toAdd, TimeDirection direction);
+        void remove(Frame* toRemove);
         void clear() { map_.clear(); }
         bool empty() const { return map_.empty(); }
         size_t size() const { return map_.size(); }

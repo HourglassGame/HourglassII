@@ -11,21 +11,34 @@ namespace hg {
     class DepartureMap {
     public:
         
-        typedef ::boost::unordered_map<FrameID, TimeObjectListList> MapType;
-        typedef MapType::value_type ValueType;
-        //BIG privacy leak here, it is incorrect to use DepartureMap::const_iterator as anything but a forward_iterator
-        //To fix make new iterator class, but that would take effort...
-        typedef MapType::const_iterator const_iterator;
-        
+        typedef ::boost::unordered_map<Frame*, std::map<Frame*, ObjectList> > MapType;
+        typedef MapType::value_type ValueType;        
+        typedef MapType::value_type         value_type;               
+        typedef MapType::pointer            pointer;             
+        typedef MapType::const_pointer      const_pointer;       
+        typedef MapType::reference          reference;
+        typedef MapType::const_reference    const_reference;
+        typedef MapType::size_type          size_type;
+        typedef MapType::difference_type    difference_type;
+        typedef MapType::iterator           iterator;
+        typedef MapType::const_iterator     const_iterator;
         DepartureMap() :
         map_()
         {
         }
         //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
         void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor);
-        void addDeparture(FrameID time, TimeObjectListList departingObjects)
+        void addDeparture(Frame* time, std::map<Frame*, ObjectList> departingObjects)
         {
             swap(map_[time],departingObjects);
+        }
+        iterator begin()
+        {
+            return map_.begin();
+        }
+        iterator end()
+        {
+            return map_.end();
         }
         const_iterator begin() const
         {

@@ -14,14 +14,14 @@ namespace hg
         Button(const Button& other);
         Button& operator=(const Button& other);
 
-        inline int getX() const {return data->x;}
-        inline int getY() const {return data->y;}
-        inline int getXspeed() const {return data->xspeed;}
-        inline int getYspeed() const {return data->yspeed;}
-        inline int getIndex() const {return data->index;}
-        inline bool getState() const {return data->state;}
-        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
-        inline int getPauseLevel() const {return data->pauseLevel;}
+        int getX() const {return x_;}
+        int getY() const {return y_;}
+        int getXspeed() const {return xspeed_;}
+        int getYspeed() const {return yspeed_;}
+        int getIndex() const {return index_;}
+        bool getState() const {return state_;}
+        TimeDirection getTimeDirection() const {return timeDirection_;}
+        int getPauseLevel() const {return pauseLevel_;}
 
         bool operator==(const Button& other) const;
         bool operator!=(const Button& other) const;
@@ -29,42 +29,14 @@ namespace hg
         bool operator<(const Button& second) const;
 
     private:
-        void decrementCount();
-
-        struct Data;
-        mutable int* referenceCount;
-        Data* data;
-
-        struct Data {
-            Data(
-                int nx,
-                int ny,
-                int nxspeed,
-                int nyspeed,
-                int nindex,
-                bool nstate,
-                TimeDirection ntimeDirection,
-                int npauseLevel) :
-            x(nx),
-            y(ny),
-            xspeed(nxspeed),
-            yspeed(nyspeed),
-            index(nindex),
-            state(nstate),
-            timeDirection(ntimeDirection),
-            pauseLevel(npauseLevel)
-            {
-            }
-
-            int x;
-            int y;
-            int xspeed;
-            int yspeed;
-            int index;
-            bool state;
-            TimeDirection timeDirection;
-            int pauseLevel;
-        };
+        int x_;
+        int y_;
+        int xspeed_;
+        int yspeed_;
+        int index_;
+        bool state_;
+        TimeDirection timeDirection_;
+        int pauseLevel_;
     };
 }
 #endif //HG_BUTTON_H

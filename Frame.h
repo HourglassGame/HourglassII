@@ -10,8 +10,9 @@
 #include <boost/unordered_map.hpp>
 #include <map>
 namespace hg {
-class FramePtrUpdateSet;
+class FrameUpdateSet;
 class Frame;
+class FrameID;
 class FramePtr;
 class Universe;
 //Wrapper around Frame* to give extra safety (assert ptr before dereferencing,
@@ -36,7 +37,7 @@ public:
     {
     }
     
-    FramePtr(const Frame* ptr) :
+    FramePtr(Frame* ptr) :
     framePtr_(ptr)
     {
     }
@@ -150,7 +151,7 @@ class Frame {
     Frame* entryChildFrame(const PauseInitiatorID& initiatorID, TimeDirection direction);
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
-    FramePtrUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
+    FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
     
     //assignment
     Frame& operator=(const Frame& other)
@@ -158,7 +159,23 @@ class Frame {
         //Should never be called. Needed for vector.push_back, but I have already reserved space.
         assert(false);
     }
-private:
+    /*****************************************************
+     * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
+     */
+	ObjectPtrList getPrePhysics() const;
+
+    
+
+    /*****************************************************
+     * Returns a flattened view of the departures from 'time' for passing to the front-end.
+     * Not sure what the whichPrePause argument is actually there for, so leaving that functionality out for now.
+     */
+    ObjectPtrList getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
+    void addArrival(Frame* source, ObjectList* arrival);
+    //FrameID toFrameID() const;
+    unsigned int getFrameNumber() const { return frameNumber_; }
+    const PauseInitiatorID& getInitiatorID() const;
+    private:
     unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const;
     
     void insertArrival(const ArrivalMap::value_type& toInsert);

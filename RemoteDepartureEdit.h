@@ -7,13 +7,13 @@ namespace hg {
     {
     public:
         RemoteDepartureEdit(PauseInitiatorID origin, Type departure, bool propIntoNormal);
-        RemoteDepartureEdit<Type>(const RemoteDepartureEdit<Type>& other);
+        RemoteDepartureEdit(const RemoteDepartureEdit<Type>& other);
         ~RemoteDepartureEdit();
         RemoteDepartureEdit& operator=(const RemoteDepartureEdit<Type>& other);
 
-        const Type& getDeparture() const {return data->departure;}
-        const PauseInitiatorID& getOrigin() const {return data->origin;}
-        const bool& getPropIntoNormal() const {return data->propIntoNormal;}
+        const Type& getDeparture() const {return departure_;}
+        const PauseInitiatorID& getOrigin() const {return origin_;}
+        const bool getPropIntoNormal() const {return propIntoNormal_;}
 
         bool operator!=(const RemoteDepartureEdit<Type>& other) const;
         bool operator==(const RemoteDepartureEdit<Type>& other) const;
@@ -22,28 +22,9 @@ namespace hg {
 
     private:
 
-        struct Data;
-        void decrementCount();
-        mutable int* referenceCount;
-
-        Data* data;
-
-        struct Data {
-            Data(PauseInitiatorID norigin,
-                 Type ndeparture,
-                 bool npropIntoNormal
-            ):
-            origin(norigin),
-            departure(ndeparture),
-            propIntoNormal(npropIntoNormal)
-            {
-            }
-
-            PauseInitiatorID origin;
-            Type departure;
-            bool propIntoNormal;
-        };
-
+        PauseInitiatorID origin_;
+        Type departure_;
+        bool propIntoNormal_;
     };
 }
 #endif //HG_DEPARTURE_THIEF_H

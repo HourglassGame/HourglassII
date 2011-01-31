@@ -12,6 +12,8 @@
 
 namespace hg {
     struct ExecuteFrame;
+    class Frame;
+    class FrameID;
     class WorldState {
     public:
         /******************
@@ -26,7 +28,7 @@ namespace hg {
         /***************************************
          * Updates the state of the world once.
          */
-        std::vector<FrameID> executeWorld();
+        std::vector<Frame*> executeWorld();
 
         /*******************************
          * Stores the given input data, allowing the player to exist for another step.
@@ -37,18 +39,20 @@ namespace hg {
         * Returns an object list containing the state of whichFrame after physics was applied
         * in the last call to executeWorld.
         */
-        ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
+        //ObjectList getPostPhysics(Frame* whichFrame, const PauseInitiatorID& whichPrePause) const;
         /***********************************************************
         * Returns the frame containing the oldest (highest relative index) Guy who has input.
         */
-        FrameID getNextPlayerFrame() const;
-        FrameID getCurrentPlayerFrame() const;
+        Frame* getNextPlayerFrame();
+        Frame* getCurrentPlayerFrame();
         TimeDirection getCurrentPlayerDirection() const;
         
         ::std::vector<InputList> getReplayData() const {return playerInput_;};
+        
+        Frame* getFrame(const FrameID& whichFrame);
     private:
         friend struct ExecuteFrame;
-        TimeObjectListList getDeparturesFromFrame(const TimelineState::Frame& frame);
+        std::map<Frame*, ObjectList> getDeparturesFromFrame(Frame* frame);
 
         TimelineState timeline_;
         // stores all player input

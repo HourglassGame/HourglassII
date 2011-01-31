@@ -1,214 +1,319 @@
 #include "ObjectList.h"
 
-#include "ObjectListData.h"
-
 #include <vector>
 #include <algorithm>
 #include <cassert>
 #include <iostream>
-
+#include <boost/utility/addressof.hpp>
+#include <boost/range/algorithm/sort.hpp>
+#include <boost/range/algorithm/equal.hpp>
+#include <boost/range/algorithm/transform.hpp>
+#include <iterator>
 using namespace ::std;
 using namespace ::boost;
 namespace hg {
-// ------------ ObjectList functions ---------------
 ObjectList::ObjectList() :
-data_(new ObjectListData())
-{
-}
-
-ObjectList::ObjectList(const ObjectList& other) :
-data_(other.data_)
+guyList(),
+boxList(),
+buttonList(),
+platformList(),
+portalList(),
+boxThiefList(),
+boxExtraList(),
+guyExtraList()
 {
 }
 
 ObjectList::~ObjectList()
 {
 }
-
+ObjectList::ObjectList(const ObjectList& other):
+guyList(other.guyList),
+boxList(other.boxList),
+buttonList(other.buttonList),
+platformList(other.platformList),
+portalList(other.portalList),
+boxThiefList(other.boxThiefList),
+boxExtraList(other.boxExtraList),
+guyExtraList(other.guyExtraList)
+{
+}
 ObjectList& ObjectList::operator=(const ObjectList& other)
 {
-    if (this != &other) {
-        this->data_ = other.data_;
-    }
+    guyList = other.guyList;
+    boxList = other.boxList;
+    buttonList = other.buttonList;
+    platformList = other.platformList;
+    portalList = other.portalList;
+    boxThiefList = other.boxThiefList;
+    boxExtraList = other.boxExtraList;
+    guyExtraList = other.guyExtraList;
     return *this;
 }
-
-ObjectList::ObjectList(const MutableObjectList& other) :
-data_(other.data_)
+void ObjectList::add(const Guy& toCopy)
 {
-    data_->sortElements();
+    guyList.push_back(toCopy);
+}
+void ObjectList::add(const Box& toCopy)
+{
+    boxList.push_back(toCopy);
+}
+void ObjectList::add(const Button& toCopy)
+{
+    buttonList.push_back(toCopy);
+}
+void ObjectList::add(const Platform& toCopy)
+{
+    platformList.push_back(toCopy);
+}
+void ObjectList::add(const Portal& toCopy)
+{
+    portalList.push_back(toCopy);
+}
+void ObjectList::addThief(const RemoteDepartureEdit<Box>& toCopy)
+{
+    boxThiefList.push_back(toCopy);
+}
+void ObjectList::addExtra(const RemoteDepartureEdit<Box>& toCopy)
+{
+    boxExtraList.push_back(toCopy);
+}
+void ObjectList::addExtra(const RemoteDepartureEdit<Guy>& toCopy)
+{
+    guyExtraList.push_back(toCopy);
 }
 
-ObjectList& ObjectList::operator=(const MutableObjectList& other)
+void ObjectList::add(const ObjectList& other)
 {
-    data_ = other.data_;
-    data_->sortElements();
-    return *this;
+    guyList.insert(guyList.end(),other.guyList.begin(),other.guyList.end());
+    boxList.insert(boxList.end(),other.boxList.begin(),other.boxList.end());
+    buttonList.insert(buttonList.end(),other.buttonList.begin(),other.buttonList.end());
+    platformList.insert(platformList.end(),other.platformList.begin(),other.platformList.end());
+    portalList.insert(portalList.end(),other.portalList.begin(),other.portalList.end());
+    boxThiefList.insert(boxThiefList.end(),other.boxThiefList.begin(),other.boxThiefList.end());
+    guyExtraList.insert(guyExtraList.end(),other.guyExtraList.begin(),other.guyExtraList.end());
+    boxExtraList.insert(boxExtraList.end(),other.boxExtraList.begin(),other.boxExtraList.end());
+}
+//MUST CALL THIS after constructing complete ObjectList!
+void ObjectList::sort()
+{
+    using boost::sort;
+	sort(guyList);
+    //assert(containsNoGuysWithEqualRelativeIndices(guyList) && "If the list contains guys with equal relative index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(boxList);
+	sort(buttonList);
+    //assert(containsNoElementsWithEqualIndices(buttonList) && "If the list contains buttons with equal index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(platformList);
+    //assert(containsNoElementsWithEqualIndices(platformList) && "If the list contains platforms with equal index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(portalList);
+    //assert(containsNoElementsWithEqualIndices(portalList) && "If the list contains portals with equal index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(boxThiefList);
+	sort(guyExtraList);
+	sort(boxExtraList);
 }
 
-const vector<Guy>& ObjectList::getGuyListRef() const
+void ObjectList::swap(ObjectList& other)
 {
-    return data_->guyList;
+    guyList.swap(other.guyList);
+    boxList.swap(other.boxList);
+    buttonList.swap(other.buttonList);
+    platformList.swap(other.platformList);
+    portalList.swap(other.portalList);
+    boxThiefList.swap(other.boxThiefList);
+    guyExtraList.swap(other.guyExtraList);
+    boxExtraList.swap(other.boxExtraList);
 }
 
-const vector<Box>& ObjectList::getBoxListRef() const
+bool ObjectList::operator==(const ObjectList& other) const
 {
-    return data_->boxList;
+    using boost::equal;
+    return equal(guyList,other.guyList)
+        && equal(boxList,other.boxList)
+        && equal(buttonList,other.buttonList)
+        && equal(platformList,other.platformList)
+        && equal(portalList,other.portalList)
+        && equal(boxThiefList,other.boxThiefList)
+        && equal(guyExtraList,other.guyExtraList)
+        && equal(boxExtraList,other.boxExtraList);
 }
-
-const vector<Button>& ObjectList::getButtonListRef() const
-{
-    return data_->buttonList;
-}
-
-const vector<Platform>& ObjectList::getPlatformListRef() const
-{
-    return data_->platformList;
-}
-
-const vector<Portal>& ObjectList::getPortalListRef() const
-{
-    return data_->portalList;
-}
-
-const vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
-{
-    return data_->boxThiefList;
-}
-
-const vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxExtraListRef() const
-{
-    return data_->boxExtraList;
-}
-
-const vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyExtraListRef() const
-{
-    return data_->guyExtraList;
-}
-
-bool ObjectList::operator==(const hg::ObjectList& other) const
-{
-    return data_ == other.data_ ||
-            (data_->guyList == other.data_->guyList
-            && data_->boxList == other.data_->boxList
-            && data_->buttonList == other.data_->buttonList
-            && data_->platformList == other.data_->platformList
-            && data_->portalList == other.data_->portalList
-            && data_->boxThiefList == other.data_->boxThiefList
-            && data_->guyExtraList == other.data_->guyExtraList
-            && data_->boxExtraList == other.data_->boxExtraList);
-}
-
-bool ObjectList::operator!=(const hg::ObjectList& other) const
+bool ObjectList::operator!=(const ObjectList& other) const
 {
     return !(*this == other);
 }
-
 bool ObjectList::isEmpty() const
 {
-	return  data_->guyList.empty() &&
-            data_->boxList.empty() &&
-            data_->buttonList.empty() &&
-            data_->platformList.empty() &&
-            data_->portalList.empty() &&
-            data_->boxThiefList.empty() &&
-            data_->guyExtraList.empty() &&
-            data_->boxExtraList.empty();
+    return guyList.empty()
+        && boxList.empty()
+        && buttonList.empty()
+        && platformList.empty()
+        && portalList.empty()
+        && boxThiefList.empty()
+        && guyExtraList.empty()
+        && boxExtraList.empty();
 }
 
-// ---------- MutableObjectList functions ------------
 
-MutableObjectList::MutableObjectList() :
-data_(new ObjectListData())
+
+//---------------------------------ObjectPtrList-----------------------------------
+ObjectPtrList::ObjectPtrList() :
+guyList(),
+boxList(),
+buttonList(),
+platformList(),
+portalList(),
+boxThiefList(),
+boxExtraList(),
+guyExtraList()
 {
 }
 
-MutableObjectList::~MutableObjectList()
+ObjectPtrList::~ObjectPtrList()
+{}
+ObjectPtrList::ObjectPtrList(const ObjectPtrList& other):
+guyList(other.guyList),
+boxList(other.boxList),
+buttonList(other.buttonList),
+platformList(other.platformList),
+portalList(other.portalList),
+boxThiefList(other.boxThiefList),
+boxExtraList(other.boxExtraList),
+guyExtraList(other.guyExtraList)
 {
 }
-
-MutableObjectList::MutableObjectList(const ObjectList& other) :
-data_(other.data_)
+ObjectPtrList& ObjectPtrList::operator=(const ObjectPtrList& other)
 {
-}
-
-MutableObjectList::MutableObjectList(const MutableObjectList& other) :
-data_(other.data_)
-{
-}
-
-MutableObjectList& MutableObjectList::operator=(const MutableObjectList& other)
-{
-    if (this != &other) {
-        data_ = other.data_;
-    }
+    guyList = other.guyList;
+    boxList = other.boxList;
+    buttonList = other.buttonList;
+    platformList = other.platformList;
+    portalList = other.portalList;
+    boxThiefList = other.boxThiefList;
+    boxExtraList = other.boxExtraList;
+    guyExtraList = other.guyExtraList;
     return *this;
 }
 
-void MutableObjectList::makeUnique()
+template <typename T>
+struct AddressOf
 {
-    if (!data_.unique()) {
-        data_ = boost::shared_ptr<ObjectListData>(new ObjectListData(*data_));
+    T* operator()(const T& toTakeAddressOf) const
+    {
+        return const_cast<T*>(boost::addressof(toTakeAddressOf));
+    }
+};
+
+void ObjectPtrList::add(const ObjectList& other)
+{
+    {
+        std::back_insert_iterator<std::vector<const Guy*> > it(guyList);
+        boost::transform(other.guyList, it, AddressOf<Guy>());
+    }
+    {
+        std::back_insert_iterator<std::vector<const Box*> > it(boxList);
+        boost::transform(other.boxList, it, AddressOf<Box>());
+    }
+    {
+        std::back_insert_iterator<std::vector<const Button*> > it(buttonList);
+        boost::transform(other.buttonList, it, AddressOf<Button>());
+    }
+    {
+        std::back_insert_iterator<std::vector<const Platform*> > it(platformList);
+        boost::transform(other.platformList, it, AddressOf<Platform>());
+    }
+    {
+        std::back_insert_iterator<std::vector<const Portal*> > it(portalList);
+        boost::transform(other.portalList, it, AddressOf<Portal>());
+    }
+    {
+        std::back_insert_iterator<std::vector<const RemoteDepartureEdit<Box>*> > it(boxThiefList);
+        boost::transform(other.boxThiefList, it, AddressOf<RemoteDepartureEdit<Box> >());
+    }
+    {
+        std::back_insert_iterator<std::vector<const RemoteDepartureEdit<Box>*> > it(boxExtraList);
+        boost::transform(other.boxExtraList, it, AddressOf<RemoteDepartureEdit<Box> >());
+    }
+    {
+        std::back_insert_iterator<std::vector<const RemoteDepartureEdit<Guy>*> > it(guyExtraList);
+        boost::transform(other.guyExtraList, it, AddressOf<RemoteDepartureEdit<Guy> >());
     }
 }
+template <typename T>
+struct DereferenceLessThan {
+    bool operator()(const T& l, const T& r) const
+    {
+        return *l < *r;
+    }
+};
 
-void MutableObjectList::add(const Guy& toCopy)
+//MUST CALL THIS after constructing complete ObjectPtrList!
+void ObjectPtrList::sort()
 {
-    makeUnique();
-	data_->guyList.push_back(toCopy);
+    using boost::sort;
+	sort(guyList,DereferenceLessThan<const Guy*>());
+    //assert(containsNoGuyPointersWithEqualRelativeIndices(guyList) && "If the list contains guys with equal relative index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(boxList,DereferenceLessThan<const Box*>());
+	sort(buttonList,DereferenceLessThan<const Button*>());
+    
+    //assert(containsNoElementPointersWithEqualIndices(buttonList) && "If the list contains buttons with equal index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(platformList,DereferenceLessThan<const Platform*>());
+    //assert(containsNoElementPointersWithEqualIndices(platformList) && "If the list contains platforms with equal index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(portalList,DereferenceLessThan<const Portal*>());
+    //assert(containsNoElementPointersWithEqualIndices(portalList) && "If the list contains portals with equal index then "
+    //                                                                 "the sort order is non-deterministic, potentially leading "
+    //                                                                 "equal objectLists being found to be different");
+	sort(boxThiefList,DereferenceLessThan<const RemoteDepartureEdit<Box>*>());
+	sort(boxExtraList,DereferenceLessThan<const RemoteDepartureEdit<Box>*>());
+	sort(guyExtraList,DereferenceLessThan<const RemoteDepartureEdit<Guy>*>());
 }
 
-void MutableObjectList::add(const Box& toCopy)
+void ObjectPtrList::swap(ObjectPtrList& other)
 {
-    makeUnique();
-	data_->boxList.push_back(toCopy);
+    guyList.swap(other.guyList);
+    boxList.swap(other.boxList);
+    buttonList.swap(other.buttonList);
+    platformList.swap(other.platformList);
+    portalList.swap(other.portalList);
+    boxThiefList.swap(other.boxThiefList);
+    guyExtraList.swap(other.guyExtraList);
+    boxExtraList.swap(other.boxExtraList);
 }
-
-void MutableObjectList::add(const Button& toCopy)
+#if 0
+template<typename T>
+struct DereferenceEqual {
+    bool operator()(const T& l, const T& r) const
+    {
+        return *l == *r;
+    }
+}
+bool ObjectPtrList::operator==(const ObjectPtrList& other) const
 {
-    makeUnique();
-	data_->buttonList.push_back(toCopy);
+    using boost::equal;
+    return equal(guyList,other.guyList, DereferenceEqual<Guy*>())
+        && equal(boxList,other.boxList,DereferenceEqual<Box*>())
+        && equal(buttonList,other.buttonList,DereferenceEqual<Button*>())
+        && equal(platformList,other.platformList,DereferenceEqual<Platform*>())
+        && equal(portalList,other.portalList,DereferenceEqual<Portal*>())
+        && equal(boxThiefList,other.boxThiefList,DereferenceEqual<RemoteDepartureEdit<Box>*>())
+        && equal(guyExtraList,other.guyExtraList,DereferenceEqual<RemoteDepartureEdit<Box>*>())
+        && equal(boxExtraList,other.boxExtraList,DereferenceEqual<RemoteDepartureEdit<Guy>*>());
 }
-
-void MutableObjectList::add(const Platform& toCopy)
+bool ObjectPtrList::operator!=(const ObjectPtrList& other) const
 {
-    makeUnique();
-	data_->platformList.push_back(toCopy);
+    return !(*this == other);
 }
-
-void MutableObjectList::add(const Portal& toCopy)
-{
-    makeUnique();
-	data_->portalList.push_back(toCopy);
-}
-
-void MutableObjectList::addThief(const RemoteDepartureEdit<Box>& toCopy)
-{
-    makeUnique();
-	data_->boxThiefList.push_back(toCopy);
-}
-
-void MutableObjectList::addExtra(const RemoteDepartureEdit<Box>& toCopy)
-{
-    makeUnique();
-	data_->boxExtraList.push_back(toCopy);
-}
-
-void MutableObjectList::addExtra(const RemoteDepartureEdit<Guy>& toCopy)
-{
-    makeUnique();
-	data_->guyExtraList.push_back(toCopy);
-}
-
-void MutableObjectList::add(const MutableObjectList& other)
-{
-    makeUnique();
-    data_->add(*other.data_);
-}
-
-void MutableObjectList::add(const ObjectList& other)
-{
-    makeUnique();
-    data_->add(*other.data_);
-}
-}//namespace hg
+#endif
+} //namespace hg

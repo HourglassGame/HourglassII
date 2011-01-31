@@ -11,13 +11,13 @@ namespace hg {
         Box(const Box& other, TimeDirection timeDirection, int pauseLevel);
         Box& operator=(const Box& other);
 
-        int getX() const {return data->x;}
-        int getY() const {return data->y;}
-        int getXspeed() const {return data->xspeed;}
-        int getYspeed() const {return data->yspeed;}
-        int getSize() const {return data->size;}
-        TimeDirection getTimeDirection() const {return data->timeDirection;}
-        int getPauseLevel() const {return data->pauseLevel;}
+        int getX() const {return x_;}
+        int getY() const {return y_;}
+        int getXspeed() const {return xspeed_;}
+        int getYspeed() const {return yspeed_;}
+        int getSize() const {return size_;}
+        TimeDirection getTimeDirection() const {return timeDirection_;}
+        int getPauseLevel() const {return pauseLevel_;}
 
         bool operator==(const Box& other) const;
         bool operator!=(const Box& other) const;
@@ -25,39 +25,15 @@ namespace hg {
         bool operator<(const Box& second) const;
 
     private:
-        void decrementCount();
 
-        struct Data;
-        mutable int* referenceCount;
-        Data* data;
+        int x_;
+        int y_;
+        int xspeed_;
+        int yspeed_;
+        int size_;
 
-        struct Data {
-            Data(int nx,
-                 int ny,
-                 int nxspeed,
-                 int nyspeed,
-                 int nsize,
-                 TimeDirection ntimeDirection,
-                 int npauseLevel) :
-            x(nx),
-            y(ny),
-            xspeed(nxspeed),
-            yspeed(nyspeed),
-            size(nsize),
-            timeDirection(ntimeDirection),
-            pauseLevel(npauseLevel)
-            {
-            }
-
-            int x;
-            int y;
-            int xspeed;
-            int yspeed;
-            int size;
-
-            TimeDirection timeDirection;
-            int pauseLevel;
-        };
+        TimeDirection timeDirection_;
+        int pauseLevel_;
     };
 }
 #endif //HG_BOX_H

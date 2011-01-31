@@ -1,7 +1,9 @@
 #include "Frame.h"
-#include "FramePtrUpdateSet.h"
+#include "FrameUpdateSet.h"
+#include <boost/foreach.hpp>
 #include <utility>
 #include <cassert>
+#define foreach BOOST_FOREACH
 namespace hg {
 Frame::Frame(unsigned int frameNumber, Universe* universe):
 frameNumber_(frameNumber),
@@ -52,7 +54,7 @@ Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, unsigned 
     if(it == subUniverses_.end())
     {
         it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
-        it->second.construct(this, initiatorID.timelineLength_);
+        it->second.construct(this, initiatorID.timelineLength_, it->first);
     }
     return it->second.getArbitraryFrame(frameNumber);
 }
@@ -62,13 +64,13 @@ Frame* Frame::entryChildFrame(const PauseInitiatorID& initiatorID, TimeDirection
     if(it == subUniverses_.end())
     {
         it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
-        it->second.construct(this, initiatorID.timelineLength_);
+        it->second.construct(this, initiatorID.timelineLength_, it->first);
     }
     return it->second.getEntryFrame(direction);
 }
-FramePtrUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture)
+FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture)
 {
-    FramePtrUpdateSet changedTimes;
+    FrameUpdateSet changedTimes;
 
     std::map<Frame*, ObjectList>::iterator ni(newDeparture.begin());
     const std::map<Frame*, ObjectList>::iterator nend(newDeparture.end());
@@ -118,7 +120,28 @@ end:
     departures_.swap(newDeparture);
     return changedTimes;
 }
-
+ObjectPtrList Frame::getPrePhysics() const
+{
+    ObjectPtrList retv;
+    foreach(const ArrivalMap::value_type& value, arrivals_) {
+        retv.add(*value.second);
+    }
+    retv.sort();
+    return retv;
+}
+ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const
+{
+    ObjectPtrList retv;
+    typedef std::map<Frame*, ObjectList>::value_type value_type;
+    foreach(const value_type& value, departures_) {
+        retv.add(value.second);
+    }
+    retv.sort();
+    return retv;
+}
+const PauseInitiatorID& Frame::getInitiatorID() const {
+    return universe_->getInitiatorID();
+}
 unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const
 {
     if (frameNumber_ == 0 && direction == REVERSE
@@ -132,6 +155,11 @@ unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, in
     }
 }
 
+void Frame::addArrival(Frame* source, ObjectList* arrival)
+{
+    arrivals_.insert(ArrivalMap::value_type(source, arrival));
+}
+
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 {
     bool didInsert(arrivals_.insert(toInsert));
@@ -143,6 +171,7 @@ void Frame::changeArrival(const ArrivalMap::value_type& toChange)
     if(arrivals_.find(access, toChange.first))
     {
         access->second = toChange.second;
+        return;
     }
     assert(false && "Should only call change when the element does exist");
 }

@@ -6,14 +6,14 @@ map_()
 {
 }
 
-void ConcurrentTimeMap::add(const FrameID& toAdd, TimeDirection direction)
+void ConcurrentTimeMap::add(Frame* toAdd, TimeDirection direction)
 {
     MapType::accessor acc;
     if (!map_.insert(acc, MapType::value_type(toAdd, direction))) {
         acc->second = direction;
     }
 }
-void ConcurrentTimeMap::remove(const FrameID& toRemove)
+void ConcurrentTimeMap::remove(Frame* toRemove)
 {
     map_.erase(toRemove);
 }

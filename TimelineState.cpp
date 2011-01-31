@@ -2,6 +2,10 @@
 
 #include "FrameUpdateSet.h"
 #include "DepartureMap.h"
+#include "ParallelForEach.h"
+#include "Frame.h"
+#include "FrameID.h"
+#include "ConcurrentFrameUpdateSet.h"
 
 #include <cassert>
 #include <algorithm>
@@ -9,127 +13,57 @@
 
 using namespace ::std;
 namespace hg {
-typedef TimeObjectListList::ListType::const_iterator Iterator;
+struct UpdateDeparturesFromTime
+{
+    UpdateDeparturesFromTime(ConcurrentFrameUpdateSet& framesWithChangedArrivals) :
+    framesWithChangedArrivals_(framesWithChangedArrivals)
+    {
+    }
+    void operator()(DepartureMap::value_type& newDeparture) const
+    {
+        framesWithChangedArrivals_.add(newDeparture.first->updateDeparturesFromHere(newDeparture.second));
+    }
+    ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
+};
 
 TimelineState::TimelineState(unsigned int timelineLength) :
-//permanentDepartureIndex(timeLength),
-arrivals(),
-departures()
+universe_(timelineLength)
 {
 }
 
-ObjectList TimelineState::Frame::getPrePhysics() const
+FrameUpdateSet TimelineState::updateWithNewDepartures(DepartureMap& newDepartures)
 {
-    return this_.getPrePhysics(time_);
+    ConcurrentFrameUpdateSet framesWithChangedArrivals;
+    parallel_for_each(newDepartures, UpdateDeparturesFromTime(framesWithChangedArrivals));
+    return framesWithChangedArrivals.merge();
 }
-FrameID TimelineState::Frame::getTime() const
+void TimelineState::addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList>& initialArrivals)
 {
-    return time_;
+    for (std::map<Frame*, ObjectList>::const_iterator it(initialArrivals.begin()), end(initialArrivals.end()); it != end; ++it) {
+        permanentDepartures_[it->first].add(it->second);
+        permanentDepartures_[it->first].sort();
+        it->first->addArrival(0, &(permanentDepartures_[it->first]));
+    }
 }
 
-TimelineState::Frame::Frame(const TimelineState& mapPtr, const FrameID& time) :
-time_(time),
-this_(mapPtr)
+Frame* TimelineState::getFrame(const FrameID& whichFrame)
 {
-}
-
-FrameUpdateSet TimelineState::updateWithNewDepartures(const DepartureMap& newDepartures)
-{
-    FrameUpdateSet newWaveFrames;
-    for(DepartureMap::const_iterator
-            it(newDepartures.begin()), end(newDepartures.end());
-            it != end;
-            ++it)
+    assert(universe_.getTimelineLength()==whichFrame.universe().timelineLength_);
+    Frame* parentFrame(0);
+    for (std::vector<SubUniverse>::const_iterator it(whichFrame.universe().nestTrain_.begin()), end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
     {
-        newWaveFrames.add(updateDeparturesFromTime(it->first, it->second));
-    }
-    return newWaveFrames;
-}
-
-TimelineState::Frame TimelineState::getFrame(const FrameID& whichFrame) const
-{
-    return Frame(*this, whichFrame);
-}
-
-void TimelineState::addArrivalsFromPermanentDepartureFrame(const TimeObjectListList& initialArrivals)
-{
-    for (TimeObjectListList::const_iterator it(initialArrivals.begin()), end(initialArrivals.end()); it != end; ++it) {
-        arrivals[it->first].addObjectList(FrameID(), it->second);
-    }
-}
-
-//returns which frames are changed
-FrameUpdateSet TimelineState::updateDeparturesFromTime(const FrameID& time, const TimeObjectListList& newDeparture)
-{
-    FrameUpdateSet changedTimes;
-
-    Iterator ni(newDeparture.begin());
-    const Iterator nend(newDeparture.end());
-    Iterator oi(departures[time].begin());
-    const Iterator oend(departures[time].end());
-
-    while (oi != oend) {
-        while (true) {
-            if (ni != nend) {
-                if (ni->first < oi->first) {
-                    arrivals.at(ni->first).insertObjectList(time, ni->second);
-                    changedTimes.addFrame(ni->first);
-                    ++ni;
-                }
-                else if (ni->first == oi->first) {
-                    if (ni->second != oi->second) {
-                        arrivals[ni->first].setObjectList(time, ni->second);
-                        changedTimes.addFrame(ni->first);
-                    }
-                    ++ni;
-                    break;
-                }
-                else {
-                    arrivals[oi->first].clearTime(time);
-                    changedTimes.addFrame(oi->first);
-                    break;
-                }
-            }
-            else {
-                while (oi != oend) {
-                    arrivals[oi->first].clearTime(time);
-                    changedTimes.addFrame(oi->first);
-                    ++oi;
-                }
-                goto end;
-            }
+        if (!parentFrame) {
+            parentFrame = universe_.getArbitraryFrame(it->initiatorFrame_);
         }
-        ++oi;
+        else {
+            parentFrame = parentFrame->arbitraryChildFrame((it-1)->pauseInitiatorID_, (it)->initiatorFrame_);
+        }
     }
-    while (ni != nend) {
-        arrivals[ni->first].insertObjectList(time, ni->second);
-        changedTimes.addFrame(ni->first);
-        ++ni;
-    }
-end:
-    departures[time] = newDeparture;
-    return changedTimes;
-}
-
-ObjectList TimelineState::getPostPhysics(const FrameID& time, const PauseInitiatorID& whichPrePause) const
-{
-    ::boost::unordered_map<FrameID, TimeObjectListList>::const_iterator it(departures.find(time));
-    if (it != departures.end()) {
-        return it->second.getFlattenedVersion(time, whichPrePause);
+    if (parentFrame) {
+        return parentFrame->arbitraryChildFrame(whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_, whichFrame.frame());
     }
     else {
-        return ObjectList();
-    }
-}
-
-ObjectList TimelineState::getPrePhysics(const FrameID& time) const
-{
-    ::boost::unordered_map<FrameID, TimeObjectListList>::const_iterator it(arrivals.find(time));
-    if (it != arrivals.end()) {
-        return it->second.getFlattenedVersion();
-    }
-    else {
-        return ObjectList();
+        return universe_.getArbitraryFrame(whichFrame.frame());
     }
 }
 }//namespace hg
