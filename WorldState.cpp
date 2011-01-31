@@ -132,7 +132,7 @@ std::vector<Frame*> WorldState::executeWorld()
     changedFrames.makeSpaceFor(frameUpdateSet_);
     parallel_for_each(returnSet, ExecuteFrame(*this, changedFrames));
     //boost::for_each(frameUpdateSet_, ExecuteFrame(*this, changedFrames));
-    frameUpdateSet_ = timeline_.updateWithNewDepartures(changedFrames);
+    timeline_.updateWithNewDepartures(changedFrames).swap(frameUpdateSet_);
     if (frameUpdateSet_.empty() && currentWinFrames_.size() == 1) {
         throw PlayerVictoryException();
     }
