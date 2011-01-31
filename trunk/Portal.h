@@ -5,9 +5,7 @@ namespace hg
 {
     class Portal
     {
-
     public:
-
         Portal(int x, int y, int xspeed, int yspeed, int width, int height, int index, TimeDirection timeDirection, int pauseLevel, int charges, bool active,
                int xDestination, int yDestination, int destinationIndex, int timeDestination, bool relativeTime);
         Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
@@ -15,22 +13,22 @@ namespace hg
         Portal(const Portal& other);
         Portal& operator=(const Portal& other);
 
-        inline int getX() const {return data->x;}
-        inline int getY() const {return data->y;}
-        inline int getXspeed() const {return data->xspeed;}
-        inline int getYspeed() const {return data->yspeed;}
-        inline int getWidth() const {return data->width;}
-        inline int getHeight() const {return data->height;}
-        inline int getIndex() const {return data->index;}
-        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
-        inline int getPauseLevel() const {return data->pauseLevel;}
-        inline int getCharges() const {return data->charges;}
-        inline bool getActive() const {return data->active;}
-        inline int getXdestination() const {return data->xDestination;}
-        inline int getYdestination() const {return data->yDestination;}
-        inline int getDestinationIndex() const {return data->destinationIndex;}
-        inline int getTimeDestination() const {return data->timeDestination;}
-        inline bool getRelativeTime() const {return data->relativeTime;}
+        int getX() const {return x_;}
+        int getY() const {return y_;}
+        int getXspeed() const {return xspeed_;}
+        int getYspeed() const {return yspeed_;}
+        int getWidth() const {return width_;}
+        int getHeight() const {return height_;}
+        int getIndex() const {return index_;}
+        TimeDirection getTimeDirection() const {return timeDirection_;}
+        int getPauseLevel() const {return pauseLevel_;}
+        int getCharges() const {return charges_;}
+        bool getActive() const {return active_;}
+        int getXdestination() const {return xDestination_;}
+        int getYdestination() const {return yDestination_;}
+        int getDestinationIndex() const {return destinationIndex_;}
+        int getTimeDestination() const {return timeDestination_;}
+        bool getRelativeTime() const {return relativeTime_;}
 
         bool operator==(const Portal& other) const;
         bool operator!=(const Portal& other) const;
@@ -38,67 +36,22 @@ namespace hg
         bool operator<(const Portal& second) const;
 
     private:
-        void decrementCount();
-
-        struct Data;
-        mutable int* referenceCount;
-        Data* data;
-
-        struct Data {
-            Data(
-                int nx,
-                int ny,
-                int nXspeed,
-                int nYspeed,
-                int nWidth,
-                int nHeight,
-                int nIndex,
-                TimeDirection nTimeDirection,
-                int npauseLevel,
-                int ncharges,
-                bool nactive,
-                int nxDestination,
-                int nyDestination,
-                int ndestinationIndex,
-                int ntimeDestination,
-                bool nrelativeTime
-                ) :
-            x(nx),
-            y(ny),
-            xspeed(nXspeed),
-            yspeed(nYspeed),
-            width(nWidth),
-            height(nHeight),
-            index(nIndex),
-            timeDirection(nTimeDirection),
-            pauseLevel(npauseLevel),
-            charges(ncharges),
-            active(nactive),
-            xDestination(nxDestination),
-            yDestination(nyDestination),
-            destinationIndex(ndestinationIndex),
-            timeDestination(ntimeDestination),
-            relativeTime(nrelativeTime)
-            {
-            }
-
-            int x;
-            int y;
-            int xspeed;
-            int yspeed;
-            int width;
-            int height;
-            int index;
-            TimeDirection timeDirection;
-            int pauseLevel;
-            int charges;
-            bool active;
-            int xDestination;
-            int yDestination;
-            int destinationIndex;
-            int timeDestination;
-            bool relativeTime;
-        };
+        int x_;
+        int y_;
+        int xspeed_;
+        int yspeed_;
+        int width_;
+        int height_;
+        int index_;
+        TimeDirection timeDirection_;
+        int pauseLevel_;
+        int charges_;
+        bool active_;
+        int xDestination_;
+        int yDestination_;
+        int destinationIndex_;
+        int timeDestination_;
+        bool relativeTime_;
     };
 }
 #endif //HG_PLATFORM_H

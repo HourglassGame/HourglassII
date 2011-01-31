@@ -2,12 +2,14 @@
 namespace hg {
 Universe::Universe() :
 initiatorFrame_(0),
-frames_()
+frames_(), 
+initiatorID_(0)
 {
 }
 Universe::Universe(const Universe& other) :
 initiatorFrame_(0),
-frames_()
+frames_(),
+initiatorID_(0)
 {
     //Ok to copy construct as long as there are no frames which know where the universe is 
     //and there are no frames which know where the frames in this universe are
@@ -16,10 +18,11 @@ frames_()
 //creates a top level universe
 Universe::Universe(unsigned int timelineLength) :
 initiatorFrame_(0),
-frames_()
+frames_(),
+initiatorID_(0)
 {
     assert(timelineLength > 0);
-    construct(initiatorFrame_, timelineLength);
+    construct(initiatorFrame_, timelineLength, *initiatorID_);
 }
 //returns initiatorFrame_
 Frame* Universe::getInitiatorFrame() const
@@ -53,15 +56,15 @@ unsigned int Universe::getTimelineLength() const
     assert(!frames_.empty());
     return frames_.size();
 }
-Universe::Universe(Frame* initiatorFrame, unsigned int timelineLength) :
+Universe::Universe(Frame* initiatorFrame, unsigned int timelineLength, const PauseInitiatorID& initiatorID) :
 initiatorFrame_(0),
 frames_()
 {
     assert(timelineLength > 0);
-    construct(initiatorFrame, timelineLength);
+    construct(initiatorFrame, timelineLength, initiatorID);
 }
 
-void Universe::construct(Frame* initiatorFrame, unsigned int timelineLength)
+void Universe::construct(Frame* initiatorFrame, unsigned int timelineLength, const PauseInitiatorID& initiatorID)
 {
     initiatorFrame_ = initiatorFrame;
     frames_.reserve(timelineLength);
@@ -69,5 +72,6 @@ void Universe::construct(Frame* initiatorFrame, unsigned int timelineLength)
     {
         frames_.push_back(Frame(i, this));
     }
+    initiatorID_ = &initiatorID;
 }
 }

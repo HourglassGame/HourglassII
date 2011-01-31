@@ -1,3 +1,4 @@
+#if 0
 #ifndef HG_OBJECT_LIST_DATA_H
 #define HG_OBJECT_LIST_DATA_H
 #include "Guy.h"
@@ -27,3 +28,4 @@ struct ObjectListData {
 };
 }
 #endif //HG_OBJECT_LIST_DATA_H
+#endif

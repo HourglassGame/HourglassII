@@ -16,6 +16,7 @@
 #include <vector>
 #include <map>
 namespace hg {
+class Frame;
 class ObjectList;
 class TimeObjectListList;
 class ConcurrentTimeMap;
@@ -30,63 +31,61 @@ public:
                     const TriggerSystem& nTriggerSystem);
 
     // executes frame and returns departures
-	TimeObjectListList executeFrame(const ObjectList& arrivals,
-                                    FrameID time,
+	std::map<Frame*, ObjectList> executeFrame(const ObjectPtrList& arrivals,
+                                    Frame* time,
                                     const ::std::vector<InputList>& playerInput,
                                     ConcurrentTimeMap& currentPlayerFramesAndDirections,
                                     ConcurrentTimeSet& nextPlayerFrames,
                                     ConcurrentTimeSet& winFrames) const;
 
 private:
-    typedef std::map<FrameID, MutableObjectList> NewDeparturesT;
+    typedef std::map<Frame*, ObjectList> NewDeparturesT;
+    
     struct BoxInfo {
         BoxInfo(Box nbox,
-                FrameID nTime,
-                bool nsupported) :
+                Frame* nTime) :
         info(nbox),
-        time(nTime),
-        supported(nsupported)
+        time(nTime)
         {}
         Box info;
-        FrameID time;
-        bool supported;
+        Frame* time;
     };
 
     struct GuyInfo {
         GuyInfo(Guy nGuy,
-                FrameID nTime) :
+                Frame* nTime) :
         info(nGuy),
         time(nTime)
         {}
         Guy info;
-        FrameID time;
+        Frame* time;
     };
 
-    void platformStep(const ::std::vector<Platform>& oldPlatformList,
+    void platformStep(const ::std::vector<const Platform*>& oldPlatformList,
                       std::vector<Platform>& nextPlatform,
-                      const std::vector<PlatformDestination>& platformDestinations,
-                      const FrameID& time) const;
+                      const std::vector<PlatformDestination>& pd,
+                      Frame* time) const;
 
-    void buttonChecks(  const ::std::vector<Platform>& oldPlatformList,
-                        const ::std::vector<Box>& oldBoxList,
-                        const ::std::vector<Guy>& oldGuyList,
-                        const ::std::vector<Button>& oldButtonList,
-                        std::vector<char>& nextButtonState,
-                        FrameID time) const;
+    void buttonChecks(  const ::std::vector<const Platform*>& oldPlatformList,
+                        const ::std::vector<const Box*>& oldBoxList,
+                        const ::std::vector<const Guy*>& oldGuyList,
+                        const ::std::vector<const Button*>& oldButtonList,
+                        std::vector<char>& nextButton,
+                        Frame* time) const;
 
     template <class Type, class TypeInfo> void BuildDepartureForComplexEntities(
                                     const ::std::vector<TypeInfo>& next,
-                                    const ::std::vector<RemoteDepartureEdit<Type> >& thief,
-                                    const ::std::vector<RemoteDepartureEdit<Type> >& extra,
+                                    const ::std::vector<const RemoteDepartureEdit<Type>* >& thief,
+                                    const ::std::vector<const RemoteDepartureEdit<Type>* >& extra,
                                     NewDeparturesT& newDepartures,
-                                    const FrameID time,
+                                    Frame* time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const;
 
     template <class Type> void BuildDepartureForReallySimpleThing(
                                     const ::std::vector<Type>& next,
                                     NewDeparturesT& newDepartures,
-                                    const FrameID time,
+                                    Frame* time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const;
 
@@ -95,37 +94,37 @@ private:
                         const ::std::vector<Portal>& nextPortal,
                         const ::std::vector<Button>& nextButton,
                         const ::std::vector<GuyInfo>& nextGuy,
-                        const ::std::vector<RemoteDepartureEdit<Box> >& boxThief,
-                        const ::std::vector<RemoteDepartureEdit<Box> >& boxExtra,
-                        const ::std::vector<RemoteDepartureEdit<Guy> >& guyExtra,
+                        const ::std::vector<const RemoteDepartureEdit<Box>* >& boxThief,
+                        const ::std::vector<const RemoteDepartureEdit<Box>* >& boxExtra,
+                        const ::std::vector<const RemoteDepartureEdit<Guy>* >& guyExtra,
                         NewDeparturesT& newDepartures,
-                        const FrameID time,
+                        Frame* time,
                         std::vector<PauseInitiatorID>& pauseTimes
                         ) const;
 
     void buttonPositionUpdate(
         const ::std::vector<Platform>& nextPlatform,
         const ::std::vector<char>& nextButtonState,
-        const ::std::vector<Button>& oldButtonList,
+        const ::std::vector<const Button*>& oldButtonList,
         ::std::vector<Button>& nextButton,
-        FrameID time
+        Frame* time
     ) const;
 
     void portalPositionUpdate(
         const std::vector<Platform>& nextPlatform,
-        const ::std::vector<Portal>& oldPortalList,
+        const ::std::vector<const Portal*>& oldPortalList,
         std::vector<Portal>& nextPortal,
-        FrameID time
+        Frame* time
     ) const;
 
-	void crappyBoxCollisionAlogorithm(  const ::std::vector<Box>& oldBoxList,
+	void crappyBoxCollisionAlogorithm(  const ::std::vector<const Box*>& oldBoxList,
                                         ::std::vector<BoxInfo>& nextBox,
                                         std::vector<Platform>& nextPlatform,
-                                        const FrameID time
+                                        Frame* time
                                         ) const;
 
-    void guyStep(   const ::std::vector<Guy>& oldGuyList,
-                    FrameID time,
+    void guyStep(   const ::std::vector<const Guy*>& oldGuyList,
+                    Frame* time,
                     const ::std::vector<InputList>& playerInput,
                     std::vector<GuyInfo>& nextGuy,
                     ::std::vector<BoxInfo>& nextBox,

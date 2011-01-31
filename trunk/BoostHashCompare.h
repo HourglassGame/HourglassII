@@ -1,6 +1,7 @@
 #ifndef HG_BOOST_HASH_COMPARE
 #define HG_BOOST_HASH_COMPARE
 #include <cstdlib>
+#include <boost/functional/hash.hpp>
 namespace hg {
 template <typename T>
 class BoostHashCompare
@@ -15,7 +16,7 @@ class BoostHashCompare
     }
     size_t hash( const T& k ) const
     {
-        return hash_value(k);
+        return boost::hash<T>()(k);
     }
 };
 }

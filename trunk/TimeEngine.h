@@ -5,8 +5,6 @@
 #include "WorldState.h"
 #include "TimelineState.h"
 
-#include <boost/tuple/tuple.hpp>
-
 #include <vector>
 
 namespace hg {
@@ -15,9 +13,19 @@ class ObjectList;
 class TimeObjectListList;
 class ParadoxException;
 class Level;
+class Frame;
 class TimeEngine
 {
 public:
+    typedef ::std::vector<std::vector<Frame*> > FrameListList;
+    struct RunResult
+    {
+        Frame* currentPlayerFrame;
+        Frame* nextPlayerFrame;
+        FrameListList updatedFrames;
+        TimeDirection currentPlayerDirection;
+    };
+    
     /*********************************************************************************************
      * Constructs a new TimeEngine with the given timeline length, wall, wall size and gravity
      * wall size is the length along one of the sides of the square wall segments given by wallmap
@@ -31,23 +39,22 @@ public:
      */
 	TimeEngine(const Level& level);
 
-    typedef ::std::vector<std::vector<FrameID> > FrameListList;
+
 	/************************
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
-    ::boost::tuple<FrameID, FrameID, FrameListList, TimeDirection> runToNextPlayerFrame(const InputList& newInputData);
+    RunResult runToNextPlayerFrame(const InputList& newInputData);
 	/****************************
     * Returns an object list containing the state of whichFrame after physics was applied.
     * This function is always run after the runToNextPlayerFrame function in order to
     * query the state of particular frames.
     */
-    ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
-    
+    //ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
+    Frame* getFrame(const FrameID& whichFrame);
     ::std::vector<InputList> getReplayData() const;
 private:
-    void executeWorld(WorldState& currentState) const;
     unsigned int speedOfTime;
     //state of world at end of last executed frame
     WorldState worldState;

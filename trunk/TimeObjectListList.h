@@ -1,3 +1,4 @@
+#if 0
 #ifndef HG_TIME_OBJECT_LIST_LIST_H
 #define HG_TIME_OBJECT_LIST_LIST_H
 
@@ -47,3 +48,4 @@ private:
 void swap(TimeObjectListList& l, TimeObjectListList& r);
 }
 #endif //HG_TIME_OBJECT_LIST_LIST_H
+#endif

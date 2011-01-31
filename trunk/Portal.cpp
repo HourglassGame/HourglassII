@@ -4,64 +4,103 @@
 #include <iostream>
 
 namespace hg {
-Portal::Portal(int nX,
-        int nY,
-        int nXspeed,
-        int nYspeed,
-        int nWidth,
-        int nHeight,
-        int nIndex,
-        TimeDirection nTimeDirection,
-        int nPauseLevel,
-        int ncharges,
-        bool nactive,
-        int nxDestination,
-        int nyDestination,
-        int ndestinationIndex,
-        int ntimeDestination,
-        bool nrelativeTime) :
-referenceCount(new int(1)),
-data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nIndex,nTimeDirection, nPauseLevel, ncharges,
-              nactive, nxDestination, nyDestination, ndestinationIndex, ntimeDestination, nrelativeTime))
+Portal::Portal(int x,
+               int y,
+               int xspeed,
+               int yspeed,
+               int width,
+               int height,
+               int index,
+               TimeDirection timeDirection,
+               int pauseLevel,
+               int charges,
+               bool active,
+               int xDestination,
+               int yDestination,
+               int destinationIndex,
+               int timeDestination,
+               bool relativeTime) :
+x_(x),
+y_(y),
+xspeed_(xspeed),
+yspeed_(yspeed),
+width_(width),
+height_(height),
+index_(index),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel),
+charges_(charges),
+active_(active),
+xDestination_(xDestination),
+yDestination_(yDestination),
+destinationIndex_(destinationIndex),
+timeDestination_(timeDestination),
+relativeTime_(relativeTime)
 {
 }
 
-Portal::Portal(const Portal& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getWidth(), other.getHeight(), other.getIndex(), nTimeDirection, nPauseLevel,
-              getCharges(), other.getActive(), other.getXdestination(), other.getYdestination(),
-			  other.getDestinationIndex(), other.getTimeDestination(), other.getRelativeTime() )
-              )
+Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLevel) :
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+width_(other.width_),
+height_(other.height_),
+index_(other.index_),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel),
+charges_(other.charges_),
+active_(other.active_),
+xDestination_(other.xDestination_),
+yDestination_(other.yDestination_),
+destinationIndex_(other.destinationIndex_),
+timeDestination_(other.timeDestination_),
+relativeTime_(other.relativeTime_)
 {
 }
 
 Portal::Portal(const Portal& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+width_(other.width_),
+height_(other.height_),
+index_(other.index_),
+timeDirection_(other.timeDirection_),
+pauseLevel_(other.pauseLevel_),
+charges_(other.charges_),
+active_(other.active_),
+xDestination_(other.xDestination_),
+yDestination_(other.yDestination_),
+destinationIndex_(other.destinationIndex_),
+timeDestination_(other.timeDestination_),
+relativeTime_(other.relativeTime_)
 {
 }
 
 Portal::~Portal()
 {
-    decrementCount();
-}
-
-void Portal::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 Portal& Portal::operator=(const Portal& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
-    }
+    x_ = other.x_;
+    y_ = other.y_;
+    xspeed_ = other.xspeed_;
+    yspeed_ = other.yspeed_;
+    width_ = other.width_;
+    height_ = other.height_;
+    index_ = other.index_;
+    timeDirection_ = other.timeDirection_;
+    pauseLevel_ = other.pauseLevel_;
+    charges_ = other.charges_;
+    active_ = other.active_;
+    xDestination_ = other.xDestination_;
+    yDestination_ = other.yDestination_;
+    destinationIndex_ = other.destinationIndex_;
+    timeDestination_ = other.timeDestination_;
+    relativeTime_ = other.relativeTime_;
     return *this;
 }
 
@@ -72,26 +111,25 @@ bool Portal::operator!=(const Portal& other) const
 
 bool Portal::operator==(const Portal& other) const
 {
-	return data->index == other.data->index
-            && (data->x == other.data->x)
-            && (data->y == other.data->y)
-            && (data->xspeed == other.data->xspeed)
-            && (data->yspeed == other.data->yspeed)
-            && (data->width == other.data->width)
-            && (data->height == other.data->height)
-            && (data->pauseLevel == other.data->pauseLevel)
-            && (data->charges == other.data->charges)
-            && (data->active == other.data->active)
-            && (data->xDestination  == other.data->xDestination)
-            && (data->yDestination == other.data->yDestination)
-            && (data->destinationIndex == other.data->destinationIndex)
-            && (data->timeDestination == other.data->timeDestination)
-            && (data->relativeTime == other.data->relativeTime)
-            ;
+    return (index_ == other.index_)
+        && (x_ == other.x_)
+        && (y_ == other.y_)
+        && (xspeed_ == other.xspeed_)
+        && (yspeed_ == other.yspeed_)
+        && (pauseLevel_ == other.pauseLevel_)
+        && (charges_ == other.charges_)
+        && (active_ == other.active_)
+        && (destinationIndex_ == other.destinationIndex_)
+        && (timeDestination_ == other.timeDestination_)
+        && (relativeTime_ == other.relativeTime_)
+        && (xDestination_  == other.xDestination_)
+        && (yDestination_ == other.yDestination_)
+        && (width_ == other.width_)
+        && (height_ == other.height_);
 }
 
 bool Portal::operator<(const Portal& other) const
 {
-    return data->index < other.data->index;
+    return index_ < other.index_;
 }
 }

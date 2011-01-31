@@ -60,6 +60,7 @@ struct UniverseID {
     bool operator==(const UniverseID& other) const;
     bool operator<(const UniverseID& other) const;
 private:
+    friend class TimelineState;
     friend ::std::size_t hash_value(const UniverseID& toHash);
     unsigned int timelineLength_;
     //nestTrain_[0] is the least nested SubUniverse, and nestTrain_[nestTrain_.size()-1] is the most nested (bottom level)

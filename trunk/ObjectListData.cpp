@@ -1,3 +1,4 @@
+#if 0
 #include "ObjectListData.h"
 
 #include <boost/foreach.hpp>
@@ -58,8 +59,17 @@ void ObjectListData::sortElements()
                                                                      "equal objectLists being found to be different");
 	sort(boxList.begin(), boxList.end());
 	sort(buttonList.begin(), buttonList.end());
+    assert(containsNoButtonsWithEqualIndices(buttonList) && "If the list contains buttons with equal index then "
+                                                                     "the sort order is non-deterministic, potentially leading "
+                                                                     "equal objectLists being found to be different");
 	sort(platformList.begin(), platformList.end());
+    assert(containsNoPlatformsWithEqualIndices(platformList) && "If the list contains platforms with equal index then "
+                                                                     "the sort order is non-deterministic, potentially leading "
+                                                                     "equal objectLists being found to be different");
 	sort(portalList.begin(), portalList.end());
+    assert(containsNoPortalsWithEqualIndices(portalList) && "If the list contains portals with equal index then "
+                                                                     "the sort order is non-deterministic, potentially leading "
+                                                                     "equal objectLists being found to be different");
 	sort(boxThiefList.begin(), boxThiefList.end());
 	sort(guyExtraList.begin(), guyExtraList.end());
 	sort(boxExtraList.begin(), boxExtraList.end());
@@ -77,3 +87,4 @@ void ObjectListData::add(const ObjectListData& other)
     boxExtraList.insert(boxExtraList.end(),other.boxExtraList.begin(),other.boxExtraList.end());
 }
 }//namespace hg
+#endif

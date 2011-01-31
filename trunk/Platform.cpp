@@ -4,53 +4,62 @@
 #include <iostream>
 
 namespace hg {
-Platform::Platform(int nX,
-         int nY,
-         int nXspeed,
-         int nYspeed,
-         int nWidth,
-         int nHeight,
-         int nIndex,
-         TimeDirection nTimeDirection,
-         int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(nX,nY,nXspeed,nYspeed,nWidth,nHeight, nIndex,nTimeDirection, nPauseLevel))
+Platform::Platform(int x, int y, int xspeed, int yspeed, 
+                   int width, int height, int index, 
+                   TimeDirection timeDirection, int pauseLevel) :
+x_(x),
+y_(y),
+xspeed_(xspeed),
+yspeed_(yspeed),
+width_(width),
+height_(height),
+index_(index),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel)
 {
 }
 
-Platform::Platform(const Platform& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getWidth(), other.getHeight(), other.getIndex(), nTimeDirection, nPauseLevel))
+Platform::Platform(const Platform& other, hg::TimeDirection timeDirection, int pauseLevel) :
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+width_(other.width_),
+height_(other.height_),
+index_(other.index_),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel)
 {
 }
 
 Platform::Platform(const Platform& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+width_(other.width_),
+height_(other.height_),
+index_(other.index_),
+timeDirection_(other.timeDirection_),
+pauseLevel_(other.pauseLevel_)
 {
 }
 
 Platform::~Platform()
 {
-    decrementCount();
-}
-
-void Platform::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 Platform& Platform::operator=(const Platform& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
-    }
+    x_ = other.x_;
+    y_ = other.y_;
+    xspeed_ = other.xspeed_;
+    yspeed_ = other.yspeed_;
+    width_ = other.width_;
+    height_ = other.height_;
+    index_ = other.index_;
+    timeDirection_ = other.timeDirection_;
+    pauseLevel_ = other.pauseLevel_;
     return *this;
 }
 
@@ -61,18 +70,18 @@ bool Platform::operator!=(const Platform& other) const
 
 bool Platform::operator==(const Platform& other) const
 {
-	return data->index == other.data->index
-            && (data->x == other.data->x)
-            && (data->y == other.data->y)
-            && (data->xspeed == other.data->xspeed)
-            && (data->yspeed == other.data->yspeed)
-            && (data->width == other.data->width)
-            && (data->height == other.data->height)
-            && (data->pauseLevel == other.data->pauseLevel);
+	return (index_ == other.index_)
+        && (x_ == other.x_)
+        && (y_ == other.y_)
+        && (xspeed_ == other.xspeed_)
+        && (yspeed_ == other.yspeed_)
+        && (pauseLevel_ == other.pauseLevel_)
+        && (width_ == other.width_)
+        && (height_ == other.height_);
 }
 
 bool Platform::operator<(const Platform& other) const
 {
-    return data->index < other.data->index;
+    return index_ < other.index_;
 }
 }

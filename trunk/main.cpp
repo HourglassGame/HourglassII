@@ -1,7 +1,6 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include "ObjectList.h"
 #include "TimeEngine.h"
 #include "PlayerVictoryException.h"
 #include "Hg_Input.h"
@@ -98,14 +97,14 @@ using namespace ::std;
 using namespace ::sf;
 using namespace ::boost;
 namespace {
-    void Draw(RenderWindow& target, const ObjectList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection);
-    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameID& playerFrame);
+    void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection);
+    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, Frame* playerFrame);
     void DrawWall(RenderTarget& target, const ::boost::multi_array<bool, 2>& wallData);
-    void DrawBoxes(RenderTarget& target, const vector<Box>& boxData, TimeDirection&);
-    void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection&);
-    void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection);
-    void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection);
-    void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDirection& playerDirection);
+    void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection&);
+    void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection&);
+    void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection& playerDirection);
+    void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection& playerDirection);
+    void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection& playerDirection);
 
     ::boost::multi_array<bool, 2> MakeWall();
     Level MakeLevel(const ::boost::multi_array<bool, 2>& wallData);
@@ -151,28 +150,20 @@ int main()
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         try{
-            tuple<FrameID, FrameID, TimeEngine::FrameListList, TimeDirection> waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-            if (waveInfo.get<0>().isValidFrame()) {
+            TimeEngine::RunResult waveInfo = timeEngine.runToNextPlayerFrame(input.AsInputList());
+            if (waveInfo.currentPlayerFrame) {
                 Draw
                 (
                     app,
-                    timeEngine.getPostPhysics
-                    (
-                        waveInfo.get<0>(),
-                        waveInfo.get<1>().universe().pauseDepth() == waveInfo.get<0>().universe().pauseDepth()
-                            ?
-                            PauseInitiatorID(pauseinitiatortype::INVALID,0,0)
-                            :
-                            waveInfo.get<1>().universe().initiatorID()
-                    ),
+                    waveInfo.currentPlayerFrame->getPostPhysics(),
                     wall,
-                    waveInfo.get<3>()
+                    waveInfo.currentPlayerDirection
                 );
             }
             else {
-                Draw(app, timeEngine.getPostPhysics(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800),PauseInitiatorID(pauseinitiatortype::INVALID,0,0)), wall, waveInfo.get<3>());
+                Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800))->getPostPhysics(), wall, waveInfo.currentPlayerDirection);
             }
-            DrawTimeline(app, waveInfo.get<2>(), waveInfo.get<0>());
+            DrawTimeline(app, waveInfo.updatedFrames, waveInfo.currentPlayerFrame);
         }
         catch (hg::PlayerVictoryException& playerWon) {
             cout << "Congratulations, a winner is you!\n";
@@ -190,6 +181,7 @@ int main()
         app.Display();
     }
     }
+    #if 0
     {
 
     ::boost::multi_array<bool, 2> wall(MakeWall());
@@ -274,11 +266,12 @@ int main()
     cout << "best fps: " << *max_element(fpses.begin(), fpses.end()) << "\n";
     cout << "worst fps: " << *min_element(fpses.begin(), fpses.end()) << "\n";
     }
+    #endif
     return EXIT_SUCCESS;
 }
 
 namespace  {
-void Draw(RenderWindow& target, const ObjectList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection)
+void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection)
 {
     DrawWall(target, wall);
     DrawPortals(target, frame.getPortalListRef(), playerDirection);
@@ -311,66 +304,66 @@ void DrawWall(sf::RenderTarget& target, const ::boost::multi_array<bool, 2>& wal
     }
 }
 
-void DrawBoxes(RenderTarget& target, const vector<Box>& boxList, TimeDirection& playerDirection)
+void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxList, TimeDirection& playerDirection)
 {
-    foreach(const Box& box, boxList) {
-        if (playerDirection == box.getTimeDirection())
+    foreach(const Box* box, boxList) {
+        if (playerDirection == box->getTimeDirection())
         {
              target.Draw(Shape::Rectangle(
-                box.getX()/100,
-                box.getY()/100,
-                (box.getX()+ box.getSize())/100,
-                (box.getY()+box.getSize())/100,
+                box->getX()/100,
+                box->getY()/100,
+                (box->getX()+ box->getSize())/100,
+                (box->getY()+box->getSize())/100,
                 Color(255,0,255))
             );
         }
         else
         {
-            int x = box.getX()-box.getXspeed();
-            int y = box.getY()-box.getYspeed();
+            int x = box->getX()-box->getXspeed();
+            int y = box->getY()-box->getYspeed();
             target.Draw(Shape::Rectangle(
                 x/100,
                 y/100,
-                (x+ box.getSize())/100,
-                (y+box.getSize())/100,
+                (x+ box->getSize())/100,
+                (y+box->getSize())/100,
                 Color(0,255,0))
             );
         }
     }
 }
 
-void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& playerDirection)
+void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection& playerDirection)
 {
-    foreach(const Guy& guy, guyList) {
-        if (guy.getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
+    foreach(const Guy* guy, guyList) {
+        if (guy->getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
         {
             int x,y;
             Color guyColor;
-            if (playerDirection == guy.getTimeDirection())
+            if (playerDirection == guy->getTimeDirection())
             {
-                x = guy.getX();
-                y = guy.getY();
+                x = guy->getX();
+                y = guy->getY();
                 guyColor = Color(150,150,0);
             }
             else
             {
-                x = guy.getX()-guy.getXspeed();
-                y = guy.getY()-guy.getYspeed();
+                x = guy->getX()-guy->getXspeed();
+                y = guy->getY()-guy->getYspeed();
                 guyColor = Color(0,0,150);
             }
 
             target.Draw(Shape::Rectangle(
                 x/100,
                 y/100,
-                (x+ guy.getWidth())/100,
-                (y+guy.getHeight())/100,
+                (x+ guy->getWidth())/100,
+                (y+guy->getHeight())/100,
                 guyColor)
             );
 
-            if (guy.getBoxCarrying())
+            if (guy->getBoxCarrying())
             {
                 Color boxColor;
-                if (playerDirection == guy.getBoxCarryDirection())
+                if (playerDirection == guy->getBoxCarryDirection())
                 {
                     boxColor = Color(150,0,150);
                 }
@@ -380,9 +373,9 @@ void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& p
                 }
 
                 target.Draw(Shape::Rectangle(
-                    (x + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
-                    (y - guy.getBoxCarrySize())/100,
-                    (x + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
+                    (x + guy->getWidth()/2 - guy->getBoxCarrySize()/2)/100,
+                    (y - guy->getBoxCarrySize())/100,
+                    (x + guy->getWidth()/2 + guy->getBoxCarrySize()/2)/100,
                     y/100,
                     boxColor)
                 );
@@ -391,12 +384,12 @@ void DrawGuys(RenderTarget& target, const vector<Guy>& guyList, TimeDirection& p
     }
 }
 
-void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDirection& playerDirection)
+void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection& playerDirection)
 {
-     foreach(const Button& button, buttonList)
+     foreach(const Button* button, buttonList)
      {
         Color buttonColor;
-        if (button.getState())
+        if (button->getState())
         {
             buttonColor = Color(150,255,150);
         }
@@ -406,15 +399,15 @@ void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDir
         }
 
         int x,y;
-        if (playerDirection == button.getTimeDirection())
+        if (playerDirection == button->getTimeDirection())
         {
-            x = button.getX();
-            y = button.getY();
+            x = button->getX();
+            y = button->getY();
         }
         else
         {
-            x = button.getX()-button.getXspeed();
-            y = button.getY()-button.getYspeed();
+            x = button->getX()-button->getXspeed();
+            y = button->getY()-button->getYspeed();
         }
 
         target.Draw(Shape::Rectangle(
@@ -427,24 +420,24 @@ void DrawButtons(RenderTarget& target, const vector<Button>& buttonList, TimeDir
      }
 }
 
-void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, TimeDirection& playerDirection)
+void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection& playerDirection)
 {
 
-     foreach(const Platform& platform, platformList)
+     foreach(const Platform* platform, platformList)
      {
         int x,y;
 
         Color platformColor;
-        if (playerDirection == platform.getTimeDirection())
+        if (playerDirection == platform->getTimeDirection())
         {
-            x = platform.getX();
-            y = platform.getY();
+            x = platform->getX();
+            y = platform->getY();
             platformColor = Color(50,0,0);
         }
         else
         {
-            x = platform.getX()-platform.getXspeed();
-            y = platform.getY()-platform.getYspeed();
+            x = platform->getX()-platform->getXspeed();
+            y = platform->getY()-platform->getYspeed();
             platformColor = Color(0,0,50);
         }
         //cout << x << " " << y << " " << platform.getXspeed() << " " << platform.getYspeed() << endl;
@@ -452,57 +445,58 @@ void DrawPlatforms(RenderTarget& target, const vector<Platform>& platformList, T
         target.Draw(Shape::Rectangle(
             x/100,
             y/100,
-            (x+platform.getWidth())/100,
-            (y+platform.getHeight())/100,
+            (x+platform->getWidth())/100,
+            (y+platform->getHeight())/100,
             platformColor)
         );
      }
 }
 
-void DrawPortals(RenderTarget& target, const vector<Portal>& portalList, TimeDirection& playerDirection)
+void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection& playerDirection)
 {
 
-     foreach(const Portal& portal, portalList)
+     foreach(const Portal* portal, portalList)
      {
         int x,y;
 
         Color portalColor;
-        if (playerDirection == portal.getTimeDirection())
+        if (playerDirection == portal->getTimeDirection())
         {
-            x = portal.getX();
-            y = portal.getY();
+            x = portal->getX();
+            y = portal->getY();
             portalColor = Color(120,120,120);
         }
         else
         {
-            x = portal.getX()-portal.getXspeed();
-            y = portal.getY()-portal.getYspeed();
+            x = portal->getX()-portal->getXspeed();
+            y = portal->getY()-portal->getYspeed();
             portalColor = Color(120,120,120);
         }
 
         target.Draw(Shape::Rectangle(
             x/100,
             y/100,
-            (x+portal.getWidth())/100,
-            (y+portal.getHeight())/100,
+            (x+portal->getWidth())/100,
+            (y+portal->getHeight())/100,
             portalColor)
         );
      }
 }
 
-void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameID& playerFrame)
+void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, Frame* playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
-    foreach(const std::vector<FrameID>& lists, waves) {
-        foreach (FrameID frame, lists) {
-            if (frame.isValidFrame()) {
-                if (!pixelsWhichHaveBeenDrawnIn[static_cast<unsigned int> ((frame.frame()/10800.f)*640)]) {
-                    target.Draw(Shape::Rectangle((frame.frame()/10800.f)*640,
+    foreach(const std::vector<Frame*>& lists, waves) {
+        foreach (Frame* frame, lists) {
+            if (frame) {
+
+                if (!pixelsWhichHaveBeenDrawnIn[static_cast<unsigned int> ((frame->getFrameNumber()/10800.f)*640)]) {
+                    target.Draw(Shape::Rectangle((frame->getFrameNumber()/10800.f)*640,
                                                 10,
-                                                (frame.frame()/10800.f)*640+1,
+                                                (frame->getFrameNumber()/10800.f)*640+1,
                                                 25,
                                                 Color(250,0,0)));
-                    pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame.frame()/10800.f)*640)] = true;
+                    pixelsWhichHaveBeenDrawnIn[static_cast<int> ((frame->getFrameNumber()/10800.f)*640)] = true;
                 }
             }
             else {
@@ -510,10 +504,10 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameI
             }
         }
     }
-    if(playerFrame.isValidFrame()) {
-        target.Draw(Shape::Rectangle((playerFrame.frame()/10800.f)*640-1,
+    if(playerFrame) {
+        target.Draw(Shape::Rectangle((playerFrame->getFrameNumber()/10800.f)*640-1,
                                              10,
-                                             (playerFrame.frame()/10800.f)*640+2,
+                                             (playerFrame->getFrameNumber()/10800.f)*640+2,
                                              25,
                                              Color(200,200,0)));
     }
@@ -585,12 +579,12 @@ void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, FrameI
 
 Level MakeLevel(const ::boost::multi_array<bool, 2>& wall)
 {
-    MutableObjectList newObjectList;
+    ObjectList newObjectList;
     newObjectList.add(Box(32400, 10000, 0, 0, 3200, FORWARDS, 0));
     //newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, INVALID, 0, FORWARDS, 0, 0, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, INVALID, 0, FORWARDS, 0, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
     newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false));

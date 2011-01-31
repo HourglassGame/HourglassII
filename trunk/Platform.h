@@ -14,15 +14,15 @@ namespace hg
         Platform(const Platform& other);
         Platform& operator=(const Platform& other);
 
-        inline int getX() const {return data->x;}
-        inline int getY() const {return data->y;}
-        inline int getXspeed() const {return data->xspeed;}
-        inline int getYspeed() const {return data->yspeed;}
-        inline int getWidth() const {return data->width;}
-        inline int getHeight() const {return data->height;}
-        inline int getIndex() const {return data->index;}
-        inline TimeDirection getTimeDirection() const {return data->timeDirection;}
-        inline int getPauseLevel() const {return data->pauseLevel;}
+        int getX() const {return x_;}
+        int getY() const {return y_;}
+        int getXspeed() const {return xspeed_;}
+        int getYspeed() const {return yspeed_;}
+        int getWidth() const {return width_;}
+        int getHeight() const {return height_;}
+        int getIndex() const {return index_;}
+        TimeDirection getTimeDirection() const {return timeDirection_;}
+        int getPauseLevel() const {return pauseLevel_;}
 
         bool operator==(const Platform& other) const;
         bool operator!=(const Platform& other) const;
@@ -30,45 +30,15 @@ namespace hg
         bool operator<(const Platform& second) const;
 
     private:
-        void decrementCount();
-
-        struct Data;
-        mutable int* referenceCount;
-        Data* data;
-
-        struct Data {
-            Data(
-                int nx,
-                int ny,
-                int nXspeed,
-                int nYspeed,
-                int nWidth,
-                int nHeight,
-                int nIndex,
-                TimeDirection nTimeDirection,
-                int npauseLevel) :
-            x(nx),
-            y(ny),
-            xspeed(nXspeed),
-            yspeed(nYspeed),
-            width(nWidth),
-            height(nHeight),
-            index(nIndex),
-            timeDirection(nTimeDirection),
-            pauseLevel(npauseLevel)
-            {
-            }
-
-            int x;
-            int y;
-            int xspeed;
-            int yspeed;
-            int width;
-            int height;
-            int index;
-            TimeDirection timeDirection;
-            int pauseLevel;
-        };
+        int x_;
+        int y_;
+        int xspeed_;
+        int yspeed_;
+        int width_;
+        int height_;
+        int index_;
+        TimeDirection timeDirection_;
+        int pauseLevel_;
     };
 }
 #endif //HG_PLATFORM_H

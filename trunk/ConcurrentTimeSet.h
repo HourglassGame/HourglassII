@@ -4,7 +4,7 @@
 //#include <boost/unordered_set.hpp>
 #include <tbb/concurrent_hash_map.h>
 #include "BoostHashCompare.h"
-#include "FrameID.h"
+#include "Frame.h"
 namespace hg {/*
     class ConcurrentTimeSet {
         typedef boost::unordered_set<FrameID> SetType;
@@ -96,13 +96,13 @@ namespace hg {/*
 
     class ConcurrentTimeSet {
         //typedef boost::unordered_set<FrameID> SetType;
-        typedef tbb::concurrent_hash_map<FrameID, char, BoostHashCompare<FrameID> > SetType;
+        typedef tbb::concurrent_hash_map<Frame*, char, BoostHashCompare<Frame*> > SetType;
         public:
         ConcurrentTimeSet();
         //Must never try to add or remove a particular frame concurrently,
         //only has safe concurrent access when called with different frames
-        void add(const FrameID& toAdd);
-        void remove(const FrameID& toRemove);
+        void add(Frame* toAdd);
+        void remove(Frame* toRemove);
         void clear() { set_.clear(); }
         bool empty() const { return set_.empty(); }
         size_t size() const { return set_.size(); }

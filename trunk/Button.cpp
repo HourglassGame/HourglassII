@@ -1,45 +1,56 @@
 #include "Button.h"
 
 namespace hg {
-Button::Button(int nX, int nY, int nxspeed, int nyspeed, int index, bool state, hg::TimeDirection nTimeDirection, int npauseLevel) :
-referenceCount(new int(1)),
-data(new Data(nX, nY, nxspeed, nyspeed, index, state, nTimeDirection, npauseLevel))
+Button::Button(int x, int y, int xspeed, int yspeed, int index, bool state, TimeDirection timeDirection, int pauseLevel) :
+x_(x),
+y_(y),
+xspeed_(xspeed),
+yspeed_(yspeed),
+index_(index),
+state_(state),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel)
 {
 }
 
-Button::Button(const Button& other, hg::TimeDirection nTimeDirection, int nPauseLevel) :
-referenceCount(new int(1)),
-data(new Data(other.getX(), other.getY(), other.getXspeed(), other.getYspeed(), other.getIndex(), other.getState(), nTimeDirection, nPauseLevel))
+Button::Button(const Button& other, hg::TimeDirection timeDirection, int pauseLevel) :
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+index_(other.index_),
+state_(other.state_),
+timeDirection_(timeDirection),
+pauseLevel_(pauseLevel)
 {
 }
 
 Button::Button(const Button& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+x_(other.x_),
+y_(other.y_),
+xspeed_(other.xspeed_),
+yspeed_(other.yspeed_),
+index_(other.index_),
+state_(other.state_),
+timeDirection_(other.timeDirection_),
+pauseLevel_(other.pauseLevel_)
 {
 }
 
 Button::~Button()
 {
-    decrementCount();
-}
-
-void Button::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 Button& Button::operator=(const Button& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
-    }
+    x_ = other.x_;
+    y_ = other.y_;
+    xspeed_ = other.xspeed_;
+    yspeed_ = other.yspeed_;
+    index_ = other.index_;
+    state_ = other.state_;
+    timeDirection_ = other.timeDirection_;
+    pauseLevel_ = other.pauseLevel_;
     return *this;
 }
 
@@ -50,19 +61,18 @@ bool Button::operator!=(const Button& other) const
 
 bool Button::operator==(const Button& other) const
 {
-	return data == other.data ||
-        ((data->state == other.data->state)
-        && (data->x == other.data->x)
-        && (data->y == other.data->y)
-        && (data->xspeed == other.data->xspeed)
-        && (data->yspeed == other.data->yspeed)
-        && (data->index == other.data->index)
-        && (data->timeDirection == other.data->timeDirection)
-        && (data->pauseLevel == other.data->pauseLevel));
+	return (state_ == other.state_)
+        && (x_ == other.x_)
+        && (y_ == other.y_)
+        && (xspeed_ == other.xspeed_)
+        && (yspeed_ == other.yspeed_)
+        && (index_ == other.index_)
+        && (timeDirection_ == other.timeDirection_)
+        && (pauseLevel_ == other.pauseLevel_);
 }
 
 bool Button::operator<(const Button& other) const
 {
-    return data->y < other.data->index;
+    return index_ < other.index_;
 }
 }

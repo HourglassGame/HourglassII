@@ -4,38 +4,28 @@
 
 namespace hg {
 template <class Type> RemoteDepartureEdit<Type>::RemoteDepartureEdit(PauseInitiatorID origin, Type departure, bool propIntoNormal) :
-referenceCount(new int(1)),
-data(new Data(origin, departure, propIntoNormal))
+origin_(origin),
+departure_(departure),
+propIntoNormal_(propIntoNormal)
 {
 }
 
 template <class Type> RemoteDepartureEdit<Type>::RemoteDepartureEdit(const RemoteDepartureEdit<Type>& other) :
-referenceCount(&++(*other.referenceCount)),
-data(other.data)
+origin_(other.origin_),
+departure_(other.departure_),
+propIntoNormal_(other.propIntoNormal_)
 {
 }
 
 template <class Type> RemoteDepartureEdit<Type>::~RemoteDepartureEdit()
 {
-    decrementCount();
-}
-
-template <class Type> void RemoteDepartureEdit<Type>::decrementCount()
-{
-    if(--(*referenceCount) == 0) {
-        delete referenceCount;
-        delete data;
-    }
 }
 
 template <class Type> RemoteDepartureEdit<Type>& RemoteDepartureEdit<Type>::operator=(const RemoteDepartureEdit<Type>& other)
 {
-    if (other.data != data) {
-        decrementCount();
-        referenceCount = other.referenceCount;
-        data = other.data;
-        ++(*referenceCount);
-    }
+    origin_ = other.origin_;
+    departure_ = other.departure_;
+    propIntoNormal_ = other.propIntoNormal_;
     return *this;
 }
 
@@ -46,40 +36,34 @@ template <class Type> bool RemoteDepartureEdit<Type>::operator!=(const RemoteDep
 
 template <class Type> bool RemoteDepartureEdit<Type>::operator==(const RemoteDepartureEdit<Type>& other) const
 {
-	return (data->origin == other.data->origin)
-            && (data->departure == other.data->departure)
-            && (data->propIntoNormal == other.data->propIntoNormal);
+	return (origin_ == other.origin_)
+            && (departure_ == other.departure_)
+            && (propIntoNormal_ == other.propIntoNormal_);
 }
 
 template <class Type> bool RemoteDepartureEdit<Type>::operator<(const RemoteDepartureEdit<Type>& other) const
 {
-    if (data != other.data) {
-        if (data->origin == other.data->origin)
+    if (origin_ == other.origin_)
+    {
+        if (departure_ == other.departure_)
         {
-            if (data->departure == other.data->departure)
+            if (propIntoNormal_ == other.propIntoNormal_)
             {
-                if (data->propIntoNormal == other.data->propIntoNormal)
-                {
-                    return false;
-                }
-                else
-                {
-                    return (data->propIntoNormal < other.data->propIntoNormal);
-                }
+                return false;
             }
             else
             {
-                return (data->departure < other.data->departure);
+                return propIntoNormal_ < other.propIntoNormal_;
             }
         }
         else
         {
-            return (data->origin < other.data->origin);
+            return departure_ < other.departure_;
         }
     }
     else
     {
-        return false;
+        return origin_ < other.origin_;
     }
 }
 }

@@ -21,7 +21,7 @@ worldState(level.timeLineLength,
 {
 }
 
-tuple<FrameID,FrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
+TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
 
@@ -29,16 +29,17 @@ tuple<FrameID,FrameID, TimeEngine::FrameListList, TimeDirection> TimeEngine::run
     for (unsigned int i = 0; i < speedOfTime; ++i) {
         updatedList.push_back(worldState.executeWorld());
     }
-    return tuple<FrameID, FrameID, FrameListList, TimeDirection>(worldState.getCurrentPlayerFrame(), worldState.getNextPlayerFrame(), updatedList, worldState.getCurrentPlayerDirection());
-}
-
-ObjectList TimeEngine::getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const
-{
-    return worldState.getPostPhysics(whichFrame, whichPrePause);
+    TimeEngine::RunResult retv =  {worldState.getCurrentPlayerFrame(), worldState.getNextPlayerFrame(), updatedList, worldState.getCurrentPlayerDirection()};
+    return retv;
 }
     
 ::std::vector<InputList> TimeEngine::getReplayData() const
 {
     return worldState.getReplayData();
+}
+
+Frame* TimeEngine::getFrame(const FrameID& whichFrame)
+{
+    return worldState.getFrame(whichFrame);
 }
 }//namespace hg
