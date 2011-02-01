@@ -1,6 +1,7 @@
 #ifndef HG_FRAME_UPDATE_SET_H
 #define HG_FRAME_UPDATE_SET_H
 #include "Frame.h"
+#include <boost/range/algorithm/equal.hpp>
 #include <set>
 namespace hg {
     class FrameUpdateSet {
@@ -28,8 +29,10 @@ namespace hg {
         //Privacy leak here, it is an error to use FrameUpdateSet::const_iterator as anything more than a ForwardIterator
         //I should define my own iterator class, but I can't be bothered right now
         //typedef ::std::set<Frame*>::const_iterator const_iterator;
-        typedef ::std::set<Frame*>::iterator iterator;
+        typedef SetType::iterator iterator;
         typedef SetType::value_type value_type;
+        typedef SetType::reference reference;
+        typedef SetType::reference pointer;
         const_iterator begin() const { return updateSet_.begin(); }
         const_iterator end() const { return updateSet_.end(); }
         iterator begin() { return updateSet_.begin(); }
@@ -39,5 +42,9 @@ namespace hg {
     private:
         SetType updateSet_;
     };
+    inline bool operator==(const FrameUpdateSet& lhs, const FrameUpdateSet& rhs)
+    {
+        return boost::equal(lhs,rhs);
+    }
 }
 #endif //HG_FRAME_UPDATE_SET_H

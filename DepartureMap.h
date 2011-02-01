@@ -1,7 +1,6 @@
 #ifndef HG_DEPARTURE_MAP_H
 #define HG_DEPARTURE_MAP_H
 #include "FrameID.h"
-#include "TimeObjectListList.h"
 #include "FrameUpdateSet.h"
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/locks.hpp>

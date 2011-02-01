@@ -150,7 +150,8 @@ int main()
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         try{
-            TimeEngine::RunResult waveInfo = timeEngine.runToNextPlayerFrame(input.AsInputList());
+            TimeEngine::RunResult waveInfo;
+            timeEngine.runToNextPlayerFrame(input.AsInputList()).swap(waveInfo);
             if (waveInfo.currentPlayerFrame) {
                 Draw
                 (
@@ -486,7 +487,7 @@ void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, 
 void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, Frame* playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
-    foreach(const std::vector<Frame*>& lists, waves) {
+    foreach(const FrameUpdateSet& lists, waves) {
         foreach (Frame* frame, lists) {
             if (frame) {
 

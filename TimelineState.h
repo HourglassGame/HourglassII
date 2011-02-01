@@ -1,9 +1,7 @@
 #ifndef HG_ARRIVAL_DEPARTURE_MAP_H
 #define HG_ARRIVAL_DEPARTURE_MAP_H
 
-#include "TimeObjectListList.h"
 #include <map>
-#include <boost/unordered_map.hpp>
 #include "Universe.h"
 
 namespace hg {

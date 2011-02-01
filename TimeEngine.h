@@ -6,6 +6,7 @@
 #include "TimelineState.h"
 
 #include <vector>
+#include <boost/swap.hpp>
 
 namespace hg {
 class InputList;
@@ -17,13 +18,20 @@ class Frame;
 class TimeEngine
 {
 public:
-    typedef ::std::vector<std::vector<Frame*> > FrameListList;
+    typedef ::std::vector<FrameUpdateSet > FrameListList;
     struct RunResult
     {
         Frame* currentPlayerFrame;
         Frame* nextPlayerFrame;
         FrameListList updatedFrames;
         TimeDirection currentPlayerDirection;
+        void swap(RunResult& other)
+        {
+            boost::swap(currentPlayerFrame, other.currentPlayerFrame);
+            boost::swap(nextPlayerFrame, other.nextPlayerFrame);
+            boost::swap(updatedFrames, other.updatedFrames);
+            boost::swap(currentPlayerDirection, other.currentPlayerDirection);
+        }
     };
     
     /*********************************************************************************************

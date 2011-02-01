@@ -2,7 +2,6 @@
 #include "DepartureMap.h"
 #include "PlayerVictoryException.h"
 #include "ParallelForEach.h"
-//#include <boost/range/algorithm/for_each.hpp>
 #include <boost/foreach.hpp>
 #include <iostream>
 #define foreach BOOST_FOREACH
@@ -122,28 +121,20 @@ std::map<Frame*, ObjectList> WorldState::getDeparturesFromFrame(Frame* frame)
                                  currentWinFrames_);
 }
 
-std::vector<Frame*> WorldState::executeWorld()
+FrameUpdateSet WorldState::executeWorld()
 {
     //cout << "executeWorld\n";
-    //Make parallel_for_each compatible type, also save result for return
-    //(I don't really understand the mechanism, but tbb::parallel_for_each doesn't work for FrameUpdatSets, but does for vectors)
-    std::vector<Frame*> returnSet(frameUpdateSet_.begin(), frameUpdateSet_.end());
     DepartureMap changedFrames;
     changedFrames.makeSpaceFor(frameUpdateSet_);
+    FrameUpdateSet returnSet;
+    frameUpdateSet_.swap(returnSet);
     parallel_for_each(returnSet, ExecuteFrame(*this, changedFrames));
-    //boost::for_each(frameUpdateSet_, ExecuteFrame(*this, changedFrames));
     timeline_.updateWithNewDepartures(changedFrames).swap(frameUpdateSet_);
     if (frameUpdateSet_.empty() && currentWinFrames_.size() == 1) {
         throw PlayerVictoryException();
     }
     return returnSet;
 }
-/*
-ObjectList WorldState::getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const
-{
-    return timeline_.getPostPhysics(whichFrame, whichPrePause);
-}*/
-
 
 //The worrying situation is when there are arrivals at a frame which are equal to arrivals which happened earlier,
 //except that the effects of the new arrivals are different from the old ones because playerInput_.Count is larger
