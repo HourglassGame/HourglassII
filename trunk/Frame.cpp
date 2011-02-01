@@ -117,6 +117,7 @@ FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& new
         ++ni;
     }
 end:
+    departures_.clear();
     departures_.swap(newDeparture);
     return changedTimes;
 }
