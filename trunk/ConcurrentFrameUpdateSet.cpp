@@ -1,7 +1,4 @@
 #include "ConcurrentFrameUpdateSet.h"
-#include <boost/thread/locks.hpp>
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
 namespace hg {
 ConcurrentFrameUpdateSet::ConcurrentFrameUpdateSet() :
 threadLocalMap_()
