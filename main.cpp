@@ -98,7 +98,7 @@ using namespace ::sf;
 using namespace ::boost;
 namespace {
     void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection);
-    void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, Frame* playerFrame);
+    void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, Frame* playerFrame);
     void DrawWall(RenderTarget& target, const ::boost::multi_array<bool, 2>& wallData);
     void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection&);
     void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection&);
@@ -164,7 +164,7 @@ int main()
             else {
                 Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800))->getPostPhysics(), wall, waveInfo.currentPlayerDirection);
             }
-            DrawTimeline(app, waveInfo.updatedFrames, waveInfo.currentPlayerFrame);
+            DrawTimeline(app, *waveInfo.updatedFrames, waveInfo.currentPlayerFrame);
         }
         catch (hg::PlayerVictoryException& playerWon) {
             cout << "Congratulations, a winner is you!\n";
@@ -484,7 +484,7 @@ void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, 
      }
 }
 
-void DrawTimeline(RenderTarget& target, TimeEngine::FrameListList& waves, Frame* playerFrame)
+void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, Frame* playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {false};
     foreach(const FrameUpdateSet& lists, waves) {

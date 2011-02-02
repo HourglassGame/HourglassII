@@ -4,12 +4,8 @@
 #include <boost/functional/hash.hpp>
 namespace hg {
 template <typename T>
-class BoostHashCompare
+struct BoostHashCompare
 {
-    public:
-    BoostHashCompare(){}
-    BoostHashCompare( const BoostHashCompare& ){}
-    ~BoostHashCompare (){}
     bool equal( const T& j, const T& k ) const
     {
         return j == k;

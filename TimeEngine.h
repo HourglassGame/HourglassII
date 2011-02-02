@@ -23,7 +23,7 @@ public:
     {
         Frame* currentPlayerFrame;
         Frame* nextPlayerFrame;
-        FrameListList updatedFrames;
+        const FrameListList* updatedFrames;
         TimeDirection currentPlayerDirection;
         void swap(RunResult& other)
         {
@@ -66,6 +66,7 @@ private:
     unsigned int speedOfTime;
     //state of world at end of last executed frame
     WorldState worldState;
+    FrameListList updatedList;
 };
 }
 #endif //HG_TIME_ENGINE_H

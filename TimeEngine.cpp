@@ -25,14 +25,16 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInput
 {
     worldState.addNewInputData(newInputData);
 
-    FrameListList updatedList(speedOfTime);
+    //FrameListList updatedList(speedOfTime);
+    updatedList.clear();
+    updatedList.resize(speedOfTime);
     for (unsigned int i = 0; i < speedOfTime; ++i) {
         worldState.executeWorld().swap(updatedList[i]);
     }
     TimeEngine::RunResult retv;
     retv.currentPlayerFrame = worldState.getCurrentPlayerFrame();
     retv.nextPlayerFrame = worldState.getNextPlayerFrame();
-    retv.updatedFrames.swap(updatedList);
+    retv.updatedFrames = &updatedList;
     retv.currentPlayerDirection = worldState.getCurrentPlayerDirection();
     return retv;
 }
