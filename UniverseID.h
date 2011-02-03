@@ -44,6 +44,7 @@ bool operator<(const SubUniverse& lhs, const SubUniverse& rhs);
 //timelineLength always refers to the timelinelength of the top-level universe,
 struct UniverseID {
     //lower level universeID
+    //timelineLength is always length of top-level universe, nestTrain gives lengths of lower level universes.
     UniverseID(unsigned int timelineLength, ::std::vector<SubUniverse> nestTrain = ::std::vector<SubUniverse>());
     
     PauseInitiatorID initiatorID() const;

@@ -70,7 +70,7 @@ void Universe::construct(Frame* initiatorFrame, unsigned int timelineLength, con
     frames_.reserve(timelineLength);
     for (unsigned int i(0); i < timelineLength; ++i)
     {
-        frames_.push_back(Frame(i, this));
+        frames_.push_back(Frame(i, *this));
     }
     initiatorID_ = &initiatorID;
 }

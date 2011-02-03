@@ -6,7 +6,7 @@ updateSet_()
 {
 }
 
-void FrameUpdateSet::addFrame(Frame* frame) { 
+void FrameUpdateSet::add(Frame* frame) { 
     if (frame) {
         updateSet_.insert(frame);
     }
