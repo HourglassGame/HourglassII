@@ -27,7 +27,7 @@ public:
     FrameID nextFrame(TimeDirection direction) const;
 
     // returns the number of universes up that the next frame is
-    // (0 for 
+    // (0 for in same universe)
     unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in

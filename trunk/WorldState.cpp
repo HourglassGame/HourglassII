@@ -56,8 +56,8 @@ currentWinFrames_()
         timeline_.addArrivalsFromPermanentDepartureFrame(initialPlatformArrivals);
 
         // run level from both ends, platforms can be the ONLY objects in the world at this point as attachment must always have a target
-        frameUpdateSet_.addFrame(timeline_.getUniverse().getEntryFrame(FORWARDS));
-        frameUpdateSet_.addFrame(timeline_.getUniverse().getEntryFrame(REVERSE));
+        frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(FORWARDS));
+        frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(REVERSE));
 
         //** run level for a while
         for (unsigned int i = 0; i < timelineLength; ++i) {
@@ -96,10 +96,10 @@ currentWinFrames_()
 
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }
-    frameUpdateSet_.addFrame(timeline_.getUniverse().getEntryFrame(FORWARDS));
-    frameUpdateSet_.addFrame(timeline_.getUniverse().getEntryFrame(REVERSE));
+    frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(FORWARDS));
+    frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(REVERSE));
     //Guys without input can still affect stuff, and so must be run
-    frameUpdateSet_.addFrame(guyStartFrame);
+    frameUpdateSet_.add(guyStartFrame);
     //** run level for a while
     for (unsigned int i = 0; i < timelineLength; ++i) {
         executeWorld();
@@ -159,7 +159,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
     for(ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end());it != end; ++it) {
-        frameUpdateSet_.addFrame(*it);
+        frameUpdateSet_.add(*it);
         //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
     }
     //All non-executing frames are assumed to Remove a playerFrame (eep D:)

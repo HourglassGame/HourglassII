@@ -1,11 +1,14 @@
 #include "Frame.h"
 #include "FrameUpdateSet.h"
+#include "UniverseID.h"
+#include "FrameID.h"
+#include <boost/range/algorithm/reverse.hpp>
 #include <boost/foreach.hpp>
 #include <utility>
 #include <cassert>
 #define foreach BOOST_FOREACH
 namespace hg {
-Frame::Frame(unsigned int frameNumber, Universe* universe):
+Frame::Frame(unsigned int frameNumber, Universe& universe):
 frameNumber_(frameNumber),
 universe_(universe),
 departures_(),
@@ -26,12 +29,12 @@ Frame* Frame::nextFrame(TimeDirection direction) const
 {
     assert(direction != INVALID);
     if (frameNumber_ == 0 && direction == REVERSE
-     || frameNumber_ == universe_->getTimelineLength() - 1 && direction == FORWARDS) {
-        Frame* parent(universe_->getInitiatorFrame());
+     || frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS) {
+        Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFrame(direction) : 0;
     }
     else {
-        return universe_->getArbitraryFrame(frameNumber_ + direction);
+        return universe_.getArbitraryFrame(frameNumber_ + direction);
     }
 }
 unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
@@ -41,11 +44,11 @@ unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
 }
 Frame* Frame::arbitraryFrameInUniverse(unsigned int frameNumber) const
 {
-    return universe_->getArbitraryFrame(frameNumber);
+    return universe_.getArbitraryFrame(frameNumber);
 }
 Frame* Frame::parentFrame() const
 {
-    return universe_->getInitiatorFrame();
+    return universe_.getInitiatorFrame();
 }
 Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, unsigned int frameNumber)
 {
@@ -82,12 +85,12 @@ FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& new
             if (ni != nend) {
                 if (ni->first < oi->first) {
                     ni->first->insertArrival(std::make_pair(this, &ni->second));
-                    changedTimes.addFrame(ni->first);
+                    changedTimes.add(ni->first);
                     ++ni;
                 }
                 else if (ni->first == oi->first) {
                     if (ni->second != oi->second) {
-                        changedTimes.addFrame(ni->first);
+                        changedTimes.add(ni->first);
                     }
                     //Always change because old pointer will become invalid
                     ni->first->changeArrival(std::make_pair(this, &ni->second));
@@ -96,14 +99,14 @@ FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& new
                 }
                 else {
                     oi->first->clearArrival(this);
-                    changedTimes.addFrame(oi->first);
+                    changedTimes.add(oi->first);
                     break;
                 }
             }
             else {
                 while (oi != oend) {
                     oi->first->clearArrival(this);
-                    changedTimes.addFrame(oi->first);
+                    changedTimes.add(oi->first);
                     ++oi;
                 }
                 goto end;
@@ -113,7 +116,7 @@ FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& new
     }
     while (ni != nend) {
         ni->first->insertArrival(std::make_pair(this, &ni->second));
-        changedTimes.addFrame(ni->first);
+        changedTimes.add(ni->first);
         ++ni;
     }
 end:
@@ -141,14 +144,14 @@ ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) c
     return retv;
 }
 const PauseInitiatorID& Frame::getInitiatorID() const {
-    return universe_->getInitiatorID();
+    return universe_.getInitiatorID();
 }
 unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const
 {
     if (frameNumber_ == 0 && direction == REVERSE
-     || frameNumber_ == universe_->getTimelineLength() - 1 && direction == FORWARDS) {
+     || frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS) {
         ++accumulator;
-        Frame* parent(universe_->getInitiatorFrame());
+        Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFramePauseLevelDifferenceAux(direction, accumulator) : accumulator;
     }
     else {
@@ -159,6 +162,18 @@ unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, in
 void Frame::addArrival(Frame* source, ObjectList* arrival)
 {
     arrivals_.insert(ArrivalMap::value_type(source, arrival));
+}
+
+FrameID Frame::toFrameID() const
+{
+    std::vector<SubUniverse> nestTrain;
+    const Universe* universe(&universe_);
+    for(; universe->initiatorFrame_; universe = &(universe->initiatorFrame_->universe_))
+    {
+        nestTrain.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
+    }
+    boost::reverse(nestTrain);
+    return FrameID(frameNumber_, UniverseID(universe->frames_.size() ,nestTrain));
 }
 
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)

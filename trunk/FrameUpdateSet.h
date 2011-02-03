@@ -9,8 +9,7 @@ namespace hg {
     public:
         FrameUpdateSet();
         
-        void addFrame(Frame* frame);
-        
+        void add(Frame* frame);
         void add(const FrameUpdateSet& other);
         void swap(FrameUpdateSet& other);
         

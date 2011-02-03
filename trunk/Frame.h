@@ -118,11 +118,10 @@ private:
 //A system like this could also put the arrivals and departures in Frames
 //and so avoid the arrival-departure-map system altogether
 class Frame {
-//    #if 0
     typedef ::boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
     typedef ::tbb::concurrent_hash_map<Frame*, ObjectList*> ArrivalMap;
     public:
-    Frame(unsigned int frameNumber, Universe* universe);
+    Frame(unsigned int frameNumber, Universe& universe);
     
     //copy-construction -- quite dangerous, because frames are identified by their address
     Frame(const Frame& other);
@@ -172,7 +171,7 @@ class Frame {
      */
     ObjectPtrList getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
     void addArrival(Frame* source, ObjectList* arrival);
-    //FrameID toFrameID() const;
+    FrameID toFrameID() const;
     unsigned int getFrameNumber() const { return frameNumber_; }
     const PauseInitiatorID& getInitiatorID() const;
     private:
@@ -182,12 +181,11 @@ class Frame {
     void changeArrival(const ArrivalMap::value_type& toChange);
     void clearArrival(Frame* toClear);
     unsigned int frameNumber_;
-    //back-link to universe in which this frame is
-    Universe* universe_;
+    //back-link to universe which this frame is in
+    Universe& universe_;
     std::map<Frame*, ObjectList> departures_;
     ArrivalMap arrivals_;
     SubUniverseMap subUniverses_;
- //   #endif
 };
 }
 #endif //HG_FRAME_H
