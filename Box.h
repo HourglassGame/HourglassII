@@ -6,7 +6,6 @@ namespace hg {
     {
     public:
         Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection, int pauseLevel);
-        ~Box();
         Box(const Box& other);
         Box(const Box& other, TimeDirection timeDirection, int pauseLevel);
         Box& operator=(const Box& other);

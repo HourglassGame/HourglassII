@@ -24,7 +24,6 @@ worldState(level.timeLineLength,
 TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
-
     //FrameListList updatedList(speedOfTime);
     updatedList.clear();
     updatedList.resize(speedOfTime);

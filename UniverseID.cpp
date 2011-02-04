@@ -5,7 +5,7 @@
 
 using namespace ::std;
 namespace hg {
-SubUniverse::SubUniverse(unsigned int initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
+SubUniverse::SubUniverse(size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
 initiatorFrame_(initiatorFrame),
 pauseInitiatorID_(pauseInitiatorID)
 {
@@ -35,8 +35,8 @@ bool operator<(const SubUniverse& lhs, const SubUniverse& rhs)
     return seed;
 }
 
-UniverseID::UniverseID(unsigned int ntimelineLength, ::std::vector<SubUniverse> nestTrain) :
-timelineLength_(ntimelineLength),
+UniverseID::UniverseID(size_t timelineLength, const ::std::vector<SubUniverse>& nestTrain) :
+timelineLength_(timelineLength),
 nestTrain_(nestTrain)
 {
 }
@@ -63,7 +63,7 @@ FrameID UniverseID::parentFrame() const
     }
 }
 
-unsigned int UniverseID::timelineLength() const
+size_t UniverseID::timelineLength() const
 {
     if (nestTrain_.empty()) {
         return timelineLength_;

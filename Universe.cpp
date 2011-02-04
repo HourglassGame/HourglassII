@@ -1,4 +1,5 @@
 #include "Universe.h"
+#include "FrameID.h"
 namespace hg {
 Universe::Universe() :
 initiatorFrame_(0),
@@ -16,7 +17,7 @@ initiatorID_(0)
     assert(other.frames_.empty());
 }
 //creates a top level universe
-Universe::Universe(unsigned int timelineLength) :
+Universe::Universe(size_t timelineLength) :
 initiatorFrame_(0),
 frames_(),
 initiatorID_(0)
@@ -42,7 +43,7 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
             assert(false);
     }
 }
-Frame* Universe::getArbitraryFrame(unsigned int frameNumber)
+Frame* Universe::getArbitraryFrame(size_t frameNumber)
 {
     assert(!frames_.empty());
     if (frameNumber < frames_.size()) {
@@ -51,12 +52,33 @@ Frame* Universe::getArbitraryFrame(unsigned int frameNumber)
     return 0;
 }
 //returns the length of this Universe's timeline
-unsigned int Universe::getTimelineLength() const
+size_t Universe::getTimelineLength() const
 {
     assert(!frames_.empty());
     return frames_.size();
 }
-Universe::Universe(Frame* initiatorFrame, unsigned int timelineLength, const PauseInitiatorID& initiatorID) :
+Frame* Universe::getFrame(const FrameID& whichFrame)
+{
+    assert(getTimelineLength()==whichFrame.universe().timelineLength());
+    assert(!initiatorFrame_);
+    Frame* parentFrame(0);
+    for (std::vector<SubUniverse>::const_iterator it(whichFrame.universe().nestTrain_.begin()), end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
+    {
+        if (!parentFrame) {
+            parentFrame = getArbitraryFrame(it->initiatorFrame_);
+        }
+        else {
+            parentFrame = parentFrame->arbitraryChildFrame((it-1)->pauseInitiatorID_, (it)->initiatorFrame_);
+        }
+    }
+    if (parentFrame) {
+        return parentFrame->arbitraryChildFrame(whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_, whichFrame.frame());
+    }
+    else {
+        return getArbitraryFrame(whichFrame.frame());
+    }
+}
+Universe::Universe(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID) :
 initiatorFrame_(0),
 frames_()
 {
@@ -64,7 +86,7 @@ frames_()
     construct(initiatorFrame, timelineLength, initiatorID);
 }
 
-void Universe::construct(Frame* initiatorFrame, unsigned int timelineLength, const PauseInitiatorID& initiatorID)
+void Universe::construct(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID)
 {
     initiatorFrame_ = initiatorFrame;
     frames_.reserve(timelineLength);

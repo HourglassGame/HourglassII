@@ -48,22 +48,6 @@ void TimelineState::addArrivalsFromPermanentDepartureFrame(std::map<Frame*, Obje
 
 Frame* TimelineState::getFrame(const FrameID& whichFrame)
 {
-    assert(universe_.getTimelineLength()==whichFrame.universe().timelineLength_);
-    Frame* parentFrame(0);
-    for (std::vector<SubUniverse>::const_iterator it(whichFrame.universe().nestTrain_.begin()), end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
-    {
-        if (!parentFrame) {
-            parentFrame = universe_.getArbitraryFrame(it->initiatorFrame_);
-        }
-        else {
-            parentFrame = parentFrame->arbitraryChildFrame((it-1)->pauseInitiatorID_, (it)->initiatorFrame_);
-        }
-    }
-    if (parentFrame) {
-        return parentFrame->arbitraryChildFrame(whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_, whichFrame.frame());
-    }
-    else {
-        return universe_.getArbitraryFrame(whichFrame.frame());
-    }
+    return universe_.getFrame(whichFrame);
 }
 }//namespace hg

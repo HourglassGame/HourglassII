@@ -1,15 +1,15 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
 #include "TimeDirection.h"
+#include <cstdlib>
 namespace hg {
     class Guy
     {
     public:
         Guy(int x,int y,int xspeed,int yspeed,int width,int height,int relativeToPortal,bool supported,bool boxCarrying,
             int boxCarrySize,TimeDirection boxCarryDirection,int boxPauseLevel,TimeDirection timeDirection,int pauseLevel,
-            int relativeIndex);
+            std::size_t index);
 
-        ~Guy();
         Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel);
         Guy(const Guy& other);
         Guy& operator=(const Guy& other);
@@ -31,7 +31,7 @@ namespace hg {
 
         TimeDirection getTimeDirection() const {return timeDirection_;}
         int getPauseLevel() const {return pauseLevel_;}
-        int getRelativeIndex() const {return relativeIndex_;}
+        size_t getIndex() const {return index_;}
 
         bool operator!=(const Guy& other) const;
         bool operator==(const Guy& other) const;
@@ -55,7 +55,7 @@ namespace hg {
 
         TimeDirection timeDirection_;
         int pauseLevel_;
-        int relativeIndex_;
+        size_t index_;
     };
 }
 #endif //HG_GUY_H

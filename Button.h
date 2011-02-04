@@ -10,7 +10,6 @@ namespace hg
 
         Button(int x, int y, int xspeed, int yspeed, int index, bool state, TimeDirection timeDirection, int pauseLevel);
         Button(const Button& other, TimeDirection timeDirection, int pauseLevel);
-        ~Button();
         Button(const Button& other);
         Button& operator=(const Button& other);
 

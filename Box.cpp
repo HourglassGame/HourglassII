@@ -34,10 +34,6 @@ pauseLevel_(other.pauseLevel_)
 {
 }
 
-Box::~Box()
-{
-}
-
 Box& Box::operator=(const Box& other)
 {
     x_ = other.x_;

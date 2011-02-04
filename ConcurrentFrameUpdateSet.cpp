@@ -1,8 +1,5 @@
 #include "ConcurrentFrameUpdateSet.h"
-#include <tbb/parallel_reduce.h>
-#include <tbb/blocked_range.h>
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
+
 namespace hg {
 ConcurrentFrameUpdateSet::ConcurrentFrameUpdateSet() :
 threadLocalMap_()

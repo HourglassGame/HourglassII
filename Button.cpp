@@ -37,10 +37,6 @@ pauseLevel_(other.pauseLevel_)
 {
 }
 
-Button::~Button()
-{
-}
-
 Button& Button::operator=(const Button& other)
 {
     x_ = other.x_;

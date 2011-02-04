@@ -8,7 +8,7 @@
 #include <cassert>
 #define foreach BOOST_FOREACH
 namespace hg {
-Frame::Frame(unsigned int frameNumber, Universe& universe):
+Frame::Frame(size_t frameNumber, Universe& universe):
 frameNumber_(frameNumber),
 universe_(universe),
 departures_(),
@@ -42,7 +42,7 @@ unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
     assert(direction != INVALID);
     return nextFramePauseLevelDifferenceAux(direction, 0);
 }
-Frame* Frame::arbitraryFrameInUniverse(unsigned int frameNumber) const
+Frame* Frame::arbitraryFrameInUniverse(size_t frameNumber) const
 {
     return universe_.getArbitraryFrame(frameNumber);
 }
@@ -50,7 +50,7 @@ Frame* Frame::parentFrame() const
 {
     return universe_.getInitiatorFrame();
 }
-Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, unsigned int frameNumber)
+Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, size_t frameNumber)
 {
     assert(initiatorID.timelineLength_ > frameNumber);
     SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
@@ -163,7 +163,7 @@ void Frame::addArrival(Frame* source, ObjectList* arrival)
 {
     arrivals_.insert(ArrivalMap::value_type(source, arrival));
 }
-
+/*
 FrameID Frame::toFrameID() const
 {
     std::vector<SubUniverse> nestTrain;
@@ -173,8 +173,8 @@ FrameID Frame::toFrameID() const
         nestTrain.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
     }
     boost::reverse(nestTrain);
-    return FrameID(frameNumber_, UniverseID(universe->frames_.size() ,nestTrain));
-}
+    return FrameID(frameNumber_, UniverseID(universe->frames_.size(), nestTrain));
+}*/
 
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 {

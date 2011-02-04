@@ -1,7 +1,3 @@
-#ifndef HG_DEPARTURE_THIEF_CPP
-#define HG_DEPARTURE_THIEF_CPP
-#include "RemoteDepartureEdit.h"
-
 namespace hg {
 template <class Type> RemoteDepartureEdit<Type>::RemoteDepartureEdit(PauseInitiatorID origin, Type departure, bool propIntoNormal) :
 origin_(origin),
@@ -14,10 +10,6 @@ template <class Type> RemoteDepartureEdit<Type>::RemoteDepartureEdit(const Remot
 origin_(other.origin_),
 departure_(other.departure_),
 propIntoNormal_(other.propIntoNormal_)
-{
-}
-
-template <class Type> RemoteDepartureEdit<Type>::~RemoteDepartureEdit()
 {
 }
 
@@ -43,28 +35,21 @@ template <class Type> bool RemoteDepartureEdit<Type>::operator==(const RemoteDep
 
 template <class Type> bool RemoteDepartureEdit<Type>::operator<(const RemoteDepartureEdit<Type>& other) const
 {
-    if (origin_ == other.origin_)
-    {
-        if (departure_ == other.departure_)
-        {
-            if (propIntoNormal_ == other.propIntoNormal_)
-            {
+    if (origin_ == other.origin_) {
+        if (departure_ == other.departure_) {
+            if (propIntoNormal_ == other.propIntoNormal_) {
                 return false;
             }
-            else
-            {
+            else {
                 return propIntoNormal_ < other.propIntoNormal_;
             }
         }
-        else
-        {
+        else {
             return departure_ < other.departure_;
         }
     }
-    else
-    {
+    else {
         return origin_ < other.origin_;
     }
 }
 }
-#endif //HG_DEPARTURE_THIEF_CPP

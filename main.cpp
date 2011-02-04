@@ -569,7 +569,8 @@ void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, 
     row += 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1;
     wall.push_back(row);
     row.clear();
-    boost::multi_array<bool, 2> actualWall(boost::extents[wall.at(0).size()][wall.size()]);
+    boost::array<boost::multi_array<bool, 2>::index, 2> wallShape = {{ wall.at(0).size(), wall.size() }};
+    boost::multi_array<bool, 2> actualWall(wallShape);
     for(unsigned int i = 0; i < wall.size(); ++i) {
         for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
             actualWall[j][i] = wall.at(i).at(j);
@@ -589,7 +590,7 @@ Level MakeLevel(const ::boost::multi_array<bool, 2>& wall)
     newObjectList.add(Button(30400, 44000, 0, 0, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
     newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false));
-
+    newObjectList.sort();
     return 
         Level(
         3,
