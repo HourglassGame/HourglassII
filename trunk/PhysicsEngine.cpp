@@ -5,6 +5,8 @@
 #include "ConcurrentTimeMap.h"
 #include "ConcurrentTimeSet.h"
 
+#include <boost/range/algorithm/for_each.hpp>
+
 #include <iostream>
 #include <map>
 #include <vector>
@@ -27,6 +29,14 @@ attachmentMap(nAttachmentMap),
 triggerSystem(nTriggerSystem)
 {
 }
+
+struct SortObjectList
+{
+    void operator()(std::pair<Frame* const, ObjectList>& toSortObjectListOf) const
+    {
+        toSortObjectListOf.second.sort();
+    }
+};
 
 std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(const ObjectPtrList& arrivals,
                                                Frame* time,
@@ -90,7 +100,8 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(const ObjectPtrList& ar
     
     //Guys cannot win (ATM)
     winFrames.remove(time);
-    
+    //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
+    boost::for_each(newDepartures,SortObjectList());
 	// add data to departures
 	return newDepartures;
 }
@@ -471,9 +482,9 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
         yspeed.push_back(oldGuyList[i]->getYspeed() + gravity);
         supported.push_back(false);
 
-        if (oldGuyList[i]->getRelativeIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0)
+        if (oldGuyList[i]->getIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0u)
         {
-            size_t relativeIndex = oldGuyList[i]->getRelativeIndex();
+            size_t relativeIndex = oldGuyList[i]->getIndex();
             const InputList& input = playerInput[relativeIndex];
 
             int width = oldGuyList[i]->getWidth();
@@ -655,10 +666,10 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
 		carryDirection.push_back(hg::INVALID);
 		carryPauseLevel.push_back(0);
 
-        if (oldGuyList[i]->getRelativeIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0)
+        if (oldGuyList[i]->getIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0u)
         {
 
-            size_t relativeIndex = oldGuyList[i]->getRelativeIndex();
+            size_t relativeIndex = oldGuyList[i]->getIndex();
             const InputList& input = playerInput[relativeIndex];
 
             if (carry[i])
@@ -823,10 +834,10 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                 )
             );
 	    }
-        else if (oldGuyList[i]->getRelativeIndex() < playerInput.size())
+        else if (oldGuyList[i]->getIndex() < playerInput.size())
         {
 
-            size_t relativeIndex(oldGuyList[i]->getRelativeIndex());
+            size_t relativeIndex(oldGuyList[i]->getIndex());
             const InputList& input = playerInput[relativeIndex];
             int nextCarryPauseLevel = carryPauseLevel[i];
             int relativeToPortal = -1;
@@ -936,7 +947,7 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
         }
         else
         {
-            assert(oldGuyList[i]->getRelativeIndex() == playerInput.size());
+            assert(oldGuyList[i]->getIndex() == playerInput.size());
             nextPlayerInFrame = true;
         }
     }

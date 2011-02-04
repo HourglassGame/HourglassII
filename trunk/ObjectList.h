@@ -5,8 +5,7 @@
 #include "Button.h"
 #include "Platform.h"
 #include "Portal.h"
-#include "RemoteDepartureEdit.cpp"
-#include "TimeDirection.h"
+#include "RemoteDepartureEdit.h"
 
 #include <vector>
 
@@ -17,7 +16,6 @@ class ObjectList
 public:
     ObjectList();
 
-    ~ObjectList();
     ObjectList(const ObjectList& other);
     ObjectList& operator=(const ObjectList& other);
 
@@ -41,7 +39,7 @@ public:
 	void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
     
     void add(const ObjectList& other);
-    //MUST CALL THIS after constructing complete ObjectList!
+    //MUST CALL this to make lists sorted (required for operator==)
     void sort();
     
     void swap(ObjectList& other);
@@ -51,6 +49,9 @@ public:
 	bool isEmpty() const;
 private:
     friend class ObjectPtrList;
+#ifndef NDEBUG
+    bool sorted;
+#endif //NDEBUG
     ::std::vector<Guy> guyList;
     ::std::vector<Box> boxList;
     ::std::vector<Button> buttonList;
@@ -66,7 +67,6 @@ class ObjectPtrList
 public:
     ObjectPtrList();
 
-    ~ObjectPtrList();
     ObjectPtrList(const ObjectPtrList& other);
     ObjectPtrList& operator=(const ObjectPtrList& other);
 
@@ -82,7 +82,7 @@ public:
 
     void add(const ObjectList& other);
     
-    //MUST CALL THIS after constructing complete ObjectPtrList!
+    //MUST CALL this to make lists sorted (required for deterministic physics)
     void sort();
     
     void swap(ObjectPtrList& other);

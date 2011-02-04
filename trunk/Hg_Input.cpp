@@ -1,8 +1,5 @@
 #include "Hg_Input.h"
 
-#include <iostream>
-#include <cassert>
-
 using namespace ::hg;
 
 static void updatePress(int &var, bool inputState)

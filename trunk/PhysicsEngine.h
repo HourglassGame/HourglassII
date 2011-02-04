@@ -11,7 +11,7 @@
 #include "ObjectList.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
-#include "RemoteDepartureEdit.cpp"
+#include "RemoteDepartureEdit.h"
 #include <boost/multi_array.hpp>
 #include <vector>
 #include <map>

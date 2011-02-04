@@ -1,7 +1,7 @@
 #ifndef HG_BOOST_HASH_COMPARE
 #define HG_BOOST_HASH_COMPARE
-#include <cstdlib>
 #include <boost/functional/hash.hpp>
+#include <cstdlib>
 namespace hg {
 template <typename T>
 struct BoostHashCompare

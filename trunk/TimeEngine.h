@@ -41,7 +41,7 @@ public:
      * Propogates the level with the given ObjectList to fully initialise the TimeEngine
      * (objects begin at all points in time throughout the level,
      * and so must be propogated through from the start and the end)
-     * Throws InvalidLevelException if level is not correct and consistent.
+     * Throws InvalidLevelException if level is not correct (and consistent?)
      * A correct level has exacty one guy.
      * A consistent level has a state which does not depend on the direction in which it is propogated
      */

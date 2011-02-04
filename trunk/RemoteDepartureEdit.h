@@ -8,7 +8,6 @@ namespace hg {
     public:
         RemoteDepartureEdit(PauseInitiatorID origin, Type departure, bool propIntoNormal);
         RemoteDepartureEdit(const RemoteDepartureEdit<Type>& other);
-        ~RemoteDepartureEdit();
         RemoteDepartureEdit& operator=(const RemoteDepartureEdit<Type>& other);
 
         const Type& getDeparture() const {return departure_;}
@@ -27,4 +26,6 @@ namespace hg {
         bool propIntoNormal_;
     };
 }
+
+#include "RemoteDepartureEditImpl.h"
 #endif //HG_DEPARTURE_THIEF_H

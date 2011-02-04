@@ -10,109 +10,9 @@
 #include <boost/unordered_map.hpp>
 #include <map>
 namespace hg {
-class FrameUpdateSet;
-class Frame;
-class FrameID;
-class FramePtr;
 class Universe;
-//Wrapper around Frame* to give extra safety (assert ptr before dereferencing,
-//    also allows shared syntax with FrameID for ease of changing).
-/*
-class FramePtr {
-public:
-    //NullFrame construction
-    FramePtr() :
-    framePtr_(0)
-    {
-    }
-    //assignment
-    FramePtr& operator=(const FramePtr& other)
-    {
-        framePtr_ = other.framePtr_;
-    }
-    
-    //copy-construction
-    FramePtr(const FramePtr& other) :
-    framePtr_(other.framePtr_)
-    {
-    }
-    
-    FramePtr(Frame* ptr) :
-    framePtr_(ptr)
-    {
-    }
-    
-    // returns the normal next frame for things moving in direction TimeDirection
-    FramePtr nextFrame(TimeDirection direction) const
-    {
-        assert(framePtr_);
-        return framePtr_->nextFrame(direction);
-    }
-
-    // returns if the next frame for things moving in direction TimeDirection
-    //is part of the same pause time universe as the frame
-    bool nextFramePauseLevelDifference(TimeDirection direction) const
-    {
-        assert(framePtr_);
-        return framePtr_->nextFramePauseLevelDifference(direction);
-    }
-
-    // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    FramePtr arbitraryFrameInUniverse(unsigned int frameNumber) const
-    {
-        assert(framePtr_);
-        return framePtr_->arbitraryFrameInUniverse(frameNumber);
-    }
-
-    // returns the frame that spawned the universe that this frame is in
-    FramePtr parentFrame() const
-    {
-        assert(framePtr_);
-        return framePtr_->parentFrame();
-    }
-
-    // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
-    //'distance' from the start of the universe This function cannot return nullFrame,
-    //place assert to assure frameNumber is never greater pauseLength
-    FramePtr arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int frameNumber) const
-    {
-        assert(framePtr_);
-        return framePtr_->arbitraryChildFrame(initatorID,direction);
-    }
-
-    // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
-    //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
-    //universe cannot return nullFrame,
-    FramePtr entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const
-    {
-        assert(framePtr_);
-        return framePtr_->entryChildFrame(initatorID,direction);
-    }
-
-    bool operator==(const FramePtr other)
-    {
-        assert(framePtr_);
-        return framePtr_ == other.framePtr_;
-    }
-
-    bool operator<(const FramePtr other) 
-    {
-        return framePtr_ < other.framePtr_;
-    }
-    
-    operator Frame*()
-    {
-        return framePtr_;
-    }
-private:
-    friend ::std::size_t hash_value(const FramePtr& toHash);
-    friend class Universe;
-
-    //constructs a FramePtr for the frame at time in the universe given by Universe
-    FramePtr(unsigned int time, const Universe& universe);
-
-    Frame* framePtr_;
-};*/
+class FrameUpdateSet;
+class FrameID;
 //Only one frame per frame. Referenced by frame pointers and contained in universes.
 //Tim's idea for FrameID
 //A system like this could also put the arrivals and departures in Frames
@@ -121,7 +21,7 @@ class Frame {
     typedef ::boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
     typedef ::tbb::concurrent_hash_map<Frame*, ObjectList*> ArrivalMap;
     public:
-    Frame(unsigned int frameNumber, Universe& universe);
+    Frame(size_t frameNumber, Universe& universe);
     
     //copy-construction -- quite dangerous, because frames are identified by their address
     Frame(const Frame& other);
@@ -134,7 +34,7 @@ class Frame {
     unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    Frame* arbitraryFrameInUniverse(unsigned int frameNumber) const;
+    Frame* arbitraryFrameInUniverse(size_t frameNumber) const;
 
     // returns the frame that spawned the universe that this frame is in
     Frame* parentFrame() const;
@@ -142,7 +42,7 @@ class Frame {
     // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
     //'distance' from the start of the universe This function cannot return nullFrame,
     //place assert to assure frameNumber is never greater than pauseLength - 1
-    Frame* arbitraryChildFrame(const PauseInitiatorID& initiatorID, unsigned int frameNumber);
+    Frame* arbitraryChildFrame(const PauseInitiatorID& initiatorID, size_t frameNumber);
 
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
     //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
@@ -153,17 +53,17 @@ class Frame {
     FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
     
     //assignment
-    Frame& operator=(const Frame& other)
+    Frame& operator=(const Frame&)
     {
-        //Should never be called. Needed for vector.push_back, but I have already reserved space.
+        //Should never be called. Needed for vector<Frame>::push_back  (in Universe construction), but I have already reserved space.
         assert(false);
+        return *this;
     }
     /*****************************************************
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
 	ObjectPtrList getPrePhysics() const;
 
-    
 
     /*****************************************************
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
@@ -171,16 +71,17 @@ class Frame {
      */
     ObjectPtrList getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
     void addArrival(Frame* source, ObjectList* arrival);
-    FrameID toFrameID() const;
-    unsigned int getFrameNumber() const { return frameNumber_; }
+    //FrameID toFrameID() const;
+    size_t getFrameNumber() const { return frameNumber_; }
     const PauseInitiatorID& getInitiatorID() const;
     private:
+    friend class FrameID;
     unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const;
     
     void insertArrival(const ArrivalMap::value_type& toInsert);
     void changeArrival(const ArrivalMap::value_type& toChange);
     void clearArrival(Frame* toClear);
-    unsigned int frameNumber_;
+    size_t frameNumber_;
     //back-link to universe which this frame is in
     Universe& universe_;
     std::map<Frame*, ObjectList> departures_;

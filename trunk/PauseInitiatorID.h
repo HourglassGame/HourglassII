@@ -21,7 +21,7 @@ namespace hg {
     public:
         PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
                          unsigned int ID,
-                         unsigned int timelineLength);
+                         size_t timelineLength);
         PauseInitiatorID() :
         type_(pauseinitiatortype::INVALID),
         ID_(0),
@@ -29,7 +29,7 @@ namespace hg {
         {}
         pauseinitiatortype::PauseInitiatorType type_;
         unsigned int ID_;
-        unsigned int timelineLength_;
+        size_t timelineLength_;
         friend class boost::serialization::access;
 
     template<class Archive>

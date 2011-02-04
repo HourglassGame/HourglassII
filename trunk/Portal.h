@@ -9,8 +9,8 @@ namespace hg
         Portal(int x, int y, int xspeed, int yspeed, int width, int height, int index, TimeDirection timeDirection, int pauseLevel, int charges, bool active,
                int xDestination, int yDestination, int destinationIndex, int timeDestination, bool relativeTime);
         Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
-        ~Portal();
         Portal(const Portal& other);
+        
         Portal& operator=(const Portal& other);
 
         int getX() const {return x_;}

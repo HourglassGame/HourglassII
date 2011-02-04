@@ -1,8 +1,5 @@
 #include "Platform.h"
 
-#include <cassert>
-#include <iostream>
-
 namespace hg {
 Platform::Platform(int x, int y, int xspeed, int yspeed, 
                    int width, int height, int index, 
@@ -42,10 +39,6 @@ height_(other.height_),
 index_(other.index_),
 timeDirection_(other.timeDirection_),
 pauseLevel_(other.pauseLevel_)
-{
-}
-
-Platform::~Platform()
 {
 }
 

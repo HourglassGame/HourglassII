@@ -10,19 +10,22 @@
 #include <cassert>
 
 namespace hg {
+class Frame;
 //Class following original intention of FrameID. May be too slow for back-end use,
-//but I think that it is the best place to start because it is much less disruptive to the rest of the engine
-//It is 100% compatible with the FramePtr system from the point of view of physics.
-//It may be that both system can co-exist.
+//Compliments Frame* by not requiring a central authority (ie the base universe) to be used
 class FrameID {
 public:
     //Creates a nullframe
     FrameID();
 
     //Creates a FrameID referring to the given time in the given universe
-    FrameID(unsigned int time, const UniverseID& universe);
+    FrameID(size_t time, const UniverseID& universe);
 
-
+    //Creates a FrameID corresponding to the given Frame*
+    //(Not yet Implemented... if you need this functionality use Frame::toFrameID 
+    //or complete it using Frame::toFrameID as a reference)
+    FrameID(const Frame* toConvert);
+    
     // returns the normal next frame for things moving in direction TimeDirection
     FrameID nextFrame(TimeDirection direction) const;
 
@@ -31,7 +34,7 @@ public:
     unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    FrameID arbitraryFrameInUniverse(unsigned int frameNumber) const;
+    FrameID arbitraryFrameInUniverse(size_t frameNumber) const;
 
     // returns the frame that spawned the universe that this frame is in
     FrameID parentFrame() const;
@@ -39,7 +42,7 @@ public:
     // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
     //'distance' from the start of the universe This function cannot return nullFrame,
     //place assert to assure frameNumber is never greater pauseLength
-    FrameID arbitraryChildFrame(const PauseInitiatorID& initatorID, unsigned int frameNumber) const;
+    FrameID arbitraryChildFrame(const PauseInitiatorID& initatorID, size_t frameNumber) const;
 
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
     //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
@@ -53,19 +56,19 @@ public:
 
     bool isValidFrame() const;
 
-    unsigned int frame() const {
+    size_t frame() const {
         assert (isValidFrame());
         return frame_;
     }
 
     const UniverseID& universe() const {
-        return universe_;
+        return universeID_;
     }
 
 private:
     friend ::std::size_t hash_value(const FrameID& toHash);
-    unsigned int frame_;
-    UniverseID universe_;
+    size_t frame_;
+    UniverseID universeID_;
     unsigned int nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const;
     
     friend class boost::serialization::access;
@@ -73,7 +76,7 @@ private:
     void serialize(Archive &ar, const unsigned int /*version*/)
     {
         ar & BOOST_SERIALIZATION_NVP(frame_);
-        ar & BOOST_SERIALIZATION_NVP(universe_);
+        ar & BOOST_SERIALIZATION_NVP(universeID_);
     }
 };
 //Returns a size_t based on toHash such that two FrameIDs for which operator== returns true give the same size_t value;

@@ -18,7 +18,7 @@ Guy::Guy(int x,
 
          TimeDirection timeDirection,
          int pauseLevel,
-         int relativeIndex) :
+         size_t index) :
 x_(x),
 y_(y),
 xspeed_(xspeed),
@@ -36,7 +36,7 @@ boxPauseLevel_(boxPauseLevel),
 
 timeDirection_(timeDirection),
 pauseLevel_(pauseLevel),
-relativeIndex_(relativeIndex)
+index_(index)
 {
 }
 
@@ -58,7 +58,7 @@ boxPauseLevel_(other.boxPauseLevel_),
 
 timeDirection_(timeDirection),
 pauseLevel_(pauseLevel),
-relativeIndex_(other.relativeIndex_)
+index_(other.index_)
 {
 }
 
@@ -80,11 +80,7 @@ boxPauseLevel_(other.boxPauseLevel_),
 
 timeDirection_(other.timeDirection_),
 pauseLevel_(other.pauseLevel_),
-relativeIndex_(other.relativeIndex_)
-{
-}
-
-Guy::~Guy()
+index_(other.index_)
 {
 }
 
@@ -107,7 +103,7 @@ Guy& Guy::operator=(const Guy& other)
 
     timeDirection_ = other.timeDirection_;
     pauseLevel_ = other.pauseLevel_;
-    relativeIndex_ = other.relativeIndex_;
+    index_ = other.index_;
     return *this;
 }
 
@@ -118,7 +114,7 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return  (relativeIndex_ == other.relativeIndex_)
+	return  (index_ == other.index_)
             && (x_ == other.x_)
             && (y_ == other.y_)
             && (xspeed_ == other.xspeed_)
@@ -135,6 +131,6 @@ bool Guy::operator==(const Guy& other) const
 
 bool Guy::operator<(const Guy& other) const
 {
-    return relativeIndex_ < other.relativeIndex_;
+    return index_ < other.index_;
 }
 }//namespace hg

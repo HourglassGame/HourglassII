@@ -8,28 +8,43 @@
 namespace hg {
 
 FrameID::FrameID() :
-frame_(::std::numeric_limits<unsigned int>::max()),
-universe_(0)
+frame_(::std::numeric_limits<size_t>::max()),
+universeID_(0)
 {
 }
 
-FrameID::FrameID(unsigned int time, const UniverseID& nuniverse) :
+FrameID::FrameID(size_t time, const UniverseID& nuniverse) :
 frame_(time),
-universe_(nuniverse)
+universeID_(nuniverse)
 {
     assert(isValidFrame());
 }
-
+#if 0
+//Creates a FrameID corresponding to the given Frame*
+FrameID::FrameID(const Frame* toConvert) :
+frame_(toConvert->frameNumber_),
+universeID_()
+{
+    std::vector<SubUniverse>& nestTrain;
+    const Universe* universe(&(toConvert->universe_));
+    for(; universe->initiatorFrame_; universe = &(universe->initiatorFrame_->universe_))
+    {
+        universeID_.nestTrain.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
+    }
+    boost::reverse(universe_.nestTrain);
+    universeID_.timelineLength_ = universe->frames_.size();
+}
+#endif
 FrameID FrameID::nextFrame(TimeDirection direction) const
 {
     if (!isValidFrame()) {
         return FrameID();
     }
     else if (nextFramePauseLevelDifference(direction) == 0) {
-        return FrameID(frame_ + direction, universe_);
+        return FrameID(frame_ + direction, universeID_);
     }
     else {
-        return universe_.parentFrame().nextFrame(direction);
+        return universeID_.parentFrame().nextFrame(direction);
     }
 }
 
@@ -46,33 +61,33 @@ unsigned int FrameID::nextFramePauseLevelDifferenceAux(unsigned int depthAccumul
         ||
                 !((direction == REVERSE && frame_ == 0)
             ||
-                (direction == FORWARDS && frame_ == universe_.timelineLength()))) {
+                (direction == FORWARDS && frame_ == universeID_.timelineLength()))) {
         return depthAccumulator;
     }
     else {
-        return universe_.parentFrame().nextFramePauseLevelDifferenceAux(depthAccumulator + 1, direction);
+        return universeID_.parentFrame().nextFramePauseLevelDifferenceAux(depthAccumulator + 1, direction);
     }
 }
 
-FrameID FrameID::arbitraryFrameInUniverse(unsigned int frameNumber) const
+FrameID FrameID::arbitraryFrameInUniverse(size_t frameNumber) const
 {
-    if (frameNumber >= universe_.timelineLength()) {
+    if (frameNumber >= universeID_.timelineLength()) {
         return FrameID();
     }
     else {
-        return FrameID(frameNumber, universe_);
+        return FrameID(frameNumber, universeID_);
     }
 }
 
 FrameID FrameID::parentFrame() const
 {
-    return universe_.parentFrame();
+    return universeID_.parentFrame();
 }
 
 FrameID FrameID::arbitraryChildFrame(const PauseInitiatorID& initatorID,
-                                           unsigned int frameNumber) const
+                                           size_t frameNumber) const
 {
-    return FrameID(frameNumber, universe_.getSubUniverse(SubUniverse(frame_, initatorID)));
+    return FrameID(frameNumber, universeID_.getSubUniverse(SubUniverse(frame_, initatorID)));
 }
 
 FrameID FrameID::entryChildFrame(const PauseInitiatorID& initatorID,
@@ -80,12 +95,12 @@ FrameID FrameID::entryChildFrame(const PauseInitiatorID& initatorID,
 {
     assert(initatorID.timelineLength_ != 0);
     return FrameID(direction == FORWARDS ? 0 : initatorID.timelineLength_ - 1,
-                      universe_.getSubUniverse(SubUniverse(frame_, initatorID)));
+                      universeID_.getSubUniverse(SubUniverse(frame_, initatorID)));
 }
 
 bool FrameID::operator==(const FrameID& other) const
 {
-    return frame_ == other.frame_ && universe_ == other.universe_;
+    return frame_ == other.frame_ && universeID_ == other.universeID_;
 }
 
 bool FrameID::operator!=(const FrameID& other) const
@@ -95,20 +110,20 @@ bool FrameID::operator!=(const FrameID& other) const
 
 bool FrameID::operator<(const FrameID& other) const
 {
-    if (universe_ == other.universe_) {
+    if (universeID_ == other.universeID_) {
         return frame_ < other.frame_;
     }
     else {
-        return universe_ < other.universe_;
+        return universeID_ < other.universeID_;
     }
 
 }
 
 bool FrameID::isValidFrame() const
 {
-    if (universe_.timelineLength() < frame_) {
-        assert(frame_ == ::std::numeric_limits<unsigned int>::max());
-        assert(universe_.timelineLength() == 0);
+    if (universeID_.timelineLength() < frame_) {
+        assert(frame_ == ::std::numeric_limits<size_t>::max());
+        assert(universeID_.timelineLength() == 0);
         return false;
     }
     else {
@@ -120,7 +135,7 @@ bool FrameID::isValidFrame() const
 {
     ::std::size_t seed(0);
     ::boost::hash_combine(seed, toHash.frame_);
-    ::boost::hash_combine(seed, toHash.universe_);
+    ::boost::hash_combine(seed, toHash.universeID_);
     return seed;
 }
 }

@@ -1,8 +1,5 @@
 #include "Portal.h"
 
-#include <cassert>
-#include <iostream>
-
 namespace hg {
 Portal::Portal(int x,
                int y,
@@ -76,10 +73,6 @@ yDestination_(other.yDestination_),
 destinationIndex_(other.destinationIndex_),
 timeDestination_(other.timeDestination_),
 relativeTime_(other.relativeTime_)
-{
-}
-
-Portal::~Portal()
 {
 }
 

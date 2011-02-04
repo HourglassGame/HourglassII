@@ -5,12 +5,9 @@ namespace hg
 {
     class Platform
     {
-
     public:
-
         Platform(int x, int y, int xspeed, int yspeed, int width, int height, int index, TimeDirection timeDirection, int pauseLevel);
         Platform(const Platform& other, TimeDirection timeDirection, int pauseLevel);
-        ~Platform();
         Platform(const Platform& other);
         Platform& operator=(const Platform& other);
 

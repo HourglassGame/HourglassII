@@ -1,10 +1,10 @@
 #ifndef HG_FRAME_UPDATE_SET_H
 #define HG_FRAME_UPDATE_SET_H
-#include "Frame.h"
 
 #include <boost/unordered_set.hpp>
 #include <set>
 namespace hg {
+    class Frame;
     class FrameUpdateSet {
     public:
         FrameUpdateSet();
