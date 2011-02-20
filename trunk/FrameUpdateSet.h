@@ -13,6 +13,7 @@ namespace hg {
         void add(const FrameUpdateSet& other);
         void swap(FrameUpdateSet& other);
         
+        //typedef ConcurrentTimeSet SetType;
         typedef boost::unordered_set<Frame*> SetType;
         //typedef std::set<Frame*> SetType;
         

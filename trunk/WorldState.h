@@ -22,7 +22,7 @@ namespace hg {
          */
         WorldState(unsigned int timelineLength,
                    FrameID guyStartTime,
-                   PhysicsEngine physics,
+                   const PhysicsEngine& physics,
                    const ObjectList& initialObjects);
 
         /***************************************
@@ -57,7 +57,8 @@ namespace hg {
         TimelineState timeline_;
         // stores all player input
         ::std::vector<InputList> playerInput_;
-        //Stores the frames which changed in the most recent call to executeWorld
+        //Stores the frames whose arrivals have changed but which have not been executed since the change
+        //executeWorld executes every frame in frameUpdateSet_
         FrameUpdateSet frameUpdateSet_;
         //stores the physical properties of the world and uses them to turn arrivals into departures
         PhysicsEngine physics_;

@@ -21,29 +21,33 @@ public:
     typedef ::std::vector<FrameUpdateSet > FrameListList;
     struct RunResult
     {
-        Frame* currentPlayerFrame;
-        Frame* nextPlayerFrame;
-        const FrameListList* updatedFrames;
-        TimeDirection currentPlayerDirection;
+        Frame* currentPlayerFrame() {return currentPlayerFrame_;}
+        Frame* nextPlayerFrame() {return nextPlayerFrame_;}
+        const FrameListList& updatedFrames() {return *updatedFrames_;}
+        TimeDirection currentPlayerDirection() {return currentPlayerDirection_;}
         void swap(RunResult& other)
         {
-            boost::swap(currentPlayerFrame, other.currentPlayerFrame);
-            boost::swap(nextPlayerFrame, other.nextPlayerFrame);
-            boost::swap(updatedFrames, other.updatedFrames);
-            boost::swap(currentPlayerDirection, other.currentPlayerDirection);
+            boost::swap(currentPlayerFrame_, other.currentPlayerFrame_);
+            boost::swap(nextPlayerFrame_, other.nextPlayerFrame_);
+            boost::swap(updatedFrames_, other.updatedFrames_);
+            boost::swap(currentPlayerDirection_, other.currentPlayerDirection_);
         }
+        private:
+        friend class TimeEngine;
+        Frame* currentPlayerFrame_;
+        Frame* nextPlayerFrame_;
+        const FrameListList* updatedFrames_;
+        TimeDirection currentPlayerDirection_;
     };
     
     /*********************************************************************************************
-     * Constructs a new TimeEngine with the given timeline length, wall, wall size and gravity
-     * wall size is the length along one of the sides of the square wall segments given by wallmap
+     * Constructs a new TimeEngine with the given Level
      *
-     * Propogates the level with the given ObjectList to fully initialise the TimeEngine
+     * Propogates the level to fully initialise the TimeEngine
      * (objects begin at all points in time throughout the level,
-     * and so must be propogated through from the start and the end)
-     * Throws InvalidLevelException if level is not correct (and consistent?)
+     * and so must be propagated through from the start and the end)
+     * Throws InvalidLevelException if level is not correct
      * A correct level has exacty one guy.
-     * A consistent level has a state which does not depend on the direction in which it is propogated
      */
 	TimeEngine(const Level& level);
 

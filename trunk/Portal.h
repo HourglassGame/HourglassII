@@ -1,6 +1,7 @@
 #ifndef HG_PORTAL_H
 #define HG_PORTAL_H
 #include "TimeDirection.h"
+#include "SortedByIndex.h"
 namespace hg
 {
     class Portal
@@ -52,6 +53,11 @@ namespace hg
         int destinationIndex_;
         int timeDestination_;
         bool relativeTime_;
+    };
+    template<>
+    struct sorted_by_index<Portal>
+    {
+        static const bool value = true;
     };
 }
 #endif //HG_PLATFORM_H

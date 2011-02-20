@@ -2,6 +2,7 @@
 #define HG_GUY_H
 #include "TimeDirection.h"
 #include <cstdlib>
+#include "SortedByIndex.h"
 namespace hg {
     class Guy
     {
@@ -56,6 +57,11 @@ namespace hg {
         TimeDirection timeDirection_;
         int pauseLevel_;
         size_t index_;
+    };
+    template<>
+    struct sorted_by_index<Guy>
+    {
+        static const bool value = true;
     };
 }
 #endif //HG_GUY_H

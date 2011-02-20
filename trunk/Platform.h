@@ -1,6 +1,7 @@
 #ifndef HG_PLATFORM_H
 #define HG_PLATFORM_H
 #include "TimeDirection.h"
+#include "SortedByIndex.h"
 namespace hg
 {
     class Platform
@@ -36,6 +37,11 @@ namespace hg
         int index_;
         TimeDirection timeDirection_;
         int pauseLevel_;
+    };
+    template<>
+    class sorted_by_index<Platform>
+    {
+        static const bool value = true;
     };
 }
 #endif //HG_PLATFORM_H
