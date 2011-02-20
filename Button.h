@@ -1,6 +1,7 @@
 #ifndef HG_BUTTON_H
 #define HG_BUTTON_H
 #include "TimeDirection.h"
+#include "SortedByIndex.h"
 namespace hg
 {
     class Button
@@ -36,6 +37,11 @@ namespace hg
         bool state_;
         TimeDirection timeDirection_;
         int pauseLevel_;
+    };
+    template<>
+    struct sorted_by_index<Button>
+    {
+        static const bool value = true;
     };
 }
 #endif //HG_BUTTON_H

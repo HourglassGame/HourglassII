@@ -97,14 +97,14 @@ using namespace ::std;
 using namespace ::sf;
 using namespace ::boost;
 namespace {
-    void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection);
+    void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
     void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, Frame* playerFrame);
     void DrawWall(RenderTarget& target, const ::boost::multi_array<bool, 2>& wallData);
-    void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection&);
-    void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection&);
-    void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection& playerDirection);
-    void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection& playerDirection);
-    void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection& playerDirection);
+    void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection);
+    void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection);
+    void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection);
+    void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection);
+    void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection);
 
     ::boost::multi_array<bool, 2> MakeWall();
     Level MakeLevel(const ::boost::multi_array<bool, 2>& wallData);
@@ -152,19 +152,19 @@ int main()
         try{
             TimeEngine::RunResult waveInfo;
             timeEngine.runToNextPlayerFrame(input.AsInputList()).swap(waveInfo);
-            if (waveInfo.currentPlayerFrame) {
+            if (waveInfo.currentPlayerFrame()) {
                 Draw
                 (
                     app,
-                    waveInfo.currentPlayerFrame->getPostPhysics(),
+                    waveInfo.currentPlayerFrame()->getPostPhysics(),
                     wall,
-                    waveInfo.currentPlayerDirection
+                    waveInfo.currentPlayerDirection()
                 );
             }
             else {
-                Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800))->getPostPhysics(), wall, waveInfo.currentPlayerDirection);
+                Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800))->getPostPhysics(), wall, waveInfo.currentPlayerDirection());
             }
-            DrawTimeline(app, *waveInfo.updatedFrames, waveInfo.currentPlayerFrame);
+            DrawTimeline(app, waveInfo.updatedFrames(), waveInfo.currentPlayerFrame());
         }
         catch (hg::PlayerVictoryException& playerWon) {
             cout << "Congratulations, a winner is you!\n";
@@ -272,7 +272,7 @@ int main()
 }
 
 namespace  {
-void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection& playerDirection)
+void Draw(RenderWindow& target, const ObjectPtrList& frame, const ::boost::multi_array<bool, 2>& wall, TimeDirection playerDirection)
 {
     DrawWall(target, wall);
     DrawPortals(target, frame.getPortalListRef(), playerDirection);
@@ -305,7 +305,7 @@ void DrawWall(sf::RenderTarget& target, const ::boost::multi_array<bool, 2>& wal
     }
 }
 
-void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxList, TimeDirection& playerDirection)
+void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxList, TimeDirection playerDirection)
 {
     foreach(const Box* box, boxList) {
         if (playerDirection == box->getTimeDirection())
@@ -333,7 +333,7 @@ void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxList, TimeDire
     }
 }
 
-void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection& playerDirection)
+void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection playerDirection)
 {
     foreach(const Guy* guy, guyList) {
         if (guy->getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
@@ -385,7 +385,7 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
     }
 }
 
-void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection& playerDirection)
+void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection)
 {
      foreach(const Button* button, buttonList)
      {
@@ -421,7 +421,7 @@ void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, 
      }
 }
 
-void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection& playerDirection)
+void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection)
 {
 
      foreach(const Platform* platform, platformList)
@@ -453,7 +453,7 @@ void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platform
      }
 }
 
-void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection& playerDirection)
+void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection)
 {
 
      foreach(const Portal* portal, portalList)

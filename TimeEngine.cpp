@@ -31,10 +31,10 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInput
         worldState.executeWorld().swap(updatedList[i]);
     }
     TimeEngine::RunResult retv;
-    retv.currentPlayerFrame = worldState.getCurrentPlayerFrame();
-    retv.nextPlayerFrame = worldState.getNextPlayerFrame();
-    retv.updatedFrames = &updatedList;
-    retv.currentPlayerDirection = worldState.getCurrentPlayerDirection();
+    retv.currentPlayerFrame_ = worldState.getCurrentPlayerFrame();
+    retv.nextPlayerFrame_ = worldState.getNextPlayerFrame();
+    retv.updatedFrames_ = &updatedList;
+    retv.currentPlayerDirection_ = worldState.getCurrentPlayerDirection();
     return retv;
 }
     

@@ -28,7 +28,7 @@ struct ExecuteFrame
 
 WorldState::WorldState(unsigned int timelineLength,
                        FrameID guyStartTime,
-                       PhysicsEngine physics,
+                       const PhysicsEngine& physics,
                        const ObjectList& initialObjects) :
 timeline_(timelineLength),
 playerInput_(),
@@ -140,7 +140,7 @@ FrameUpdateSet WorldState::executeWorld()
 //except that the effects of the new arrivals are different from the old ones because playerInput_.Count is larger
 //than it was before. This situation breaks the wave assumption that departures == apply_physics(arrivals).
 
-//this is ok? because a new arrival with maxGuyIndex >= playerInput_.size() is either:
+//this is ok because a new arrival with maxGuyIndex >= playerInput_.size() is either:
 //			run, in which case nextPlayerFrames_ will be set and the frame will be run again when new input becomes available
 //		or
 //			not run, in which case it will be still sitting in frameUpdateSet_ and will be run in the next executeWorld
