@@ -15,8 +15,8 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/nvp.hpp>
+//#include <boost/serialization/vector.hpp>
+//#include <boost/serialization/nvp.hpp>
 
 #include <fstream>
 #include <sstream>
@@ -24,7 +24,7 @@
 #include <algorithm>
 
 #include <cmath>
-#include "nedmalloc.c"
+#include "nedmalloc.h"
 #include <new>
 
 void* operator new(size_t size) throw(std::bad_alloc)
@@ -139,6 +139,7 @@ int main()
                     break;
             }
         }
+        /*
         if (app.GetInput().IsKeyDown(sf::Key::S)) {
             const vector<InputList> replay(timeEngine.getReplayData());
             std::ofstream ofs("replay");
@@ -146,7 +147,7 @@ int main()
                 boost::archive::binary_oarchive out(ofs);
                 out << BOOST_SERIALIZATION_NVP(replay);
             }
-        }
+        }*/
         input.updateState(app.GetInput());
         //cout << "called from main" << endl;
         try{
