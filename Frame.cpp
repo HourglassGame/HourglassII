@@ -28,8 +28,8 @@ subUniverses_(other.subUniverses_)
 Frame* Frame::nextFrame(TimeDirection direction) const
 {
     assert(direction != INVALID);
-    if (frameNumber_ == 0 && direction == REVERSE
-     || frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS) {
+    if ((frameNumber_ == 0 && direction == REVERSE)
+     || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
         Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFrame(direction) : 0;
     }
@@ -148,8 +148,8 @@ const PauseInitiatorID& Frame::getInitiatorID() const {
 }
 unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const
 {
-    if (frameNumber_ == 0 && direction == REVERSE
-     || frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS) {
+    if ((frameNumber_ == 0 && direction == REVERSE)
+     || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
         ++accumulator;
         Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFramePauseLevelDifferenceAux(direction, accumulator) : accumulator;
