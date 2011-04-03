@@ -68,14 +68,14 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(const ObjectPtrList& ar
     if (time->parentFrame() == 0)
     {
         // button state update
-        buttonChecks(arrivals.getPlatformListRef(), arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextButtonState, time);
+        buttonChecks(arrivals.getPlatformListRef(), arrivals.getBoxListRef(), arrivals.getGuyListRef(), arrivals.getButtonListRef(), nextButtonState);
 
         // Trigger system execution
         triggerSystem.getPlatformDestinations(nextButtonState, platformDesinations);
     }
 
 	// platforms set their new location and velocity from trigger system data (and ofc their physical data)
-	platformStep(arrivals.getPlatformListRef(), nextPlatform, platformDesinations, time);
+	platformStep(arrivals.getPlatformListRef(), nextPlatform, platformDesinations);
 
 	// pickup position update from platform
 
@@ -85,14 +85,14 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(const ObjectPtrList& ar
 	// item simple collision algorithm
 
     // portal position update
-    portalPositionUpdate(nextPlatform, arrivals.getPortalListRef(), nextPortal, time);
+    portalPositionUpdate(nextPlatform, arrivals.getPortalListRef(), nextPortal);
 
 	// guys simple collision algorithm
 	guyStep(arrivals.getGuyListRef(), time, playerInput,
             nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFramesAndDirections, nextPlayerFrames, pauseTimes);
 
     // button position update
-    buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton, time);
+    buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton);
 
     buildDepartures(nextBox, nextPlatform, nextPortal, nextButton, nextGuy,
                     arrivals.getBoxThiefListRef(), arrivals.getBoxExtraListRef(), arrivals.getGuyExtraListRef(),
@@ -1201,11 +1201,10 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
 
 void PhysicsEngine::platformStep(const ::std::vector<const Platform*>& oldPlatformList,
                                  std::vector<Platform>& nextPlatform,
-                                 const std::vector<PlatformDestination>& pd,
-                                 Frame* time) const
+                                 const std::vector<PlatformDestination>& pd) const
 {
 
-    for (unsigned int i = 0; i < oldPlatformList.size(); ++i)
+    for (size_t i = 0; i < oldPlatformList.size(); ++i)
     {
         if (oldPlatformList[i]->getPauseLevel() != 0)
 	    {
@@ -1344,8 +1343,7 @@ void PhysicsEngine::platformStep(const ::std::vector<const Platform*>& oldPlatfo
 void PhysicsEngine::portalPositionUpdate(
         const std::vector<Platform>& nextPlatform,
         const ::std::vector<const Portal*>& oldPortalList,
-        std::vector<Portal>& nextPortal,
-        Frame* time
+        std::vector<Portal>& nextPortal
     ) const
 {
     const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getPortalAttachmentRef());
@@ -1392,8 +1390,7 @@ void PhysicsEngine::buttonPositionUpdate(
         const ::std::vector<Platform>& nextPlatform,
         const ::std::vector<char>& nextButtonState,
         const ::std::vector<const Button*>& oldButtonList,
-        ::std::vector<Button>& nextButton,
-        Frame* time
+        ::std::vector<Button>& nextButton
     ) const
 {
 
@@ -1438,8 +1435,7 @@ void PhysicsEngine::buttonChecks(const ::std::vector<const Platform*>& oldPlatfo
                         const ::std::vector<const Box*>& oldBoxList,
                         const ::std::vector<const Guy*>& oldGuyList,
                         const ::std::vector<const Button*>& oldButtonList,
-                        std::vector<char>& nextButton,
-                        Frame* time) const
+                        std::vector<char>& nextButton) const
 {
 
     const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getButtonAttachmentRef());

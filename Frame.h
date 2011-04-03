@@ -76,7 +76,7 @@ class Frame {
     const PauseInitiatorID& getInitiatorID() const;
     private:
     friend class FrameID;
-    unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const;
+    unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const;
     
     void insertArrival(const ArrivalMap::value_type& toInsert);
     void changeArrival(const ArrivalMap::value_type& toChange);

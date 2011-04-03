@@ -20,7 +20,7 @@ namespace hg {
     {
     public:
         PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
-                         unsigned int ID,
+                         size_t ID,
                          size_t timelineLength);
         PauseInitiatorID() :
         type_(pauseinitiatortype::INVALID),
@@ -28,7 +28,7 @@ namespace hg {
         timelineLength_(0)
         {}
         pauseinitiatortype::PauseInitiatorType type_;
-        unsigned int ID_;
+        size_t ID_;
         size_t timelineLength_;
         friend class boost::serialization::access;
 

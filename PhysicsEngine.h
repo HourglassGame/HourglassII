@@ -63,15 +63,13 @@ private:
 
     void platformStep(const ::std::vector<const Platform*>& oldPlatformList,
                       std::vector<Platform>& nextPlatform,
-                      const std::vector<PlatformDestination>& pd,
-                      Frame* time) const;
+                      const std::vector<PlatformDestination>& pd) const;
 
     void buttonChecks(  const ::std::vector<const Platform*>& oldPlatformList,
                         const ::std::vector<const Box*>& oldBoxList,
                         const ::std::vector<const Guy*>& oldGuyList,
                         const ::std::vector<const Button*>& oldButtonList,
-                        std::vector<char>& nextButton,
-                        Frame* time) const;
+                        std::vector<char>& nextButton) const;
 
     template <class Type, class TypeInfo> void BuildDepartureForComplexEntities(
                                     const ::std::vector<TypeInfo>& next,
@@ -106,15 +104,13 @@ private:
         const ::std::vector<Platform>& nextPlatform,
         const ::std::vector<char>& nextButtonState,
         const ::std::vector<const Button*>& oldButtonList,
-        ::std::vector<Button>& nextButton,
-        Frame* time
+        ::std::vector<Button>& nextButton
     ) const;
 
     void portalPositionUpdate(
         const std::vector<Platform>& nextPlatform,
         const ::std::vector<const Portal*>& oldPortalList,
-        std::vector<Portal>& nextPortal,
-        Frame* time
+        std::vector<Portal>& nextPortal
     ) const;
 
 	void crappyBoxCollisionAlogorithm(  const ::std::vector<const Box*>& oldBoxList,

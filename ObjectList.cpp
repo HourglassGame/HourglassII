@@ -358,8 +358,6 @@ struct DereferenceLess {
 //MUST CALL this before calling operator== on this ObjectPtrList
 void ObjectPtrList::sort()
 {
-    using boost::sort;
-    using namespace boost::lambda;
     boost::fusion::for_each(objectPtrList_, Sort<DereferenceLess>());
 }
 
