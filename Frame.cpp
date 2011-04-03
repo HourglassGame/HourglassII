@@ -178,7 +178,7 @@ FrameID Frame::toFrameID() const
 
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 {
-    bool didInsert(arrivals_.insert(toInsert));
+    bool didInsert(arrivals_.insert(toInsert)); (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
 void Frame::changeArrival(const ArrivalMap::value_type& toChange)
@@ -193,7 +193,7 @@ void Frame::changeArrival(const ArrivalMap::value_type& toChange)
 }
 void Frame::clearArrival(Frame* toClear)
 {
-    bool didErase(arrivals_.erase(toClear));
+    bool didErase(arrivals_.erase(toClear)); (void) didErase;
     assert(didErase && "Should only call Erase when the element does exist");
 }
 }
