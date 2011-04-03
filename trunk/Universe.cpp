@@ -42,6 +42,8 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
         default:
             assert(false);
     }
+    //Never reached
+    return 0;
 }
 Frame* Universe::getArbitraryFrame(size_t frameNumber)
 {

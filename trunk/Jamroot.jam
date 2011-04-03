@@ -65,7 +65,7 @@ alias staticlibcpp
 
 exe HourglassII 
 : [ glob *.cpp ] boost_include threading_building_blocks SFML-system SFML-window SFML-graphics CoreFoundation Cocoa OpenGL freetype staticlibcpp
-: <define>BOOST_MULTI_ARRAY_NO_GENERATORS <define>NDEBUG : <optimization>speed ;
+: <define>BOOST_MULTI_ARRAY_NO_GENERATORS <define>NDEBUG ;
 
 alias Install : Install-exe Install-libs Install-plist Install-resources ;
 install Install-exe : HourglassII : <conditional>@exe_install_location_rule ;
