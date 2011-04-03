@@ -1,0 +1,148 @@
+include configuration.jam ;
+
+alias boost_include
+    : # no sources
+    : # no build requirements
+    : # no default build
+    : <include>$(boost_header_directory) ;
+
+lib threading_building_blocks
+    :
+    : <file>$(threading_building_blocks_library)
+    :
+    : <include>$(threading_building_blocks_include_directory)
+    ;
+
+lib threading_building_blocks_malloc
+    :
+    : <file>$(threading_building_blocks_malloc_library)
+    :
+    : <include>$(threading_building_blocks_include_directory)
+    ;
+
+lib SFML-system
+    :
+    : <file>$(SFML_system_library)
+    :
+    : <include>$(SFML_include_directory) ;
+lib SFML-window
+    :
+    : <file>$(SFML_window_library)
+    :
+    : <include>$(SFML_include_directory) ;
+lib SFML-graphics
+    :
+    : <file>$(SFML_graphics_library)
+    :
+    : <include>$(SFML_include_directory) ;
+
+alias CoreFoundation
+    :
+    : 
+    :
+    : <linkflags>"-framework CoreFoundation" ;
+alias Cocoa
+    :
+    : 
+    :
+    : <linkflags>"-framework Cocoa" ;
+alias OpenGL
+    :
+    :
+    :
+    : <linkflags>"-framework OpenGL" ;
+lib freetype
+    :
+    : <file>"/usr/X11/lib/libfreetype.dylib"
+    :
+    : ;
+    
+alias staticlibcpp
+:
+: 
+:
+: <linkflags>"-lstdc++-static" ;
+
+exe HourglassII 
+: [ glob *.cpp ] boost_include threading_building_blocks SFML-system SFML-window SFML-graphics CoreFoundation Cocoa OpenGL freetype staticlibcpp
+: <define>BOOST_MULTI_ARRAY_NO_GENERATORS <define>NDEBUG : <optimization>speed ;
+
+alias Install : Install-exe Install-libs Install-plist Install-resources ;
+install Install-exe : HourglassII : <conditional>@exe_install_location_rule ;
+install Install-libs : threading_building_blocks : <conditional>@lib_install_location_rule ;
+install Install-resources : osx/HourglassSwirl.icns : <conditional>@resources_install_location_rule ;
+install Install-plist : osx/Info.plist osx/PkgInfo : <conditional>@plist_install_location_rule ;
+
+rule exe_install_location_rule ( properties * )
+{
+    local result ;
+    local relative_install_location ;
+    if <target-os>darwin in $(properties)
+    {
+        relative_install_location = "HourglassII.app/Contents/MacOS/" ;
+    }
+    else
+    {
+        relative_install_location = "HourglassII/" ;
+    }
+    if <variant>debug in $(properties)
+    {
+        result = <location>$(debug_install_location)$(relative_install_location) ;
+    }
+    else if <variant>release in $(properties)
+    {
+        result = <location>$(release_install_location)$(relative_install_location) ;
+    }
+    return $(result) ;
+}
+
+rule lib_install_location_rule ( properties * )
+{
+    local result ;
+    local relative_install_location ;
+    if <target-os>darwin in $(properties)
+    {
+        relative_install_location = "HourglassII.app/Contents/Frameworks/" ;
+    }
+    else
+    {
+        relative_install_location = "HourglassII/" ;
+    }
+    if <variant>debug in $(properties)
+    {
+        result = <location>$(debug_install_location)$(relative_install_location) ;
+    }
+    else if <variant>release in $(properties)
+    {
+        result = <location>$(release_install_location)$(relative_install_location) ;
+    }
+    return $(result) ;
+}
+
+rule plist_install_location_rule ( properties * )
+{
+    local result ;
+    if <variant>debug in $(properties)
+    {
+        result = <location>$(debug_install_location)"HourglassII.app/Contents/" ;
+    }
+    else if <variant>release in $(properties)
+    {
+        result = <location>$(release_install_location)"HourglassII.app/Contents/" ;
+    }
+    return $(result) ;
+}
+
+rule resources_install_location_rule ( properties * )
+{
+    local result ;
+    if <variant>debug in $(properties)
+    {
+        result = <location>$(debug_install_location)"HourglassII.app/Contents/Resources/" ;
+    }
+    else if <variant>release in $(properties)
+    {
+        result = <location>$(release_install_location)"HourglassII.app/Contents/Resources/" ;
+    }
+    return $(result) ;
+}

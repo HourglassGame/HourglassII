@@ -23,14 +23,37 @@
 #include <iostream>
 #include <algorithm>
 
+#include <cstdio>
+
 #include <cmath>
 #include "nedmalloc.h"
+//#include "tbb/scalable_allocator.h"
 #include <new>
+
+void* custom_malloc(size_t size);
+void custom_free(void* p);
+
+void* custom_malloc(size_t size)
+{
+    //puts("m");
+    return nedalloc::nedmalloc(size);
+    //return scalable_malloc(size);
+}
+
+void custom_free(void* p)
+{
+    //puts("f");
+    //scalable_free(p);
+    //free(p);
+    if (p) {
+        nedalloc::nedfree(p);
+    }
+}
 
 void* operator new(size_t size) throw(std::bad_alloc)
 {
     while (true) {
-        void* pointer(nedalloc::nedmalloc(size));
+        void* pointer(custom_malloc(size));
         if (pointer) {
             return pointer;
         }
@@ -46,13 +69,13 @@ void* operator new(size_t size) throw(std::bad_alloc)
 
 void operator delete(void *p) throw()
 {
-    nedalloc::nedfree(p);
+    custom_free(p);
 }
 
 void* operator new(size_t size, const std::nothrow_t &) throw()
 {
     while (true) {
-        void* pointer(nedalloc::nedmalloc(size));
+        void* pointer(custom_malloc(size));
         if (pointer) {
             return pointer;
         }
@@ -68,7 +91,7 @@ void* operator new(size_t size, const std::nothrow_t &) throw()
 
 void operator delete(void *p, const std::nothrow_t &) throw()
 {
-    nedalloc::nedfree(p);
+    custom_free(p);
 }
 
 void* operator new[](size_t size) throw(std::bad_alloc)

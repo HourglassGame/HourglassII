@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>${EXECUTABLE_NAME}</string>
+	<string>HourglassII</string>
 	<key>CFBundleIconFile</key>
 	<string>HourglassSwirl</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.TeamCausality.${PRODUCT_NAME:identifier}</string>
+	<string>org.TeamCausality.HourglassII</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>

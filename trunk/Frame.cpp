@@ -146,7 +146,7 @@ ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) c
 const PauseInitiatorID& Frame::getInitiatorID() const {
     return universe_.getInitiatorID();
 }
-unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, int accumulator) const
+unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const
 {
     if ((frameNumber_ == 0 && direction == REVERSE)
      || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
