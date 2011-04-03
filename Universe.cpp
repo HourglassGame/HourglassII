@@ -12,6 +12,7 @@ initiatorFrame_(0),
 frames_(),
 initiatorID_(0)
 {
+    (void)other;
     //Ok to copy construct as long as there are no frames which know where the universe is 
     //and there are no frames which know where the frames in this universe are
     assert(other.frames_.empty());
@@ -87,9 +88,11 @@ frames_()
     assert(timelineLength > 0);
     construct(initiatorFrame, timelineLength, initiatorID);
 }
-
 void Universe::construct(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID)
 {
+    assert(initiatorFrame_ == 0 && "Trying to construct already constructed universe!");
+    assert(frames_.empty() && "Trying to construct already constructed universe!");
+    assert(initiatorID_ == 0 && "Trying to construct already constructed universe!");
     initiatorFrame_ = initiatorFrame;
     frames_.reserve(timelineLength);
     for (unsigned int i(0); i < timelineLength; ++i)
