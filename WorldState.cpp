@@ -12,15 +12,15 @@ namespace hg {
 struct ExecuteFrame
 {
     ExecuteFrame(WorldState& thisptr, DepartureMap& departuremap):
-    thisptr_(thisptr),
-    departuremap_(departuremap)
+            thisptr_(thisptr),
+            departuremap_(departuremap)
     {
     }
     void operator()(Frame* time) const
     {
         departuremap_.addDeparture(time, thisptr_.getDeparturesFromFrame(time));
     }
-    private:
+private:
     WorldState& thisptr_;
     DepartureMap& departuremap_;
 };
@@ -29,13 +29,13 @@ WorldState::WorldState(std::size_t timelineLength,
                        FrameID guyStartTime,
                        const PhysicsEngine& physics,
                        const ObjectList& initialObjects) :
-timeline_(timelineLength),
-playerInput_(),
-frameUpdateSet_(),
-physics_(physics),
-nextPlayerFrames_(),
-currentPlayerFramesAndDirections_(),
-currentWinFrames_()
+        timeline_(timelineLength),
+        playerInput_(),
+        frameUpdateSet_(),
+        physics_(physics),
+        nextPlayerFrames_(),
+        currentPlayerFramesAndDirections_(),
+        currentWinFrames_()
 {
 
     assert(guyStartTime.isValidFrame());
@@ -47,7 +47,7 @@ currentWinFrames_()
         std::map<Frame*, ObjectList> initialPlatformArrivals;
 
         for (std::vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
-             end(initialObjects.getPlatformListRef().end()); it != end; ++it)
+                end(initialObjects.getPlatformListRef().end()); it != end; ++it)
         {
             initialPlatformArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
@@ -69,21 +69,21 @@ currentWinFrames_()
 
         // boxes
         for (std::vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
-                 end(initialObjects.getBoxListRef().end()); it != end; ++it)
+                end(initialObjects.getBoxListRef().end()); it != end; ++it)
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
 
         // portals
         for (std::vector<Portal>::const_iterator it(initialObjects.getPortalListRef().begin()),
-             end(initialObjects.getPortalListRef().end()); it != end; ++it)
+                end(initialObjects.getPortalListRef().end()); it != end; ++it)
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
 
         // buttons
         for (std::vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
-             end(initialObjects.getButtonListRef().end()); it != end; ++it)
+                end(initialObjects.getButtonListRef().end()); it != end; ++it)
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
@@ -148,8 +148,8 @@ FrameUpdateSet WorldState::executeWorld()
 //However, in this case it would be ok because the earlier equivalent arrival must already run
 // and added itself to nextPlayerFrames_
 //The basic assertion in the whole system is maxGuyIndex <= playerInput_.size()
- 
-//A better? system would remove physics from having to do any work at all, and would have the timeline manage this 
+
+//A better? system would remove physics from having to do any work at all, and would have the timeline manage this
 //together with the WorldState by scanning all new arrivals.
 /**
 * Stores the given input data, allowing the player to exist for another step.
@@ -157,7 +157,7 @@ FrameUpdateSet WorldState::executeWorld()
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
-    for(ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end()); it != end; ++it) {
+    for (ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end()); it != end; ++it) {
         frameUpdateSet_.add(*it);
         //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
     }
@@ -170,7 +170,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
     //					in this case maxGuyIndex is guaranteed to be < playerInput.size() - 1 after this is called
     //					(as this increases size by 1) and so the maxGuyIndex guy is neither a currentPlayer nor nextPlayer)
     // maxGuyIndex == playerInput_.size():
-    //					in this case maxGuyIndex == playerInput_.size() - 1 and so (barring new arrivals) 
+    //					in this case maxGuyIndex == playerInput_.size() - 1 and so (barring new arrivals)
     //					it contains a currentPlayer. However, in this case physics would have added this frame to nextPlayerFrames_
     //					and so it was added to be executed just above
     // maxGuyIndex > playerInput_.size():

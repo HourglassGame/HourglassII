@@ -46,39 +46,39 @@ template<typename ForwardRange>
 bool containsNoElementsWithEqualIndices(const ForwardRange& range)
 {
     return boost::adjacent_find<boost::return_found>
-            (range,
-             EqualIndices
-             <
-                typename std::iterator_traits
-                <
-                    typename boost::range_iterator<ForwardRange>::type
-                >::value_type
-             >())
-            == boost::end(range);
+           (range,
+            EqualIndices
+            <
+            typename std::iterator_traits
+            <
+            typename boost::range_iterator<ForwardRange>::type
+            >::value_type
+            >())
+           == boost::end(range);
 }
 template<class SequenceOfSequences, class Func>
 void n_ary_for_each(SequenceOfSequences const & s, Func const & f)
 {
     using namespace boost::fusion;
     for_each(zip_view<SequenceOfSequences>(s),
-        fused_procedure<Func const &>(f));
+             fused_procedure<Func const &>(f));
 }
 } //namespace
 
 namespace hg {
 ObjectList::ObjectList() :
 #ifndef NDEBUG
-sorted(true),
+        sorted(true),
 #endif //NDEBUG
-objectList_()
+        objectList_()
 {
 }
 
 ObjectList::ObjectList(const ObjectList& other):
 #ifndef NDEBUG
-sorted(other.sorted),
+        sorted(other.sorted),
 #endif //NDEBUG
-objectList_(other.objectList_)
+        objectList_(other.objectList_)
 {
 }
 ObjectList& ObjectList::operator=(const ObjectList& other)
@@ -90,7 +90,7 @@ ObjectList& ObjectList::operator=(const ObjectList& other)
     return *this;
 }
 
-const std::vector<Guy>& ObjectList::getGuyListRef() const 
+const std::vector<Guy>& ObjectList::getGuyListRef() const
 {
     return boost::fusion::at_c<object_list_detail::guyList>(objectList_);
 }
@@ -210,7 +210,7 @@ struct Sort
     {
         boost::sort(toSort, Comparitor<typename ListType::value_type>());
         //These lists are sorted on index alone, but have equality based on all their members.
-        //This means that they must never have more than one element with the same index, 
+        //This means that they must never have more than one element with the same index,
         //because that could cause equal ObjectLists to be found to be different because the order in which the lists within the
         //two ObjectLists are sorted is different, even though the lists contain the same elements.
         assert(containsNoElementsWithEqualIndices(toSort));
@@ -273,12 +273,12 @@ bool ObjectList::isEmpty() const
 
 //---------------------------------ObjectPtrList-----------------------------------
 ObjectPtrList::ObjectPtrList() :
-objectPtrList_()
+        objectPtrList_()
 {
 }
 
 ObjectPtrList::ObjectPtrList(const ObjectPtrList& other):
-objectPtrList_(other.objectPtrList_)
+        objectPtrList_(other.objectPtrList_)
 
 {
 }
@@ -288,7 +288,7 @@ ObjectPtrList& ObjectPtrList::operator=(const ObjectPtrList& other)
     return *this;
 }
 
-const std::vector<const Guy*>& ObjectPtrList::getGuyListRef() const 
+const std::vector<const Guy*>& ObjectPtrList::getGuyListRef() const
 {
     return boost::fusion::at_c<object_list_detail::guyList>(objectPtrList_);
 }
@@ -343,7 +343,7 @@ struct InsertAddresses
 void ObjectPtrList::add(const ObjectList& other)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(objectPtrList_, other.objectList_), InsertAddresses());           
+    n_ary_for_each(vector_tie(objectPtrList_, other.objectList_), InsertAddresses());
 }
 
 template<typename T>
@@ -377,13 +377,13 @@ bool ObjectPtrList::operator==(const ObjectPtrList& other) const
 {
     using boost::equal;
     return equal(guyList,other.guyList, DereferenceEqual<Guy*>())
-        && equal(boxList,other.boxList, DereferenceEqual<Box*>())
-        && equal(buttonList,other.buttonList, DereferenceEqual<Button*>())
-        && equal(platformList,other.platformList, DereferenceEqual<Platform*>())
-        && equal(portalList,other.portalList, DereferenceEqual<Portal*>())
-        && equal(boxThiefList,other.boxThiefList, DereferenceEqual<RemoteDepartureEdit<Box>*>())
-        && equal(guyExtraList,other.guyExtraList, DereferenceEqual<RemoteDepartureEdit<Box>*>())
-        && equal(boxExtraList,other.boxExtraList, DereferenceEqual<RemoteDepartureEdit<Guy>*>());
+           && equal(boxList,other.boxList, DereferenceEqual<Box*>())
+           && equal(buttonList,other.buttonList, DereferenceEqual<Button*>())
+           && equal(platformList,other.platformList, DereferenceEqual<Platform*>())
+           && equal(portalList,other.portalList, DereferenceEqual<Portal*>())
+           && equal(boxThiefList,other.boxThiefList, DereferenceEqual<RemoteDepartureEdit<Box>*>())
+           && equal(guyExtraList,other.guyExtraList, DereferenceEqual<RemoteDepartureEdit<Box>*>())
+           && equal(boxExtraList,other.boxExtraList, DereferenceEqual<RemoteDepartureEdit<Guy>*>());
 }
 bool ObjectPtrList::operator!=(const ObjectPtrList& other) const
 {

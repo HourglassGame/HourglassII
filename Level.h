@@ -10,16 +10,16 @@ namespace hg {
 class Level {
 //Probably will make these private when the level editor gets implemented
 public:
-Level(unsigned int nspeedOfTime,
-      std::size_t ntimeLineLength,
-    const boost::multi_array<bool, 2>& nwallmap,
-    int nwallSize,
-    int ngravity,
-    const ObjectList& ninitialObjects,
-    const FrameID& nguyStartTime,
-    const AttachmentMap& nattachmentMap,
-    const TriggerSystem& ntriggerSystem);
-    
+    Level(unsigned int nspeedOfTime,
+          std::size_t ntimeLineLength,
+          const boost::multi_array<bool, 2>& nwallmap,
+          int nwallSize,
+          int ngravity,
+          const ObjectList& ninitialObjects,
+          const FrameID& nguyStartTime,
+          const AttachmentMap& nattachmentMap,
+          const TriggerSystem& ntriggerSystem);
+
     unsigned int speedOfTime;
     std::size_t timeLineLength;
     boost::multi_array<bool, 2> wallmap;

@@ -1,7 +1,7 @@
 #include "ConcurrentTimeMap.h"
 namespace hg {
 ConcurrentTimeMap::ConcurrentTimeMap() :
-map_()
+        map_()
 {
 }
 //in this implementation the comment about adding or removing a particular frame concurrently

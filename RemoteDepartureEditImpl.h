@@ -1,15 +1,15 @@
 namespace hg {
 template <class Type> RemoteDepartureEdit<Type>::RemoteDepartureEdit(PauseInitiatorID origin, Type departure, bool propIntoNormal) :
-origin_(origin),
-departure_(departure),
-propIntoNormal_(propIntoNormal)
+        origin_(origin),
+        departure_(departure),
+        propIntoNormal_(propIntoNormal)
 {
 }
 
 template <class Type> RemoteDepartureEdit<Type>::RemoteDepartureEdit(const RemoteDepartureEdit<Type>& other) :
-origin_(other.origin_),
-departure_(other.departure_),
-propIntoNormal_(other.propIntoNormal_)
+        origin_(other.origin_),
+        departure_(other.departure_),
+        propIntoNormal_(other.propIntoNormal_)
 {
 }
 
@@ -28,9 +28,9 @@ template <class Type> bool RemoteDepartureEdit<Type>::operator!=(const RemoteDep
 
 template <class Type> bool RemoteDepartureEdit<Type>::operator==(const RemoteDepartureEdit<Type>& other) const
 {
-	return (origin_ == other.origin_)
-            && (departure_ == other.departure_)
-            && (propIntoNormal_ == other.propIntoNormal_);
+    return (origin_ == other.origin_)
+           && (departure_ == other.departure_)
+           && (propIntoNormal_ == other.propIntoNormal_);
 }
 
 template <class Type> bool RemoteDepartureEdit<Type>::operator<(const RemoteDepartureEdit<Type>& other) const

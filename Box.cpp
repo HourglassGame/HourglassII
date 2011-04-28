@@ -2,35 +2,35 @@
 
 namespace hg {
 Box::Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection, int pauseLevel) :
-x_(x),
-y_(y),
-xspeed_(xspeed),
-yspeed_(yspeed),
-size_(size),
-timeDirection_(timeDirection),
-pauseLevel_(pauseLevel)
+        x_(x),
+        y_(y),
+        xspeed_(xspeed),
+        yspeed_(yspeed),
+        size_(size),
+        timeDirection_(timeDirection),
+        pauseLevel_(pauseLevel)
 {
 }
 
 Box::Box(const Box& other, hg::TimeDirection timeDirection, int pauseLevel) :
-x_(other.x_),
-y_(other.y_),
-xspeed_(other.xspeed_),
-yspeed_(other.yspeed_),
-size_(other.size_),
-timeDirection_(timeDirection),
-pauseLevel_(pauseLevel)
+        x_(other.x_),
+        y_(other.y_),
+        xspeed_(other.xspeed_),
+        yspeed_(other.yspeed_),
+        size_(other.size_),
+        timeDirection_(timeDirection),
+        pauseLevel_(pauseLevel)
 {
 }
 
 Box::Box(const Box& other) :
-x_(other.x_),
-y_(other.y_),
-xspeed_(other.xspeed_),
-yspeed_(other.yspeed_),
-size_(other.size_),
-timeDirection_(other.timeDirection_),
-pauseLevel_(other.pauseLevel_)
+        x_(other.x_),
+        y_(other.y_),
+        xspeed_(other.xspeed_),
+        yspeed_(other.yspeed_),
+        size_(other.size_),
+        timeDirection_(other.timeDirection_),
+        pauseLevel_(other.pauseLevel_)
 {
 }
 
@@ -53,13 +53,13 @@ bool Box::operator!=(const Box& other) const
 
 bool Box::operator==(const Box& other) const
 {
-	return (x_ == other.x_)
-        && (y_ == other.y_)
-        && (xspeed_ == other.xspeed_)
-        && (yspeed_ == other.yspeed_)
-        && (timeDirection_ == other.timeDirection_)
-        && (pauseLevel_ == other.pauseLevel_)
-        && (size_ == other.size_);
+    return (x_ == other.x_)
+           && (y_ == other.y_)
+           && (xspeed_ == other.xspeed_)
+           && (yspeed_ == other.yspeed_)
+           && (timeDirection_ == other.timeDirection_)
+           && (pauseLevel_ == other.pauseLevel_)
+           && (size_ == other.size_);
 }
 
 bool Box::operator<(const Box& other) const

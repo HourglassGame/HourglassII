@@ -14,7 +14,7 @@ namespace hg {
 struct UpdateDeparturesFromTime
 {
     UpdateDeparturesFromTime(ConcurrentFrameUpdateSet& framesWithChangedArrivals) :
-    framesWithChangedArrivals_(framesWithChangedArrivals)
+            framesWithChangedArrivals_(framesWithChangedArrivals)
     {
     }
     void operator()(DepartureMap::value_type& newDeparture) const
@@ -25,7 +25,7 @@ struct UpdateDeparturesFromTime
 };
 
 TimelineState::TimelineState(std::size_t timelineLength) :
-universe_(timelineLength)
+        universe_(timelineLength)
 {
 }
 

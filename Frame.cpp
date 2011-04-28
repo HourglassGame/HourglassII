@@ -7,27 +7,27 @@
 #define foreach BOOST_FOREACH
 namespace hg {
 Frame::Frame(std::size_t frameNumber, Universe& universe):
-frameNumber_(frameNumber),
-universe_(universe),
-departures_(),
-arrivals_(),
-subUniverses_()
+        frameNumber_(frameNumber),
+        universe_(universe),
+        departures_(),
+        arrivals_(),
+        subUniverses_()
 {
 }
 //copy-construction
 Frame::Frame(const Frame& other) :
-frameNumber_(other.frameNumber_),
-universe_(other.universe_),
-departures_(other.departures_),
-arrivals_(other.arrivals_),
-subUniverses_(other.subUniverses_)
+        frameNumber_(other.frameNumber_),
+        universe_(other.universe_),
+        departures_(other.departures_),
+        arrivals_(other.arrivals_),
+        subUniverses_(other.subUniverses_)
 {
 }
 Frame* Frame::nextFrame(TimeDirection direction) const
 {
     assert(direction != INVALID);
     if ((frameNumber_ == 0 && direction == REVERSE)
-     || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
+            || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
         Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFrame(direction) : 0;
     }
@@ -52,7 +52,7 @@ Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, std::size
 {
     assert(initiatorID.timelineLength_ > frameNumber);
     SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
-    if(it == subUniverses_.end())
+    if (it == subUniverses_.end())
     {
         it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
         it->second.construct(this, initiatorID.timelineLength_, it->first);
@@ -62,7 +62,7 @@ Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, std::size
 Frame* Frame::entryChildFrame(const PauseInitiatorID& initiatorID, TimeDirection direction)
 {
     SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
-    if(it == subUniverses_.end())
+    if (it == subUniverses_.end())
     {
         it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
         it->second.construct(this, initiatorID.timelineLength_, it->first);
@@ -147,7 +147,7 @@ const PauseInitiatorID& Frame::getInitiatorID() const {
 unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const
 {
     if ((frameNumber_ == 0 && direction == REVERSE)
-     || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
+            || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
         ++accumulator;
         Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFramePauseLevelDifferenceAux(direction, accumulator) : accumulator;
@@ -163,7 +163,8 @@ void Frame::addArrival(Frame* source, ObjectList* arrival)
 }
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 {
-    bool didInsert(arrivals_.insert(toInsert)); (void) didInsert;
+    bool didInsert(arrivals_.insert(toInsert));
+    (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
 void Frame::changeArrival(const ArrivalMap::value_type& toChange)
@@ -178,7 +179,8 @@ void Frame::changeArrival(const ArrivalMap::value_type& toChange)
 }
 void Frame::clearArrival(Frame* toClear)
 {
-    bool didErase(arrivals_.erase(toClear)); (void) didErase;
+    bool didErase(arrivals_.erase(toClear));
+    (void) didErase;
     assert(didErase && "Should only call Erase when the element does exist");
 }
 }

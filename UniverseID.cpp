@@ -7,15 +7,15 @@
 #include "Universe.h"
 namespace hg {
 SubUniverse::SubUniverse(std::size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
-initiatorFrame_(initiatorFrame),
-pauseInitiatorID_(pauseInitiatorID)
+        initiatorFrame_(initiatorFrame),
+        pauseInitiatorID_(pauseInitiatorID)
 {
 }
 
 bool operator==(const SubUniverse& lhs, const SubUniverse& rhs)
 {
-    return lhs.initiatorFrame_ == rhs.initiatorFrame_ 
-            && lhs.pauseInitiatorID_ == rhs.pauseInitiatorID_;
+    return lhs.initiatorFrame_ == rhs.initiatorFrame_
+           && lhs.pauseInitiatorID_ == rhs.pauseInitiatorID_;
 }
 
 bool operator<(const SubUniverse& lhs, const SubUniverse& rhs)
@@ -37,14 +37,14 @@ std::size_t hash_value(const SubUniverse& toHash)
 }
 
 UniverseID::UniverseID(std::size_t timelineLength) :
-timelineLength_(timelineLength),
-nestTrain_()
+        timelineLength_(timelineLength),
+        nestTrain_()
 {
 }
 
 UniverseID::UniverseID(const Universe& toConvert) :
-timelineLength_(),
-nestTrain_()
+        timelineLength_(),
+        nestTrain_()
 {
     const Universe* universe(&toConvert);
     for (; universe->initiatorFrame_; universe = &(universe->initiatorFrame_->universe_))
@@ -86,14 +86,14 @@ std::size_t UniverseID::timelineLength() const
 bool UniverseID::operator==(const UniverseID& other) const
 {
     return timelineLength_ == other.timelineLength_
-            && nestTrain_ == other.nestTrain_;
+           && nestTrain_ == other.nestTrain_;
 }
 
 bool UniverseID::operator<(const UniverseID& other) const
 {
     if (nestTrain_.size() == other.nestTrain_.size()) {
         for (std::vector<SubUniverse>::const_reverse_iterator it(nestTrain_.rbegin()), end(nestTrain_.rend()), oit(other.nestTrain_.rbegin());
-             it != end; ++it, ++oit) {
+                it != end; ++it, ++oit) {
             if (*it != *oit) {
                 return *it < *oit;
             }

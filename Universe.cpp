@@ -8,26 +8,26 @@
 #include <functional>
 namespace hg {
 Universe::Universe() :
-initiatorFrame_(0),
-frames_(), 
-initiatorID_(0)
+        initiatorFrame_(0),
+        frames_(),
+        initiatorID_(0)
 {
 }
 Universe::Universe(const Universe& other) :
-initiatorFrame_(0),
-frames_(),
-initiatorID_(0)
+        initiatorFrame_(0),
+        frames_(),
+        initiatorID_(0)
 {
     (void)other;
-    //Ok to copy construct as long as there are no frames which know where the universe is 
+    //Ok to copy construct as long as there are no frames which know where the universe is
     //and there are no frames which know where the frames in this universe are
     assert(other.frames_.empty());
 }
 //creates a top level universe
 Universe::Universe(std::size_t timelineLength) :
-initiatorFrame_(0),
-frames_(),
-initiatorID_(0)
+        initiatorFrame_(0),
+        frames_(),
+        initiatorID_(0)
 {
     assert(timelineLength > 0);
     construct(initiatorFrame_, timelineLength, *initiatorID_);
@@ -42,12 +42,12 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
 {
     assert(!frames_.empty());
     switch (direction) {
-        case FORWARDS:
-            return &(*frames_.begin());
-        case REVERSE:
-            return &(*frames_.rbegin());
-        default:
-            assert(false);
+    case FORWARDS:
+        return &(*frames_.begin());
+    case REVERSE:
+        return &(*frames_.rbegin());
+    default:
+        assert(false);
     }
     //Never reached
     return 0;
@@ -72,7 +72,7 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
     assert(!initiatorFrame_);
     Frame* parentFrame(0);
     for (std::vector<SubUniverse>::const_iterator it(whichFrame.universe().nestTrain_.begin()),
-                                                end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
+            end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
     {
         if (!parentFrame) {
             parentFrame = getArbitraryFrame(it->initiatorFrame_);
@@ -89,8 +89,8 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
     }
 }
 Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID) :
-initiatorFrame_(0),
-frames_()
+        initiatorFrame_(0),
+        frames_()
 {
     assert(timelineLength > 0);
     construct(initiatorFrame, timelineLength, initiatorID);
@@ -98,8 +98,10 @@ frames_()
 namespace {
 struct ConstructFrame : std::unary_function<std::size_t, Frame> {
     ConstructFrame(Universe& universe) : universe_(universe) {}
-    Frame operator()(std::size_t frameNumber) const { return Frame(frameNumber, universe_); }
-    private:
+    Frame operator()(std::size_t frameNumber) const {
+        return Frame(frameNumber, universe_);
+    }
+private:
     Universe& universe_;
 };
 }
@@ -110,8 +112,8 @@ void Universe::construct(Frame* initiatorFrame, std::size_t timelineLength, cons
     assert(frames_.empty() && "Trying to construct already constructed universe!");
     assert(initiatorID_ == 0 && "Trying to construct already constructed universe!");
     initiatorFrame_ = initiatorFrame;
-    boost::push_back(frames_, boost::irange<std::size_t>(0, timelineLength) 
-                                | boost::adaptors::transformed(ConstructFrame(*this)));
+    boost::push_back(frames_, boost::irange<std::size_t>(0, timelineLength)
+                     | boost::adaptors::transformed(ConstructFrame(*this)));
     initiatorID_ = &initiatorID;
 }
 }

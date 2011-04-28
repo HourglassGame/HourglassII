@@ -20,13 +20,13 @@ class FrameID;
 class Frame {
     typedef boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
     typedef tbb::concurrent_hash_map<Frame*, ObjectList*> ArrivalMap;
-    public:
+public:
     //copy-construction -- quite dangerous, because frames are identified by their address
     //public to allow use in standard containers in Universe
     Frame(const Frame& other);
-    
+
     Frame(std::size_t frameNumber, Universe& universe);
-    
+
     // returns the normal next frame for things moving in direction TimeDirection
     Frame* nextFrame(TimeDirection direction) const;
 
@@ -52,7 +52,7 @@ class Frame {
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
     FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
-    
+
     //assignment
     Frame& operator=(const Frame&)
     {
@@ -63,7 +63,7 @@ class Frame {
     /*****************************************************
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
-	ObjectPtrList getPrePhysics() const;
+    ObjectPtrList getPrePhysics() const;
 
     /*****************************************************
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
@@ -71,15 +71,17 @@ class Frame {
      */
     ObjectPtrList getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
     void addArrival(Frame* source, ObjectList* arrival);
-    std::size_t getFrameNumber() const { return frameNumber_; }
+    std::size_t getFrameNumber() const {
+        return frameNumber_;
+    }
     const PauseInitiatorID& getInitiatorID() const;
-    private:
+private:
     friend class FrameID;
     friend class Universe;
     friend class UniverseID;
 
     unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const;
-    
+
     void insertArrival(const ArrivalMap::value_type& toInsert);
     void changeArrival(const ArrivalMap::value_type& toChange);
     void clearArrival(Frame* toClear);

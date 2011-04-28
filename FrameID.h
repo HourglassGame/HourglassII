@@ -21,7 +21,7 @@ public:
 
     //Creates a FrameID corresponding to the given Frame*
     explicit FrameID(const Frame* toConvert);
-    
+
     // returns the normal next frame for things moving in direction TimeDirection
     FrameID nextFrame(TimeDirection direction) const;
 

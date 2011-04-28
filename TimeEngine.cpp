@@ -4,11 +4,11 @@
 
 namespace hg {
 TimeEngine::TimeEngine(const Level& level) :
-speedOfTime(level.speedOfTime),
-worldState(level.timeLineLength,
-           level.guyStartTime,
-           PhysicsEngine(level.wallmap, level.wallSize, level.gravity, level.attachmentMap, level.triggerSystem),
-           level.initialObjects)
+        speedOfTime(level.speedOfTime),
+        worldState(level.timeLineLength,
+                   level.guyStartTime,
+                   PhysicsEngine(level.wallmap, level.wallSize, level.gravity, level.attachmentMap, level.triggerSystem),
+                   level.initialObjects)
 
 {
 }
@@ -29,7 +29,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInput
     retv.currentPlayerDirection_ = worldState.getCurrentPlayerDirection();
     return retv;
 }
-    
+
 std::vector<InputList> TimeEngine::getReplayData() const
 {
     return worldState.getReplayData();

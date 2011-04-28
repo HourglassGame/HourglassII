@@ -1,7 +1,7 @@
 #include "ConcurrentTimeSet.h"
 namespace hg {
 ConcurrentTimeSet::ConcurrentTimeSet() :
-set_()
+        set_()
 {
 }
 void ConcurrentTimeSet::add(Frame* toAdd)
