@@ -48,7 +48,7 @@ private:
         TimeDirection currentPlayerDirection_;
     };
 
-    /*******************************************************************************************************************
+    /**
      * Constructs a new TimeEngine with the given Level
      *
      * Propagates the level to fully initialise the TimeEngine
@@ -60,24 +60,25 @@ private:
     TimeEngine(const Level& level);
 
 
-    /*******************************************************************************************************************
+    /**
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
     RunResult runToNextPlayerFrame(const InputList& newInputData);
-    /*******************************************************************************************************************
-    * Returns an object list containing the state of whichFrame after physics was applied.
-    * This function is always run after the runToNextPlayerFrame function in order to
-    * query the state of particular frames.
-    */
-    //ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
+
+    /**
+     * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
+     */
     Frame* getFrame(const FrameID& whichFrame);
     std::vector<InputList> getReplayData() const;
 private:
     unsigned int speedOfTime;
     //state of world at end of last executed frame
     WorldState worldState;
+    //Stores the lists of frames which were updated for each step of the execution.
+    //This is a member of TimeEngine for performance reasons alone;
+    //(logically a new one is created with each call to runToNextPlayerFrame).
     FrameListList updatedList;
 };
 }

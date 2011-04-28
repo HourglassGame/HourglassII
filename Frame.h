@@ -60,12 +60,12 @@ public:
         assert(false);
         return *this;
     }
-    /*****************************************************
+    /**
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
     ObjectPtrList getPrePhysics() const;
 
-    /*****************************************************
+    /**
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
      * Not sure what the whichPrePause argument is actually there for, so leaving that functionality out for now.
      */
@@ -85,9 +85,9 @@ private:
     void insertArrival(const ArrivalMap::value_type& toInsert);
     void changeArrival(const ArrivalMap::value_type& toChange);
     void clearArrival(Frame* toClear);
-    //position of frame within universe_
+    /** Position of frame within universe_ */
     std::size_t frameNumber_;
-    //back-link to universe which this frame is in
+    /** Back-link to universe which this frame is in */
     Universe& universe_;
     std::map<Frame*, ObjectList> departures_;
     ArrivalMap arrivals_;
