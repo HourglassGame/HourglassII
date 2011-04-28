@@ -11,17 +11,17 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 
-#include <cstdio>
+#include <cstddef>
 
 #include <cmath>
 #include "nedmalloc.h"
 //#include "tbb/scalable_allocator.h"
 #include <new>
 
-void* custom_malloc(size_t size);
+void* custom_malloc(std::size_t size);
 void custom_free(void* p);
 
-void* custom_malloc(size_t size)
+void* custom_malloc(std::size_t size)
 {
     //puts("m");
     return nedalloc::nedmalloc(size);
@@ -38,7 +38,7 @@ void custom_free(void* p)
     }
 }
 
-void* operator new(size_t size) throw(std::bad_alloc)
+void* operator new(std::size_t size) throw(std::bad_alloc)
 {
     while (true) {
         void* pointer(custom_malloc(size));
@@ -60,7 +60,7 @@ void operator delete(void *p) throw()
     custom_free(p);
 }
 
-void* operator new(size_t size, const std::nothrow_t &) throw()
+void* operator new(std::size_t size, const std::nothrow_t &) throw()
 {
     while (true) {
         void* pointer(custom_malloc(size));
@@ -82,7 +82,7 @@ void operator delete(void *p, const std::nothrow_t &) throw()
     custom_free(p);
 }
 
-void* operator new[](size_t size) throw(std::bad_alloc)
+void* operator new[](std::size_t size) throw(std::bad_alloc)
 {
     return ::operator new(size);
 }
@@ -92,7 +92,7 @@ void operator delete[](void *p) throw()
     ::operator delete(p);
 }
 
-void* operator new[](size_t size, const std::nothrow_t & nothrow) throw()
+void* operator new[](std::size_t size, const std::nothrow_t & nothrow) throw()
 {
    return ::operator new(size, nothrow);
 }
@@ -165,7 +165,7 @@ int main()
                 );
             }
             else {
-                Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),10800))->getPostPhysics(), wall, waveInfo.currentPlayerDirection());
+                Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, waveInfo.currentPlayerDirection());
             }
             DrawTimeline(app, waveInfo.updatedFrames(), waveInfo.currentPlayerFrame());
         }
@@ -408,13 +408,13 @@ void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, 
         foreach (Frame* frame, lists) {
             if (frame) {
 
-                if (!pixelsWhichHaveBeenDrawnIn[static_cast<size_t>(frame->getFrameNumber()/10800.*640)]) {
+                if (!pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(frame->getFrameNumber()/10800.*640)]) {
                     target.Draw(Shape::Rectangle(static_cast<int>(frame->getFrameNumber()/10800.*640),
                                                 10,
                                                 static_cast<int>(frame->getFrameNumber()/10800.*640+1),
                                                 25,
                                                 Color(250,0,0)));
-                    pixelsWhichHaveBeenDrawnIn[static_cast<size_t>(frame->getFrameNumber()/10800.*640)] = true;
+                    pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(frame->getFrameNumber()/10800.*640)] = true;
                 }
             }
             else {
@@ -516,7 +516,7 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
         3200,
         30,
         ObjectList(newObjectList),
-        FrameID(0,10800),
+        FrameID(0,UniverseID(10800)),
         AttachmentMap
         (
          std::vector<Attachment>(1, Attachment(0,3200,-800)),

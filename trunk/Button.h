@@ -2,7 +2,7 @@
 #define HG_BUTTON_H
 #include "TimeDirection.h"
 #include "SortedByIndex.h"
-#include <cstring> //for size_t -- TODO, find proper header
+#include <cstddef>
 namespace hg
 {
     class Button
@@ -10,7 +10,7 @@ namespace hg
 
     public:
 
-        Button(int x, int y, int xspeed, int yspeed, int width, int height, size_t index, bool state, TimeDirection timeDirection, int pauseLevel);
+        Button(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, bool state, TimeDirection timeDirection, int pauseLevel);
         Button(const Button& other, TimeDirection timeDirection, int pauseLevel);
         Button(const Button& other);
         Button& operator=(const Button& other);
@@ -21,7 +21,7 @@ namespace hg
         int getYspeed() const {return yspeed_;}
         int getWidth() const {return width_;}
         int getHeight() const {return height_;}
-        size_t getIndex() const {return index_;}
+        std::size_t getIndex() const {return index_;}
         bool getState() const {return state_;}
         TimeDirection getTimeDirection() const {return timeDirection_;}
         int getPauseLevel() const {return pauseLevel_;}
@@ -38,7 +38,7 @@ namespace hg
         int yspeed_;
         int width_;
         int height_;
-        size_t index_;
+        std::size_t index_;
         bool state_;
         TimeDirection timeDirection_;
         int pauseLevel_;

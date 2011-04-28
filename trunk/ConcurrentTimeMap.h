@@ -16,7 +16,7 @@ namespace hg {
         void remove(Frame* toRemove);
         void clear() { map_.clear(); }
         bool empty() const { return map_.empty(); }
-        size_t size() const { return map_.size(); }
+        std::size_t size() const { return map_.size(); }
         typedef MapType::iterator iterator;
         typedef MapType::const_iterator const_iterator;
         iterator begin() { return map_.begin(); }

@@ -24,7 +24,7 @@ struct UpdateDeparturesFromTime
     ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
 };
 
-TimelineState::TimelineState(size_t timelineLength) :
+TimelineState::TimelineState(std::size_t timelineLength) :
 universe_(timelineLength)
 {
 }

@@ -7,6 +7,7 @@
 
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/indirected.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
@@ -115,34 +116,34 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(const ObjectPtrList& ar
 }
 
 
-template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForComplexEntities(
-                                    const std::vector<TypeInfo>& next,
-                                    const std::vector<const RemoteDepartureEdit<Type>* >& thief,
-                                    const std::vector<const RemoteDepartureEdit<Type>* >& extra,
-                                    NewDeparturesT& newDepartures,
-                                    Frame* time,
-                                    std::vector<PauseInitiatorID>& pauseTimes
-                                    ) const
+template <class Type, class TypeInfo> 
+void PhysicsEngine::buildDeparturesForComplexEntities(
+        const std::vector<TypeInfo>& next,
+        const std::vector<const RemoteDepartureEdit<Type>* >& thieves,
+        const std::vector<const RemoteDepartureEdit<Type>* >& extras,
+        NewDeparturesT& newDepartures,
+        Frame* time,
+        std::vector<PauseInitiatorID>& pauseTimes) const
 {
     // builds departures for something that can move in complex ways throughout pause frames
 	// adding, removal etc... things like guys and boxes
-	for (size_t i = 0; i < next.size(); ++i)
+	foreach (const TypeInfo& thingAndTime, next)
 	{
-	    Type thing = next[i].info;
+	    const Type& thing(thingAndTime.info);
 
 	    // the index of the next normal departure for a thing
 		Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
 
-        if (next[i].time != nextTime)
+        if (thingAndTime.time != nextTime)
         {
-            newDepartures[next[i].time].add(thing);
+            newDepartures[thingAndTime.time].add(thing);
             goto buildNext;
         }
 
         // check if the departure is to be stolen
-		for (size_t t = 0; t < thief.size(); ++t)
+		foreach (const RemoteDepartureEdit<Type>& thief, thieves | boost::adaptors::indirected)
 		{
-		    if (thief[t]->getDeparture() == thing)
+		    if (thief.getDeparture() == thing)
 		    {
 		        // by now the departure is known to be stolen
 		        // if the departure is a pause departure the departure a level up must also be stolen
@@ -161,14 +162,14 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 
                 // adds pause time departures to pause times before this one
                 // also adds pause time departure to the pause time that stole the departue
-                for (size_t j = 0; j < pauseTimes.size(); ++j)
+                foreach (const PauseInitiatorID& pauseTime, pauseTimes)
                 {
-                    newDepartures[time->entryChildFrame(pauseTimes[j], thing.getTimeDirection())].add
+                    newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
                     (
                         Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
                     );
 
-                    if (pauseTimes[j] == thief[t]->getOrigin())
+                    if (pauseTime == thief.getOrigin())
                     {
                         // the current thing is finished, goto next one
                         goto buildNext;
@@ -192,9 +193,9 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 		}
 
         // add pause time departure to all spawned pause times
-		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		foreach (const PauseInitiatorID& pauseTime, pauseTimes)
 		{
-		    newDepartures[time->entryChildFrame(pauseTimes[j], thing.getTimeDirection())].add
+		    newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
             (
                 Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
             );
@@ -205,17 +206,17 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 
 	// special departures for things, from pause time
 	// these things are pause time things that have changed location in pause time
-	for (size_t i = 0; i < extra.size(); ++i)
+	foreach (const RemoteDepartureEdit<Type>& extra, extras | boost::adaptors::indirected)
 	{
-	    Type thing = extra[i]->getDeparture();
+	    const Type& thing(extra.getDeparture());
 
 	    // the index of the next normal departure for a thing
 		Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
 
         // check if the departure is to be stolen
-		for (size_t t = 0; t < thief.size(); ++t)
+		foreach (const RemoteDepartureEdit<Type>& thief, thieves | boost::adaptors::indirected)
 		{
-		    if (thief[t]->getDeparture() == thing)
+		    if (thief.getDeparture() == thing)
 		    {
 		        // by now the departure is known to be stolen
 		        // if the departure is a pause departure the departure a level up must also be stolen
@@ -235,17 +236,17 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
                 // adds pause time departures to pause times before this one
                 // also adds pause time departure to the pause time that stole the departue
                 // CHANGE FROM NORMAL THING HANDLING: only add to pause times that occur after the extra thing pause time
-                for (size_t j = 0; j < pauseTimes.size(); ++j)
+                foreach (const PauseInitiatorID& pauseTime, pauseTimes)
                 {
-                    if (extra[i]->getOrigin() < pauseTimes[j])
+                    if (extra.getOrigin() < pauseTime)
                     {
-                        newDepartures[time->entryChildFrame(pauseTimes[j], thing.getTimeDirection())].add
+                        newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
                         (
                             Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
                         );
                     }
 
-                    if (thief[t]->getOrigin() == pauseTimes[j])
+                    if (thief.getOrigin() == pauseTime)
                     {
                         // the thing is finished, goto next one
                         goto buildNextExtra;
@@ -261,18 +262,18 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
         {
 
         }
-		else if (nextTime && extra[i]->getPropIntoNormal())
+		else if (nextTime && extra.getPropIntoNormal())
 		{
 		    // simply depart to next frame
 			newDepartures[nextTime].add(thing);
 		}
 
         // CHANGE FROM NORMAL THING HANDLING: add pause time departure to pause times after the current one
-		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		foreach (const PauseInitiatorID& pauseTime, pauseTimes)
 		{
-		    if (extra[i]->getOrigin() < pauseTimes[j])
+		    if (extra.getOrigin() < pauseTime)
             {
-                newDepartures[time->entryChildFrame(pauseTimes[j], thing.getTimeDirection())].add
+                newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
                 (
                     Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
                 );
@@ -284,27 +285,27 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 
 }
 
-template <class Type> void PhysicsEngine::BuildDepartureForReallySimpleThing(
+template <class Type> void PhysicsEngine::buildDeparturesForReallySimpleThings(
                                     const std::vector<Type>& next,
                                     NewDeparturesT& newDepartures,
                                     Frame* time,
                                     std::vector<PauseInitiatorID>& pauseTimes
                                     ) const
 {
-    for (size_t i = 0; i < next.size(); ++i)
+    foreach (const Type& thing, next)
 	{
-		Frame* nextTime(time->nextFrame(next[i].getTimeDirection()));
+		Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
 
-		if (nextTime && (next[i].getPauseLevel() == 0 || time->nextFramePauseLevelDifference(next[i].getTimeDirection()) == 0))
+		if (nextTime && (thing.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(thing.getTimeDirection()) == 0))
 		{
-			newDepartures[nextTime].add(next[i]);
+			newDepartures[nextTime].add(thing);
 		}
 
-		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		foreach (const PauseInitiatorID& pauseTime, pauseTimes)
 		{
-		    newDepartures[time->entryChildFrame(pauseTimes[j], next[i].getTimeDirection())].add
+		    newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
             (
-                Type(next[i], next[i].getTimeDirection(), next[i].getPauseLevel()+1)
+                Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
             );
 		}
 	}
@@ -316,19 +317,18 @@ void PhysicsEngine::buildDepartures(const std::vector<BoxInfo>& nextBox,
                         const std::vector<Portal>& nextPortal,
                         const std::vector<Button>& nextButton,
                         const std::vector<GuyInfo>& nextGuy,
-                        const std::vector<const RemoteDepartureEdit<Box>* >& boxThief,
-                        const std::vector<const RemoteDepartureEdit<Box>* >& boxExtra,
-                        const std::vector<const RemoteDepartureEdit<Guy>* >& guyExtra,
+                        const std::vector<const RemoteDepartureEdit<Box>* >& boxThieves,
+                        const std::vector<const RemoteDepartureEdit<Box>* >& extraBoxes,
+                        const std::vector<const RemoteDepartureEdit<Guy>* >& extraGuys,
                         NewDeparturesT& newDepartures,
                         Frame* time,
-                        std::vector<PauseInitiatorID>& pauseTimes
-                                    ) const
+                        std::vector<PauseInitiatorID>& pauseTimes) const
 {
 
     // pause times initiated in the frame must be sorted
     boost::sort(pauseTimes);
 
-	BuildDepartureForComplexEntities<Box,BoxInfo>(nextBox, boxThief, boxExtra, newDepartures, time, pauseTimes);
+	buildDeparturesForComplexEntities(nextBox, boxThieves, extraBoxes, newDepartures, time, pauseTimes);
 
     // build departures for guys
 	for (std::size_t i = 0; i < nextGuy.size(); ++i)
@@ -388,13 +388,13 @@ void PhysicsEngine::buildDepartures(const std::vector<BoxInfo>& nextBox,
         {
             // if the guy is departing to paused don't add it to pause times after this one
             PauseInitiatorID pauseID = nextGuy[i].time->getInitiatorID();
-            for (size_t j = 0; j < pauseTimes.size(); ++j)
+            foreach (const PauseInitiatorID& pauseTime, pauseTimes)
             {
-                if (pauseID == pauseTimes[j])
+                if (pauseID == pauseTime)
                 {
                     break;
                 }
-                newDepartures[time->entryChildFrame(pauseTimes[j], guyData.getTimeDirection())].add
+                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add
                 (
                     Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
                         guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
@@ -409,9 +409,9 @@ void PhysicsEngine::buildDepartures(const std::vector<BoxInfo>& nextBox,
         else
         {
             // add pause guy to every pause time universe from this frame
-            for (size_t j = 0; j < pauseTimes.size(); ++j)
+            foreach (const PauseInitiatorID& pauseTime, pauseTimes)
             {
-                newDepartures[time->entryChildFrame(pauseTimes[j], guyData.getTimeDirection())].add
+                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add
                 (
                     Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
                         guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
@@ -426,25 +426,30 @@ void PhysicsEngine::buildDepartures(const std::vector<BoxInfo>& nextBox,
 	}
 
 	// build departure for extra guys (purely graphical things to do with pause order)
-	for (size_t i = 0; i < guyExtra.size(); ++i)
+	foreach (const RemoteDepartureEdit<Guy>& extraGuy, extraGuys | boost::adaptors::indirected)
 	{
         // add pause time departure to pause times after the current one
-		for (size_t j = 0; j < pauseTimes.size(); ++j)
+		foreach (const PauseInitiatorID& pauseTime, pauseTimes | boost::adaptors::reversed)
 		{
-		    if (guyExtra[i]->getOrigin() < pauseTimes[j])
+		    if (extraGuy.getOrigin() < pauseTime)
             {
-                newDepartures[time->entryChildFrame(pauseTimes[j], guyExtra[i]->getDeparture().getTimeDirection())].add
+                newDepartures[time->entryChildFrame(pauseTime, extraGuy.getDeparture().getTimeDirection())].add
                 (
-                    Guy(guyExtra[i]->getDeparture())
+                    Guy(extraGuy.getDeparture())
                 );
+            }
+            else
+            {
+                //pauseTimes is sorted (in ascending order)
+                break;
             }
 		}
 	}
 
 	// simple things
-    BuildDepartureForReallySimpleThing<Platform>(nextPlatform, newDepartures, time, pauseTimes);
-    BuildDepartureForReallySimpleThing<Button>(nextButton, newDepartures, time, pauseTimes);
-    BuildDepartureForReallySimpleThing<Portal>(nextPortal, newDepartures, time, pauseTimes);
+    buildDeparturesForReallySimpleThings(nextPlatform, newDepartures, time, pauseTimes);
+    buildDeparturesForReallySimpleThings(nextButton, newDepartures, time, pauseTimes);
+    buildDeparturesForReallySimpleThings(nextPortal, newDepartures, time, pauseTimes);
 }
 
 void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
@@ -457,8 +462,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                             NewDeparturesT& newDepartures,
                             ConcurrentTimeMap& currentPlayerFramesAndDirections,
                             ConcurrentTimeSet& nextPlayerFrames,
-                            std::vector<PauseInitiatorID>& pauseTimes
-                            ) const
+                            std::vector<PauseInitiatorID>& pauseTimes) const
 {
 	std::vector<int> x;
 	std::vector<int> y;

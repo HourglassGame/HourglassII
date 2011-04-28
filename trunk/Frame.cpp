@@ -1,14 +1,12 @@
 #include "Frame.h"
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
-#include "FrameID.h"
-#include <boost/range/adaptor/reversed.hpp>
 #include <boost/foreach.hpp>
 #include <utility>
 #include <cassert>
 #define foreach BOOST_FOREACH
 namespace hg {
-Frame::Frame(size_t frameNumber, Universe& universe):
+Frame::Frame(std::size_t frameNumber, Universe& universe):
 frameNumber_(frameNumber),
 universe_(universe),
 departures_(),
@@ -42,7 +40,7 @@ unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
     assert(direction != INVALID);
     return nextFramePauseLevelDifferenceAux(direction, 0);
 }
-Frame* Frame::arbitraryFrameInUniverse(size_t frameNumber) const
+Frame* Frame::arbitraryFrameInUniverse(std::size_t frameNumber) const
 {
     return universe_.getArbitraryFrame(frameNumber);
 }
@@ -50,7 +48,7 @@ Frame* Frame::parentFrame() const
 {
     return universe_.getInitiatorFrame();
 }
-Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, size_t frameNumber)
+Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, std::size_t frameNumber)
 {
     assert(initiatorID.timelineLength_ > frameNumber);
     SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
@@ -127,7 +125,7 @@ end:
 ObjectPtrList Frame::getPrePhysics() const
 {
     ObjectPtrList retv;
-    foreach(const ArrivalMap::value_type& value, arrivals_) {
+    foreach (const ArrivalMap::value_type& value, arrivals_) {
         retv.add(*value.second);
     }
     retv.sort();
@@ -137,7 +135,7 @@ ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) c
 {
     ObjectPtrList retv;
     typedef std::map<Frame*, ObjectList>::value_type value_type;
-    foreach(const value_type& value, departures_) {
+    foreach (const value_type& value, departures_) {
         retv.add(value.second);
     }
     retv.sort();
@@ -163,18 +161,6 @@ void Frame::addArrival(Frame* source, ObjectList* arrival)
 {
     arrivals_.insert(ArrivalMap::value_type(source, arrival));
 }
-
-FrameID Frame::toFrameID() const
-{
-    std::vector<SubUniverse> nestTrain;
-    const Universe* universe(&universe_);
-    for(; universe->initiatorFrame_; universe = &(universe->initiatorFrame_->universe_))
-    {
-        nestTrain.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
-    }
-    return FrameID(frameNumber_, UniverseID(universe->frames_.size(), nestTrain | boost::adaptors::reversed));
-}
-
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 {
     bool didInsert(arrivals_.insert(toInsert)); (void) didInsert;
@@ -183,7 +169,7 @@ void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 void Frame::changeArrival(const ArrivalMap::value_type& toChange)
 {
     ArrivalMap::accessor access;
-    if(arrivals_.find(access, toChange.first))
+    if (arrivals_.find(access, toChange.first))
     {
         access->second = toChange.second;
         return;

@@ -2,13 +2,13 @@
 #define HG_PORTAL_H
 #include "TimeDirection.h"
 #include "SortedByIndex.h"
-#include <cstring> //for size_t -- TODO, find proper header
+#include <cstddef>
 namespace hg
 {
     class Portal
     {
     public:
-        Portal(int x, int y, int xspeed, int yspeed, int width, int height, size_t index, TimeDirection timeDirection, int pauseLevel, int charges, bool active,
+        Portal(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, TimeDirection timeDirection, int pauseLevel, int charges, bool active,
                int xDestination, int yDestination, int destinationIndex, int timeDestination, bool relativeTime);
         Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
         Portal(const Portal& other);
@@ -21,7 +21,7 @@ namespace hg
         int getYspeed() const {return yspeed_;}
         int getWidth() const {return width_;}
         int getHeight() const {return height_;}
-        size_t getIndex() const {return index_;}
+        std::size_t getIndex() const {return index_;}
         TimeDirection getTimeDirection() const {return timeDirection_;}
         int getPauseLevel() const {return pauseLevel_;}
         int getCharges() const {return charges_;}
@@ -44,7 +44,7 @@ namespace hg
         int yspeed_;
         int width_;
         int height_;
-        size_t index_;
+        std::size_t index_;
         TimeDirection timeDirection_;
         int pauseLevel_;
         int charges_;

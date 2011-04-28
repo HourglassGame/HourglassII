@@ -2,10 +2,11 @@
 #include "FrameID.h"
 
 #include <boost/functional/hash.hpp>
-#include <boost/range/iterator_range.hpp>
+#include <boost/range/algorithm/reverse.hpp>
 
+#include "Universe.h"
 namespace hg {
-SubUniverse::SubUniverse(size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
+SubUniverse::SubUniverse(std::size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
 initiatorFrame_(initiatorFrame),
 pauseInitiatorID_(pauseInitiatorID)
 {
@@ -29,16 +30,29 @@ bool operator<(const SubUniverse& lhs, const SubUniverse& rhs)
 
 std::size_t hash_value(const SubUniverse& toHash)
 {
-    size_t seed(0);
+    std::size_t seed(0);
     boost::hash_combine(seed, toHash.initiatorFrame_);
     boost::hash_combine(seed, toHash.pauseInitiatorID_);
     return seed;
 }
 
-UniverseID::UniverseID(size_t timelineLength) :
+UniverseID::UniverseID(std::size_t timelineLength) :
 timelineLength_(timelineLength),
 nestTrain_()
 {
+}
+
+UniverseID::UniverseID(const Universe& toConvert) :
+timelineLength_(),
+nestTrain_()
+{
+    const Universe* universe(&toConvert);
+    for (; universe->initiatorFrame_; universe = &(universe->initiatorFrame_->universe_))
+    {
+        nestTrain_.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
+    }
+    boost::reverse(nestTrain_);
+    timelineLength_ = universe->frames_.size();
 }
 
 FrameID UniverseID::parentFrame() const
@@ -59,7 +73,7 @@ FrameID UniverseID::parentFrame() const
     }
 }
 
-size_t UniverseID::timelineLength() const
+std::size_t UniverseID::timelineLength() const
 {
     if (nestTrain_.empty()) {
         return timelineLength_;
@@ -100,7 +114,7 @@ UniverseID UniverseID::getSubUniverse(const SubUniverse& newestNest) const
 
 std::size_t hash_value(const UniverseID& toHash)
 {
-    size_t seed(0);
+    std::size_t seed(0);
     boost::hash_combine(seed, toHash.timelineLength_);
     boost::hash_combine(seed, toHash.nestTrain_);
     return seed;
@@ -115,7 +129,7 @@ PauseInitiatorID UniverseID::initiatorID() const
         return PauseInitiatorID(pauseinitiatortype::INVALID,0,0);
     }
 }
-size_t UniverseID::pauseDepth() const
+std::size_t UniverseID::pauseDepth() const
 {
     return nestTrain_.size();
 }

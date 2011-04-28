@@ -74,47 +74,42 @@ private:
                         const std::vector<const Button*>& oldButtonList,
                         std::vector<char>& nextButton) const;
 
-    template <class Type, class TypeInfo> void BuildDepartureForComplexEntities(
+    template <class Type, class TypeInfo> void buildDeparturesForComplexEntities(
                                     const std::vector<TypeInfo>& next,
-                                    const std::vector<const RemoteDepartureEdit<Type>* >& thief,
-                                    const std::vector<const RemoteDepartureEdit<Type>* >& extra,
+                                    const std::vector<const RemoteDepartureEdit<Type>* >& thieves,
+                                    const std::vector<const RemoteDepartureEdit<Type>* >& extras,
                                     NewDeparturesT& newDepartures,
                                     Frame* time,
-                                    std::vector<PauseInitiatorID>& pauseTimes
-                                    ) const;
+                                    std::vector<PauseInitiatorID>& pauseTimes) const;
 
-    template <class Type> void BuildDepartureForReallySimpleThing(
+    template <class Type> void buildDeparturesForReallySimpleThings(
                                     const std::vector<Type>& next,
                                     NewDeparturesT& newDepartures,
                                     Frame* time,
-                                    std::vector<PauseInitiatorID>& pauseTimes
-                                    ) const;
+                                    std::vector<PauseInitiatorID>& pauseTimes) const;
 
     void buildDepartures(const std::vector<BoxInfo>& nextBox,
-                        const std::vector<Platform>& nextPlatform,
-                        const std::vector<Portal>& nextPortal,
-                        const std::vector<Button>& nextButton,
-                        const std::vector<GuyInfo>& nextGuy,
-                        const std::vector<const RemoteDepartureEdit<Box>* >& boxThief,
-                        const std::vector<const RemoteDepartureEdit<Box>* >& boxExtra,
-                        const std::vector<const RemoteDepartureEdit<Guy>* >& guyExtra,
-                        NewDeparturesT& newDepartures,
-                        Frame* time,
-                        std::vector<PauseInitiatorID>& pauseTimes
-                        ) const;
+                         const std::vector<Platform>& nextPlatform,
+                         const std::vector<Portal>& nextPortal,
+                         const std::vector<Button>& nextButton,
+                         const std::vector<GuyInfo>& nextGuy,
+                         const std::vector<const RemoteDepartureEdit<Box>* >& boxThieves,
+                         const std::vector<const RemoteDepartureEdit<Box>* >& extraBoxes,
+                         const std::vector<const RemoteDepartureEdit<Guy>* >& extraGuys,
+                         NewDeparturesT& newDepartures,
+                         Frame* time,
+                         std::vector<PauseInitiatorID>& pauseTimes) const;
 
     void buttonPositionUpdate(
         const std::vector<Platform>& nextPlatform,
         const std::vector<char>& nextButtonState,
         const std::vector<const Button*>& oldButtonList,
-        std::vector<Button>& nextButton
-    ) const;
+        std::vector<Button>& nextButton) const;
 
     void portalPositionUpdate(
         const std::vector<Platform>& nextPlatform,
         const std::vector<const Portal*>& oldPortalList,
-        std::vector<Portal>& nextPortal
-    ) const;
+        std::vector<Portal>& nextPortal) const;
 
 	void crappyBoxCollisionAlogorithm(  const std::vector<const Box*>& oldBoxList,
                                         std::vector<BoxInfo>& nextBox,

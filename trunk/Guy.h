@@ -32,7 +32,7 @@ namespace hg {
 
         TimeDirection getTimeDirection() const {return timeDirection_;}
         int getPauseLevel() const {return pauseLevel_;}
-        size_t getIndex() const {return index_;}
+        std::size_t getIndex() const {return index_;}
 
         bool operator!=(const Guy& other) const;
         bool operator==(const Guy& other) const;
@@ -56,7 +56,7 @@ namespace hg {
 
         TimeDirection timeDirection_;
         int pauseLevel_;
-        size_t index_;
+        std::size_t index_;
     };
     template<>
     struct sorted_by_index<Guy>

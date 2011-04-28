@@ -11,7 +11,7 @@ class Level {
 //Probably will make these private when the level editor gets implemented
 public:
 Level(unsigned int nspeedOfTime,
-    size_t ntimeLineLength,
+      std::size_t ntimeLineLength,
     const boost::multi_array<bool, 2>& nwallmap,
     int nwallSize,
     int ngravity,
@@ -21,7 +21,7 @@ Level(unsigned int nspeedOfTime,
     const TriggerSystem& ntriggerSystem);
     
     unsigned int speedOfTime;
-    size_t timeLineLength;
+    std::size_t timeLineLength;
     boost::multi_array<bool, 2> wallmap;
     int wallSize;
     int gravity;

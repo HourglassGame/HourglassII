@@ -25,7 +25,7 @@ struct ExecuteFrame
     DepartureMap& departuremap_;
 };
 
-WorldState::WorldState(size_t timelineLength,
+WorldState::WorldState(std::size_t timelineLength,
                        FrameID guyStartTime,
                        const PhysicsEngine& physics,
                        const ObjectList& initialObjects) :
@@ -59,7 +59,7 @@ currentWinFrames_()
         frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(REVERSE));
 
         //** run level for a while
-        for (size_t i(0); i < timelineLength; ++i) {
+        for (std::size_t i(0); i < timelineLength; ++i) {
             executeWorld();
         }
     }
@@ -100,7 +100,7 @@ currentWinFrames_()
     //Guys without input can still affect stuff, and so must be run
     frameUpdateSet_.add(guyStartFrame);
     //** run level for a while
-    for (size_t i(0); i < timelineLength; ++i) {
+    for (std::size_t i(0); i < timelineLength; ++i) {
         executeWorld();
     }
 }

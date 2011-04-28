@@ -7,12 +7,13 @@
 #include <vector>
 namespace hg {
 class FrameID;
+class Universe;
 //Identifies the position of a SubUniverse, 
 //this includes the frame in which is exists, as well as the ID of the initiator of the universe 
 //(which includes the timelineLength of the subuniverse)
 struct SubUniverse {
-    SubUniverse(size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID);
-    size_t initiatorFrame_;
+    SubUniverse(std::size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID);
+    std::size_t initiatorFrame_;
     PauseInitiatorID pauseInitiatorID_;
     private:
     
@@ -37,16 +38,20 @@ std::size_t hash_value(const SubUniverse& toHash);
 struct UniverseID {
     //top level universeID
     //timelineLength is always length of top-level universe
-    UniverseID(size_t timelineLength);
+    explicit UniverseID(std::size_t timelineLength);
     
     //lower level universeID
     //timelineLength is always length of top-level universe, nestTrain gives lengths of lower level universes.
     template<typename SinglePassRange>
-    UniverseID(size_t timelineLength, const SinglePassRange& nestTrain) :
+    UniverseID(std::size_t timelineLength, const SinglePassRange& nestTrain) :
     timelineLength_(timelineLength),
     nestTrain_(boost::begin(nestTrain), boost::end(nestTrain))
     {
     }
+    
+    //Construct a UniverseID corresponding to toConvert
+    //This conversion loses information, as UniverseIDs do not contain frames, but Universes do.
+    explicit UniverseID(const Universe& toConvert);
     PauseInitiatorID initiatorID() const;
     
     std::size_t pauseDepth() const;
@@ -54,7 +59,7 @@ struct UniverseID {
     //returns the frame in which the lowest level of this universe exists. NullFrame if this is a top-level universe.
     FrameID parentFrame() const;
     //returns the length of the lowest level of this universe
-    size_t timelineLength() const;
+    std::size_t timelineLength() const;
     
     UniverseID getSubUniverse(const SubUniverse& newestNest) const;
     
@@ -64,7 +69,8 @@ private:
     friend class Universe;
     friend class FrameID;
     friend std::size_t hash_value(const UniverseID& toHash);
-    size_t timelineLength_;
+    //timelineLength_ -- length of main universe (ie top-level universe). 
+    std::size_t timelineLength_;
     //nestTrain_[0] is the least nested SubUniverse, and nestTrain_[nestTrain_.size()-1] is the most nested (bottom level)
     std::vector<SubUniverse> nestTrain_;
 };

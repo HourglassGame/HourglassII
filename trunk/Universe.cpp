@@ -24,7 +24,7 @@ initiatorID_(0)
     assert(other.frames_.empty());
 }
 //creates a top level universe
-Universe::Universe(size_t timelineLength) :
+Universe::Universe(std::size_t timelineLength) :
 initiatorFrame_(0),
 frames_(),
 initiatorID_(0)
@@ -52,7 +52,7 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
     //Never reached
     return 0;
 }
-Frame* Universe::getArbitraryFrame(size_t frameNumber)
+Frame* Universe::getArbitraryFrame(std::size_t frameNumber)
 {
     assert(!frames_.empty());
     if (frameNumber < frames_.size()) {
@@ -61,7 +61,7 @@ Frame* Universe::getArbitraryFrame(size_t frameNumber)
     return 0;
 }
 //returns the length of this Universe's timeline
-size_t Universe::getTimelineLength() const
+std::size_t Universe::getTimelineLength() const
 {
     assert(!frames_.empty());
     return frames_.size();
@@ -88,28 +88,29 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
         return getArbitraryFrame(whichFrame.frame());
     }
 }
-Universe::Universe(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID) :
+Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID) :
 initiatorFrame_(0),
 frames_()
 {
     assert(timelineLength > 0);
     construct(initiatorFrame, timelineLength, initiatorID);
 }
-
-struct ConstructFrame : std::unary_function<size_t, Frame> {
+namespace {
+struct ConstructFrame : std::unary_function<std::size_t, Frame> {
     ConstructFrame(Universe& universe) : universe_(universe) {}
-    Frame operator()(size_t frameNumber) const { return Frame(frameNumber, universe_); }
+    Frame operator()(std::size_t frameNumber) const { return Frame(frameNumber, universe_); }
     private:
     Universe& universe_;
 };
+}
 
-void Universe::construct(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID)
+void Universe::construct(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID)
 {
     assert(initiatorFrame_ == 0 && "Trying to construct already constructed universe!");
     assert(frames_.empty() && "Trying to construct already constructed universe!");
     assert(initiatorID_ == 0 && "Trying to construct already constructed universe!");
     initiatorFrame_ = initiatorFrame;
-    boost::push_back(frames_, boost::irange<size_t>(0, timelineLength) 
+    boost::push_back(frames_, boost::irange<std::size_t>(0, timelineLength) 
                                 | boost::adaptors::transformed(ConstructFrame(*this)));
     initiatorID_ = &initiatorID;
 }
