@@ -2,10 +2,11 @@
 #include "DepartureMap.h"
 #include "PlayerVictoryException.h"
 #include "ParallelForEach.h"
+
 #include <boost/foreach.hpp>
-#include <iostream>
+
 #define foreach BOOST_FOREACH
-using namespace ::std;
+
 namespace hg {
 
 struct ExecuteFrame
@@ -24,9 +25,7 @@ struct ExecuteFrame
     DepartureMap& departuremap_;
 };
 
-
-
-WorldState::WorldState(unsigned int timelineLength,
+WorldState::WorldState(size_t timelineLength,
                        FrameID guyStartTime,
                        const PhysicsEngine& physics,
                        const ObjectList& initialObjects) :
@@ -45,9 +44,9 @@ currentWinFrames_()
 
     //*** Add Platforms to world ***
     {
-        map<Frame*, ObjectList> initialPlatformArrivals;
+        std::map<Frame*, ObjectList> initialPlatformArrivals;
 
-        for (vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
+        for (std::vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
              end(initialObjects.getPlatformListRef().end()); it != end; ++it)
         {
             initialPlatformArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
@@ -60,30 +59,30 @@ currentWinFrames_()
         frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(REVERSE));
 
         //** run level for a while
-        for (unsigned int i = 0; i < timelineLength; ++i) {
+        for (size_t i(0); i < timelineLength; ++i) {
             executeWorld();
         }
     }
     //** Add everything else apart from guys **
     {
-        map<Frame*, ObjectList> initialArrivals;
+        std::map<Frame*, ObjectList> initialArrivals;
 
         // boxes
-        for (vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
+        for (std::vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
                  end(initialObjects.getBoxListRef().end()); it != end; ++it)
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
 
         // portals
-        for (vector<Portal>::const_iterator it(initialObjects.getPortalListRef().begin()),
+        for (std::vector<Portal>::const_iterator it(initialObjects.getPortalListRef().begin()),
              end(initialObjects.getPortalListRef().end()); it != end; ++it)
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
 
         // buttons
-        for (vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
+        for (std::vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
              end(initialObjects.getButtonListRef().end()); it != end; ++it)
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
@@ -101,7 +100,7 @@ currentWinFrames_()
     //Guys without input can still affect stuff, and so must be run
     frameUpdateSet_.add(guyStartFrame);
     //** run level for a while
-    for (unsigned int i = 0; i < timelineLength; ++i) {
+    for (size_t i(0); i < timelineLength; ++i) {
         executeWorld();
     }
 }
@@ -158,7 +157,7 @@ FrameUpdateSet WorldState::executeWorld()
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
-    for(ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end());it != end; ++it) {
+    for(ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end()); it != end; ++it) {
         frameUpdateSet_.add(*it);
         //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
     }

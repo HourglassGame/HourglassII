@@ -20,13 +20,15 @@ namespace hg {
          * Creates a new world state.
          * Throws an exception if the world state is not consistent.
          */
-        WorldState(unsigned int timelineLength,
+        WorldState(size_t timelineLength,
                    FrameID guyStartTime,
                    const PhysicsEngine& physics,
                    const ObjectList& initialObjects);
 
         /***************************************
          * Updates the state of the world once.
+         * throws PlayerVictoryException if the player has won
+         * in exactly one frame and there are no waves.
          */
         FrameUpdateSet executeWorld();
 
@@ -47,7 +49,7 @@ namespace hg {
         Frame* getCurrentPlayerFrame();
         TimeDirection getCurrentPlayerDirection() const;
         
-        ::std::vector<InputList> getReplayData() const {return playerInput_;};
+        std::vector<InputList> getReplayData() const {return playerInput_;};
         
         Frame* getFrame(const FrameID& whichFrame);
     private:
@@ -56,7 +58,7 @@ namespace hg {
 
         TimelineState timeline_;
         // stores all player input
-        ::std::vector<InputList> playerInput_;
+        std::vector<InputList> playerInput_;
         //Stores the frames whose arrivals have changed but which have not been executed since the change
         //executeWorld executes every frame in frameUpdateSet_
         FrameUpdateSet frameUpdateSet_;

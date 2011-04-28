@@ -1,8 +1,8 @@
 #include "Level.h"
 namespace hg {
 Level::Level(unsigned int nspeedOfTime,
-             unsigned int ntimeLineLength,
-             const ::boost::multi_array<bool, 2>& nwallmap,
+             size_t ntimeLineLength,
+             const boost::multi_array<bool, 2>& nwallmap,
              int nwallSize,
              int ngravity,
              const ObjectList& ninitialObjects,

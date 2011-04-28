@@ -1,5 +1,7 @@
 include configuration.jam ;
 
+using darwin : : /Developer-old/usr/bin/g++ ;
+
 alias boost_include
     : # no sources
     : # no build requirements
@@ -21,20 +23,20 @@ lib threading_building_blocks_malloc
     ;
 
 lib SFML-system
-    :
+    : freetype
     : <file>$(SFML_system_library)
     :
-    : <include>$(SFML_include_directory) ;
+    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL ;
 lib SFML-window
-    :
+    : freetype
     : <file>$(SFML_window_library)
     :
-    : <include>$(SFML_include_directory) ;
+    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL ;
 lib SFML-graphics
-    :
+    : freetype
     : <file>$(SFML_graphics_library)
     :
-    : <include>$(SFML_include_directory) ;
+    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL ;
 
 alias CoreFoundation
     :
@@ -51,20 +53,12 @@ alias OpenGL
     :
     :
     : <linkflags>"-framework OpenGL" ;
-lib freetype
-    :
-    : <file>"/usr/X11/lib/libfreetype.dylib"
-    :
-    : ;
+lib freetype : : <file>"/usr/X11/lib/libfreetype.dylib" : : ;
     
-alias staticlibcpp
-:
-: 
-:
-: <linkflags>"-lstdc++-static" ;
+alias staticlibcpp : : : : <linkflags>"-lstdc++-static" ;
 
 exe HourglassII 
-: [ glob *.cpp ] boost_include threading_building_blocks SFML-system SFML-window SFML-graphics CoreFoundation Cocoa OpenGL freetype staticlibcpp
+: [ glob *.cpp ] boost_include threading_building_blocks SFML-system SFML-window SFML-graphics staticlibcpp
 : <define>BOOST_MULTI_ARRAY_NO_GENERATORS <define>NDEBUG ;
 
 alias Install : Install-exe Install-libs Install-plist Install-resources ;

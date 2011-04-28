@@ -1,5 +1,11 @@
 #include "Universe.h"
 #include "FrameID.h"
+
+#include <boost/range/irange.hpp>
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
+
+#include <functional>
 namespace hg {
 Universe::Universe() :
 initiatorFrame_(0),
@@ -62,10 +68,11 @@ size_t Universe::getTimelineLength() const
 }
 Frame* Universe::getFrame(const FrameID& whichFrame)
 {
-    assert(getTimelineLength()==whichFrame.universe().timelineLength());
+    assert(getTimelineLength() == whichFrame.universe().timelineLength());
     assert(!initiatorFrame_);
     Frame* parentFrame(0);
-    for (std::vector<SubUniverse>::const_iterator it(whichFrame.universe().nestTrain_.begin()), end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
+    for (std::vector<SubUniverse>::const_iterator it(whichFrame.universe().nestTrain_.begin()),
+                                                end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
     {
         if (!parentFrame) {
             parentFrame = getArbitraryFrame(it->initiatorFrame_);
@@ -88,17 +95,22 @@ frames_()
     assert(timelineLength > 0);
     construct(initiatorFrame, timelineLength, initiatorID);
 }
+
+struct ConstructFrame : std::unary_function<size_t, Frame> {
+    ConstructFrame(Universe& universe) : universe_(universe) {}
+    Frame operator()(size_t frameNumber) const { return Frame(frameNumber, universe_); }
+    private:
+    Universe& universe_;
+};
+
 void Universe::construct(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID)
 {
     assert(initiatorFrame_ == 0 && "Trying to construct already constructed universe!");
     assert(frames_.empty() && "Trying to construct already constructed universe!");
     assert(initiatorID_ == 0 && "Trying to construct already constructed universe!");
     initiatorFrame_ = initiatorFrame;
-    frames_.reserve(timelineLength);
-    for (unsigned int i(0); i < timelineLength; ++i)
-    {
-        frames_.push_back(Frame(i, *this));
-    }
+    boost::push_back(frames_, boost::irange<size_t>(0, timelineLength) 
+                                | boost::adaptors::transformed(ConstructFrame(*this)));
     initiatorID_ = &initiatorID;
 }
 }

@@ -16,7 +16,7 @@ void DepartureMap::makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)
         map_.insert(ValueType(frame, MapType::mapped_type()));
     }
 }
-void DepartureMap::addDeparture(Frame* time, ::std::map<Frame*, ObjectList> departingObjects)
+void DepartureMap::addDeparture(Frame* time, std::map<Frame*, ObjectList> departingObjects)
 {
     swap(map_[time],departingObjects);
 }

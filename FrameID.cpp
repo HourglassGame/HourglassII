@@ -8,7 +8,7 @@
 namespace hg {
 
 FrameID::FrameID() :
-frame_(::std::numeric_limits<size_t>::max()),
+frame_(std::numeric_limits<size_t>::max()),
 universeID_(0)
 {
 }
@@ -122,7 +122,7 @@ bool FrameID::operator<(const FrameID& other) const
 bool FrameID::isValidFrame() const
 {
     if (universeID_.timelineLength() < frame_) {
-        assert(frame_ == ::std::numeric_limits<size_t>::max());
+        assert(frame_ == std::numeric_limits<size_t>::max());
         assert(universeID_.timelineLength() == 0);
         return false;
     }
@@ -131,11 +131,11 @@ bool FrameID::isValidFrame() const
     }
 }
 
-::std::size_t hash_value(const FrameID& toHash)
+std::size_t hash_value(const FrameID& toHash)
 {
-    ::std::size_t seed(0);
-    ::boost::hash_combine(seed, toHash.frame_);
-    ::boost::hash_combine(seed, toHash.universeID_);
+    std::size_t seed(0);
+    boost::hash_combine(seed, toHash.frame_);
+    boost::hash_combine(seed, toHash.universeID_);
     return seed;
 }
 }

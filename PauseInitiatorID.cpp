@@ -33,12 +33,12 @@ bool operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
     }
 }
 
-::std::size_t hash_value(const PauseInitiatorID& toHash)
+std::size_t hash_value(const PauseInitiatorID& toHash)
 {
-    ::std::size_t seed(0);
-    ::boost::hash_combine(seed, toHash.type_);
-    ::boost::hash_combine(seed, toHash.ID_);
-    ::boost::hash_combine(seed, toHash.timelineLength_);
+    std::size_t seed(0);
+    boost::hash_combine(seed, toHash.type_);
+    boost::hash_combine(seed, toHash.ID_);
+    boost::hash_combine(seed, toHash.timelineLength_);
     return seed;
 }
 }//namespace hg

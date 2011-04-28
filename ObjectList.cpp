@@ -9,7 +9,6 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/indirected.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/fusion/algorithm.hpp>
 #include <boost/fusion/include/next.hpp>
@@ -91,35 +90,35 @@ ObjectList& ObjectList::operator=(const ObjectList& other)
     return *this;
 }
 
-const ::std::vector<Guy>& ObjectList::getGuyListRef() const 
+const std::vector<Guy>& ObjectList::getGuyListRef() const 
 {
     return boost::fusion::at_c<object_list_detail::guyList>(objectList_);
 }
-const ::std::vector<Box>& ObjectList::getBoxListRef() const
+const std::vector<Box>& ObjectList::getBoxListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxList>(objectList_);
 }
-const ::std::vector<Button>& ObjectList::getButtonListRef() const
+const std::vector<Button>& ObjectList::getButtonListRef() const
 {
     return boost::fusion::at_c<object_list_detail::buttonList>(objectList_);
 }
-const ::std::vector<Platform>& ObjectList::getPlatformListRef() const
+const std::vector<Platform>& ObjectList::getPlatformListRef() const
 {
     return boost::fusion::at_c<object_list_detail::platformList>(objectList_);
 }
-const ::std::vector<Portal>& ObjectList::getPortalListRef() const
+const std::vector<Portal>& ObjectList::getPortalListRef() const
 {
     return boost::fusion::at_c<object_list_detail::portalList>(objectList_);
 }
-const ::std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
+const std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxThiefList>(objectList_);
 }
-const ::std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxExtraListRef() const
+const std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxExtraListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxExtraList>(objectList_);
 }
-const ::std::vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyExtraListRef() const
+const std::vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyExtraListRef() const
 {
     return boost::fusion::at_c<object_list_detail::guyExtraList>(objectList_);
 }
@@ -289,35 +288,35 @@ ObjectPtrList& ObjectPtrList::operator=(const ObjectPtrList& other)
     return *this;
 }
 
-const ::std::vector<const Guy*>& ObjectPtrList::getGuyListRef() const 
+const std::vector<const Guy*>& ObjectPtrList::getGuyListRef() const 
 {
     return boost::fusion::at_c<object_list_detail::guyList>(objectPtrList_);
 }
-const ::std::vector<const Box*>& ObjectPtrList::getBoxListRef() const
+const std::vector<const Box*>& ObjectPtrList::getBoxListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxList>(objectPtrList_);
 }
-const ::std::vector<const Button*>& ObjectPtrList::getButtonListRef() const
+const std::vector<const Button*>& ObjectPtrList::getButtonListRef() const
 {
     return boost::fusion::at_c<object_list_detail::buttonList>(objectPtrList_);
 }
-const ::std::vector<const Platform*>& ObjectPtrList::getPlatformListRef() const
+const std::vector<const Platform*>& ObjectPtrList::getPlatformListRef() const
 {
     return boost::fusion::at_c<object_list_detail::platformList>(objectPtrList_);
 }
-const ::std::vector<const Portal*>& ObjectPtrList::getPortalListRef() const
+const std::vector<const Portal*>& ObjectPtrList::getPortalListRef() const
 {
     return boost::fusion::at_c<object_list_detail::portalList>(objectPtrList_);
 }
-const ::std::vector<const RemoteDepartureEdit<Box>* >& ObjectPtrList::getBoxThiefListRef() const
+const std::vector<const RemoteDepartureEdit<Box>* >& ObjectPtrList::getBoxThiefListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxThiefList>(objectPtrList_);
 }
-const ::std::vector<const RemoteDepartureEdit<Box>* >& ObjectPtrList::getBoxExtraListRef() const
+const std::vector<const RemoteDepartureEdit<Box>* >& ObjectPtrList::getBoxExtraListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxExtraList>(objectPtrList_);
 }
-const ::std::vector<const RemoteDepartureEdit<Guy>* >& ObjectPtrList::getGuyExtraListRef() const
+const std::vector<const RemoteDepartureEdit<Guy>* >& ObjectPtrList::getGuyExtraListRef() const
 {
     return boost::fusion::at_c<object_list_detail::guyExtraList>(objectPtrList_);
 }

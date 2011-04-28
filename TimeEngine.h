@@ -18,7 +18,7 @@ class Frame;
 class TimeEngine
 {
 public:
-    typedef ::std::vector<FrameUpdateSet > FrameListList;
+    typedef std::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
         Frame* currentPlayerFrame() {return currentPlayerFrame_;}
@@ -40,10 +40,10 @@ public:
         TimeDirection currentPlayerDirection_;
     };
     
-    /*********************************************************************************************
+    /*******************************************************************************************************************
      * Constructs a new TimeEngine with the given Level
      *
-     * Propogates the level to fully initialise the TimeEngine
+     * Propagates the level to fully initialise the TimeEngine
      * (objects begin at all points in time throughout the level,
      * and so must be propagated through from the start and the end)
      * Throws InvalidLevelException if level is not correct
@@ -52,20 +52,20 @@ public:
 	TimeEngine(const Level& level);
 
 
-	/************************
+	/*******************************************************************************************************************
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
     RunResult runToNextPlayerFrame(const InputList& newInputData);
-	/****************************
+	/*******************************************************************************************************************
     * Returns an object list containing the state of whichFrame after physics was applied.
     * This function is always run after the runToNextPlayerFrame function in order to
     * query the state of particular frames.
     */
     //ObjectList getPostPhysics(FrameID whichFrame, const PauseInitiatorID& whichPrePause) const;
     Frame* getFrame(const FrameID& whichFrame);
-    ::std::vector<InputList> getReplayData() const;
+    std::vector<InputList> getReplayData() const;
 private:
     unsigned int speedOfTime;
     //state of world at end of last executed frame

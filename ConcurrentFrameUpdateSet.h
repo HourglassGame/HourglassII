@@ -9,7 +9,7 @@ namespace hg {
         void add(const FrameUpdateSet& toAdd);
         FrameUpdateSet merge();
     private:
-        typedef ::tbb::enumerable_thread_specific<FrameUpdateSet> MapType;
+        typedef tbb::enumerable_thread_specific<FrameUpdateSet> MapType;
         MapType threadLocalMap_;
     };
 }

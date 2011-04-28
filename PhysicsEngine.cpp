@@ -6,18 +6,26 @@
 #include "ConcurrentTimeSet.h"
 
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/adaptor/indirected.hpp>
+#include <boost/range/iterator_range.hpp>
+#include <boost/range/algorithm/sort.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/foreach.hpp>
 
-#include <iostream>
 #include <map>
 #include <vector>
 
 #include <cassert>
 #include <cmath>
 
-using namespace ::std;
-namespace hg {
+#define foreach BOOST_FOREACH
 
-PhysicsEngine::PhysicsEngine(const ::boost::multi_array<bool, 2>& nwallmap,
+namespace hg {
+static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
+static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
+static bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
+
+PhysicsEngine::PhysicsEngine(const boost::multi_array<bool, 2>& nwallmap,
                     int newWallSize,
                     int newGravity,
                     const AttachmentMap& nAttachmentMap,
@@ -108,9 +116,9 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(const ObjectPtrList& ar
 
 
 template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForComplexEntities(
-                                    const ::std::vector<TypeInfo>& next,
-                                    const ::std::vector<const RemoteDepartureEdit<Type>* >& thief,
-                                    const ::std::vector<const RemoteDepartureEdit<Type>* >& extra,
+                                    const std::vector<TypeInfo>& next,
+                                    const std::vector<const RemoteDepartureEdit<Type>* >& thief,
+                                    const std::vector<const RemoteDepartureEdit<Type>* >& extra,
                                     NewDeparturesT& newDepartures,
                                     Frame* time,
                                     std::vector<PauseInitiatorID>& pauseTimes
@@ -277,7 +285,7 @@ template <class Type, class TypeInfo> void PhysicsEngine::BuildDepartureForCompl
 }
 
 template <class Type> void PhysicsEngine::BuildDepartureForReallySimpleThing(
-                                    const ::std::vector<Type>& next,
+                                    const std::vector<Type>& next,
                                     NewDeparturesT& newDepartures,
                                     Frame* time,
                                     std::vector<PauseInitiatorID>& pauseTimes
@@ -303,14 +311,14 @@ template <class Type> void PhysicsEngine::BuildDepartureForReallySimpleThing(
 }
 
 
-void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
-                        const ::std::vector<Platform>& nextPlatform,
-                        const ::std::vector<Portal>& nextPortal,
-                        const ::std::vector<Button>& nextButton,
-                        const ::std::vector<GuyInfo>& nextGuy,
-                        const ::std::vector<const RemoteDepartureEdit<Box>* >& boxThief,
-                        const ::std::vector<const RemoteDepartureEdit<Box>* >& boxExtra,
-                        const ::std::vector<const RemoteDepartureEdit<Guy>* >& guyExtra,
+void PhysicsEngine::buildDepartures(const std::vector<BoxInfo>& nextBox,
+                        const std::vector<Platform>& nextPlatform,
+                        const std::vector<Portal>& nextPortal,
+                        const std::vector<Button>& nextButton,
+                        const std::vector<GuyInfo>& nextGuy,
+                        const std::vector<const RemoteDepartureEdit<Box>* >& boxThief,
+                        const std::vector<const RemoteDepartureEdit<Box>* >& boxExtra,
+                        const std::vector<const RemoteDepartureEdit<Guy>* >& guyExtra,
                         NewDeparturesT& newDepartures,
                         Frame* time,
                         std::vector<PauseInitiatorID>& pauseTimes
@@ -318,12 +326,12 @@ void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
 {
 
     // pause times initiated in the frame must be sorted
-    sort(pauseTimes.begin(), pauseTimes.end());
+    boost::sort(pauseTimes);
 
 	BuildDepartureForComplexEntities<Box,BoxInfo>(nextBox, boxThief, boxExtra, newDepartures, time, pauseTimes);
 
     // build departures for guys
-	for (size_t i = 0; i < nextGuy.size(); ++i)
+	for (std::size_t i = 0; i < nextGuy.size(); ++i)
 	{
 	    Guy guyData = nextGuy[i].info;
 
@@ -364,13 +372,13 @@ void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
                             guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                             guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                             guyData.getTimeDirection(), guyData.getPauseLevel()+1,
-                            -1
+                            std::numeric_limits<size_t>::max()
                         ),
                         false
                     )
 
                 );
-                universes--;
+                --universes;
             }
             while (universes > 0);
         }
@@ -393,7 +401,7 @@ void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
                         guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                         guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                         guyData.getTimeDirection(), guyData.getPauseLevel()+1,
-                        -1
+                        std::numeric_limits<size_t>::max()
                     )
                 );
             }
@@ -410,7 +418,7 @@ void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
                         guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                         guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                         guyData.getTimeDirection(), guyData.getPauseLevel()+1,
-                        -1
+                        std::numeric_limits<size_t>::max()
                     )
                 );
             }
@@ -439,24 +447,24 @@ void PhysicsEngine::buildDepartures(const ::std::vector<BoxInfo>& nextBox,
     BuildDepartureForReallySimpleThing<Portal>(nextPortal, newDepartures, time, pauseTimes);
 }
 
-void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
+void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                             Frame* time,
-                            const ::std::vector<InputList>& playerInput,
+                            const std::vector<InputList>& playerInput,
                             std::vector<GuyInfo>& nextGuy,
-                            ::std::vector<BoxInfo>& nextBox,
-                            const ::std::vector<Platform>& nextPlatform,
-                            const ::std::vector<Portal>& nextPortal,
+                            std::vector<BoxInfo>& nextBox,
+                            const std::vector<Platform>& nextPlatform,
+                            const std::vector<Portal>& nextPortal,
                             NewDeparturesT& newDepartures,
                             ConcurrentTimeMap& currentPlayerFramesAndDirections,
                             ConcurrentTimeSet& nextPlayerFrames,
                             std::vector<PauseInitiatorID>& pauseTimes
                             ) const
 {
-	vector<int> x;
-	vector<int> y;
-	vector<int> xspeed;
-	vector<int> yspeed;
-	vector<char> supported;
+	std::vector<int> x;
+	std::vector<int> y;
+	std::vector<int> xspeed;
+	std::vector<int> yspeed;
+	std::vector<char> supported;
 
     x.reserve(oldGuyList.size());
     y.reserve(oldGuyList.size());
@@ -529,7 +537,7 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                 int pWidth = nextPlatform[j].getWidth();
                 int pHeight = nextPlatform[j].getHeight();
 
-                if (IntersectingRectangles(x[i], newY, width, height, pX, pY, pWidth, pHeight, false))
+                if (IntersectingRectanglesExclusive(x[i], newY, width, height, pX, pY, pWidth, pHeight))
                 {
                     if (newY+height/2 < pY+pHeight/2)
                     {
@@ -628,7 +636,7 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                 int pWidth = nextPlatform[j].getWidth();
                 int pHeight = nextPlatform[j].getHeight();
 
-                if (IntersectingRectangles(newX, newY, width, height, pX, pY, pWidth, pHeight, false))
+                if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
                 {
                     if (newX+width/2 < pX+pWidth/2)
                     {
@@ -649,10 +657,10 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
         }
 	}
 
-	vector<char> carry;
-	vector<int> carrySize;
-	vector<TimeDirection> carryDirection;
-	vector<int> carryPauseLevel;
+	std::vector<char> carry;
+	std::vector<int> carrySize;
+	std::vector<TimeDirection> carryDirection;
+	std::vector<int> carryPauseLevel;
     carry.reserve(oldGuyList.size());
     carrySize.reserve(oldGuyList.size());
     carryDirection.reserve(oldGuyList.size());
@@ -687,17 +695,17 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                         droppable = true;
                         for (unsigned int j = 0; droppable && j < nextBox.size(); ++j)
                         {
-                            if (IntersectingRectangles(nextBox[j].info.getX(), nextBox[j].info.getY(), nextBox[j].info.getSize(), nextBox[j].info.getSize(),
-                                                      dropX, dropY, dropSize, dropSize, false))
+                            if (IntersectingRectanglesExclusive(nextBox[j].info.getX(), nextBox[j].info.getY(), nextBox[j].info.getSize(), nextBox[j].info.getSize(),
+                                                      dropX, dropY, dropSize, dropSize))
                             {
                                 droppable = false;
                             }
                         }
                         for (unsigned int j = 0; droppable && j < nextPlatform.size(); ++j)
                         {
-                            if (IntersectingRectangles(nextPlatform[j].getX(), nextPlatform[j].getY(),
+                            if (IntersectingRectanglesExclusive(nextPlatform[j].getX(), nextPlatform[j].getY(),
                                                        nextPlatform[j].getWidth(), nextPlatform[j].getHeight(),
-                                                      dropX, dropY, dropSize, dropSize, false))
+                                                      dropX, dropY, dropSize, dropSize))
                             {
                                 droppable = false;
                                 break;
@@ -727,11 +735,12 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                             if (oldGuyList[i]->getBoxPauseLevel() != 0)
                             {
                                 int pauseLevel = oldGuyList[i]->getBoxPauseLevel();
-                                Frame* parTime = time->parentFrame();
-                                PauseInitiatorID parInit = time->getInitiatorID();
+                                Frame* parTime = time;
                                 int pauseLevelChange = 1;
                                 while (pauseLevel > 0)
                                 {
+                                    PauseInitiatorID parInit(parTime->getInitiatorID());
+                                    parTime = parTime->parentFrame();
                                     newDepartures[parTime].addExtra
                                     (
                                         RemoteDepartureEdit<Box>
@@ -749,8 +758,6 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                                     );
                                     --pauseLevel;
                                     ++pauseLevelChange;
-                                    parInit = parTime->getInitiatorID();
-                                    parTime = parTime->parentFrame();
                                 }
                             }
 
@@ -888,7 +895,7 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
                     int py = nextPortal[j].getY();
                     int pw = nextPortal[j].getWidth();
                     int ph = nextPortal[j].getHeight();
-                    if (PointInRectangle(mx, my, px, py, pw, ph, true) && nextPortal[j].getPauseLevel() == 0 &&
+                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph) && nextPortal[j].getPauseLevel() == 0 &&
                         nextPortal[j].getActive() && nextPortal[j].getCharges() != 0) // charges not fully implemented
                     {
                         Frame* portalTime;
@@ -965,12 +972,12 @@ void PhysicsEngine::guyStep(const ::std::vector<const Guy*>& oldGuyList,
     }    
 }
 
-void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>& oldBoxList,
-                                                ::std::vector<BoxInfo>& nextBox,
+void PhysicsEngine::crappyBoxCollisionAlogorithm(const std::vector<const Box*>& oldBoxList,
+                                                std::vector<BoxInfo>& nextBox,
                                                 std::vector<Platform>& nextPlatform,
                                                 Frame* time) const
 {
-	for (vector<const Box*>::const_iterator i(oldBoxList.begin()), iend(oldBoxList.end()); i != iend; ++i)
+	for (std::vector<const Box*>::const_iterator i(oldBoxList.begin()), iend(oldBoxList.end()); i != iend; ++i)
 	{
 
 	    if ((*i)->getPauseLevel() != 0)
@@ -1005,7 +1012,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
                 int boxX = j->getX();
                 int boxY = j->getY();
                 int boxSize = j->getSize();
-                if (PhysicsEngine::IntersectingRectangles(x, y, size, size, boxX, boxY, boxSize, boxSize, false))
+                if (PhysicsEngine::IntersectingRectanglesExclusive(x, y, size, size, boxX, boxY, boxSize, boxSize))
                 {
                     exploded = true;
                     continue;
@@ -1016,7 +1023,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
         /*
         for (vector<Platform>::const_iterator j(nextPlatform.begin()), jend(nextPlatform.end()); j != jend; ++j)
         {
-            if (PhysicsEngine::IntersectingRectangles(x, y, size, size, j->getX(), j->getY(), j->getHeight(), j->getWidth(), false))
+            if (PhysicsEngine::IntersectingRectanglesExclusive(x, y, size, size, j->getX(), j->getY(), j->getHeight(), j->getWidth()))
             {
                 exploded = true;
                 continue;
@@ -1032,14 +1039,14 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
         int newY = y + yspeed;
 
 		// box collision
-        for (vector<const Box*>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
+        for (std::vector<const Box*>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
         {
             if (j != i)
             {
                 int boxX = (*j)->getX();
                 int boxY = (*j)->getY();
                 int boxSize = (*j)->getSize();
-                if (PhysicsEngine::IntersectingRectangles(x, newY, size, size, boxX, boxY, boxSize, boxSize, true))
+                if (IntersectingRectanglesInclusive(x, newY, size, size, boxX, boxY, boxSize, boxSize))
                 {
                     if (newY + size/2 < boxY + boxSize/2)
                     {
@@ -1073,29 +1080,25 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
 		}
 
 		// platform collision
-        for (unsigned int j = 0; j < nextPlatform.size(); ++j)
-        {
-            int pX = nextPlatform[j].getX();
-            int pY = nextPlatform[j].getY();
-            TimeDirection pDirection = nextPlatform[j].getTimeDirection();
-            if (pDirection*(*i)->getPauseLevel() == 0 && pDirection*(*i)->getTimeDirection() == hg::REVERSE)
+        foreach (const Platform& platform, nextPlatform) {
+            int pX(platform.getX());
+            int pY(platform.getY());
+            TimeDirection pDirection = platform.getTimeDirection();
+            if (pDirection * (*i)->getPauseLevel() == 0 && pDirection*(*i)->getTimeDirection() == hg::REVERSE)
             {
-                pX -= nextPlatform[j].getXspeed();
-                pY -= nextPlatform[j].getYspeed();
+                pX -= platform.getXspeed();
+                pY -= platform.getYspeed();
             }
-            int pWidth = nextPlatform[j].getWidth();
-            int pHeight = nextPlatform[j].getHeight();
-
-            if (IntersectingRectangles(x, newY, size, size, pX, pY, pWidth, pHeight, false))
-            {
-                if (newY+size/2 < pY+pHeight/2)
-                {
+            
+            int pWidth(platform.getWidth());
+            int pHeight(platform.getHeight());
+            if (IntersectingRectanglesExclusive(x, newY, size, size, pX, pY, pWidth, pHeight)) {
+                if (newY + size/2 < pY + pHeight/2) {
                     newY = pY-size;
-                    xspeed = pDirection*(*i)->getTimeDirection()*nextPlatform[j].getXspeed();
+                    xspeed = pDirection * (*i)->getTimeDirection() * platform.getXspeed();
                     supported = true;
                 }
-                else
-                {
+                else {
                     newY = pY+pHeight;
                 }
             }
@@ -1104,7 +1107,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
         // ** X component **
         int newX = x + xspeed;
 
-        for (vector<const Box*>::const_reverse_iterator j(oldBoxList.rbegin()), jend(oldBoxList.rend()); j != jend; ++j)
+        for (std::vector<const Box*>::const_reverse_iterator j(oldBoxList.rbegin()), jend(oldBoxList.rend()); j != jend; ++j)
         {
             if ((j.base() - 1) != i )
             {
@@ -1112,7 +1115,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
                     int boxX = (*j)->getX();
                     int boxY = (*j)->getY();
                     int boxSize = (*j)->getSize();
-                    if (PhysicsEngine::IntersectingRectangles(newX, newY, size, size, boxX, boxY, boxSize, boxSize, true))
+                    if (IntersectingRectanglesInclusive(newX, newY, size, size, boxX, boxY, boxSize, boxSize))
                     {
                         if (newX + size/2 < boxX + boxSize/2)
                         {
@@ -1158,7 +1161,7 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
             int pWidth = nextPlatform[j].getWidth();
             int pHeight = nextPlatform[j].getHeight();
 
-            if (IntersectingRectangles(newX, newY, size, size, pX, pY, pWidth, pHeight, false))
+            if (IntersectingRectanglesExclusive(newX, newY, size, size, pX, pY, pWidth, pHeight))
             {
                 if (newX+size/2 < pX+pWidth/2)
                 {
@@ -1199,39 +1202,46 @@ void PhysicsEngine::crappyBoxCollisionAlogorithm(const ::std::vector<const Box*>
 	}
 }
 
-void PhysicsEngine::platformStep(const ::std::vector<const Platform*>& oldPlatformList,
+void PhysicsEngine::platformStep(const std::vector<const Platform*>& oldPlatformList,
                                  std::vector<Platform>& nextPlatform,
                                  const std::vector<PlatformDestination>& pd) const
 {
-
-    for (size_t i = 0; i < oldPlatformList.size(); ++i)
+    if (boost::distance(pd) == 0) {
+        boost::push_back(nextPlatform, oldPlatformList | boost::adaptors::indirected);
+        return;
+    }
+    
+    assert(boost::distance(oldPlatformList) <= boost::distance(pd));
+    boost::range_iterator<boost::indirected_range<const std::vector<const Platform*> > >::type 
+            platIt(boost::begin(oldPlatformList | boost::adaptors::indirected)),
+            platEnd(boost::end(oldPlatformList | boost::adaptors::indirected));
+    boost::range_iterator<const std::vector<PlatformDestination> >::type
+            destIt(boost::begin(pd));
+    for(; platIt != platEnd; ++platIt, ++destIt)
     {
-        if (oldPlatformList[i]->getPauseLevel() != 0)
-	    {
-	        nextPlatform.push_back(*oldPlatformList[i]);
-	        continue;
-	    }
-
-        int x = oldPlatformList[i]->getX();
-		int y = oldPlatformList[i]->getY();
-		int xspeed = oldPlatformList[i]->getXspeed();
-		int yspeed = oldPlatformList[i]->getYspeed();
+        const Platform& platform(*platIt);
+        const PlatformDestination& destination(*destIt);
+        assert(platform.getPauseLevel() == 0);
+        int x(platform.getX());
+		int y(platform.getY());
+		int xspeed(platform.getXspeed());
+		int yspeed(platform.getYspeed());
 
         // X component
-        if (pd[i].getX() != x)
+        if (destination.getX() != x)
         {
-            if (abs(pd[i].getX() - x) <= abs(xspeed) && abs(xspeed) <= pd[i].getXdeccel())
+            if (abs(destination.getX() - x) <= abs(xspeed) && abs(xspeed) <= destination.getXdeccel())
             {
-                xspeed = pd[i].getX() - x;
+                xspeed = destination.getX() - x;
             }
             else
             {
-                int direction = abs(x - pd[i].getX())/(x - pd[i].getX());
+                int direction = abs(x - destination.getX())/(x - destination.getX());
 
                 if (xspeed*direction >= 0)
                 {
-                    xspeed -= direction*pd[i].getXdeccel();
-                    if (xspeed*direction < 0)
+                    xspeed -= direction * destination.getXdeccel();
+                    if (xspeed * direction < 0)
                     {
                         xspeed = 0;
                     }
@@ -1239,58 +1249,64 @@ void PhysicsEngine::platformStep(const ::std::vector<const Platform*>& oldPlatfo
                 else
                 {
                     // if the platform can still stop if it fully accelerates
-                    if (abs(x - pd[i].getX()) > ((int)(pow((double)(xspeed - direction*pd[i].getXaccel()),2))*3/(2*pd[i].getXdeccel())))
+                    if (
+                        abs(x - destination.getX()) 
+                       >
+                        (static_cast<int>(
+                            pow(
+                                static_cast<double>
+                                    (xspeed - direction*destination.getXaccel()),2))*3/(2*destination.getXdeccel())))
                     {
                         // fully accelerate
-                        xspeed -= direction*pd[i].getXaccel();
+                        xspeed -= direction*destination.getXaccel();
                     }
                     // if the platform can stop if it doesn't accelerate
-                    else if (abs(x - pd[i].getX()) > ((int)(pow((double)(xspeed),2))*3/(2*pd[i].getXdeccel())))
+                    else if (abs(x - destination.getX()) > (static_cast<int>(pow(static_cast<double>(xspeed),2))*3/(2*destination.getXdeccel())))
                     {
                         // set speed to required speed
-                        xspeed = -direction*(int)(floor((double)(abs(x - pd[i].getX())*pd[i].getXdeccel()*2/3)));
+                        xspeed = -direction*static_cast<int>(floor(static_cast<double>(abs(x - destination.getX())*destination.getXdeccel()*2/3)));
                     }
                     else
                     {
-                        xspeed += direction*pd[i].getXdeccel();
+                        xspeed += direction*destination.getXdeccel();
                     }
                 }
             }
         }
         else
         {
-            if (abs(xspeed) <= pd[i].getXdeccel())
+            if (abs(xspeed) <= destination.getXdeccel())
             {
                 xspeed = 0;
             }
             else
             {
-                xspeed += abs(xspeed)/xspeed*pd[i].getXdeccel();
+                xspeed += abs(xspeed)/xspeed*destination.getXdeccel();
             }
         }
 
-        if (abs(xspeed) > pd[i].getXspeed())
+        if (abs(xspeed) > destination.getXspeed())
         {
-            xspeed = abs(xspeed)/xspeed*pd[i].getXspeed();
+            xspeed = abs(xspeed)/xspeed*destination.getXspeed();
         }
 
 		x += xspeed;
 
         // Y component
-        if (pd[i].getY() != y)
+        if (destination.getY() != y)
         {
-            if (abs(pd[i].getY() - y) <= abs(yspeed) && abs(yspeed) <= pd[i].getYdeccel())
+            if (abs(destination.getY() - y) <= abs(yspeed) && abs(yspeed) <= destination.getYdeccel())
             {
-                yspeed = pd[i].getY() - y;
+                yspeed = destination.getY() - y;
             }
             else
             {
-                int direction = abs(y - pd[i].getY())/(y - pd[i].getY());
+                int direction = abs(y - destination.getY())/(y - destination.getY());
 
-                if (yspeed*direction > 0)
+                if (yspeed * direction > 0)
                 {
-                    yspeed -= direction*pd[i].getYdeccel();
-                    if (yspeed*direction < 0)
+                    yspeed -= direction * destination.getYdeccel();
+                    if (yspeed * direction < 0)
                     {
                         yspeed = 0;
                     }
@@ -1298,106 +1314,121 @@ void PhysicsEngine::platformStep(const ::std::vector<const Platform*>& oldPlatfo
                 else
                 {
                     // if the platform can still stop if it fully accelerates
-                    if (abs(y - pd[i].getY()) > ((int)pow((double)yspeed - direction*pd[i].getYaccel(),2))*3/(2*pd[i].getYdeccel()))
+                    if (abs(y - destination.getY()) 
+                       >
+                        (static_cast<int>(pow(static_cast<double>(yspeed - direction*destination.getYaccel()),2))
+                         *3/(2*destination.getYdeccel())))
                     {
                         // fully accelerate
-                        yspeed -= direction*pd[i].getYaccel();
+                        yspeed -= direction*destination.getYaccel();
                     }
                     // if the platform can stop if it doesn't accelerate
-                    else if (abs(y - pd[i].getY()) > ((int)pow((double)yspeed,2))*3/(2*pd[i].getYdeccel()))
+                    else if (abs(y - destination.getY()) > (static_cast<int>(pow(static_cast<double>(yspeed),2))*3/(2*destination.getYdeccel())))
                     {
                         // set speed to required speed
-                        yspeed = -direction*(int)floor(sqrt((double)abs(y - pd[i].getY())*pd[i].getYdeccel()*2/3));
+                        yspeed = -direction*static_cast<int>(floor(sqrt(static_cast<double>(abs(y - destination.getY())*destination.getYdeccel()*2/3))));
                     }
                     else
                     {
-                        yspeed += direction*pd[i].getYdeccel();
+                        yspeed += direction*destination.getYdeccel();
                     }
                 }
             }
         }
         else
         {
-            if (abs(yspeed) <= pd[i].getYdeccel())
+            if (abs(yspeed) <= destination.getYdeccel())
             {
                 yspeed = 0;
             }
             else
             {
-                yspeed += abs(yspeed)/yspeed*pd[i].getYdeccel();
+                yspeed += abs(yspeed)/yspeed*destination.getYdeccel();
             }
         }
 
-        if (abs(yspeed) > pd[i].getYspeed())
+        if (abs(yspeed) > destination.getYspeed())
         {
-            yspeed = abs(yspeed)/yspeed*pd[i].getYspeed();
+            yspeed = abs(yspeed)/yspeed*destination.getYspeed();
         }
 
         y += yspeed;
 
 		// send information
-        nextPlatform.push_back(Platform(x, y, xspeed, yspeed, oldPlatformList[i]->getWidth(), oldPlatformList[i]->getHeight(), oldPlatformList[i]->getIndex(), oldPlatformList[i]->getTimeDirection(), 0));
+        nextPlatform.push_back(Platform(x, y,
+                                        xspeed, yspeed,
+                                        platform.getWidth(), platform.getHeight(),
+                                        platform.getIndex(),
+                                        platform.getTimeDirection(),
+                                        0));
     }
 }
 
 void PhysicsEngine::portalPositionUpdate(
         const std::vector<Platform>& nextPlatform,
-        const ::std::vector<const Portal*>& oldPortalList,
-        std::vector<Portal>& nextPortal
-    ) const
+        const std::vector<const Portal*>& oldPortalList,
+        std::vector<Portal>& nextPortal) const
 {
-    const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getPortalAttachmentRef());
+    const std::vector<Attachment>& attachments(attachmentMap.getPortalAttachmentRef());
 
-    for (unsigned int i = 0; i < oldPortalList.size(); ++i)
+    foreach(const Portal& portal, oldPortalList | boost::adaptors::indirected)
 	{
-	    Portal data(*oldPortalList[i]);
-
-	    if (data.getPauseLevel() != 0)
+	    if (portal.getPauseLevel() != 0)
 	    {
-	        nextPortal.push_back(data);
+	        nextPortal.push_back(portal);
 	        continue;
 	    }
 
-	    int x = data.getX();
-	    int y = data.getY();
+	    int x(portal.getX());
+	    int y(portal.getY());
 
-	    int index = data.getIndex();
-
-	    if (attachments[index].get<0>() != -1)
+        const Attachment& attachment(attachments[portal.getIndex()]);
+        size_t pid = attachment.platformIndex;
+	    if (pid != std::numeric_limits<size_t>::max())
 	    {
-	        int pid = attachments[index].get<0>();
-
-	        if (nextPlatform[pid].getTimeDirection()*data.getTimeDirection() == hg::FORWARDS)
+            const Platform& platform(nextPlatform[pid]);
+	        if (nextPlatform[pid].getTimeDirection() * platform.getTimeDirection() == hg::FORWARDS)
 	        {
-	            x = nextPlatform[pid].getX()+attachments[index].get<1>();
-                y = nextPlatform[pid].getY()+attachments[index].get<2>();
+	            x = platform.getX() + attachment.xOffset;
+                y = platform.getY() + attachment.yOffset;
 	        }
 	        else
 	        {
-	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[index].get<1>();
-                y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[index].get<2>();
+	            x = platform.getX() - platform.getXspeed() + attachment.xOffset;
+                y = platform.getY() - platform.getYspeed() + attachment.yOffset;
 	        }
 	    }
 
-        nextPortal.push_back(Portal(x, y, x-data.getX(), y-data.getY(),  data.getWidth() , data.getHeight() , index, data.getTimeDirection(), data.getPauseLevel(),
-                                    data.getCharges(), data.getActive(), data.getXdestination(), data.getYdestination(), data.getDestinationIndex(),
-                                    data.getTimeDestination(), data.getRelativeTime() ));
+        nextPortal.push_back(Portal(x, y, 
+                                    x-portal.getX(), y-portal.getY(),
+                                    portal.getWidth(), portal.getHeight(),
+                                    portal.getIndex(),
+                                    portal.getTimeDirection(),
+                                    portal.getPauseLevel(),
+                                    portal.getCharges(),
+                                    portal.getActive(),
+                                    portal.getXdestination(),
+                                    portal.getYdestination(),
+                                    portal.getDestinationIndex(),
+                                    portal.getTimeDestination(),
+                                    portal.getRelativeTime()));
 	}
-
 }
-
+    
 void PhysicsEngine::buttonPositionUpdate(
-        const ::std::vector<Platform>& nextPlatform,
-        const ::std::vector<char>& nextButtonState,
-        const ::std::vector<const Button*>& oldButtonList,
-        ::std::vector<Button>& nextButton
-    ) const
+        const std::vector<Platform>& nextPlatform,
+        const std::vector<char>& nextButtonState,
+        const std::vector<const Button*>& oldButtonList,
+        std::vector<Button>& nextButton) const
 {
-
-    const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getButtonAttachmentRef());
-
-
-    for (unsigned int i = 0; i < oldButtonList.size(); ++i)
+    const std::vector<Attachment>& attachments(attachmentMap.getButtonAttachmentRef());
+    //This is the minimal assert which ensures defined behaviour for the following code.
+    //There should probably be a stricter == assert, but the current code
+    //would fail such an assert during level construction.
+    //TODO -- look deeper into why this is and whether or not it is desireable/fixable
+    assert(boost::distance(oldButtonList) <= boost::distance(nextButtonState));
+             
+    for (size_t i(0), size(oldButtonList.size()); i != size; ++i)
 	{
 	    if (oldButtonList[i]->getPauseLevel() != 0)
 	    {
@@ -1405,79 +1436,90 @@ void PhysicsEngine::buttonPositionUpdate(
 	        continue;
 	    }
 
-	    int x = oldButtonList[i]->getX();
-	    int y = oldButtonList[i]->getY();
-
-	    int index = oldButtonList[i]->getIndex();
-
-	    if (attachments[index].get<0>() != -1)
+	    int x(oldButtonList[i]->getX());
+	    int y(oldButtonList[i]->getY());
+        std::size_t index(oldButtonList[i]->getIndex());
+        Attachment attachment(attachments[index]);
+        std::size_t pid(attachment.platformIndex);
+	    if (attachment.platformIndex != std::numeric_limits<std::size_t>::max())
 	    {
-	        int pid = attachments[index].get<0>();
-
-	        if (nextPlatform[pid].getTimeDirection()*oldButtonList[index]->getTimeDirection() == hg::FORWARDS)
+            const Platform& platform(nextPlatform[pid]);
+	        if (platform.getTimeDirection() * oldButtonList[index]->getTimeDirection() == hg::FORWARDS)
 	        {
-	            x = nextPlatform[pid].getX()+attachments[index].get<1>();
-                y = nextPlatform[pid].getY()+attachments[index].get<2>();
+	            x = platform.getX() + attachment.xOffset;
+                y = platform.getY() + attachment.yOffset;
 	        }
 	        else
 	        {
-	            x = nextPlatform[pid].getX()-nextPlatform[pid].getXspeed()+attachments[index].get<1>();
-                y = nextPlatform[pid].getY()-nextPlatform[pid].getYspeed()+attachments[index].get<2>();
+	            x = platform.getX() - platform.getXspeed() + attachment.xOffset;
+                y = platform.getY() - platform.getYspeed() + attachment.yOffset;
 	        }
 	    }
 
-        nextButton.push_back(Button(x, y, x-oldButtonList[i]->getX(), y-oldButtonList[i]->getY(), index, nextButtonState[i], oldButtonList[i]->getTimeDirection(), 0));
+        nextButton.push_back(
+                Button(x, y,
+                       x-oldButtonList[i]->getX(), y-oldButtonList[i]->getY(),
+                       oldButtonList[i]->getWidth(), oldButtonList[i]->getHeight(),
+                       index,
+                       nextButtonState[i],
+                       oldButtonList[i]->getTimeDirection(),
+                       0));
 	}
 }
 
 
-void PhysicsEngine::buttonChecks(const ::std::vector<const Platform*>& oldPlatformList,
-                        const ::std::vector<const Box*>& oldBoxList,
-                        const ::std::vector<const Guy*>& oldGuyList,
-                        const ::std::vector<const Button*>& oldButtonList,
-                        std::vector<char>& nextButton) const
+void PhysicsEngine::buttonChecks(const std::vector<const Platform*>& oldPlatformList,
+                                 const std::vector<const Box*>& oldBoxList,
+                                 const std::vector<const Guy*>& oldGuyList,
+                                 const std::vector<const Button*>& oldButtonList,
+                                 std::vector<char>& nextButton) const
 {
-
-    const ::std::vector< ::boost::tuple<int, int, int> >& attachments(attachmentMap.getButtonAttachmentRef());
-
-    for (unsigned int i = 0; i < oldButtonList.size(); ++i)
+    const std::vector<Attachment>& attachments(attachmentMap.getButtonAttachmentRef());
+    foreach (const Button& oldButton, oldButtonList | boost::adaptors::indirected)
 	{
-
-	    int x = oldButtonList[i]->getX();
-	    int y = oldButtonList[i]->getY();
-	    int w = 3200;
-	    int h = 800;
-	    bool state = false;
-
-	    int index = oldButtonList[i]->getIndex();
-
-	    if (attachments[index].get<0>() != -1)
-	    {
-	        int pid = attachments[index].get<0>();
-
-	        if (oldPlatformList[pid]->getTimeDirection()*oldButtonList[index]->getTimeDirection() == hg::FORWARDS)
-	        {
-	            x = oldPlatformList[pid]->getX()+attachments[index].get<1>();
-                y = oldPlatformList[pid]->getY()+attachments[index].get<2>();
-	        }
-	        else
-	        {
-	            x = oldPlatformList[pid]->getX()-oldPlatformList[pid]->getXspeed()+attachments[index].get<1>();
-                y = oldPlatformList[pid]->getY()-oldPlatformList[pid]->getYspeed()+attachments[index].get<2>();
-	        }
-	    }
-
-	    for (unsigned int j = 0; !state && j < oldBoxList.size(); ++j)
+	    int x(oldButton.getX());
+	    int y(oldButton.getY());
+	    int w(oldButton.getWidth());
+	    int h(oldButton.getHeight());
+	    bool state(false);
         {
-            state = PhysicsEngine::IntersectingRectangles(x, y, w, h, oldBoxList[j]->getX(), oldBoxList[j]->getY(), oldBoxList[j]->getSize(), oldBoxList[j]->getSize(), true);
+            std::size_t index(oldButton.getIndex());
+            const Attachment& attachment(attachments[index]);
+            std::size_t pid(attachment.platformIndex);
+            if (pid != std::numeric_limits<std::size_t>::max())
+            {
+                const Platform& platform(*oldPlatformList[pid]);
+                if (platform.getTimeDirection() * oldButtonList[index]->getTimeDirection() == FORWARDS)
+                {
+                    x = platform.getX() + attachment.xOffset;
+                    y = platform.getY() + attachment.yOffset;
+                }
+                else
+                {
+                    x = platform.getX() - platform.getXspeed() + attachment.xOffset;
+                    y = platform.getY() - platform.getYspeed() + attachment.yOffset;
+                }
+            }
         }
-
-        for (unsigned int j = 0; !state && j < oldGuyList.size(); ++j)
+	    foreach (const Box& box, oldBoxList | boost::adaptors::indirected)
         {
-            state = PhysicsEngine::IntersectingRectangles(x, y, w, h, oldGuyList[j]->getX(), oldGuyList[j]->getY(), oldGuyList[j]->getWidth(), oldGuyList[j]->getHeight(), true);
+            if (state) {
+                break;
+            }
+            state = IntersectingRectanglesInclusive(x, y, w, h,
+                                                    box.getX(), box.getY(), 
+                                                    box.getSize(), box.getSize());
         }
-
-        nextButton[oldButtonList[i]->getIndex()] = state;
+        foreach (const Guy& guy, oldGuyList | boost::adaptors::indirected)
+        {
+            if (state) {
+                break;
+            }
+            state = IntersectingRectanglesInclusive(x, y, w, h,
+                                                    guy.getX(), guy.getY(),
+                                                    guy.getWidth(), guy.getHeight());
+        }
+        nextButton[oldButton.getIndex()] = state;
 	}
 }
 
@@ -1488,8 +1530,8 @@ bool PhysicsEngine::wallAt(int x, int y) const
 		return true;
 	}
 
-	unsigned int aX = x/wallSize;
-	unsigned int aY = y/wallSize;
+    unsigned int aX(x/wallSize);
+    unsigned int aY(y/wallSize);
 
 	if (aX < wallmap.size() && aY < wallmap[aX].size())
 	{
@@ -1506,68 +1548,50 @@ bool PhysicsEngine::wallAt(int x, int y, int w, int h) const
 	return wallAt(x, y) || wallAt(x+w, y) || wallAt(x, y+h) || wallAt(x+w, y+h);
 }
 
-bool PhysicsEngine::PointInRectangle(int px, int py, int x, int y, int w, int h, bool inclusive) const
+static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)
 {
-     if (inclusive)
-    {
-        return
-        (
+    return 
             (px <= x + w && px >= x)
-         &&
+        &&
             (py <= y + h && py >= y)
-        );
-    }
-    else
-    {
-        return
-        (
-            (px < x + w && px > x)
-         &&
-            (py < y + h && py > y)
-        );
-    }
+    ;
 }
 
-bool PhysicsEngine::IntersectingRectangles(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool inclusive) const
+static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
-    if (inclusive)
-    {
-        return
+    return
         (
-            (
-                (x1 <= x2 && x1 + w1 >= x2)
-             ||
-                (x2 <= x1 && x2 + w2 >= x1)
-            )
-         &&
-            (
-                (y1 <= y2 && y1 + h1 >= y2)
-             ||
-                (y2 <= y1 && y2 + h2 >= y1)
-            )
-        );
-    }
-    else
-    {
-        return
+         (x1 <= x2 && x1 + w1 >= x2)
+          ||
+         (x2 <= x1 && x2 + w2 >= x1)
+        )
+       &&
         (
-            (
-                (x1 < x2 && x1 + w1 > x2)
-             ||
-                (x2 < x1 && x2 + w2 > x1)
-             ||
-                (x1 == x2)
-            )
-         &&
-            (
-                (y1 < y2 && y1 + h1 > y2)
-             ||
-                (y2 < y1 && y2 + h2 > y1)
-             ||
-                (y1 == y2)
-            )
-        );
-    }
+         (y1 <= y2 && y1 + h1 >= y2)
+          ||
+         (y2 <= y1 && y2 + h2 >= y1)
+        )
+       ;
 }
 
+static bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+{
+    return
+        (
+         (x1 < x2 && x1 + w1 > x2)
+          ||
+         (x2 < x1 && x2 + w2 > x1)
+          ||
+         (x1 == x2)
+        )
+       &&
+        (
+         (y1 < y2 && y1 + h1 > y2)
+          ||
+         (y2 < y1 && y2 + h2 > y1)
+          ||
+         (y1 == y2)
+        )
+       ;
+}
 } //namespace hg

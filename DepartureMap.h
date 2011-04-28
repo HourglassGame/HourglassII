@@ -8,7 +8,7 @@ namespace hg {
     class Frame;
     class DepartureMap {
     public:
-        typedef ::boost::unordered_map<Frame*, ::std::map<Frame*, ObjectList> > MapType;
+        typedef boost::unordered_map<Frame*, std::map<Frame*, ObjectList> > MapType;
         typedef MapType::value_type ValueType;        
         typedef MapType::value_type         value_type;               
         typedef MapType::pointer            pointer;             
@@ -22,7 +22,7 @@ namespace hg {
         DepartureMap();
         //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
         void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor);
-        void addDeparture(Frame* time, ::std::map<Frame*, ObjectList> departingObjects);
+        void addDeparture(Frame* time, std::map<Frame*, ObjectList> departingObjects);
         iterator begin();
         iterator end();
         const_iterator begin() const;

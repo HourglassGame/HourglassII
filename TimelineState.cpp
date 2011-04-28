@@ -9,9 +9,7 @@
 
 #include <cassert>
 #include <algorithm>
-#include <iostream>
 
-using namespace ::std;
 namespace hg {
 struct UpdateDeparturesFromTime
 {
@@ -26,7 +24,7 @@ struct UpdateDeparturesFromTime
     ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
 };
 
-TimelineState::TimelineState(unsigned int timelineLength) :
+TimelineState::TimelineState(size_t timelineLength) :
 universe_(timelineLength)
 {
 }

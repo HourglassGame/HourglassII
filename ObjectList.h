@@ -19,10 +19,10 @@
 namespace hg {
 template<typename T>
 struct vector_of {
-    typedef ::std::vector<T> type;
+    typedef std::vector<T> type;
 };
 namespace object_list_detail {
-    typedef ::boost::fusion::vector
+    typedef boost::fusion::vector
         <
             Guy,
             Box,
@@ -53,14 +53,14 @@ public:
     ObjectList(const ObjectList& other);
     ObjectList& operator=(const ObjectList& other);
 
-    const ::std::vector<Guy>& getGuyListRef() const;
-    const ::std::vector<Box>& getBoxListRef() const;
-    const ::std::vector<Button>& getButtonListRef() const;
-    const ::std::vector<Platform>& getPlatformListRef() const;
-    const ::std::vector<Portal>& getPortalListRef() const;
-    const ::std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
-    const ::std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
-    const ::std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
+    const std::vector<Guy>& getGuyListRef() const;
+    const std::vector<Box>& getBoxListRef() const;
+    const std::vector<Button>& getButtonListRef() const;
+    const std::vector<Platform>& getPlatformListRef() const;
+    const std::vector<Portal>& getPortalListRef() const;
+    const std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
+    const std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
+    const std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
     //Add other ref getters as needed
 
 	void add(const Guy& toCopy);
@@ -86,7 +86,7 @@ private:
 #ifndef NDEBUG
     bool sorted;
 #endif //NDEBUG
-    typedef ::boost::mpl::transform<object_list_detail::ObjectListTypes, vector_of< ::boost::mpl::_1> >::type ObjectListType;
+    typedef boost::mpl::transform<object_list_detail::ObjectListTypes, vector_of<boost::mpl::_1> >::type ObjectListType;
     ObjectListType objectList_;
 };
 void swap(ObjectList& l, ObjectList& r);
@@ -98,14 +98,14 @@ public:
     ObjectPtrList(const ObjectPtrList& other);
     ObjectPtrList& operator=(const ObjectPtrList& other);
 
-    const ::std::vector<const Guy*>& getGuyListRef() const;
-    const ::std::vector<const Box*>& getBoxListRef() const;
-    const ::std::vector<const Button*>& getButtonListRef() const;
-    const ::std::vector<const Platform*>& getPlatformListRef() const;
-    const ::std::vector<const Portal*>& getPortalListRef() const;
-    const ::std::vector<const RemoteDepartureEdit<Box>* >& getBoxThiefListRef() const;
-    const ::std::vector<const RemoteDepartureEdit<Box>* >& getBoxExtraListRef() const;
-    const ::std::vector<const RemoteDepartureEdit<Guy>* >& getGuyExtraListRef() const;
+    const std::vector<const Guy*>& getGuyListRef() const;
+    const std::vector<const Box*>& getBoxListRef() const;
+    const std::vector<const Button*>& getButtonListRef() const;
+    const std::vector<const Platform*>& getPlatformListRef() const;
+    const std::vector<const Portal*>& getPortalListRef() const;
+    const std::vector<const RemoteDepartureEdit<Box>* >& getBoxThiefListRef() const;
+    const std::vector<const RemoteDepartureEdit<Box>* >& getBoxExtraListRef() const;
+    const std::vector<const RemoteDepartureEdit<Guy>* >& getGuyExtraListRef() const;
     //Add other ref getters as needed
 
     void add(const ObjectList& other);
