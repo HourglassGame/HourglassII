@@ -2,7 +2,7 @@
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
 #include "FrameID.h"
-#include <boost/range/algorithm/reverse.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 #include <boost/foreach.hpp>
 #include <utility>
 #include <cassert>
@@ -163,7 +163,7 @@ void Frame::addArrival(Frame* source, ObjectList* arrival)
 {
     arrivals_.insert(ArrivalMap::value_type(source, arrival));
 }
-/*
+
 FrameID Frame::toFrameID() const
 {
     std::vector<SubUniverse> nestTrain;
@@ -172,9 +172,8 @@ FrameID Frame::toFrameID() const
     {
         nestTrain.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
     }
-    boost::reverse(nestTrain);
-    return FrameID(frameNumber_, UniverseID(universe->frames_.size(), nestTrain));
-}*/
+    return FrameID(frameNumber_, UniverseID(universe->frames_.size(), nestTrain | boost::adaptors::reversed));
+}
 
 void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
 {

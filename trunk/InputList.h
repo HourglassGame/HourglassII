@@ -1,8 +1,6 @@
 #include "FrameID.h"
 #include "Ability.h"
 
-#include <boost/serialization/nvp.hpp>
-
 #include <cassert>
 
 #ifndef HG_INPUT_LIST_H
@@ -10,10 +8,7 @@
 namespace hg {
 class InputList
 {
-
 public:
-
-
 	InputList(bool left,
               bool right,
               bool up,
@@ -62,21 +57,6 @@ private:
 	Ability ability;
 	FrameID frameIdParams;
 	int frameIdParamCount;
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int /*version*/)
-    {
-        ar & BOOST_SERIALIZATION_NVP(left);
-        ar & BOOST_SERIALIZATION_NVP(right);
-        ar & BOOST_SERIALIZATION_NVP(up);
-        ar & BOOST_SERIALIZATION_NVP(down);
-        ar & BOOST_SERIALIZATION_NVP(use);
-
-        ar & BOOST_SERIALIZATION_NVP(ability);
-        ar & BOOST_SERIALIZATION_NVP(frameIdParams);
-        ar & BOOST_SERIALIZATION_NVP(frameIdParamCount);
-    }
-
 };
 }
 #endif //HG_INPUT_LIST_H

@@ -1,12 +1,12 @@
 #include "TriggerSystem.h"
 
 namespace hg {
-TriggerSystem::TriggerSystem(::std::vector<int> nPlatformsTriggeredByButton,
+TriggerSystem::TriggerSystem(std::vector<int> nPlatformsTriggeredByButton,
                             unsigned int nButtonCount,
                             unsigned int nTriggerCount,
                             unsigned int nPlatformCount,
-                            ::std::vector<PlatformDestination> nonDestinations,
-                            ::std::vector<PlatformDestination> noffDestinations) :
+                            std::vector<PlatformDestination> nonDestinations,
+                            std::vector<PlatformDestination> noffDestinations) :
 platformsTriggeredByButton(nPlatformsTriggeredByButton),
 buttonCount(nButtonCount),
 triggerCount(nTriggerCount),

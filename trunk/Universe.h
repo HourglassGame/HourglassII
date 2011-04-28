@@ -67,7 +67,7 @@ private:
     
     //This is a reference to allow rebinding when performing 2-part construction.
     Frame* initiatorFrame_;
-    ::std::vector<Frame> frames_;
+    std::vector<Frame> frames_;
     const PauseInitiatorID* initiatorID_;
 };
 }

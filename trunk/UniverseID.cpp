@@ -2,8 +2,8 @@
 #include "FrameID.h"
 
 #include <boost/functional/hash.hpp>
+#include <boost/range/iterator_range.hpp>
 
-using namespace ::std;
 namespace hg {
 SubUniverse::SubUniverse(size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
 initiatorFrame_(initiatorFrame),
@@ -27,17 +27,17 @@ bool operator<(const SubUniverse& lhs, const SubUniverse& rhs)
     }
 }
 
-::std::size_t hash_value(const SubUniverse& toHash)
+std::size_t hash_value(const SubUniverse& toHash)
 {
     size_t seed(0);
-    ::boost::hash_combine(seed, toHash.initiatorFrame_);
-    ::boost::hash_combine(seed, toHash.pauseInitiatorID_);
+    boost::hash_combine(seed, toHash.initiatorFrame_);
+    boost::hash_combine(seed, toHash.pauseInitiatorID_);
     return seed;
 }
 
-UniverseID::UniverseID(size_t timelineLength, const ::std::vector<SubUniverse>& nestTrain) :
+UniverseID::UniverseID(size_t timelineLength) :
 timelineLength_(timelineLength),
-nestTrain_(nestTrain)
+nestTrain_()
 {
 }
 
@@ -53,11 +53,7 @@ FrameID UniverseID::parentFrame() const
                    UniverseID
                    (
                        timelineLength_,
-                       ::std::vector<SubUniverse>
-                       (
-                           nestTrain_.begin(),
-                           nestTrain_.end() - 1
-                       )
+                       boost::make_iterator_range(nestTrain_, 0, -1)
                    )
                );
     }
@@ -82,7 +78,7 @@ bool UniverseID::operator==(const UniverseID& other) const
 bool UniverseID::operator<(const UniverseID& other) const
 {
     if (nestTrain_.size() == other.nestTrain_.size()) {
-        for (::std::vector<SubUniverse>::const_reverse_iterator it(nestTrain_.rbegin()), end(nestTrain_.rend()), oit(other.nestTrain_.rbegin());
+        for (std::vector<SubUniverse>::const_reverse_iterator it(nestTrain_.rbegin()), end(nestTrain_.rend()), oit(other.nestTrain_.rbegin());
              it != end; ++it, ++oit) {
             if (*it != *oit) {
                 return *it < *oit;
@@ -97,16 +93,16 @@ bool UniverseID::operator<(const UniverseID& other) const
 
 UniverseID UniverseID::getSubUniverse(const SubUniverse& newestNest) const
 {
-    vector<SubUniverse> newNestTrain(nestTrain_);
-    newNestTrain.push_back(newestNest);
-    return UniverseID(timelineLength_, newNestTrain);
+    UniverseID retv(*this);
+    retv.nestTrain_.push_back(newestNest);
+    return retv;
 }
 
-::std::size_t hash_value(const UniverseID& toHash)
+std::size_t hash_value(const UniverseID& toHash)
 {
     size_t seed(0);
-    ::boost::hash_combine(seed, toHash.timelineLength_);
-    ::boost::hash_combine(seed, toHash.nestTrain_);
+    boost::hash_combine(seed, toHash.timelineLength_);
+    boost::hash_combine(seed, toHash.nestTrain_);
     return seed;
 }
 
@@ -118,7 +114,6 @@ PauseInitiatorID UniverseID::initiatorID() const
     else {
         return PauseInitiatorID(pauseinitiatortype::INVALID,0,0);
     }
-
 }
 size_t UniverseID::pauseDepth() const
 {

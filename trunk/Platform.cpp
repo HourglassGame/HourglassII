@@ -1,8 +1,9 @@
 #include "Platform.h"
-
+#include <limits>
+#include <cassert>
 namespace hg {
 Platform::Platform(int x, int y, int xspeed, int yspeed, 
-                   int width, int height, int index, 
+                   int width, int height, size_t index, 
                    TimeDirection timeDirection, int pauseLevel) :
 x_(x),
 y_(y),
@@ -14,6 +15,8 @@ index_(index),
 timeDirection_(timeDirection),
 pauseLevel_(pauseLevel)
 {
+    assert(index_ != std::numeric_limits<size_t>::max() 
+           && "the max value is reserved for representing invalid/null indices");
 }
 
 Platform::Platform(const Platform& other, hg::TimeDirection timeDirection, int pauseLevel) :

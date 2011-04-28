@@ -1,5 +1,6 @@
 #include "Portal.h"
-
+#include <limits>
+#include <cassert>
 namespace hg {
 Portal::Portal(int x,
                int y,
@@ -7,7 +8,7 @@ Portal::Portal(int x,
                int yspeed,
                int width,
                int height,
-               int index,
+               size_t index,
                TimeDirection timeDirection,
                int pauseLevel,
                int charges,
@@ -34,6 +35,8 @@ destinationIndex_(destinationIndex),
 timeDestination_(timeDestination),
 relativeTime_(relativeTime)
 {
+    assert(index_ != std::numeric_limits<size_t>::max() 
+           && "the max value is reserved for representing invalid/null indices");
 }
 
 Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLevel) :

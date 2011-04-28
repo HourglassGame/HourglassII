@@ -1,15 +1,7 @@
 #include "TimeEngine.h"
 
-#include "InvalidLevelException.h"
-#include "ObjectList.h"
 #include "Level.h"
 
-#include <iostream>
-#include <cassert>
-#include <algorithm>
-
-using namespace ::std;
-using namespace ::boost;
 namespace hg {
 TimeEngine::TimeEngine(const Level& level) :
 speedOfTime(level.speedOfTime),
@@ -38,7 +30,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInput
     return retv;
 }
     
-::std::vector<InputList> TimeEngine::getReplayData() const
+std::vector<InputList> TimeEngine::getReplayData() const
 {
     return worldState.getReplayData();
 }

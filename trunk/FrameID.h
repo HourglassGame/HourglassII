@@ -4,8 +4,6 @@
 #include "TimeDirection.h"
 #include "UniverseID.h"
 
-#include <boost/serialization/nvp.hpp>
-
 #include <cstring>
 #include <cassert>
 
@@ -66,20 +64,12 @@ public:
     }
 
 private:
-    friend ::std::size_t hash_value(const FrameID& toHash);
+    friend std::size_t hash_value(const FrameID& toHash);
     size_t frame_;
     UniverseID universeID_;
     unsigned int nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const;
-    
-    friend class boost::serialization::access;
-    template<class Archive>
-    void serialize(Archive &ar, const unsigned int /*version*/)
-    {
-        ar & BOOST_SERIALIZATION_NVP(frame_);
-        ar & BOOST_SERIALIZATION_NVP(universeID_);
-    }
 };
 //Returns a size_t based on toHash such that two FrameIDs for which operator== returns true give the same size_t value;
-::std::size_t hash_value(const FrameID& toHash);
+std::size_t hash_value(const FrameID& toHash);
 }//namespace hg
 #endif //HG_FRAME_ID_H

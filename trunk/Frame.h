@@ -18,8 +18,8 @@ class FrameID;
 //A system like this could also put the arrivals and departures in Frames
 //and so avoid the arrival-departure-map system altogether
 class Frame {
-    typedef ::boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
-    typedef ::tbb::concurrent_hash_map<Frame*, ObjectList*> ArrivalMap;
+    typedef boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
+    typedef tbb::concurrent_hash_map<Frame*, ObjectList*> ArrivalMap;
     public:
     Frame(size_t frameNumber, Universe& universe);
     
@@ -64,14 +64,13 @@ class Frame {
      */
 	ObjectPtrList getPrePhysics() const;
 
-
     /*****************************************************
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
      * Not sure what the whichPrePause argument is actually there for, so leaving that functionality out for now.
      */
     ObjectPtrList getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
     void addArrival(Frame* source, ObjectList* arrival);
-    //FrameID toFrameID() const;
+    FrameID toFrameID() const;
     size_t getFrameNumber() const { return frameNumber_; }
     const PauseInitiatorID& getInitiatorID() const;
     private:
