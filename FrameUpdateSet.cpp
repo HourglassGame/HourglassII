@@ -23,7 +23,7 @@ FrameUpdateSet::const_iterator FrameUpdateSet::begin() const { return updateSet_
 FrameUpdateSet::const_iterator FrameUpdateSet::end() const { return updateSet_.end(); }
 FrameUpdateSet::iterator FrameUpdateSet::begin() { return updateSet_.begin(); }
 FrameUpdateSet::iterator FrameUpdateSet::end() { return updateSet_.end(); }
-size_t FrameUpdateSet::size() const { return updateSet_.size(); }
+std::size_t FrameUpdateSet::size() const { return updateSet_.size(); }
 bool FrameUpdateSet::empty() const { return updateSet_.empty(); }
 bool operator==(const FrameUpdateSet& lhs, const FrameUpdateSet& rhs)
 {

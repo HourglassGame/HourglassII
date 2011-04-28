@@ -2,7 +2,7 @@
 #include <limits>
 #include <cassert>
 namespace hg {
-Button::Button(int x, int y, int xspeed, int yspeed, int width, int height, size_t index, bool state, TimeDirection timeDirection, int pauseLevel) :
+    Button::Button(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, bool state, TimeDirection timeDirection, int pauseLevel) :
 x_(x),
 y_(y),
 xspeed_(xspeed),
@@ -14,7 +14,7 @@ state_(state),
 timeDirection_(timeDirection),
 pauseLevel_(pauseLevel)
 {
-    assert(index_ != std::numeric_limits<size_t>::max() 
+    assert(index_ != std::numeric_limits<std::size_t>::max() 
            && "the max value is reserved for representing invalid/null indices");
 }
 

@@ -8,7 +8,7 @@ Portal::Portal(int x,
                int yspeed,
                int width,
                int height,
-               size_t index,
+               std::size_t index,
                TimeDirection timeDirection,
                int pauseLevel,
                int charges,
@@ -35,7 +35,7 @@ destinationIndex_(destinationIndex),
 timeDestination_(timeDestination),
 relativeTime_(relativeTime)
 {
-    assert(index_ != std::numeric_limits<size_t>::max() 
+    assert(index_ != std::numeric_limits<std::size_t>::max() 
            && "the max value is reserved for representing invalid/null indices");
 }
 

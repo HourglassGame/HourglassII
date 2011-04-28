@@ -21,13 +21,13 @@ public:
     //Postcondition: *this is a newly constructed universe which has also not been fully constructed.
     Universe(const Universe& other);
     //creates a top level universe
-    explicit Universe(size_t timelineLength);
+    explicit Universe(std::size_t timelineLength);
     //returns initiatorFrame_
     Frame* getInitiatorFrame() const;
     Frame* getEntryFrame(TimeDirection direction);
-    Frame* getArbitraryFrame(size_t frameNumber);
+    Frame* getArbitraryFrame(std::size_t frameNumber);
     //returns the length of this Universe's timeline
-    size_t getTimelineLength() const;
+    std::size_t getTimelineLength() const;
     Frame* getFrame(const FrameID& whichFrame);
     const PauseInitiatorID& getInitiatorID()
     {
@@ -36,11 +36,12 @@ public:
     }
 private:
     friend class Frame;
+    friend class UniverseID;
     //Creates a lower level universe.
     //This is never used in the current code, but kept because it is logically part of the interface, 
     //and will be needed once emplace becomes more widely supported and we change away from 
     //the 2-part construction workaround.
-    Universe(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID);
+    Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID);
     
     //The default constructor creates an Universe which can be copied around, but which is not 
     //useable for anything. construct(...) must be called on a default constructed universe
@@ -60,7 +61,7 @@ private:
     //Precondition: Universe was default constructed or copy constructed 
     //(from a default constructed Universe) and has had no member functions called
     //since construction.
-    void construct(Frame* initiatorFrame, size_t timelineLength, const PauseInitiatorID& initiatorID);
+    void construct(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID);
     
     //Intentionally undefined
     Universe& operator=(const Universe&);

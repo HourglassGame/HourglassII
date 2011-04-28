@@ -20,7 +20,7 @@ namespace hg {
          * Creates a new world state.
          * Throws an exception if the world state is not consistent.
          */
-        WorldState(size_t timelineLength,
+        WorldState(std::size_t timelineLength,
                    FrameID guyStartTime,
                    const PhysicsEngine& physics,
                    const ObjectList& initialObjects);

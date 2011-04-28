@@ -3,8 +3,8 @@
 
 namespace hg {
 PauseInitiatorID::PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
-                                   size_t ID,
-                                   size_t timelineLength) :
+                                   std::size_t ID,
+                                   std::size_t timelineLength) :
 type_(type),
 ID_(ID),
 timelineLength_(timelineLength)

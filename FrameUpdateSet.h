@@ -28,7 +28,7 @@ namespace hg {
         const_iterator end() const;
         iterator begin();
         iterator end();
-        size_t size() const;
+        std::size_t size() const;
         bool empty() const;
     private:
         SetType updateSet_;

@@ -2,13 +2,13 @@
 #define HG_PLATFORM_H
 #include "TimeDirection.h"
 #include "SortedByIndex.h"
-#include <cstring> //for size_t -- TODO find proper header
+#include <cstddef>
 namespace hg
 {
     class Platform
     {
     public:
-        Platform(int x, int y, int xspeed, int yspeed, int width, int height, size_t index, TimeDirection timeDirection, int pauseLevel);
+        Platform(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, TimeDirection timeDirection, int pauseLevel);
         Platform(const Platform& other, TimeDirection timeDirection, int pauseLevel);
         Platform(const Platform& other);
         Platform& operator=(const Platform& other);
@@ -19,7 +19,7 @@ namespace hg
         int getYspeed() const {return yspeed_;}
         int getWidth() const {return width_;}
         int getHeight() const {return height_;}
-        size_t getIndex() const {return index_;}
+        std::size_t getIndex() const {return index_;}
         TimeDirection getTimeDirection() const {return timeDirection_;}
         int getPauseLevel() const {return pauseLevel_;}
 
@@ -35,7 +35,7 @@ namespace hg
         int yspeed_;
         int width_;
         int height_;
-        size_t index_;
+        std::size_t index_;
         TimeDirection timeDirection_;
         int pauseLevel_;
     };

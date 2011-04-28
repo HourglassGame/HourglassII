@@ -1,5 +1,7 @@
 #include "FrameID.h"
 
+#include "Frame.h"
+
 #include <boost/functional/hash.hpp>
 
 #include <limits>
@@ -8,33 +10,25 @@
 namespace hg {
 
 FrameID::FrameID() :
-frame_(std::numeric_limits<size_t>::max()),
+frame_(std::numeric_limits<std::size_t>::max()),
 universeID_(0)
 {
 }
 
-FrameID::FrameID(size_t time, const UniverseID& nuniverse) :
+FrameID::FrameID(std::size_t time, const UniverseID& nuniverse) :
 frame_(time),
 universeID_(nuniverse)
 {
     assert(isValidFrame());
 }
-#if 0
+
 //Creates a FrameID corresponding to the given Frame*
 FrameID::FrameID(const Frame* toConvert) :
 frame_(toConvert->frameNumber_),
-universeID_()
+universeID_(toConvert->universe_)
 {
-    std::vector<SubUniverse>& nestTrain;
-    const Universe* universe(&(toConvert->universe_));
-    for(; universe->initiatorFrame_; universe = &(universe->initiatorFrame_->universe_))
-    {
-        universeID_.nestTrain.push_back(SubUniverse(universe->initiatorFrame_->frameNumber_, *(universe->initiatorID_)));
-    }
-    boost::reverse(universe_.nestTrain);
-    universeID_.timelineLength_ = universe->frames_.size();
 }
-#endif
+
 FrameID FrameID::nextFrame(TimeDirection direction) const
 {
     if (!isValidFrame()) {
@@ -69,7 +63,7 @@ unsigned int FrameID::nextFramePauseLevelDifferenceAux(unsigned int depthAccumul
     }
 }
 
-FrameID FrameID::arbitraryFrameInUniverse(size_t frameNumber) const
+FrameID FrameID::arbitraryFrameInUniverse(std::size_t frameNumber) const
 {
     if (frameNumber >= universeID_.timelineLength()) {
         return FrameID();
@@ -85,7 +79,7 @@ FrameID FrameID::parentFrame() const
 }
 
 FrameID FrameID::arbitraryChildFrame(const PauseInitiatorID& initatorID,
-                                           size_t frameNumber) const
+                                     std::size_t frameNumber) const
 {
     return FrameID(frameNumber, universeID_.getSubUniverse(SubUniverse(frame_, initatorID)));
 }
@@ -122,7 +116,7 @@ bool FrameID::operator<(const FrameID& other) const
 bool FrameID::isValidFrame() const
 {
     if (universeID_.timelineLength() < frame_) {
-        assert(frame_ == std::numeric_limits<size_t>::max());
+        assert(frame_ == std::numeric_limits<std::size_t>::max());
         assert(universeID_.timelineLength() == 0);
         return false;
     }

@@ -15,7 +15,7 @@ public:
     /**************
      * Constructs a timeline state of length timeLength containing no arrivals or departures.
      */
-	TimelineState(size_t timelineLength);
+	TimelineState(std::size_t timelineLength);
 
     /********************
      * Updates the timeline with new departures and returns the set of frames

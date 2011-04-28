@@ -4,7 +4,7 @@
 #include "TimeDirection.h"
 #include "UniverseID.h"
 
-#include <cstring>
+#include <cstddef>
 #include <cassert>
 
 namespace hg {
@@ -17,12 +17,10 @@ public:
     FrameID();
 
     //Creates a FrameID referring to the given time in the given universe
-    FrameID(size_t time, const UniverseID& universe);
+    FrameID(std::size_t time, const UniverseID& universe);
 
     //Creates a FrameID corresponding to the given Frame*
-    //(Not yet Implemented... if you need this functionality use Frame::toFrameID 
-    //or complete it using Frame::toFrameID as a reference)
-    FrameID(const Frame* toConvert);
+    explicit FrameID(const Frame* toConvert);
     
     // returns the normal next frame for things moving in direction TimeDirection
     FrameID nextFrame(TimeDirection direction) const;
@@ -32,7 +30,7 @@ public:
     unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    FrameID arbitraryFrameInUniverse(size_t frameNumber) const;
+    FrameID arbitraryFrameInUniverse(std::size_t frameNumber) const;
 
     // returns the frame that spawned the universe that this frame is in
     FrameID parentFrame() const;
@@ -40,7 +38,7 @@ public:
     // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
     //'distance' from the start of the universe This function cannot return nullFrame,
     //place assert to assure frameNumber is never greater pauseLength
-    FrameID arbitraryChildFrame(const PauseInitiatorID& initatorID, size_t frameNumber) const;
+    FrameID arbitraryChildFrame(const PauseInitiatorID& initatorID, std::size_t frameNumber) const;
 
     // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
     //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
@@ -54,7 +52,7 @@ public:
 
     bool isValidFrame() const;
 
-    size_t frame() const {
+    std::size_t frame() const {
         assert (isValidFrame());
         return frame_;
     }
@@ -65,11 +63,12 @@ public:
 
 private:
     friend std::size_t hash_value(const FrameID& toHash);
-    size_t frame_;
+    //positiong of frame within universeID_
+    std::size_t frame_;
     UniverseID universeID_;
     unsigned int nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const;
 };
-//Returns a size_t based on toHash such that two FrameIDs for which operator== returns true give the same size_t value;
+//Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
 std::size_t hash_value(const FrameID& toHash);
 }//namespace hg
 #endif //HG_FRAME_ID_H

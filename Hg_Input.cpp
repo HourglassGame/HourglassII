@@ -53,7 +53,7 @@ const InputList Input::AsInputList() const
 {
     if (mouseLeft == 1)
     {
-        return InputList(left, right, up, (down == 1) , space, hg::TIME_JUMP, FrameID(mouseX*10800/64000, 10800), 1);
+        return InputList(left, right, up, (down == 1) , space, hg::TIME_JUMP, FrameID(mouseX*10800/64000, UniverseID(10800)), 1);
     }
 
     if (mouseRight == 1)
