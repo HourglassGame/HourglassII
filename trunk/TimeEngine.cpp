@@ -16,10 +16,9 @@ TimeEngine::TimeEngine(const Level& level) :
 TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
-    //FrameListList updatedList(speedOfTime);
     updatedList.clear();
     updatedList.resize(speedOfTime);
-    for (unsigned int i = 0; i < speedOfTime; ++i) {
+    for (unsigned int i(0); i < speedOfTime; ++i) {
         worldState.executeWorld().swap(updatedList[i]);
     }
     TimeEngine::RunResult retv;
