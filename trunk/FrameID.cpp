@@ -10,22 +10,22 @@
 namespace hg {
 
 FrameID::FrameID() :
-frame_(std::numeric_limits<std::size_t>::max()),
-universeID_(0)
+        frame_(std::numeric_limits<std::size_t>::max()),
+        universeID_(0)
 {
 }
 
 FrameID::FrameID(std::size_t time, const UniverseID& nuniverse) :
-frame_(time),
-universeID_(nuniverse)
+        frame_(time),
+        universeID_(nuniverse)
 {
     assert(isValidFrame());
 }
 
 //Creates a FrameID corresponding to the given Frame*
 FrameID::FrameID(const Frame* toConvert) :
-frame_(toConvert->frameNumber_),
-universeID_(toConvert->universe_)
+        frame_(toConvert->frameNumber_),
+        universeID_(toConvert->universe_)
 {
 }
 
@@ -52,10 +52,10 @@ unsigned int FrameID::nextFramePauseLevelDifference(TimeDirection direction) con
 unsigned int FrameID::nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const
 {
     if (        !isValidFrame()
-        ||
+                ||
                 !((direction == REVERSE && frame_ == 0)
-            ||
-                (direction == FORWARDS && frame_ == universeID_.timelineLength()))) {
+                  ||
+                  (direction == FORWARDS && frame_ == universeID_.timelineLength()))) {
         return depthAccumulator;
     }
     else {
@@ -85,11 +85,11 @@ FrameID FrameID::arbitraryChildFrame(const PauseInitiatorID& initatorID,
 }
 
 FrameID FrameID::entryChildFrame(const PauseInitiatorID& initatorID,
-                                       TimeDirection direction) const
+                                 TimeDirection direction) const
 {
     assert(initatorID.timelineLength_ != 0);
     return FrameID(direction == FORWARDS ? 0 : initatorID.timelineLength_ - 1,
-                      universeID_.getSubUniverse(SubUniverse(frame_, initatorID)));
+                   universeID_.getSubUniverse(SubUniverse(frame_, initatorID)));
 }
 
 bool FrameID::operator==(const FrameID& other) const

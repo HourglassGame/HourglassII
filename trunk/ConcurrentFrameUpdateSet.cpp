@@ -2,7 +2,7 @@
 
 namespace hg {
 ConcurrentFrameUpdateSet::ConcurrentFrameUpdateSet() :
-threadLocalMap_()
+        threadLocalMap_()
 {
 }
 void ConcurrentFrameUpdateSet::add(const FrameUpdateSet& toAdd)
@@ -12,7 +12,7 @@ void ConcurrentFrameUpdateSet::add(const FrameUpdateSet& toAdd)
 struct FrameUpdateSetCombiner
 {
     FrameUpdateSetCombiner(FrameUpdateSet& taker) :
-    taker_(taker)
+            taker_(taker)
     {
     }
     void operator()(const FrameUpdateSet& toAdd) const

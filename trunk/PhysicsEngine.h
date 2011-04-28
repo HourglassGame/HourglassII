@@ -27,28 +27,28 @@ class ConcurrentTimeSet;
 class PhysicsEngine
 {
 public:
-	PhysicsEngine(  const boost::multi_array<bool, 2>& nwallmap,
+    PhysicsEngine(  const boost::multi_array<bool, 2>& nwallmap,
                     int newWallSize,
                     int newGravity,
                     const AttachmentMap& nAttachmentMap,
                     const TriggerSystem& nTriggerSystem);
 
     // executes frame and returns departures
-	std::map<Frame*, ObjectList> executeFrame(const ObjectPtrList& arrivals,
-                                    Frame* time,
-                                    const std::vector<InputList>& playerInput,
-                                    ConcurrentTimeMap& currentPlayerFramesAndDirections,
-                                    ConcurrentTimeSet& nextPlayerFrames,
-                                    ConcurrentTimeSet& winFrames) const;
+    std::map<Frame*, ObjectList> executeFrame(const ObjectPtrList& arrivals,
+            Frame* time,
+            const std::vector<InputList>& playerInput,
+            ConcurrentTimeMap& currentPlayerFramesAndDirections,
+            ConcurrentTimeSet& nextPlayerFrames,
+            ConcurrentTimeSet& winFrames) const;
 
 private:
     typedef std::map<Frame*, ObjectList> NewDeparturesT;
-    
+
     struct BoxInfo {
         BoxInfo(Box nbox,
                 Frame* nTime) :
-        info(nbox),
-        time(nTime)
+                info(nbox),
+                time(nTime)
         {}
         Box info;
         Frame* time;
@@ -57,8 +57,8 @@ private:
     struct GuyInfo {
         GuyInfo(Guy nGuy,
                 Frame* nTime) :
-        info(nGuy),
-        time(nTime)
+                info(nGuy),
+                time(nTime)
         {}
         Guy info;
         Frame* time;
@@ -75,18 +75,18 @@ private:
                         std::vector<char>& nextButton) const;
 
     template <class Type, class TypeInfo> void buildDeparturesForComplexEntities(
-                                    const std::vector<TypeInfo>& next,
-                                    const std::vector<const RemoteDepartureEdit<Type>* >& thieves,
-                                    const std::vector<const RemoteDepartureEdit<Type>* >& extras,
-                                    NewDeparturesT& newDepartures,
-                                    Frame* time,
-                                    std::vector<PauseInitiatorID>& pauseTimes) const;
+        const std::vector<TypeInfo>& next,
+        const std::vector<const RemoteDepartureEdit<Type>* >& thieves,
+        const std::vector<const RemoteDepartureEdit<Type>* >& extras,
+        NewDeparturesT& newDepartures,
+        Frame* time,
+        std::vector<PauseInitiatorID>& pauseTimes) const;
 
     template <class Type> void buildDeparturesForReallySimpleThings(
-                                    const std::vector<Type>& next,
-                                    NewDeparturesT& newDepartures,
-                                    Frame* time,
-                                    std::vector<PauseInitiatorID>& pauseTimes) const;
+        const std::vector<Type>& next,
+        NewDeparturesT& newDepartures,
+        Frame* time,
+        std::vector<PauseInitiatorID>& pauseTimes) const;
 
     void buildDepartures(const std::vector<BoxInfo>& nextBox,
                          const std::vector<Platform>& nextPlatform,
@@ -111,11 +111,11 @@ private:
         const std::vector<const Portal*>& oldPortalList,
         std::vector<Portal>& nextPortal) const;
 
-	void crappyBoxCollisionAlogorithm(  const std::vector<const Box*>& oldBoxList,
+    void crappyBoxCollisionAlogorithm(  const std::vector<const Box*>& oldBoxList,
                                         std::vector<BoxInfo>& nextBox,
                                         std::vector<Platform>& nextPlatform,
                                         Frame* time
-                                        ) const;
+                                     ) const;
 
     void guyStep(   const std::vector<const Guy*>& oldGuyList,
                     Frame* time,
@@ -129,16 +129,16 @@ private:
                     ConcurrentTimeSet& nextPlayerFrames,
                     std::vector<PauseInitiatorID>& pauseTimes) const;
 
-	bool wallAt(int x, int y) const;
-	bool wallAt(int x, int y, int w, int h) const;
+    bool wallAt(int x, int y) const;
+    bool wallAt(int x, int y, int w, int h) const;
 
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)
     boost::multi_array<bool, 2> wallmap;
-	int gravity;
-	int wallSize;
-	AttachmentMap attachmentMap;
-	TriggerSystem triggerSystem;
+    int gravity;
+    int wallSize;
+    AttachmentMap attachmentMap;
+    TriggerSystem triggerSystem;
 };
 }
 #endif //HG_PHYSICS_ENGINE_H

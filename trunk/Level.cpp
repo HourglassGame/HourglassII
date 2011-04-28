@@ -9,15 +9,15 @@ Level::Level(unsigned int nspeedOfTime,
              const FrameID& nguyStartTime,
              const AttachmentMap& nattachmentMap,
              const TriggerSystem& ntriggerSystem) :
-    speedOfTime(nspeedOfTime),
-    timeLineLength(ntimeLineLength),
-    wallmap(nwallmap),
-    wallSize(nwallSize),
-    gravity(ngravity),
-    initialObjects(ninitialObjects),
-    guyStartTime(nguyStartTime),
-    attachmentMap(nattachmentMap),
-    triggerSystem(ntriggerSystem)
-    {
-    }
+        speedOfTime(nspeedOfTime),
+        timeLineLength(ntimeLineLength),
+        wallmap(nwallmap),
+        wallSize(nwallSize),
+        gravity(ngravity),
+        initialObjects(ninitialObjects),
+        guyStartTime(nguyStartTime),
+        attachmentMap(nattachmentMap),
+        triggerSystem(ntriggerSystem)
+{
+}
 }

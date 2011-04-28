@@ -1,6 +1,6 @@
 #include "Guy.h"
 
-namespace hg{
+namespace hg {
 Guy::Guy(int x,
          int y,
          int xspeed,
@@ -19,68 +19,68 @@ Guy::Guy(int x,
          TimeDirection timeDirection,
          int pauseLevel,
          size_t index) :
-x_(x),
-y_(y),
-xspeed_(xspeed),
-yspeed_(yspeed),
-width_(width),
-height_(height),
+        x_(x),
+        y_(y),
+        xspeed_(xspeed),
+        yspeed_(yspeed),
+        width_(width),
+        height_(height),
 
-relativeToPortal_(relativeToPortal),
-supported_(supported),
+        relativeToPortal_(relativeToPortal),
+        supported_(supported),
 
-boxCarrying_(boxCarrying),
-boxCarrySize_(boxCarrySize),
-boxCarryDirection_(boxCarryDirection),
-boxPauseLevel_(boxPauseLevel),
+        boxCarrying_(boxCarrying),
+        boxCarrySize_(boxCarrySize),
+        boxCarryDirection_(boxCarryDirection),
+        boxPauseLevel_(boxPauseLevel),
 
-timeDirection_(timeDirection),
-pauseLevel_(pauseLevel),
-index_(index)
+        timeDirection_(timeDirection),
+        pauseLevel_(pauseLevel),
+        index_(index)
 {
 }
 
 Guy::Guy(const Guy& other, TimeDirection timeDirection, int pauseLevel) :
-x_(other.x_),
-y_(other.y_),
-xspeed_(other.xspeed_),
-yspeed_(other.yspeed_),
-width_(other.width_),
-height_(other.height_),
+        x_(other.x_),
+        y_(other.y_),
+        xspeed_(other.xspeed_),
+        yspeed_(other.yspeed_),
+        width_(other.width_),
+        height_(other.height_),
 
-relativeToPortal_(other.relativeToPortal_),
-supported_(other.supported_),
+        relativeToPortal_(other.relativeToPortal_),
+        supported_(other.supported_),
 
-boxCarrying_(other.boxCarrying_),
-boxCarrySize_(other.boxCarrySize_),
-boxCarryDirection_(other.boxCarryDirection_),
-boxPauseLevel_(other.boxPauseLevel_),
+        boxCarrying_(other.boxCarrying_),
+        boxCarrySize_(other.boxCarrySize_),
+        boxCarryDirection_(other.boxCarryDirection_),
+        boxPauseLevel_(other.boxPauseLevel_),
 
-timeDirection_(timeDirection),
-pauseLevel_(pauseLevel),
-index_(other.index_)
+        timeDirection_(timeDirection),
+        pauseLevel_(pauseLevel),
+        index_(other.index_)
 {
 }
 
 Guy::Guy(const Guy& other) :
-x_(other.x_),
-y_(other.y_),
-xspeed_(other.xspeed_),
-yspeed_(other.yspeed_),
-width_(other.width_),
-height_(other.height_),
+        x_(other.x_),
+        y_(other.y_),
+        xspeed_(other.xspeed_),
+        yspeed_(other.yspeed_),
+        width_(other.width_),
+        height_(other.height_),
 
-relativeToPortal_(other.relativeToPortal_),
-supported_(other.supported_),
+        relativeToPortal_(other.relativeToPortal_),
+        supported_(other.supported_),
 
-boxCarrying_(other.boxCarrying_),
-boxCarrySize_(other.boxCarrySize_),
-boxCarryDirection_(other.boxCarryDirection_),
-boxPauseLevel_(other.boxPauseLevel_),
+        boxCarrying_(other.boxCarrying_),
+        boxCarrySize_(other.boxCarrySize_),
+        boxCarryDirection_(other.boxCarryDirection_),
+        boxPauseLevel_(other.boxPauseLevel_),
 
-timeDirection_(other.timeDirection_),
-pauseLevel_(other.pauseLevel_),
-index_(other.index_)
+        timeDirection_(other.timeDirection_),
+        pauseLevel_(other.pauseLevel_),
+        index_(other.index_)
 {
 }
 
@@ -114,7 +114,7 @@ bool Guy::operator!=(const Guy& other) const
 
 bool Guy::operator==(const Guy& other) const
 {
-	return  (index_ == other.index_)
+    return  (index_ == other.index_)
             && (x_ == other.x_)
             && (y_ == other.y_)
             && (xspeed_ == other.xspeed_)

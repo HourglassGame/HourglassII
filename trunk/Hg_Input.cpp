@@ -22,16 +22,16 @@ static void updatePress(int &var, bool inputState)
 }
 
 Input::Input() :
-left(false),
-right(false),
-up(false),
-down(0),
-space(false),
-mouseLeft(0),
-mouseRight(false),
-mouseX(0),
-mouseY(0),
-pause(0)
+        left(false),
+        right(false),
+        up(false),
+        down(0),
+        space(false),
+        mouseLeft(0),
+        mouseRight(false),
+        mouseX(0),
+        mouseY(0),
+        pause(0)
 {
 }
 
@@ -66,7 +66,7 @@ const InputList Input::AsInputList() const
         return InputList(left, right, up, (down == 1), space, hg::PAUSE_TIME, FrameID(), 0);
     }
 
-     return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, FrameID(), 0);
+    return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, FrameID(), 0);
 }
 }
 

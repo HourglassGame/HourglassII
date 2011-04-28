@@ -94,7 +94,7 @@ void operator delete[](void *p) throw()
 
 void* operator new[](std::size_t size, const std::nothrow_t & nothrow) throw()
 {
-   return ::operator new(size, nothrow);
+    return ::operator new(size, nothrow);
 }
 
 void operator delete[](void *p, const std::nothrow_t & nothrow) throw()
@@ -108,17 +108,17 @@ using namespace std;
 using namespace ::sf;
 using namespace boost;
 namespace {
-    void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
-    void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, Frame* playerFrame);
-    void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
-    void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection);
-    void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection);
-    void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection);
-    void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection);
-    void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection);
+void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
+void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, Frame* playerFrame);
+void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
+void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection);
+void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection);
+void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection);
+void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection);
+void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection);
 
-    boost::multi_array<bool, 2> MakeWall();
-    Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
+boost::multi_array<bool, 2> MakeWall();
+Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
 }
 
 ////////////////////////////////////////////////////////////
@@ -129,61 +129,61 @@ namespace {
 ////////////////////////////////////////////////////////////
 int main()
 {
-{
-    RenderWindow app(VideoMode(640, 480), "Hourglass II");
-    app.UseVerticalSync(true);
-    app.SetFramerateLimit(60);
-    boost::multi_array<bool, 2> wall(MakeWall());
-    TimeEngine timeEngine(MakeLevel(wall));
-
-    ::hg::Input input;
-    while (app.IsOpened())
     {
-        Event event;
-        while (app.GetEvent(event))
+        RenderWindow app(VideoMode(640, 480), "Hourglass II");
+        app.UseVerticalSync(true);
+        app.SetFramerateLimit(60);
+        boost::multi_array<bool, 2> wall(MakeWall());
+        TimeEngine timeEngine(MakeLevel(wall));
+
+        ::hg::Input input;
+        while (app.IsOpened())
         {
-            switch (event.Type) {
+            Event event;
+            while (app.GetEvent(event))
+            {
+                switch (event.Type) {
                 case sf::Event::Closed:
                     app.Close();
                     break;
                 default:
                     break;
+                }
             }
-        }
-        input.updateState(app.GetInput());
-        //cout << "called from main" << endl;
-        try{
-            TimeEngine::RunResult waveInfo;
-            timeEngine.runToNextPlayerFrame(input.AsInputList()).swap(waveInfo);
-            if (waveInfo.currentPlayerFrame()) {
-                Draw
-                (
-                    app,
-                    waveInfo.currentPlayerFrame()->getPostPhysics(),
-                    wall,
-                    waveInfo.currentPlayerDirection()
-                );
+            input.updateState(app.GetInput());
+            //cout << "called from main" << endl;
+            try {
+                TimeEngine::RunResult waveInfo;
+                timeEngine.runToNextPlayerFrame(input.AsInputList()).swap(waveInfo);
+                if (waveInfo.currentPlayerFrame()) {
+                    Draw
+                    (
+                        app,
+                        waveInfo.currentPlayerFrame()->getPostPhysics(),
+                        wall,
+                        waveInfo.currentPlayerDirection()
+                    );
+                }
+                else {
+                    Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, waveInfo.currentPlayerDirection());
+                }
+                DrawTimeline(app, waveInfo.updatedFrames(), waveInfo.currentPlayerFrame());
             }
-            else {
-                Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, waveInfo.currentPlayerDirection());
+            catch (hg::PlayerVictoryException& playerWon) {
+                cout << "Congratulations, a winner is you!\n";
+                return EXIT_SUCCESS;
             }
-            DrawTimeline(app, waveInfo.updatedFrames(), waveInfo.currentPlayerFrame());
-        }
-        catch (hg::PlayerVictoryException& playerWon) {
-            cout << "Congratulations, a winner is you!\n";
-            return EXIT_SUCCESS;
-        }
 
-        {
-            stringstream fpsstring;
-            fpsstring << (1./app.GetFrameTime());
-            sf::String fpsglyph(fpsstring.str());
-            fpsglyph.SetPosition(600, 465);
-            fpsglyph.SetSize(8.f);
-            app.Draw(fpsglyph);
+            {
+                stringstream fpsstring;
+                fpsstring << (1./app.GetFrameTime());
+                sf::String fpsglyph(fpsstring.str());
+                fpsglyph.SetPosition(600, 465);
+                fpsglyph.SetSize(8.f);
+                app.Draw(fpsglyph);
+            }
+            app.Display();
         }
-        app.Display();
-    }
     }
     return EXIT_SUCCESS;
 }
@@ -203,8 +203,8 @@ void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_a
 void DrawWall(sf::RenderTarget& target, const boost::multi_array<bool, 2>& wall)
 {
     target.Clear(Color(255,255,255));
-    for(unsigned int i = 0; i < wall.shape()[0]; ++i) {
-        for(unsigned int j = 0; j < wall.shape()[1]; ++j) {
+    for (unsigned int i = 0; i < wall.shape()[0]; ++i) {
+        for (unsigned int j = 0; j < wall.shape()[1]; ++j) {
             if (wall[i][j]) {
                 target.Draw
                 (
@@ -227,25 +227,25 @@ void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxList, TimeDire
     foreach(const Box* box, boxList) {
         if (playerDirection == box->getTimeDirection())
         {
-             target.Draw(Shape::Rectangle(
-                box->getX()/100,
-                box->getY()/100,
-                (box->getX()+ box->getSize())/100,
-                (box->getY()+box->getSize())/100,
-                Color(255,0,255))
-            );
+            target.Draw(Shape::Rectangle(
+                            box->getX()/100,
+                            box->getY()/100,
+                            (box->getX()+ box->getSize())/100,
+                            (box->getY()+box->getSize())/100,
+                            Color(255,0,255))
+                       );
         }
         else
         {
             int x = box->getX()-box->getXspeed();
             int y = box->getY()-box->getYspeed();
             target.Draw(Shape::Rectangle(
-                x/100,
-                y/100,
-                (x+ box->getSize())/100,
-                (y+box->getSize())/100,
-                Color(0,255,0))
-            );
+                            x/100,
+                            y/100,
+                            (x+ box->getSize())/100,
+                            (y+box->getSize())/100,
+                            Color(0,255,0))
+                       );
         }
     }
 }
@@ -271,12 +271,12 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
             }
 
             target.Draw(Shape::Rectangle(
-                x/100,
-                y/100,
-                (x+ guy->getWidth())/100,
-                (y+guy->getHeight())/100,
-                guyColor)
-            );
+                            x/100,
+                            y/100,
+                            (x+ guy->getWidth())/100,
+                            (y+guy->getHeight())/100,
+                            guyColor)
+                       );
 
             if (guy->getBoxCarrying())
             {
@@ -291,12 +291,12 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
                 }
 
                 target.Draw(Shape::Rectangle(
-                    (x + guy->getWidth()/2 - guy->getBoxCarrySize()/2)/100,
-                    (y - guy->getBoxCarrySize())/100,
-                    (x + guy->getWidth()/2 + guy->getBoxCarrySize()/2)/100,
-                    y/100,
-                    boxColor)
-                );
+                                (x + guy->getWidth()/2 - guy->getBoxCarrySize()/2)/100,
+                                (y - guy->getBoxCarrySize())/100,
+                                (x + guy->getWidth()/2 + guy->getBoxCarrySize()/2)/100,
+                                y/100,
+                                boxColor)
+                           );
             }
         }
     }
@@ -304,8 +304,8 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
 
 void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection)
 {
-     foreach(const Button* button, buttonList)
-     {
+    foreach(const Button* button, buttonList)
+    {
         Color buttonColor;
         if (button->getState())
         {
@@ -329,20 +329,20 @@ void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, 
         }
 
         target.Draw(Shape::Rectangle(
-            x/100,
-            y/100,
-            (x+button->getWidth())/100,
-            (y+button->getHeight())/100,
-            buttonColor)
-        );
-     }
+                        x/100,
+                        y/100,
+                        (x+button->getWidth())/100,
+                        (y+button->getHeight())/100,
+                        buttonColor)
+                   );
+    }
 }
 
 void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection)
 {
 
-     foreach(const Platform* platform, platformList)
-     {
+    foreach(const Platform* platform, platformList)
+    {
         int x,y;
 
         Color platformColor;
@@ -361,20 +361,20 @@ void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platform
         //cout << x << " " << y << " " << platform.getXspeed() << " " << platform.getYspeed() << endl;
 
         target.Draw(Shape::Rectangle(
-            x/100,
-            y/100,
-            (x+platform->getWidth())/100,
-            (y+platform->getHeight())/100,
-            platformColor)
-        );
-     }
+                        x/100,
+                        y/100,
+                        (x+platform->getWidth())/100,
+                        (y+platform->getHeight())/100,
+                        platformColor)
+                   );
+    }
 }
 
 void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection)
 {
 
-     foreach(const Portal* portal, portalList)
-     {
+    foreach(const Portal* portal, portalList)
+    {
         int x,y;
 
         Color portalColor;
@@ -392,13 +392,13 @@ void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, 
         }
 
         target.Draw(Shape::Rectangle(
-            x/100,
-            y/100,
-            (x+portal->getWidth())/100,
-            (y+portal->getHeight())/100,
-            portalColor)
-        );
-     }
+                        x/100,
+                        y/100,
+                        (x+portal->getWidth())/100,
+                        (y+portal->getHeight())/100,
+                        portalColor)
+                   );
+    }
 }
 
 void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, Frame* playerFrame)
@@ -410,10 +410,10 @@ void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, 
 
                 if (!pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(frame->getFrameNumber()/10800.*640)]) {
                     target.Draw(Shape::Rectangle(static_cast<int>(frame->getFrameNumber()/10800.*640),
-                                                10,
-                                                static_cast<int>(frame->getFrameNumber()/10800.*640+1),
-                                                25,
-                                                Color(250,0,0)));
+                                                 10,
+                                                 static_cast<int>(frame->getFrameNumber()/10800.*640+1),
+                                                 25,
+                                                 Color(250,0,0)));
                     pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(frame->getFrameNumber()/10800.*640)] = true;
                 }
             }
@@ -422,18 +422,18 @@ void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, 
             }
         }
     }
-    if(playerFrame) {
+    if (playerFrame) {
         target.Draw(Shape::Rectangle(static_cast<int>(playerFrame->getFrameNumber()/10800.*640-1),
-                                             10,
-                                             static_cast<int>(playerFrame->getFrameNumber()/10800.*640+2),
-                                             25,
-                                             Color(200,200,0)));
+                                     10,
+                                     static_cast<int>(playerFrame->getFrameNumber()/10800.*640+2),
+                                     25,
+                                     Color(200,200,0)));
     }
-     target.Draw(Shape::Rectangle((3000.f/10800.f)*640-1,
-                                             10,
-                                             (3000.f/10800.f)*640+2,
-                                             25,
-                                             Color(0,255,0)));
+    target.Draw(Shape::Rectangle((3000.f/10800.f)*640-1,
+                                 10,
+                                 (3000.f/10800.f)*640+2,
+                                 25,
+                                 Color(0,255,0)));
 }
 
 boost::multi_array<bool, 2> MakeWall()
@@ -488,8 +488,8 @@ boost::multi_array<bool, 2> MakeWall()
     row.clear();
     boost::array<boost::multi_array<bool, 2>::index, 2> wallShape = {{ wall.at(0).size(), wall.size() }};
     boost::multi_array<bool, 2> actualWall(wallShape);
-    for(unsigned int i = 0; i < wall.size(); ++i) {
-        for(unsigned int j = 0; j < wall.at(i).size(); ++j) {
+    for (unsigned int i = 0; i < wall.size(); ++i) {
+        for (unsigned int j = 0; j < wall.at(i).size(); ++j) {
             actualWall[j][i] = wall.at(i).at(j);
         }
     }
@@ -508,57 +508,57 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
     newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false));
     newObjectList.sort();
-    return 
+    return
         Level(
-        3,
-        10800,
-        wall,
-        3200,
-        30,
-        ObjectList(newObjectList),
-        FrameID(0,UniverseID(10800)),
-        AttachmentMap
-        (
-         std::vector<Attachment>(1, Attachment(0,3200,-800)),
-         std::vector<Attachment>(1, Attachment(0,-4200,-3200))
-        ),
-        TriggerSystem
-        (
-            std::vector<int>(1, 0),
-            1,
-            1,
-            1,
-            std::vector<PlatformDestination>
+            3,
+            10800,
+            wall,
+            3200,
+            30,
+            ObjectList(newObjectList),
+            FrameID(0,UniverseID(10800)),
+            AttachmentMap
             (
-                1,
-                PlatformDestination
-                (
-                    38400,
-                    0,
-                    0,
-                    0,
-                    32000,
-                    300,
-                    50,
-                    50
-                )
+                std::vector<Attachment>(1, Attachment(0,3200,-800)),
+                std::vector<Attachment>(1, Attachment(0,-4200,-3200))
             ),
-            std::vector<PlatformDestination>
+            TriggerSystem
             (
+                std::vector<int>(1, 0),
                 1,
-                PlatformDestination
+                1,
+                1,
+                std::vector<PlatformDestination>
                 (
-                    38400,
-                    0,
-                    0,
-                    0,
-                    43800,
-                    300,
-                    20,
-                    20
+                    1,
+                    PlatformDestination
+                    (
+                        38400,
+                        0,
+                        0,
+                        0,
+                        32000,
+                        300,
+                        50,
+                        50
+                    )
+                ),
+                std::vector<PlatformDestination>
+                (
+                    1,
+                    PlatformDestination
+                    (
+                        38400,
+                        0,
+                        0,
+                        0,
+                        43800,
+                        300,
+                        20,
+                        20
+                    )
                 )
             )
-        )
-    );
+        );
 }
 }

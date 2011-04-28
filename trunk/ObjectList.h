@@ -22,27 +22,27 @@ struct vector_of {
     typedef std::vector<T> type;
 };
 namespace object_list_detail {
-    typedef boost::fusion::vector
-        <
-            Guy,
-            Box,
-            Button,
-            Platform,
-            Portal,
-            RemoteDepartureEdit<Box>,//theif
-            RemoteDepartureEdit<Box>,//extra
-            RemoteDepartureEdit<Guy> //extra
-        > ObjectListTypes;
-    enum ElementID {
-        guyList = 0,
-        boxList = 1,
-        buttonList = 2,
-        platformList = 3,
-        portalList = 4,
-        boxThiefList = 5,
-        boxExtraList = 6,
-        guyExtraList = 7
-    };
+typedef boost::fusion::vector
+<
+Guy,
+Box,
+Button,
+Platform,
+Portal,
+RemoteDepartureEdit<Box>,//theif
+RemoteDepartureEdit<Box>,//extra
+RemoteDepartureEdit<Guy> //extra
+> ObjectListTypes;
+enum ElementID {
+    guyList = 0,
+    boxList = 1,
+    buttonList = 2,
+    platformList = 3,
+    portalList = 4,
+    boxThiefList = 5,
+    boxExtraList = 6,
+    guyExtraList = 7
+};
 }
 // Object list stores all data sent between frames or to rendering engine
 class ObjectList
@@ -63,24 +63,24 @@ public:
     const std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
     //Add other ref getters as needed
 
-	void add(const Guy& toCopy);
-	void add(const Box& toCopy);
-	void add(const Button& toCopy);
-	void add(const Platform& toCopy);
-	void add(const Portal& toCopy);
-	void addThief(const RemoteDepartureEdit<Box>& toCopy);
-	void addExtra(const RemoteDepartureEdit<Box>& toCopy);
-	void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
-    
+    void add(const Guy& toCopy);
+    void add(const Box& toCopy);
+    void add(const Button& toCopy);
+    void add(const Platform& toCopy);
+    void add(const Portal& toCopy);
+    void addThief(const RemoteDepartureEdit<Box>& toCopy);
+    void addExtra(const RemoteDepartureEdit<Box>& toCopy);
+    void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
+
     void add(const ObjectList& other);
     //MUST CALL this to make lists sorted (required for operator==)
     void sort();
-    
+
     void swap(ObjectList& other);
 
     bool operator==(const ObjectList& other) const;
     bool operator!=(const ObjectList& other) const;
-	bool isEmpty() const;
+    bool isEmpty() const;
 private:
     friend class ObjectPtrList;
 #ifndef NDEBUG
@@ -109,10 +109,10 @@ public:
     //Add other ref getters as needed
 
     void add(const ObjectList& other);
-    
+
     //MUST CALL this to make lists sorted (required for deterministic physics)
     void sort();
-    
+
     void swap(ObjectPtrList& other);
 
     //bool operator==(const ObjectPtrList& other) const;

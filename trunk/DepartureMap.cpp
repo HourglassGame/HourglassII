@@ -4,7 +4,7 @@
 #define foreach BOOST_FOREACH
 namespace hg {
 DepartureMap::DepartureMap() :
-map_()
+        map_()
 {
 }
 void DepartureMap::makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)

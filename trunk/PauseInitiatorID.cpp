@@ -5,17 +5,17 @@ namespace hg {
 PauseInitiatorID::PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
                                    std::size_t ID,
                                    std::size_t timelineLength) :
-type_(type),
-ID_(ID),
-timelineLength_(timelineLength)
+        type_(type),
+        ID_(ID),
+        timelineLength_(timelineLength)
 {
 }
 
 bool operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
 {
     return lhs.type_ == rhs.type_
-        && lhs.ID_ == rhs.ID_
-        && lhs.timelineLength_ == rhs.timelineLength_;
+           && lhs.ID_ == rhs.ID_
+           && lhs.timelineLength_ == rhs.timelineLength_;
 }
 
 bool operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
