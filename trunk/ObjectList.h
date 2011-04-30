@@ -115,8 +115,6 @@ public:
 
     void swap(ObjectPtrList& other);
 
-    //bool operator==(const ObjectPtrList& other) const;
-    //bool operator!=(const ObjectPtrList& other) const;
 private:
     typedef boost::mpl::transform< object_list_detail::ObjectListTypes,vector_of<boost::add_pointer<boost::add_const<boost::mpl::_1> > > >::type ObjectPtrListType;
     ObjectPtrListType objectPtrList_;
