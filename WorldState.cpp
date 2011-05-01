@@ -132,7 +132,7 @@ std::map<Frame*, ObjectList> WorldState::getDeparturesFromFrame(Frame* frame)
         currentWinFrames_.add(frame);
     }
     else {
-        currentWinFrames.remove(frame);
+        currentWinFrames_.remove(frame);
     }
     return retv.departures;
 }
