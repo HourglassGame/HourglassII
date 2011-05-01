@@ -178,7 +178,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
         frameUpdateSet_.add(*it);
         //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
     }
-    //All non-executing frames are assumed to Remove a playerFrame (eep D:)
+    //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one
     // of four categories prior to this being called:
     // maxGuyIndex == undefined, no guys:
