@@ -34,7 +34,7 @@ WorldState::WorldState(std::size_t timelineLength,
         frameUpdateSet_(),
         physics_(physics),
         nextPlayerFrames_(),
-        currentPlayerFramesAndDirections_(),
+        currentPlayerFrames_(),
         currentWinFrames_()
 {
 
@@ -117,10 +117,10 @@ std::map<Frame*, ObjectList> WorldState::getDeparturesFromFrame(Frame* frame)
                               frame,
                               playerInput_));
     if (retv.currentPlayerFrame) {
-        currentPlayerFramesAndDirections_.add(frame, retv.currentPlayerDirection);
+        currentPlayerFrames_.add(frame);
     }
     else {
-        currentPlayerFramesAndDirections_.remove(frame);
+        currentPlayerFrames_.remove(frame);
     }
     if (retv.nextPlayerFrame) {
         nextPlayerFrames_.add(frame);
@@ -193,15 +193,15 @@ void WorldState::addNewInputData(const InputList& newInputData)
     // maxGuyIndex > playerInput_.size():
     //					this can never happen, as physics cannot create a guy departure without having input for the guy
     //					and input does not exist unless maxGuyIndex < playerInput_.size()
-    currentPlayerFramesAndDirections_.clear();
+    currentPlayerFrames_.clear();
     nextPlayerFrames_.clear();
 }
 
 Frame* WorldState::getCurrentPlayerFrame()
 {
-    if (!currentPlayerFramesAndDirections_.empty()) {
-        assert(currentPlayerFramesAndDirections_.size() == 1);
-        return currentPlayerFramesAndDirections_.begin()->first;
+    if (!currentPlayerFrames_.empty()) {
+        assert(currentPlayerFrames_.size() == 1);
+        return currentPlayerFrames_.front();
     }
     else {
         return 0;
@@ -216,17 +216,6 @@ Frame* WorldState::getNextPlayerFrame()
     }
     else {
         return 0;
-    }
-}
-
-TimeDirection WorldState::getCurrentPlayerDirection() const
-{
-    if (!currentPlayerFramesAndDirections_.empty()) {
-        assert(currentPlayerFramesAndDirections_.size() == 1);
-        return currentPlayerFramesAndDirections_.begin()->second;
-    }
-    else {
-        return INVALID;
     }
 }
 }//namespace hg

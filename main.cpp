@@ -117,6 +117,8 @@ void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, 
 void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection);
 void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection);
 
+const Guy& getCurrentGuy(const std::vector<const Guy*>& currentPlayerFrameData, std::size_t playerIndex);
+
 boost::multi_array<bool, 2> MakeWall();
 Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
 }
@@ -137,6 +139,7 @@ int main()
         TimeEngine timeEngine(MakeLevel(wall));
 
         ::hg::Input input;
+        
         while (app.IsOpened())
         {
             Event event;
@@ -153,19 +156,17 @@ int main()
             input.updateState(app.GetInput());
             //cout << "called from main" << endl;
             try {
-                TimeEngine::RunResult waveInfo;
-                timeEngine.runToNextPlayerFrame(input.AsInputList()).swap(waveInfo);
+                TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
                 if (waveInfo.currentPlayerFrame()) {
-                    Draw
-                    (
+                    const ObjectPtrList& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
+                    Draw(
                         app,
-                        waveInfo.currentPlayerFrame()->getPostPhysics(),
+                        frameData,
                         wall,
-                        waveInfo.currentPlayerDirection()
-                    );
+                        frameData.getGuyListRef().back()->getTimeDirection());
                 }
                 else {
-                    Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, waveInfo.currentPlayerDirection());
+                    Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, FORWARDS);
                 }
                 DrawTimeline(app, waveInfo.updatedFrames(), waveInfo.currentPlayerFrame());
             }

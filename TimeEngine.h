@@ -30,22 +30,17 @@ public:
         const FrameListList& updatedFrames() {
             return *updatedFrames_;
         }
-        TimeDirection currentPlayerDirection() {
-            return currentPlayerDirection_;
-        }
         void swap(RunResult& other)
         {
             boost::swap(currentPlayerFrame_, other.currentPlayerFrame_);
             boost::swap(nextPlayerFrame_, other.nextPlayerFrame_);
             boost::swap(updatedFrames_, other.updatedFrames_);
-            boost::swap(currentPlayerDirection_, other.currentPlayerDirection_);
         }
 private:
         friend class TimeEngine;
         Frame* currentPlayerFrame_;
         Frame* nextPlayerFrame_;
         const FrameListList* updatedFrames_;
-        TimeDirection currentPlayerDirection_;
     };
 
     /**
