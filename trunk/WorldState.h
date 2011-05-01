@@ -42,7 +42,6 @@ public:
     */
     Frame* getNextPlayerFrame();
     Frame* getCurrentPlayerFrame();
-    TimeDirection getCurrentPlayerDirection() const;
 
     std::vector<InputList> getReplayData() const {
         return playerInput_;
@@ -65,7 +64,7 @@ private:
     //The frame constaining the guy with the largest overall relative index - who has arrived but not yet departed.
     ConcurrentTimeSet nextPlayerFrames_;
     //The frame containing the guy with the largest relative index who has both arrived and departed.
-    ConcurrentTimeMap currentPlayerFramesAndDirections_;
+    ConcurrentTimeSet currentPlayerFrames_;
     //Holds the frame(s) in which the win condition is met in the current universe state.
     //That is - just the frame(s) when a guy actually went through the end portal 
     //(or whatever the win condition is) and not the following frames when the

@@ -40,6 +40,10 @@ public:
     }
     typedef boost::range_iterator<boost::select_first_range<SetType> >::type iterator;
     typedef boost::range_iterator<const boost::select_first_range<SetType> >::type const_iterator;
+    typedef boost::range_reference<boost::select_first_range<SetType> >::type reference;
+    typedef boost::range_reference<const boost::select_first_range<SetType> >::type const_reference;
+    typedef boost::range_pointer<boost::select_first_range<SetType> >::type pointer;
+    typedef boost::range_pointer<const boost::select_first_range<SetType> >::type const_pointer;
     iterator begin() {
         return boost::begin(boost::adaptors::keys(set_));
     }
@@ -51,6 +55,18 @@ public:
     }
     const_iterator end() const {
         return boost::end(boost::adaptors::keys(set_));
+    }
+    reference front() {
+        return *begin();
+    }
+    const_reference front() const {
+        return *begin();
+    }
+    reference back() {
+        return *end();
+    }
+    const_reference back() const {
+        return *end();
     }
 private:
     SetType set_;

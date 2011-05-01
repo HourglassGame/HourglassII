@@ -25,7 +25,6 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInput
     retv.currentPlayerFrame_ = worldState.getCurrentPlayerFrame();
     retv.nextPlayerFrame_ = worldState.getNextPlayerFrame();
     retv.updatedFrames_ = &updatedList;
-    retv.currentPlayerDirection_ = worldState.getCurrentPlayerDirection();
     return retv;
 }
 
