@@ -52,7 +52,7 @@ public:
 
     bool isValidFrame() const;
 
-    std::size_t frame() const {
+    std::size_t getFrameNumber() const {
         assert (isValidFrame());
         return frame_;
     }

@@ -858,7 +858,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 
             if (input.getAbility() == hg::TIME_JUMP)
             {
-                nextTime = time->arbitraryFrameInUniverse(input.getFrameIdParam(0).frame());
+                nextTime = time->arbitraryFrameInUniverse(input.getFrameIdParam(0).getFrameNumber());
                 normalDeparture = false;
             }
             else if (input.getAbility() == hg::TIME_REVERSE)
@@ -938,7 +938,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 }
             }
 
-            if (playerInput.size() - 1 == relativeIndex)
+            if (playerInput.size() - 1 == relativeIndex && nextTime)
             {
                 currentPlayerDirection = oldGuyList[i]->getTimeDirection();
                 currentPlayerFrame = true;

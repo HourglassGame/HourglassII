@@ -82,10 +82,10 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
         }
     }
     if (parentFrame) {
-        return parentFrame->arbitraryChildFrame(whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_, whichFrame.frame());
+        return parentFrame->arbitraryChildFrame(whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_, whichFrame.getFrameNumber());
     }
     else {
-        return getArbitraryFrame(whichFrame.frame());
+        return getArbitraryFrame(whichFrame.getFrameNumber());
     }
 }
 Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID) :
