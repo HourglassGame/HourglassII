@@ -51,26 +51,18 @@ unsigned int FrameID::nextFramePauseLevelDifference(TimeDirection direction) con
 //Probably won't be recursive in final version, but it seemed the easiest way.
 unsigned int FrameID::nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const
 {
-    if (        !isValidFrame()
-                ||
-                !((direction == REVERSE && frame_ == 0)
-                  ||
-                  (direction == FORWARDS && frame_ == universeID_.timelineLength()))) {
-        return depthAccumulator;
-    }
-    else {
-        return universeID_.parentFrame().nextFramePauseLevelDifferenceAux(depthAccumulator + 1, direction);
-    }
+        return 
+               !isValidFrame()
+            || !((direction == REVERSE && frame_ == 0)
+            || (direction == FORWARDS && frame_ == universeID_.timelineLength())) ?
+                  depthAccumulator : 
+                  universeID_.parentFrame().nextFramePauseLevelDifferenceAux(depthAccumulator + 1, direction);
 }
 
 FrameID FrameID::arbitraryFrameInUniverse(std::size_t frameNumber) const
 {
-    if (frameNumber >= universeID_.timelineLength()) {
-        return FrameID();
-    }
-    else {
-        return FrameID(frameNumber, universeID_);
-    }
+    return frameNumber >= universeID_.timelineLength() ?
+        FrameID() : FrameID(frameNumber, universeID_);
 }
 
 FrameID FrameID::parentFrame() const

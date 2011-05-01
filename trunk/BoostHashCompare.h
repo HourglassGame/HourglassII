@@ -10,7 +10,7 @@ struct BoostHashCompare
     {
         return j == k;
     }
-    size_t hash( const T& k ) const
+    std::size_t hash( const T& k ) const
     {
         return boost::hash<T>()(k);
     }
