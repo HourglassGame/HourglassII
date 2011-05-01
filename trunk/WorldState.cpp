@@ -112,12 +112,29 @@ Frame* WorldState::getFrame(const FrameID& whichFrame)
 
 std::map<Frame*, ObjectList> WorldState::getDeparturesFromFrame(Frame* frame)
 {
-    return physics_.executeFrame(frame->getPrePhysics(),
-                                 frame,
-                                 playerInput_,
-                                 currentPlayerFramesAndDirections_,
-                                 nextPlayerFrames_,
-                                 currentWinFrames_);
+    PhysicsEngine::PhysicsReturnT retv(
+        physics_.executeFrame(frame->getPrePhysics(),
+                              frame,
+                              playerInput_));
+    if (retv.currentPlayerFrame) {
+        currentPlayerFramesAndDirections_.add(frame, retv.currentPlayerDirection);
+    }
+    else {
+        currentPlayerFramesAndDirections_.remove(frame);
+    }
+    if (retv.nextPlayerFrame) {
+        nextPlayerFrames_.add(frame);
+    }
+    else {
+        nextPlayerFrames_.remove(frame);
+    }
+    if (retv.currentWinFrame) {
+        currentWinFrames_.add(frame);
+    }
+    else {
+        currentWinFrames.remove(frame);
+    }
+    return retv.departures;
 }
 
 FrameUpdateSet WorldState::executeWorld()
