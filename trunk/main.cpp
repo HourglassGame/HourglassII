@@ -5,6 +5,7 @@
 #include "PlayerVictoryException.h"
 #include "Hg_Input.h"
 #include "Level.h"
+#include "Inertia.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -138,8 +139,8 @@ int main()
         boost::multi_array<bool, 2> wall(MakeWall());
         TimeEngine timeEngine(MakeLevel(wall));
 
-        ::hg::Input input;
-        
+        hg::Input input;
+        hg::Inertia inertia;
         while (app.IsOpened())
         {
             Event event;
@@ -157,8 +158,11 @@ int main()
             //cout << "called from main" << endl;
             try {
                 TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+                std::cout << waveInfo.currentPlayerFrame() << "\n";
                 if (waveInfo.currentPlayerFrame()) {
                     const ObjectPtrList& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
+                    std::cout << "saving inertia\n";
+                    inertia.save(FrameID(waveInfo.currentPlayerFrame()), frameData.getGuyListRef().back()->getTimeDirection());
                     Draw(
                         app,
                         frameData,
@@ -166,7 +170,14 @@ int main()
                         frameData.getGuyListRef().back()->getTimeDirection());
                 }
                 else {
-                    Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, FORWARDS);
+                    inertia.run();
+                    FrameID inertialFrame(inertia.getFrame());
+                    if (inertialFrame.isValidFrame()) {
+                        Draw(app, timeEngine.getFrame(inertialFrame)->getPostPhysics(), wall, inertia.getTimeDirection());
+                    }
+                    else {
+                        Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, FORWARDS);
+                    }
                 }
                 DrawTimeline(app, waveInfo.updatedFrames(), waveInfo.currentPlayerFrame());
             }
