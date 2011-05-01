@@ -32,16 +32,34 @@ public:
         int newWallSize,
         int newGravity,
         const AttachmentMap& nAttachmentMap,
-        const TriggerSystem& nTriggerSystem);
+        const TriggerSystem& nTriggerSystem
+       );
+
+    struct PhysicsReturnT
+    {
+    	PhysicsReturnT(std::map<Frame*, ObjectList> Ndepartures,
+    			bool NcurrentPlayerFrame,
+    			TimeDirection NcurrentPlayerDirection,
+    			bool NnextPlayerFrame,
+    			bool NcurrentWinFrame) :
+    				departures(Ndepartures),
+    				currentPlayerFrame(NcurrentPlayerFrame),
+    				currentPlayerDirection(NcurrentPlayerDirection),
+    				nextPlayerFrame(NnextPlayerFrame),
+    				currentWinFrame(NcurrentWinFrame)
+    	{}
+    	std::map<Frame*, ObjectList> departures;
+    	bool currentPlayerFrame;
+    	TimeDirection currentPlayerDirection;
+    	bool nextPlayerFrame;
+    	bool currentWinFrame;
+    };
 
     // executes frame and returns departures
-    std::map<Frame*, ObjectList> executeFrame(
+    PhysicsEngine::PhysicsReturnT executeFrame(
         const ObjectPtrList& arrivals,
         Frame* time,
-        const std::vector<InputList>& playerInput,
-        ConcurrentTimeMap& currentPlayerFramesAndDirections,
-        ConcurrentTimeSet& nextPlayerFrames,
-        ConcurrentTimeSet& winFrames) const;
+        const std::vector<InputList>& playerInput) const;
 
 private:
     typedef std::map<Frame*, ObjectList> NewDeparturesT;
@@ -143,8 +161,10 @@ private:
         const std::vector<Platform>& nextPlatform,
         const std::vector<Portal>& nextPortal,
         NewDeparturesT& newDepartures,
-        ConcurrentTimeMap& currentPlayerFramesAndDirections,
-        ConcurrentTimeSet& nextPlayerFrames,
+        bool& currentPlayerFrame,
+        TimeDirection& currentPlayerDirection,
+        bool& nextPlayerFrame,
+        bool& winFrame,
         std::vector<PauseInitiatorID>& pauseTimes) const;
 
     bool wallAt(int x, int y) const;
