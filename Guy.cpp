@@ -18,7 +18,7 @@ Guy::Guy(int x,
 
          TimeDirection timeDirection,
          int pauseLevel,
-         size_t index) :
+         std::size_t index) :
         x_(x),
         y_(y),
         xspeed_(xspeed),

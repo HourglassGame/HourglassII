@@ -27,23 +27,37 @@ class ConcurrentTimeSet;
 class PhysicsEngine
 {
 public:
-    PhysicsEngine(  const boost::multi_array<bool, 2>& nwallmap,
-                    int newWallSize,
-                    int newGravity,
-                    const AttachmentMap& nAttachmentMap,
-                    const TriggerSystem& nTriggerSystem);
+    PhysicsEngine(
+        const boost::multi_array<bool, 2>& nwallmap,
+        int newWallSize,
+        int newGravity,
+        const AttachmentMap& nAttachmentMap,
+        const TriggerSystem& nTriggerSystem);
 
     // executes frame and returns departures
-    std::map<Frame*, ObjectList> executeFrame(const ObjectPtrList& arrivals,
-            Frame* time,
-            const std::vector<InputList>& playerInput,
-            ConcurrentTimeMap& currentPlayerFramesAndDirections,
-            ConcurrentTimeSet& nextPlayerFrames,
-            ConcurrentTimeSet& winFrames) const;
+    std::map<Frame*, ObjectList> executeFrame(
+        const ObjectPtrList& arrivals,
+        Frame* time,
+        const std::vector<InputList>& playerInput,
+        ConcurrentTimeMap& currentPlayerFramesAndDirections,
+        ConcurrentTimeSet& nextPlayerFrames,
+        ConcurrentTimeSet& winFrames) const;
 
 private:
     typedef std::map<Frame*, ObjectList> NewDeparturesT;
 
+    template<typename Object>
+    struct ObjectAndTime
+    {
+        ObjectAndTime(const Object& nobject,
+                Frame* nTime) :
+                object(nobject),
+                time(nTime)
+        {}
+        Object object;
+        Frame* time;
+    };
+/*
     struct BoxInfo {
         BoxInfo(Box nbox,
                 Frame* nTime) :
@@ -62,20 +76,22 @@ private:
         {}
         Guy info;
         Frame* time;
-    };
+    };*/
 
-    void platformStep(const std::vector<const Platform*>& oldPlatformList,
-                      std::vector<Platform>& nextPlatform,
-                      const std::vector<PlatformDestination>& pd) const;
+    void platformStep(
+        const std::vector<const Platform*>& oldPlatformList,
+        std::vector<Platform>& nextPlatform,
+        const std::vector<PlatformDestination>& pd) const;
 
-    void buttonChecks(  const std::vector<const Platform*>& oldPlatformList,
-                        const std::vector<const Box*>& oldBoxList,
-                        const std::vector<const Guy*>& oldGuyList,
-                        const std::vector<const Button*>& oldButtonList,
-                        std::vector<char>& nextButton) const;
+    void buttonChecks(
+        const std::vector<const Platform*>& oldPlatformList,
+        const std::vector<const Box*>& oldBoxList,
+        const std::vector<const Guy*>& oldGuyList,
+        const std::vector<const Button*>& oldButtonList,
+        std::vector<char>& nextButton) const;
 
-    template <class Type, class TypeInfo> void buildDeparturesForComplexEntities(
-        const std::vector<TypeInfo>& next,
+    template <class Type> void buildDeparturesForComplexEntities(
+        const std::vector<ObjectAndTime<Type> >& next,
         const std::vector<const RemoteDepartureEdit<Type>* >& thieves,
         const std::vector<const RemoteDepartureEdit<Type>* >& extras,
         NewDeparturesT& newDepartures,
@@ -88,17 +104,18 @@ private:
         Frame* time,
         std::vector<PauseInitiatorID>& pauseTimes) const;
 
-    void buildDepartures(const std::vector<BoxInfo>& nextBox,
-                         const std::vector<Platform>& nextPlatform,
-                         const std::vector<Portal>& nextPortal,
-                         const std::vector<Button>& nextButton,
-                         const std::vector<GuyInfo>& nextGuy,
-                         const std::vector<const RemoteDepartureEdit<Box>* >& boxThieves,
-                         const std::vector<const RemoteDepartureEdit<Box>* >& extraBoxes,
-                         const std::vector<const RemoteDepartureEdit<Guy>* >& extraGuys,
-                         NewDeparturesT& newDepartures,
-                         Frame* time,
-                         std::vector<PauseInitiatorID>& pauseTimes) const;
+    void buildDepartures(
+        const std::vector<ObjectAndTime<Box> >& nextBox,
+        const std::vector<Platform>& nextPlatform,
+        const std::vector<Portal>& nextPortal,
+        const std::vector<Button>& nextButton,
+        const std::vector<ObjectAndTime<Guy> >& nextGuy,
+        const std::vector<const RemoteDepartureEdit<Box>* >& boxThieves,
+        const std::vector<const RemoteDepartureEdit<Box>* >& extraBoxes,
+        const std::vector<const RemoteDepartureEdit<Guy>* >& extraGuys,
+        NewDeparturesT& newDepartures,
+        Frame* time,
+        std::vector<PauseInitiatorID>& pauseTimes) const;
 
     void buttonPositionUpdate(
         const std::vector<Platform>& nextPlatform,
@@ -111,23 +128,24 @@ private:
         const std::vector<const Portal*>& oldPortalList,
         std::vector<Portal>& nextPortal) const;
 
-    void crappyBoxCollisionAlogorithm(  const std::vector<const Box*>& oldBoxList,
-                                        std::vector<BoxInfo>& nextBox,
-                                        std::vector<Platform>& nextPlatform,
-                                        Frame* time
-                                     ) const;
+    void crappyBoxCollisionAlogorithm(
+        const std::vector<const Box*>& oldBoxList,
+        std::vector<ObjectAndTime<Box> >& nextBox,
+        std::vector<Platform>& nextPlatform,
+        Frame* time) const;
 
-    void guyStep(   const std::vector<const Guy*>& oldGuyList,
-                    Frame* time,
-                    const std::vector<InputList>& playerInput,
-                    std::vector<GuyInfo>& nextGuy,
-                    std::vector<BoxInfo>& nextBox,
-                    const std::vector<Platform>& nextPlatform,
-                    const std::vector<Portal>& nextPortal,
-                    NewDeparturesT& newDepartures,
-                    ConcurrentTimeMap& currentPlayerFramesAndDirections,
-                    ConcurrentTimeSet& nextPlayerFrames,
-                    std::vector<PauseInitiatorID>& pauseTimes) const;
+    void guyStep(
+        const std::vector<const Guy*>& oldGuyList,
+        Frame* time,
+        const std::vector<InputList>& playerInput,
+        std::vector<ObjectAndTime<Guy> >& nextGuy,
+        std::vector<ObjectAndTime<Box> >& nextBox,
+        const std::vector<Platform>& nextPlatform,
+        const std::vector<Portal>& nextPortal,
+        NewDeparturesT& newDepartures,
+        ConcurrentTimeMap& currentPlayerFramesAndDirections,
+        ConcurrentTimeSet& nextPlayerFrames,
+        std::vector<PauseInitiatorID>& pauseTimes) const;
 
     bool wallAt(int x, int y) const;
     bool wallAt(int x, int y, int w, int h) const;
