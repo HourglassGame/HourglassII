@@ -48,13 +48,11 @@ namespace {
         }
     };
 }
-std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(
+
+PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     const ObjectPtrList& arrivals,
     Frame* time,
-    const std::vector<InputList>& playerInput,
-    ConcurrentTimeMap& currentPlayerFramesAndDirections,
-    ConcurrentTimeSet& nextPlayerFrames,
-    ConcurrentTimeSet& winFrames) const
+    const std::vector<InputList>& playerInput) const
 {
     std::vector<ObjectAndTime<Box> > nextBox;
     std::vector<ObjectAndTime<Guy> > nextGuy;
@@ -98,9 +96,14 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(
     // portal position update
     portalPositionUpdate(nextPlatform, arrivals.getPortalListRef(), nextPortal);
 
+    bool currentPlayerFrame(false);
+    TimeDirection currentPlayerDirection(INVALID);
+    bool nextPlayerFrame(false);
+    bool winFrame(false);
+
     // guys simple collision algorithm
     guyStep(arrivals.getGuyListRef(), time, playerInput,
-            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFramesAndDirections, nextPlayerFrames, pauseTimes);
+            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFrame, currentPlayerDirection, nextPlayerFrame, winFrame, pauseTimes);
 
     // button position update
     buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton);
@@ -109,12 +112,10 @@ std::map<Frame*, ObjectList> PhysicsEngine::executeFrame(
                     arrivals.getBoxThiefListRef(), arrivals.getBoxExtraListRef(), arrivals.getGuyExtraListRef(),
                     newDepartures, time, pauseTimes);
 
-    //Guys cannot win (ATM)
-    winFrames.remove(time);
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
     boost::for_each(newDepartures,SortObjectList());
     // add data to departures
-    return newDepartures;
+    return PhysicsReturnT( newDepartures, currentPlayerFrame, currentPlayerDirection, nextPlayerFrame, winFrame);
 }
 
 
@@ -458,8 +459,10 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                             const std::vector<Platform>& nextPlatform,
                             const std::vector<Portal>& nextPortal,
                             NewDeparturesT& newDepartures,
-                            ConcurrentTimeMap& currentPlayerFramesAndDirections,
-                            ConcurrentTimeSet& nextPlayerFrames,
+                            bool& currentPlayerFrame,
+                            TimeDirection& currentPlayerDirection,
+                           	bool& nextPlayerFrame,
+                            bool& winFrame,
                             std::vector<PauseInitiatorID>& pauseTimes) const
 {
     std::vector<int> x;
@@ -830,9 +833,6 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     }
     // colliding with pickups?
     // time travel
-    bool currentPlayerInFrame(false);
-    TimeDirection currentPlayerDirection(INVALID);
-    bool nextPlayerInFrame(false);
     for (std::size_t i(0), size(oldGuyList.size()); i != size; ++i)
     {
         if (oldGuyList[i]->getPauseLevel() != 0)
@@ -899,6 +899,13 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                             nextPortal[j].getActive() && nextPortal[j].getCharges() != 0) // charges not fully implemented
                     {
                         Frame* portalTime;
+                        if (nextPortal[j].getWinner())
+                        {
+                        	winFrame = true;
+                        	nextTime = 0;
+                        	break;
+                        }
+
                         if (nextPortal[j].getRelativeTime() == true)
                         {
                             portalTime = time->arbitraryFrameInUniverse(time->getFrameNumber() + nextPortal[j].getTimeDestination());
@@ -934,7 +941,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             if (playerInput.size() - 1 == relativeIndex)
             {
                 currentPlayerDirection = oldGuyList[i]->getTimeDirection();
-                currentPlayerInFrame = true;
+                currentPlayerFrame = true;
                 //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
 
@@ -955,20 +962,8 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
         else
         {
             assert(oldGuyList[i]->getIndex() == playerInput.size());
-            nextPlayerInFrame = true;
+            nextPlayerFrame = true;
         }
-    }
-    if (currentPlayerInFrame) {
-        currentPlayerFramesAndDirections.add(time, currentPlayerDirection);
-    }
-    else {
-        currentPlayerFramesAndDirections.remove(time);
-    }
-    if (nextPlayerInFrame) {
-        nextPlayerFrames.add(time);
-    }
-    else {
-        nextPlayerFrames.remove(time);
     }
 }
 
@@ -1408,7 +1403,8 @@ void PhysicsEngine::portalPositionUpdate(
                                     portal.getYdestination(),
                                     portal.getDestinationIndex(),
                                     portal.getTimeDestination(),
-                                    portal.getRelativeTime()));
+                                    portal.getRelativeTime(),
+                                    portal.getWinner()));
     }
 }
 

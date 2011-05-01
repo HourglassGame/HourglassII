@@ -17,7 +17,8 @@ Portal::Portal(int x,
                int yDestination,
                int destinationIndex,
                int timeDestination,
-               bool relativeTime) :
+               bool relativeTime,
+               bool winner) :
         x_(x),
         y_(y),
         xspeed_(xspeed),
@@ -33,7 +34,8 @@ Portal::Portal(int x,
         yDestination_(yDestination),
         destinationIndex_(destinationIndex),
         timeDestination_(timeDestination),
-        relativeTime_(relativeTime)
+        relativeTime_(relativeTime),
+		winner_(winner)
 {
     assert(index_ != std::numeric_limits<std::size_t>::max()
            && "the max value is reserved for representing invalid/null indices");
@@ -55,7 +57,8 @@ Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLe
         yDestination_(other.yDestination_),
         destinationIndex_(other.destinationIndex_),
         timeDestination_(other.timeDestination_),
-        relativeTime_(other.relativeTime_)
+        relativeTime_(other.relativeTime_),
+        winner_(other.winner_)
 {
 }
 
@@ -75,7 +78,8 @@ Portal::Portal(const Portal& other) :
         yDestination_(other.yDestination_),
         destinationIndex_(other.destinationIndex_),
         timeDestination_(other.timeDestination_),
-        relativeTime_(other.relativeTime_)
+        relativeTime_(other.relativeTime_),
+        winner_(other.winner_)
 {
 }
 
@@ -97,6 +101,7 @@ Portal& Portal::operator=(const Portal& other)
     destinationIndex_ = other.destinationIndex_;
     timeDestination_ = other.timeDestination_;
     relativeTime_ = other.relativeTime_;
+    winner_ = other.winner_;
     return *this;
 }
 
@@ -121,7 +126,8 @@ bool Portal::operator==(const Portal& other) const
            && (xDestination_  == other.xDestination_)
            && (yDestination_ == other.yDestination_)
            && (width_ == other.width_)
-           && (height_ == other.height_);
+           && (height_ == other.height_)
+           && (winner_ == other.winner_);
 }
 
 bool Portal::operator<(const Portal& other) const

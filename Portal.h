@@ -9,7 +9,7 @@ class Portal
 {
 public:
     Portal(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, TimeDirection timeDirection, int pauseLevel, int charges, bool active,
-           int xDestination, int yDestination, int destinationIndex, int timeDestination, bool relativeTime);
+           int xDestination, int yDestination, int destinationIndex, int timeDestination, bool relativeTime, bool winner);
     Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
     Portal(const Portal& other);
 
@@ -63,6 +63,9 @@ public:
     bool getRelativeTime() const {
         return relativeTime_;
     }
+    bool getWinner() const {
+    	return winner_;
+    }
 
     bool operator==(const Portal& other) const;
     bool operator!=(const Portal& other) const;
@@ -86,6 +89,8 @@ private:
     int destinationIndex_;
     int timeDestination_;
     bool relativeTime_;
+    bool winner_;
+
 };
 template<>
 struct sorted_by_index<Portal>
