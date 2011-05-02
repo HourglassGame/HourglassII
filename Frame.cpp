@@ -2,6 +2,9 @@
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
 #include <boost/foreach.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range.hpp>
+#include <functional>
 #include <utility>
 #include <cassert>
 #define foreach BOOST_FOREACH
@@ -69,14 +72,31 @@ Frame* Frame::entryChildFrame(const PauseInitiatorID& initiatorID, TimeDirection
     }
     return it->second.getEntryFrame(direction);
 }
+namespace {
+    struct FrameNotNull : std::unary_function<const std::pair<Frame*, ObjectList>&, bool> {
+        bool operator()(const std::pair<Frame*, ObjectList>& pair) const {
+            return pair.first;
+        }
+    };
+}
+
 FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture)
 {
     FrameUpdateSet changedTimes;
 
-    std::map<Frame*, ObjectList>::iterator ni(newDeparture.begin());
-    const std::map<Frame*, ObjectList>::iterator nend(newDeparture.end());
-    std::map<Frame*, ObjectList>::iterator oi(departures_.begin());
-    const std::map<Frame*, ObjectList>::iterator oend(departures_.end());
+    //filter so that things can safely depart to the null frame
+    //such departures do not create arrivals or updated frames, but are saved as departures.
+    typedef boost::filtered_range<FrameNotNull, std::map<Frame*, ObjectList> > filtered_range_t;
+
+    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull()));
+    filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull()));    
+    
+    boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
+    const boost::range_iterator<filtered_range_t>::type nend(boost::end(newDepartureFiltered));
+    
+    
+    boost::range_iterator<filtered_range_t>::type oi(boost::begin(oldDepartureFiltered));
+    const boost::range_iterator<filtered_range_t>::type oend(boost::end(oldDepartureFiltered));
 
     while (oi != oend) {
         while (true) {

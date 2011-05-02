@@ -14,6 +14,8 @@
 
 #include <cstddef>
 
+#include <iostream>
+
 #include <cmath>
 #include "nedmalloc.h"
 //#include "tbb/scalable_allocator.h"
