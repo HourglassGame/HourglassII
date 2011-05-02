@@ -26,6 +26,8 @@ static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h
 static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 static bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
+static const int SQUISHED_SPEED = 3200;
+
 PhysicsEngine::PhysicsEngine(
     const boost::multi_array<bool, 2>& nwallmap,
     int newWallSize,
@@ -470,14 +472,17 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     std::vector<int> xspeed;
     std::vector<int> yspeed;
     std::vector<char> supported;
+    std::vector<bool> squished;
 
     x.reserve(oldGuyList.size());
     y.reserve(oldGuyList.size());
     xspeed.reserve(oldGuyList.size());
     yspeed.reserve(oldGuyList.size());
     supported.reserve(oldGuyList.size());
+    squished.reserve(oldGuyList.size());
 
     // position, velocity, collisions
+    // check collisions in Y direction then do the same in X direction
     for (std::size_t i = 0; i < oldGuyList.size(); ++i)
     {
         if (oldGuyList[i]->getRelativeToPortal() == -1)
@@ -494,6 +499,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
         xspeed.push_back(0);
         yspeed.push_back(oldGuyList[i]->getYspeed() + gravity);
         supported.push_back(false);
+        squished.push_back(false);
 
         if (oldGuyList[i]->getIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0u)
         {
@@ -503,15 +509,63 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             int width = oldGuyList[i]->getWidth();
             int height = oldGuyList[i]->getHeight();
 
+            int boxThatIamStandingOn = -1;
+
             // jump
             if (oldGuyList[i]->getSupported() && input.getUp())
             {
                 yspeed[i] = -550;
             }
 
-            //check wall collision in Y direction
+            // Y direction collisions
             int newY = y[i] + yspeed[i];
 
+            // box collision (only occurs in Y direction
+            for (unsigned int j = 0; j < nextBox.size(); ++j)
+			{
+				int boxX(nextBox[j].object.getX());
+				int boxY(nextBox[j].object.getY());
+				int boxXspeed(nextBox[j].object.getXspeed());
+				int boxYspeed(nextBox[j].object.getYspeed());
+				int boxSize(nextBox[j].object.getSize());
+				TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
+				if (x[i] <= boxX+boxSize && x[i]+width >= boxX)
+				{
+					if (nextBox[j].object.getPauseLevel() > 0)
+					{
+						if (newY+height >= boxY && newY+height-yspeed[i] <= boxY)
+						{
+							boxThatIamStandingOn = j;
+							newY = boxY-height;
+							xspeed[i] = 0;
+							supported[i] = true;
+						}
+					}
+					else if (boxDirection*oldGuyList[i]->getTimeDirection() == hg::REVERSE)
+					{
+						if (newY+height >= boxY-boxYspeed && newY+height-yspeed[i] <= boxY)
+						{
+							boxThatIamStandingOn = j;
+							newY = boxY-height-boxYspeed;
+							xspeed[i] = -boxXspeed;
+							supported[i] = true;
+						}
+
+					}
+					else
+					{
+						if (newY+height >= boxY && newY-yspeed[i]+height <= boxY-boxYspeed)
+						{
+							boxThatIamStandingOn = j;
+							newY = boxY-height;
+							xspeed[i] = boxXspeed;
+							supported[i] = true;
+						}
+					}
+				}
+			}
+
+            //check wall collision in Y direction
             if (yspeed[i] > 0) // down
             {
                 if (wallAt(x[i], newY+height) || (x[i] - (x[i]/wallSize)*wallSize > wallSize-width && wallAt(x[i]+width, newY+height)))
@@ -528,7 +582,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 }
             }
 
-            // platform collision
+            // check platform collision in Y direction
             foreach (const Platform& platform, nextPlatform)
             {
                 int pX(platform.getX());
@@ -557,52 +611,10 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 }
             }
 
-            // box collision
-            foreach (const ObjectAndTime<Box>& box, nextBox)
-            {
-                int boxX(box.object.getX());
-                int boxY(box.object.getY());
-                int boxXspeed(box.object.getXspeed());
-                int boxYspeed(box.object.getYspeed());
-                int boxSize(box.object.getSize());
-                TimeDirection boxDirection(box.object.getTimeDirection());
-                if (x[i] <= boxX+boxSize && x[i]+width >= boxX)
-                {
-                    if (box.object.getPauseLevel() > 0)
-                    {
-                        if (newY+height >= boxY && newY+height-yspeed[i] <= boxY)
-                        {
-                            newY = boxY-height;
-                            xspeed[i] = 0;
-                            supported[i] = true;
-                        }
-                    }
-                    else if (boxDirection*oldGuyList[i]->getTimeDirection() == hg::REVERSE)
-                    {
-                        if (newY+height >= boxY-boxYspeed && newY+height-yspeed[i] <= boxY)
-                        {
-                            newY = boxY-height-boxYspeed;
-                            xspeed[i] = -boxXspeed;
-                            supported[i] = true;
-                        }
-
-                    }
-                    else
-                    {
-                        if (newY+height >= boxY && newY-yspeed[i]+height <= boxY-boxYspeed)
-                        {
-                            newY = boxY-height;
-                            xspeed[i] = boxXspeed;
-                            supported[i] = true;
-                        }
-                    }
-                }
-            }
-
-
-            //check wall collision in X direction
+            // X direction stuff
             int newX(x[i] + xspeed[i]);
 
+            //check wall collision in X direction
             if (input.getLeft())
             {
                 newX += -250;
@@ -654,6 +666,62 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 }
             }
 
+            // Check inside a wall
+			if (wallAt(newX+1, newY+height-1) || wallAt(newX+width-1, newY+height-1) ||  wallAt(newX+1, newY+1) ||  wallAt(newX+width-1, newY + 1))
+			{
+				squished[i] = true;
+			}
+
+			// Check inside a platform
+			foreach (const Platform& platform, nextPlatform)
+			{
+				int pX(platform.getX());
+				int pY(platform.getY());
+				TimeDirection pDirection(platform.getTimeDirection());
+				if (pDirection * oldGuyList[i]->getTimeDirection() == hg::REVERSE)
+				{
+					pX -= platform.getXspeed();
+					pY -= platform.getYspeed();
+				}
+				int pWidth(platform.getWidth());
+				int pHeight(platform.getHeight());
+
+				if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
+				{
+					squished[i] = true;
+				}
+			}
+
+			// Check inside the box that I am suppose to be on top of
+
+			if (boxThatIamStandingOn != -1)
+			{
+				int boxX(nextBox[boxThatIamStandingOn].object.getX());
+				int boxY(nextBox[boxThatIamStandingOn].object.getY());
+				int boxXspeed(nextBox[boxThatIamStandingOn].object.getXspeed());
+				int boxYspeed(nextBox[boxThatIamStandingOn].object.getYspeed());
+				int boxSize(nextBox[boxThatIamStandingOn].object.getSize());
+				TimeDirection boxDirection(nextBox[boxThatIamStandingOn].object.getTimeDirection());
+
+				if (boxDirection * oldGuyList[i]->getTimeDirection() == hg::REVERSE)
+				{
+					boxX -= boxXspeed;
+					boxY -= boxYspeed;
+				}
+
+				if (newX < boxX+boxSize && newX+width > boxX && newY < boxY+boxSize && newY+height > boxY)
+				{
+					squished[i] = true;
+				}
+        	}
+
+			// If speed is too great I was squished (for example pushed to the side of a platform)
+			if (newX-x[i] > SQUISHED_SPEED || newY-y[i] > SQUISHED_SPEED)
+			{
+				squished[i] = true;
+			}
+
+			// Apply Change
             xspeed[i] = newX-x[i];
             yspeed[i] = newY-y[i];
 
@@ -679,7 +747,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
         carryDirection.push_back(hg::INVALID);
         carryPauseLevel.push_back(0);
 
-        if (oldGuyList[i]->getIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0u)
+        if (oldGuyList[i]->getIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0 && not squished[i])
         {
 
             std::size_t relativeIndex(oldGuyList[i]->getIndex());
@@ -835,6 +903,10 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     // time travel
     for (std::size_t i(0), size(oldGuyList.size()); i != size; ++i)
     {
+    	if (squished[i])
+		{
+			continue;
+		}
         if (oldGuyList[i]->getPauseLevel() != 0)
         {
             nextGuy.push_back(
