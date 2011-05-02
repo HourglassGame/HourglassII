@@ -187,12 +187,14 @@ void PhysicsEngine::buildDeparturesForComplexEntities(
 
         // the depature is not stolen for this thing
 
-        // if the this is a pause time thing and this is the end of the universe do not depart
+        // if the this is a pause time thing and this is the end of the universe depart to null-frame as workaround for
+        //flicker
         if (time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0 && thing.getPauseLevel() != 0)
         {
-
+            newDepartures[0].add(thing);
         }
-        else if (nextTime)
+        //otherwise depart normally
+        else
         {
             // simply depart to next frame
             newDepartures[nextTime].add(thing);
@@ -268,7 +270,7 @@ buildNext:
         {
 
         }
-        else if (nextTime && extra.getPropIntoNormal())
+        else if (extra.getPropIntoNormal())
         {
             // simply depart to next frame
             newDepartures[nextTime].add(thing);
@@ -303,10 +305,15 @@ void PhysicsEngine::buildDeparturesForReallySimpleThings(
     {
         Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
 
-        if (nextTime && (thing.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(thing.getTimeDirection()) == 0))
+        if (thing.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(thing.getTimeDirection()) == 0)
         {
             newDepartures[nextTime].add(thing);
         }
+        else {
+            //workaround for flicker, object departs to null frame and so never arrives anywhere
+            newDepartures[0].add(thing);
+        }
+
 
         foreach (const PauseInitiatorID& pauseTime, pauseTimes)
         {
@@ -348,10 +355,15 @@ void PhysicsEngine::buildDepartures(
         // Depart to next frame but do not depart if the guy is paused and it is the end of a pause time
         if (guyAndTime.time == nextTime)
         {
-            if (nextTime && (guyData.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(guyData.getTimeDirection()) == 0))
+            if (guyData.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(guyData.getTimeDirection()) == 0)
             {
                 newDepartures[nextTime].add(guyData);
             }
+            else {
+                //if it is end of pause time and guy is paused then add departure to null-frame as workaround for flicker
+                newDepartures[0].add(guyData);
+            }
+
         }
         else
         {
@@ -360,7 +372,7 @@ void PhysicsEngine::buildDepartures(
 
         // Add extra departures if departing from pause time so that subsequent pause times in the same parent frame see
         // this guy's state at the end of it's pause time. Pause times are ordered.
-        if (time->nextFramePauseLevelDifference(guyData.getTimeDirection()) != 0 and guyData.getPauseLevel() == 0 )
+        if (nextTime && time->nextFramePauseLevelDifference(guyData.getTimeDirection()) != 0 and guyData.getPauseLevel() == 0 )
         {
             int universes(time->nextFramePauseLevelDifference(guyData.getTimeDirection()));
             Frame* parTime(time);
@@ -392,7 +404,7 @@ void PhysicsEngine::buildDepartures(
         }
 
 
-        if (guyAndTime.time->parentFrame() == time)
+        if (guyAndTime.time && guyAndTime.time->parentFrame() == time)
         {
             // if the guy is departing to paused don't add it to pause times after this one
             const PauseInitiatorID& pauseID(guyAndTime.time->getInitiatorID());
@@ -1025,26 +1037,23 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 }
             }
 
-            if (playerInput.size() - 1 == relativeIndex && nextTime)
+            if (playerInput.size() - 1 == relativeIndex)
             {
                 currentPlayerDirection = oldGuyList[i]->getTimeDirection();
                 currentPlayerFrame = true;
                 //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
 
-            if (nextTime)
-            {
-                nextGuy.push_back(
-                    ObjectAndTime<Guy>(
-                        Guy(
-                            x[i], y[i], xspeed[i], yspeed[i],
-                            oldGuyList[i]->getWidth(), oldGuyList[i]->getHeight(),
-                            relativeToPortal, supported[i], supportedSpeed[i],
-                            carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
-                            nextTimeDirection, 0,
-                            relativeIndex+1),
-                        nextTime));
-            }
+            nextGuy.push_back(
+                ObjectAndTime<Guy>(
+                    Guy(
+                        x[i], y[i], xspeed[i], yspeed[i],
+                        oldGuyList[i]->getWidth(), oldGuyList[i]->getHeight(),
+                        relativeToPortal, supported[i], supportedSpeed[i],
+                        carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
+                        nextTimeDirection, 0,
+                        relativeIndex+1),
+                    nextTime));
         }
         else
         {
