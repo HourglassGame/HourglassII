@@ -7,9 +7,9 @@ namespace hg {
 class Guy
 {
 public:
-    Guy(int x,int y,int xspeed,int yspeed,int width,int height,int relativeToPortal,bool supported,bool boxCarrying,
-        int boxCarrySize,TimeDirection boxCarryDirection,int boxPauseLevel,TimeDirection timeDirection,int pauseLevel,
-        std::size_t index);
+    Guy(int x,int y,int xspeed,int yspeed,int width,int height,int relativeToPortal,bool supported, int supportedSpeed,
+    	bool boxCarrying, int boxCarrySize,TimeDirection boxCarryDirection,int boxPauseLevel,TimeDirection timeDirection,
+    	int pauseLevel,std::size_t index);
 
     Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel);
     Guy(const Guy& other);
@@ -37,9 +37,12 @@ public:
     int getRelativeToPortal() const {
         return relativeToPortal_;
     }
-    int getSupported() const {
+    bool getSupported() const {
         return supported_;
     }
+    int getSupportedSpeed() const {
+		return supportedSpeed_;
+	}
 
     bool getBoxCarrying() const {
         return boxCarrying_;
@@ -78,6 +81,7 @@ private:
 
     int relativeToPortal_;
     bool supported_;
+    int supportedSpeed_;
 
     bool boxCarrying_;
     int boxCarrySize_;

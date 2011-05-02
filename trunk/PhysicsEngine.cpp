@@ -27,6 +27,7 @@ static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int 
 static bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
 static const int SQUISHED_SPEED = 3200;
+static const int JUMP_SPEED 	= -550;
 
 PhysicsEngine::PhysicsEngine(
     const boost::multi_array<bool, 2>& nwallmap,
@@ -376,7 +377,7 @@ void PhysicsEngine::buildDepartures(
                         parInit,
                         Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
                             guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
-                            guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
+                            guyData.getSupportedSpeed(), guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                             guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                             guyData.getTimeDirection(), guyData.getPauseLevel()+1,
                             std::numeric_limits<std::size_t>::max()
@@ -404,7 +405,7 @@ void PhysicsEngine::buildDepartures(
                 newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(
                     Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
                         guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
-                        guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
+                        guyData.getSupportedSpeed(), guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                         guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                         guyData.getTimeDirection(), guyData.getPauseLevel()+1,
                         std::numeric_limits<std::size_t>::max()));
@@ -418,7 +419,7 @@ void PhysicsEngine::buildDepartures(
                 newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(
                     Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
                         guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
-                        guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
+                        guyData.getSupportedSpeed(), guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
                         guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
                         guyData.getTimeDirection(), guyData.getPauseLevel()+1,
                         std::numeric_limits<std::size_t>::max()));
@@ -472,13 +473,15 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     std::vector<int> xspeed;
     std::vector<int> yspeed;
     std::vector<char> supported;
-    std::vector<bool> squished;
+    std::vector<int> supportedSpeed;
+    std::vector<char> squished;
 
     x.reserve(oldGuyList.size());
     y.reserve(oldGuyList.size());
     xspeed.reserve(oldGuyList.size());
     yspeed.reserve(oldGuyList.size());
     supported.reserve(oldGuyList.size());
+    supportedSpeed.reserve(oldGuyList.size());
     squished.reserve(oldGuyList.size());
 
     // position, velocity, collisions
@@ -514,7 +517,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             // jump
             if (oldGuyList[i]->getSupported() && input.getUp())
             {
-                yspeed[i] = -550;
+                yspeed[i] = oldGuyList[i]->getSupportedSpeed() + JUMP_SPEED;
             }
 
             // Y direction collisions
@@ -539,6 +542,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 							newY = boxY-height;
 							xspeed[i] = 0;
 							supported[i] = true;
+							supportedSpeed[i] = 0;
 						}
 					}
 					else if (boxDirection*oldGuyList[i]->getTimeDirection() == hg::REVERSE)
@@ -549,6 +553,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 							newY = boxY-height-boxYspeed;
 							xspeed[i] = -boxXspeed;
 							supported[i] = true;
+							supportedSpeed[i] = -boxYspeed;
 						}
 
 					}
@@ -560,6 +565,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 							newY = boxY-height;
 							xspeed[i] = boxXspeed;
 							supported[i] = true;
+							supportedSpeed[i] = boxYspeed;
 						}
 					}
 				}
@@ -572,6 +578,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 {
                     newY = ((newY+height)/wallSize)*wallSize - height;
                     supported[i] = true;
+                    supportedSpeed[i] = 0;
                 }
             }
             else if (yspeed[i] < 0) // up
@@ -603,6 +610,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                         newY = pY-height;
                         xspeed[i] = pDirection * oldGuyList[i]->getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
+                        supportedSpeed[i] = pDirection * oldGuyList[i]->getTimeDirection() * platform.getYspeed();
                     }
                     else
                     {
@@ -797,7 +805,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                                         dropX,
                                         dropY,
                                         0,
-                                        0,
+                                        yspeed[i],
                                         dropSize,
                                         oldGuyList[i]->getBoxCarryDirection(),
                                         oldGuyList[i]->getBoxPauseLevel()
@@ -823,7 +831,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                                             parInit,
                                             Box
                                             (
-                                                dropX, dropY, 0, 0,
+                                                dropX, dropY, 0, yspeed[i],
                                                 dropSize, oldGuyList[i]->getBoxCarryDirection(),
                                                 oldGuyList[i]->getBoxPauseLevel()-pauseLevelChange
                                             ),
@@ -1024,7 +1032,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                         Guy(
                             x[i], y[i], xspeed[i], yspeed[i],
                             oldGuyList[i]->getWidth(), oldGuyList[i]->getHeight(),
-                            relativeToPortal, supported[i],
+                            relativeToPortal, supported[i], supportedSpeed[i],
                             carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
                             nextTimeDirection, 0,
                             relativeIndex+1),

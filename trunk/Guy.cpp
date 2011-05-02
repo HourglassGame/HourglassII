@@ -10,6 +10,7 @@ Guy::Guy(int x,
 
          int relativeToPortal,
          bool supported,
+         int supportedSpeed,
 
          bool boxCarrying,
          int boxCarrySize,
@@ -28,6 +29,7 @@ Guy::Guy(int x,
 
         relativeToPortal_(relativeToPortal),
         supported_(supported),
+        supportedSpeed_(supportedSpeed),
 
         boxCarrying_(boxCarrying),
         boxCarrySize_(boxCarrySize),
@@ -50,6 +52,7 @@ Guy::Guy(const Guy& other, TimeDirection timeDirection, int pauseLevel) :
 
         relativeToPortal_(other.relativeToPortal_),
         supported_(other.supported_),
+        supportedSpeed_(other.supportedSpeed_),
 
         boxCarrying_(other.boxCarrying_),
         boxCarrySize_(other.boxCarrySize_),
@@ -72,6 +75,7 @@ Guy::Guy(const Guy& other) :
 
         relativeToPortal_(other.relativeToPortal_),
         supported_(other.supported_),
+        supportedSpeed_(other.supportedSpeed_),
 
         boxCarrying_(other.boxCarrying_),
         boxCarrySize_(other.boxCarrySize_),
@@ -95,6 +99,7 @@ Guy& Guy::operator=(const Guy& other)
 
     relativeToPortal_ = other.relativeToPortal_;
     supported_ = other.supported_;
+    supportedSpeed_ = other.supportedSpeed_;
 
     boxCarrying_ = other.boxCarrying_;
     boxCarrySize_ = other.boxCarrySize_;
@@ -121,6 +126,7 @@ bool Guy::operator==(const Guy& other) const
             && (yspeed_ == other.yspeed_)
             && (relativeToPortal_ == other.relativeToPortal_)
             && (supported_ == other.supported_)
+            && (supportedSpeed_ == other.supportedSpeed_)
             && (boxCarrying_ == other.boxCarrying_)
             && (timeDirection_ == other.timeDirection_)
             && (boxCarryDirection_ == other.boxCarryDirection_)
