@@ -610,7 +610,14 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                         newY = pY-height;
                         xspeed[i] = pDirection * oldGuyList[i]->getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
-                        supportedSpeed[i] = pDirection * oldGuyList[i]->getTimeDirection() * platform.getYspeed();
+                        if (platform.getPauseLevel() == 0)
+                        {
+                        	supportedSpeed[i] = pDirection * oldGuyList[i]->getTimeDirection() * platform.getYspeed();
+                        }
+                        else
+                        {
+                        	supportedSpeed[i] = 0;
+                        }
                     }
                     else
                     {
