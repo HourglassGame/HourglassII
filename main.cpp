@@ -550,7 +550,7 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
                         0,
                         0,
                         0,
-                        32000,
+                        3200,
                         300,
                         50,
                         50
