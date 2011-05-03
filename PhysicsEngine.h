@@ -39,18 +39,15 @@ public:
     {
     	PhysicsReturnT(std::map<Frame*, ObjectList> Ndepartures,
     			bool NcurrentPlayerFrame,
-    			TimeDirection NcurrentPlayerDirection,
     			bool NnextPlayerFrame,
     			bool NcurrentWinFrame) :
     				departures(Ndepartures),
     				currentPlayerFrame(NcurrentPlayerFrame),
-    				currentPlayerDirection(NcurrentPlayerDirection),
     				nextPlayerFrame(NnextPlayerFrame),
     				currentWinFrame(NcurrentWinFrame)
     	{}
     	std::map<Frame*, ObjectList> departures;
     	bool currentPlayerFrame;
-    	TimeDirection currentPlayerDirection;
     	bool nextPlayerFrame;
     	bool currentWinFrame;
     };
@@ -162,13 +159,12 @@ private:
         const std::vector<Portal>& nextPortal,
         NewDeparturesT& newDepartures,
         bool& currentPlayerFrame,
-        TimeDirection& currentPlayerDirection,
         bool& nextPlayerFrame,
         bool& winFrame,
         std::vector<PauseInitiatorID>& pauseTimes) const;
 
     bool wallAt(int x, int y) const;
-    bool wallAt(int x, int y, int w, int h) const;
+    bool wallAt(int x, int y, int w, int h, bool inclusive) const;
 
     //map info (keeping it here allows for an optimised representation;
     //          also, the fact that the physics engine uses a world should be irrelevant to the time-engine)

@@ -280,18 +280,40 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
             }
             else
             {
-                x = guy->getX()-guy->getXspeed();
+            	x = guy->getX()-guy->getXspeed();
                 y = guy->getY()-guy->getYspeed();
                 guyColor = Color(0,0,150);
             }
 
             target.Draw(Shape::Rectangle(
-                            x/100,
-                            y/100,
-                            (x+ guy->getWidth())/100,
-                            (y+guy->getHeight())/100,
-                            guyColor)
-                       );
+				x/100,
+				y/100,
+				(x+guy->getWidth())/100,
+				(y+guy->getHeight())/100,
+				guyColor)
+			 );
+
+            if (guy->getFacing())
+            {
+            	target.Draw(Shape::Rectangle(
+					(x+guy->getWidth()/2)/100,
+					y/100,
+					(x+guy->getWidth())/100,
+					(y+guy->getHeight()/2)/100,
+					Color(50,50,50))
+				);
+            }
+            else
+            {
+            	target.Draw(Shape::Rectangle(
+					x/100,
+					y/100,
+					(x+guy->getWidth()/2)/100,
+					(y+guy->getHeight()/2)/100,
+					Color(50,50,50))
+				);
+            }
+
 
             if (guy->getBoxCarrying())
             {
@@ -518,7 +540,7 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
     //newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
     //newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, 0, INVALID, 0, FORWARDS, 0, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, false, 0, INVALID, 0, FORWARDS, 0, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
     newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false, true));
