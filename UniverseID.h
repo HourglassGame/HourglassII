@@ -74,6 +74,5 @@ private:
     //nestTrain_[0] is the least nested SubUniverse, and nestTrain_[nestTrain_.size()-1] is the most nested (bottom level)
     std::vector<SubUniverse> nestTrain_;
 };
-std::size_t hash_value(const UniverseID& toHash);
 }
 #endif //HG_UNIVERSE_ID_H

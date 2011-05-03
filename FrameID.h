@@ -62,13 +62,12 @@ public:
     }
 
 private:
+    //Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
     friend std::size_t hash_value(const FrameID& toHash);
     //positiong of frame within universeID_
     std::size_t frame_;
     UniverseID universeID_;
     unsigned int nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const;
 };
-//Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
-std::size_t hash_value(const FrameID& toHash);
 }//namespace hg
 #endif //HG_FRAME_ID_H
