@@ -26,7 +26,7 @@ static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h
 static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 static bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
-static const int SQUISHED_SPEED = 3200;
+static const int SQUISHED_SPEED = 1600;
 static const int JUMP_SPEED 	= -550;
 
 PhysicsEngine::PhysicsEngine(
@@ -100,13 +100,12 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     portalPositionUpdate(nextPlatform, arrivals.getPortalListRef(), nextPortal);
 
     bool currentPlayerFrame(false);
-    TimeDirection currentPlayerDirection(INVALID);
     bool nextPlayerFrame(false);
     bool winFrame(false);
 
     // guys simple collision algorithm
     guyStep(arrivals.getGuyListRef(), time, playerInput,
-            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFrame, currentPlayerDirection, nextPlayerFrame, winFrame, pauseTimes);
+            nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame, pauseTimes);
 
     // button position update
     buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton);
@@ -118,7 +117,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
     boost::for_each(newDepartures,SortObjectList());
     // add data to departures
-    return PhysicsReturnT( newDepartures, currentPlayerFrame, currentPlayerDirection, nextPlayerFrame, winFrame);
+    return PhysicsReturnT( newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame);
 }
 
 
@@ -387,13 +386,7 @@ void PhysicsEngine::buildDepartures(
                     RemoteDepartureEdit<Guy>
                     (
                         parInit,
-                        Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
-                            guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
-                            guyData.getSupportedSpeed(), guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
-                            guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
-                            guyData.getTimeDirection(), guyData.getPauseLevel()+1,
-                            std::numeric_limits<std::size_t>::max()
-                           ),
+                        Guy(guyData, 1),
                         false
                     )
 
@@ -414,13 +407,7 @@ void PhysicsEngine::buildDepartures(
                 {
                     break;
                 }
-                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(
-                    Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
-                        guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
-                        guyData.getSupportedSpeed(), guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
-                        guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
-                        guyData.getTimeDirection(), guyData.getPauseLevel()+1,
-                        std::numeric_limits<std::size_t>::max()));
+                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(Guy(guyData, 1));
             }
         }
         else
@@ -428,13 +415,7 @@ void PhysicsEngine::buildDepartures(
             // add pause guy to every pause time universe from this frame
             foreach (const PauseInitiatorID& pauseTime, pauseTimes)
             {
-                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(
-                    Guy(guyData.getX(), guyData.getY(), guyData.getXspeed(), guyData.getYspeed(),
-                        guyData.getWidth(),guyData.getHeight(), guyData.getRelativeToPortal(), guyData.getSupported(),
-                        guyData.getSupportedSpeed(), guyData.getBoxCarrying(), guyData.getBoxCarrySize(),
-                        guyData.getBoxCarryDirection(), guyData.getBoxPauseLevel(),
-                        guyData.getTimeDirection(), guyData.getPauseLevel()+1,
-                        std::numeric_limits<std::size_t>::max()));
+                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(Guy(guyData, 1));
             }
         }
     }
@@ -475,7 +456,6 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                             const std::vector<Portal>& nextPortal,
                             NewDeparturesT& newDepartures,
                             bool& currentPlayerFrame,
-                            TimeDirection& currentPlayerDirection,
                            	bool& nextPlayerFrame,
                             bool& winFrame,
                             std::vector<PauseInitiatorID>& pauseTimes) const
@@ -487,6 +467,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     std::vector<char> supported;
     std::vector<int> supportedSpeed;
     std::vector<char> squished;
+    std::vector<char> facing;
 
     x.reserve(oldGuyList.size());
     y.reserve(oldGuyList.size());
@@ -495,6 +476,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     supported.reserve(oldGuyList.size());
     supportedSpeed.reserve(oldGuyList.size());
     squished.reserve(oldGuyList.size());
+    facing.reserve(oldGuyList.size());
 
     // position, velocity, collisions
     // check collisions in Y direction then do the same in X direction
@@ -515,6 +497,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
         yspeed.push_back(oldGuyList[i]->getYspeed() + gravity);
         supported.push_back(false);
         squished.push_back(false);
+        facing.push_back(oldGuyList[i]->getFacing());
 
         if (oldGuyList[i]->getIndex() < playerInput.size() && oldGuyList[i]->getPauseLevel() == 0u)
         {
@@ -644,10 +627,12 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             //check wall collision in X direction
             if (input.getLeft())
             {
+            	facing[i] = false;
                 newX += -250;
             }
             else if (input.getRight())
             {
+            	facing[i] = true;
                 newX += 250;
             }
 
@@ -694,7 +679,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             }
 
             // Check inside a wall
-			if (wallAt(newX+1, newY+height-1) || wallAt(newX+width-1, newY+height-1) ||  wallAt(newX+1, newY+1) ||  wallAt(newX+width-1, newY + 1))
+			if (wallAt(newX, newY, width, height, false))
 			{
 				squished[i] = true;
 			}
@@ -783,14 +768,19 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             if (carry[i])
             {
                 bool droppable = false;
-                if (input.getDown())
+                if (input.getDown() && supported[i])
                 {
                     int width(oldGuyList[i]->getWidth());
-                    int dropX(x[i] + width/2 - oldGuyList[i]->getBoxCarrySize()/2);
-                    int dropY(y[i] - oldGuyList[i]->getBoxCarrySize());
+                    int dropX(x[i] - oldGuyList[i]->getBoxCarrySize());
+                    int dropY(y[i]);
                     int dropSize(oldGuyList[i]->getBoxCarrySize());
 
-                    if (!wallAt(dropX, dropY, dropSize, dropSize))
+                    if (facing[i])
+                    {
+                    	dropX = x[i] + width;
+                    }
+
+                    if (!wallAt(dropX, dropY, dropSize, dropSize, false))
                     {
                         droppable = true;
                         for (unsigned int j = 0; droppable && j < nextBox.size(); ++j)
@@ -880,7 +870,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             }
             else
             {
-                if (input.getDown())
+                if (input.getDown() && supported[i])
                 {
                     int width = oldGuyList[i]->getWidth();
                     int height = oldGuyList[i]->getHeight();
@@ -1039,7 +1029,6 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 
             if (playerInput.size() - 1 == relativeIndex)
             {
-                currentPlayerDirection = oldGuyList[i]->getTimeDirection();
                 currentPlayerFrame = true;
                 //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
@@ -1049,7 +1038,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                     Guy(
                         x[i], y[i], xspeed[i], yspeed[i],
                         oldGuyList[i]->getWidth(), oldGuyList[i]->getHeight(),
-                        relativeToPortal, supported[i], supportedSpeed[i],
+                        relativeToPortal, supported[i], supportedSpeed[i], facing[i],
                         carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
                         nextTimeDirection, 0,
                         relativeIndex+1),
@@ -1633,9 +1622,16 @@ bool PhysicsEngine::wallAt(int x, int y) const
     }
 }
 
-bool PhysicsEngine::wallAt(int x, int y, int w, int h) const
+bool PhysicsEngine::wallAt(int x, int y, int w, int h, bool inclusive) const
 {
-    return wallAt(x, y) || wallAt(x+w, y) || wallAt(x, y+h) || wallAt(x+w, y+h);
+	if (inclusive)
+	{
+		 return wallAt(x, y) || wallAt(x+w, y) || wallAt(x, y+h) || wallAt(x+w, y+h);
+	}
+	else
+	{
+		return wallAt(x+1, y+1) || wallAt(x+w-1, y+1) || wallAt(x+1, y+h-1) || wallAt(x+w-1, y+h-1);
+	}
 }
 
 static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)

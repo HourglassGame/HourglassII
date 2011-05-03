@@ -8,9 +8,11 @@ class Guy
 {
 public:
     Guy(int x,int y,int xspeed,int yspeed,int width,int height,int relativeToPortal,bool supported, int supportedSpeed,
+    	bool facing,
     	bool boxCarrying, int boxCarrySize,TimeDirection boxCarryDirection,int boxPauseLevel,TimeDirection timeDirection,
     	int pauseLevel,std::size_t index);
 
+    Guy(const Guy& other, int copyType);
     Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel);
     Guy(const Guy& other);
     Guy& operator=(const Guy& other);
@@ -43,6 +45,10 @@ public:
     int getSupportedSpeed() const {
 		return supportedSpeed_;
 	}
+
+    int getFacing() const {
+   		return facing_;
+   	}
 
     bool getBoxCarrying() const {
         return boxCarrying_;
@@ -82,6 +88,8 @@ private:
     int relativeToPortal_;
     bool supported_;
     int supportedSpeed_;
+
+    bool facing_; // <- false, -> true
 
     bool boxCarrying_;
     int boxCarrySize_;
