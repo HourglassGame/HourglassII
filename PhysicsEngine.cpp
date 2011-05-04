@@ -22,6 +22,7 @@
 #define foreach BOOST_FOREACH
 
 namespace hg {
+static bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
 static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 static bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
@@ -89,15 +90,20 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // platforms set their new location and velocity from trigger system data (and ofc their physical data)
     platformStep(arrivals.getPlatformListRef(), nextPlatform, platformDesinations);
 
+    // button position update
+    buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton);
+
     // pickup position update from platform
 
     // boxes do their crazy wizz-bang collision algorithm
-    crappyBoxCollisionAlogorithm(arrivals.getBoxListRef(), nextBox, nextPlatform, time);
+    boxCollisionAlogorithm(arrivals.getBoxListRef(), nextBox, nextPlatform, time);
 
     // item simple collision algorithm
 
     // portal position update
     portalPositionUpdate(nextPlatform, arrivals.getPortalListRef(), nextPortal);
+
+
 
     bool currentPlayerFrame(false);
     bool nextPlayerFrame(false);
@@ -106,9 +112,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // guys simple collision algorithm
     guyStep(arrivals.getGuyListRef(), time, playerInput,
             nextGuy, nextBox, nextPlatform, nextPortal, newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame, pauseTimes);
-
-    // button position update
-    buttonPositionUpdate(nextPlatform, nextButtonState, arrivals.getButtonListRef(), nextButton);
 
     buildDepartures(nextBox, nextPlatform, nextPortal, nextButton, nextGuy,
                     arrivals.getBoxThiefListRef(), arrivals.getBoxExtraListRef(), arrivals.getGuyExtraListRef(),
@@ -590,7 +593,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * oldGuyList[i]->getTimeDirection() == hg::REVERSE)
+                if (pDirection * oldGuyList[i]->getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -598,7 +601,8 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 int pWidth(platform.getWidth());
                 int pHeight(platform.getHeight());
 
-                if (IntersectingRectanglesExclusive(x[i], newY, width, height, pX, pY, pWidth, pHeight))
+                if (IntersectingRectanglesExclusive(x[i], newY, width, height,
+                		pX-pDirection * oldGuyList[i]->getTimeDirection() * platform.getXspeed(), pY, pWidth, pHeight))
                 {
                     if (newY+height/2 < pY+pHeight/2)
                     {
@@ -657,7 +661,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection*oldGuyList[i]->getTimeDirection() == hg::REVERSE)
+                if (pDirection*oldGuyList[i]->getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -690,7 +694,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 				int pX(platform.getX());
 				int pY(platform.getY());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * oldGuyList[i]->getTimeDirection() == hg::REVERSE)
+				if (pDirection * oldGuyList[i]->getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -1052,231 +1056,531 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
     }
 }
 
-void PhysicsEngine::crappyBoxCollisionAlogorithm(
+bool PhysicsEngine::explodeBoxes(std::vector<int>& pos, std::vector<int>& size, std::vector<std::vector<int> >& links,
+		std::vector<char>& toBeSquished, std::vector<int>& bound, int index, int boundSoFar, int sign) const
+{
+	// sign = 1, small to large (eg left to right)
+	// sign = -1, large to small (eg right to left)
+	pos[index] = boundSoFar;
+	boundSoFar = boundSoFar + size[index] * sign;
+
+	bool subSquished = false;
+
+	for (unsigned int i = 0; i < links[index].size(); ++i)
+	{
+		subSquished = explodeBoxes(pos, size, links, toBeSquished, bound, links[index][i], boundSoFar, sign) || subSquished;
+	}
+
+	if (subSquished || (bound[index] != 0 && bound[index] * sign <= boundSoFar * sign))
+	{
+		toBeSquished[index] = true;
+		return true;
+		}
+	return false;
+}
+
+bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& xTemp, std::vector<int>& y, std::vector<int>& size, std::vector<std::vector<int> >& links,
+		std::vector<char>& toBeSquished, std::vector<int>& bound, int index, int boundSoFar) const
+{
+	y[index] = boundSoFar;
+	boundSoFar = boundSoFar - size[index];
+
+	bool subSquished = false;
+
+	for (unsigned int i = 0; i < links[index].size(); ++i)
+	{
+		subSquished = explodeBoxesUpwards(x, xTemp, y, size, links, toBeSquished, bound, links[index][i], boundSoFar) || subSquished;
+		x[i] = xTemp[i] + x[index] - xTemp[index]; // boxes sitting on this one
+	}
+
+	if (subSquished || (bound[index] != 0 && bound[index] >= boundSoFar))
+	{
+		toBeSquished[index] = true;
+		return true;
+	}
+	return false;
+}
+
+void PhysicsEngine::recursiveBoxCollision(std::vector<int>& majorAxis, std::vector<int>& minorAxis, std::vector<int>& size,
+		std::vector<char>& squished, std::vector<int>& boxesSoFar, unsigned int index) const
+{
+	boxesSoFar.push_back(index);
+
+	for (unsigned int i = 0; i < majorAxis.size(); ++i)
+	{
+		if (i != index && !squished[i] &&
+			IntersectingRectanglesExclusive(majorAxis[index], minorAxis[index], size[index], size[index], majorAxis[i], minorAxis[i], size[i], size[i]) &&
+			std::abs(majorAxis[index] - majorAxis[i]) > std::abs(minorAxis[index] - minorAxis[i])
+		)
+		{
+			int overlap = -(majorAxis[index] + size[index] - majorAxis[i]); // index must move UP
+			if (majorAxis[i] < majorAxis[index])
+			{
+				overlap = majorAxis[i] + size[i] - majorAxis[index];  // index must move DOWN
+			}
+
+			int indexMovement = overlap/(static_cast<int>(boxesSoFar.size()) + 1);
+			int iMovement = -overlap + indexMovement;
+			for (unsigned int j = 0; j < boxesSoFar.size(); ++j)
+			{
+				majorAxis[boxesSoFar[j]] = majorAxis[boxesSoFar[j]] + indexMovement;
+			}
+			majorAxis[i] = majorAxis[i] + iMovement;
+
+			recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i);
+		}
+	}
+}
+
+
+void PhysicsEngine::boxCollisionAlogorithm(
     const std::vector<const Box*>& oldBoxList,
     std::vector<ObjectAndTime<Box> >& nextBox,
     std::vector<Platform>& nextPlatform,
     Frame* time) const
 {
-    for (std::vector<const Box*>::const_iterator i(oldBoxList.begin()), iend(oldBoxList.end()); i != iend; ++i)
-    {
-        if ((*i)->getPauseLevel() != 0)
-        {
-            nextBox.push_back
-            (
-                ObjectAndTime<Box>
-                (
-                    **i,
-                    time->nextFrame((*i)->getTimeDirection())//,
-                    //true
-                )
-            );
 
-            continue;
-        }
+	std::vector<int> x(oldBoxList.size());
+	std::vector<int> y(oldBoxList.size());
+	std::vector<int> xTemp(oldBoxList.size());
+	std::vector<int> yTemp(oldBoxList.size());
+	std::vector<int> size(oldBoxList.size());
+	std::vector<char> squished(oldBoxList.size(), false);
 
-        int x = (*i)->getX();
-        int y = (*i)->getY();
-        int xspeed = (*i)->getXspeed();
-        int yspeed = (*i)->getYspeed() + gravity;
-        int size = (*i)->getSize();
+	std::vector<int> top(oldBoxList.size(), 0);
+	std::vector<int> bottom(oldBoxList.size(), 0); // put size of wall in here
+	std::vector<int> left(oldBoxList.size(), 0);
+	std::vector<int> right(oldBoxList.size(), 0); // put size of wall in here
 
-        bool supported = false;
+	std::vector<std::vector<int> > topLinks(oldBoxList.size());
+	std::vector<std::vector<int> > bottomLinks(oldBoxList.size());
+	std::vector<std::vector<int> > rightLinks(oldBoxList.size());
+	std::vector<std::vector<int> > leftLinks(oldBoxList.size());
 
-        bool exploded = false;
-        /*
-        for (vector<Box>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
-        {
-            if (j != i)
-            {
-                int boxX = j->getX();
-                int boxY = j->getY();
-                int boxSize = j->getSize();
-                if (PhysicsEngine::IntersectingRectanglesExclusive(x, y, size, size, boxX, boxY, boxSize, boxSize))
-                {
-                    exploded = true;
-                    continue;
-                }
-            }
-        }
-        */
-        /*
-        for (vector<Platform>::const_iterator j(nextPlatform.begin()), jend(nextPlatform.end()); j != jend; ++j)
-        {
-            if (PhysicsEngine::IntersectingRectanglesExclusive(x, y, size, size, j->getX(), j->getY(), j->getHeight(), j->getWidth()))
-            {
-                exploded = true;
-                continue;
-            }
-        }
-        */
-        if (exploded)
-        {
-            continue;
-        }
+	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
+	/*for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+	{
+		if (!squished[i])
+		{
+			for (unsigned int j = 0; j < oldBoxList.size(); ++j)
+			{
+				if (j != i && !squished[j])
+				{
+					if (IntersectingRectanglesExclusive(oldBoxList[i]->getX(), oldBoxList[i]->getY(), oldBoxList[i]->getSize(), oldBoxList[i]->getSize(),
+					oldBoxList[j]->getX(), oldBoxList[j]->getY(), oldBoxList[j]->getSize(), oldBoxList[j]->getSize()))
+					{
+						squished[i] = true;
+						squished[j] = true;
+					}
+				}
+			}
+		}
+	}*/
 
-        // ** Y component **
-        int newY = y + yspeed;
+	// Make a list of pause boxes, these are collided with like platforms.
+	std::vector<const Box*> pauseBoxes = std::vector<const Box*>();
+	for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+	{
+		if (oldBoxList[i]->getPauseLevel() != 0)
+		{
+			pauseBoxes.push_back(oldBoxList[i]);
+			squished[i] = true; // squished is equivelent to paused as they do not do things
+		}
+		else
+		{
+			xTemp[i] = oldBoxList[i]->getX();
+			yTemp[i] = oldBoxList[i]->getY();
+			x[i] = oldBoxList[i]->getX() + oldBoxList[i]->getXspeed();
+			y[i] = oldBoxList[i]->getY() + oldBoxList[i]->getYspeed() + gravity;
+			size[i] = oldBoxList[i]->getSize();
 
-        // box collision
-        for (std::vector<const Box*>::const_iterator j(oldBoxList.begin()), jend(oldBoxList.end()); j != jend; ++j)
-        {
-            if (j != i)
-            {
-                int boxX = (*j)->getX();
-                int boxY = (*j)->getY();
-                int boxSize = (*j)->getSize();
-                if (IntersectingRectanglesInclusive(x, newY, size, size, boxX, boxY, boxSize, boxSize))
-                {
-                    if (newY + size/2 < boxY + boxSize/2)
-                    {
-                        newY = boxY - size;
-                    }
-                    else
-                    {
-                        //newY = boxY + boxSize;
-                    }
-                }
-            }
-        }
-        yspeed = newY - y;
+			topLinks[i] = std::vector<int>();
+			bottomLinks[i] = std::vector<int>();
+			rightLinks[i] = std::vector<int>();
+			leftLinks[i] = std::vector<int>();
+		}
+	}
 
-        //check wall collision in Y direction
-        if (yspeed > 0) // down
-        {
-            if (wallAt(x, newY+size)/*wallmap[x/wallSize][(newY+size)/wallSize]*/ || (x - (x/wallSize)*wallSize > wallSize-size && wallAt(x+size,newY+size)/*wallmap[(x+size)/wallSize][(newY+size)/wallSize]*/))
-            {
-                newY = ((newY+size)/wallSize)*wallSize - size;
-                supported = true;
-                xspeed = 0;
-            }
-        }
-        else if (yspeed < 0) // up
-        {
-            if  (wallAt(x, newY)/*wallmap[x/wallSize][newY/wallSize]*/ || (x - (x/wallSize)*wallSize > wallSize-size && wallAt(x+size, newY) /*wallmap[(x+size)/wallSize][newY/wallSize]*/))
-            {
-                newY = (newY/wallSize + 1)*wallSize;
-            }
-        }
+	// do all the other things until there are no more things to do
+	bool thereAreStillThingsToDo = true;
+	while (thereAreStillThingsToDo)
+	{
+		thereAreStillThingsToDo = false;
 
-        // platform collision
-        foreach (const Platform& platform, nextPlatform) {
-            int pX(platform.getX());
-            int pY(platform.getY());
-            TimeDirection pDirection = platform.getTimeDirection();
-            if (pDirection * (*i)->getPauseLevel() == 0 && pDirection*(*i)->getTimeDirection() == hg::REVERSE)
-            {
-                pX -= platform.getXspeed();
-                pY -= platform.getYspeed();
-            }
+		// collide boxes with platforms, walls and paused boxes to discover the hard bounds on the system
+		// if a box moves thereAreStillThingsToDo
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				// Check inside a platform
+				foreach (const Platform& platform, nextPlatform)
+				{
+					int pX(platform.getX());
+					int pY(platform.getY());
+					TimeDirection pDirection(platform.getTimeDirection());
+					if (pDirection * oldBoxList[i]->getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+					{
+						pX -= platform.getXspeed();
+						pY -= platform.getYspeed();
+					}
+					int pWidth(platform.getWidth());
+					int pHeight(platform.getHeight());
 
-            int pWidth(platform.getWidth());
-            int pHeight(platform.getHeight());
-            if (IntersectingRectanglesExclusive(x, newY, size, size, pX, pY, pWidth, pHeight)) {
-                if (newY + size/2 < pY + pHeight/2) {
-                    newY = pY-size;
-                    xspeed = pDirection * (*i)->getTimeDirection() * platform.getXspeed();
-                    supported = true;
-                }
-                else {
-                    newY = pY+pHeight;
-                }
-            }
-        }
+					if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
+					{
+						if (IsPointInVerticalQuadrant(x[i] + size[i]/2, y[i] + size[i], pX, pY, pWidth, pHeight))
+						{
+							if (y[i] < pY) // box above platform
+							{
+								y[i] = pY - size[i];
+								bottom[i] = y[i];
+								if (platform.getPauseLevel() == 0)
+								{
+									x[i] = xTemp[i] + pDirection * oldBoxList[i]->getTimeDirection() * platform.getXspeed();
+								}
+							}
+							else // a below b
+							{
+								y[i] = pY + pHeight;
+								top[i] = y[i];
+							}
+						}
+						else // left or right
+						{
+							if (x[i] < pX) // a left of b
+							{
+								x[i] = pX - size[i];
+								right[i] = x[i];
+							}
+							else // a right of b
+							{
+								x[i] = pX + pWidth;
+								left[i] = x[i];
+							}
+						}
+					}
+				}
 
-        // ** X component **
-        int newX = x + xspeed;
+				// Check inside a wall, velocity independant which is why it is so complex
+				bool topRightDiagonal = (y[i] - (y[i]/wallSize)*wallSize) < (x[i] - (x[i]/wallSize)*wallSize);
+				bool topLeftDiagonal = (y[i] - (y[i]/wallSize)*wallSize) + (x[i] - (x[i]/wallSize)*wallSize) < wallSize;
+				if (wallAt(x[i], y[i])) // top left
+				{
+					if (wallAt(x[i]+size[i], y[i]) || !(wallAt(x[i], y[i]+size[i]) || topRightDiagonal)) // top right
+					{
+						y[i] = (y[i]/wallSize+1)*wallSize;
+						top[i] = y[i];
+						if (wallAt(x[i], y[i]+size[i])) // bottom left
+						{
+							x[i] = (x[i]/wallSize+1)*wallSize;
+							left[i] = x[i];
+						}
+					}
+					else // bottom left
+					{
+						x[i] = (x[i]/wallSize+1)*wallSize;
+						left[i] = x[i];
+						if (wallAt(x[i]+size[i], y[i]+size[i])) // bottom right
+						{
+							y[i] = ((y[i]+size[i])/wallSize)*wallSize-size[i];
+							bottom[i] = y[i];
+							x[i] = xTemp[i];
+						}
+					}
 
-        for (std::vector<const Box*>::const_reverse_iterator j(oldBoxList.rbegin()), jend(oldBoxList.rend()); j != jend; ++j)
-        {
-            if ((j.base() - 1) != i )
-            {
-                {
-                    int boxX = (*j)->getX();
-                    int boxY = (*j)->getY();
-                    int boxSize = (*j)->getSize();
-                    if (IntersectingRectanglesInclusive(newX, newY, size, size, boxX, boxY, boxSize, boxSize))
-                    {
-                        if (newX + size/2 < boxX + boxSize/2)
-                        {
-                            newX = x + (*j)->getXspeed()/10;//boxX - size;
-                        }
-                        else
-                        {
-                            newX = x + (*j)->getXspeed()/10;//boxX + boxSize;
-                        }
-                    }
-                }
-            }
-        }
-        xspeed = newX - x;
+				}
+				else if (wallAt(x[i], y[i]+size[i])) // bottom left and not top left
+				{
+					if (!topLeftDiagonal)
+					{
+						x[i] = (x[i]/wallSize+1)*wallSize;
+						left[i] = x[i];
+						if (wallAt(x[i]+size[i], y[i]+size[i])) // bottom right
+						{
+							y[i] = ((y[i]+size[i])/wallSize)*wallSize-size[i];
+							bottom[i] = y[i];
+							x[i] = xTemp[i];
+						}
+					}
+					else
+					{
+						y[i] = ((y[i]+size[i])/wallSize)*wallSize-size[i];
+						bottom[i] = y[i];
+						x[i] = xTemp[i];
+						if (wallAt(x[i]+size[i], y[i])) // top right
+						{
+							x[i] = ((x[i]+size[i])/wallSize)*wallSize-size[i];
+							right[i] = x[i];
+						}
+					}
 
-        //check wall collision in X direction
-        if (xspeed > 0) // right
-        {
-            if (wallmap[(newX+size)/wallSize][newY/wallSize] || (newY - (newY/wallSize)*wallSize > wallSize-size && wallmap[(newX+size)/wallSize][(newY+size)/wallSize]))
-            {
-                newX = (newX+size)/wallSize*wallSize - size;
-            }
-        }
-        else if (xspeed < 0) // left
-        {
-            if (wallmap[newX/wallSize][newY/wallSize] || (newY - (newY/wallSize)*wallSize > wallSize-size && wallmap[newX/wallSize][(newY+size)/wallSize]))
-            {
-                newX = (newX/wallSize + 1)*wallSize;
-            }
-        }
+				}
+				else if (wallAt(x[i]+size[i], y[i]+size[i])) // no left and bottom right
+				{
+					if (!wallAt(x[i]+size[i], y[i]) && topRightDiagonal)
+					{
+						y[i] = ((y[i]+size[i])/wallSize)*wallSize-size[i];
+						bottom[i] = y[i];
+						x[i] = xTemp[i];
+					}
+					else
+					{
+						x[i] = ((x[i]+size[i])/wallSize)*wallSize-size[i];
+						right[i] = x[i];
+					}
+				}
+				else if (wallAt(x[i]+size[i], y[i])) // only top right
+				{
+					if (!topRightDiagonal)
+					{
+						y[i] = (y[i]/wallSize+1)*wallSize;
+						top[i] = y[i];
+					}
+					else
+					{
+						x[i] = ((x[i]+size[i])/wallSize)*wallSize-size[i];
+						right[i] = x[i];
+					}
+				}
 
-        // platform collision
-        for (unsigned int j = 0; j < nextPlatform.size(); ++j)
-        {
-            int pX = nextPlatform[j].getX();
-            int pY = nextPlatform[j].getY();
-            TimeDirection pDirection = nextPlatform[j].getTimeDirection();
-            if (pDirection*(*i)->getTimeDirection() == hg::REVERSE)
-            {
-                pX -= nextPlatform[j].getXspeed();
-                pY -= nextPlatform[j].getYspeed();
-            }
-            int pWidth = nextPlatform[j].getWidth();
-            int pHeight = nextPlatform[j].getHeight();
+				// Inside paused box
+				for (unsigned int j = 0; j < pauseBoxes.size(); ++j)
+				{
+					int boxX = pauseBoxes[j]->getX();
+					int boxY = pauseBoxes[j]->getY();
+					int boxSize = pauseBoxes[j]->getSize();
+					if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], boxX, boxY, boxSize, boxSize))
+					{
+						if (std::abs(x[i] - boxX) < std::abs(y[i] - boxY)) // top or bot
+						{
+							if (y[i] < boxY) // box above platform
+							{
+								y[i] = boxY - size[i];
+								bottom[i] = y[i];
+							}
+							else // box below platform
+							{
+								y[i] = boxY + boxSize;
+								top[i] = y[i];
+							}
+						}
+						else // left or right
+						{
+							if (x[i] < boxX) // box left of platform
+							{
+								x[i] = boxX - size[i];
+								right[i] = x[i];
+							}
+							else // box right of platform
+							{
+								x[i] = boxX + boxSize;
+								left[i] = x[i];
+							}
+						}
+					}
+				}
+			}
+		}
 
-            if (IntersectingRectanglesExclusive(newX, newY, size, size, pX, pY, pWidth, pHeight))
-            {
-                if (newX+size/2 < pX+pWidth/2)
-                {
-                    newX = pX-size;
-                }
-                else
-                {
-                    newX = pX+pWidth;
-                }
-            }
-        }
+		// Now make the map of vertical collisions
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				for (unsigned int j = 0; j < i; ++j)
+				{
+					if (j != i && !squished[j])
+					{
+						if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
+						{
+							if (std::abs(x[i] - x[j]) < std::abs(y[i] - y[j])) // top or bot
+							{
+								if (y[i] < y[j]) // i above j
+								{
+									bottomLinks[i].push_back(j);
+									topLinks[j].push_back(i);
+								}
+								else // i below j
+								{
+									topLinks[i].push_back(j);
+									bottomLinks[j].push_back(i);
+								}
+							}
+							else // left or right
+							{
+								//if (x[i] < x[j]) // i left of j
+								//{
+								//	rightLinks[i].push_back(j);
+								//	leftLinks[j].push_back(i);
+								//}
+								//else // i right of j
+								//{
+								//	leftLinks[i].push_back(j);
+								//	rightLinks[j].push_back(i);
+								//}
+							}
+						}
+					}
+				}
+			}
+		}
 
-        xspeed = newX-x;
-        yspeed = newY-y;
+		// propagate through vertical collision links to reposition and explode
+		std::vector<char> toBeSquished(oldBoxList.size(), false);
 
-        x = newX;
-        y = newY;
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				if (bottom[i] != 0)
+				{
+					explodeBoxesUpwards(x, xTemp, y, size, topLinks, toBeSquished, top, i, bottom[i]);
+				}
+				if (top[i] != 0)
+				{
+					explodeBoxes(y, size, bottomLinks, toBeSquished, bottom, i, top[i], 1);
+				}
+			}
+		}
 
-        nextBox.push_back
-        (
-            ObjectAndTime<Box>(
-                Box(
-                    x,
-                    y,
-                    xspeed,
-                    yspeed,
-                    size,
-                    (*i)->getTimeDirection(),
-                    0),
-                time->nextFrame((*i)->getTimeDirection())//,
-                //supported
-            )
-        );
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (toBeSquished[i])
+			{
+				squished[i] = true;
+			}
+		}
 
-    }
+		// Now make the map of horizontal collisions
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				for (unsigned int j = 0; j < i; ++j)
+				{
+					if (j != i && !squished[j])
+					{
+						if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
+						{
+							if (std::abs(x[i] - x[j]) < std::abs(y[i] - y[j])) // top or bot
+							{
+								//if (y[i] < y[j]) // i above j
+								//{
+								//	bottomLinks[i].push_back(j);
+								//	topLinks[j].push_back(i);
+								//}
+								//else // i below j
+								//{
+								//	topLinks[i].push_back(j);
+								//	bottomLinks[j].push_back(i);
+								//}
+							}
+							else // left or right
+							{
+								if (x[i] < x[j]) // i left of j
+								{
+									rightLinks[i].push_back(j);
+									leftLinks[j].push_back(i);
+								}
+								else // i right of j
+								{
+									leftLinks[i].push_back(j);
+									rightLinks[j].push_back(i);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// propagate through horizontal collision links to reposition and explode
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			toBeSquished[i] = false;
+		}
+
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				if (right[i] != 0)
+				{
+					explodeBoxes(x, size, leftLinks, toBeSquished, top, i, right[i], -1);
+				}
+				if (left[i] != 0)
+				{
+					explodeBoxes(x, size, rightLinks, toBeSquished, bottom, i, left[i], 1);
+				}
+			}
+		}
+
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (toBeSquished[i])
+			{
+				squished[i] = true;
+			}
+		}
+
+		// Do something recusive!
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				std::vector<int> pass(0);
+				recursiveBoxCollision(y, x, size, squished, pass, i);
+			}
+		}
+
+		// And now in that other dimension!
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				std::vector<int> pass(0);
+				recursiveBoxCollision(x, y, size, squished, pass, i);
+			}
+		}
+
+		// Check if I must do what Has To Be Done (again)
+		for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+		{
+			if (!squished[i])
+			{
+				if (x[i] != xTemp[i] || y[i] != yTemp[i])
+				{
+					//thereAreStillThingsToDo = true;
+					xTemp[i] = x[i];
+					yTemp[i] = y[i];
+				}
+			}
+		}
+	}
+
+	// get this junk out of here
+	for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+	{
+		if (!squished[i] && oldBoxList[i]->getPauseLevel() == 0)
+		{
+			nextBox.push_back
+			(
+				ObjectAndTime<Box>(
+					Box(
+						x[i],
+						y[i],
+						x[i] - oldBoxList[i]->getX(),
+						y[i] - oldBoxList[i]->getY(),
+						size[i],
+						oldBoxList[i]->getTimeDirection(),
+						0),
+					time->nextFrame(oldBoxList[i]->getTimeDirection())
+				)
+			);
+		}
+	}
+
 }
 
 void PhysicsEngine::platformStep(const std::vector<const Platform*>& oldPlatformList,
@@ -1305,69 +1609,66 @@ void PhysicsEngine::platformStep(const std::vector<const Platform*>& oldPlatform
         int yspeed(platform.getYspeed());
 
         // X component
-        if (destination.getX() != x)
-        {
-            if (abs(destination.getX() - x) <= abs(xspeed) && abs(xspeed) <= destination.getXdeccel())
-            {
-                xspeed = destination.getX() - x;
-            }
-            else
-            {
-                int direction = abs(x - destination.getX())/(x - destination.getX());
+		if (destination.getX() != x)
+		{
+			if (abs(destination.getX() - x) <= abs(xspeed) && abs(xspeed) <= destination.getXdeccel())
+			{
+				xspeed = destination.getX() - x;
+			}
+			else
+			{
+				int direction = abs(x - destination.getX())/(x - destination.getX());
 
-                if (xspeed*direction >= 0)
-                {
-                    xspeed -= direction * destination.getXdeccel();
-                    if (xspeed * direction < 0)
-                    {
-                        xspeed = 0;
-                    }
-                }
-                else
-                {
-                    // if the platform can still stop if it fully accelerates
-                    if (
-                        abs(x - destination.getX())
-                        >
-                        (static_cast<int>(
-                             pow(
-                                 static_cast<double>
-                                 (xspeed - direction*destination.getXaccel()),2))*3/(2*destination.getXdeccel())))
-                    {
-                        // fully accelerate
-                        xspeed -= direction*destination.getXaccel();
-                    }
-                    // if the platform can stop if it doesn't accelerate
-                    else if (abs(x - destination.getX()) > (static_cast<int>(pow(static_cast<double>(xspeed),2))*3/(2*destination.getXdeccel())))
-                    {
-                        // set speed to required speed
-                        xspeed = -direction*static_cast<int>(floor(static_cast<double>(abs(x - destination.getX())*destination.getXdeccel()*2/3)));
-                    }
-                    else
-                    {
-                        xspeed += direction*destination.getXdeccel();
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (abs(xspeed) <= destination.getXdeccel())
-            {
-                xspeed = 0;
-            }
-            else
-            {
-                xspeed += abs(xspeed)/xspeed*destination.getXdeccel();
-            }
-        }
+				if (xspeed * direction > 0)
+				{
+					xspeed -= direction * destination.getXdeccel();
+					if (xspeed * direction < 0)
+					{
+						xspeed = 0;
+					}
+				}
+				else
+				{
+					// if the platform can still stop if it fully accelerates
+					if (abs(x - destination.getX())
+							>
+							(static_cast<int>(pow(static_cast<double>(xspeed - direction*destination.getXaccel()),2))
+							 *3/(2*destination.getXdeccel())))
+					{
+						// fully accelerate
+						xspeed -= direction*destination.getXaccel();
+					}
+					// if the platform can stop if it doesn't accelerate
+					else if (abs(x - destination.getX()) > (static_cast<int>(pow(static_cast<double>(xspeed),2))*3/(2*destination.getXdeccel())))
+					{
+						// set speed to required speed
+						xspeed = -direction*static_cast<int>(floor(sqrt(static_cast<double>(abs(x - destination.getX())*destination.getXdeccel()*2/3))));
+					}
+					else
+					{
+						xspeed += direction*destination.getXdeccel();
+					}
+				}
+			}
+		}
+		else
+		{
+			if (abs(xspeed) <= destination.getXdeccel())
+			{
+				xspeed = 0;
+			}
+			else
+			{
+				xspeed += abs(xspeed)/xspeed*destination.getXdeccel();
+			}
+		}
 
-        if (abs(xspeed) > destination.getXspeed())
-        {
-            xspeed = abs(xspeed)/xspeed*destination.getXspeed();
-        }
+		if (abs(xspeed) > destination.getXspeed())
+		{
+			xspeed = abs(xspeed)/xspeed*destination.getXspeed();
+		}
 
-        x += xspeed;
+		x += xspeed;
 
         // Y component
         if (destination.getY() != y)
@@ -1641,6 +1942,40 @@ static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h
         &&
         (py <= y + h && py >= y)
         ;
+}
+
+static bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h)
+{
+	if (w > h)
+	{
+		if (x < x1 + h/2) // left
+		{
+			return std::abs(x - (x1 + h/2)) < std::abs(y - (y1 + h/2));
+		}
+		else if  (x < x1 + w - h/2) // middle
+		{
+			return true;
+		}
+		else // right
+		{
+			return std::abs(x - (x1 + w - h/2)) < std::abs(y - (y1 + h/2));
+		}
+	}
+	else
+	{
+		if (y < y1 + w/2) // top
+		{
+			return std::abs(x - (x1 + w/2)) < std::abs(y - (y1 + w/2));
+		}
+		else if  (x < x1 + w - h/2) // middle
+		{
+			return false;
+		}
+		else // bottom
+		{
+			return std::abs(x - (x1 + w/2)) < std::abs(y - (y1 + h - w/2));
+		}
+	}
 }
 
 static bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
