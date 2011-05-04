@@ -143,7 +143,36 @@ private:
         const std::vector<const Portal*>& oldPortalList,
         std::vector<Portal>& nextPortal) const;
 
-    void crappyBoxCollisionAlogorithm(
+    bool explodeBoxes(
+		std::vector<int>& pos,
+		std::vector<int>& size,
+		std::vector<std::vector<int> >& links,
+		std::vector<char>& toBeSquished,
+		std::vector<int>& bound,
+		int index,
+		int boundSoFar,
+		int sign) const;
+
+    bool explodeBoxesUpwards(
+		std::vector<int>& x,
+		std::vector<int>& xTemp,
+		std::vector<int>& y,
+		std::vector<int>& size,
+		std::vector<std::vector<int> >& links,
+    	std::vector<char>& toBeSquished,
+    	std::vector<int>& bound,
+    	int index,
+    	int boundSoFar) const;
+
+    void recursiveBoxCollision(
+		std::vector<int>& majorAxis,
+		std::vector<int>& minorAxis,
+		std::vector<int>& size,
+		std::vector<char>& squished,
+		std::vector<int>& boxesSoFar,
+		unsigned int index) const;
+
+    void boxCollisionAlogorithm(
         const std::vector<const Box*>& oldBoxList,
         std::vector<ObjectAndTime<Box> >& nextBox,
         std::vector<Platform>& nextPlatform,
