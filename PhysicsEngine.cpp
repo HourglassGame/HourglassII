@@ -1080,8 +1080,8 @@ bool PhysicsEngine::explodeBoxes(std::vector<int>& pos, std::vector<int>& size, 
 	return false;
 }
 
-bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& xTemp, std::vector<int>& y, std::vector<int>& size, std::vector<std::vector<int> >& links,
-		std::vector<char>& toBeSquished, std::vector<int>& bound, int index, int boundSoFar) const
+bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& xTemp, std::vector<int>& y, std::vector<int>& size,
+		std::vector<std::vector<int> >& links, std::vector<char>& toBeSquished, std::vector<int>& bound, int index, int boundSoFar) const
 {
 	y[index] = boundSoFar;
 	boundSoFar = boundSoFar - size[index];
@@ -1090,8 +1090,8 @@ bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& x
 
 	for (unsigned int i = 0; i < links[index].size(); ++i)
 	{
-		subSquished = explodeBoxesUpwards(x, xTemp, y, size, links, toBeSquished, bound, links[index][i], boundSoFar) || subSquished;
 		x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index]; // boxes sitting on this one
+		subSquished = explodeBoxesUpwards(x, xTemp, y, size, links, toBeSquished, bound, links[index][i], boundSoFar) || subSquished;
 	}
 
 	if (subSquished || (bound[index] != 0 && bound[index] >= boundSoFar))
@@ -1148,16 +1148,6 @@ void PhysicsEngine::boxCollisionAlogorithm(
 	std::vector<int> size(oldBoxList.size());
 	std::vector<char> squished(oldBoxList.size(), false);
 
-	std::vector<int> top(oldBoxList.size(), 0);
-	std::vector<int> bottom(oldBoxList.size(), 0); // put size of wall in here
-	std::vector<int> left(oldBoxList.size(), 0);
-	std::vector<int> right(oldBoxList.size(), 0); // put size of wall in here
-
-	std::vector<std::vector<int> > topLinks(oldBoxList.size());
-	std::vector<std::vector<int> > bottomLinks(oldBoxList.size());
-	std::vector<std::vector<int> > rightLinks(oldBoxList.size());
-	std::vector<std::vector<int> > leftLinks(oldBoxList.size());
-
 	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
 	for (unsigned int i = 0; i < oldBoxList.size(); ++i)
 	{
@@ -1194,11 +1184,6 @@ void PhysicsEngine::boxCollisionAlogorithm(
 			x[i] = oldBoxList[i]->getX() + oldBoxList[i]->getXspeed();
 			y[i] = oldBoxList[i]->getY() + oldBoxList[i]->getYspeed() + gravity;
 			size[i] = oldBoxList[i]->getSize();
-
-			topLinks[i] = std::vector<int>();
-			bottomLinks[i] = std::vector<int>();
-			rightLinks[i] = std::vector<int>();
-			leftLinks[i] = std::vector<int>();
 		}
 	}
 
@@ -1207,6 +1192,16 @@ void PhysicsEngine::boxCollisionAlogorithm(
 	bool firstTimeThrough = true;
 	while (thereAreStillThingsToDo)
 	{
+		std::vector<int> top(oldBoxList.size(), 0);
+		std::vector<int> bottom(oldBoxList.size(), 0); // put size of wall in here
+		std::vector<int> left(oldBoxList.size(), 0);
+		std::vector<int> right(oldBoxList.size(), 0); // put size of wall in here
+
+		std::vector<std::vector<int> > topLinks(oldBoxList.size());
+		std::vector<std::vector<int> > bottomLinks(oldBoxList.size());
+		std::vector<std::vector<int> > rightLinks(oldBoxList.size());
+		std::vector<std::vector<int> > leftLinks(oldBoxList.size());
+
 		thereAreStillThingsToDo = false;
 
 		// collide boxes with platforms, walls and paused boxes to discover the hard bounds on the system
@@ -1215,6 +1210,11 @@ void PhysicsEngine::boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
+				topLinks[i] = std::vector<int>();
+				bottomLinks[i] = std::vector<int>();
+				rightLinks[i] = std::vector<int>();
+				leftLinks[i] = std::vector<int>();
+
 				// Check inside a wall, velocity independant which is why it is so complex
 				bool topRightDiagonal = (y[i] - (y[i]/wallSize)*wallSize) < (x[i] - (x[i]/wallSize)*wallSize);
 				bool topLeftDiagonal = (y[i] - (y[i]/wallSize)*wallSize) + (x[i] - (x[i]/wallSize)*wallSize) < wallSize;
@@ -1245,7 +1245,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 				}
 				else if (wallAt(x[i], y[i]+size[i])) // bottom left and not top left
 				{
-					if (!topLeftDiagonal)
+					if (!(topLeftDiagonal || wallAt(x[i]+size[i], y[i]+size[i])))
 					{
 						x[i] = (x[i]/wallSize+1)*wallSize;
 						left[i] = x[i];
@@ -1457,6 +1457,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 		{
 			if (toBeSquished[i])
 			{
+				//cout << "vertical" << endl;
 				squished[i] = true;
 			}
 		}
@@ -1529,6 +1530,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 		{
 			if (toBeSquished[i])
 			{
+				//cout << "horizontal" << endl;
 				squished[i] = true;
 			}
 		}
