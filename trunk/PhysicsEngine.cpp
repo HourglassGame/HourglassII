@@ -21,6 +21,8 @@
 
 #define foreach BOOST_FOREACH
 
+using namespace std;
+
 namespace hg {
 static bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 static bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
@@ -1062,13 +1064,12 @@ bool PhysicsEngine::explodeBoxes(std::vector<int>& pos, std::vector<int>& size, 
 	// sign = 1, small to large (eg left to right)
 	// sign = -1, large to small (eg right to left)
 	pos[index] = boundSoFar;
-	boundSoFar = boundSoFar + size[index] * sign;
 
 	bool subSquished = false;
 
 	for (unsigned int i = 0; i < links[index].size(); ++i)
 	{
-		subSquished = explodeBoxes(pos, size, links, toBeSquished, bound, links[index][i], boundSoFar, sign) || subSquished;
+		subSquished = explodeBoxes(pos, size, links, toBeSquished, bound, links[index][i], boundSoFar + size[index] * sign, sign) || subSquished;
 	}
 
 	if (subSquished || (bound[index] != 0 && bound[index] * sign <= boundSoFar * sign))
@@ -1090,7 +1091,7 @@ bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& x
 	for (unsigned int i = 0; i < links[index].size(); ++i)
 	{
 		subSquished = explodeBoxesUpwards(x, xTemp, y, size, links, toBeSquished, bound, links[index][i], boundSoFar) || subSquished;
-		x[i] = xTemp[i] + x[index] - xTemp[index]; // boxes sitting on this one
+		x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index]; // boxes sitting on this one
 	}
 
 	if (subSquished || (bound[index] != 0 && bound[index] >= boundSoFar))
@@ -1158,7 +1159,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 	std::vector<std::vector<int> > leftLinks(oldBoxList.size());
 
 	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-	/*for (unsigned int i = 0; i < oldBoxList.size(); ++i)
+	for (unsigned int i = 0; i < oldBoxList.size(); ++i)
 	{
 		if (!squished[i])
 		{
@@ -1175,7 +1176,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 				}
 			}
 		}
-	}*/
+	}
 
 	// Make a list of pause boxes, these are collided with like platforms.
 	std::vector<const Box*> pauseBoxes = std::vector<const Box*>();
@@ -1203,6 +1204,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 
 	// do all the other things until there are no more things to do
 	bool thereAreStillThingsToDo = true;
+	bool firstTimeThrough = true;
 	while (thereAreStillThingsToDo)
 	{
 		thereAreStillThingsToDo = false;
@@ -1213,55 +1215,6 @@ void PhysicsEngine::boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				// Check inside a platform
-				foreach (const Platform& platform, nextPlatform)
-				{
-					int pX(platform.getX());
-					int pY(platform.getY());
-					TimeDirection pDirection(platform.getTimeDirection());
-					if (pDirection * oldBoxList[i]->getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
-					{
-						pX -= platform.getXspeed();
-						pY -= platform.getYspeed();
-					}
-					int pWidth(platform.getWidth());
-					int pHeight(platform.getHeight());
-
-					if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
-					{
-						if (IsPointInVerticalQuadrant(x[i] + size[i]/2, y[i] + size[i], pX, pY, pWidth, pHeight))
-						{
-							if (y[i] < pY) // box above platform
-							{
-								y[i] = pY - size[i];
-								bottom[i] = y[i];
-								if (platform.getPauseLevel() == 0)
-								{
-									x[i] = xTemp[i] + pDirection * oldBoxList[i]->getTimeDirection() * platform.getXspeed();
-								}
-							}
-							else // a below b
-							{
-								y[i] = pY + pHeight;
-								top[i] = y[i];
-							}
-						}
-						else // left or right
-						{
-							if (x[i] < pX) // a left of b
-							{
-								x[i] = pX - size[i];
-								right[i] = x[i];
-							}
-							else // a right of b
-							{
-								x[i] = pX + pWidth;
-								left[i] = x[i];
-							}
-						}
-					}
-				}
-
 				// Check inside a wall, velocity independant which is why it is so complex
 				bool topRightDiagonal = (y[i] - (y[i]/wallSize)*wallSize) < (x[i] - (x[i]/wallSize)*wallSize);
 				bool topLeftDiagonal = (y[i] - (y[i]/wallSize)*wallSize) + (x[i] - (x[i]/wallSize)*wallSize) < wallSize;
@@ -1358,6 +1311,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 							{
 								y[i] = boxY - size[i];
 								bottom[i] = y[i];
+								x[i] = xTemp[i];
 							}
 							else // box below platform
 							{
@@ -1380,6 +1334,61 @@ void PhysicsEngine::boxCollisionAlogorithm(
 						}
 					}
 				}
+
+				// Check inside a platform
+				foreach (const Platform& platform, nextPlatform)
+				{
+					int pX(platform.getX());
+					int pY(platform.getY());
+					TimeDirection pDirection(platform.getTimeDirection());
+					if (pDirection * oldBoxList[i]->getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+					{
+						pX -= platform.getXspeed();
+						pY -= platform.getYspeed();
+					}
+					int pWidth(platform.getWidth());
+					int pHeight(platform.getHeight());
+
+					if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
+					{
+						if (IsPointInVerticalQuadrant(x[i] + size[i]/2, y[i] + size[i]/2, pX, pY, pWidth, pHeight))
+						{
+							if (y[i] + size[i]/2 < pY + pHeight/2) // box above platform
+							{
+								y[i] = pY - size[i];
+								bottom[i] = y[i];
+								if (platform.getPauseLevel() == 0 && firstTimeThrough)
+								{
+									x[i] = xTemp[i] + pDirection * oldBoxList[i]->getTimeDirection() * platform.getXspeed();
+								}
+								else
+								{
+									x[i] = xTemp[i];
+								}
+							}
+							else
+							{
+								y[i] = pY + pHeight;
+								top[i] = y[i];
+							}
+						}
+						else // left or right
+						{
+							if (x[i] + size[i]/2 < pX + pWidth/2) // box left of platform
+							{
+								x[i] = pX - size[i];
+								right[i] = x[i];
+							}
+							else
+							{
+								x[i] = pX + pWidth;
+								left[i] = x[i];
+							}
+						}
+					}
+				}
+
+
 			}
 		}
 
@@ -1507,11 +1516,11 @@ void PhysicsEngine::boxCollisionAlogorithm(
 			{
 				if (right[i] != 0)
 				{
-					explodeBoxes(x, size, leftLinks, toBeSquished, top, i, right[i], -1);
+					explodeBoxes(x, size, leftLinks, toBeSquished, left, i, right[i], -1);
 				}
 				if (left[i] != 0)
 				{
-					explodeBoxes(x, size, rightLinks, toBeSquished, bottom, i, left[i], 1);
+					explodeBoxes(x, size, rightLinks, toBeSquished, right, i, left[i], 1);
 				}
 			}
 		}
@@ -1551,12 +1560,14 @@ void PhysicsEngine::boxCollisionAlogorithm(
 			{
 				if (x[i] != xTemp[i] || y[i] != yTemp[i])
 				{
-					//thereAreStillThingsToDo = true;
+					thereAreStillThingsToDo = true;
 					xTemp[i] = x[i];
 					yTemp[i] = y[i];
 				}
 			}
 		}
+
+		firstTimeThrough = false;
 	}
 
 	// get this junk out of here
