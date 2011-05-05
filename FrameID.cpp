@@ -54,15 +54,15 @@ unsigned int FrameID::nextFramePauseLevelDifferenceAux(unsigned int depthAccumul
         return 
                !isValidFrame()
             || !((direction == REVERSE && frame_ == 0)
-            || (direction == FORWARDS && frame_ == universeID_.timelineLength())) ?
+            || (direction == FORWARDS && frame_ == universeID_.timelineLength() - 1)) ?
                   depthAccumulator : 
                   universeID_.parentFrame().nextFramePauseLevelDifferenceAux(depthAccumulator + 1, direction);
 }
 
 FrameID FrameID::arbitraryFrameInUniverse(std::size_t frameNumber) const
 {
-    return frameNumber >= universeID_.timelineLength() ?
-        FrameID() : FrameID(frameNumber, universeID_);
+    return frameNumber < universeID_.timelineLength() ?
+        FrameID(frameNumber, universeID_) : FrameID();
 }
 
 FrameID FrameID::parentFrame() const
@@ -107,13 +107,13 @@ bool FrameID::operator<(const FrameID& other) const
 
 bool FrameID::isValidFrame() const
 {
-    if (universeID_.timelineLength() < frame_) {
+    if (frame_ < universeID_.timelineLength()) {
+        return true;
+    }
+    else {
         assert(frame_ == std::numeric_limits<std::size_t>::max());
         assert(universeID_.timelineLength() == 0);
         return false;
-    }
-    else {
-        return true;
     }
 }
 
