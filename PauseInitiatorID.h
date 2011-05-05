@@ -1,7 +1,8 @@
 #ifndef HG_PAUSE_INITIATOR_ID
 #define HG_PAUSE_INITIATOR_ID
-#include <cstddef>
+#include <boost/functional/hash_fwd.hpp>
 
+#include <cstddef>
 namespace hg {
 namespace pauseinitiatortype {
 enum PauseInitiatorType {
