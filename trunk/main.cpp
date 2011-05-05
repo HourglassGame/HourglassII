@@ -120,7 +120,6 @@ void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, 
 void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection);
 void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection);
 
-const Guy& getCurrentGuy(const std::vector<const Guy*>& currentPlayerFrameData, std::size_t playerIndex);
 
 boost::multi_array<bool, 2> MakeWall();
 Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
