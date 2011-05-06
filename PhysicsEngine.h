@@ -159,10 +159,12 @@ private:
 		std::vector<int>& y,
 		std::vector<int>& size,
 		std::vector<std::vector<int> >& links,
+		bool firstTime,
     	std::vector<char>& toBeSquished,
     	std::vector<int>& bound,
     	int index,
     	int boundSoFar) const;
+
 
     void recursiveBoxCollision(
 		std::vector<int>& majorAxis,

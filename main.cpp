@@ -550,7 +550,7 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
     newObjectList.sort();
     return
         Level(
-            3,
+            1,
             10800,
             wall,
             3200,
