@@ -982,8 +982,8 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             }
             else if (input.getUse() == true)
             {
-                int mx = x[i] + oldGuyList[i]->getWidth();
-                int my = y[i] + oldGuyList[i]->getHeight();
+                int mx = x[i] + oldGuyList[i]->getWidth() / 2;
+                int my = y[i] + oldGuyList[i]->getHeight() / 2;
                 for (unsigned int j = 0; j < nextPortal.size(); ++j)
                 {
                     int px = nextPortal[j].getX();
