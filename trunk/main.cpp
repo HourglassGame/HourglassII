@@ -537,12 +537,12 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
 {
     ObjectList newObjectList;
     newObjectList.add(Box(32400, 10000, 0, 0, 3200, FORWARDS, 0));
-    //newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
-   // newObjectList.add(Box(46400, 12600, -1000, -500, 3200, FORWARDS, 0));
-   // newObjectList.add(Box(46400, 17600, -1000, -500, 3200, FORWARDS, 0));
-   // newObjectList.add(Box(46400, 21600, -500, -500, 3200, FORWARDS, 0));
-   // newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
-   // newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
+    newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
+    newObjectList.add(Box(46400, 12600, -1000, -500, 3200, FORWARDS, 0));
+    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, FORWARDS, 0));
+    newObjectList.add(Box(46400, 21600, -500, -500, 3200, FORWARDS, 0));
+    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
+    newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
     newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, false, 0, INVALID, 0, FORWARDS, 0, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));

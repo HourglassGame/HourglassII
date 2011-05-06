@@ -532,7 +532,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
 				int boxYspeed(nextBox[j].object.getYspeed());
 				int boxSize(nextBox[j].object.getSize());
 				TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
-				if (x[i] <= boxX+boxSize && x[i]+width >= boxX)
+				if (x[i] < boxX+boxSize && x[i]+width > boxX)
 				{
 					if (nextBox[j].object.getPauseLevel() > 0)
 					{
@@ -876,7 +876,7 @@ void PhysicsEngine::guyStep(const std::vector<const Guy*>& oldGuyList,
             }
             else
             {
-                if (input.getDown() && supported[i])
+                if (input.getDown())
                 {
                     int width = oldGuyList[i]->getWidth();
                     int height = oldGuyList[i]->getHeight();
