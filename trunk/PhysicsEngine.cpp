@@ -1081,7 +1081,8 @@ bool PhysicsEngine::explodeBoxes(std::vector<int>& pos, std::vector<int>& size, 
 }
 
 bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& xTemp, std::vector<int>& y, std::vector<int>& size,
-		std::vector<std::vector<int> >& links, std::vector<char>& toBeSquished, std::vector<int>& bound, int index, int boundSoFar) const
+		std::vector<std::vector<int> >& links, bool firstTime, std::vector<char>& toBeSquished,
+		std::vector<int>& bound, int index, int boundSoFar) const
 {
 	y[index] = boundSoFar;
 	boundSoFar = boundSoFar - size[index];
@@ -1090,8 +1091,15 @@ bool PhysicsEngine::explodeBoxesUpwards(std::vector<int>& x, std::vector<int>& x
 
 	for (unsigned int i = 0; i < links[index].size(); ++i)
 	{
-		x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index]; // boxes sitting on this one
-		subSquished = explodeBoxesUpwards(x, xTemp, y, size, links, toBeSquished, bound, links[index][i], boundSoFar) || subSquished;
+		if (firstTime)
+		{
+			x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index]; // boxes sitting on this one
+		}
+		else if (x[index] != xTemp[index])
+		{
+			x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index]; // boxes sitting on this one
+		}
+		subSquished = explodeBoxesUpwards(x, xTemp, y, size, links, firstTime, toBeSquished, bound, links[index][i], boundSoFar) || subSquished;
 	}
 
 	if (subSquished || (bound[index] != 0 && bound[index] >= boundSoFar))
@@ -1132,7 +1140,6 @@ void PhysicsEngine::recursiveBoxCollision(std::vector<int>& majorAxis, std::vect
 		}
 	}
 }
-
 
 void PhysicsEngine::boxCollisionAlogorithm(
     const std::vector<const Box*>& oldBoxList,
@@ -1193,9 +1200,9 @@ void PhysicsEngine::boxCollisionAlogorithm(
 	while (thereAreStillThingsToDo)
 	{
 		std::vector<int> top(oldBoxList.size(), 0);
-		std::vector<int> bottom(oldBoxList.size(), 0); // put size of wall in here
+		std::vector<int> bottom(oldBoxList.size(), 0);
 		std::vector<int> left(oldBoxList.size(), 0);
-		std::vector<int> right(oldBoxList.size(), 0); // put size of wall in here
+		std::vector<int> right(oldBoxList.size(), 0);
 
 		std::vector<std::vector<int> > topLinks(oldBoxList.size());
 		std::vector<std::vector<int> > bottomLinks(oldBoxList.size());
@@ -1444,7 +1451,7 @@ void PhysicsEngine::boxCollisionAlogorithm(
 			{
 				if (bottom[i] != 0)
 				{
-					explodeBoxesUpwards(x, xTemp, y, size, topLinks, toBeSquished, top, i, bottom[i]);
+					explodeBoxesUpwards(x, xTemp, y, size, topLinks, firstTimeThrough, toBeSquished, top, i, bottom[i]);
 				}
 				if (top[i] != 0)
 				{
