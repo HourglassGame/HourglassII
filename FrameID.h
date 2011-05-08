@@ -3,12 +3,11 @@
 
 #include "TimeDirection.h"
 #include "UniverseID.h"
+#include "Frame_fwd.h"
 
 #include <cstddef>
-#include <cassert>
 
 namespace hg {
-class Frame;
 //Class following original intention of FrameID. May be too slow for back-end use,
 //Compliments Frame* by not requiring a central authority (ie the base universe) to be used
 class FrameID {
@@ -52,22 +51,16 @@ public:
 
     bool isValidFrame() const;
 
-    std::size_t getFrameNumber() const {
-        assert (isValidFrame());
-        return frame_;
-    }
-
-    const UniverseID& universe() const {
-        return universeID_;
-    }
-
+    std::size_t getFrameNumber() const;
+    const UniverseID& universe() const;
 private:
-    //Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
-    friend std::size_t hash_value(const FrameID& toHash);
     //positiong of frame within universeID_
     std::size_t frame_;
     UniverseID universeID_;
-    unsigned int nextFramePauseLevelDifferenceAux(unsigned int depthAccumulator, TimeDirection direction) const;
+    //Private function access
+    template<typename Name> static typename Name::Return p(typename Name::Args);
 };
+//Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
+std::size_t hash_value(const FrameID& toHash);
 }//namespace hg
 #endif //HG_FRAME_ID_H

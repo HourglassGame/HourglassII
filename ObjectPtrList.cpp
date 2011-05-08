@@ -25,37 +25,37 @@ ObjectPtrList& ObjectPtrList::operator=(const ObjectPtrList& other)
     return *this;
 }
 
-const std::vector<const Guy*>& ObjectPtrList::getGuyListRef() const
+boost::indirected_range<const std::vector<const Guy*> > ObjectPtrList::getGuyListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::guyList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::guyList>(objectPtrList_));
 }
-const std::vector<const Box*>& ObjectPtrList::getBoxListRef() const
+boost::indirected_range<const std::vector<const Box*> > ObjectPtrList::getBoxListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::boxList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::boxList>(objectPtrList_));
 }
-const std::vector<const Button*>& ObjectPtrList::getButtonListRef() const
+boost::indirected_range<const std::vector<const Button*> > ObjectPtrList::getButtonListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::buttonList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::buttonList>(objectPtrList_));
 }
-const std::vector<const Platform*>& ObjectPtrList::getPlatformListRef() const
+boost::indirected_range<const std::vector<const Platform*> > ObjectPtrList::getPlatformListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::platformList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::platformList>(objectPtrList_));
 }
-const std::vector<const Portal*>& ObjectPtrList::getPortalListRef() const
+boost::indirected_range<const std::vector<const Portal*> > ObjectPtrList::getPortalListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::portalList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::portalList>(objectPtrList_));
 }
-const std::vector<const RemoteDepartureEdit<Box>*>& ObjectPtrList::getBoxThiefListRef() const
+boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>*> > ObjectPtrList::getBoxThiefListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::boxThiefList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::boxThiefList>(objectPtrList_));
 }
-const std::vector<const RemoteDepartureEdit<Box>*>& ObjectPtrList::getBoxExtraListRef() const
+boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>*> > ObjectPtrList::getBoxExtraListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::boxExtraList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::boxExtraList>(objectPtrList_));
 }
-const std::vector<const RemoteDepartureEdit<Guy>*>& ObjectPtrList::getGuyExtraListRef() const
+boost::indirected_range<const std::vector<const RemoteDepartureEdit<Guy>*> > ObjectPtrList::getGuyExtraListRef() const
 {
-    return boost::fusion::at_c<object_list_detail::guyExtraList>(objectPtrList_);
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::guyExtraList>(objectPtrList_));
 }
 
 namespace {

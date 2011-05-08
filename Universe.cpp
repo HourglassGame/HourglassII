@@ -1,11 +1,13 @@
 #include "Universe.h"
 #include "FrameID.h"
+#include "Frame.h"
 
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 
 #include <functional>
+#include <cassert>
 namespace hg {
 Universe::Universe() :
         initiatorFrame_(0),
@@ -87,6 +89,11 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
     else {
         return getArbitraryFrame(whichFrame.getFrameNumber());
     }
+}
+const PauseInitiatorID& Universe::getInitiatorID()
+{
+    assert(initiatorID_);
+    return *initiatorID_;
 }
 Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID) :
         initiatorFrame_(0),

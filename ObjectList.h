@@ -7,6 +7,8 @@
 #include "Portal.h"
 #include "RemoteDepartureEdit.h"
 
+#include <boost/range/adaptor/indirected.hpp>
+
 #include <boost/fusion/container/vector.hpp>
 #include <boost/mpl/transform.hpp>
 #include <boost/type_traits/add_const.hpp>
@@ -98,14 +100,14 @@ public:
     ObjectPtrList(const ObjectPtrList& other);
     ObjectPtrList& operator=(const ObjectPtrList& other);
 
-    const std::vector<const Guy*>& getGuyListRef() const;
-    const std::vector<const Box*>& getBoxListRef() const;
-    const std::vector<const Button*>& getButtonListRef() const;
-    const std::vector<const Platform*>& getPlatformListRef() const;
-    const std::vector<const Portal*>& getPortalListRef() const;
-    const std::vector<const RemoteDepartureEdit<Box>* >& getBoxThiefListRef() const;
-    const std::vector<const RemoteDepartureEdit<Box>* >& getBoxExtraListRef() const;
-    const std::vector<const RemoteDepartureEdit<Guy>* >& getGuyExtraListRef() const;
+    boost::indirected_range<const std::vector<const Guy*> > getGuyListRef() const;
+    boost::indirected_range<const std::vector<const Box*> > getBoxListRef() const;
+    boost::indirected_range<const std::vector<const Button*> > getButtonListRef() const;
+    boost::indirected_range<const std::vector<const Platform*> > getPlatformListRef() const;
+    boost::indirected_range<const std::vector<const Portal*> > getPortalListRef() const;
+    boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>* > > getBoxThiefListRef() const;
+    boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>* > > getBoxExtraListRef() const;
+    boost::indirected_range<const std::vector<const RemoteDepartureEdit<Guy>* > > getGuyExtraListRef() const;
     //Add other ref getters as needed
 
     void add(const ObjectList& other);

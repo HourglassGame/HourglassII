@@ -1,4 +1,5 @@
 #include "WorldState.h"
+
 #include "DepartureMap.h"
 #include "PlayerVictoryException.h"
 #include "ParallelForEach.h"
@@ -26,7 +27,7 @@ private:
 };
 
 WorldState::WorldState(std::size_t timelineLength,
-                       FrameID guyStartTime,
+                       const FrameID& guyStartTime,
                        const PhysicsEngine& physics,
                        const ObjectList& initialObjects) :
         timeline_(timelineLength),
@@ -37,35 +38,18 @@ WorldState::WorldState(std::size_t timelineLength,
         currentPlayerFrames_(),
         currentWinFrames_()
 {
-
     assert(guyStartTime.isValidFrame());
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
-
-    //*** Add Platforms to world ***
     {
-        std::map<Frame*, ObjectList> initialPlatformArrivals;
+        std::map<Frame*, ObjectList> initialArrivals;
 
+        // platforms
         for (std::vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
                 end(initialObjects.getPlatformListRef().end()); it != end; ++it)
         {
-            initialPlatformArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
+            initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
-
-        timeline_.addArrivalsFromPermanentDepartureFrame(initialPlatformArrivals);
-
-        // run level from both ends, platforms can be the ONLY objects in the world at this point as attachment must always have a target
-        frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(FORWARDS));
-        frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(REVERSE));
-
-        //** run level for a while
-        for (std::size_t i(0); i < timelineLength; ++i) {
-            executeWorld();
-        }
-    }
-    //** Add everything else apart from guys **
-    {
-        std::map<Frame*, ObjectList> initialArrivals;
 
         // boxes
         for (std::vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
@@ -87,11 +71,11 @@ WorldState::WorldState(std::size_t timelineLength,
         {
             initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
         }
-
-
+        
+        // guy
         assert(initialObjects.getGuyListRef().size() == 1
                && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-        initialArrivals[guyStartFrame].add(initialObjects.getGuyListRef().at(0));
+        initialArrivals[guyStartFrame].add(initialObjects.getGuyListRef()[0]);
 
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }

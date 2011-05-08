@@ -25,6 +25,12 @@ public:
     int getSize() const {
         return size_;
     }
+    int getWidth() const {
+        return size_;
+    }
+    int getHeight() const {
+        return size_;
+    }
     TimeDirection getTimeDirection() const {
         return timeDirection_;
     }

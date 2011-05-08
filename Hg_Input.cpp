@@ -1,5 +1,5 @@
 #include "Hg_Input.h"
-
+#include "InputList.h"
 namespace hg
 {
 static void updatePress(int &var, bool inputState)

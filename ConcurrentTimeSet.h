@@ -4,7 +4,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range.hpp>
 #include "BoostHashCompare.h"
-#include "Frame.h"
+#include "Frame_fwd.h"
 namespace hg {
 /**
  *  Unordered set providing the following guarantees:

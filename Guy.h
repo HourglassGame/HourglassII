@@ -2,15 +2,21 @@
 #define HG_GUY_H
 #include "TimeDirection.h"
 #include <cstdlib>
-#include "SortedByIndex.h"
+#include "SortedByIndex_fwd.h"
 namespace hg {
 class Guy
 {
 public:
-    Guy(int x,int y,int xspeed,int yspeed,int width,int height,int relativeToPortal,bool supported, int supportedSpeed,
+    Guy(int x,int y,
+        int xspeed, int yspeed,
+        int width, int height,
+        int relativeToPortal,
+        bool supported, int supportedSpeed,
     	bool facing,
-    	bool boxCarrying, int boxCarrySize,TimeDirection boxCarryDirection,int boxPauseLevel,TimeDirection timeDirection,
-    	int pauseLevel,std::size_t index);
+    	bool boxCarrying, int boxCarrySize, TimeDirection boxCarryDirection, int boxPauseLevel,
+        TimeDirection timeDirection,
+    	int pauseLevel,
+        std::size_t index);
 
     Guy(const Guy& other, int copyType);
     Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel);

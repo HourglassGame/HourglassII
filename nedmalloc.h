@@ -5403,7 +5403,7 @@ postaction:
     return 0;
 }
 
-void mspace_free(mspace msp, void* mem) {
+void mspace_free(mspace /*msp*/, void* mem) {
     if (mem != 0) {
         mchunkptr p  = mem2chunk(mem);
 #if FOOTERS
@@ -6027,35 +6027,39 @@ size_t nedblksize(void *mem) THROWSPEC
 #endif
 }
 
-void nedsetvalue(void *v) THROWSPEC					{ nedpsetvalue(0, v);
-                                        }
-void * nedmalloc(size_t size) THROWSPEC				{ return nedpmalloc(0, size);
-                                           }
-void * nedcalloc(size_t no, size_t size) THROWSPEC	{ return nedpcalloc(0, no, size);
-                                                   }
-void * nedrealloc(void *mem, size_t size) THROWSPEC	{ return nedprealloc(0, mem, size);
-                                                    }
-void   nedfree(void *mem) THROWSPEC					{ nedpfree(0, mem);
-                                        }
-void * nedmemalign(size_t alignment, size_t bytes) THROWSPEC { return nedpmemalign(0, alignment, bytes);
-                                                             }
+void nedsetvalue(void *v) THROWSPEC	{ nedpsetvalue(0, v); }
+void * nedmalloc(size_t size) THROWSPEC	{ return nedpmalloc(0, size); }
+void * nedcalloc(size_t no, size_t size) THROWSPEC { return nedpcalloc(0, no, size); }
+void * nedrealloc(void *mem, size_t size) THROWSPEC	{ return nedprealloc(0, mem, size); }
+void   nedfree(void *mem) THROWSPEC	{ nedpfree(0, mem); }
+void * nedmemalign(size_t alignment, size_t bytes) THROWSPEC {
+    return nedpmemalign(0, alignment, bytes);
+}
 #if !NO_MALLINFO
-struct mallinfo nedmallinfo(void) THROWSPEC			{
+struct mallinfo nedmallinfo(void) THROWSPEC {
     return nedpmallinfo(0);
 }
 #endif
-int    nedmallopt(int parno, int value) THROWSPEC	{ return nedpmallopt(0, parno, value);
-                                                  }
-int    nedmalloc_trim(size_t pad) THROWSPEC			{ return nedpmalloc_trim(0, pad);
-                                              }
-void   nedmalloc_stats() THROWSPEC					{ nedpmalloc_stats(0);
-                                       }
-size_t nedmalloc_footprint() THROWSPEC				{ return nedpmalloc_footprint(0);
-                                          }
-void **nedindependent_calloc(size_t elemsno, size_t elemsize, void **chunks) THROWSPEC	{ return nedpindependent_calloc(0, elemsno, elemsize, chunks);
-                                                                                       }
-void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC	{ return nedpindependent_comalloc(0, elems, sizes, chunks);
-                                                                                     }
+int    nedmallopt(int parno, int value) THROWSPEC {
+    return nedpmallopt(0, parno, value);
+}
+int    nedmalloc_trim(size_t pad) THROWSPEC	{
+    return nedpmalloc_trim(0, pad);
+}
+void   nedmalloc_stats() THROWSPEC {
+    nedpmalloc_stats(0);
+}
+size_t nedmalloc_footprint() THROWSPEC {
+    return nedpmalloc_footprint(0);
+}
+void **nedindependent_calloc(size_t elemsno, size_t elemsize, void **chunks) THROWSPEC
+{
+    return nedpindependent_calloc(0, elemsno, elemsize, chunks);
+}
+void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC
+{
+    return nedpindependent_comalloc(0, elems, sizes, chunks);
+}
 
 struct threadcacheblk_t;
 typedef struct threadcacheblk_t threadcacheblk;
@@ -6176,7 +6180,7 @@ static void tcfullsanitycheck(threadcache *tc) THROWSPEC
 }
 #endif
 
-static NOINLINE void RemoveCacheEntries(nedpool *p, threadcache *tc, unsigned int age) THROWSPEC
+static NOINLINE void RemoveCacheEntries(nedpool* /*p*/, threadcache *tc, unsigned int age) THROWSPEC
 {
 #ifdef FULLSANITYCHECKS
     tcfullsanitycheck(tc);
@@ -6259,13 +6263,13 @@ static NOINLINE threadcache *AllocCache(nedpool *p) THROWSPEC
 #endif
     tc->threadid=(long)(size_t)CURRENT_THREAD;
     for (end=0; p->m[end]; end++);
-    tc->mymspace=tc->threadid % end;
+    tc->mymspace=(int)(tc->threadid % end);
     RELEASE_LOCK(&p->mutex);
     if (TLSSET(p->mycache, (void *)(size_t)(n+1))) abort();
     return tc;
 }
 
-static void *threadcache_malloc(nedpool *p, threadcache *tc, size_t *size) THROWSPEC
+static void *threadcache_malloc(nedpool* /*p*/, threadcache *tc, size_t *size) THROWSPEC
 {
     void *ret=0;
     unsigned int bestsize;
@@ -6351,7 +6355,7 @@ static void *threadcache_malloc(nedpool *p, threadcache *tc, size_t *size) THROW
 #endif
     return ret;
 }
-static NOINLINE void ReleaseFreeInCache(nedpool *p, threadcache *tc, int mymspace) THROWSPEC
+static NOINLINE void ReleaseFreeInCache(nedpool *p, threadcache *tc, int /*mymspace*/) THROWSPEC
 {
     unsigned int age=THREADCACHEMAXFREESPACE/8192;
     /*ACQUIRE_LOCK(&p->m[mymspace]->mutex);*/
@@ -6767,7 +6771,7 @@ void   nedpfree(nedpool *p, void *mem) THROWSPEC
 struct mallinfo nedpmallinfo(nedpool *p) THROWSPEC
 {
     int n;
-    struct mallinfo ret={0};
+    struct mallinfo ret={0,0,0,0,0,0,0,0,0,0};
     if (!p) {
         p=&syspool;
         if (!syspool.threads) InitPool(&syspool, 0, -1);
@@ -6786,7 +6790,7 @@ struct mallinfo nedpmallinfo(nedpool *p) THROWSPEC
     return ret;
 }
 #endif
-int    nedpmallopt(nedpool *p, int parno, int value) THROWSPEC
+int    nedpmallopt(nedpool* /*p*/, int parno, int value) THROWSPEC
 {
     return mspace_mallopt(parno, value);
 }

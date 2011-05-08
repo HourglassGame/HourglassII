@@ -4,7 +4,7 @@
 #include "FrameID.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
-#include <boost/multi_array.hpp>
+#include "Environment.h"
 
 namespace hg {
 class Level {
@@ -12,22 +12,16 @@ class Level {
 public:
     Level(unsigned int nspeedOfTime,
           std::size_t ntimeLineLength,
-          const boost::multi_array<bool, 2>& nwallmap,
-          int nwallSize,
-          int ngravity,
+          const Environment& nenvironment,
           const ObjectList& ninitialObjects,
           const FrameID& nguyStartTime,
-          const AttachmentMap& nattachmentMap,
           const TriggerSystem& ntriggerSystem);
 
     unsigned int speedOfTime;
     std::size_t timeLineLength;
-    boost::multi_array<bool, 2> wallmap;
-    int wallSize;
-    int gravity;
+    Environment environment;
     ObjectList initialObjects;
     FrameID guyStartTime;
-    AttachmentMap attachmentMap;
     TriggerSystem triggerSystem;
 };
 }

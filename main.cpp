@@ -114,11 +114,16 @@ namespace {
 void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
 void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame);
 void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
-void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxData, TimeDirection);
-void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection);
-void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection);
-void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection);
-void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection);
+template<typename RandomAccessBoxRange>
+void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDirection playerDirection);
+template<typename RandomAccessGuyRange>
+void DrawGuys(RenderTarget& target, const RandomAccessGuyRange& guyList, TimeDirection playerDirection);
+template<typename RandomAccessButtonRange>
+void DrawButtons(RenderTarget& target, const RandomAccessButtonRange& buttonList, TimeDirection playerDirection);
+template<typename RandomAccessPlatformRange>
+void DrawPlatforms(RenderTarget& target, const RandomAccessPlatformRange& platformList, TimeDirection playerDirection);
+template<typename RandomAccessPortalRange>
+void DrawPortals(RenderTarget& target, const RandomAccessPortalRange& portalList, TimeDirection playerDirection);
 
 
 boost::multi_array<bool, 2> MakeWall();
@@ -162,13 +167,13 @@ int main()
                 TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
                 if (waveInfo.currentPlayerFrame()) {
                     const ObjectPtrList& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
-                    inertia.save(FrameID(waveInfo.currentPlayerFrame()), frameData.getGuyListRef().back()->getTimeDirection());
+                    inertia.save(FrameID(waveInfo.currentPlayerFrame()), frameData.getGuyListRef().back().getTimeDirection());
                     drawnFrame = FrameID(waveInfo.currentPlayerFrame());
                     Draw(
                         app,
                         frameData,
                         wall,
-                        frameData.getGuyListRef().back()->getTimeDirection());
+                        frameData.getGuyListRef().back().getTimeDirection());
                 }
                 else {
                     inertia.run();
@@ -187,7 +192,14 @@ int main()
                 cout << "Congratulations, a winner is you!\n";
                 return EXIT_SUCCESS;
             }
-
+            {
+                stringstream memorystring;
+                memorystring << nedalloc::nedmalloc_footprint() << "B";
+                sf::String memoryglyph(memorystring.str());
+                memoryglyph.SetPosition(580, 455);
+                memoryglyph.SetSize(8.f);
+                app.Draw(memoryglyph);
+            }
             {
                 stringstream fpsstring;
                 fpsstring << (1./app.GetFrameTime());
@@ -236,70 +248,72 @@ void DrawWall(sf::RenderTarget& target, const boost::multi_array<bool, 2>& wall)
     }
 }
 
-void DrawBoxes(RenderTarget& target, const vector<const Box*>& boxList, TimeDirection playerDirection)
+template<typename RandomAccessBoxRange>
+void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDirection playerDirection)
 {
-    foreach(const Box* box, boxList) {
+    foreach(const Box& box, boxList) {
 		//std::cout << box->getX() << std::endl;
-    	if (playerDirection == box->getTimeDirection())
+    	if (playerDirection == box.getTimeDirection())
         {
             target.Draw(Shape::Rectangle(
-                            box->getX()/100,
-                            box->getY()/100,
-                            (box->getX()+ box->getSize())/100,
-                            (box->getY()+box->getSize())/100,
+                            box.getX()/100,
+                            box.getY()/100,
+                            (box.getX()+ box.getSize())/100,
+                            (box.getY()+box.getSize())/100,
                             Color(255,0,255))
                        );
         }
         else
         {
-            int x = box->getX()-box->getXspeed();
-            int y = box->getY()-box->getYspeed();
+            int x = box.getX()-box.getXspeed();
+            int y = box.getY()-box.getYspeed();
             target.Draw(Shape::Rectangle(
                             x/100,
                             y/100,
-                            (x+ box->getSize())/100,
-                            (y+box->getSize())/100,
+                            (x + box.getSize())/100,
+                            (y + box.getSize())/100,
                             Color(0,255,0))
                        );
         }
     }
 }
 
-void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirection playerDirection)
+template<typename RandomAccessGuyRange>
+void DrawGuys(RenderTarget& target, const RandomAccessGuyRange& guyList, TimeDirection playerDirection)
 {
-    foreach(const Guy* guy, guyList) {
-        if (guy->getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
+    foreach(const Guy& guy, guyList) {
+        if (guy.getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
         {
             int x,y;
             Color guyColor;
-            if (playerDirection == guy->getTimeDirection())
+            if (playerDirection == guy.getTimeDirection())
             {
-                x = guy->getX();
-                y = guy->getY();
+                x = guy.getX();
+                y = guy.getY();
                 guyColor = Color(150,150,0);
             }
             else
             {
-            	x = guy->getX()-guy->getXspeed();
-                y = guy->getY()-guy->getYspeed();
+            	x = guy.getX()-guy.getXspeed();
+                y = guy.getY()-guy.getYspeed();
                 guyColor = Color(0,0,150);
             }
 
             target.Draw(Shape::Rectangle(
 				x/100,
 				y/100,
-				(x+guy->getWidth())/100,
-				(y+guy->getHeight())/100,
+				(x+guy.getWidth())/100,
+				(y+guy.getHeight())/100,
 				guyColor)
 			 );
 
-            if (guy->getFacing())
+            if (guy.getFacing())
             {
             	target.Draw(Shape::Rectangle(
-					(x+guy->getWidth()/2)/100,
+					(x+guy.getWidth()/2)/100,
 					y/100,
-					(x+guy->getWidth())/100,
-					(y+guy->getHeight()/2)/100,
+					(x+guy.getWidth())/100,
+					(y+guy.getHeight()/2)/100,
 					Color(50,50,50))
 				);
             }
@@ -308,17 +322,17 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
             	target.Draw(Shape::Rectangle(
 					x/100,
 					y/100,
-					(x+guy->getWidth()/2)/100,
-					(y+guy->getHeight()/2)/100,
+					(x+guy.getWidth()/2)/100,
+					(y+guy.getHeight()/2)/100,
 					Color(50,50,50))
 				);
             }
 
 
-            if (guy->getBoxCarrying())
+            if (guy.getBoxCarrying())
             {
                 Color boxColor;
-                if (playerDirection == guy->getBoxCarryDirection())
+                if (playerDirection == guy.getBoxCarryDirection())
                 {
                     boxColor = Color(150,0,150);
                 }
@@ -328,9 +342,9 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
                 }
 
                 target.Draw(Shape::Rectangle(
-                                (x + guy->getWidth()/2 - guy->getBoxCarrySize()/2)/100,
-                                (y - guy->getBoxCarrySize())/100,
-                                (x + guy->getWidth()/2 + guy->getBoxCarrySize()/2)/100,
+                                (x + guy.getWidth()/2 - guy.getBoxCarrySize()/2)/100,
+                                (y - guy.getBoxCarrySize())/100,
+                                (x + guy.getWidth()/2 + guy.getBoxCarrySize()/2)/100,
                                 y/100,
                                 boxColor)
                            );
@@ -339,12 +353,13 @@ void DrawGuys(RenderTarget& target, const vector<const Guy*>& guyList, TimeDirec
     }
 }
 
-void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, TimeDirection playerDirection)
+template<typename RandomAccessButtonRange>
+void DrawButtons(RenderTarget& target, const RandomAccessButtonRange& buttonList, TimeDirection playerDirection)
 {
-    foreach(const Button* button, buttonList)
+    foreach(const Button& button, buttonList)
     {
         Color buttonColor;
-        if (button->getState())
+        if (button.getState())
         {
             buttonColor = Color(150,255,150);
         }
@@ -354,45 +369,46 @@ void DrawButtons(RenderTarget& target, const vector<const Button*>& buttonList, 
         }
 
         int x,y;
-        if (playerDirection == button->getTimeDirection())
+        if (playerDirection == button.getTimeDirection())
         {
-            x = button->getX();
-            y = button->getY();
+            x = button.getX();
+            y = button.getY();
         }
         else
         {
-            x = button->getX()-button->getXspeed();
-            y = button->getY()-button->getYspeed();
+            x = button.getX()-button.getXspeed();
+            y = button.getY()-button.getYspeed();
         }
 
         target.Draw(Shape::Rectangle(
                         x/100,
                         y/100,
-                        (x+button->getWidth())/100,
-                        (y+button->getHeight())/100,
+                        (x+button.getWidth())/100,
+                        (y+button.getHeight())/100,
                         buttonColor)
                    );
     }
 }
 
-void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platformList, TimeDirection playerDirection)
+template<typename RandomAccessPlatformRange>
+void DrawPlatforms(RenderTarget& target, const RandomAccessPlatformRange& platformList, TimeDirection playerDirection)
 {
 
-    foreach(const Platform* platform, platformList)
+    foreach(const Platform& platform, platformList)
     {
         int x,y;
 
         Color platformColor;
-        if (playerDirection == platform->getTimeDirection())
+        if (playerDirection == platform.getTimeDirection())
         {
-            x = platform->getX();
-            y = platform->getY();
+            x = platform.getX();
+            y = platform.getY();
             platformColor = Color(50,0,0);
         }
         else
         {
-            x = platform->getX()-platform->getXspeed();
-            y = platform->getY()-platform->getYspeed();
+            x = platform.getX()-platform.getXspeed();
+            y = platform.getY()-platform.getYspeed();
             platformColor = Color(0,0,50);
         }
         //cout << x << " " << y << " " << platform.getXspeed() << " " << platform.getYspeed() << endl;
@@ -400,39 +416,40 @@ void DrawPlatforms(RenderTarget& target, const vector<const Platform*>& platform
         target.Draw(Shape::Rectangle(
                         x/100,
                         y/100,
-                        (x+platform->getWidth())/100,
-                        (y+platform->getHeight())/100,
+                        (x+platform.getWidth())/100,
+                        (y+platform.getHeight())/100,
                         platformColor)
                    );
     }
 }
 
-void DrawPortals(RenderTarget& target, const vector<const Portal*>& portalList, TimeDirection playerDirection)
+template<typename RandomAccessPortalRange>
+void DrawPortals(RenderTarget& target, const RandomAccessPortalRange& portalList, TimeDirection playerDirection)
 {
 
-    foreach(const Portal* portal, portalList)
+    foreach(const Portal& portal, portalList)
     {
         int x,y;
 
         Color portalColor;
-        if (playerDirection == portal->getTimeDirection())
+        if (playerDirection == portal.getTimeDirection())
         {
-            x = portal->getX();
-            y = portal->getY();
+            x = portal.getX();
+            y = portal.getY();
             portalColor = Color(120,120,120);
         }
         else
         {
-            x = portal->getX()-portal->getXspeed();
-            y = portal->getY()-portal->getYspeed();
+            x = portal.getX()-portal.getXspeed();
+            y = portal.getY()-portal.getYspeed();
             portalColor = Color(120,120,120);
         }
 
         target.Draw(Shape::Rectangle(
                         x/100,
                         y/100,
-                        (x+portal->getWidth())/100,
-                        (y+portal->getHeight())/100,
+                        (x+portal.getWidth())/100,
+                        (y+portal.getHeight())/100,
                         portalColor)
                    );
     }
@@ -550,55 +567,44 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
     newObjectList.sort();
     return
         Level(
-            1,
+            3,
             10800,
-            wall,
-            3200,
-            30,
+            Environment(
+                Wall(
+                    3200,
+                    wall),
+                30),
             ObjectList(newObjectList),
             FrameID(0,UniverseID(10800)),
-            AttachmentMap
-            (
-            	std::vector<Attachment>(1, Attachment(0,3200,-800)),
-            	std::vector<Attachment>(1, Attachment(0,-4200,-3200))
-            ),
-            TriggerSystem
-            (
-                std::vector<int>(1, 0),
+            TriggerSystem(
                 1,
-                1,
-                1,
-                std::vector<PlatformDestination>
-                (
+                std::vector<PlatformDestinationPair>(
                     1,
-                    PlatformDestination
-                    (
-                        22400,
-                        200,
-                        50,
-                        50,
-                        43800,
-                        300,
-                        50,
-                        50
-                    )
-                ),
-                std::vector<PlatformDestination>
-                (
-                    1,
-                    PlatformDestination
-                    (
-                        38400,
-                        200,
-                        50,
-                        50,
-                        43800,
-                        300,
-                        20,
-                        20
-                    )
-                )
-            )
-        );
+                    PlatformDestinationPair(
+                        PlatformDestination(
+                            PlatformDestinationComponent(
+                                22400,
+                                200,
+                                50,
+                                50),
+                            PlatformDestinationComponent(
+                                43800,
+                                300,
+                                50,
+                                50)),
+                        PlatformDestination(
+                            PlatformDestinationComponent(
+                                38400,
+                                200,
+                                50,
+                                50),
+                            PlatformDestinationComponent(
+                                43800,
+                                300,
+                                20,
+                                20)))),
+                AttachmentMap(
+                    std::vector<Attachment>(1, Attachment(0,3200,-800)),
+                    std::vector<Attachment>(1, Attachment(0,-4200,-3200)))));
 }
 }

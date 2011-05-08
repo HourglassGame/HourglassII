@@ -1,7 +1,7 @@
 #ifndef HG_BUTTON_H
 #define HG_BUTTON_H
 #include "TimeDirection.h"
-#include "SortedByIndex.h"
+#include "SortedByIndex_fwd.h"
 #include <cstddef>
 namespace hg
 {
@@ -11,6 +11,7 @@ class Button
 public:
 
     Button(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, bool state, TimeDirection timeDirection, int pauseLevel);
+    Button(int x, int y, int xspeed, int yspeed, const Button& other);
     Button(const Button& other, TimeDirection timeDirection, int pauseLevel);
     Button(const Button& other);
     Button& operator=(const Button& other);

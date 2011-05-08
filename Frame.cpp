@@ -1,6 +1,7 @@
 #include "Frame.h"
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
+#include "Universe.h"
 #include <boost/foreach.hpp>
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range.hpp>

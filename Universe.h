@@ -1,15 +1,14 @@
 #ifndef HG_UNIVERSE_H
 #define HG_UNIVERSE_H
 
-#include "Frame.h"
-
+#include "Frame_fwd.h"
+#include "FrameID_fwd.h"
+#include "TimeDirection.h"
 #include <vector>
-#include <cassert>
+
+#include "PauseInitiatorID_fwd.h"
 
 namespace hg {
-class Frame;
-class FrameID;
-class PauseInitiatorID;
 class Universe {
 public:
     //This copy constructor only exists to allow universes to be put into standard containers
@@ -29,11 +28,7 @@ public:
     //returns the length of this Universe's timeline
     std::size_t getTimelineLength() const;
     Frame* getFrame(const FrameID& whichFrame);
-    const PauseInitiatorID& getInitiatorID()
-    {
-        assert(initiatorID_);
-        return *initiatorID_;
-    }
+    const PauseInitiatorID& getInitiatorID();
 private:
     friend class Frame;
     friend class UniverseID;

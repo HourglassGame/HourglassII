@@ -2,21 +2,15 @@
 namespace hg {
 Level::Level(unsigned int nspeedOfTime,
              std::size_t ntimeLineLength,
-             const boost::multi_array<bool, 2>& nwallmap,
-             int nwallSize,
-             int ngravity,
+             const Environment& nenvironment,
              const ObjectList& ninitialObjects,
              const FrameID& nguyStartTime,
-             const AttachmentMap& nattachmentMap,
              const TriggerSystem& ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timeLineLength(ntimeLineLength),
-        wallmap(nwallmap),
-        wallSize(nwallSize),
-        gravity(ngravity),
+        environment(nenvironment),
         initialObjects(ninitialObjects),
         guyStartTime(nguyStartTime),
-        attachmentMap(nattachmentMap),
         triggerSystem(ntriggerSystem)
 {
 }

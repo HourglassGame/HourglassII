@@ -1,5 +1,5 @@
 #include "Guy.h"
-
+#include <limits>
 namespace hg {
 Guy::Guy(int x,
          int y,
@@ -71,7 +71,7 @@ Guy::Guy(const Guy& other, int copyType) :
 {
 	if (copyType == 1)
 	{
-		index_ = -1;
+		index_ = std::numeric_limits<std::size_t>::max();
 		pauseLevel_ = pauseLevel_ + 1;
 	}
 }

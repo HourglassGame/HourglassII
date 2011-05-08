@@ -1,5 +1,6 @@
 #include "UniverseID.h"
 #include "FrameID.h"
+#include "Frame.h"
 
 #include <boost/functional/hash.hpp>
 #include <boost/range/algorithm/reverse.hpp>
