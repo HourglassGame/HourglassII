@@ -1,15 +1,26 @@
 #ifndef HG_PORTAL_H
 #define HG_PORTAL_H
 #include "TimeDirection.h"
-#include "SortedByIndex.h"
+#include "SortedByIndex_fwd.h"
 #include <cstddef>
 namespace hg
 {
 class Portal
 {
 public:
-    Portal(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, TimeDirection timeDirection, int pauseLevel, int charges, bool active,
-           int xDestination, int yDestination, int destinationIndex, int timeDestination, bool relativeTime, bool winner);
+    Portal(
+        int x, int y,
+        int xspeed, int yspeed,
+        int width, int height,
+        std::size_t index,
+        TimeDirection timeDirection,
+        int pauseLevel,
+        int charges,
+        bool active,
+        int xDestination, int yDestination,
+        int destinationIndex, int timeDestination,
+        bool relativeTime, bool winner);
+    Portal(int x, int y, int xspeed, int yspeed, const Portal& other);
     Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
     Portal(const Portal& other);
 

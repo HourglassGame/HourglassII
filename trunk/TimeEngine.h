@@ -1,20 +1,16 @@
 #ifndef HG_TIME_ENGINE_H
 #define HG_TIME_ENGINE_H
 
-#include "PhysicsEngine.h"
 #include "WorldState.h"
-#include "TimelineState.h"
+#include "FrameUpdateSet.h"
 
 #include <vector>
 #include <boost/swap.hpp>
 
+#include "InputList_fwd.h"
+#include "Level_fwd.h"
+#include "Frame_fwd.h"
 namespace hg {
-class InputList;
-class ObjectList;
-class TimeObjectListList;
-class ParadoxException;
-class Level;
-class Frame;
 class TimeEngine
 {
 public:
@@ -36,7 +32,7 @@ public:
             boost::swap(nextPlayerFrame_, other.nextPlayerFrame_);
             boost::swap(updatedFrames_, other.updatedFrames_);
         }
-private:
+    private:
         friend class TimeEngine;
         Frame* currentPlayerFrame_;
         Frame* nextPlayerFrame_;

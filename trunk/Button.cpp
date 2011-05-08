@@ -18,6 +18,21 @@ Button::Button(int x, int y, int xspeed, int yspeed, int width, int height, std:
            && "the max value is reserved for representing invalid/null indices");
 }
 
+Button::Button(int x, int y, int xspeed, int yspeed, const Button& other) :
+    x_(x),
+    y_(y),
+    xspeed_(xspeed),
+    yspeed_(yspeed),
+    width_(other.width_),
+    height_(other.height_),
+    index_(other.index_),
+    state_(other.state_),
+    timeDirection_(other.timeDirection_),
+    pauseLevel_(other.pauseLevel_)
+{
+
+}
+
 Button::Button(const Button& other, TimeDirection timeDirection, int pauseLevel) :
         x_(other.x_),
         y_(other.y_),

@@ -3,66 +3,56 @@
 
 namespace hg
 {
+struct PositionAndVelocity {
+    PositionAndVelocity(int nPosition, int nVelocity) :
+    position(nPosition), velocity(nVelocity) {}
+    int position;
+    int velocity;
+};
+class PlatformDestinationComponent {
+public:
+    PlatformDestinationComponent(
+        int desiredPosition,
+        int maxSpeed,
+        int acceleration,
+        int deceleration);   
+    PositionAndVelocity solvePDEquation(PositionAndVelocity currentPositionAndVelocity) const;
+private:
+    int desiredPosition_;
+    int maxSpeed_;
+    int acceleration_;
+    int deceleration_;
+};
 class PlatformDestination
 {
 public:
     PlatformDestination(
-        int nx,
-        int nxspeed,
-        int nxaccel,
-        int nxdeccel,
-        int ny,
-        int nyspeed,
-        int nyaccel,
-        int nydeccel) :
-            x(nx),
-            xspeed(nxspeed),
-            xaccel(nxaccel),
-            xdeccel(nxdeccel),
-
-            y(ny),
-            yspeed(nyspeed),
-            yaccel(nyaccel),
-            ydeccel(nydeccel)
+        PlatformDestinationComponent xComponent,
+        PlatformDestinationComponent yComponent) :
+            xComponent_(xComponent),
+            yComponent_(yComponent)
     {
     }
 
-    int getX() const {
-        return x;
+    const PlatformDestinationComponent& getXDestination() const {
+        return xComponent_;
     }
-    int getXspeed() const {
-        return xspeed;
+    const PlatformDestinationComponent& getYDestination() const {
+        return yComponent_;
     }
-    int getXaccel() const {
-        return xaccel;
-    }
-    int getXdeccel() const {
-        return xdeccel;
-    }
-
-    int getY() const {
-        return y;
-    }
-    int getYspeed() const {
-        return yspeed;
-    }
-    int getYaccel() const {
-        return yaccel;
-    }
-    int getYdeccel() const {
-        return ydeccel;
-    }
-
 private:
-    int x;
-    int xspeed;
-    int xaccel;
-    int xdeccel;
+    PlatformDestinationComponent xComponent_;
+    PlatformDestinationComponent yComponent_;
+};
 
-    int y;
-    int yspeed;
-    int yaccel;
-    int ydeccel;
+struct PlatformDestinationPair {
+    PlatformDestinationPair(
+        const PlatformDestination& newOnDestination,
+        const PlatformDestination& newOffDestination) :
+    onDestination(newOnDestination),
+    offDestination(newOffDestination) {}
+    PlatformDestination onDestination;
+    PlatformDestination offDestination;
 };
 }
 

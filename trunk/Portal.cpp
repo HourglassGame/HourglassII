@@ -40,7 +40,25 @@ Portal::Portal(int x,
     assert(index_ != std::numeric_limits<std::size_t>::max()
            && "the max value is reserved for representing invalid/null indices");
 }
-
+Portal::Portal(int x, int y, int xspeed, int yspeed, const Portal& other) :
+        x_(x),
+        y_(y),
+        xspeed_(xspeed),
+        yspeed_(yspeed),
+        width_(other.width_),
+        height_(other.height_),
+        index_(other.index_),
+        timeDirection_(other.timeDirection_),
+        pauseLevel_(other.pauseLevel_),
+        charges_(other.charges_),
+        active_(other.active_),
+        xDestination_(other.xDestination_),
+        yDestination_(other.yDestination_),
+        destinationIndex_(other.destinationIndex_),
+        timeDestination_(other.timeDestination_),
+        relativeTime_(other.relativeTime_),
+        winner_(other.winner_)
+{}
 Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLevel) :
         x_(other.x_),
         y_(other.y_),

@@ -4,19 +4,17 @@
 #include "TimeDirection.h"
 #include "PauseInitiatorID.h"
 #include "ObjectList.h"
-#include "Universe.h"
 //LOLOLOL all 3 types of map needed (:
 #include <tbb/concurrent_hash_map.h>
 #include <boost/unordered_map.hpp>
 #include <map>
+
+#include "Universe_fwd.h"
+#include "FrameUpdateSet_fwd.h"
+#include "FrameID_fwd.h"
 namespace hg {
-class Universe;
-class FrameUpdateSet;
-class FrameID;
-//Only one frame per frame. Referenced by frame pointers and contained in universes.
-//Tim's idea for FrameID
-//A system like this could also put the arrivals and departures in Frames
-//and so avoid the arrival-departure-map system altogether
+//Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
+//Arrivals and departures are also held by
 class Frame {
     typedef boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
     typedef tbb::concurrent_hash_map<Frame*, ObjectList*> ArrivalMap;
@@ -56,7 +54,8 @@ public:
     //assignment
     Frame& operator=(const Frame&)
     {
-        //Should never be called. Needed for vector<Frame>::push_back  (in Universe construction), but I have already reserved space.
+        //Should never be called. Needed for vector<Frame>::push_back to compile
+        //(in Universe construction), but I have already reserved space.
         assert(false);
         return *this;
     }

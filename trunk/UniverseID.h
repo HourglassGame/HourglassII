@@ -2,12 +2,13 @@
 #define HG_UNIVERSE_ID_H
 
 #include "PauseInitiatorID.h"
-
 #include <boost/range.hpp>
 #include <vector>
+
+#include "FrameID_fwd.h"
+#include "Universe_fwd.h"
+
 namespace hg {
-class FrameID;
-class Universe;
 //Identifies the position of a SubUniverse,
 //this includes the frame in which is exists, as well as the ID of the initiator of the universe
 //(which includes the timelineLength of the subuniverse)
@@ -16,7 +17,6 @@ struct SubUniverse {
     std::size_t initiatorFrame_;
     PauseInitiatorID pauseInitiatorID_;
 private:
-
     SubUniverse():
             initiatorFrame_(0),
             pauseInitiatorID_()
@@ -42,8 +42,8 @@ struct UniverseID {
 
     //lower level universeID
     //timelineLength is always length of top-level universe, nestTrain gives lengths of lower level universes.
-    template<typename SinglePassRange>
-    UniverseID(std::size_t timelineLength, const SinglePassRange& nestTrain) :
+    template<typename SinglePassSubUniverseRange>
+    UniverseID(std::size_t timelineLength, const SinglePassSubUniverseRange& nestTrain) :
             timelineLength_(timelineLength),
             nestTrain_(boost::begin(nestTrain), boost::end(nestTrain))
     {

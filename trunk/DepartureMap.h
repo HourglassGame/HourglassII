@@ -3,9 +3,11 @@
 #include "ObjectList.h"
 #include <boost/unordered_map.hpp>
 #include <map>
+
+#include "Frame_fwd.h"
+#include "FrameUpdateSet_fwd.h"
+
 namespace hg {
-class FrameUpdateSet;
-class Frame;
 class DepartureMap {
 public:
     typedef boost::unordered_map<Frame*, std::map<Frame*, ObjectList> > MapType;

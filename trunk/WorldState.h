@@ -3,17 +3,17 @@
 
 #include "TimelineState.h"
 #include "FrameUpdateSet.h"
-#include "InputList.h"
 #include "PhysicsEngine.h"
 #include "FrameUpdateSet.h"
 #include "ConcurrentTimeSet.h"
-#include "ConcurrentTimeMap.h"
+#include "InputList.h"
+
 #include <vector>
 
+#include "Frame_fwd.h"
+#include "FrameID_fwd.h"
 namespace hg {
 struct ExecuteFrame;
-class Frame;
-class FrameID;
 class WorldState {
 public:
     /**
@@ -21,7 +21,7 @@ public:
      * Throws an exception if the world state is not consistent.
      */
     WorldState(std::size_t timelineLength,
-               FrameID guyStartTime,
+               const FrameID& guyStartTime,
                const PhysicsEngine& physics,
                const ObjectList& initialObjects);
 

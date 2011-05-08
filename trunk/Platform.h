@@ -1,7 +1,7 @@
 #ifndef HG_PLATFORM_H
 #define HG_PLATFORM_H
 #include "TimeDirection.h"
-#include "SortedByIndex.h"
+#include "SortedByIndex_fwd.h"
 #include <cstddef>
 namespace hg
 {

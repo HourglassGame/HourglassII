@@ -5,11 +5,12 @@
 #include "Universe.h"
 #include "ObjectList.h"
 
+#include "FrameID_fwd.h"
+#include "Frame_fwd.h"
+#include "FrameUpdateSet_fwd.h"
+#include "DepartureMap_fwd.h"
+
 namespace hg {
-class FrameID;
-class Frame;
-class FrameUpdateSet;
-class DepartureMap;
 class TimelineState
 {
 public:
