@@ -285,7 +285,7 @@ void buildDeparturesForComplexEntities(
         // the depature is not stolen for this thing
 
         // if this is the end of the universe depart to null-frame as workaround for flicker
-        if (time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0)
+        if (time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0 && thing.getPauseLevel() != 0)
         {
             newDepartures[0].add(thing);
         }
@@ -1300,8 +1300,10 @@ void boxCollisionAlogorithm(
 			{
 				if (j != i && !squished[j])
 				{
-					if (IntersectingRectanglesExclusive(oldBoxList[i].getX(), oldBoxList[i].getY(), oldBoxList[i].getSize(), oldBoxList[i].getSize(),
-					oldBoxList[j].getX(), oldBoxList[j].getY(), oldBoxList[j].getSize(), oldBoxList[j].getSize()))
+					int sizeI = oldBoxList[i].getSize();
+					int sizeJ = oldBoxList[j].getSize();
+					if (IntersectingRectanglesExclusive(oldBoxList[i].getX() + sizeI/4, oldBoxList[i].getY() + sizeI/4, sizeI/2, sizeI/2,
+					oldBoxList[j].getX() + sizeJ/4, oldBoxList[j].getY() + sizeJ/4, sizeJ/2, sizeJ/2))
 					{
 						squished[i] = true;
 						squished[j] = true;
