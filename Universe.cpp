@@ -1,6 +1,5 @@
 #include "Universe.h"
 #include "FrameID.h"
-#include "Frame.h"
 
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/transformed.hpp>
