@@ -1,7 +1,7 @@
 #ifndef HG_UNIVERSE_H
 #define HG_UNIVERSE_H
 
-#include "Frame_fwd.h"
+#include "Frame.h"
 #include "FrameID_fwd.h"
 #include "TimeDirection.h"
 #include <vector>

@@ -3,6 +3,7 @@
 #include "DepartureMap.h"
 #include "PlayerVictoryException.h"
 #include "ParallelForEach.h"
+#include "Frame.h"
 
 #include <boost/foreach.hpp>
 

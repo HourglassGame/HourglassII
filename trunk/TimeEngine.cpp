@@ -1,6 +1,7 @@
 #include "TimeEngine.h"
 
 #include "Level.h"
+#include "Frame.h"
 
 namespace hg {
 TimeEngine::TimeEngine(const Level& level) :

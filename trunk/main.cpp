@@ -6,6 +6,7 @@
 #include "Hg_Input.h"
 #include "Level.h"
 #include "Inertia.h"
+#include "Frame.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
