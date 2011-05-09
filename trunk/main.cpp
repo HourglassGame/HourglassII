@@ -12,6 +12,8 @@
 #include <boost/multi_array.hpp>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
+#include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/adaptor/filtered.hpp>
 
 #include <cstddef>
 
@@ -125,7 +127,8 @@ template<typename RandomAccessPlatformRange>
 void DrawPlatforms(RenderTarget& target, const RandomAccessPlatformRange& platformList, TimeDirection playerDirection);
 template<typename RandomAccessPortalRange>
 void DrawPortals(RenderTarget& target, const RandomAccessPortalRange& portalList, TimeDirection playerDirection);
-
+template<typename BidirectionalGuyRange>
+TimeDirection findCurrentGuyDirection(const BidirectionalGuyRange& guyRange);
 
 boost::multi_array<bool, 2> MakeWall();
 Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
@@ -168,13 +171,14 @@ int main()
                 TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
                 if (waveInfo.currentPlayerFrame()) {
                     const ObjectPtrList& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
-                    inertia.save(FrameID(waveInfo.currentPlayerFrame()), frameData.getGuyListRef().back().getTimeDirection());
+                    TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getGuyListRef()));
+                    inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
                     drawnFrame = FrameID(waveInfo.currentPlayerFrame());
                     Draw(
                         app,
                         frameData,
                         wall,
-                        frameData.getGuyListRef().back().getTimeDirection());
+                        currentGuyDirection);
                 }
                 else {
                     inertia.run();
@@ -490,6 +494,24 @@ void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, 
                                  25,
                                  Color(0,255,0)));
 }
+struct IsActualObject {
+    template<typename Object>
+    bool operator()(const Object& obj) const
+    {
+        return obj.getPauseLevel() == 0;
+    }
+};
+
+
+template<typename BidirectionalGuyRange>
+TimeDirection findCurrentGuyDirection(const BidirectionalGuyRange& guyRange)
+{
+    return boost::begin(
+        guyRange 
+        | boost::adaptors::reversed 
+        | boost::adaptors::filtered(IsActualObject()))->getTimeDirection();
+}
+
 
 boost::multi_array<bool, 2> MakeWall()
 {
