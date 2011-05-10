@@ -19,7 +19,10 @@ public:
         bool active,
         int xDestination, int yDestination,
         int destinationIndex, int timeDestination,
-        bool relativeTime, bool winner);
+        bool relativeTime,
+        int illegalDestination,
+        bool fallable,
+        bool winner);
     Portal(int x, int y, int xspeed, int yspeed, const Portal& other);
     Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
     Portal(const Portal& other);
@@ -74,6 +77,12 @@ public:
     bool getRelativeTime() const {
         return relativeTime_;
     }
+    int getIllegalDestination() const {
+    	return illegalDestination_;
+    }
+    int getFallable() const {
+		return fallable_;
+	}
     bool getWinner() const {
     	return winner_;
     }
@@ -100,6 +109,8 @@ private:
     int destinationIndex_;
     int timeDestination_;
     bool relativeTime_;
+    int illegalDestination_;
+    bool fallable_;
     bool winner_;
 
 };

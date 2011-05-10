@@ -5,7 +5,7 @@ namespace hg {
 class Box
 {
 public:
-    Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection, int pauseLevel);
+    Box(int x, int y, int xspeed, int yspeed, int size, int illegalPortal, int relativeToPortal, TimeDirection timeDirection, int pauseLevel);
     Box(const Box& other);
     Box(const Box& other, TimeDirection timeDirection, int pauseLevel);
     Box& operator=(const Box& other);
@@ -31,6 +31,12 @@ public:
     int getHeight() const {
         return size_;
     }
+    int getIllegalPortal() const {
+    	return illegalPortal_;
+	}
+	int getRelativeToPortal() const {
+		return relativeToPortal_;
+	}
     TimeDirection getTimeDirection() const {
         return timeDirection_;
     }
@@ -50,6 +56,9 @@ private:
     int xspeed_;
     int yspeed_;
     int size_;
+
+    int illegalPortal_;
+    int relativeToPortal_;
 
     TimeDirection timeDirection_;
     int pauseLevel_;

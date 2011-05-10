@@ -18,6 +18,8 @@ Portal::Portal(int x,
                int destinationIndex,
                int timeDestination,
                bool relativeTime,
+               int illegalDestination,
+               bool fallable,
                bool winner) :
         x_(x),
         y_(y),
@@ -35,6 +37,8 @@ Portal::Portal(int x,
         destinationIndex_(destinationIndex),
         timeDestination_(timeDestination),
         relativeTime_(relativeTime),
+        illegalDestination_(illegalDestination),
+        fallable_(fallable),
 		winner_(winner)
 {
     assert(index_ != std::numeric_limits<std::size_t>::max()
@@ -57,6 +61,8 @@ Portal::Portal(int x, int y, int xspeed, int yspeed, const Portal& other) :
         destinationIndex_(other.destinationIndex_),
         timeDestination_(other.timeDestination_),
         relativeTime_(other.relativeTime_),
+        illegalDestination_(other.illegalDestination_),
+        fallable_(other.fallable_),
         winner_(other.winner_)
 {}
 Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLevel) :
@@ -76,6 +82,8 @@ Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLe
         destinationIndex_(other.destinationIndex_),
         timeDestination_(other.timeDestination_),
         relativeTime_(other.relativeTime_),
+        illegalDestination_(other.illegalDestination_),
+        fallable_(other.fallable_),
         winner_(other.winner_)
 {
 }
@@ -97,6 +105,8 @@ Portal::Portal(const Portal& other) :
         destinationIndex_(other.destinationIndex_),
         timeDestination_(other.timeDestination_),
         relativeTime_(other.relativeTime_),
+        illegalDestination_(other.illegalDestination_),
+        fallable_(other.fallable_),
         winner_(other.winner_)
 {
 }
@@ -119,6 +129,8 @@ Portal& Portal::operator=(const Portal& other)
     destinationIndex_ = other.destinationIndex_;
     timeDestination_ = other.timeDestination_;
     relativeTime_ = other.relativeTime_;
+    illegalDestination_ = other.illegalDestination_;
+    fallable_ = other.fallable_;
     winner_ = other.winner_;
     return *this;
 }
@@ -145,6 +157,8 @@ bool Portal::operator==(const Portal& other) const
            && (yDestination_ == other.yDestination_)
            && (width_ == other.width_)
            && (height_ == other.height_)
+           && (illegalDestination_ == other.illegalDestination_)
+           && (fallable_ == other.fallable_)
            && (winner_ == other.winner_);
 }
 

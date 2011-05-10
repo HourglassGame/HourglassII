@@ -1,12 +1,14 @@
 #include "Box.h"
 
 namespace hg {
-Box::Box(int x, int y, int xspeed, int yspeed, int size, TimeDirection timeDirection, int pauseLevel) :
+Box::Box(int x, int y, int xspeed, int yspeed, int size, int illegalPortal, int relativeToPortal, TimeDirection timeDirection, int pauseLevel):
         x_(x),
         y_(y),
         xspeed_(xspeed),
         yspeed_(yspeed),
         size_(size),
+        illegalPortal_(illegalPortal),
+        relativeToPortal_(relativeToPortal),
         timeDirection_(timeDirection),
         pauseLevel_(pauseLevel)
 {
@@ -18,6 +20,8 @@ Box::Box(const Box& other, hg::TimeDirection timeDirection, int pauseLevel) :
         xspeed_(other.xspeed_),
         yspeed_(other.yspeed_),
         size_(other.size_),
+        illegalPortal_(other.illegalPortal_),
+        relativeToPortal_(other.relativeToPortal_),
         timeDirection_(timeDirection),
         pauseLevel_(pauseLevel)
 {
@@ -29,6 +33,8 @@ Box::Box(const Box& other) :
         xspeed_(other.xspeed_),
         yspeed_(other.yspeed_),
         size_(other.size_),
+        illegalPortal_(other.illegalPortal_),
+        relativeToPortal_(other.relativeToPortal_),
         timeDirection_(other.timeDirection_),
         pauseLevel_(other.pauseLevel_)
 {
@@ -41,6 +47,8 @@ Box& Box::operator=(const Box& other)
     xspeed_ = other.xspeed_;
     yspeed_ = other.yspeed_;
     size_ = other.size_;
+    illegalPortal_ = other.illegalPortal_;
+    relativeToPortal_ = other.relativeToPortal_;
     timeDirection_ = other.timeDirection_;
     pauseLevel_ = other.pauseLevel_;
     return *this;
@@ -57,9 +65,11 @@ bool Box::operator==(const Box& other) const
            && (y_ == other.y_)
            && (xspeed_ == other.xspeed_)
            && (yspeed_ == other.yspeed_)
+           && (size_ == other.size_)
+           && (illegalPortal_ == other.illegalPortal_)
+           && (relativeToPortal_ == other.relativeToPortal_)
            && (timeDirection_ == other.timeDirection_)
-           && (pauseLevel_ == other.pauseLevel_)
-           && (size_ == other.size_);
+           && (pauseLevel_ == other.pauseLevel_);
 }
 
 bool Box::operator<(const Box& other) const
@@ -78,7 +88,21 @@ bool Box::operator<(const Box& other) const
                         {
                             if (pauseLevel_ == other.pauseLevel_)
                             {
-                                return false;
+                            	if (illegalPortal_ == other.illegalPortal_)
+								{
+                            		if (relativeToPortal_ == other.relativeToPortal_)
+									{
+										return false;
+									}
+									else
+									{
+										return relativeToPortal_ < other.relativeToPortal_;
+									}
+								}
+								else
+								{
+									return illegalPortal_ < other.illegalPortal_;
+								}
                             }
                             else
                             {
