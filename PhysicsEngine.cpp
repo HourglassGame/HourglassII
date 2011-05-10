@@ -285,9 +285,22 @@ void buildDeparturesForComplexEntities(
         // the depature is not stolen for this thing
 
         // if this is the end of the universe depart to null-frame as workaround for flicker
-        if (time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0 && thing.getPauseLevel() != 0)
+        if (time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0)
         {
             newDepartures[0].add(thing);
+            // if this is a normal time thing add an extra to propagate into later pause times
+            // do not do so for root universe (no parent)
+            if (thing.getPauseLevel() == 0 && time->parentFrame() != 0)
+            {
+            	newDepartures[time->parentFrame()].addExtra
+            	(
+            		RemoteDepartureEdit<Type>(
+						time->getInitiatorID(),
+						thing,
+						true
+					)
+            	);
+            }
         }
         //otherwise depart normally
         else
@@ -304,9 +317,16 @@ void buildDeparturesForComplexEntities(
                 Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
             );
         }
-buildNext:
-        ;
+        buildNext:;
     }
+
+    // For Guy Shooting the following loop must be executed in WorldState::executeWorld after all normal executions
+    // It must be executed for every frame that has changed departures from that executeWorld step
+    // This must be executed for every frame changed frame until there are no more thiefs added
+    // (this only occurs at one spot in the loop, it thieves properly from nested pause time)
+    // Parallel execution is desirable and may be mandatory, may as well do it to be safe
+    // Once this happens in WorldState there will be no 1 frame delay as extra Guys propagate through and as such the next
+    // player frame invariant will not be broken.
 
     // special departures for things, from pause time
     // these things are pause time things that have changed location in pause time
@@ -361,10 +381,10 @@ buildNext:
         }
         // the depature is not stolen for this thing
 
-        // if the thing is a pause time thing and this is the end of the universe do not depart
+        // if this is the end of the universe depart to null-frame as workaround for flicker
         if (thing.getPauseLevel() != 0 && time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0)
         {
-
+        	newDepartures[0].add(thing);
         }
         else if (extra.getPropIntoNormal())
         {
@@ -383,8 +403,7 @@ buildNext:
                 );
             }
         }
-buildNextExtra:
-        ;
+        buildNextExtra:;
     }
 
 }
@@ -404,7 +423,8 @@ void buildDeparturesForReallySimpleThings(
         {
             newDepartures[nextTime].add(thing);
         }
-        else {
+        else
+        {
             //workaround for flicker, object departs to null frame and so never arrives anywhere
             newDepartures[0].add(thing);
         }
