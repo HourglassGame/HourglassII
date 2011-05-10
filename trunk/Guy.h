@@ -10,6 +10,7 @@ public:
     Guy(int x,int y,
         int xspeed, int yspeed,
         int width, int height,
+        int illegalPortal_,
         int relativeToPortal,
         bool supported, int supportedSpeed,
     	bool facing,
@@ -42,6 +43,9 @@ public:
         return height_;
     }
 
+    int getIllegalPortal() const {
+           return illegalPortal_;
+    }
     int getRelativeToPortal() const {
         return relativeToPortal_;
     }
@@ -91,6 +95,7 @@ private:
     int width_;
     int height_;
 
+    int illegalPortal_;
     int relativeToPortal_;
     bool supported_;
     int supportedSpeed_;

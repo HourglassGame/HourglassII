@@ -8,6 +8,7 @@ Guy::Guy(int x,
          int width,
          int height,
 
+         int illegalPortal,
          int relativeToPortal,
          bool supported,
          int supportedSpeed,
@@ -29,6 +30,7 @@ Guy::Guy(int x,
         width_(width),
         height_(height),
 
+        illegalPortal_(illegalPortal),
         relativeToPortal_(relativeToPortal),
         supported_(supported),
         supportedSpeed_(supportedSpeed),
@@ -54,6 +56,7 @@ Guy::Guy(const Guy& other, int copyType) :
         width_(other.width_),
         height_(other.height_),
 
+        illegalPortal_(other.illegalPortal_),
         relativeToPortal_(other.relativeToPortal_),
         supported_(other.supported_),
         supportedSpeed_(other.supportedSpeed_),
@@ -84,6 +87,7 @@ Guy::Guy(const Guy& other, TimeDirection timeDirection, int pauseLevel) :
         width_(other.width_),
         height_(other.height_),
 
+        illegalPortal_(other.illegalPortal_),
         relativeToPortal_(other.relativeToPortal_),
         supported_(other.supported_),
         supportedSpeed_(other.supportedSpeed_),
@@ -109,6 +113,7 @@ Guy::Guy(const Guy& other) :
         width_(other.width_),
         height_(other.height_),
 
+        illegalPortal_(other.illegalPortal_),
         relativeToPortal_(other.relativeToPortal_),
         supported_(other.supported_),
         supportedSpeed_(other.supportedSpeed_),
@@ -135,6 +140,7 @@ Guy& Guy::operator=(const Guy& other)
     width_ = other.width_;
     height_ = other.height_;
 
+    illegalPortal_ = other.illegalPortal_;
     relativeToPortal_ = other.relativeToPortal_;
     supported_ = other.supported_;
     supportedSpeed_ = other.supportedSpeed_;
@@ -164,6 +170,7 @@ bool Guy::operator==(const Guy& other) const
             && (y_ == other.y_)
             && (xspeed_ == other.xspeed_)
             && (yspeed_ == other.yspeed_)
+            && (illegalPortal_ == other.illegalPortal_)
             && (relativeToPortal_ == other.relativeToPortal_)
             && (supported_ == other.supported_)
             && (supportedSpeed_ == other.supportedSpeed_)

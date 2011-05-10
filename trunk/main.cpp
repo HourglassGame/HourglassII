@@ -258,28 +258,31 @@ void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDi
 {
     foreach(const Box& box, boxList) {
 		//std::cout << box->getX() << std::endl;
-    	if (playerDirection == box.getTimeDirection())
-        {
-            target.Draw(Shape::Rectangle(
-                            box.getX()/100,
-                            box.getY()/100,
-                            (box.getX()+ box.getSize())/100,
-                            (box.getY()+box.getSize())/100,
-                            Color(255,0,255))
-                       );
-        }
-        else
-        {
-            int x = box.getX()-box.getXspeed();
-            int y = box.getY()-box.getYspeed();
-            target.Draw(Shape::Rectangle(
-                            x/100,
-                            y/100,
-                            (x + box.getSize())/100,
-                            (y + box.getSize())/100,
-                            Color(0,255,0))
-                       );
-        }
+    	if (box.getRelativeToPortal() == -1)
+    	{
+			if (playerDirection == box.getTimeDirection())
+			{
+				target.Draw(Shape::Rectangle(
+								box.getX()/100,
+								box.getY()/100,
+								(box.getX()+ box.getSize())/100,
+								(box.getY()+box.getSize())/100,
+								Color(255,0,255))
+						   );
+			}
+			else
+			{
+				int x = box.getX()-box.getXspeed();
+				int y = box.getY()-box.getYspeed();
+				target.Draw(Shape::Rectangle(
+								x/100,
+								y/100,
+								(x + box.getSize())/100,
+								(y + box.getSize())/100,
+								Color(0,255,0))
+						   );
+			}
+    	}
     }
 }
 
@@ -576,17 +579,17 @@ boost::multi_array<bool, 2> MakeWall()
 Level MakeLevel(const boost::multi_array<bool, 2>& wall)
 {
     ObjectList newObjectList;
-    newObjectList.add(Box(32400, 10000, 0, 0, 3200, FORWARDS, 0));
-    newObjectList.add(Box(46400, 15600, -1000, -500, 3200, FORWARDS, 0));
-    newObjectList.add(Box(46400, 12600, -1000, -500, 3200, FORWARDS, 0));
-    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, FORWARDS, 0));
-    newObjectList.add(Box(46400, 21600, -500, -500, 3200, FORWARDS, 0));
-    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, FORWARDS, 0));
-    newObjectList.add(Box(56400, 15600, 0, 0, 3200, FORWARDS, 0));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, -1, false, false, 0, false, 0, INVALID, 0, FORWARDS, 0, 0));
+    //newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, false, 0, false, 0, INVALID, 0, FORWARDS, 0, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
-    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false, true));
+    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false, 0, true, false));
     newObjectList.sort();
     return
         Level(
