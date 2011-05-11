@@ -1118,16 +1118,13 @@ void guyStep(
                         {
                             portalTime = time->arbitraryFrameInUniverse(nextPortal[j].getTimeDestination());
                         }
-                        if (portalTime)
-                        {
-                        	nextTime = portalTime->nextFrame(nextTimeDirection);
-                            normalDeparture = false;
-                            illegalPortal = nextPortal[j].getIllegalDestination();
-                            relativeToPortal = nextPortal[j].getDestinationIndex();
-                            x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
-                            y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-                            break;
-                        }
+						nextTime = portalTime ? portalTime->nextFrame(nextTimeDirection) : 0;
+						normalDeparture = false;
+						illegalPortal = nextPortal[j].getIllegalDestination();
+						relativeToPortal = nextPortal[j].getDestinationIndex();
+						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+						break;
                     }
                 }
             }
@@ -1158,16 +1155,13 @@ void guyStep(
 						{
 							portalTime = time->arbitraryFrameInUniverse(nextPortal[j].getTimeDestination());
 						}
-						if (portalTime)
-						{
-							nextTime = portalTime->nextFrame(nextTimeDirection);
-							normalDeparture = false;
-							illegalPortal = nextPortal[j].getIllegalDestination();
-							relativeToPortal = nextPortal[j].getDestinationIndex();
-							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
-							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-							break;
-						}
+						nextTime = portalTime ? portalTime->nextFrame(nextTimeDirection) : 0;
+						normalDeparture = false;
+						illegalPortal = nextPortal[j].getIllegalDestination();
+						relativeToPortal = nextPortal[j].getDestinationIndex();
+						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+						break;
 					}
 				}
 			}
@@ -1258,15 +1252,12 @@ void makeBoxAndTimeWithPortals(
 					{
 						portalTime = time->arbitraryFrameInUniverse(nextPortal[i].getTimeDestination());
 					}
-					if (portalTime)
-					{
-						nextTime = portalTime->nextFrame(oldTimeDirection);
-						illegalPortal = nextPortal[i].getIllegalDestination();
-						relativeToPortal = nextPortal[i].getDestinationIndex();
-						x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
-						y = y - nextPortal[i].getY() + nextPortal[i].getYdestination();
-						break;
-					}
+					nextTime = portalTime ? portalTime->nextFrame(oldTimeDirection) : 0;
+					illegalPortal = nextPortal[i].getIllegalDestination();
+					relativeToPortal = nextPortal[i].getDestinationIndex();
+					x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
+					y = y - nextPortal[i].getY() + nextPortal[i].getYdestination();
+					break;
 				}
 			}
 		}
