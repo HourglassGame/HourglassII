@@ -1197,8 +1197,11 @@ void guyStep(
                         illegalPortal, relativeToPortal, supported[i], supportedSpeed[i], facing[i],
                         carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
                         nextTimeDirection, 0,
-                        relativeIndex+1),
-                    nextTime));
+                        relativeIndex+1
+                    ),
+                    nextTime
+                )
+            );
         }
         else
         {
