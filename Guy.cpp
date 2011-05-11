@@ -170,17 +170,19 @@ bool Guy::operator==(const Guy& other) const
             && (y_ == other.y_)
             && (xspeed_ == other.xspeed_)
             && (yspeed_ == other.yspeed_)
+            && (width_ == other.width_)
+            && (height_ == other.height_)
             && (illegalPortal_ == other.illegalPortal_)
             && (relativeToPortal_ == other.relativeToPortal_)
             && (supported_ == other.supported_)
             && (supportedSpeed_ == other.supportedSpeed_)
             && (facing_ == other.facing_)
             && (boxCarrying_ == other.boxCarrying_)
-            && (timeDirection_ == other.timeDirection_)
-            && (boxCarryDirection_ == other.boxCarryDirection_)
             && (boxCarrySize_ == other.boxCarrySize_)
-            && (width_ == other.width_)
-            && (height_ == other.height_);
+            && (boxCarryDirection_ == other.boxCarryDirection_)
+            && (boxPauseLevel_ == other.boxPauseLevel_)
+            && (timeDirection_ == other.timeDirection_)
+            && (pauseLevel_ == other.pauseLevel_);
 }
 
 bool Guy::operator<(const Guy& other) const
