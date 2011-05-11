@@ -630,6 +630,7 @@ void guyStep(
             x.push_back(relativePortal.getX() + oldGuyList[i].getX());
             y.push_back(relativePortal.getY() + oldGuyList[i].getY());
         }
+        supportedSpeed.push_back(0);
         xspeed.push_back(0);
         yspeed.push_back(oldGuyList[i].getYspeed() + env.gravity);
         supported.push_back(false);
