@@ -24,29 +24,7 @@ public:
     Frame(const Frame& other);
 
     Frame(std::size_t frameNumber, Universe& universe);
-
-    // returns the normal next frame for things moving in direction TimeDirection
-    Frame* nextFrame(TimeDirection direction) const;
-
-    // returns if the next frame for things moving in direction TimeDirection
-    //is part of the same pause time universe as the frame
-    unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
-
-    // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    Frame* arbitraryFrameInUniverse(std::size_t frameNumber) const;
-
-    // returns the frame that spawned the universe that this frame is in
-    Frame* parentFrame() const;
-
-    // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
-    //'distance' from the start of the universe This function cannot return nullFrame,
-    //place assert to assure frameNumber is never greater than pauseLength - 1
-    Frame* arbitraryChildFrame(const PauseInitiatorID& initiatorID, std::size_t frameNumber);
-
-    // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
-    //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
-    //universe cannot return nullFrame,
-    Frame* entryChildFrame(const PauseInitiatorID& initiatorID, TimeDirection direction);
+    
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
     FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture);
@@ -70,14 +48,27 @@ public:
      */
     ObjectPtrList getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
     void addArrival(Frame* source, ObjectList* arrival);
-    std::size_t getFrameNumber() const {
-        return frameNumber_;
-    }
-    const PauseInitiatorID& getInitiatorID() const;
+
+
 private:
     friend class FrameID;
     friend class Universe;
     friend class UniverseID;
+
+    //Private to enforce use of non-member variants.
+    Frame* nextFrame(TimeDirection direction) const;
+    unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
+    bool nextFrameInSameUniverse(TimeDirection direction) const;
+    Universe& getSubUniverse(PauseInitiatorID const& initiatorID);
+    Universe& getUniverse() const;
+    std::size_t getFrameNumber() const;
+    
+    friend Frame* nextFrame(Frame const* frame, TimeDirection direction);
+    friend bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
+    friend unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection direction);
+    friend Universe& getUniverse(Frame const* frame);
+    friend Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID);
+    friend std::size_t getFrameNumber(Frame const* frame);
 
     unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const;
 
@@ -92,5 +83,16 @@ private:
     ArrivalMap arrivals_;
     SubUniverseMap subUniverses_;
 };
+//<Undefined to call with NullFrame>
+//Frame* nextFrame(Frame const* frame, TimeDirection direction);
+//bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
+//unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection direction);
+//Universe& getUniverse(Frame const* frame);
+//Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID);
+//std::size_t getFrameNumber(Frame const* frame);
+//</Undefined to call with NullFrame>
+//<Valid to call with NullFrame>
+bool isNullFrame(Frame const* frame);
+//</Valid to call with NullFrame>
 }
 #endif //HG_FRAME_H

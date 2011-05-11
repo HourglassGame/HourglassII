@@ -21,17 +21,54 @@ public:
     Universe(const Universe& other);
     //creates a top level universe
     explicit Universe(std::size_t timelineLength);
-    //returns initiatorFrame_
-    Frame* getInitiatorFrame() const;
-    Frame* getEntryFrame(TimeDirection direction);
-    Frame* getArbitraryFrame(std::size_t frameNumber);
-    //returns the length of this Universe's timeline
-    std::size_t getTimelineLength() const;
+    
+    //Conversion from FrameID to equivalent Frame* within this universe
+    //The universe must be a top level universe, and the FrameID must
+    //correspond to a frame that could actually be in the universe.
     Frame* getFrame(const FrameID& whichFrame);
-    const PauseInitiatorID& getInitiatorID();
 private:
     friend class Frame;
     friend class UniverseID;
+    
+    //private to enforce use of non-member variants
+    //(this is not as important for Universe as for Frame*, but anyway)
+    //<UniverseT interface>
+    //Returns the frame which this Universe is a sub universe of.
+    //The top level universe is a sub universe of the NullFrame
+    Frame* getInitiatorFrame() const;
+    //Returns the first frame in the universe for objects travelling
+    //in TimeDirection direction.
+    Frame* getEntryFrame(TimeDirection direction);
+    //Returns the frame with the index frameNumber within the universe, 
+    //or the NullFrame if no such frame exists
+    Frame* getArbitraryFrame(std::size_t frameNumber);
+    //returns the length of this Universe's timeline
+    std::size_t getTimelineLength() const;
+    //Returns the ID of the initiator of the sub-universe
+    //If this is the main universe then behaviour is undefined
+    PauseInitiatorID const& getInitiatorID() const;
+    //</UniverseT interface>
+    //Returns the frame which this Universe is a sub universe of.
+    //The top level universe is a sub universe of the NullFrame
+    Frame* getInitiatorFrame(Universe const& universe);
+    //Returns the first frame in the universe for objects travelling
+    //in TimeDirection direction.
+    Frame* getEntryFrame(Universe& universe, TimeDirection direction);
+    //Returns the frame with the index frameNumber within the universe, 
+    //or the NullFrame if no such frame exists
+    Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
+    //returns the length of this Universe's timeline
+    std::size_t getTimelineLength(Universe const& universe);
+    //Returns the ID of the initiator of the sub-universe
+    //If this is the main universe then behaviour is undefined
+    const PauseInitiatorID& getInitiatorID(Universe const& universe);
+    
+    friend Frame* getInitiatorFrame(Universe const& universe);
+    friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
+    friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
+    friend std::size_t getTimelineLength(Universe const& universe);
+    friend const PauseInitiatorID& getInitiatorID(Universe const& universe);
+    
     //Creates a lower level universe.
     //This is never used in the current code, but kept because it is logically part of the interface,
     //and will be needed once emplace becomes more widely supported and we change away from

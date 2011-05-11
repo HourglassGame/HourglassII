@@ -1,5 +1,6 @@
 #include "TriggerSystem.h"
 #include "Frame.h"
+#include "Universe.h"
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/algorithm/find.hpp>
@@ -250,7 +251,7 @@ ObjectList TriggerSystem::calculateStaticDepartures(
     const Frame* time) const
 {
     (void)time;
-    assert(!time->parentFrame() && "There really is no way for the trigger system to work with pause time (I think?)");
+    assert(isNullFrame(getInitiatorFrame(getUniverse(time))) && "There really is no way for the trigger system to work with pause time (I think?)");
     std::vector<char> buttonState(calculateButtonState(buttonCount_, arrivals, attachmentMap_.getButtonAttachmentRef()));
     ObjectList retv;
     //TODO - add versions of add which take ranges.

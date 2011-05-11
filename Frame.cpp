@@ -27,52 +27,79 @@ Frame::Frame(const Frame& other) :
         subUniverses_(other.subUniverses_)
 {
 }
-Frame* Frame::nextFrame(TimeDirection direction) const
-{
+Frame* Frame::nextFrame(TimeDirection direction) const {
     assert(direction != INVALID);
-    if ((frameNumber_ == 0 && direction == REVERSE)
-            || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
+    if (nextFrameInSameUniverse(direction)) {
+        return universe_.getArbitraryFrame(frameNumber_ + direction);
+    }
+    else {
         Frame* parent(universe_.getInitiatorFrame());
         return parent ? parent->nextFrame(direction) : 0;
     }
-    else {
-        return universe_.getArbitraryFrame(frameNumber_ + direction);
-    }
 }
-unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
-{
+bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
+    return (frameNumber_ != 0 && direction == REVERSE)
+            || (frameNumber_ != universe_.getTimelineLength() - 1 && direction == FORWARDS);
+}
+unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const {
     assert(direction != INVALID);
     return nextFramePauseLevelDifferenceAux(direction, 0);
 }
-Frame* Frame::arbitraryFrameInUniverse(std::size_t frameNumber) const
-{
-    return universe_.getArbitraryFrame(frameNumber);
-}
-Frame* Frame::parentFrame() const
-{
-    return universe_.getInitiatorFrame();
-}
-Frame* Frame::arbitraryChildFrame(const PauseInitiatorID& initiatorID, std::size_t frameNumber)
-{
-    assert(initiatorID.timelineLength_ > frameNumber);
+
+Universe& Frame::getSubUniverse(PauseInitiatorID const& initiatorID) {
     SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
     if (it == subUniverses_.end())
     {
         it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
         it->second.construct(this, initiatorID.timelineLength_, it->first);
     }
-    return it->second.getArbitraryFrame(frameNumber);
+    return it->second;
 }
-Frame* Frame::entryChildFrame(const PauseInitiatorID& initiatorID, TimeDirection direction)
+
+unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const
 {
-    SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
-    if (it == subUniverses_.end())
-    {
-        it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
-        it->second.construct(this, initiatorID.timelineLength_, it->first);
+    if (nextFrameInSameUniverse(direction)) {
+        return accumulator;
     }
-    return it->second.getEntryFrame(direction);
+    else {
+        ++accumulator;
+        Frame* parent(universe_.getInitiatorFrame());
+        return parent ? parent->nextFramePauseLevelDifferenceAux(direction, accumulator) : accumulator;
+    }
 }
+Universe& Frame::getUniverse() const {
+    return universe_;
+}
+std::size_t Frame::getFrameNumber() const {
+    return frameNumber_;
+}
+
+
+bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction) {
+    assert(frame);
+    return frame->nextFrameInSameUniverse(direction);
+}
+unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection direction) {
+    assert(frame);
+    return frame->nextFramePauseLevelDifference(direction);
+}
+Universe& getUniverse(Frame const* frame) {
+    assert(frame);
+    return frame->getUniverse();
+}
+Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID)
+{
+    assert(frame);
+    return frame->getSubUniverse(initiatorID);
+}
+std::size_t getFrameNumber(Frame const* frame) {
+    assert(frame);
+    return frame->getFrameNumber();
+}
+bool isNullFrame(Frame const* frame) {
+    return !frame;
+}
+
 namespace {
     struct FrameNotNull : std::unary_function<const std::pair<Frame*, ObjectList>&, bool> {
         bool operator()(const std::pair<Frame*, ObjectList>& pair) const {
@@ -162,21 +189,6 @@ ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) c
     retv.sort();
     return retv;
 }
-const PauseInitiatorID& Frame::getInitiatorID() const {
-    return universe_.getInitiatorID();
-}
-unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const
-{
-    if ((frameNumber_ == 0 && direction == REVERSE)
-            || (frameNumber_ == universe_.getTimelineLength() - 1 && direction == FORWARDS)) {
-        ++accumulator;
-        Frame* parent(universe_.getInitiatorFrame());
-        return parent ? parent->nextFramePauseLevelDifferenceAux(direction, accumulator) : accumulator;
-    }
-    else {
-        return accumulator;
-    }
-}
 
 void Frame::addArrival(Frame* source, ObjectList* arrival)
 {
@@ -203,5 +215,11 @@ void Frame::clearArrival(Frame* toClear)
     bool didErase(arrivals_.erase(toClear));
     (void) didErase;
     assert(didErase && "Should only call Erase when the element does exist");
+}
+
+Frame* nextFrame(Frame const* frame, TimeDirection direction)
+{
+    assert(frame);
+    return frame->nextFrame(direction);
 }
 }

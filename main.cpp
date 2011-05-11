@@ -470,13 +470,13 @@ void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, 
         foreach (Frame* frame, lists) {
             if (frame) {
 
-                if (!pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(frame->getFrameNumber()/10800.*640)]) {
-                    target.Draw(Shape::Rectangle(static_cast<int>(frame->getFrameNumber()/10800.*640),
+                if (!pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(getFrameNumber(frame)/10800.*640)]) {
+                    target.Draw(Shape::Rectangle(static_cast<int>(getFrameNumber(frame)/10800.*640),
                                                  10,
-                                                 static_cast<int>(frame->getFrameNumber()/10800.*640+1),
+                                                 static_cast<int>(getFrameNumber(frame)/10800.*640+1),
                                                  25,
                                                  Color(250,0,0)));
-                    pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(frame->getFrameNumber()/10800.*640)] = true;
+                    pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(getFrameNumber(frame)/10800.*640)] = true;
                 }
             }
             else {

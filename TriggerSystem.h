@@ -34,7 +34,7 @@ TriggerSystem(
 
 //Creates Departures for all arrivals of pauseLevel == 0 staticly identifiable objects in arrivals
 //These objects must also be in the top-level universe (as otherwise they would not be statically identifiable)
-//Therefore, if !(time->parentFrame()) then this returns a map which contains no statically identifiable object departures.
+//Therefore, if !(getInitiatorFrame(getUniverse(time))) then this returns a map which contains no statically identifiable object departures.
 //Also creates TriggerObjects. These are a trigger ID combined with arbitrary data 
 //(stored as an int for now, could be changed to be something else if necessecary), which the time engine simply makes depart.
 //Could also return a special ObjectList-ish thing which contains instructions for physics (such as, "create pause here" etc.)

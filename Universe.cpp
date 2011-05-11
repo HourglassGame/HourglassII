@@ -56,10 +56,7 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
 Frame* Universe::getArbitraryFrame(std::size_t frameNumber)
 {
     assert(!frames_.empty());
-    if (frameNumber < frames_.size()) {
-        return &frames_[frameNumber];
-    }
-    return 0;
+    return frameNumber < frames_.size() ? &frames_[frameNumber] : 0;
 }
 //returns the length of this Universe's timeline
 std::size_t Universe::getTimelineLength() const
@@ -67,6 +64,42 @@ std::size_t Universe::getTimelineLength() const
     assert(!frames_.empty());
     return frames_.size();
 }
+PauseInitiatorID const& Universe::getInitiatorID() const
+{
+    assert(initiatorID_);
+    return *initiatorID_;
+}
+
+//Returns the frame which this Universe is a sub universe of.
+//The top level universe is a sub universe of the NullFrame
+Frame* getInitiatorFrame(Universe const& universe)
+{
+    return universe.getInitiatorFrame();
+}
+//Returns the first frame in the universe for objects travelling
+//in TimeDirection direction.
+Frame* getEntryFrame(Universe& universe, TimeDirection direction)
+{
+    return universe.getEntryFrame(direction);
+}
+//Returns the frame with the index frameNumber within the universe, 
+//or the NullFrame if no such frame exists
+Frame* getArbitraryFrame(Universe& universe,std::size_t frameNumber)
+{
+    return universe.getArbitraryFrame(frameNumber);
+}
+//returns the length of this Universe's timeline
+std::size_t getTimelineLength(Universe const& universe) {
+    return universe.getTimelineLength();
+}
+//Returns the ID of the initiator of the sub-universe
+//If this is the main universe then behaviour is undefined
+PauseInitiatorID const& getInitiatorID(Universe const& universe)
+{
+    return universe.getInitiatorID();
+}
+
+
 Frame* Universe::getFrame(const FrameID& whichFrame)
 {
     assert(getTimelineLength() == whichFrame.universe().timelineLength());
@@ -76,23 +109,27 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
             end(whichFrame.universe().nestTrain_.end()); it != end; ++it)
     {
         if (!parentFrame) {
-            parentFrame = getArbitraryFrame(it->initiatorFrame_);
+            parentFrame = hg::getArbitraryFrame(*this, it->initiatorFrame_);
         }
         else {
-            parentFrame = parentFrame->arbitraryChildFrame((it-1)->pauseInitiatorID_, (it)->initiatorFrame_);
+            parentFrame = 
+                hg::getArbitraryFrame(
+                    getSubUniverse(
+                        parentFrame,
+                        (it-1)->pauseInitiatorID_),
+                    (it)->initiatorFrame_);
         }
     }
     if (parentFrame) {
-        return parentFrame->arbitraryChildFrame(whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_, whichFrame.getFrameNumber());
+        return hg::getArbitraryFrame(
+                    getSubUniverse(
+                        parentFrame,
+                        whichFrame.universe().nestTrain_.rbegin()->pauseInitiatorID_),
+                    whichFrame.getFrameNumber());
     }
     else {
         return getArbitraryFrame(whichFrame.getFrameNumber());
     }
-}
-const PauseInitiatorID& Universe::getInitiatorID()
-{
-    assert(initiatorID_);
-    return *initiatorID_;
 }
 Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID) :
         initiatorFrame_(0),
