@@ -589,7 +589,7 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
     newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, false, 0, false, 0, INVALID, 0, FORWARDS, 0, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE, 0));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
-    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, 0, 0, 4000, false, 0, true, false));
+    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, false, 3600, 0, 0, 0, true, 0, true, false));
     newObjectList.sort();
     return
         Level(
