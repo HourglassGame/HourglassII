@@ -28,6 +28,8 @@ public:
 //particular platforms/buttons/etc have not yet come into existence.
 TriggerSystem(
     unsigned int buttonCount,
+    unsigned int triggerCount,
+    const std::vector<int> triggerOffset,
     const std::vector<PlatformDestinationPair>& destinations,
     const AttachmentMap& attachmentMap);
 
@@ -47,6 +49,8 @@ ObjectList calculateStaticDepartures(
     const Frame* time) const;
 private:
     unsigned int buttonCount_;
+    unsigned int triggerCount_;
+    std::vector<int> triggerOffset_;
     std::vector<PlatformDestinationPair> destinations_;
     AttachmentMap attachmentMap_;
 };

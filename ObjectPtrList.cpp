@@ -45,6 +45,10 @@ boost::indirected_range<const std::vector<const Portal*> > ObjectPtrList::getPor
 {
     return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::portalList>(objectPtrList_));
 }
+boost::indirected_range<const std::vector<const TriggerData*> > ObjectPtrList::getTriggerDataListRef() const
+{
+    return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::triggerDataList>(objectPtrList_));
+}
 boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>*> > ObjectPtrList::getBoxThiefListRef() const
 {
     return boost::adaptors::indirect(boost::fusion::at_c<object_list_detail::boxThiefList>(objectPtrList_));

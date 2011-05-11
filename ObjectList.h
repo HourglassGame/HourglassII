@@ -5,6 +5,7 @@
 #include "Button.h"
 #include "Platform.h"
 #include "Portal.h"
+#include "TriggerData.h"
 #include "RemoteDepartureEdit.h"
 
 #include <boost/range/adaptor/indirected.hpp>
@@ -31,6 +32,7 @@ Box,
 Button,
 Platform,
 Portal,
+TriggerData,
 RemoteDepartureEdit<Box>,//theif
 RemoteDepartureEdit<Box>,//extra
 RemoteDepartureEdit<Guy> //extra
@@ -41,9 +43,10 @@ enum ElementID {
     buttonList = 2,
     platformList = 3,
     portalList = 4,
-    boxThiefList = 5,
-    boxExtraList = 6,
-    guyExtraList = 7
+    triggerDataList = 5,
+    boxThiefList = 6,
+    boxExtraList = 7,
+    guyExtraList = 8
 };
 }
 // Object list stores all data sent between frames or to rendering engine
@@ -60,6 +63,7 @@ public:
     const std::vector<Button>& getButtonListRef() const;
     const std::vector<Platform>& getPlatformListRef() const;
     const std::vector<Portal>& getPortalListRef() const;
+    const std::vector<TriggerData>& getTriggerDataListRef() const;
     const std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
     const std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
     const std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
@@ -70,9 +74,11 @@ public:
     void add(const Button& toCopy);
     void add(const Platform& toCopy);
     void add(const Portal& toCopy);
+    void add(const TriggerData& toCopy);
     void addThief(const RemoteDepartureEdit<Box>& toCopy);
     void addExtra(const RemoteDepartureEdit<Box>& toCopy);
     void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
+
 
     void add(const ObjectList& other);
     //MUST CALL this to make lists sorted (required for operator==)
@@ -105,6 +111,7 @@ public:
     boost::indirected_range<const std::vector<const Button*> > getButtonListRef() const;
     boost::indirected_range<const std::vector<const Platform*> > getPlatformListRef() const;
     boost::indirected_range<const std::vector<const Portal*> > getPortalListRef() const;
+    boost::indirected_range<const std::vector<const TriggerData*> > getTriggerDataListRef() const;
     boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>* > > getBoxThiefListRef() const;
     boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>* > > getBoxExtraListRef() const;
     boost::indirected_range<const std::vector<const RemoteDepartureEdit<Guy>* > > getGuyExtraListRef() const;

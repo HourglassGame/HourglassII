@@ -604,6 +604,8 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
             FrameID(0,UniverseID(10800)),
             TriggerSystem(
                 1,
+                0,
+                std::vector<int>(),
                 std::vector<PlatformDestinationPair>(
                     1,
                     PlatformDestinationPair(
