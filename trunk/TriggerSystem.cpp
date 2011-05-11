@@ -236,9 +236,13 @@ std::vector<Platform> getPlatformDepartures(
 
 TriggerSystem::TriggerSystem(
     unsigned int buttonCount,
+    unsigned int triggerCount,
+    const std::vector<int> triggerOffset,
     const std::vector<PlatformDestinationPair>& destinations,
     const AttachmentMap& attachmentMap) :
         buttonCount_(buttonCount),
+        triggerCount_(triggerCount),
+        triggerOffset_(triggerOffset),
         destinations_(destinations),
         attachmentMap_(attachmentMap)
 {

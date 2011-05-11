@@ -57,6 +57,10 @@ const std::vector<Portal>& ObjectList::getPortalListRef() const
 {
     return boost::fusion::at_c<object_list_detail::portalList>(objectList_);
 }
+const std::vector<TriggerData >& ObjectList::getTriggerDataListRef() const
+{
+    return boost::fusion::at_c<object_list_detail::triggerDataList>(objectList_);
+}
 const std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
 {
     return boost::fusion::at_c<object_list_detail::boxThiefList>(objectList_);
@@ -101,6 +105,13 @@ void ObjectList::add(const Platform& toCopy)
 void ObjectList::add(const Portal& toCopy)
 {
     boost::fusion::at_c<object_list_detail::portalList>(objectList_).push_back(toCopy);
+#ifndef NDEBUG
+    sorted = false;
+#endif //NDEBUG
+}
+void ObjectList::addThief(const TriggerData& toCopy)
+{
+    boost::fusion::at_c<object_list_detail::triggerDataList>(objectList_).push_back(toCopy);
 #ifndef NDEBUG
     sorted = false;
 #endif //NDEBUG
