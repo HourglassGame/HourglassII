@@ -7,14 +7,21 @@ namespace hg {
 class Guy
 {
 public:
-    Guy(int x,int y,
-        int xspeed, int yspeed,
-        int width, int height,
+    Guy(int x,
+    	int y,
+        int xspeed,
+        int yspeed,
+        int width,
+        int height,
         int illegalPortal_,
         int relativeToPortal,
-        bool supported, int supportedSpeed,
+        bool supported,
+        int supportedSpeed,
     	bool facing,
-    	bool boxCarrying, int boxCarrySize, TimeDirection boxCarryDirection, int boxPauseLevel,
+    	bool boxCarrying,
+    	int boxCarrySize,
+    	TimeDirection boxCarryDirection,
+    	int boxPauseLevel,
         TimeDirection timeDirection,
     	int pauseLevel,
         std::size_t index);
