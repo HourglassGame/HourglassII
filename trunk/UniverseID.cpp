@@ -93,7 +93,10 @@ bool UniverseID::operator==(const UniverseID& other) const
 bool UniverseID::operator<(const UniverseID& other) const
 {
     if (nestTrain_.size() == other.nestTrain_.size()) {
-        for (std::vector<SubUniverse>::const_reverse_iterator it(nestTrain_.rbegin()), end(nestTrain_.rend()), oit(other.nestTrain_.rbegin());
+        for (std::vector<SubUniverse>::const_reverse_iterator 
+            it(nestTrain_.rbegin()),
+            end(nestTrain_.rend()),
+            oit(other.nestTrain_.rbegin());
                 it != end; ++it, ++oit) {
             if (*it != *oit) {
                 return *it < *oit;
@@ -121,14 +124,10 @@ std::size_t hash_value(const UniverseID& toHash)
     return seed;
 }
 
-PauseInitiatorID UniverseID::initiatorID() const
+const PauseInitiatorID& UniverseID::getInitiatorID() const
 {
-    if (!nestTrain_.empty()) {
-        return nestTrain_.rbegin()->pauseInitiatorID_;
-    }
-    else {
-        return PauseInitiatorID(pauseinitiatortype::INVALID,0,0);
-    }
+    assert(!nestTrain_.empty());
+    return nestTrain_.rbegin()->pauseInitiatorID_;
 }
 std::size_t UniverseID::pauseDepth() const
 {

@@ -1,6 +1,7 @@
 #include "PhysicsEngine.h"
 
 #include "Frame.h"
+#include "Universe.h"
 
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/reversed.hpp>
@@ -183,7 +184,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     const std::vector<InputList>& playerInput) const
 {
     /*Static?*/ObjectList staticDepartures(
-        time->parentFrame() == 0 ? 
+        isNullFrame(getInitiatorFrame(getUniverse(time))) ? 
             triggerSystem_.calculateStaticDepartures(arrivals, playerInput, time):
             calculatePausedStaticDepartures(arrivals));
 
@@ -254,7 +255,7 @@ void buildDeparturesForComplexEntities(
         const Type& thing(thingAndTime.object);
 
         // the index of the next normal departure for a thing
-        Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
+        Frame* nextTime(nextFrame(time,thing.getTimeDirection()));
 
         if (thingAndTime.time != nextTime)
         {
@@ -271,11 +272,11 @@ void buildDeparturesForComplexEntities(
                 // if the departure is a pause departure the departure a level up must also be stolen
                 if (thing.getPauseLevel() != 0)
                 {
-                    newDepartures[time->parentFrame()].addThief
+                    newDepartures[getInitiatorFrame(getUniverse(time))].addThief
                     (
                         RemoteDepartureEdit<Type>
                         (
-                            time->getInitiatorID(),
+                            getInitiatorID(getUniverse(time)),
                             Type(thing, thing.getTimeDirection(), thing.getPauseLevel()-1),
                             true
                         )
@@ -286,10 +287,11 @@ void buildDeparturesForComplexEntities(
                 // also adds pause time departure to the pause time that stole the departue
                 foreach (const PauseInitiatorID& pauseTime, pauseTimes)
                 {
-                    newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
-                    (
-                        Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
-                    );
+                    newDepartures[
+                        getEntryFrame(
+                            getSubUniverse(time, pauseTime),
+                            thing.getTimeDirection())
+                    ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
 
                     if (pauseTime == thief.getOrigin())
                     {
@@ -304,21 +306,18 @@ void buildDeparturesForComplexEntities(
         // the depature is not stolen for this thing
 
         // if this is the end of the universe depart to null-frame as workaround for flicker
-        if (time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0)
+        if (!nextFrameInSameUniverse(time, thing.getTimeDirection()))
         {
             newDepartures[0].add(thing);
             // if this is a normal time thing add an extra to propagate into later pause times
             // do not do so for root universe (no parent)
-            if (thing.getPauseLevel() == 0 && time->parentFrame() != 0)
+            if (thing.getPauseLevel() == 0 && !isNullFrame(getInitiatorFrame(getUniverse(time))))
             {
-            	newDepartures[time->parentFrame()].addExtra
-            	(
+            	newDepartures[getInitiatorFrame(getUniverse(time))].addExtra(
             		RemoteDepartureEdit<Type>(
-						time->getInitiatorID(),
+						getInitiatorID(getUniverse(time)),
 						thing,
-						true
-					)
-            	);
+						true));
             }
         }
         //otherwise depart normally
@@ -331,10 +330,11 @@ void buildDeparturesForComplexEntities(
         // add pause time departure to all spawned pause times
         foreach (const PauseInitiatorID& pauseTime, pauseTimes)
         {
-            newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
-            (
-                Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
-            );
+            newDepartures[
+                getEntryFrame(
+                    getSubUniverse(time, pauseTime),
+                    thing.getTimeDirection())
+            ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
         }
         buildNext:;
     }
@@ -354,7 +354,7 @@ void buildDeparturesForComplexEntities(
         const Type& thing(extra.getDeparture());
 
         // the index of the next normal departure for a thing
-        Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
+        Frame* nextTime(nextFrame(time,thing.getTimeDirection()));
 
         // check if the departure is to be stolen
         foreach (const RemoteDepartureEdit<Type>& thief, thieves)
@@ -365,15 +365,14 @@ void buildDeparturesForComplexEntities(
                 // if the departure is a pause departure the departure a level up must also be stolen
                 if (thing.getPauseLevel() != 0)
                 {
-                    newDepartures[time->parentFrame()].addThief
-                    (
-                        RemoteDepartureEdit<Type>
-                        (
-                            time->getInitiatorID(),
-                            Type(thing, thing.getTimeDirection(), thing.getPauseLevel()-1),
-                            true
-                        )
-                    );
+                    newDepartures[getInitiatorFrame(getUniverse(time))].addThief(
+                        RemoteDepartureEdit<Type>(
+                            getInitiatorID(getUniverse(time)),
+                            Type(
+                                thing,
+                                thing.getTimeDirection(),
+                                thing.getPauseLevel()-1),
+                            true));
                 }
 
                 // adds pause time departures to pause times before this one
@@ -383,10 +382,11 @@ void buildDeparturesForComplexEntities(
                 {
                     if (extra.getOrigin() < pauseTime)
                     {
-                        newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
-                        (
-                            Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
-                        );
+                        newDepartures[
+                            getEntryFrame(
+                                getSubUniverse(time, pauseTime),
+                                thing.getTimeDirection())
+                        ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
                     }
 
                     if (thief.getOrigin() == pauseTime)
@@ -401,7 +401,7 @@ void buildDeparturesForComplexEntities(
         // the depature is not stolen for this thing
 
         // if this is the end of the universe depart to null-frame as workaround for flicker
-        if (thing.getPauseLevel() != 0 && time->nextFramePauseLevelDifference(thing.getTimeDirection()) != 0)
+        if (thing.getPauseLevel() != 0 && !nextFrameInSameUniverse(time, thing.getTimeDirection()))
         {
         	newDepartures[0].add(thing);
         }
@@ -416,10 +416,11 @@ void buildDeparturesForComplexEntities(
         {
             if (extra.getOrigin() < pauseTime)
             {
-                newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
-                (
-                    Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
-                );
+                newDepartures[
+                    getEntryFrame(
+                        getSubUniverse(time, pauseTime),
+                        thing.getTimeDirection())
+                ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
             }
         }
         buildNextExtra:;
@@ -436,9 +437,9 @@ void buildDeparturesForReallySimpleThings(
 {
     foreach (const Type& thing, next)
     {
-        Frame* nextTime(time->nextFrame(thing.getTimeDirection()));
+        Frame* nextTime(nextFrame(time, thing.getTimeDirection()));
 
-        if (thing.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(thing.getTimeDirection()) == 0)
+        if (thing.getPauseLevel() == 0 || nextFrameInSameUniverse(time, thing.getTimeDirection()))
         {
             newDepartures[nextTime].add(thing);
         }
@@ -450,10 +451,10 @@ void buildDeparturesForReallySimpleThings(
 
         foreach (const PauseInitiatorID& pauseTime, pauseTimes)
         {
-            newDepartures[time->entryChildFrame(pauseTime, thing.getTimeDirection())].add
-            (
-                Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1)
-            );
+            newDepartures[
+                getEntryFrame(getSubUniverse(time, pauseTime),
+                thing.getTimeDirection())
+            ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
         }
     }
 }
@@ -486,12 +487,12 @@ void buildDepartures(
     {
         const Guy& guyData(guyAndTime.object);
 
-        Frame* nextTime(time->nextFrame(guyData.getTimeDirection()));
+        Frame* nextTime(nextFrame(time, guyData.getTimeDirection()));
 
         // Depart to next frame but do not depart if the guy is paused and it is the end of a pause time
         if (guyAndTime.time == nextTime)
         {
-            if (guyData.getPauseLevel() == 0 || time->nextFramePauseLevelDifference(guyData.getTimeDirection()) == 0)
+            if (guyData.getPauseLevel() == 0 || nextFrameInSameUniverse(time, guyData.getTimeDirection()))
             {
                 newDepartures[nextTime].add(guyData);
             }
@@ -508,14 +509,14 @@ void buildDepartures(
 
         // Add extra departures if departing from pause time so that subsequent pause times in the same parent frame see
         // this guy's state at the end of it's pause time. Pause times are ordered.
-        if (nextTime && time->nextFramePauseLevelDifference(guyData.getTimeDirection()) != 0 and guyData.getPauseLevel() == 0 )
+        if (nextTime && !nextFrameInSameUniverse(time, guyData.getTimeDirection()) && guyData.getPauseLevel() == 0 )
         {
-            int universes(time->nextFramePauseLevelDifference(guyData.getTimeDirection()));
+            int universes(nextFramePauseLevelDifference(time, guyData.getTimeDirection()));
             Frame* parTime(time);
             do
             {
-                const PauseInitiatorID& parInit(parTime->getInitiatorID());
-                parTime = parTime->parentFrame();
+                const PauseInitiatorID& parInit(getInitiatorID(getUniverse(parTime)));
+                parTime = getInitiatorFrame(getUniverse(parTime));
                 // This should be the ONLY place extra guys are added.
                 // REMEMBER: PAUSE TIME GUNS DO NOT WORK
                 newDepartures[parTime].addExtra(
@@ -529,17 +530,17 @@ void buildDepartures(
         }
 
 
-        if (guyAndTime.time && guyAndTime.time->parentFrame() == time)
+        if (!isNullFrame(guyAndTime.time) && getInitiatorFrame(getUniverse(guyAndTime.time)) == time)
         {
             // if the guy is departing to paused don't add it to pause times after this one
-            const PauseInitiatorID& pauseID(guyAndTime.time->getInitiatorID());
-            foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-            {
-                if (pauseID == pauseTime)
-                {
+            const PauseInitiatorID& pauseID(getInitiatorID(getUniverse(guyAndTime.time)));
+            foreach (const PauseInitiatorID& pauseTime, pauseTimes) {
+                if (pauseID == pauseTime) {
                     break;
                 }
-                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(Guy(guyData, 1));
+                newDepartures[
+                    getEntryFrame(getSubUniverse(time, pauseTime), guyData.getTimeDirection())
+                ].add(Guy(guyData, 1));
             }
         }
         else
@@ -547,7 +548,9 @@ void buildDepartures(
             // add pause guy to every pause time universe from this frame
             foreach (const PauseInitiatorID& pauseTime, pauseTimes)
             {
-                newDepartures[time->entryChildFrame(pauseTime, guyData.getTimeDirection())].add(Guy(guyData, 1));
+                newDepartures[
+                    getEntryFrame(getSubUniverse(time, pauseTime),guyData.getTimeDirection())
+                ].add(Guy(guyData, 1));
             }
         }
     }
@@ -560,10 +563,11 @@ void buildDepartures(
         {
             if (extraGuy.getOrigin() < pauseTime)
             {
-                newDepartures[time->entryChildFrame(pauseTime, extraGuy.getDeparture().getTimeDirection())].add
-                (
-                    Guy(extraGuy.getDeparture())
-                );
+                newDepartures[
+                    getEntryFrame(
+                        getSubUniverse(time,pauseTime),
+                        extraGuy.getDeparture().getTimeDirection())
+                ].add(Guy(extraGuy.getDeparture()));
             }
             else
             {
@@ -949,8 +953,8 @@ void guyStep(
                                 int pauseLevelChange = 1;
                                 while (pauseLevel > 0)
                                 {
-                                    PauseInitiatorID parInit(parTime->getInitiatorID());
-                                    parTime = parTime->parentFrame();
+                                    PauseInitiatorID parInit(getInitiatorID(getUniverse(parTime)));
+                                    parTime = getInitiatorFrame(getUniverse(parTime));
                                     newDepartures[parTime].addExtra
                                     (
                                         RemoteDepartureEdit<Box>
@@ -1006,9 +1010,9 @@ void guyStep(
                             carryPauseLevel[i] = nextBox[j].object.getPauseLevel();
                             if (nextBox[j].object.getPauseLevel() != 0)
                             {
-                                newDepartures[time->parentFrame()].addThief(
+                                newDepartures[getInitiatorFrame(getUniverse(time))].addThief(
                                     RemoteDepartureEdit<Box>(
-                                        time->getInitiatorID(),
+                                        getInitiatorID(getUniverse(time)),
                                         Box(
                                             boxX, boxY, nextBox[j].object.getXspeed(), nextBox[j].object.getYspeed(),
                                             boxSize, nextBox[j].object.getIllegalPortal(), nextBox[j].object.getRelativeToPortal(),
@@ -1043,7 +1047,7 @@ void guyStep(
             nextGuy.push_back(
                 ObjectAndTime<Guy>(
                     oldGuyList[i],
-                    time->nextFrame(oldGuyList[i].getTimeDirection())));
+                    nextFrame(time, oldGuyList[i].getTimeDirection())));
         }
         else if (oldGuyList[i].getIndex() < playerInput.size())
         {
@@ -1055,37 +1059,37 @@ void guyStep(
 
             // add departure for guy at the appropriate time
             TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
-            Frame* nextTime(time->nextFrame(nextTimeDirection));
+            Frame* nextTime(nextFrame(time, nextTimeDirection));
             assert(time);
 
             bool normalDeparture = true;
 
             if (input.getAbility() == hg::TIME_JUMP)
             {
-                nextTime = time->arbitraryFrameInUniverse(input.getFrameIdParam(0).getFrameNumber());
+                nextTime = getArbitraryFrame(getUniverse(time), input.getFrameIdParam(0).getFrameNumber());
                 normalDeparture = false;
             }
             else if (input.getAbility() == hg::TIME_REVERSE)
             {
                 normalDeparture = false;
                 nextTimeDirection *= -1;
-                nextTime = time->nextFrame(nextTimeDirection);
+                nextTime = nextFrame(time, nextTimeDirection);
                 carryDirection[i] *= -1;
 
-                if (time->nextFramePauseLevelDifference(nextTimeDirection) != 0)
+                if (!nextFrameInSameUniverse(time, nextTimeDirection))
                 {
-                    nextCarryPauseLevel -= time->nextFramePauseLevelDifference(nextTimeDirection);
+                    nextCarryPauseLevel -= nextFramePauseLevelDifference(time, nextTimeDirection);
                     if (nextCarryPauseLevel < 0)
                     {
                         nextCarryPauseLevel = 0;
                     }
                 }
             }
-            else if (input.getAbility() == hg::PAUSE_TIME and time->getFrameNumber() == 3000) // FOR TESTING, REMOVE EVENTUALLY
+            else if (input.getAbility() == hg::PAUSE_TIME && getFrameNumber(time) == 3000) // FOR TESTING, REMOVE EVENTUALLY
             {
                 normalDeparture = false;
                 PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
-                nextTime = time->entryChildFrame(pauseID, oldGuyList[i].getTimeDirection());
+                nextTime = getEntryFrame(getSubUniverse(time, pauseID), oldGuyList[i].getTimeDirection());
 
                 pauseTimes.push_back(pauseID);
             }
@@ -1102,23 +1106,21 @@ void guyStep(
                     if (PointInRectangleInclusive(mx, my, px, py, pw, ph) && nextPortal[j].getPauseLevel() == 0 &&
                             nextPortal[j].getActive() && nextPortal[j].getCharges() != 0) // charges not fully implemented
                     {
-                        Frame* portalTime;
                         if (nextPortal[j].getWinner())
                         {
                         	winFrame = true;
                         	nextTime = 0;
                         	break;
                         }
-
-                        if (nextPortal[j].getRelativeTime() == true)
-                        {
-                            portalTime = time->arbitraryFrameInUniverse(time->getFrameNumber() + nextPortal[j].getTimeDestination());
-                        }
-                        else
-                        {
-                            portalTime = time->arbitraryFrameInUniverse(nextPortal[j].getTimeDestination());
-                        }
-						nextTime = portalTime ? portalTime->nextFrame(nextTimeDirection) : 0;
+                        Frame* portalTime(
+                            nextPortal[j].getRelativeTime() ?
+                                getArbitraryFrame(
+                                    getUniverse(time),
+                                    getFrameNumber(time) + nextPortal[j].getTimeDestination()) :
+                                getArbitraryFrame(
+                                    getUniverse(time),
+                                    nextPortal[j].getTimeDestination()));
+						nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 						normalDeparture = false;
 						illegalPortal = nextPortal[j].getIllegalDestination();
 						relativeToPortal = nextPortal[j].getDestinationIndex();
@@ -1146,16 +1148,15 @@ void guyStep(
 					}
 					else
 					{
-						Frame* portalTime;
-						if (nextPortal[j].getRelativeTime() == true)
-						{
-							portalTime = time->arbitraryFrameInUniverse(time->getFrameNumber() + nextPortal[j].getTimeDestination());
-						}
-						else
-						{
-							portalTime = time->arbitraryFrameInUniverse(nextPortal[j].getTimeDestination());
-						}
-						nextTime = portalTime ? portalTime->nextFrame(nextTimeDirection) : 0;
+						Frame* portalTime(
+                            nextPortal[j].getRelativeTime() ?
+                            getArbitraryFrame(
+                                getUniverse(time),
+                                getFrameNumber(time) + nextPortal[j].getTimeDestination()):
+                            getArbitraryFrame(
+                                getUniverse(time),
+                                nextPortal[j].getTimeDestination()));
+						nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 						normalDeparture = false;
 						illegalPortal = nextPortal[j].getIllegalDestination();
 						relativeToPortal = nextPortal[j].getDestinationIndex();
@@ -1168,9 +1169,9 @@ void guyStep(
 
             if (normalDeparture)
             {
-                if (time->nextFramePauseLevelDifference(nextTimeDirection) != 0)
+                if (!nextFrameInSameUniverse(time, nextTimeDirection))
                 {
-                    nextCarryPauseLevel -= time->nextFramePauseLevelDifference(nextTimeDirection);
+                    nextCarryPauseLevel -= nextFramePauseLevelDifference(time, nextTimeDirection);
                     if (nextCarryPauseLevel < 0)
                     {
                         nextCarryPauseLevel = 0;
@@ -1223,7 +1224,7 @@ void makeBoxAndTimeWithPortals(
 {
 	int relativeToPortal = -1;
 	int illegalPortal = -1;
-	Frame* nextTime(time->nextFrame(oldTimeDirection));
+	Frame* nextTime(nextFrame(time, oldTimeDirection));
 
 	if (pauseLevel == 0)
 	{
@@ -1243,16 +1244,11 @@ void makeBoxAndTimeWithPortals(
 				}
 				else
 				{
-					Frame* portalTime;
-					if (nextPortal[i].getRelativeTime() == true)
-					{
-						portalTime = time->arbitraryFrameInUniverse(time->getFrameNumber() + nextPortal[i].getTimeDestination());
-					}
-					else
-					{
-						portalTime = time->arbitraryFrameInUniverse(nextPortal[i].getTimeDestination());
-					}
-					nextTime = portalTime ? portalTime->nextFrame(oldTimeDirection) : 0;
+					Frame* portalTime(
+                        nextPortal[i].getRelativeTime() ?
+                        getArbitraryFrame(getUniverse(time), getFrameNumber(time) + nextPortal[i].getTimeDestination()):
+                        getArbitraryFrame(getUniverse(time), nextPortal[i].getTimeDestination()));
+					nextTime = portalTime ? nextFrame(portalTime, oldTimeDirection) : 0;
 					illegalPortal = nextPortal[i].getIllegalDestination();
 					relativeToPortal = nextPortal[i].getDestinationIndex();
 					x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
@@ -1904,7 +1900,7 @@ void boxCollisionAlogorithm(
 			(
 				ObjectAndTime<Box>(
 					Box(oldBoxList[i]),
-					time->nextFrame(oldBoxList[i].getTimeDirection())
+					nextFrame(time, oldBoxList[i].getTimeDirection())
 				)
 			);
         }

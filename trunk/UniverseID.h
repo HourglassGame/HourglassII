@@ -52,7 +52,7 @@ struct UniverseID {
     //Construct a UniverseID corresponding to toConvert
     //This conversion loses information, as UniverseIDs do not contain frames, but Universes do.
     explicit UniverseID(const Universe& toConvert);
-    PauseInitiatorID initiatorID() const;
+    PauseInitiatorID const& getInitiatorID() const;
 
     std::size_t pauseDepth() const;
 

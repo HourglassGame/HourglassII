@@ -49,28 +49,28 @@ WorldState::WorldState(std::size_t timelineLength,
         for (std::vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
                 end(initialObjects.getPlatformListRef().end()); it != end; ++it)
         {
-            initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
+            initialArrivals[getEntryFrame(timeline_.getUniverse(),it->getTimeDirection())].add(*it);
         }
 
         // boxes
         for (std::vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
                 end(initialObjects.getBoxListRef().end()); it != end; ++it)
         {
-            initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
+            initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
 
         // portals
         for (std::vector<Portal>::const_iterator it(initialObjects.getPortalListRef().begin()),
                 end(initialObjects.getPortalListRef().end()); it != end; ++it)
         {
-            initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
+            initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
 
         // buttons
         for (std::vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
                 end(initialObjects.getButtonListRef().end()); it != end; ++it)
         {
-            initialArrivals[timeline_.getUniverse().getEntryFrame(it->getTimeDirection())].add(*it);
+            initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
         
         // guy
@@ -80,8 +80,8 @@ WorldState::WorldState(std::size_t timelineLength,
 
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }
-    frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(FORWARDS));
-    frameUpdateSet_.add(timeline_.getUniverse().getEntryFrame(REVERSE));
+    frameUpdateSet_.add(getEntryFrame(timeline_.getUniverse(), FORWARDS));
+    frameUpdateSet_.add(getEntryFrame(timeline_.getUniverse(), REVERSE));
     //Guys without input can still affect stuff, and so must be run
     frameUpdateSet_.add(guyStartFrame);
     //** run level for a while
