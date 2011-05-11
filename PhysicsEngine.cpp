@@ -18,7 +18,6 @@
 #define foreach BOOST_FOREACH
 
 namespace hg {
-static const int SQUISHED_SPEED = 1600;
 static const int JUMP_SPEED 	= -550;
 
 PhysicsEngine::PhysicsEngine(
@@ -637,13 +636,39 @@ void guyStep(
         squished.push_back(false);
         facing.push_back(oldGuyList[i].getFacing());
 
-        if (oldGuyList[i].getIndex() < playerInput.size() && oldGuyList[i].getPauseLevel() == 0u)
+        if (oldGuyList[i].getIndex() < playerInput.size() && oldGuyList[i].getPauseLevel() == 0)
         {
             std::size_t relativeIndex(oldGuyList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
 
             int width = oldGuyList[i].getWidth();
             int height = oldGuyList[i].getHeight();
+
+            // chonofrag with platforms
+			foreach (const Platform& platform, nextPlatform)
+			{
+				int pX(platform.getX());
+				int pY(platform.getY());
+				TimeDirection pDirection(platform.getTimeDirection());
+				if (pDirection * oldGuyList[i].getTimeDirection() == hg::FORWARDS && platform.getPauseLevel() == 0)
+				{
+					pX -= platform.getXspeed();
+					pY -= platform.getYspeed();
+				}
+				int pWidth(platform.getWidth());
+				int pHeight(platform.getHeight());
+
+				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+				{
+					squished[i] = true;
+					continue;
+				}
+			}
+
+            bool bottom = false;
+            bool top = false;
+            bool left = false;
+            bool right = false;
 
             std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
@@ -675,6 +700,7 @@ void guyStep(
 							newY = boxY-height;
 							xspeed[i] = 0;
 							supported[i] = true;
+							bottom = true;
 							supportedSpeed[i] = 0;
 						}
 					}
@@ -686,6 +712,7 @@ void guyStep(
 							newY = boxY-height-boxYspeed;
 							xspeed[i] = -boxXspeed;
 							supported[i] = true;
+							bottom = true;
 							supportedSpeed[i] = -boxYspeed;
 						}
 
@@ -698,29 +725,12 @@ void guyStep(
 							newY = boxY-height;
 							xspeed[i] = boxXspeed;
 							supported[i] = true;
+							bottom = true;
 							supportedSpeed[i] = boxYspeed;
 						}
 					}
 				}
 			}
-
-            //check wall collision in Y direction
-            if (yspeed[i] > 0) // down
-            {
-                if (env.wall.at(x[i], newY+height) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY+height)))
-                {
-                    newY = ((newY+height)/env.wall.segmentSize())*env.wall.segmentSize() - height;
-                    supported[i] = true;
-                    supportedSpeed[i] = 0;
-                }
-            }
-            else if (yspeed[i] < 0) // up
-            {
-                if  (env.wall.at(x[i], newY) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY)))
-                {
-                    newY = (newY/env.wall.segmentSize() + 1)*env.wall.segmentSize();
-                }
-            }
 
             // check platform collision in Y direction
             foreach (const Platform& platform, nextPlatform)
@@ -744,6 +754,7 @@ void guyStep(
                         newY = pY-height;
                         xspeed[i] = pDirection * oldGuyList[i].getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
+                        bottom = true;
                         if (platform.getPauseLevel() == 0)
                         {
                         	supportedSpeed[i] = pDirection * oldGuyList[i].getTimeDirection() * platform.getYspeed();
@@ -756,8 +767,35 @@ void guyStep(
                     else
                     {
                         newY = pY + pHeight;
+                        top = true;
                     }
                 }
+            }
+
+            //check wall collision in Y direction
+			if (yspeed[i] > 0) // down
+			{
+				if (env.wall.at(x[i], newY+height) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY+height)))
+				{
+					newY = ((newY+height)/env.wall.segmentSize())*env.wall.segmentSize() - height;
+					supported[i] = true;
+					bottom = true;
+					supportedSpeed[i] = 0;
+				}
+			}
+			else if (yspeed[i] < 0) // up
+			{
+				if  (env.wall.at(x[i], newY) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY)))
+				{
+					newY = (newY/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+					top = true;
+				}
+			}
+
+            if (bottom && top)
+            {
+            	squished[i] = true;
+            	continue;
             }
 
             // X direction stuff
@@ -773,21 +811,6 @@ void guyStep(
             {
             	facing[i] = true;
                 newX += 250;
-            }
-
-            if (newX-x[i] > 0) // right
-            {
-                if (env.wall.at(newX+width, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX+width, newY+height)))
-                {
-                    newX = (newX+width)/env.wall.segmentSize()*env.wall.segmentSize() - width;
-                }
-            }
-            else if (newX-x[i] < 0) // left
-            {
-                if (env.wall.at(newX, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX, newY+height)))
-                {
-                    newX = (newX/env.wall.segmentSize() + 1)*env.wall.segmentSize();
-                }
             }
 
             // platform collision
@@ -809,67 +832,37 @@ void guyStep(
                     if (newX+width/2 < pX+pWidth/2)
                     {
                         newX = pX-width;
+                        right = true;
                     }
                     else
                     {
                         newX = pX+pWidth;
+                        left = true;
                     }
                 }
             }
 
-            // Check inside a wall
-			if (wallAtExclusive(env, newX, newY, width, height))
+            if (newX-x[i] > 0) // right
 			{
-				squished[i] = true;
-			}
-
-			// Check inside a platform
-			foreach (const Platform& platform, nextPlatform)
-			{
-				int pX(platform.getX());
-				int pY(platform.getY());
-				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * oldGuyList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+				if (env.wall.at(newX+width, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX+width, newY+height)))
 				{
-					pX -= platform.getXspeed();
-					pY -= platform.getYspeed();
+					newX = (newX+width)/env.wall.segmentSize()*env.wall.segmentSize() - width;
+					right = true;
 				}
-				int pWidth(platform.getWidth());
-				int pHeight(platform.getHeight());
-
-				if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
+			}
+			else if (newX-x[i] < 0) // left
+			{
+				if (env.wall.at(newX, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX, newY+height)))
 				{
-					squished[i] = true;
+					newX = (newX/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+					left = true;
 				}
 			}
 
-			// Check inside the box that I am suppose to be on top of
-
-			if (boxThatIamStandingOn != std::numeric_limits<std::size_t>::max())
-			{
-				int boxX(nextBox[boxThatIamStandingOn].object.getX());
-				int boxY(nextBox[boxThatIamStandingOn].object.getY());
-				int boxXspeed(nextBox[boxThatIamStandingOn].object.getXspeed());
-				int boxYspeed(nextBox[boxThatIamStandingOn].object.getYspeed());
-				int boxSize(nextBox[boxThatIamStandingOn].object.getSize());
-				TimeDirection boxDirection(nextBox[boxThatIamStandingOn].object.getTimeDirection());
-
-				if (boxDirection * oldGuyList[i].getTimeDirection() == hg::REVERSE)
-				{
-					boxX -= boxXspeed;
-					boxY -= boxYspeed;
-				}
-
-				if (newX < boxX+boxSize && newX+width > boxX && newY < boxY+boxSize && newY+height > boxY)
-				{
-					squished[i] = true;
-				}
-        	}
-
-			// If speed is too great I was squished (for example pushed to the side of a platform)
-			if (newX-x[i] > SQUISHED_SPEED || newY-y[i] > SQUISHED_SPEED)
+            if (left && right)
 			{
 				squished[i] = true;
+				continue;
 			}
 
 			// Apply Change
@@ -1126,7 +1119,7 @@ void guyStep(
                         }
                         if (portalTime)
                         {
-                            nextTime = portalTime;
+                        	nextTime = portalTime->nextFrame(nextTimeDirection);
                             normalDeparture = false;
                             illegalPortal = nextPortal[j].getIllegalDestination();
                             relativeToPortal = nextPortal[j].getDestinationIndex();
@@ -1166,7 +1159,7 @@ void guyStep(
 						}
 						if (portalTime)
 						{
-							nextTime = portalTime;
+							nextTime = portalTime->nextFrame(nextTimeDirection);
 							normalDeparture = false;
 							illegalPortal = nextPortal[j].getIllegalDestination();
 							relativeToPortal = nextPortal[j].getDestinationIndex();
@@ -1263,7 +1256,7 @@ void makeBoxAndTimeWithPortals(
 					}
 					if (portalTime)
 					{
-						nextTime = portalTime;
+						nextTime = portalTime->nextFrame(oldTimeDirection);
 						illegalPortal = nextPortal[i].getIllegalDestination();
 						relativeToPortal = nextPortal[i].getDestinationIndex();
 						x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
@@ -1466,6 +1459,29 @@ void boxCollisionAlogorithm(
 			x[i] = xTemp[i] + oldBoxList[i].getXspeed();
 			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
 			size[i] = oldBoxList[i].getSize();
+		}
+	}
+
+	// Destroy boxes that are overlapping with platforms
+	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+	{
+		foreach (const Platform& platform, nextPlatform)
+		{
+			int pX(platform.getX());
+			int pY(platform.getY());
+			TimeDirection pDirection(platform.getTimeDirection());
+			if (pDirection * oldBoxList[i].getTimeDirection() == hg::FORWARDS && platform.getPauseLevel() == 0)
+			{
+				pX -= platform.getXspeed();
+				pY -= platform.getYspeed();
+			}
+			int pWidth(platform.getWidth());
+			int pHeight(platform.getHeight());
+
+			if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
+			{
+				squished[i] = true;
+			}
 		}
 	}
 
