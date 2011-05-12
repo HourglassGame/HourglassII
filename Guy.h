@@ -2,7 +2,7 @@
 #define HG_GUY_H
 #include "TimeDirection.h"
 #include <cstdlib>
-#include "SortedByIndex_fwd.h"
+#include "SortWeakerThanEquality_fwd.h"
 namespace hg {
 class Guy
 {
@@ -119,7 +119,7 @@ private:
     std::size_t index_;
 };
 template<>
-struct sorted_by_index<Guy>
+struct sort_weaker_than_equality<Guy>
 {
     static const bool value = true;
 };

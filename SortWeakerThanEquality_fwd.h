@@ -1,4 +1,4 @@
 namespace hg {
     template<typename T>
-    struct sorted_by_index;
+    struct sort_weaker_than_equality;
 }

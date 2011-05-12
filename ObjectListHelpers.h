@@ -1,6 +1,6 @@
 #ifndef HG_OBJECTLISTHELPERS_H
 #define HG_OBJECTLISTHELPERS_H
-#include "SortedByIndex.h"
+#include "SortWeakerThanEquality.h"
 #include <boost/fusion/algorithm.hpp>
 #include <boost/fusion/include/zip_view.hpp>
 #include <boost/fusion/functional.hpp>
@@ -32,27 +32,27 @@ struct Swap
 };
 
 template<typename T>
-struct EqualIndices
+struct Equivalent
 {
     bool operator()(const T& l, const T& r) const {
-        return l.getIndex() == r.getIndex();
+        return !(l < r) && !(r < l);
     }
 };
 
 template<typename T>
-struct EqualIndices<T*>
+struct Equivalent<T*>
 {
     bool operator()(T* l, T* r) const {
-        return l->getIndex() == r->getIndex();
+        return !(*l < *r) && !(*r < *l);
     }
 };
 
 template<typename ForwardRange>
-bool containsNoElementsWithEqualIndices(const ForwardRange& range)
+bool containsNoEquivalentElements(const ForwardRange& range)
 {
     return boost::adjacent_find<boost::return_found>(
             range,
-            EqualIndices<
+            Equivalent<
                 typename boost::range_value<ForwardRange>::type
             >())
            == boost::end(range);
@@ -62,19 +62,19 @@ template<template<class> class Comparitor = std::less>
 struct Sort
 {
     template <typename ListType>
-    void operator()(ListType& toSort, typename boost::disable_if<hg::sorted_by_index<ListType> >::type* = 0) const
+    void operator()(ListType& toSort, typename boost::disable_if<hg::sort_weaker_than_equality<ListType> >::type* = 0) const
     {
         boost::sort(toSort, Comparitor<typename ListType::value_type>());
     }
     template <typename ListType>
-    void operator()(ListType& toSort, typename boost::enable_if<hg::sorted_by_index<ListType> >::type* = 0) const
+    void operator()(ListType& toSort, typename boost::enable_if<hg::sort_weaker_than_equality<ListType> >::type* = 0) const
     {
         boost::sort(toSort, Comparitor<typename ListType::value_type>());
-        //These lists are sorted on index alone, but have equality based on all their members.
-        //This means that they must never have more than one element with the same index,
-        //because that could cause equal ObjectLists to be found to be different because the order in which the lists within the
+        //These lists are sorted on a criterion that allows equivalent elements to not be equal.
+        //This means that they must never have equivalent elements, because that could cause equal
+        //ObjectLists to be found to be different because the order in which the lists within the
         //two ObjectLists are sorted is different, even though the lists contain the same elements.
-        assert(containsNoElementsWithEqualIndices(toSort));
+        assert(containsNoEquivalentElements(toSort));
     }
 };
 }//namespace

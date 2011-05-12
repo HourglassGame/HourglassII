@@ -1,7 +1,7 @@
 #ifndef HG_PLATFORM_H
 #define HG_PLATFORM_H
 #include "TimeDirection.h"
-#include "SortedByIndex_fwd.h"
+#include "SortWeakerThanEquality_fwd.h"
 #include <cstddef>
 namespace hg
 {
@@ -58,7 +58,7 @@ private:
     int pauseLevel_;
 };
 template<>
-class sorted_by_index<Platform>
+class sort_weaker_than_equality<Platform>
 {
     static const bool value = true;
 };

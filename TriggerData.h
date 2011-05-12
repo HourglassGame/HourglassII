@@ -1,6 +1,6 @@
 #ifndef HG_TRIGGER_DATA_H
 #define HG_TRIGGER_DATA_H
-#include "SortedByIndex_fwd.h"
+#include "SortWeakerThanEquality_fwd.h"
 #include <cstddef>
 namespace hg
 {
@@ -30,7 +30,7 @@ private:
 
 };
 template<>
-struct sorted_by_index<TriggerData>
+struct sort_weaker_than_equality<TriggerData>
 {
     static const bool value = true;
 };

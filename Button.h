@@ -1,7 +1,7 @@
 #ifndef HG_BUTTON_H
 #define HG_BUTTON_H
 #include "TimeDirection.h"
-#include "SortedByIndex_fwd.h"
+#include "SortWeakerThanEquality_fwd.h"
 #include <cstddef>
 namespace hg
 {
@@ -65,7 +65,7 @@ private:
     int pauseLevel_;
 };
 template<>
-struct sorted_by_index<Button>
+struct sort_weaker_than_equality<Button>
 {
     static const bool value = true;
 };
