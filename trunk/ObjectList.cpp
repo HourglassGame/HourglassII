@@ -109,7 +109,7 @@ void ObjectList::add(const Portal& toCopy)
     sorted = false;
 #endif //NDEBUG
 }
-void ObjectList::addThief(const TriggerData& toCopy)
+void ObjectList::add(const TriggerData& toCopy)
 {
     boost::fusion::at_c<object_list_detail::triggerDataList>(objectList_).push_back(toCopy);
 #ifndef NDEBUG

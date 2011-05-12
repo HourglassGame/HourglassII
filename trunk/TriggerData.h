@@ -1,6 +1,5 @@
 #ifndef HG_TRIGGER_DATA_H
 #define HG_TRIGGER_DATA_H
-#include "TimeDirection.h"
 #include "SortedByIndex_fwd.h"
 #include <cstddef>
 namespace hg
