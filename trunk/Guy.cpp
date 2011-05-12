@@ -187,6 +187,9 @@ bool Guy::operator==(const Guy& other) const
 
 bool Guy::operator<(const Guy& other) const
 {
-    return index_ < other.index_;
+    return
+    pauseLevel_ == other.pauseLevel_?
+        index_ < other.index_:
+        other.pauseLevel_ < pauseLevel_;
 }
 }//namespace hg

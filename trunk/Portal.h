@@ -1,7 +1,7 @@
 #ifndef HG_PORTAL_H
 #define HG_PORTAL_H
 #include "TimeDirection.h"
-#include "SortedByIndex_fwd.h"
+#include "SortWeakerThanEquality_fwd.h"
 #include <cstddef>
 namespace hg
 {
@@ -115,7 +115,7 @@ private:
 
 };
 template<>
-struct sorted_by_index<Portal>
+struct sort_weaker_than_equality<Portal>
 {
     static const bool value = true;
 };

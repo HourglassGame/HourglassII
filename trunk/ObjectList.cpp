@@ -1,7 +1,7 @@
 #include "ObjectList.h"
 
 #include "ObjectListHelpers.h"
-#include "SortedByIndex.h"
+#include "SortWeakerThanEquality.h"
 
 #include <boost/range/algorithm_ext/push_back.hpp>
 
