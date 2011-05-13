@@ -6,16 +6,21 @@
 #include "Platform.h"
 #include "Portal.h"
 #include "TriggerData.h"
-#include "RemoteDepartureEdit.h"
+#include "RemoteDepartureEdit_def.h"
 
-#include <boost/range/adaptor/indirected.hpp>
-
-#include <boost/fusion/container/vector.hpp>
 #include <boost/mpl/transform.hpp>
+#include <boost/mpl/placeholders.hpp>
+
+#include <boost/fusion/mpl.hpp>
+#include <boost/fusion/include/find.hpp>
+#include <boost/fusion/container/vector.hpp>
+
+#include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/range/adaptor/indirected.hpp>
+#include <boost/range.hpp>
+
 #include <boost/type_traits/add_const.hpp>
 #include <boost/type_traits/add_pointer.hpp>
-#include <boost/mpl/placeholders.hpp>
-#include <boost/fusion/mpl.hpp>
 
 #include <vector>
 
@@ -33,21 +38,10 @@ Button,
 Platform,
 Portal,
 TriggerData,
-RemoteDepartureEdit<Box>,//theif
-RemoteDepartureEdit<Box>,//extra
-RemoteDepartureEdit<Guy> //extra
+RemoteDepartureEdit<Thief,Box>,
+RemoteDepartureEdit<Extra,Box>,
+RemoteDepartureEdit<Extra,Guy>
 > ObjectListTypes;
-enum ElementID {
-    guyList = 0,
-    boxList = 1,
-    buttonList = 2,
-    platformList = 3,
-    portalList = 4,
-    triggerDataList = 5,
-    boxThiefList = 6,
-    boxExtraList = 7,
-    guyExtraList = 8
-};
 }
 // Object list stores all data sent between frames or to rendering engine
 class ObjectList
@@ -57,28 +51,15 @@ public:
 
     ObjectList(const ObjectList& other);
     ObjectList& operator=(const ObjectList& other);
-
-    const std::vector<Guy>& getGuyListRef() const;
-    const std::vector<Box>& getBoxListRef() const;
-    const std::vector<Button>& getButtonListRef() const;
-    const std::vector<Platform>& getPlatformListRef() const;
-    const std::vector<Portal>& getPortalListRef() const;
-    const std::vector<TriggerData>& getTriggerDataListRef() const;
-    const std::vector<RemoteDepartureEdit<Box> >& getBoxThiefListRef() const;
-    const std::vector<RemoteDepartureEdit<Box> >& getBoxExtraListRef() const;
-    const std::vector<RemoteDepartureEdit<Guy> >& getGuyExtraListRef() const;
-    //Add other ref getters as needed
-
-    void add(const Guy& toCopy);
-    void add(const Box& toCopy);
-    void add(const Button& toCopy);
-    void add(const Platform& toCopy);
-    void add(const Portal& toCopy);
-    void add(const TriggerData& toCopy);
-    void addThief(const RemoteDepartureEdit<Box>& toCopy);
-    void addExtra(const RemoteDepartureEdit<Box>& toCopy);
-    void addExtra(const RemoteDepartureEdit<Guy>& toCopy);
-
+    
+    template<typename ObjectT>
+    typename vector_of<ObjectT>::type const& getList() const;
+    
+    template<typename ObjectT>
+    void add(const ObjectT& toCopy);
+    
+    template<typename ObjectRangeT>
+    void addRange(const ObjectRangeT& toAdd);
 
     void add(const ObjectList& other);
     //MUST CALL this to make lists sorted (required for operator==)
@@ -98,6 +79,46 @@ private:
     ObjectListType objectList_;
 };
 void swap(ObjectList& l, ObjectList& r);
+
+template<typename ObjectT>
+void ObjectList::add(const ObjectT& toCopy)
+{
+    boost::fusion::deref(
+        boost::fusion::find<
+            typename vector_of<ObjectT>::type
+        >(objectList_)
+    ).push_back(toCopy);
+#ifndef NDEBUG
+    sorted = false;
+#endif //NDEBUG
+}
+
+template<typename ObjectRangeT>
+void ObjectList::addRange(const ObjectRangeT& toAdd)
+{
+    boost::push_back(
+        boost::fusion::deref(
+            boost::fusion::find<
+                typename vector_of<typename boost::range_value<ObjectRangeT>::type >::type
+            >(objectList_)),
+        toAdd);
+#ifndef NDEBUG
+    sorted = false;
+#endif //NDEBUG
+}
+
+//Be very careful about using this on unsorted lists.
+//REALLY! BE CAREFUL. You could end up with non-deterministic/unstable stuff 
+//if you have code which depends on the order of the resulting range.
+template<typename ObjectT>
+typename vector_of<ObjectT>::type const& ObjectList::getList() const
+{
+    return boost::fusion::deref(
+        boost::fusion::find<
+            typename vector_of<ObjectT>::type
+        >(objectList_));
+}
+
 class ObjectPtrList
 {
 public:
@@ -106,16 +127,8 @@ public:
     ObjectPtrList(const ObjectPtrList& other);
     ObjectPtrList& operator=(const ObjectPtrList& other);
 
-    boost::indirected_range<const std::vector<const Guy*> > getGuyListRef() const;
-    boost::indirected_range<const std::vector<const Box*> > getBoxListRef() const;
-    boost::indirected_range<const std::vector<const Button*> > getButtonListRef() const;
-    boost::indirected_range<const std::vector<const Platform*> > getPlatformListRef() const;
-    boost::indirected_range<const std::vector<const Portal*> > getPortalListRef() const;
-    boost::indirected_range<const std::vector<const TriggerData*> > getTriggerDataListRef() const;
-    boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>* > > getBoxThiefListRef() const;
-    boost::indirected_range<const std::vector<const RemoteDepartureEdit<Box>* > > getBoxExtraListRef() const;
-    boost::indirected_range<const std::vector<const RemoteDepartureEdit<Guy>* > > getGuyExtraListRef() const;
-    //Add other ref getters as needed
+    template<typename ObjectT>
+    boost::indirected_range<const typename vector_of<const ObjectT*>::type > getList() const;
 
     void add(const ObjectList& other);
 
@@ -125,9 +138,23 @@ public:
     void swap(ObjectPtrList& other);
 
 private:
-    typedef boost::mpl::transform< object_list_detail::ObjectListTypes,vector_of<boost::add_pointer<boost::add_const<boost::mpl::_1> > > >::type ObjectPtrListType;
+    typedef
+    boost::mpl::transform<
+        object_list_detail::ObjectListTypes,
+        vector_of<
+            boost::add_pointer<
+                boost::add_const<boost::mpl::_1> > > >::type ObjectPtrListType;
     ObjectPtrListType objectPtrList_;
 };
 void swap(ObjectPtrList& l, ObjectPtrList& r);
+template<typename ObjectT>
+boost::indirected_range<const typename vector_of<const ObjectT*>::type > ObjectPtrList::getList() const
+{
+    return boost::adaptors::indirect(
+        boost::fusion::deref(
+            boost::fusion::find<
+                typename vector_of<const ObjectT*>::type
+            >(objectPtrList_)));
+}
 }
 #endif //HG_OBJECT_LIST_H

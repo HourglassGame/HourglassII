@@ -1,26 +1,28 @@
 #ifndef HG_REMOTE_DEPARTURE_EDIT_H
 #define HG_REMOTE_DEPARTURE_EDIT_H
 #include "PauseInitiatorID.h"
-
 namespace hg {
-template <class Type> class RemoteDepartureEdit
+struct Extra {};
+struct Thief {};
+template <typename EditT, typename ObjectT>
+class RemoteDepartureEdit
 {
 public:
-    RemoteDepartureEdit(const PauseInitiatorID& origin, const Type& departure, bool propIntoNormal);
-    RemoteDepartureEdit(const RemoteDepartureEdit<Type>& other);
-    RemoteDepartureEdit& operator=(const RemoteDepartureEdit<Type>& other);
+    RemoteDepartureEdit(const PauseInitiatorID& origin, const ObjectT& departure, bool propIntoNormal);
+    RemoteDepartureEdit(const RemoteDepartureEdit<EditT, ObjectT>& other);
+    RemoteDepartureEdit& operator=(const RemoteDepartureEdit<EditT, ObjectT>& other);
 
-    const Type& getDeparture() const;
+    const ObjectT& getDeparture() const;
     const PauseInitiatorID& getOrigin() const;
-    const bool getPropIntoNormal() const;
+    bool getPropIntoNormal() const;
     
-    bool operator!=(const RemoteDepartureEdit<Type>& other) const;
-    bool operator==(const RemoteDepartureEdit<Type>& other) const;
+    bool operator!=(const RemoteDepartureEdit<EditT, ObjectT>& other) const;
+    bool operator==(const RemoteDepartureEdit<EditT, ObjectT>& other) const;
 
-    bool operator<(const RemoteDepartureEdit<Type>& second) const;
+    bool operator<(const RemoteDepartureEdit<EditT, ObjectT>& second) const;
 private:
     PauseInitiatorID origin_;
-    Type departure_;
+    ObjectT departure_;
     bool propIntoNormal_;
 };
 }

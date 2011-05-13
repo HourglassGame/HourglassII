@@ -171,7 +171,7 @@ int main()
                 TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
                 if (waveInfo.currentPlayerFrame()) {
                     const ObjectPtrList& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
-                    TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getGuyListRef()));
+                    TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
                     inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
                     drawnFrame = FrameID(waveInfo.currentPlayerFrame());
                     Draw(
@@ -223,11 +223,11 @@ namespace  {
 void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection)
 {
     DrawWall(target, wall);
-    DrawPortals(target, frame.getPortalListRef(), playerDirection);
-    DrawBoxes(target, frame.getBoxListRef(), playerDirection);
-    DrawGuys(target, frame.getGuyListRef(), playerDirection);
-    DrawButtons(target, frame.getButtonListRef(), playerDirection);
-    DrawPlatforms(target, frame.getPlatformListRef(), playerDirection);
+    DrawPortals(target, frame.getList<Portal>(), playerDirection);
+    DrawBoxes(target, frame.getList<Box>(), playerDirection);
+    DrawGuys(target, frame.getList<Guy>(), playerDirection);
+    DrawButtons(target, frame.getList<Button>(), playerDirection);
+    DrawPlatforms(target, frame.getList<Platform>(), playerDirection);
 
 }
 
