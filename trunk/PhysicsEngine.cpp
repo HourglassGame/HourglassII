@@ -49,13 +49,13 @@ namespace {
     };
     ObjectList calculatePausedStaticDepartures(const ObjectPtrList& arrivals) {
         ObjectList retv;
-        foreach (const Platform& platform, arrivals.getPlatformListRef()) {
+        foreach (const Platform& platform, arrivals.getList<Platform>()) {
             retv.add(platform);
         }
-        foreach (const Button& button, arrivals.getButtonListRef()) {
+        foreach (const Button& button, arrivals.getList<Button>()) {
             retv.add(button);
         }
-        foreach (const Portal& portal, arrivals.getPortalListRef()) {
+        foreach (const Portal& portal, arrivals.getList<Portal>()) {
             retv.add(portal);
         }
         return retv;
@@ -133,12 +133,15 @@ namespace {
         const std::vector<char>& squished,
         std::vector<int>& boxesSoFar,
         std::size_t index);
-        template <typename Type, typename RandomAccessEditRange>
-    
+        
+    template <
+        typename Type,
+        typename RandomAccessThiefRange,
+        typename RandomAccessExtraRange>
     void buildDeparturesForComplexEntities(
         const std::vector<ObjectAndTime<Type> >& next,
-        const RandomAccessEditRange& thieves,
-        const RandomAccessEditRange& extras,
+        const RandomAccessThiefRange& thieves,
+        const RandomAccessExtraRange& extras,
         std::map<Frame*, ObjectList>& newDepartures,
         Frame* time,
         std::vector<PauseInitiatorID>& pauseTimes);
@@ -191,7 +194,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     std::vector<ObjectAndTime<Box> > nextBox;
 
     // boxes do their crazy wizz-bang collision algorithm
-    boxCollisionAlogorithm(env_, arrivals.getBoxListRef(), nextBox, staticDepartures.getPlatformListRef(), staticDepartures.getPortalListRef(), time);
+    boxCollisionAlogorithm(env_, arrivals.getList<Box>(), nextBox, staticDepartures.getList<Platform>(), staticDepartures.getList<Portal>(), time);
 
     bool currentPlayerFrame(false);
     bool nextPlayerFrame(false);
@@ -206,13 +209,13 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // guys simple collision algorithm
     guyStep(
         env_,
-        arrivals.getGuyListRef(),
+        arrivals.getList<Guy>(),
         time,
         playerInput,
         nextGuy,
         nextBox,
-        staticDepartures.getPlatformListRef(),
-        staticDepartures.getPortalListRef(),
+        staticDepartures.getList<Platform>(),
+        staticDepartures.getList<Portal>(),
         newDepartures,
         currentPlayerFrame,
         nextPlayerFrame,
@@ -221,13 +224,13 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     buildDepartures(
         nextBox,
-        staticDepartures.getPlatformListRef(),
-        staticDepartures.getPortalListRef(),
-        staticDepartures.getButtonListRef(),
+        staticDepartures.getList<Platform>(),
+        staticDepartures.getList<Portal>(),
+        staticDepartures.getList<Button>(),
         nextGuy,
-        arrivals.getBoxThiefListRef(),
-        arrivals.getBoxExtraListRef(),
-        arrivals.getGuyExtraListRef(),
+        arrivals.getList<RemoteDepartureEdit<Thief,Box> >(),
+        arrivals.getList<RemoteDepartureEdit<Extra,Box> >(),
+        arrivals.getList<RemoteDepartureEdit<Extra,Guy> >(),
         newDepartures,
         time,
         pauseTimes);
@@ -237,7 +240,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add data to departures
     return PhysicsReturnT(newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame);
 }
-
+#if 0
 template <typename Type, typename RandomAccessEditRange>
 void addPausedDepartures(
 		ObjectList& departures,
@@ -343,14 +346,17 @@ void departureEditFunction(
 	}
 
 }
-
+#endif
 
 namespace {
-template <typename Type, typename RandomAccessEditRange>
+template <
+    typename Type,
+    typename RandomAccessThiefRange,
+    typename RandomAccessExtraRange>
 void buildDeparturesForComplexEntities(
     const std::vector<ObjectAndTime<Type> >& next,
-    const RandomAccessEditRange& thieves,
-    const RandomAccessEditRange& extras,
+    const RandomAccessThiefRange& thieves,
+    const RandomAccessExtraRange& extras,
     std::map<Frame*, ObjectList>& newDepartures,
     Frame* time,
     std::vector<PauseInitiatorID>& pauseTimes)
@@ -371,7 +377,8 @@ void buildDeparturesForComplexEntities(
         }
 
         // check if the departure is to be stolen
-        foreach (const RemoteDepartureEdit<Type>& thief, thieves)
+        typedef RemoteDepartureEdit<Thief, Type> thief_t;
+        foreach (const thief_t& thief, thieves)
         {
             if (thief.getDeparture() == thing)
             {
@@ -379,9 +386,9 @@ void buildDeparturesForComplexEntities(
                 // if the departure is a pause departure the departure a level up must also be stolen
                 if (thing.getPauseLevel() != 0)
                 {
-                    newDepartures[getInitiatorFrame(getUniverse(time))].addThief
+                    newDepartures[getInitiatorFrame(getUniverse(time))].add
                     (
-                        RemoteDepartureEdit<Type>
+                        RemoteDepartureEdit<Thief, Type>
                         (
                             getInitiatorID(getUniverse(time)),
                             Type(thing, thing.getTimeDirection(), thing.getPauseLevel()-1),
@@ -420,8 +427,8 @@ void buildDeparturesForComplexEntities(
             // do not do so for root universe (no parent)
             if (thing.getPauseLevel() == 0 && !isNullFrame(getInitiatorFrame(getUniverse(time))))
             {
-            	newDepartures[getInitiatorFrame(getUniverse(time))].addExtra(
-            		RemoteDepartureEdit<Type>(
+            	newDepartures[getInitiatorFrame(getUniverse(time))].add(
+            		RemoteDepartureEdit<Extra,Type>(
 						getInitiatorID(getUniverse(time)),
 						thing,
 						true));
@@ -456,15 +463,17 @@ void buildDeparturesForComplexEntities(
 
     // special departures for things, from pause time
     // these things are pause time things that have changed location in pause time
-    foreach (const RemoteDepartureEdit<Type>& extra, extras)
+    typedef RemoteDepartureEdit<Extra, Type> extra_t;
+    foreach (const extra_t& extra, extras)
     {
         const Type& thing(extra.getDeparture());
 
         // the index of the next normal departure for a thing
         Frame* nextTime(nextFrame(time,thing.getTimeDirection()));
-
+        
         // check if the departure is to be stolen
-        foreach (const RemoteDepartureEdit<Type>& thief, thieves)
+        typedef RemoteDepartureEdit<Thief, Type> thief_t;
+        foreach (const thief_t& thief, thieves)
         {
             if (thief.getDeparture() == thing)
             {
@@ -472,8 +481,8 @@ void buildDeparturesForComplexEntities(
                 // if the departure is a pause departure the departure a level up must also be stolen
                 if (thing.getPauseLevel() != 0)
                 {
-                    newDepartures[getInitiatorFrame(getUniverse(time))].addThief(
-                        RemoteDepartureEdit<Type>(
+                    newDepartures[getInitiatorFrame(getUniverse(time))].add(
+                        RemoteDepartureEdit<Thief, Type>(
                             getInitiatorID(getUniverse(time)),
                             Type(
                                 thing,
@@ -626,8 +635,8 @@ void buildDepartures(
                 parTime = getInitiatorFrame(getUniverse(parTime));
                 // This should be the ONLY place extra guys are added.
                 // REMEMBER: PAUSE TIME GUNS DO NOT WORK
-                newDepartures[parTime].addExtra(
-                    RemoteDepartureEdit<Guy>(
+                newDepartures[parTime].add(
+                    RemoteDepartureEdit<Extra,Guy>(
                         parInit,
                         Guy(guyData, 1),
                         false));
@@ -663,7 +672,8 @@ void buildDepartures(
     }
 
     // build departure for extra guys (purely graphical things to do with pause order)
-    foreach (const RemoteDepartureEdit<Guy>& extraGuy, extraGuys)
+    typedef RemoteDepartureEdit<Extra, Guy> extra_t;
+    foreach (const extra_t& extraGuy, extraGuys)
     {
         // add pause time departure to pause times after the current one
         foreach (const PauseInitiatorID& pauseTime, pauseTimes | boost::adaptors::reversed)
@@ -1062,9 +1072,9 @@ void guyStep(
                                 {
                                     PauseInitiatorID parInit(getInitiatorID(getUniverse(parTime)));
                                     parTime = getInitiatorFrame(getUniverse(parTime));
-                                    newDepartures[parTime].addExtra
+                                    newDepartures[parTime].add
                                     (
-                                        RemoteDepartureEdit<Box>
+                                        RemoteDepartureEdit<Extra, Box>
                                         (
                                             parInit,
                                             Box
@@ -1117,8 +1127,8 @@ void guyStep(
                             carryPauseLevel[i] = nextBox[j].object.getPauseLevel();
                             if (nextBox[j].object.getPauseLevel() != 0)
                             {
-                                newDepartures[getInitiatorFrame(getUniverse(time))].addThief(
-                                    RemoteDepartureEdit<Box>(
+                                newDepartures[getInitiatorFrame(getUniverse(time))].add(
+                                    RemoteDepartureEdit<Thief, Box>(
                                         getInitiatorID(getUniverse(time)),
                                         Box(
                                             boxX, boxY, nextBox[j].object.getXspeed(), nextBox[j].object.getYspeed(),

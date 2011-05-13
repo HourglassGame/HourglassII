@@ -2,10 +2,10 @@
 #define HG_REMOTE_DEPARTURE_EDIT_DEF
 #include "RemoteDepartureEdit.h"
 namespace hg {
-template <typename Type>
-RemoteDepartureEdit<Type>::RemoteDepartureEdit(
+template <typename EditT, typename ObjectT>
+RemoteDepartureEdit<EditT, ObjectT>::RemoteDepartureEdit(
     const PauseInitiatorID& origin,
-    const Type& departure,
+    const ObjectT& departure,
     bool propIntoNormal) :
         origin_(origin),
         departure_(departure),
@@ -13,16 +13,16 @@ RemoteDepartureEdit<Type>::RemoteDepartureEdit(
 {
 }
 
-template <typename Type>
-RemoteDepartureEdit<Type>::RemoteDepartureEdit(const RemoteDepartureEdit<Type>& other) :
+template <typename EditT, typename ObjectT>
+RemoteDepartureEdit<EditT, ObjectT>::RemoteDepartureEdit(const RemoteDepartureEdit<EditT, ObjectT>& other) :
         origin_(other.origin_),
         departure_(other.departure_),
         propIntoNormal_(other.propIntoNormal_)
 {
 }
 
-template <typename Type>
-RemoteDepartureEdit<Type>& RemoteDepartureEdit<Type>::operator=(const RemoteDepartureEdit<Type>& other)
+template <typename EditT, typename ObjectT>
+RemoteDepartureEdit<EditT, ObjectT>& RemoteDepartureEdit<EditT, ObjectT>::operator=(const RemoteDepartureEdit<EditT, ObjectT>& other)
 {
     origin_ = other.origin_;
     departure_ = other.departure_;
@@ -30,37 +30,37 @@ RemoteDepartureEdit<Type>& RemoteDepartureEdit<Type>::operator=(const RemoteDepa
     return *this;
 }
 
-template <typename Type>
-const Type& RemoteDepartureEdit<Type>::getDeparture() const {
+template <typename EditT, typename ObjectT>
+const ObjectT& RemoteDepartureEdit<EditT, ObjectT>::getDeparture() const {
     return departure_;
 }
 
-template <typename Type>
-const PauseInitiatorID& RemoteDepartureEdit<Type>::getOrigin() const {
+template <typename EditT, typename ObjectT>
+const PauseInitiatorID& RemoteDepartureEdit<EditT, ObjectT>::getOrigin() const {
     return origin_;
 }
 
-template <typename Type>
-const bool RemoteDepartureEdit<Type>::getPropIntoNormal() const {
+template <typename EditT, typename ObjectT>
+bool RemoteDepartureEdit<EditT, ObjectT>::getPropIntoNormal() const {
     return propIntoNormal_;
 }
     
-template <typename Type>
-bool RemoteDepartureEdit<Type>::operator!=(const RemoteDepartureEdit<Type>& other) const
+template <typename EditT, typename ObjectT>
+bool RemoteDepartureEdit<EditT, ObjectT>::operator!=(const RemoteDepartureEdit<EditT, ObjectT>& other) const
 {
     return !(*this==other);
 }
 
-template <typename Type>
-bool RemoteDepartureEdit<Type>::operator==(const RemoteDepartureEdit<Type>& other) const
+template <typename EditT, typename ObjectT>
+bool RemoteDepartureEdit<EditT, ObjectT>::operator==(const RemoteDepartureEdit<EditT, ObjectT>& other) const
 {
     return (origin_ == other.origin_)
            && (departure_ == other.departure_)
            && (propIntoNormal_ == other.propIntoNormal_);
 }
 
-template <typename Type>
-bool RemoteDepartureEdit<Type>::operator<(const RemoteDepartureEdit<Type>& other) const
+template <typename EditT, typename ObjectT>
+bool RemoteDepartureEdit<EditT, ObjectT>::operator<(const RemoteDepartureEdit<EditT, ObjectT>& other) const
 {
     if (origin_ == other.origin_) {
         if (departure_ == other.departure_) {

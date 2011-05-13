@@ -8,7 +8,6 @@
 #include <boost/fusion/algorithm.hpp>
 #include <boost/fusion/include/equal_to.hpp>
 #include <boost/fusion/include/vector_tie.hpp>
-#include <boost/fusion/include/at_c.hpp>
 
 #include <cassert>
 
@@ -35,107 +34,6 @@ ObjectList& ObjectList::operator=(const ObjectList& other)
 #endif //NDEBUG
     objectList_ = other.objectList_;
     return *this;
-}
-
-const std::vector<Guy>& ObjectList::getGuyListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::guyList>(objectList_);
-}
-const std::vector<Box>& ObjectList::getBoxListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::boxList>(objectList_);
-}
-const std::vector<Button>& ObjectList::getButtonListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::buttonList>(objectList_);
-}
-const std::vector<Platform>& ObjectList::getPlatformListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::platformList>(objectList_);
-}
-const std::vector<Portal>& ObjectList::getPortalListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::portalList>(objectList_);
-}
-const std::vector<TriggerData >& ObjectList::getTriggerDataListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::triggerDataList>(objectList_);
-}
-const std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxThiefListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::boxThiefList>(objectList_);
-}
-const std::vector<RemoteDepartureEdit<Box> >& ObjectList::getBoxExtraListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::boxExtraList>(objectList_);
-}
-const std::vector<RemoteDepartureEdit<Guy> >& ObjectList::getGuyExtraListRef() const
-{
-    return boost::fusion::at_c<object_list_detail::guyExtraList>(objectList_);
-}
-
-void ObjectList::add(const Guy& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::guyList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::add(const Box& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::boxList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::add(const Button& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::buttonList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::add(const Platform& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::platformList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::add(const Portal& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::portalList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::add(const TriggerData& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::triggerDataList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::addThief(const RemoteDepartureEdit<Box>& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::boxThiefList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::addExtra(const RemoteDepartureEdit<Box>& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::boxExtraList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
-}
-void ObjectList::addExtra(const RemoteDepartureEdit<Guy>& toCopy)
-{
-    boost::fusion::at_c<object_list_detail::guyExtraList>(objectList_).push_back(toCopy);
-#ifndef NDEBUG
-    sorted = false;
-#endif //NDEBUG
 }
 
 namespace {

@@ -69,7 +69,6 @@ private:
     friend Universe& getUniverse(Frame const* frame);
     friend Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID);
     friend std::size_t getFrameNumber(Frame const* frame);
-
     unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const;
 
     void insertArrival(const ArrivalMap::value_type& toInsert);

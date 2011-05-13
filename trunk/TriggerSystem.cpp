@@ -155,17 +155,17 @@ std::vector<char> calculateButtonState(
 {
     std::vector<Button> snappedButtons(
         snapAttachments(
-            arrivals.getButtonListRef(),
-            arrivals.getPlatformListRef(),
+            arrivals.getList<Button>(),
+            arrivals.getList<Platform>(),
             attachments));
     std::vector<char> buttonState(buttonCount, false);
     foreach (const Button& button, snappedButtons) {
-        foreach(const Box& box, arrivals.getBoxListRef()) {
+        foreach(const Box& box, arrivals.getList<Box>()) {
             if (intersectingExclusive(button, box)) {
                 goto intersecting;
             }
         }
-        foreach(const Guy& guy, arrivals.getGuyListRef()) {
+        foreach(const Guy& guy, arrivals.getList<Guy>()) {
             if (intersectingExclusive(button, guy)) {
                 goto intersecting;
             }
@@ -258,21 +258,17 @@ ObjectList TriggerSystem::calculateStaticDepartures(
     assert(isNullFrame(getInitiatorFrame(getUniverse(time))) && "There really is no way for the trigger system to work with pause time (I think?)");
     std::vector<char> buttonState(calculateButtonState(buttonCount_, arrivals, attachmentMap_.getButtonAttachmentRef()));
     ObjectList retv;
-    //TODO - add versions of add which take ranges.
-    foreach (
-        const Platform& platform,
+    retv.addRange(
         getPlatformDepartures(
-            arrivals.getPlatformListRef(),
-            getPlatformDestinations(buttonState, destinations_) | boost::adaptors::indirected))
-    {
-        retv.add(platform);
-    }
+            arrivals.getList<Platform>(),
+            getPlatformDestinations(buttonState, destinations_) | boost::adaptors::indirected));
     foreach (
         const Button& button,
         snapAttachments(
-            arrivals.getButtonListRef(),
-            retv.getPlatformListRef(),
-            attachmentMap_.getButtonAttachmentRef())) {
+            arrivals.getList<Button>(),
+            retv.getList<Platform>(),
+            attachmentMap_.getButtonAttachmentRef()))
+    {
         retv.add(Button(
             button.getX(), button.getY(),
             button.getXspeed(), button.getYspeed(),
@@ -282,14 +278,11 @@ ObjectList TriggerSystem::calculateStaticDepartures(
             button.getTimeDirection(),
             button.getPauseLevel()));
     }
-    foreach (
-        const Portal& portal,
+    retv.addRange(
         snapAttachments(
-            arrivals.getPortalListRef(),
-            retv.getPlatformListRef(),
-            attachmentMap_.getPortalAttachmentRef())) {
-        retv.add(portal);
-    }
+            arrivals.getList<Portal>(),
+            retv.getList<Platform>(),
+            attachmentMap_.getPortalAttachmentRef()));
     return retv;
 }
 }//namespace hg

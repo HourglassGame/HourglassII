@@ -4,7 +4,7 @@
 #include "InputList.h"
 #include "ObjectList.h"
 #include "TriggerSystem.h"
-#include "RemoteDepartureEdit.h"
+#include "RemoteDepartureEdit_def.h"
 #include "Environment.h"
 
 #include <vector>

@@ -46,37 +46,37 @@ WorldState::WorldState(std::size_t timelineLength,
         std::map<Frame*, ObjectList> initialArrivals;
 
         // platforms
-        for (std::vector<Platform>::const_iterator it(initialObjects.getPlatformListRef().begin()),
-                end(initialObjects.getPlatformListRef().end()); it != end; ++it)
+        for (std::vector<Platform>::const_iterator it(initialObjects.getList<Platform>().begin()),
+                end(initialObjects.getList<Platform>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(),it->getTimeDirection())].add(*it);
         }
 
         // boxes
-        for (std::vector<Box>::const_iterator it(initialObjects.getBoxListRef().begin()),
-                end(initialObjects.getBoxListRef().end()); it != end; ++it)
+        for (std::vector<Box>::const_iterator it(initialObjects.getList<Box>().begin()),
+                end(initialObjects.getList<Box>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
 
         // portals
-        for (std::vector<Portal>::const_iterator it(initialObjects.getPortalListRef().begin()),
-                end(initialObjects.getPortalListRef().end()); it != end; ++it)
+        for (std::vector<Portal>::const_iterator it(initialObjects.getList<Portal>().begin()),
+                end(initialObjects.getList<Portal>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
 
         // buttons
-        for (std::vector<Button>::const_iterator it(initialObjects.getButtonListRef().begin()),
-                end(initialObjects.getButtonListRef().end()); it != end; ++it)
+        for (std::vector<Button>::const_iterator it(initialObjects.getList<Button>().begin()),
+                end(initialObjects.getList<Button>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
         
         // guy
-        assert(initialObjects.getGuyListRef().size() == 1
+        assert(initialObjects.getList<Guy>().size() == 1
                && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-        initialArrivals[guyStartFrame].add(initialObjects.getGuyListRef()[0]);
+        initialArrivals[guyStartFrame].add(initialObjects.getList<Guy>()[0]);
 
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }
@@ -130,8 +130,14 @@ FrameUpdateSet WorldState::executeWorld()
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
     parallel_for_each(returnSet, ExecuteFrame(*this, changedFrames));
-    timeline_.updateWithNewDepartures(changedFrames).swap(frameUpdateSet_);
-    if (frameUpdateSet_.empty() && currentWinFrames_.size() == 1) {
+    #if 0
+    //neat new stuff in here somewhere
+    #endif
+    frameUpdateSet_ = timeline_.updateWithNewDepartures(changedFrames);
+
+    if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
+        assert(currentWinFrames_.size() == 1 
+            && "How can a consistent reality have a guy win in multiple frames?");
         throw PlayerVictoryException();
     }
     return returnSet;
