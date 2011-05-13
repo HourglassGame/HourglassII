@@ -238,6 +238,113 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     return PhysicsReturnT(newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame);
 }
 
+template <typename Type, typename RandomAccessEditRange>
+void addPausedDepartures(
+		ObjectList& departures,
+		Type& thing,
+		int pauseLevel,
+		Frame* time,
+		Frame* boundryTime)
+{
+
+	if (boundryTime == 0) // add the pause object to every subframe
+	{
+		foreach (Universe* child, time->getChildrenUniverseList())
+		{
+			foreach(Time* childFrame, child->getFrameList())
+			{
+				departures.add(Type(thing, childFrame, pauseLevel));
+				addPausedDepartures(departures, thing, pauseLevel + 1, childFrame, boundryTime);
+			}
+		}
+	}
+	else
+	{
+		if (thing.getTimeDirection() == hg::FORWARDS) // add the pause object to subframes after boundryTime
+		{
+			foreach (Universe* child, time->getChildrenUniverseList())
+			{
+				foreach(Time* childFrame, child->getFrameList())
+				{
+					if (childFrame > boundryTime)
+					{
+						departures.add(Type(thing, childFrame, pauseLevel));
+						addPausedDepartures(departures, thing, pauseLevel + 1, childFrame, boundryTime);
+					}
+				}
+			}
+		}
+		else // add the pause object to subframes before boundryTime
+		{
+			foreach (Universe* child, time->getChildrenUniverseList())
+			{
+				foreach(Time* childFrame, child->getFrameList())
+				{
+					if (childFrame < boundryTime)
+					{
+						departures.add(Type(thing, childFrame, pauseLevel));
+						addPausedDepartures(departures, thing, pauseLevel + 1, childFrame, boundryTime);
+					}
+				}
+			}
+		}
+	}
+}
+
+
+template <typename Type, typename RandomAccessEditRange> // Type is Box, Guy etc..
+void departureEditFunction(
+		std::map<Frame*, ObjectList>& departures,
+		std::map<Frame*,  ObjectList>& editDepartures,
+		Frame* time)
+{
+	typedef std::pair<Frame*,ObjectList> framePair;
+
+	// adds normal departures as pause objects
+	foreach (const framePair& value, departures)
+	{
+		foreach (Type& thing, value.second().getListRef<Type>())
+	    {
+			if (thing.getPauseLevel() == 0) // pause things are added to departures while departures is being iterated over
+			{
+				if (value.first().getParent() == time.getParent()) // same universe
+				{
+					addPausedDepartures(value.second(), thing, 1, time, 0);
+				}
+				else // child of time
+				{
+					addPausedDepartures(value.second(), thing, 1, time, value.first());
+					// Pause departures should be fully added only to all preceeding universes for forwards objects
+					// and to subsequent universes for reverse objects
+					// * value.first() is the first frame in a pause time for fowards objects.
+					// 		This means they will be added to all pause universes before the one they departed to.
+					// * value.first() is the last frame in a pause time for reverse objects.
+					// 		This means they will be added to all pause universes after the one they departed to.
+				}
+			}
+	    }
+	}
+
+	// add extras
+	// extras consist of a Type and a boundryTime
+	foreach (const framePair& value, editDepartures)
+	{
+		foreach (Extra<Type>& extra, value.second().getExtraListRef<Type>())
+		{
+			Type& thing = extra.getObject();
+			Frame* thingParent = value.first();
+			for (int i = 0; i < thing.getPauseLevel(); ++i)
+			{
+				thingParent = thingParent.getParentFrame();
+			}
+			addPausedDepartures(thingParent.getCorrespondingDepartureObjectList(), thing, 1, time, extra.getBoundryTime());
+			thingParent.getCorrespondingDepartureObjectList.add(thing, 0, value.first().nextTime(thing->timeDirection));
+		}
+	}
+
+}
+
+
 namespace {
 template <typename Type, typename RandomAccessEditRange>
 void buildDeparturesForComplexEntities(
