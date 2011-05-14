@@ -1,6 +1,7 @@
 #ifndef HG_LEVEL_H
 #define HG_LEVEL_H
 #include "ObjectList.h"
+#include "ObjectListTypes.h"
 #include "FrameID.h"
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
@@ -13,14 +14,14 @@ public:
     Level(unsigned int nspeedOfTime,
           std::size_t ntimeLineLength,
           const Environment& nenvironment,
-          const ObjectList& ninitialObjects,
+          const ObjectList<Normal>& ninitialObjects,
           const FrameID& nguyStartTime,
           const TriggerSystem& ntriggerSystem);
 
     unsigned int speedOfTime;
     std::size_t timeLineLength;
     Environment environment;
-    ObjectList initialObjects;
+    ObjectList<Normal> initialObjects;
     FrameID guyStartTime;
     TriggerSystem triggerSystem;
 };

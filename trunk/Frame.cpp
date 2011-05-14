@@ -15,6 +15,8 @@ Frame::Frame(std::size_t frameNumber, Universe& universe):
         universe_(universe),
         departures_(),
         arrivals_(),
+        editDepartures_(),
+        editArrivals_(),
         subUniverses_()
 {
 }
@@ -24,6 +26,8 @@ Frame::Frame(const Frame& other) :
         universe_(other.universe_),
         departures_(other.departures_),
         arrivals_(other.arrivals_),
+        editDepartures_(other.editDepartures_),
+        editArrivals_(other.editArrivals_),
         subUniverses_(other.subUniverses_)
 {
 }
@@ -47,10 +51,10 @@ unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
 }
 
 Universe& Frame::getSubUniverse(PauseInitiatorID const& initiatorID) {
-    SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
+    boost::unordered_map<PauseInitiatorID, Universe>::iterator it(subUniverses_.find(initiatorID));
     if (it == subUniverses_.end())
     {
-        it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
+        it = subUniverses_.insert(boost::unordered_map<PauseInitiatorID, Universe>::value_type(initiatorID, Universe())).first;
         it->second.construct(this, initiatorID.timelineLength_, it->first);
     }
     return it->second;
@@ -75,6 +79,11 @@ std::size_t Frame::getFrameNumber() const {
 }
 
 
+Frame* nextFrame(Frame const* frame, TimeDirection direction)
+{
+    assert(frame);
+    return frame->nextFrame(direction);
+}
 bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction) {
     assert(frame);
     return frame->nextFrameInSameUniverse(direction);
@@ -101,23 +110,24 @@ bool isNullFrame(Frame const* frame) {
 }
 
 namespace {
-    struct FrameNotNull : std::unary_function<const std::pair<Frame*, ObjectList>&, bool> {
-        bool operator()(const std::pair<Frame*, ObjectList>& pair) const {
-            return pair.first;
+    template<typename ListTypes>
+    struct FrameNotNull : std::unary_function<const std::pair<Frame*, ObjectList<ListTypes> >&, bool> {
+        bool operator()(const typename std::pair<Frame*, ObjectList<ListTypes> >& pair) const {
+            return !isNullFrame(pair.first);
         }
     };
 }
 
-FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList>& newDeparture)
+FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture)
 {
     FrameUpdateSet changedTimes;
 
     //filter so that things can safely depart to the null frame
     //such departures do not create arrivals or updated frames, but are saved as departures.
-    typedef boost::filtered_range<FrameNotNull, std::map<Frame*, ObjectList> > filtered_range_t;
+    typedef boost::filtered_range<FrameNotNull<Normal>, std::map<Frame*, ObjectList<Normal> > > filtered_range_t;
 
-    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull()));
-    filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull()));    
+    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<Normal>()));
+    filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull<Normal>()));    
     
     boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
     const boost::range_iterator<filtered_range_t>::type nend(boost::end(newDepartureFiltered));
@@ -170,19 +180,85 @@ end:
     departures_.swap(newDeparture);
     return changedTimes;
 }
-ObjectPtrList Frame::getPrePhysics() const
+
+FrameUpdateSet Frame::updateEditDeparturesFromHere(std::map<Frame*, ObjectList<Edit> >& newDeparture)
 {
-    ObjectPtrList retv;
-    foreach (const ArrivalMap::value_type& value, arrivals_) {
+    FrameUpdateSet changedTimes;
+
+    //filter so that things can safely depart to the null frame
+    //such departures do not create arrivals or updated frames, but are saved as departures.
+    typedef boost::filtered_range<FrameNotNull<Edit>, std::map<Frame*, ObjectList<Edit> > > filtered_range_t;
+
+    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<Edit>()));
+    filtered_range_t oldDepartureFiltered(editDepartures_ | boost::adaptors::filtered(FrameNotNull<Edit>()));    
+    
+    boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
+    const boost::range_iterator<filtered_range_t>::type nend(boost::end(newDepartureFiltered));
+    
+    
+    boost::range_iterator<filtered_range_t>::type oi(boost::begin(oldDepartureFiltered));
+    const boost::range_iterator<filtered_range_t>::type oend(boost::end(oldDepartureFiltered));
+
+    while (oi != oend) {
+        while (true) {
+            if (ni != nend) {
+                if (ni->first < oi->first) {
+                    ni->first->insertEditArrival(std::make_pair(this, &ni->second));
+                    changedTimes.add(ni->first);
+                    ++ni;
+                }
+                else if (ni->first == oi->first) {
+                    if (ni->second != oi->second) {
+                        changedTimes.add(ni->first);
+                    }
+                    //Always change because old pointer will become invalid
+                    ni->first->changeEditArrival(std::make_pair(this, &ni->second));
+                    ++ni;
+                    break;
+                }
+                else {
+                    oi->first->clearEditArrival(this);
+                    changedTimes.add(oi->first);
+                    break;
+                }
+            }
+            else {
+                while (oi != oend) {
+                    oi->first->clearEditArrival(this);
+                    changedTimes.add(oi->first);
+                    ++oi;
+                }
+                goto end;
+            }
+        }
+        ++oi;
+    }
+    while (ni != nend) {
+        ni->first->insertEditArrival(std::make_pair(this, &ni->second));
+        changedTimes.add(ni->first);
+        ++ni;
+    }
+end:
+    editDepartures_.clear();
+    editDepartures_.swap(newDeparture);
+    return changedTimes;
+}
+
+
+ObjectPtrList<Normal>  Frame::getPrePhysics() const
+{
+    ObjectPtrList<Normal>  retv;
+    typedef tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type value_t;
+    foreach (const value_t& value, arrivals_) {
         retv.add(*value.second);
     }
     retv.sort();
     return retv;
 }
-ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const
+ObjectPtrList<Normal>  Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const
 {
-    ObjectPtrList retv;
-    typedef std::map<Frame*, ObjectList>::value_type value_type;
+    ObjectPtrList<Normal>  retv;
+    typedef std::map<Frame*, ObjectList<Normal> >::value_type value_type;
     foreach (const value_type& value, departures_) {
         retv.add(value.second);
     }
@@ -190,19 +266,19 @@ ObjectPtrList Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) c
     return retv;
 }
 
-void Frame::addArrival(Frame* source, ObjectList* arrival)
+void Frame::addArrival(Frame const* source, ObjectList<Normal> const* arrival)
 {
-    arrivals_.insert(ArrivalMap::value_type(source, arrival));
+    insertArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type(source, arrival));
 }
-void Frame::insertArrival(const ArrivalMap::value_type& toInsert)
+void Frame::insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert)
 {
     bool didInsert(arrivals_.insert(toInsert));
     (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
-void Frame::changeArrival(const ArrivalMap::value_type& toChange)
+void Frame::changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange)
 {
-    ArrivalMap::accessor access;
+    tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::accessor access;
     if (arrivals_.find(access, toChange.first))
     {
         access->second = toChange.second;
@@ -210,16 +286,33 @@ void Frame::changeArrival(const ArrivalMap::value_type& toChange)
     }
     assert(false && "Should only call change when the element does exist");
 }
-void Frame::clearArrival(Frame* toClear)
+void Frame::clearArrival(Frame const* toClear)
 {
     bool didErase(arrivals_.erase(toClear));
     (void) didErase;
     assert(didErase && "Should only call Erase when the element does exist");
 }
 
-Frame* nextFrame(Frame const* frame, TimeDirection direction)
+void Frame::insertEditArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type& toInsert)
 {
-    assert(frame);
-    return frame->nextFrame(direction);
+    bool didInsert(editArrivals_.insert(toInsert));
+    (void) didInsert;
+    assert(didInsert && "Should only call insert when the element does not exist");
+}
+void Frame::changeEditArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type& toChange)
+{
+    tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::accessor access;
+    if (editArrivals_.find(access, toChange.first))
+    {
+        access->second = toChange.second;
+        return;
+    }
+    assert(false && "Should only call change when the element does exist");
+}
+void Frame::clearEditArrival(Frame const* toClear)
+{
+    bool didErase(editArrivals_.erase(toClear));
+    (void) didErase;
+    assert(didErase && "Should only call Erase when the element does exist");
 }
 }

@@ -1,6 +1,5 @@
 #ifndef HG_DEPARTURE_MAP_H
 #define HG_DEPARTURE_MAP_H
-#include "ObjectList.h"
 #include <boost/unordered_map.hpp>
 #include <map>
 
@@ -8,23 +7,24 @@
 #include "FrameUpdateSet_fwd.h"
 
 namespace hg {
+template<typename DepartureListT>
 class DepartureMap {
+    typedef typename boost::unordered_map<Frame*, typename std::map<Frame*, DepartureListT> > MapType;
 public:
-    typedef boost::unordered_map<Frame*, std::map<Frame*, ObjectList> > MapType;
-    typedef MapType::value_type ValueType;
-    typedef MapType::value_type         value_type;
-    typedef MapType::pointer            pointer;
-    typedef MapType::const_pointer      const_pointer;
-    typedef MapType::reference          reference;
-    typedef MapType::const_reference    const_reference;
-    typedef MapType::size_type          size_type;
-    typedef MapType::difference_type    difference_type;
-    typedef MapType::iterator           iterator;
-    typedef MapType::const_iterator     const_iterator;
+    typedef typename MapType::value_type         value_type;
+    typedef typename MapType::pointer            pointer;
+    typedef typename MapType::const_pointer      const_pointer;
+    typedef typename MapType::reference          reference;
+    typedef typename MapType::const_reference    const_reference;
+    typedef typename MapType::size_type          size_type;
+    typedef typename MapType::difference_type    difference_type;
+    typedef typename MapType::iterator           iterator;
+    typedef typename MapType::const_iterator     const_iterator;
     DepartureMap();
     //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
     void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor);
-    void addDeparture(Frame* time, std::map<Frame*, ObjectList> departingObjects);
+    void setDeparture(Frame* time, std::map<Frame*, DepartureListT>& departingObjects);
+    
     iterator begin();
     iterator end();
     const_iterator begin() const;

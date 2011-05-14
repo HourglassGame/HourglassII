@@ -23,7 +23,7 @@ public:
     WorldState(std::size_t timelineLength,
                const FrameID& guyStartTime,
                const PhysicsEngine& physics,
-               const ObjectList& initialObjects);
+               const ObjectList<Normal> & initialObjects);
 
     /**
      * Updates the state of the world once.
@@ -50,7 +50,10 @@ public:
     Frame* getFrame(const FrameID& whichFrame);
 private:
     friend struct ExecuteFrame;
-    std::map<Frame*, ObjectList> getDeparturesFromFrame(Frame* frame);
+    std::pair<
+        std::map<Frame*, ObjectList<Normal> >,
+        std::map<Frame*, ObjectList<Edit> > >
+    getDeparturesFromFrame(Frame* frame);
 
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to

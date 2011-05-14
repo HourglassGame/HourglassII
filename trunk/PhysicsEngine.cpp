@@ -42,13 +42,13 @@ namespace {
     };
     struct SortObjectList
     {
-        void operator()(std::pair<Frame* const, ObjectList>& toSortObjectListOf) const
+        void operator()(std::pair<Frame* const, ObjectList<Normal> >& toSortObjectListOf) const
         {
             toSortObjectListOf.second.sort();
         }
     };
-    ObjectList calculatePausedStaticDepartures(const ObjectPtrList& arrivals) {
-        ObjectList retv;
+    ObjectList<Normal>  calculatePausedStaticDepartures(const ObjectPtrList<Normal> & arrivals) {
+        ObjectList<Normal>  retv;
         foreach (const Platform& platform, arrivals.getList<Platform>()) {
             retv.add(platform);
         }
@@ -71,7 +71,7 @@ namespace {
         std::vector<ObjectAndTime<Box> >& nextBox,
         const std::vector<Platform>& nextPlatform,
         const std::vector<Portal>& nextPortal,
-        std::map<Frame*, ObjectList>& newDepartures,
+        std::map<Frame*, ObjectList<Normal> >& newDepartures,
         bool& currentPlayerFrame,
         bool& nextPlayerFrame,
         bool& winFrame,
@@ -142,14 +142,14 @@ namespace {
         const std::vector<ObjectAndTime<Type> >& next,
         const RandomAccessThiefRange& thieves,
         const RandomAccessExtraRange& extras,
-        std::map<Frame*, ObjectList>& newDepartures,
+        std::map<Frame*, ObjectList<Normal> >& newDepartures,
         Frame* time,
         std::vector<PauseInitiatorID>& pauseTimes);
 
     template <class Type>
     void buildDeparturesForReallySimpleThings(
         const std::vector<Type>& next,
-        std::map<Frame*, ObjectList>& newDepartures,
+        std::map<Frame*, ObjectList<Normal> >& newDepartures,
         Frame* time,
         std::vector<PauseInitiatorID>& pauseTimes);
         
@@ -166,7 +166,7 @@ namespace {
         const RandomAccessBoxEditRangeA& boxThieves,
         const RandomAccessBoxEditRangeB& extraBoxes,
         const RandomAccessGuyEditRange& extraGuys,
-        std::map<Frame*, ObjectList>& newDepartures,
+        std::map<Frame*, ObjectList<Normal> >& newDepartures,
         Frame* time,
         std::vector<PauseInitiatorID>& pauseTimes);
         
@@ -182,11 +182,11 @@ namespace {
 
 
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
-    const ObjectPtrList& arrivals,
+    const ObjectPtrList<Normal> & arrivals,
     Frame* time,
     const std::vector<InputList>& playerInput) const
 {
-    /*Static?*/ObjectList staticDepartures(
+    /*Static?*/ObjectList<Normal>  staticDepartures(
         isNullFrame(getInitiatorFrame(getUniverse(time))) ? 
             triggerSystem_.calculateStaticDepartures(arrivals, playerInput, time):
             calculatePausedStaticDepartures(arrivals));
@@ -202,7 +202,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     std::vector<ObjectAndTime<Guy> > nextGuy;
     
-    std::map<Frame*, ObjectList> newDepartures;
+    std::map<Frame*, ObjectList<Normal> > newDepartures;
 
     std::vector<PauseInitiatorID> pauseTimes;
 
@@ -243,7 +243,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 #if 0
 template <typename Type, typename RandomAccessEditRange>
 void addPausedDepartures(
-		ObjectList& departures,
+		ObjectList<Normal> & departures,
 		Type& thing,
 		int pauseLevel,
 		Frame* time,
@@ -297,11 +297,11 @@ void addPausedDepartures(
 
 template <typename Type, typename RandomAccessEditRange> // Type is Box, Guy etc..
 void departureEditFunction(
-		std::map<Frame*, ObjectList>& departures,
-		std::map<Frame*,  ObjectList>& editDepartures,
+		std::map<Frame*, ObjectList<Normal> >& departures,
+		std::map<Frame*,  ObjectList<Normal> >& editDepartures,
 		Frame* time)
 {
-	typedef std::pair<Frame*,ObjectList> framePair;
+	typedef std::pair<Frame*,ObjectList<Normal> > framePair;
 
 	// adds normal departures as pause objects
 	foreach (const framePair& value, departures)
@@ -346,7 +346,17 @@ void departureEditFunction(
 	}
 
 }
+
 #endif
+std::map<Frame*, ObjectList<Normal> > departureEditFunction(
+    const std::map<Frame*, ObjectList<Normal> >& departures,
+	const ObjectPtrList<Edit>& /*edits*/,
+	const Frame* /*time*/)
+{
+    //No edits.
+    return departures;
+}
+
 
 namespace {
 template <
@@ -357,7 +367,7 @@ void buildDeparturesForComplexEntities(
     const std::vector<ObjectAndTime<Type> >& next,
     const RandomAccessThiefRange& thieves,
     const RandomAccessExtraRange& extras,
-    std::map<Frame*, ObjectList>& newDepartures,
+    std::map<Frame*, ObjectList<Normal> >& newDepartures,
     Frame* time,
     std::vector<PauseInitiatorID>& pauseTimes)
 {
@@ -547,7 +557,7 @@ void buildDeparturesForComplexEntities(
 template <class Type>
 void buildDeparturesForReallySimpleThings(
     const std::vector<Type>& next,
-    std::map<Frame*, ObjectList>& newDepartures,
+    std::map<Frame*, ObjectList<Normal> >& newDepartures,
     Frame* time,
     std::vector<PauseInitiatorID>& pauseTimes)
 {
@@ -588,7 +598,7 @@ void buildDepartures(
     const RandomAccessBoxEditRangeA& boxThieves,
     const RandomAccessBoxEditRangeB& extraBoxes,
     const RandomAccessGuyEditRange& extraGuys,
-    std::map<Frame*, ObjectList>& newDepartures,
+    std::map<Frame*, ObjectList<Normal> >& newDepartures,
     Frame* time,
     std::vector<PauseInitiatorID>& pauseTimes)
 {
@@ -712,7 +722,7 @@ void guyStep(
     std::vector<ObjectAndTime<Box> >& nextBox,
     const std::vector<Platform>& nextPlatform,
     const std::vector<Portal>& nextPortal,
-    std::map<Frame*, ObjectList>& newDepartures,
+    std::map<Frame*, ObjectList<Normal> >& newDepartures,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame,

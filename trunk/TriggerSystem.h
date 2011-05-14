@@ -5,6 +5,8 @@
 #include "PlatformDestination.h"
 #include "AttachmentMap.h"
 #include "ObjectList.h"
+#include "ObjectPtrList.h"
+#include "ObjectListTypes.h"
 #include "InputList.h"
 #include "Frame_fwd.h"
 #include <vector>
@@ -39,12 +41,12 @@ TriggerSystem(
 //Therefore, if !(getInitiatorFrame(getUniverse(time))) then this returns a map which contains no statically identifiable object departures.
 //Also creates TriggerObjects. These are a trigger ID combined with arbitrary data 
 //(stored as an int for now, could be changed to be something else if necessecary), which the time engine simply makes depart.
-//Could also return a special ObjectList-ish thing which contains instructions for physics (such as, "create pause here" etc.)
+//Could also return a special ObjectList<Normal> -ish thing which contains instructions for physics (such as, "create pause here" etc.)
 //This would, however, complicate the interface, so I'd like to not do it unless there is a specific reason/level that
 //needs the feature.
 //Note: The time-engine is still responsible for adding the "pause-time departures" of objects with pauseLevel != 0.
-ObjectList calculateStaticDepartures(
-    const ObjectPtrList& arrivals,
+ObjectList<Normal>  calculateStaticDepartures(
+    const ObjectPtrList<Normal> & arrivals,
     const std::vector<InputList>& playerInput,
     const Frame* time) const;
 private:

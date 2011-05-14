@@ -3,7 +3,7 @@ namespace hg {
 Level::Level(unsigned int nspeedOfTime,
              std::size_t ntimeLineLength,
              const Environment& nenvironment,
-             const ObjectList& ninitialObjects,
+             const ObjectList<Normal> & ninitialObjects,
              const FrameID& nguyStartTime,
              const TriggerSystem& ntriggerSystem) :
         speedOfTime(nspeedOfTime),
