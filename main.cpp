@@ -1,6 +1,8 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
+#include "ObjectPtrList.h"
+#include "ObjectListTypes.h"
 #include "TimeEngine.h"
 #include "PlayerVictoryException.h"
 #include "Hg_Input.h"
@@ -114,7 +116,7 @@ using namespace std;
 using namespace ::sf;
 using namespace boost;
 namespace {
-void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
+void Draw(RenderWindow& target, const ObjectPtrList<Normal> & frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
 void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame);
 void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
 template<typename RandomAccessBoxRange>
@@ -170,7 +172,7 @@ int main()
                 FrameID drawnFrame;
                 TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
                 if (waveInfo.currentPlayerFrame()) {
-                    const ObjectPtrList& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
+                    const ObjectPtrList<Normal> & frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
                     TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
                     inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
                     drawnFrame = FrameID(waveInfo.currentPlayerFrame());
@@ -220,7 +222,7 @@ int main()
 }
 
 namespace  {
-void Draw(RenderWindow& target, const ObjectPtrList& frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection)
+void Draw(RenderWindow& target, const ObjectPtrList<Normal> & frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection)
 {
     DrawWall(target, wall);
     DrawPortals(target, frame.getList<Portal>(), playerDirection);
@@ -578,7 +580,7 @@ boost::multi_array<bool, 2> MakeWall()
 
 Level MakeLevel(const boost::multi_array<bool, 2>& wall)
 {
-    ObjectList newObjectList;
+    ObjectList<Normal>  newObjectList;
     //newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS, 0));
     newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS, 0));
     newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS, 0));
@@ -600,7 +602,7 @@ Level MakeLevel(const boost::multi_array<bool, 2>& wall)
                     3200,
                     wall),
                 30),
-            ObjectList(newObjectList),
+            ObjectList<Normal> (newObjectList),
             FrameID(0,UniverseID(10800)),
             TriggerSystem(
                 1,

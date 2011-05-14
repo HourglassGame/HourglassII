@@ -10,6 +10,15 @@ namespace hg {
             assert(a);
             return a / abs(a);
         }
+        //TODO - optimize/use at some stage
+        template<int power>
+        int pow(int num) {
+            int retv(1);
+            for(int i(0); i < power; i) {
+                retv *= num;
+            }
+            return retv;
+        }
     }
 
     PlatformDestinationComponent::PlatformDestinationComponent(
@@ -49,7 +58,7 @@ namespace hg {
 					// if the platform can still stop if it fully accelerates
 					if (abs(pnv.position - desiredPosition_)
 							>
-                        (static_cast<int>(pow(static_cast<double>(
+                        (static_cast<int>(std::pow(static_cast<double>(
                             pnv.velocity - direction * acceleration_), 2))
                          * 3 / (2 * deceleration_)))
 					{

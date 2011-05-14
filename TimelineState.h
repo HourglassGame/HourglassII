@@ -4,6 +4,8 @@
 #include <map>
 #include "Universe.h"
 #include "ObjectList.h"
+#include "ObjectPtrList.h"
+#include "ObjectListTypes.h"
 
 #include "FrameID_fwd.h"
 #include "Frame_fwd.h"
@@ -23,15 +25,16 @@ public:
      * Updates the timeline with new departures and returns the set of frames
      * whose arrivals have changed.
      */
-    FrameUpdateSet updateWithNewDepartures(DepartureMap& newDepartures);
+    FrameUpdateSet updateWithNewDepartures(DepartureMap<ObjectList<Normal> >& newDepartures);
 
+    FrameUpdateSet updateWithNewEditDepartures(DepartureMap<ObjectList<Edit> >& newDepartures);
     /**
      * Creates the arrivals for those objects initially in the level.
      * initialArrivals must contain those arrivals.
      * This should only be called once.
      */
     //Consider moving this into constructor
-    void addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList>& initialArrivals);
+    void addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList<Normal> >& initialArrivals);
 
     /**
      * Converts FrameID into Frame*
@@ -42,7 +45,7 @@ public:
     }
 private:
     Universe universe_;
-    std::map<Frame*, ObjectList> permanentDepartures_;
+    std::map<Frame*, ObjectList<Normal> > permanentDepartures_;
 };
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H

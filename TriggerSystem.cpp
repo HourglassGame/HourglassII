@@ -150,7 +150,7 @@ bool intersectingExclusive(
 
 std::vector<char> calculateButtonState(
     unsigned buttonCount,
-    const ObjectPtrList& arrivals,
+    const ObjectPtrList<Normal> & arrivals,
     const std::vector<Attachment>& attachments)
 {
     std::vector<Button> snappedButtons(
@@ -249,19 +249,27 @@ TriggerSystem::TriggerSystem(
     assert(buttonCount_ == destinations_.size());
 }
 
-ObjectList TriggerSystem::calculateStaticDepartures(
-    const ObjectPtrList& arrivals,
+ObjectList<Normal>  TriggerSystem::calculateStaticDepartures(
+    const ObjectPtrList<Normal> & arrivals,
     const std::vector<InputList>& /*playerInput*/,
     const Frame* time) const
 {
     (void)time;
-    assert(isNullFrame(getInitiatorFrame(getUniverse(time))) && "There really is no way for the trigger system to work with pause time (I think?)");
-    std::vector<char> buttonState(calculateButtonState(buttonCount_, arrivals, attachmentMap_.getButtonAttachmentRef()));
-    ObjectList retv;
+    assert(
+        isNullFrame(
+            getInitiatorFrame(getUniverse(time)))
+        && "There really is no way for the trigger system to work with pause time (I think?)");
+    std::vector<char> buttonState(
+        calculateButtonState(
+            buttonCount_,
+            arrivals,
+            attachmentMap_.getButtonAttachmentRef()));
+    ObjectList<Normal>  retv;
     retv.addRange(
         getPlatformDepartures(
             arrivals.getList<Platform>(),
-            getPlatformDestinations(buttonState, destinations_) | boost::adaptors::indirected));
+            getPlatformDestinations(buttonState, destinations_)
+            | boost::adaptors::indirected));
     foreach (
         const Button& button,
         snapAttachments(
@@ -269,14 +277,15 @@ ObjectList TriggerSystem::calculateStaticDepartures(
             retv.getList<Platform>(),
             attachmentMap_.getButtonAttachmentRef()))
     {
-        retv.add(Button(
-            button.getX(), button.getY(),
-            button.getXspeed(), button.getYspeed(),
-            button.getWidth(), button.getHeight(),
-            button.getIndex(),
-            buttonState[button.getIndex()],
-            button.getTimeDirection(),
-            button.getPauseLevel()));
+        retv.add(
+            Button(
+                button.getX(), button.getY(),
+                button.getXspeed(), button.getYspeed(),
+                button.getWidth(), button.getHeight(),
+                button.getIndex(),
+                buttonState[button.getIndex()],
+                button.getTimeDirection(),
+                button.getPauseLevel()));
     }
     retv.addRange(
         snapAttachments(

@@ -1,1 +1,1 @@
-namespace hg { class DepartureMap; }
+namespace hg { template<typename DepartureListT> class DepartureMap; }
