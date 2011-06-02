@@ -18,7 +18,7 @@
 #include <boost/range/adaptor/filtered.hpp>
 
 #include <cstddef>
-
+//#include <debug/vector>
 #include <iostream>
 
 #include <cmath>
@@ -150,7 +150,6 @@ int main()
         app.SetFramerateLimit(60);
         boost::multi_array<bool, 2> wall(MakeWall());
         TimeEngine timeEngine(MakeLevel(wall));
-
         hg::Input input;
         hg::Inertia inertia;
         while (app.IsOpened())

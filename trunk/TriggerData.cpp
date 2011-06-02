@@ -23,11 +23,6 @@ TriggerData& TriggerData::operator=(const TriggerData& other)
     return *this;
 }
 
-bool TriggerData::operator!=(const TriggerData& other) const
-{
-    return !(*this==other);
-}
-
 bool TriggerData::operator==(const TriggerData& other) const
 {
     return (index_ == other.index_)

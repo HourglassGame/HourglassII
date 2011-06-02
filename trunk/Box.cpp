@@ -54,11 +54,6 @@ Box& Box::operator=(const Box& other)
     return *this;
 }
 
-bool Box::operator!=(const Box& other) const
-{
-    return !(*this==other);
-}
-
 bool Box::operator==(const Box& other) const
 {
     return (x_ == other.x_)

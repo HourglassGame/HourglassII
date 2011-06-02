@@ -3,6 +3,7 @@
 
 #include "TimeDirection.h"
 #include "UniverseID.h"
+#include <boost/operators.hpp>
 #include "Frame_fwd.h"
 
 #include <cstddef>
@@ -10,7 +11,8 @@
 namespace hg {
 //Class following original intention of FrameID. May be too slow for back-end use,
 //Compliments Frame* by not requiring a central authority (ie the base universe) to be used
-class FrameID {
+class FrameID : boost::totally_ordered<FrameID>
+{
 public:
     //Creates a nullframe
     FrameID();
@@ -45,7 +47,6 @@ public:
     FrameID entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const;
 
     bool operator==(const FrameID& other) const;
-    bool operator!=(const FrameID& other) const;
 
     bool operator<(const FrameID& other) const;
 

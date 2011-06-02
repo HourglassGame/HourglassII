@@ -1,10 +1,11 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
 #include "TimeDirection.h"
+#include <boost/operators.hpp>
 #include <cstdlib>
 #include "SortWeakerThanEquality_fwd.h"
 namespace hg {
-class Guy
+class Guy : boost::totally_ordered<Guy>
 {
 public:
     Guy(int x,
@@ -90,7 +91,6 @@ public:
         return index_;
     }
 
-    bool operator!=(const Guy& other) const;
     bool operator==(const Guy& other) const;
 
     bool operator<(const Guy& second) const;

@@ -51,10 +51,10 @@ unsigned int Frame::nextFramePauseLevelDifference(TimeDirection direction) const
 }
 
 Universe& Frame::getSubUniverse(PauseInitiatorID const& initiatorID) {
-    boost::unordered_map<PauseInitiatorID, Universe>::iterator it(subUniverses_.find(initiatorID));
+    SubUniverseMap::iterator it(subUniverses_.find(initiatorID));
     if (it == subUniverses_.end())
     {
-        it = subUniverses_.insert(boost::unordered_map<PauseInitiatorID, Universe>::value_type(initiatorID, Universe())).first;
+        it = subUniverses_.insert(SubUniverseMap::value_type(initiatorID, Universe())).first;
         it->second.construct(this, initiatorID.timelineLength_, it->first);
     }
     return it->second;
@@ -71,13 +71,20 @@ unsigned int Frame::nextFramePauseLevelDifferenceAux(TimeDirection direction, un
         return parent ? parent->nextFramePauseLevelDifferenceAux(direction, accumulator) : accumulator;
     }
 }
-Universe& Frame::getUniverse() const {
+Universe const& Frame::getUniverse() const {
+    return universe_;
+}
+Universe& Frame::getUniverse() {
     return universe_;
 }
 std::size_t Frame::getFrameNumber() const {
     return frameNumber_;
 }
-
+boost::select_second_const_range<Frame::SubUniverseMap>
+    Frame::getSubUniverseList() const
+{
+    return boost::adaptors::values(subUniverses_);
+}
 
 Frame* nextFrame(Frame const* frame, TimeDirection direction)
 {
@@ -92,7 +99,11 @@ unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection dir
     assert(frame);
     return frame->nextFramePauseLevelDifference(direction);
 }
-Universe& getUniverse(Frame const* frame) {
+Universe const& getUniverse(Frame const* frame) {
+    assert(frame);
+    return frame->getUniverse();
+}
+Universe& getUniverse(Frame * frame) {
     assert(frame);
     return frame->getUniverse();
 }
@@ -104,6 +115,77 @@ Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID)
 std::size_t getFrameNumber(Frame const* frame) {
     assert(frame);
     return frame->getFrameNumber();
+}
+boost::select_second_const_range<Frame::SubUniverseMap>
+       getSubUniverseList(Frame const* frame)
+{
+    assert(frame);
+    return frame->getSubUniverseList();
+}
+namespace {
+unsigned getPauseDepth(Frame const* frame) {
+    assert(frame);
+    unsigned depth(0);
+    while ((frame = getInitiatorFrame(getUniverse(frame)))) {
+        ++depth;
+    }
+    return depth;
+}
+int compare(std::size_t l, std::size_t r, TimeDirection direction)
+{
+    assert(direction != INVALID);
+    assert(l != std::numeric_limits<std::size_t>::max());
+    assert(r != std::numeric_limits<std::size_t>::max());
+    if (l < r) {
+        return -direction;
+    }
+    else if (l > r) {
+        return direction;
+    }
+    return 0;
+}
+int compare(PauseInitiatorID const& l, PauseInitiatorID const& r, TimeDirection direction)
+{
+    assert(direction != INVALID);
+    if (l < r) {
+        return -direction;
+    }
+    else if (l > r) {
+        return direction;
+    }
+    return 0;
+}
+}
+int compare(Frame const* l, Frame const* r, TimeDirection direction)
+{
+    assert(l);
+    assert(r);
+    assert(direction != INVALID);
+    unsigned thisDepth(getPauseDepth(l));
+    unsigned otherDepth(getPauseDepth(r));
+    
+    if (thisDepth > otherDepth) {
+        return compare(getInitiatorFrame(getUniverse(l)), r, direction);
+    }
+    else if (otherDepth > thisDepth) {
+        return compare(l, getInitiatorFrame(getUniverse(r)), direction);
+    }
+    int parentComparison(compare(getInitiatorFrame(getUniverse(l)), getInitiatorFrame(getUniverse(r)), direction));
+    if (parentComparison) {
+        return parentComparison;
+    }
+    Frame const* lParent(getInitiatorFrame(getUniverse(l)));
+#ifndef NDEBUG
+    Frame const* rParent(getInitiatorFrame(getUniverse(l)));
+    assert(lParent == rParent);
+#endif
+    if (lParent) {
+        int universeComparison(compare(getInitiatorID(getUniverse(l)), getInitiatorID(getUniverse(r)), direction));
+        if (universeComparison) {
+            return universeComparison;
+        }
+    }
+    return compare(getFrameNumber(l), getFrameNumber(r), direction);
 }
 bool isNullFrame(Frame const* frame) {
     return !frame;
@@ -118,8 +200,17 @@ namespace {
     };
 }
 
+void Frame::setRawDepartures(std::map<Frame*, ObjectList<Normal> >& newDeparture)
+{
+    rawDepartures_.swap(newDeparture);
+}
+std::map<Frame*, ObjectList<Normal> > const& Frame::getRawDepartures() const
+{
+    return rawDepartures_;
+}
 FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture)
 {
+    //Big code duplication between this an updateDeparturesFromHere... Fix at some time.
     FrameUpdateSet changedTimes;
 
     //filter so that things can safely depart to the null frame
@@ -255,6 +346,18 @@ ObjectPtrList<Normal>  Frame::getPrePhysics() const
     retv.sort();
     return retv;
 }
+
+ObjectPtrList<Edit>  Frame::getPreEdits() const
+{
+    ObjectPtrList<Edit>  retv;
+    typedef tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type value_t;
+    foreach (const value_t& value, editArrivals_) {
+        retv.add(*value.second);
+    }
+    retv.sort();
+    return retv;
+}
+
 ObjectPtrList<Normal>  Frame::getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const
 {
     ObjectPtrList<Normal>  retv;

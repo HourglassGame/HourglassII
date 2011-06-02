@@ -7,9 +7,8 @@
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/placeholders.hpp>
 
-#include <boost/fusion/mpl.hpp>
+#include <boost/fusion/include/mpl.hpp>
 #include <boost/fusion/include/find.hpp>
-#include <boost/fusion/container/vector.hpp>
 
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/adaptor/indirected.hpp>

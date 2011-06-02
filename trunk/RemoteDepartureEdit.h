@@ -44,12 +44,6 @@ template <typename EditT, typename ObjectT>
 bool RemoteDepartureEdit<EditT, ObjectT>::getPropIntoNormal() const {
     return propIntoNormal_;
 }
-    
-template <typename EditT, typename ObjectT>
-bool RemoteDepartureEdit<EditT, ObjectT>::operator!=(const RemoteDepartureEdit<EditT, ObjectT>& other) const
-{
-    return !(*this==other);
-}
 
 template <typename EditT, typename ObjectT>
 bool RemoteDepartureEdit<EditT, ObjectT>::operator==(const RemoteDepartureEdit<EditT, ObjectT>& other) const

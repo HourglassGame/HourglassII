@@ -11,25 +11,25 @@ PauseInitiatorID::PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
 {
 }
 
-bool operator==(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
+bool PauseInitiatorID::operator==(const PauseInitiatorID& other) const
 {
-    return lhs.type_ == rhs.type_
-           && lhs.ID_ == rhs.ID_
-           && lhs.timelineLength_ == rhs.timelineLength_;
+    return type_ == other.type_
+           && ID_ == other.ID_
+           && timelineLength_ == other.timelineLength_;
 }
 
-bool operator<(const PauseInitiatorID& lhs, const PauseInitiatorID& rhs)
+bool PauseInitiatorID::operator<(const PauseInitiatorID& other) const
 {
-    if (lhs.type_ == rhs.type_) {
-        if (lhs.ID_ == rhs.ID_) {
-            return lhs.timelineLength_ < rhs.timelineLength_;
+    if (type_ == other.type_) {
+        if (ID_ == other.ID_) {
+            return timelineLength_ < other.timelineLength_;
         }
         else {
-            return lhs.ID_ < rhs.ID_;
+            return ID_ < other.ID_;
         }
     }
     else {
-        return lhs.type_ < rhs.type_;
+        return type_ < other.type_;
     }
 }
 

@@ -158,11 +158,6 @@ Guy& Guy::operator=(const Guy& other)
     return *this;
 }
 
-bool Guy::operator!=(const Guy& other) const
-{
-    return !(*this==other);
-}
-
 bool Guy::operator==(const Guy& other) const
 {
     return  (index_ == other.index_)

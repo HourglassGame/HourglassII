@@ -1,6 +1,6 @@
 #include "WorldState.h"
 
-#include "DepartureMap_def.h"
+#include "DepartureMap.h"
 #include "PlayerVictoryException.h"
 #include "ParallelForEach.h"
 #include "Frame.h"
@@ -15,11 +15,9 @@ struct ExecuteFrame
 {
     ExecuteFrame(
         WorldState& thisptr,
-        DepartureMap<ObjectList<Normal> >& departureMap,
-        DepartureMap<ObjectList<Edit> >& editMap):
+        DepartureMap& departureMap):
             thisptr_(thisptr),
-            departureMap_(departureMap),
-            editMap_(editMap)
+            departureMap_(departureMap)
     {
     }
     void operator()(Frame* time) const
@@ -27,33 +25,59 @@ struct ExecuteFrame
         std::pair<
             std::map<Frame*, ObjectList<Normal> >,
             std::map<Frame*, ObjectList<Edit> > >
-        departures(thisptr_.getDeparturesFromFrame(time));
+                departures(thisptr_.getDeparturesFromFrame(time));
         departureMap_.setDeparture(time, departures.first);
-        editMap_.setDeparture(time, departures.second);
     }
 private:
     WorldState& thisptr_;
-    DepartureMap<ObjectList<Normal> >& departureMap_;
-    DepartureMap<ObjectList<Edit> >& editMap_;
+    DepartureMap& departureMap_;
 };
-#if 0
+
+struct NewExecuteFrame
+{
+    NewExecuteFrame(
+        WorldState& thisptr,
+        RawDepartureMap& rawDepartureMap,
+        EditDepartureMap& editDepartureMap):
+            thisptr_(thisptr),
+            rawDepartureMap_(rawDepartureMap),
+            editDepartureMap_(editDepartureMap)
+    {
+    }
+    void operator()(Frame* time) const
+    {
+        std::pair<
+            std::map<Frame*, ObjectList<Normal> >,
+            std::map<Frame*, ObjectList<Edit> > >
+                departures(thisptr_.getDeparturesFromFrame(time));
+        rawDepartureMap_.setDeparture(time, departures.first);
+        editDepartureMap_.setDeparture(time, departures.second);
+    }
+private:
+    WorldState& thisptr_;
+    RawDepartureMap& rawDepartureMap_;
+    EditDepartureMap& editDepartureMap_;
+};
+
 struct EditDepartures
 {
     EditDepartures(
-        DepartureMap<ObjectList<Normal> >& departureMap):
+        WorldState& thisptr,
+        DepartureMap& departureMap):
+            thisptr_(thisptr),
             departureMap_(departureMap)
     {
     }
     void operator()(Frame* time) const
     {
-        
-        departureMap_.setDeparture(time, departures.first);
-        editMap_.setDeparture(time, departures.second);
+        std::map<Frame*, ObjectList<Normal> > editedDepartures(thisptr_.getEditedDeparturesFromFrame(time));
+        departureMap_.setDeparture(time, editedDepartures);
     }
 private:
-    DepartureMap<ObjectList<Normal> >& departureMap_;
+    WorldState& thisptr_;
+    DepartureMap& departureMap_;
 };
-#endif
+
 WorldState::WorldState(std::size_t timelineLength,
                        const FrameID& guyStartTime,
                        const PhysicsEngine& physics,
@@ -155,6 +179,14 @@ WorldState::getDeparturesFromFrame(Frame* frame)
         retv.edits);
 }
 
+std::map<Frame*, ObjectList<Normal> > WorldState::getEditedDeparturesFromFrame(Frame const* frame)
+{
+    return departureEditFunction(
+        frame->getRawDepartures(),
+        frame->getPreEdits(),
+        frame);
+}
+
 FrameUpdateSet WorldState::executeWorld()
 {
 #if 0
@@ -170,20 +202,46 @@ FrameUpdateSet WorldState::executeWorld()
         throw PlayerVictoryException();
     }
     return returnSet;
-#endif
-    DepartureMap<ObjectList<Normal> > newDepartures;
+
+    DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
-    DepartureMap<ObjectList<Edit> > newEdits;
-    newEdits.makeSpaceFor(frameUpdateSet_);
+    //DepartureMap newEdits;
+    //newEdits.makeSpaceFor(frameUpdateSet_);
+    //RawDepartureMap rawDepartures;
+    //rawDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures, newEdits));
-    //Every frame that was run has potentially changed departures
-    //So need to rerun those
-    FrameUpdateSet editUpdateSet(returnSet);
+    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
+    //Need to rerun frames whose raw departures have changed
+    //FrameUpdateSet editUpdateSet(timeline_.addNewRawDepartures(newRawDepartures));
     //Also need to rerun frames to which Edit arrivals have changed
-    editUpdateSet.add(timeline_.updateWithNewEditDepartures(newEdits));
+    //editUpdateSet.add(timeline_.updateWithNewEditDepartures(newEdits));
+    //DepartureMap newDepartures;
+    //newDepartures.makeSpaceFor(editUpdateSet);
     //parallel_for_each(editUpdateSet, EditDepartures(newDepartures));
+    timeline_.updateWithNewDepartures(newDepartures).swap(frameUpdateSet_);
+    if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
+        assert(currentWinFrames_.size() == 1 
+            && "How can a consistent reality have a guy win in multiple frames?");
+        throw PlayerVictoryException();
+    }
+    return returnSet;
+    #endif
+
+    EditDepartureMap newEditDepartures;
+    newEditDepartures.makeSpaceFor(frameUpdateSet_);
+    RawDepartureMap newRawDepartures;
+    newRawDepartures.makeSpaceFor(frameUpdateSet_);
+    FrameUpdateSet returnSet;
+    frameUpdateSet_.swap(returnSet);
+    parallel_for_each(returnSet, NewExecuteFrame(*this, newRawDepartures, newEditDepartures));
+    //Need to rerun frames whose raw departures have changed
+    FrameUpdateSet editUpdateSet(timeline_.setNewRawDepartures(newRawDepartures));
+    //Also need to rerun frames to which Edit arrivals have changed
+    editUpdateSet.add(timeline_.updateWithNewEditDepartures(newEditDepartures));
+    DepartureMap newDepartures;
+    newDepartures.makeSpaceFor(editUpdateSet);
+    parallel_for_each(editUpdateSet, EditDepartures(*this, newDepartures));
     timeline_.updateWithNewDepartures(newDepartures).swap(frameUpdateSet_);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
