@@ -189,45 +189,6 @@ std::map<Frame*, ObjectList<Normal> > WorldState::getEditedDeparturesFromFrame(F
 
 FrameUpdateSet WorldState::executeWorld()
 {
-#if 0
-    DepartureMap<ObjectList<Normal> > newDepartures;
-    newDepartures.makeSpaceFor(frameUpdateSet_);
-    FrameUpdateSet returnSet;
-    frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
-    frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures);
-    if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
-        assert(currentWinFrames_.size() == 1 
-            && "How can a consistent reality have a guy win in multiple frames?");
-        throw PlayerVictoryException();
-    }
-    return returnSet;
-
-    DepartureMap newDepartures;
-    newDepartures.makeSpaceFor(frameUpdateSet_);
-    //DepartureMap newEdits;
-    //newEdits.makeSpaceFor(frameUpdateSet_);
-    //RawDepartureMap rawDepartures;
-    //rawDepartures.makeSpaceFor(frameUpdateSet_);
-    FrameUpdateSet returnSet;
-    frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
-    //Need to rerun frames whose raw departures have changed
-    //FrameUpdateSet editUpdateSet(timeline_.addNewRawDepartures(newRawDepartures));
-    //Also need to rerun frames to which Edit arrivals have changed
-    //editUpdateSet.add(timeline_.updateWithNewEditDepartures(newEdits));
-    //DepartureMap newDepartures;
-    //newDepartures.makeSpaceFor(editUpdateSet);
-    //parallel_for_each(editUpdateSet, EditDepartures(newDepartures));
-    timeline_.updateWithNewDepartures(newDepartures).swap(frameUpdateSet_);
-    if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
-        assert(currentWinFrames_.size() == 1 
-            && "How can a consistent reality have a guy win in multiple frames?");
-        throw PlayerVictoryException();
-    }
-    return returnSet;
-    #endif
-
     EditDepartureMap newEditDepartures;
     newEditDepartures.makeSpaceFor(frameUpdateSet_);
     RawDepartureMap newRawDepartures;
