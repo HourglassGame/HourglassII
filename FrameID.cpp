@@ -122,9 +122,6 @@ FrameID FrameID::entryChildFrame(
 bool FrameID::operator==(const FrameID& other) const {
     return frame_ == other.frame_ && universeID_ == other.universeID_;
 }
-bool FrameID::operator!=(const FrameID& other) const {
-    return !(*this==other);
-}
 bool FrameID::operator<(const FrameID& other) const {
     return
     universeID_ == other.universeID_ ?

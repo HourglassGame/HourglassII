@@ -135,11 +135,6 @@ Portal& Portal::operator=(const Portal& other)
     return *this;
 }
 
-bool Portal::operator!=(const Portal& other) const
-{
-    return !(*this==other);
-}
-
 bool Portal::operator==(const Portal& other) const
 {
     return (index_ == other.index_)

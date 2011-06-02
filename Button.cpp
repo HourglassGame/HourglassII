@@ -76,11 +76,6 @@ Button& Button::operator=(const Button& other)
     return *this;
 }
 
-bool Button::operator!=(const Button& other) const
-{
-    return !(*this==other);
-}
-
 bool Button::operator==(const Button& other) const
 {
     return (state_ == other.state_)

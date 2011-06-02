@@ -2,10 +2,11 @@
 #define HG_PLATFORM_H
 #include "TimeDirection.h"
 #include "SortWeakerThanEquality_fwd.h"
+#include <boost/operators.hpp>
 #include <cstddef>
 namespace hg
 {
-class Platform
+class Platform : boost::totally_ordered<Platform>
 {
 public:
     Platform(int x, int y, int xspeed, int yspeed, int width, int height, std::size_t index, TimeDirection timeDirection, int pauseLevel);
@@ -42,7 +43,6 @@ public:
     }
 
     bool operator==(const Platform& other) const;
-    bool operator!=(const Platform& other) const;
 
     bool operator<(const Platform& second) const;
 

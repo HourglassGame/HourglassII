@@ -59,11 +59,6 @@ Platform& Platform::operator=(const Platform& other)
     return *this;
 }
 
-bool Platform::operator!=(const Platform& other) const
-{
-    return !(*this==other);
-}
-
 bool Platform::operator==(const Platform& other) const
 {
     return (index_ == other.index_)

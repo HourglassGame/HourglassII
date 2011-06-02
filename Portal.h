@@ -1,11 +1,12 @@
 #ifndef HG_PORTAL_H
 #define HG_PORTAL_H
 #include "TimeDirection.h"
+#include <boost/operators.hpp>
 #include "SortWeakerThanEquality_fwd.h"
 #include <cstddef>
 namespace hg
 {
-class Portal
+class Portal : boost::totally_ordered<Portal>
 {
 public:
     Portal(
@@ -88,7 +89,6 @@ public:
     }
 
     bool operator==(const Portal& other) const;
-    bool operator!=(const Portal& other) const;
 
     bool operator<(const Portal& second) const;
 

@@ -1,11 +1,12 @@
 #ifndef HG_REMOTE_DEPARTURE_EDIT_H
 #define HG_REMOTE_DEPARTURE_EDIT_H
 #include "PauseInitiatorID.h"
+#include <boost/operators.hpp>
 namespace hg {
 struct Extra {};
 struct Thief {};
 template <typename EditT, typename ObjectT>
-class RemoteDepartureEdit
+class RemoteDepartureEdit : boost::totally_ordered<RemoteDepartureEdit<EditT, ObjectT> >
 {
 public:
     RemoteDepartureEdit(const PauseInitiatorID& origin, const ObjectT& departure, bool propIntoNormal);
@@ -16,7 +17,6 @@ public:
     const PauseInitiatorID& getOrigin() const;
     bool getPropIntoNormal() const;
     
-    bool operator!=(const RemoteDepartureEdit<EditT, ObjectT>& other) const;
     bool operator==(const RemoteDepartureEdit<EditT, ObjectT>& other) const;
 
     bool operator<(const RemoteDepartureEdit<EditT, ObjectT>& second) const;

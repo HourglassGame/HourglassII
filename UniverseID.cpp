@@ -7,25 +7,25 @@
 
 #include "Universe.h"
 namespace hg {
-SubUniverse::SubUniverse(std::size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID) :
+SubUniverse::SubUniverse(std::size_t initiatorFrame, PauseInitiatorID const& pauseInitiatorID) :
         initiatorFrame_(initiatorFrame),
         pauseInitiatorID_(pauseInitiatorID)
 {
 }
 
-bool operator==(const SubUniverse& lhs, const SubUniverse& rhs)
+bool SubUniverse::operator==(SubUniverse const& other) const
 {
-    return lhs.initiatorFrame_ == rhs.initiatorFrame_
-           && lhs.pauseInitiatorID_ == rhs.pauseInitiatorID_;
+    return initiatorFrame_ == other.initiatorFrame_
+           && pauseInitiatorID_ == other.pauseInitiatorID_;
 }
 
-bool operator<(const SubUniverse& lhs, const SubUniverse& rhs)
+bool SubUniverse::operator<(const SubUniverse& other) const
 {
-    if (lhs.initiatorFrame_ == rhs.initiatorFrame_) {
-        return lhs.pauseInitiatorID_ < rhs.pauseInitiatorID_;
+    if (initiatorFrame_ == other.initiatorFrame_) {
+        return pauseInitiatorID_ < other.pauseInitiatorID_;
     }
     else {
-        return lhs.initiatorFrame_ < rhs.initiatorFrame_;
+        return initiatorFrame_ < other.initiatorFrame_;
     }
 }
 

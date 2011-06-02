@@ -1,8 +1,9 @@
 #ifndef HG_BOX_H
 #define HG_BOX_H
 #include "TimeDirection.h"
+#include <boost/operators.hpp>
 namespace hg {
-class Box
+class Box : boost::totally_ordered<Box>
 {
 public:
     Box(int x, int y, int xspeed, int yspeed, int size, int illegalPortal, int relativeToPortal, TimeDirection timeDirection, int pauseLevel);
@@ -45,8 +46,6 @@ public:
     }
 
     bool operator==(const Box& other) const;
-    bool operator!=(const Box& other) const;
-
     bool operator<(const Box& second) const;
 
 private:

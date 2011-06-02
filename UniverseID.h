@@ -3,6 +3,7 @@
 
 #include "PauseInitiatorID.h"
 #include <boost/range.hpp>
+#include <boost/operators.hpp>
 #include <vector>
 
 #include "FrameID_fwd.h"
@@ -12,23 +13,21 @@ namespace hg {
 //Identifies the position of a SubUniverse,
 //this includes the frame in which is exists, as well as the ID of the initiator of the universe
 //(which includes the timelineLength of the subuniverse)
-struct SubUniverse {
+struct SubUniverse : boost::totally_ordered<SubUniverse>
+{
     SubUniverse(std::size_t initiatorFrame, const PauseInitiatorID& pauseInitiatorID);
     std::size_t initiatorFrame_;
     PauseInitiatorID pauseInitiatorID_;
+    
+    bool operator==(SubUniverse const& other) const;
+    bool operator<(SubUniverse const& other) const;
 private:
     SubUniverse():
             initiatorFrame_(0),
             pauseInitiatorID_()
     {}
 };
-bool operator==(const SubUniverse& lhs, const SubUniverse& rhs);
-inline bool operator!=(const SubUniverse& lhs, const SubUniverse& rhs)
-{
-    return !(lhs == rhs);
-}
 
-bool operator<(const SubUniverse& lhs, const SubUniverse& rhs);
 
 std::size_t hash_value(const SubUniverse& toHash);
 

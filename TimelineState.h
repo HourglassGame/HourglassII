@@ -25,9 +25,12 @@ public:
      * Updates the timeline with new departures and returns the set of frames
      * whose arrivals have changed.
      */
-    FrameUpdateSet updateWithNewDepartures(DepartureMap<ObjectList<Normal> >& newDepartures);
+    FrameUpdateSet updateWithNewDepartures(DepartureMap& newDepartures);
+    FrameUpdateSet updateWithNewEditDepartures(EditDepartureMap& newEditDepartures);
+    
+    //Returns the set of frames whose departures have changed.
+    FrameUpdateSet setNewRawDepartures(RawDepartureMap& newRawDepartures);
 
-    FrameUpdateSet updateWithNewEditDepartures(DepartureMap<ObjectList<Edit> >& newDepartures);
     /**
      * Creates the arrivals for those objects initially in the level.
      * initialArrivals must contain those arrivals.

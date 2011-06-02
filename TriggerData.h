@@ -1,10 +1,11 @@
 #ifndef HG_TRIGGER_DATA_H
 #define HG_TRIGGER_DATA_H
 #include "SortWeakerThanEquality_fwd.h"
+#include <boost/operators.hpp>
 #include <cstddef>
 namespace hg
 {
-class TriggerData
+class TriggerData : boost::totally_ordered<TriggerData>
 {
 public:
     TriggerData(std::size_t index, int value);
@@ -20,8 +21,7 @@ public:
     }
     
     bool operator==(const TriggerData& other) const;
-    bool operator!=(const TriggerData& other) const;
-
+    
     bool operator<(const TriggerData& second) const;
 
 private:

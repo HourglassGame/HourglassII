@@ -14,6 +14,8 @@
 #include "FrameID_fwd.h"
 namespace hg {
 struct ExecuteFrame;
+struct NewExecuteFrame;
+struct EditDepartures;
 class WorldState {
 public:
     /**
@@ -29,6 +31,8 @@ public:
      * Updates the state of the world once.
      * throws PlayerVictoryException if the player has won
      * in exactly one frame and there are no waves.
+     * Returns the set of frames that were executed (had different arrivals)
+     * Does not include those frames that were just executed had their departures edited
      */
     FrameUpdateSet executeWorld();
 
@@ -50,11 +54,14 @@ public:
     Frame* getFrame(const FrameID& whichFrame);
 private:
     friend struct ExecuteFrame;
+    friend struct NewExecuteFrame;
+    friend struct EditDepartures;
     std::pair<
         std::map<Frame*, ObjectList<Normal> >,
         std::map<Frame*, ObjectList<Edit> > >
     getDeparturesFromFrame(Frame* frame);
-
+    
+    std::map<Frame*, ObjectList<Normal> > getEditedDeparturesFromFrame(Frame const* frame);
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to
     //the input for the guy with the index corresponding to that element.

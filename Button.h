@@ -1,11 +1,12 @@
 #ifndef HG_BUTTON_H
 #define HG_BUTTON_H
 #include "TimeDirection.h"
+#include <boost/operators.hpp>
 #include "SortWeakerThanEquality_fwd.h"
 #include <cstddef>
 namespace hg
 {
-class Button
+class Button : boost::totally_ordered<Button>
 {
 
 public:
@@ -48,7 +49,6 @@ public:
     }
 
     bool operator==(const Button& other) const;
-    bool operator!=(const Button& other) const;
 
     bool operator<(const Button& second) const;
 
