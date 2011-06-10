@@ -14,7 +14,7 @@ namespace hg {
         template<int power>
         int pow(int num) {
             int retv(1);
-            for(int i(0); i < power; i) {
+            for(int i(0); i < power; ++i) {
                 retv *= num;
             }
             return retv;
