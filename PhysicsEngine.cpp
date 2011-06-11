@@ -109,7 +109,7 @@ namespace {
         const std::vector<int>& xTemp,
         std::vector<int>& y,
         const std::vector<int>& size,
-        const std::vector<std::vector<int> >& links,
+                             const std::vector<std::vector<std::size_t> >& links,
         bool firstTime,
         std::vector<char>& toBeSquished,
         const std::vector<int>& bound,
@@ -119,7 +119,7 @@ namespace {
     bool explodeBoxes(
         std::vector<int>& pos,
         const std::vector<int>& size,
-        const std::vector<std::vector<int> >& links,
+                      const std::vector<std::vector<std::size_t> >& links,
         std::vector<char>& toBeSquished,
         const std::vector<int>& bound,
         std::size_t index,
@@ -131,7 +131,7 @@ namespace {
         const std::vector<int>& minorAxis,
         const std::vector<int>& size,
         const std::vector<char>& squished,
-        std::vector<int>& boxesSoFar,
+        std::vector<std::size_t>& boxesSoFar,
         std::size_t index);
         
     template <
@@ -170,7 +170,7 @@ namespace {
         Frame* time,
         std::vector<PauseInitiatorID>& pauseTimes);
         
-    bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
+    //bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
     bool wallAtExclusive(const Environment& env, int x, int y, int w, int h);
         
     bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
@@ -1407,7 +1407,7 @@ void makeBoxAndTimeWithPortals(
 bool explodeBoxes(
     std::vector<int>& pos,
     const std::vector<int>& size,
-    const std::vector<std::vector<int> >& links,
+    const std::vector<std::vector<std::size_t> >& links,
     std::vector<char>& toBeSquished,
     const std::vector<int>& bound,
     std::size_t index,
@@ -1448,7 +1448,7 @@ bool explodeBoxesUpwards(
     const std::vector<int>& xTemp,
     std::vector<int>& y,
     const std::vector<int>& size,
-    const std::vector<std::vector<int> >& links,
+    const std::vector<std::vector<std::size_t> >& links,
     bool firstTime,
     std::vector<char>& toBeSquished,
     const std::vector<int>& bound,
@@ -1500,7 +1500,7 @@ void recursiveBoxCollision(
     const std::vector<int>& minorAxis,
     const std::vector<int>& size,
     const std::vector<char>& squished,
-    std::vector<int>& boxesSoFar,
+    std::vector<std::size_t>& boxesSoFar,
     std::size_t index)
 {
 	boxesSoFar.push_back(index);
@@ -1643,10 +1643,10 @@ void boxCollisionAlogorithm(
 		std::vector<int> left(oldBoxList.size(), 0);
 		std::vector<int> right(oldBoxList.size(), 0);
 
-		std::vector<std::vector<int> > topLinks(oldBoxList.size());
-		std::vector<std::vector<int> > bottomLinks(oldBoxList.size());
-		std::vector<std::vector<int> > rightLinks(oldBoxList.size());
-		std::vector<std::vector<int> > leftLinks(oldBoxList.size());
+		std::vector<std::vector<std::size_t> > topLinks(oldBoxList.size());
+		std::vector<std::vector<std::size_t> > bottomLinks(oldBoxList.size());
+		std::vector<std::vector<std::size_t> > rightLinks(oldBoxList.size());
+		std::vector<std::vector<std::size_t> > leftLinks(oldBoxList.size());
 
 		thereAreStillThingsToDo = false;
 
@@ -1656,10 +1656,10 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				topLinks[i] = std::vector<int>();
-				bottomLinks[i] = std::vector<int>();
-				rightLinks[i] = std::vector<int>();
-				leftLinks[i] = std::vector<int>();
+				topLinks[i] = std::vector<std::size_t>();
+				bottomLinks[i] = std::vector<std::size_t>();
+				rightLinks[i] = std::vector<std::size_t>();
+				leftLinks[i] = std::vector<std::size_t>();
 
 				// Check inside a wall, velocity independent which is why it is so complex
 				bool topRightDiagonal = (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) < (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize());
@@ -1986,7 +1986,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				std::vector<int> pass(0);
+				std::vector<std::size_t> pass(0);
 				recursiveBoxCollision(y, x, size, squished, pass, i);
 			}
 		}
@@ -1996,7 +1996,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				std::vector<int> pass(0);
+				std::vector<std::size_t> pass(0);
 				recursiveBoxCollision(x, y, size, squished, pass, i);
 			}
 		}
@@ -2050,11 +2050,12 @@ void boxCollisionAlogorithm(
 		}
 	}
 }
-
+#if 0
 bool wallAtInclusive(const Environment& env, int x, int y, int w, int h)
 {
     return env.wall.at(x, y) || env.wall.at(x+w, y) || env.wall.at(x, y+h) || env.wall.at(x+w, y+h);
 }
+#endif
 bool wallAtExclusive(const Environment& env, int x, int y, int w, int h)
 {
     return env.wall.at(x+1, y+1) || env.wall.at(x+w-1, y+1) || env.wall.at(x+1, y+h-1) || env.wall.at(x+w-1, y+h-1);
