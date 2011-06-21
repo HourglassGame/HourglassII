@@ -25,8 +25,7 @@ void n_ary_for_each(SequenceOfSequences const & s, Func const & f)
 struct Swap
 {
     template<typename T1, typename T2>
-    void operator()(T1& lhs, T2& rhs) const
-    {
+    void operator()(T1& lhs, T2& rhs) const {
         boost::swap(lhs, rhs);
     }
 };

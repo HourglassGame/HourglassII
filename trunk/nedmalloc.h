@@ -1907,10 +1907,11 @@ static FORCEINLINE int pthread_acquire_lock (MLOCK_T *sl) {
             int cmp = 0;
             int val = 1;
             int ret;
-            __asm__ __volatile__  ("lock; cmpxchgl %1, %2"
-                       : "=a" (ret)
-                                           : "r" (val), "m" (*(lp)), "0"(cmp)
-                                           : "memory", "cc");
+            __asm__ __volatile__  (
+                "lock; cmpxchgl %1, %2"
+                : "=a" (ret)
+                : "r" (val), "m" (*(lp)), "0"(cmp)
+                : "memory", "cc");
             if (!ret) {
                 assert(!sl->threadid);
                 sl->c = 1;
@@ -1940,10 +1941,11 @@ static FORCEINLINE void pthread_release_lock (MLOCK_T *sl) {
         volatile unsigned int* lp = &sl->l;
         int prev = 0;
         int ret;
-        __asm__ __volatile__ ("lock; xchgl %0, %1"
-                      : "=r" (ret)
-                                      : "m" (*(lp)), "0"(prev)
-                                      : "memory");
+        __asm__ __volatile__ (
+            "lock; xchgl %0, %1"
+            : "=r" (ret)
+            : "m" (*(lp)), "0"(prev)
+            : "memory");
     }
 }
 
@@ -1959,10 +1961,11 @@ static FORCEINLINE int pthread_try_lock (MLOCK_T *sl) {
         int cmp = 0;
         int val = 1;
         int ret;
-        __asm__ __volatile__  ("lock; cmpxchgl %1, %2"
-                       : "=a" (ret)
-                                       : "r" (val), "m" (*(lp)), "0"(cmp)
-                                       : "memory", "cc");
+        __asm__ __volatile__  (
+            "lock; cmpxchgl %1, %2"
+            : "=a" (ret)
+            : "r" (val), "m" (*(lp)), "0"(cmp)
+            : "memory", "cc");
         if (!ret) {
             assert(!sl->threadid);
             sl->c = 1;

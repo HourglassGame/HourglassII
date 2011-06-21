@@ -10,19 +10,6 @@ TriggerData::TriggerData(std::size_t index, int value) :
            && "the max value is reserved for representing invalid/null indices");
 }
 
-TriggerData::TriggerData(const TriggerData& other) :
-		index_(other.index_),
-		value_(other.value_)
-{
-}
-
-TriggerData& TriggerData::operator=(const TriggerData& other)
-{
-    index_ = other.index_;
-    value_ = other.value_;
-    return *this;
-}
-
 bool TriggerData::operator==(const TriggerData& other) const
 {
     return (index_ == other.index_)

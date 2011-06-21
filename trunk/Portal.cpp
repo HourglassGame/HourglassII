@@ -88,73 +88,26 @@ Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLe
 {
 }
 
-Portal::Portal(const Portal& other) :
-        x_(other.x_),
-        y_(other.y_),
-        xspeed_(other.xspeed_),
-        yspeed_(other.yspeed_),
-        width_(other.width_),
-        height_(other.height_),
-        index_(other.index_),
-        timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_),
-        charges_(other.charges_),
-        active_(other.active_),
-        xDestination_(other.xDestination_),
-        yDestination_(other.yDestination_),
-        destinationIndex_(other.destinationIndex_),
-        timeDestination_(other.timeDestination_),
-        relativeTime_(other.relativeTime_),
-        illegalDestination_(other.illegalDestination_),
-        fallable_(other.fallable_),
-        winner_(other.winner_)
-{
-}
-
-Portal& Portal::operator=(const Portal& other)
-{
-    x_ = other.x_;
-    y_ = other.y_;
-    xspeed_ = other.xspeed_;
-    yspeed_ = other.yspeed_;
-    width_ = other.width_;
-    height_ = other.height_;
-    index_ = other.index_;
-    timeDirection_ = other.timeDirection_;
-    pauseLevel_ = other.pauseLevel_;
-    charges_ = other.charges_;
-    active_ = other.active_;
-    xDestination_ = other.xDestination_;
-    yDestination_ = other.yDestination_;
-    destinationIndex_ = other.destinationIndex_;
-    timeDestination_ = other.timeDestination_;
-    relativeTime_ = other.relativeTime_;
-    illegalDestination_ = other.illegalDestination_;
-    fallable_ = other.fallable_;
-    winner_ = other.winner_;
-    return *this;
-}
-
 bool Portal::operator==(const Portal& other) const
 {
     return (index_ == other.index_)
-           && (x_ == other.x_)
-           && (y_ == other.y_)
-           && (xspeed_ == other.xspeed_)
-           && (yspeed_ == other.yspeed_)
-           && (pauseLevel_ == other.pauseLevel_)
-           && (charges_ == other.charges_)
-           && (active_ == other.active_)
-           && (destinationIndex_ == other.destinationIndex_)
-           && (timeDestination_ == other.timeDestination_)
-           && (relativeTime_ == other.relativeTime_)
-           && (xDestination_  == other.xDestination_)
-           && (yDestination_ == other.yDestination_)
-           && (width_ == other.width_)
-           && (height_ == other.height_)
-           && (illegalDestination_ == other.illegalDestination_)
-           && (fallable_ == other.fallable_)
-           && (winner_ == other.winner_);
+        && (x_ == other.x_)
+        && (y_ == other.y_)
+        && (xspeed_ == other.xspeed_)
+        && (yspeed_ == other.yspeed_)
+        && (pauseLevel_ == other.pauseLevel_)
+        && (charges_ == other.charges_)
+        && (active_ == other.active_)
+        && (destinationIndex_ == other.destinationIndex_)
+        && (timeDestination_ == other.timeDestination_)
+        && (relativeTime_ == other.relativeTime_)
+        && (xDestination_  == other.xDestination_)
+        && (yDestination_ == other.yDestination_)
+        && (width_ == other.width_)
+        && (height_ == other.height_)
+        && (illegalDestination_ == other.illegalDestination_)
+        && (fallable_ == other.fallable_)
+        && (winner_ == other.winner_);
 }
 
 bool Portal::operator<(const Portal& other) const

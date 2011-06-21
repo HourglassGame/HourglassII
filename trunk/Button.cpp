@@ -47,35 +47,6 @@ Button::Button(const Button& other, TimeDirection timeDirection, int pauseLevel)
 {
 }
 
-Button::Button(const Button& other) :
-        x_(other.x_),
-        y_(other.y_),
-        xspeed_(other.xspeed_),
-        yspeed_(other.yspeed_),
-        width_(other.width_),
-        height_(other.height_),
-        index_(other.index_),
-        state_(other.state_),
-        timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_)
-{
-}
-
-Button& Button::operator=(const Button& other)
-{
-    x_ = other.x_;
-    y_ = other.y_;
-    xspeed_ = other.xspeed_;
-    yspeed_ = other.yspeed_;
-    width_ = other.width_;
-    height_ = other.height_;
-    index_ = other.index_;
-    state_ = other.state_;
-    timeDirection_ = other.timeDirection_;
-    pauseLevel_ = other.pauseLevel_;
-    return *this;
-}
-
 bool Button::operator==(const Button& other) const
 {
     return (state_ == other.state_)

@@ -24,9 +24,6 @@ class ObjectPtrList
 public:
     ObjectPtrList();
 
-    ObjectPtrList(const ObjectPtrList& other);
-    ObjectPtrList& operator=(const ObjectPtrList& other);
-
     template<typename ObjectT>
     boost::indirected_range<const typename vector_of<const ObjectT*>::type > getList() const;
 

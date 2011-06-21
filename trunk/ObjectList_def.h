@@ -23,24 +23,6 @@ ObjectList<ListTypes>::ObjectList() :
 {
 }
 
-template<typename ListTypes>
-ObjectList<ListTypes>::ObjectList(const ObjectList<ListTypes>& other):
-#ifndef NDEBUG
-        sorted(other.sorted),
-#endif //NDEBUG
-        departureList_(other.departureList_)
-{
-}
-template<typename ListTypes>
-ObjectList<ListTypes>& ObjectList<ListTypes>::operator=(const ObjectList<ListTypes>& other)
-{
-#ifndef NDEBUG
-    sorted = other.sorted;
-#endif //NDEBUG
-    departureList_ = other.departureList_;
-    return *this;
-}
-
 namespace {
 	struct Insert
 	{
@@ -89,11 +71,6 @@ bool ObjectList<ListTypes>::operator==(const ObjectList<ListTypes>& other) const
         && "Unless you are being very careful with the insertion order this function requires sort to have been called.");
 #endif //NDEBUG
     return departureList_ == other.departureList_;
-}
-template<typename ListTypes>
-bool ObjectList<ListTypes>::operator!=(const ObjectList<ListTypes>& other) const
-{
-    return !(*this == other);
 }
 
 namespace {

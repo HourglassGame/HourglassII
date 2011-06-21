@@ -13,18 +13,17 @@
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range.hpp>
 
+#include <boost/operators.hpp>
+
 #include <vector>
 
 namespace hg {
 // Object list stores all data sent between frames or to rendering engine
 template<typename ListTypes>
-class ObjectList
+class ObjectList : boost::equality_comparable<ObjectList<ListTypes> >
 {
 public:
     ObjectList();
-
-    ObjectList(const ObjectList& other);
-    ObjectList& operator=(const ObjectList& other);
     
     template<typename ObjectT>
     typename vector_of<ObjectT>::type const& getList() const;
@@ -42,7 +41,6 @@ public:
     void swap(ObjectList& other);
 
     bool operator==(const ObjectList& other) const;
-    bool operator!=(const ObjectList& other) const;
     bool isEmpty() const;
 private:
     friend class ObjectPtrList<ListTypes>;
