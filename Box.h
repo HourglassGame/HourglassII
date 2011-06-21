@@ -6,44 +6,27 @@ namespace hg {
 class Box : boost::totally_ordered<Box>
 {
 public:
-    Box(int x, int y, int xspeed, int yspeed, int size, int illegalPortal, int relativeToPortal, TimeDirection timeDirection, int pauseLevel);
-    Box(const Box& other);
+    Box(int x, int y,
+        int xspeed, int yspeed,
+        int size,
+        int illegalPortal,
+        int relativeToPortal,
+        TimeDirection timeDirection,
+        int pauseLevel);
     Box(const Box& other, TimeDirection timeDirection, int pauseLevel);
-    Box& operator=(const Box& other);
 
-    int getX() const {
-        return x_;
-    }
-    int getY() const {
-        return y_;
-    }
-    int getXspeed() const {
-        return xspeed_;
-    }
-    int getYspeed() const {
-        return yspeed_;
-    }
-    int getSize() const {
-        return size_;
-    }
-    int getWidth() const {
-        return size_;
-    }
-    int getHeight() const {
-        return size_;
-    }
-    int getIllegalPortal() const {
-    	return illegalPortal_;
-	}
-	int getRelativeToPortal() const {
-		return relativeToPortal_;
-	}
-    TimeDirection getTimeDirection() const {
-        return timeDirection_;
-    }
-    int getPauseLevel() const {
-        return pauseLevel_;
-    }
+    int getX()      const { return x_; }
+    int getY()      const { return y_; }
+    int getXspeed() const { return xspeed_; }
+    int getYspeed() const { return yspeed_; }
+    int getSize()   const { return size_; }
+    int getWidth()  const { return size_; }
+    int getHeight() const { return size_; }
+    int getIllegalPortal()    const { return illegalPortal_; }
+	int getRelativeToPortal() const { return relativeToPortal_; }
+    TimeDirection 
+        getTimeDirection()    const { return timeDirection_; }
+    int getPauseLevel()       const { return pauseLevel_; }
 
     bool operator==(const Box& other) const;
     bool operator<(const Box& second) const;

@@ -10,8 +10,6 @@ class RemoteDepartureEdit : boost::totally_ordered<RemoteDepartureEdit<EditT, Ob
 {
 public:
     RemoteDepartureEdit(const PauseInitiatorID& origin, const ObjectT& departure, bool propIntoNormal);
-    RemoteDepartureEdit(const RemoteDepartureEdit<EditT, ObjectT>& other);
-    RemoteDepartureEdit& operator=(const RemoteDepartureEdit<EditT, ObjectT>& other);
 
     const ObjectT& getDeparture() const;
     const PauseInitiatorID& getOrigin() const;

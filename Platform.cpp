@@ -2,9 +2,13 @@
 #include <limits>
 #include <cassert>
 namespace hg {
-Platform::Platform(int x, int y, int xspeed, int yspeed,
-                   int width, int height, size_t index,
-                   TimeDirection timeDirection, int pauseLevel) :
+Platform::Platform(
+    int x, int y,
+    int xspeed, int yspeed,
+    int width, int height,
+    size_t index,
+    TimeDirection timeDirection,
+    int pauseLevel) :
         x_(x),
         y_(y),
         xspeed_(xspeed),
@@ -30,33 +34,6 @@ Platform::Platform(const Platform& other, hg::TimeDirection timeDirection, int p
         timeDirection_(timeDirection),
         pauseLevel_(pauseLevel)
 {
-}
-
-Platform::Platform(const Platform& other) :
-        x_(other.x_),
-        y_(other.y_),
-        xspeed_(other.xspeed_),
-        yspeed_(other.yspeed_),
-        width_(other.width_),
-        height_(other.height_),
-        index_(other.index_),
-        timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_)
-{
-}
-
-Platform& Platform::operator=(const Platform& other)
-{
-    x_ = other.x_;
-    y_ = other.y_;
-    xspeed_ = other.xspeed_;
-    yspeed_ = other.yspeed_;
-    width_ = other.width_;
-    height_ = other.height_;
-    index_ = other.index_;
-    timeDirection_ = other.timeDirection_;
-    pauseLevel_ = other.pauseLevel_;
-    return *this;
 }
 
 bool Platform::operator==(const Platform& other) const

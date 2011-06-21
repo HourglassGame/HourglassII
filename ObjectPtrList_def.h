@@ -18,17 +18,7 @@ ObjectPtrList<ListType>::ObjectPtrList() :
         arrivalList_()
 {
 }
-template<typename ListTypes>
-ObjectPtrList<ListTypes>::ObjectPtrList(const ObjectPtrList<ListTypes>& other):
-        arrivalList_(other.arrivalList_)
-{
-}
-template<typename ListTypes>
-ObjectPtrList<ListTypes>& ObjectPtrList<ListTypes>::operator=(const ObjectPtrList<ListTypes>& other)
-{
-    arrivalList_ = other.arrivalList_;
-    return *this;
-}
+
 namespace {
 template<typename T>
 struct DereferenceLess {

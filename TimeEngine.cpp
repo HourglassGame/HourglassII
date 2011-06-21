@@ -14,7 +14,8 @@ TimeEngine::TimeEngine(const Level& level) :
 {
 }
 
-TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
+TimeEngine::RunResult
+    TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
     updatedList.clear();

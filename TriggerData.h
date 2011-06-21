@@ -9,21 +9,13 @@ class TriggerData : boost::totally_ordered<TriggerData>
 {
 public:
     TriggerData(std::size_t index, int value);
-    TriggerData(const TriggerData& other);
 
-    TriggerData& operator=(const TriggerData& other);
-
-    std::size_t getIndex() const {
-        return index_;
-    }
-    int getValue() const {
-        return value_;
-    }
+    std::size_t getIndex() const { return index_; }
+    int getValue()         const { return value_; }
     
     bool operator==(const TriggerData& other) const;
-    
     bool operator<(const TriggerData& second) const;
-
+    
 private:
     std::size_t index_;
     int value_;

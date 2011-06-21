@@ -1,7 +1,14 @@
 #include "Box.h"
 
 namespace hg {
-Box::Box(int x, int y, int xspeed, int yspeed, int size, int illegalPortal, int relativeToPortal, TimeDirection timeDirection, int pauseLevel):
+Box::Box(
+    int x, int y,
+    int xspeed, int yspeed,
+    int size,
+    int illegalPortal,
+    int relativeToPortal,
+    TimeDirection timeDirection,
+    int pauseLevel):
         x_(x),
         y_(y),
         xspeed_(xspeed),
@@ -25,33 +32,6 @@ Box::Box(const Box& other, hg::TimeDirection timeDirection, int pauseLevel) :
         timeDirection_(timeDirection),
         pauseLevel_(pauseLevel)
 {
-}
-
-Box::Box(const Box& other) :
-        x_(other.x_),
-        y_(other.y_),
-        xspeed_(other.xspeed_),
-        yspeed_(other.yspeed_),
-        size_(other.size_),
-        illegalPortal_(other.illegalPortal_),
-        relativeToPortal_(other.relativeToPortal_),
-        timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_)
-{
-}
-
-Box& Box::operator=(const Box& other)
-{
-    x_ = other.x_;
-    y_ = other.y_;
-    xspeed_ = other.xspeed_;
-    yspeed_ = other.yspeed_;
-    size_ = other.size_;
-    illegalPortal_ = other.illegalPortal_;
-    relativeToPortal_ = other.relativeToPortal_;
-    timeDirection_ = other.timeDirection_;
-    pauseLevel_ = other.pauseLevel_;
-    return *this;
 }
 
 bool Box::operator==(const Box& other) const

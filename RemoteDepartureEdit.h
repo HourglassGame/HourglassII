@@ -14,23 +14,6 @@ RemoteDepartureEdit<EditT, ObjectT>::RemoteDepartureEdit(
 }
 
 template <typename EditT, typename ObjectT>
-RemoteDepartureEdit<EditT, ObjectT>::RemoteDepartureEdit(const RemoteDepartureEdit<EditT, ObjectT>& other) :
-        origin_(other.origin_),
-        departure_(other.departure_),
-        propIntoNormal_(other.propIntoNormal_)
-{
-}
-
-template <typename EditT, typename ObjectT>
-RemoteDepartureEdit<EditT, ObjectT>& RemoteDepartureEdit<EditT, ObjectT>::operator=(const RemoteDepartureEdit<EditT, ObjectT>& other)
-{
-    origin_ = other.origin_;
-    departure_ = other.departure_;
-    propIntoNormal_ = other.propIntoNormal_;
-    return *this;
-}
-
-template <typename EditT, typename ObjectT>
 const ObjectT& RemoteDepartureEdit<EditT, ObjectT>::getDeparture() const {
     return departure_;
 }
