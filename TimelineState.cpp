@@ -90,7 +90,7 @@ void TimelineState::addArrivalsFromPermanentDepartureFrame(std::map<Frame*, Obje
     }
 }
 
-Frame* TimelineState::getFrame(const FrameID& whichFrame)
+Frame* TimelineState::getFrame(FrameID const& whichFrame)
 {
     return universe_.getFrame(whichFrame);
 }

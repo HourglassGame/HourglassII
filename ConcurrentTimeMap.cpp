@@ -7,7 +7,8 @@ ConcurrentTimeMap::ConcurrentTimeMap() :
 
 void ConcurrentTimeMap::add(Frame* toAdd, TimeDirection direction)
 {
-//in this implementation the comment about adding or removing a particular frame concurrently
+//In this implementation the comment about adding
+//or removing a particular frame concurrently
 //is not true. These operations are safe.
     MapType::accessor acc;
     if (!map_.insert(acc, MapType::value_type(toAdd, direction))) {

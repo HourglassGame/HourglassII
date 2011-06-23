@@ -10,7 +10,7 @@ void parallel_for_each(SinglePassRange& range, Func func)
     tbb::parallel_do(boost::begin(range), boost::end(range), func);
 }
 template<typename SinglePassRange, typename Func>
-void parallel_for_each(const SinglePassRange& range, Func func)
+void parallel_for_each(SinglePassRange const& range, Func func)
 {
     tbb::parallel_do(boost::begin(range), boost::end(range), func);
 }

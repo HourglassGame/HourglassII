@@ -42,7 +42,7 @@ public:
     /**
      * Converts FrameID into Frame*
      */
-    Frame* getFrame(const FrameID& whichFrame);
+    Frame* getFrame(FrameID const& whichFrame);
     Universe& getUniverse() {
         return universe_;
     }

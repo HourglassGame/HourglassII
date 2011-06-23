@@ -6,11 +6,11 @@ namespace hg {
 template <typename T>
 struct BoostHashCompare
 {
-    bool equal( const T& j, const T& k ) const
+    bool equal(T const& j, T const& k) const
     {
         return j == k;
     }
-    std::size_t hash( const T& k ) const
+    std::size_t hash(T const& k) const
     {
         return boost::hash<T>()(k);
     }

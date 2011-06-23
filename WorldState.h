@@ -23,9 +23,9 @@ public:
      * Throws an exception if the world state is not consistent.
      */
     WorldState(std::size_t timelineLength,
-               const FrameID& guyStartTime,
-               const PhysicsEngine& physics,
-               const ObjectList<Normal> & initialObjects);
+               FrameID const& guyStartTime,
+               PhysicsEngine const& physics,
+               ObjectList<Normal> const& initialObjects);
 
     /**
      * Updates the state of the world once.
@@ -39,7 +39,7 @@ public:
     /**
      * Stores the given input data, allowing the player to exist for another step.
      */
-    void addNewInputData(const InputList& newInputData);
+    void addNewInputData(InputList const& newInputData);
 
     /**
     * Returns the frame containing the oldest (highest relative index) Guy who has input.
@@ -51,7 +51,7 @@ public:
         return playerInput_;
     };
 
-    Frame* getFrame(const FrameID& whichFrame);
+    Frame* getFrame(FrameID const& whichFrame);
 private:
     friend struct ExecuteFrame;
     friend struct NewExecuteFrame;

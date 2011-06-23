@@ -10,7 +10,7 @@ public:
     FrameUpdateSet();
 
     void add(Frame* frame);
-    void add(const FrameUpdateSet& other);
+    void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);
 
     //typedef ConcurrentTimeSet SetType;
@@ -33,6 +33,6 @@ public:
 private:
     SetType updateSet_;
 };
-bool operator==(const FrameUpdateSet& lhs, const FrameUpdateSet& rhs);
+bool operator==(FrameUpdateSet const& lhs, FrameUpdateSet const& rhs);
 }
 #endif //HG_FRAME_UPDATE_SET_H

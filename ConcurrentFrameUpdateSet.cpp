@@ -5,7 +5,7 @@ ConcurrentFrameUpdateSet::ConcurrentFrameUpdateSet() :
         threadLocalMap_()
 {
 }
-void ConcurrentFrameUpdateSet::add(const FrameUpdateSet& toAdd)
+void ConcurrentFrameUpdateSet::add(FrameUpdateSet const& toAdd)
 {
     threadLocalMap_.local().add(toAdd);
 }
@@ -15,7 +15,7 @@ struct FrameUpdateSetCombiner
             taker_(taker)
     {
     }
-    void operator()(const FrameUpdateSet& toAdd) const
+    void operator()(FrameUpdateSet const& toAdd) const
     {
         taker_.add(toAdd);
     }

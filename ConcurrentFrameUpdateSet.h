@@ -6,7 +6,7 @@ namespace hg {
 class ConcurrentFrameUpdateSet {
 public:
     ConcurrentFrameUpdateSet();
-    void add(const FrameUpdateSet& toAdd);
+    void add(FrameUpdateSet const& toAdd);
     FrameUpdateSet merge();
 private:
     typedef tbb::enumerable_thread_specific<FrameUpdateSet> MapType;

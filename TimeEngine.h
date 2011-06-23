@@ -17,13 +17,13 @@ public:
     typedef std::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
-        Frame* currentPlayerFrame() {
+        Frame const* currentPlayerFrame() {
             return currentPlayerFrame_;
         }
-        Frame* nextPlayerFrame() {
+        Frame const* nextPlayerFrame() {
             return nextPlayerFrame_;
         }
-        const FrameListList& updatedFrames() {
+        FrameListList const& updatedFrames() {
             return *updatedFrames_;
         }
         void swap(RunResult& other)
@@ -34,9 +34,9 @@ public:
         }
     private:
         friend class TimeEngine;
-        Frame* currentPlayerFrame_;
-        Frame* nextPlayerFrame_;
-        const FrameListList* updatedFrames_;
+        Frame const* currentPlayerFrame_;
+        Frame const* nextPlayerFrame_;
+        FrameListList const* updatedFrames_;
     };
 
     /**
@@ -48,7 +48,7 @@ public:
      * Throws InvalidLevelException if level is not correct
      * A correct level has exacty one guy.
      */
-    TimeEngine(const Level& level);
+    TimeEngine(Level const& level);
 
 
     /**
@@ -56,12 +56,12 @@ public:
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
      */
-    RunResult runToNextPlayerFrame(const InputList& newInputData);
+    RunResult runToNextPlayerFrame(InputList const& newInputData);
 
     /**
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
      */
-    Frame* getFrame(const FrameID& whichFrame);
+    Frame* getFrame(FrameID const& whichFrame);
     std::vector<InputList> getReplayData() const;
 private:
     unsigned int speedOfTime;
