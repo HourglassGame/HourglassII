@@ -3,10 +3,10 @@ namespace hg {
 Level::Level(
     unsigned nspeedOfTime,
     std::size_t ntimeLineLength,
-    const Environment& nenvironment,
-    const ObjectList<Normal> & ninitialObjects,
-    const FrameID& nguyStartTime,
-    const TriggerSystem& ntriggerSystem) :
+    Environment const& nenvironment,
+    ObjectList<Normal> const& ninitialObjects,
+    FrameID const& nguyStartTime,
+    TriggerSystem const& ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timeLineLength(ntimeLineLength),
         environment(nenvironment),

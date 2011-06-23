@@ -1,5 +1,6 @@
 #include "FrameUpdateSet.h"
 #include <boost/range/algorithm/equal.hpp>
+#include <cassert>
 namespace hg {
 FrameUpdateSet::FrameUpdateSet() :
         updateSet_()
@@ -7,11 +8,10 @@ FrameUpdateSet::FrameUpdateSet() :
 }
 void FrameUpdateSet::add(Frame* frame)
 {
-    if (frame) {
-        updateSet_.insert(frame);
-    }
+    assert(frame);
+    updateSet_.insert(frame);
 }
-void FrameUpdateSet::add(const FrameUpdateSet& other)
+void FrameUpdateSet::add(FrameUpdateSet const& other)
 {
     updateSet_.insert(other.updateSet_.begin(), other.updateSet_.end());
 }
@@ -37,7 +37,7 @@ std::size_t FrameUpdateSet::size() const {
 bool FrameUpdateSet::empty() const {
     return updateSet_.empty();
 }
-bool operator==(const FrameUpdateSet& lhs, const FrameUpdateSet& rhs)
+bool operator==(FrameUpdateSet const& lhs, FrameUpdateSet const& rhs)
 {
     return boost::equal(lhs,rhs);
 }
