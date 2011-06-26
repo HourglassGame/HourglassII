@@ -634,8 +634,8 @@ void buildDepartures(
         }
 
         // Add extra departures if departing from pause time so that subsequent pause times in the same parent frame see
-        // this guy's state at the end of it's pause time. Pause times are ordered.
-        if (nextTime && !nextFrameInSameUniverse(time, guyData.getTimeDirection()) && guyData.getPauseLevel() == 0 )
+        // this guy's state at the end of its pause time. Pause times are ordered.
+        if (nextTime && !nextFrameInSameUniverse(time, guyData.getTimeDirection()) && guyData.getPauseLevel() == 0)
         {
             int universes(nextFramePauseLevelDifference(time, guyData.getTimeDirection()));
             Frame* parTime(time);
@@ -648,7 +648,7 @@ void buildDepartures(
                 newDepartures[parTime].add(
                     RemoteDepartureEdit<Extra,Guy>(
                         parInit,
-                        Guy(guyData, 1),
+                        Guy(guyData, Guy::increment_pause_level_tag()),
                         false));
                 --universes;
             }
@@ -666,17 +666,16 @@ void buildDepartures(
                 }
                 newDepartures[
                     getEntryFrame(getSubUniverse(time, pauseTime), guyData.getTimeDirection())
-                ].add(Guy(guyData, 1));
+                ].add(Guy(guyData, Guy::increment_pause_level_tag()));
             }
         }
         else
         {
             // add pause guy to every pause time universe from this frame
-            foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-            {
+            foreach (const PauseInitiatorID& pauseTime, pauseTimes) {
                 newDepartures[
                     getEntryFrame(getSubUniverse(time, pauseTime),guyData.getTimeDirection())
-                ].add(Guy(guyData, 1));
+                ].add(Guy(guyData, Guy::increment_pause_level_tag()));
             }
         }
     }
@@ -1431,7 +1430,7 @@ bool explodeBoxes(
                 bound,
                 links[index][i],
                 boundSoFar + size[index] * sign,
-                sign) 
+                sign)
             || subSquished;
 	}
 
@@ -1553,12 +1552,12 @@ void boxCollisionAlogorithm(
 	std::vector<char> squished(oldBoxList.size(), false);
 
 	// Make a list of pause boxes, these are collided with like platforms.
-	std::vector<const Box*> pauseBoxes;
+	std::vector<BoxConstPtr> pauseBoxes;
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
 		if (oldBoxList[i].getPauseLevel() != 0)
 		{
-			pauseBoxes.push_back(&oldBoxList[i]);
+			pauseBoxes.push_back(BoxConstPtr(oldBoxList[i]));
 			squished[i] = true; // squished is equivelent to paused as they do not do things
 		}
 		else
@@ -1746,9 +1745,9 @@ void boxCollisionAlogorithm(
 				// Inside paused box
 				for (std::size_t j(0), jsize(pauseBoxes.size()); j < jsize; ++j)
 				{
-					int boxX = pauseBoxes[j]->getX();
-					int boxY = pauseBoxes[j]->getY();
-					int boxSize = pauseBoxes[j]->getSize();
+					int boxX = pauseBoxes[j].getX();
+					int boxY = pauseBoxes[j].getY();
+					int boxSize = pauseBoxes[j].getSize();
 					if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], boxX, boxY, boxSize, boxSize))
 					{
 						if (std::abs(x[i] - boxX) < std::abs(y[i] - boxY)) // top or bot

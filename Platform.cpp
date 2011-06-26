@@ -43,6 +43,7 @@ bool Platform::operator==(const Platform& other) const
            && (y_ == other.y_)
            && (xspeed_ == other.xspeed_)
            && (yspeed_ == other.yspeed_)
+           && (timeDirection_ == other.timeDirection_)
            && (pauseLevel_ == other.pauseLevel_)
            && (width_ == other.width_)
            && (height_ == other.height_);

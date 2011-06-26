@@ -3,6 +3,7 @@
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
 #include "SortWeakerThanEquality_fwd.h"
+#include "ConstPtr_of_fwd.h"
 #include <cstddef>
 namespace hg
 {
@@ -32,8 +33,8 @@ public:
         getTimeDirection() const { return timeDirection_; }
     int getPauseLevel() const { return pauseLevel_; }
 
-    bool operator==(const Button& other) const;
-    bool operator<(const Button& second) const;
+    bool operator==(Button const& other) const;
+    bool operator<(Button const& other) const;
 
 private:
     int x_;
@@ -47,8 +48,41 @@ private:
     TimeDirection timeDirection_;
     int pauseLevel_;
 };
+class ButtonConstPtr : boost::totally_ordered<ButtonConstPtr>
+{
+public:
+    ButtonConstPtr(Button const& button) : button_(&button) {}
+    typedef Button base_type;
+    Button const& get() const  { return *button_; }
+    int getX()      const { return button_->getX(); }
+    int getY()      const { return button_->getY(); }
+    int getXspeed() const { return button_->getXspeed(); }
+    int getYspeed() const { return button_->getYspeed(); }
+    int getWidth()  const { return button_->getWidth(); }
+    int getHeight() const { return button_->getHeight(); }
+    std::size_t getIndex() const { return button_->getIndex(); }
+    bool getState() const { return button_->getState(); }
+    TimeDirection
+        getTimeDirection() const { return button_->getTimeDirection(); }
+    int getPauseLevel() const { return button_->getPauseLevel(); }
+
+    bool operator==(ButtonConstPtr const& other) const { return *button_ == *other.button_; }
+    bool operator<(ButtonConstPtr const& other) const { return *button_ < *other.button_; }
+
+private:
+    Button const* button_;
+};
+template<>
+struct ConstPtr_of<Button> {
+    typedef ButtonConstPtr type;
+};
 template<>
 struct sort_weaker_than_equality<Button>
+{
+    static const bool value = true;
+};
+template<>
+struct sort_weaker_than_equality<ButtonConstPtr>
 {
     static const bool value = true;
 };

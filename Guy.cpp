@@ -43,13 +43,10 @@ Guy::Guy(
 {
 }
 
-Guy::Guy(const Guy& other, int copyType) :
-        x_(other.x_),
-        y_(other.y_),
-        xspeed_(other.xspeed_),
-        yspeed_(other.yspeed_),
-        width_(other.width_),
-        height_(other.height_),
+Guy::Guy(const Guy& other, Guy::increment_pause_level_tag) :
+        x_(other.x_), y_(other.y_),
+        xspeed_(other.xspeed_), yspeed_(other.yspeed_),
+        width_(other.width_), height_(other.height_),
 
         illegalPortal_(other.illegalPortal_),
         relativeToPortal_(other.relativeToPortal_),
@@ -64,14 +61,9 @@ Guy::Guy(const Guy& other, int copyType) :
         boxPauseLevel_(other.boxPauseLevel_),
 
         timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_),
-        index_(other.index_)
+        pauseLevel_(other.pauseLevel_ + 1),
+        index_(other.index_/*std::numeric_limits<std::size_t>::max()*/)
 {
-	if (copyType == 1)
-	{
-		index_ = std::numeric_limits<std::size_t>::max();
-		pauseLevel_ = pauseLevel_ + 1;
-	}
 }
 
 Guy::Guy(const Guy& other, TimeDirection timeDirection, int pauseLevel) :

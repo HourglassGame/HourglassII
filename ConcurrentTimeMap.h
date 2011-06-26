@@ -22,7 +22,7 @@ public:
     //only has safe concurrent access when each thread is calling
     //add or remove with different Frame parameters
     void add(Frame* toAdd, TimeDirection direction);
-    void remove(Frame* toRemove);
+    void remove(Frame const* toRemove);
     
     void clear()                 { map_.clear(); }
     bool empty()           const { return map_.empty(); }

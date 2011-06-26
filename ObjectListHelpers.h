@@ -14,12 +14,13 @@
 
 #include <cassert>
 
+#include <boost/range/algorithm/for_each.hpp>
 namespace {
 template<class SequenceOfSequences, class Func>
 void n_ary_for_each(SequenceOfSequences const & s, Func const & f)
 {
     using namespace boost::fusion;
-    for_each(zip_view<SequenceOfSequences>(s),
+    boost::fusion::for_each(zip_view<SequenceOfSequences>(s),
              fused_procedure<Func const &>(f));
 }
 struct Swap
@@ -38,14 +39,6 @@ struct Equivalent
     }
 };
 
-template<typename T>
-struct Equivalent<T*>
-{
-    bool operator()(T* l, T* r) const {
-        return !(*l < *r) && !(*r < *l);
-    }
-};
-
 template<typename ForwardRange>
 bool containsNoEquivalentElements(const ForwardRange& range)
 {
@@ -56,19 +49,21 @@ bool containsNoEquivalentElements(const ForwardRange& range)
             >())
            == boost::end(range);
 }
-
-template<template<class> class Comparitor = std::less>
 struct Sort
 {
     template <typename ListType>
-    void operator()(ListType& toSort, typename boost::disable_if<hg::sort_weaker_than_equality<ListType> >::type* = 0) const
+    void operator()(
+        ListType& toSort,
+        typename boost::disable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type> >::type* = 0) const
     {
-        boost::sort(toSort, Comparitor<typename ListType::value_type>());
+        boost::sort(toSort, std::less<typename boost::range_value<ListType>::type>());
     }
     template <typename ListType>
-    void operator()(ListType& toSort, typename boost::enable_if<hg::sort_weaker_than_equality<ListType> >::type* = 0) const
+    void operator()(
+        ListType& toSort,
+        typename boost::enable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type > >::type* = 0) const
     {
-        boost::sort(toSort, Comparitor<typename ListType::value_type>());
+        boost::sort(toSort, std::less<typename boost::range_value<ListType>::type>());
         //These lists are sorted on a criterion that allows equivalent elements to not be equal.
         //This means that they must never have equivalent elements, because that could cause equal
         //ObjectLists to be found to be different because the order in which the lists within the
