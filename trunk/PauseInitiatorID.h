@@ -15,9 +15,10 @@ enum PauseInitiatorType {
 class PauseInitiatorID : boost::totally_ordered<PauseInitiatorID>
 {
 public:
-    PauseInitiatorID(pauseinitiatortype::PauseInitiatorType type,
-                     std::size_t ID,
-                     std::size_t timelineLength);
+    PauseInitiatorID(
+        pauseinitiatortype::PauseInitiatorType type,
+        std::size_t ID,
+        std::size_t timelineLength);
     PauseInitiatorID() :
             type_(pauseinitiatortype::INVALID),
             ID_(0),
@@ -30,6 +31,6 @@ public:
     std::size_t timelineLength_;
 };
 
-std::size_t hash_value(const PauseInitiatorID& toHash);
+std::size_t hash_value(PauseInitiatorID const& toHash);
 }
 #endif //HG_PAUSE_INITIATOR_ID

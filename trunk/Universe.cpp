@@ -34,7 +34,13 @@ Universe::Universe(std::size_t timelineLength) :
     construct(initiatorFrame_, timelineLength, *initiatorID_);
 }
 //returns initiatorFrame_
-Frame* Universe::getInitiatorFrame() const
+Frame const* Universe::getInitiatorFrame() const
+{
+    assert(!frames_.empty());
+    return initiatorFrame_;
+}
+//returns initiatorFrame_
+Frame* Universe::getInitiatorFrame()
 {
     assert(!frames_.empty());
     return initiatorFrame_;
@@ -72,10 +78,18 @@ PauseInitiatorID const& Universe::getInitiatorID() const
 
 //Returns the frame which this Universe is a sub universe of.
 //The top level universe is a sub universe of the NullFrame
-Frame* getInitiatorFrame(Universe const& universe)
+Frame const* getInitiatorFrame(Universe const& universe)
 {
     return universe.getInitiatorFrame();
 }
+
+//Returns the frame which this Universe is a sub universe of.
+//The top level universe is a sub universe of the NullFrame
+Frame* getInitiatorFrame(Universe& universe)
+{
+    return universe.getInitiatorFrame();
+}
+
 //Returns the first frame in the universe for objects travelling
 //in TimeDirection direction.
 Frame* getEntryFrame(Universe& universe, TimeDirection direction)
@@ -131,7 +145,7 @@ Frame* Universe::getFrame(const FrameID& whichFrame)
         return getArbitraryFrame(whichFrame.getFrameNumber());
     }
 }
-Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, const PauseInitiatorID& initiatorID) :
+Universe::Universe(Frame* initiatorFrame, std::size_t timelineLength, PauseInitiatorID const& initiatorID) :
         initiatorFrame_(0),
         frames_()
 {

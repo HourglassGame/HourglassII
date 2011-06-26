@@ -21,7 +21,7 @@ Box::Box(
 {
 }
 
-Box::Box(const Box& other, hg::TimeDirection timeDirection, int pauseLevel) :
+Box::Box(Box const& other, hg::TimeDirection timeDirection, int pauseLevel) :
         x_(other.x_),
         y_(other.y_),
         xspeed_(other.xspeed_),
@@ -34,7 +34,7 @@ Box::Box(const Box& other, hg::TimeDirection timeDirection, int pauseLevel) :
 {
 }
 
-bool Box::operator==(const Box& other) const
+bool Box::operator==(Box const& other) const
 {
     return (x_ == other.x_)
            && (y_ == other.y_)

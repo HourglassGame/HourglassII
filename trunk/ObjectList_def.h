@@ -19,7 +19,7 @@ ObjectList<ListTypes>::ObjectList() :
 #ifndef NDEBUG
         sorted(true),
 #endif //NDEBUG
-        departureList_()
+        list_()
 {
 }
 
@@ -37,7 +37,7 @@ template<typename ListTypes>
 void ObjectList<ListTypes>::add(const ObjectList<ListTypes>& other)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(departureList_, other.departureList_), Insert());
+    n_ary_for_each(vector_tie(list_, other.list_), Insert());
 #ifndef NDEBUG
     sorted = false;
 #endif //NDEBUG
@@ -47,7 +47,7 @@ void ObjectList<ListTypes>::add(const ObjectList<ListTypes>& other)
 template<typename ListTypes>
 void ObjectList<ListTypes>::sort()
 {
-    boost::fusion::for_each(departureList_, Sort<>());
+    boost::fusion::for_each(list_, Sort());
 #ifndef NDEBUG
     sorted = true;
 #endif //NDEBUG
@@ -59,7 +59,7 @@ void ObjectList<ListTypes>::swap(ObjectList<ListTypes>& other)
     boost::swap(sorted, other.sorted);
 #endif //NDEBUG
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(departureList_, other.departureList_), Swap());
+    n_ary_for_each(vector_tie(list_, other.list_), Swap());
 }
 template<typename ListTypes>
 bool ObjectList<ListTypes>::operator==(const ObjectList<ListTypes>& other) const
@@ -70,7 +70,7 @@ bool ObjectList<ListTypes>::operator==(const ObjectList<ListTypes>& other) const
         && other.sorted 
         && "Unless you are being very careful with the insertion order this function requires sort to have been called.");
 #endif //NDEBUG
-    return departureList_ == other.departureList_;
+    return list_ == other.list_;
 }
 
 namespace {
@@ -86,7 +86,7 @@ namespace {
 template<typename ListTypes>
 bool ObjectList<ListTypes>::isEmpty() const
 {
-    return boost::fusion::all(departureList_, Empty());
+    return boost::fusion::all(list_, Empty());
 }
 template<typename ObjectT>
 void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r)

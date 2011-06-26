@@ -35,7 +35,8 @@ private:
     //<UniverseT interface>
     //Returns the frame which this Universe is a sub universe of.
     //The top level universe is a sub universe of the NullFrame
-    Frame* getInitiatorFrame() const;
+    Frame const* getInitiatorFrame() const;
+    Frame* getInitiatorFrame();
     //Returns the first frame in the universe for objects travelling
     //in TimeDirection direction.
     Frame* getEntryFrame(TimeDirection direction);
@@ -63,7 +64,8 @@ private:
     //If this is the main universe then behaviour is undefined
     const PauseInitiatorID& getInitiatorID(Universe const& universe);
     
-    friend Frame* getInitiatorFrame(Universe const& universe);
+    friend Frame* getInitiatorFrame(Universe& universe);
+    friend Frame const* getInitiatorFrame(Universe const& universe);
     friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
     friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(Universe const& universe);

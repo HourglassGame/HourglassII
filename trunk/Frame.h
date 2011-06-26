@@ -56,9 +56,11 @@ public:
 
     /**
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
-     * Not sure what the whichPrePause argument is actually there for, so leaving that functionality out for now.
+     * These departures are filtered to be only the departures departing to `toUniverse'.
+     * "Departing to `toUniverse'" is defined as "departing to a frame that is either in `toUniverse',
+     * or the nullFrame". "in `toUniverse'" does not include frames in a subUniverse of `toUniverse'.
      */
-    ObjectPtrList<Normal>  getPostPhysics(/*const PauseInitiatorID& whichPrePause*/) const;
+    ObjectPtrList<Normal>  getPostPhysics(/*Universe const& toUniverse*//*const PauseInitiatorID& whichPrePause*/) const;
 
     //Used for adding arrivals from permanent departure frame
     void addArrival(Frame const* source, ObjectList<Normal> const* arrival);
@@ -70,7 +72,8 @@ private:
     friend class UniverseID;
 
     //Private to enforce use of non-member variants.
-    Frame* nextFrame(TimeDirection direction) const;
+    Frame const* nextFrame(TimeDirection direction) const;
+    Frame* nextFrame(TimeDirection direction);
     unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
     bool nextFrameInSameUniverse(TimeDirection direction) const;
     Universe& getSubUniverse(PauseInitiatorID const& initiatorID);
@@ -80,7 +83,8 @@ private:
     boost::select_second_const_range<SubUniverseMap>
         getSubUniverseList() const;
     
-    friend Frame* nextFrame(Frame const* frame, TimeDirection direction);
+    friend Frame const* nextFrame(Frame const* frame, TimeDirection direction);
+    friend Frame* nextFrame(Frame* frame, TimeDirection direction);
     friend bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
     friend unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection direction);
     friend Universe& getUniverse(Frame * frame);

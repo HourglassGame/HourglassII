@@ -29,18 +29,18 @@ public:
     typename vector_of<ObjectT>::type const& getList() const;
     
     template<typename ObjectT>
-    void add(const ObjectT& toCopy);
+    void add(ObjectT const& toCopy);
     
     template<typename ObjectRangeT>
-    void addRange(const ObjectRangeT& toAdd);
+    void addRange(ObjectRangeT const& toAdd);
 
-    void add(const ObjectList& other);
+    void add(ObjectList const& other);
     //MUST CALL this to make lists sorted (required for operator==)
     void sort();
 
     void swap(ObjectList& other);
 
-    bool operator==(const ObjectList& other) const;
+    bool operator==(ObjectList const& other) const;
     bool isEmpty() const;
 private:
     friend class ObjectPtrList<ListTypes>;
@@ -50,19 +50,19 @@ private:
     typedef typename
     boost::mpl::transform<
         ListTypes,
-        vector_of<boost::mpl::_1> >::type DepartureListType;
-    DepartureListType departureList_;
+        vector_of<boost::mpl::_1> >::type ListType;
+    ListType list_;
 };
 template<typename ObjectT>
 void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r);
 template<typename ListTypes>
 template<typename ObjectT>
-void ObjectList<ListTypes>::add(const ObjectT& toCopy)
+void ObjectList<ListTypes>::add(ObjectT const& toCopy)
 {
     boost::fusion::deref(
         boost::fusion::find<
             typename vector_of<ObjectT>::type
-        >(departureList_)
+        >(list_)
     ).push_back(toCopy);
 #ifndef NDEBUG
     sorted = false;
@@ -76,7 +76,7 @@ void ObjectList<ListTypes>::addRange(const ObjectRangeT& toAdd)
         boost::fusion::deref(
             boost::fusion::find<
                 typename vector_of<typename boost::range_value<ObjectRangeT>::type >::type
-            >(departureList_)),
+            >(list_)),
         toAdd);
 #ifndef NDEBUG
     sorted = false;
@@ -93,7 +93,7 @@ typename vector_of<ObjectT>::type const& ObjectList<ListTypes>::getList() const
     return boost::fusion::deref(
         boost::fusion::find<
             typename vector_of<ObjectT>::type
-        >(departureList_));
+        >(list_));
 }
 }
 #endif //HG_DEPARTURE_LIST_H

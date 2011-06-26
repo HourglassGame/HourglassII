@@ -15,56 +15,50 @@
 namespace hg {
 template<typename ListType>
 ObjectPtrList<ListType>::ObjectPtrList() :
-        arrivalList_()
+        list_()
 {
 }
 
 namespace {
-template<typename T>
-struct DereferenceLess {
-	bool operator()(const T& l, const T& r) const
-	{
-		return *l < *r;
-	}
-};
+
 template <typename T>
-struct AddressOf : std::unary_function<T&, T*>
+struct ConstAddressOf : std::unary_function<T const&, typename ConstPtr_of<T>::type>
 {
-    T* operator()(T& t) const
+    typename ConstPtr_of<T>::type operator()(T const& t) const
     {
-        return &t;
+        return typename ConstPtr_of<T>::type(t);
     }
 };
 struct InsertAddresses
 {
     template<typename Container, typename SinglePassRange>
-    void operator()(Container& toInsertInto, const SinglePassRange& toInsert) const
+    void operator()(Container& toInsertInto, SinglePassRange const& toInsert) const
     {
         boost::push_back(
             toInsertInto,
             toInsert |
                 boost::adaptors::transformed(
-                    AddressOf<const typename boost::range_value<SinglePassRange>::type>()));
+                    ConstAddressOf<typename boost::range_value<SinglePassRange>::type>()));
     }
 };
 }//namespace
 template<typename ListTypes>
-void ObjectPtrList<ListTypes>::add(const ObjectList<ListTypes>& other)
+void ObjectPtrList<ListTypes>::add(ObjectList<ListTypes> const& other)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(arrivalList_, other.departureList_), InsertAddresses());
+    n_ary_for_each(vector_tie(list_, other.list_), InsertAddresses());
 }
 //MUST CALL this before calling operator== on this ObjectPtrList<Normal> 
 template<typename ListTypes>
 void ObjectPtrList<ListTypes>::sort()
 {
-    boost::fusion::for_each(arrivalList_, Sort<DereferenceLess>());
+    boost::fusion::for_each(list_, Sort());
 }
 template<typename ListTypes>
 void ObjectPtrList<ListTypes>::swap(ObjectPtrList<ListTypes>& other)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(arrivalList_, other.arrivalList_), Swap());
+    n_ary_for_each(vector_tie(list_, other.list_), Swap());
 }
 template<typename ListTypes>
 void swap(ObjectPtrList<ListTypes>& l, ObjectPtrList<ListTypes>& r)
@@ -72,4 +66,5 @@ void swap(ObjectPtrList<ListTypes>& l, ObjectPtrList<ListTypes>& r)
     l.swap(r);
 }
 }//namespace hg
+
 #endif //HG_ARRIVAL_LIST_DEF_H
