@@ -9,6 +9,9 @@
 #include "Level.h"
 #include "Inertia.h"
 #include "Frame.h"
+#ifdef HG_COMPILE_TESTS
+#include "TestDriver.h"
+#endif //HG_COMPILE_TESTS
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -18,6 +21,7 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/adaptor/sliced.hpp>
+#include <boost/range/algorithm/max_element.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/irange.hpp>
 
@@ -146,10 +150,15 @@ namespace {
 
 int main()
 {
+#ifdef HG_COMPILE_TESTS
+    if(!hg::getTestDriver().passesAllTests()) {
+        return EXIT_FAILURE;
+    }
+#endif //HG_COMPILE_TESTS
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
-    boost::multi_array<bool, 2> wall(MakeWall());
+    boost::multi_array<bool, 2> const wall(MakeWall());
     TimeEngine timeEngine(MakeLevel(wall));
     hg::Input input;
     hg::Inertia inertia;
@@ -171,7 +180,7 @@ int main()
         std::vector<std::size_t> framesExecutedList;
         try {
             FrameID drawnFrame;
-            TimeEngine::RunResult waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
+            TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
             boost::push_back(
                 framesExecutedList,
                 waveInfo.updatedFrames() 
@@ -179,7 +188,7 @@ int main()
                         boost::bind(boost::distance<FrameUpdateSet>, _1)));
             
             if (waveInfo.currentPlayerFrame()) {
-                const ObjectPtrList<Normal> & frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
+                ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
                 TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
                 inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
                 drawnFrame = FrameID(waveInfo.currentPlayerFrame());
@@ -191,7 +200,7 @@ int main()
             }
             else {
                 inertia.run();
-                FrameID inertialFrame(inertia.getFrame());
+                FrameID const inertialFrame(inertia.getFrame());
                 drawnFrame = inertialFrame;
                 if (inertialFrame.isValidFrame()) {
                     Draw(app, timeEngine.getFrame(inertialFrame)->getPostPhysics(), wall, inertia.getTimeDirection());
@@ -249,7 +258,7 @@ void Draw(
     RenderWindow& target,
     ObjectPtrList<Normal> const& frame,
     boost::multi_array<bool, 2> const& wall,
-    TimeDirection playerDirection)
+    TimeDirection const playerDirection)
 {
     DrawWall(target, wall);
     DrawPortals(target, frame.getList<Portal>(), playerDirection);
@@ -284,7 +293,7 @@ template<typename RandomAccessBoxRange>
 void DrawBoxes(
     RenderTarget& target,
     RandomAccessBoxRange const& boxList,
-    TimeDirection playerDirection)
+    TimeDirection const playerDirection)
 {
     foreach(Box const& box, boxList) {
         //see below (in DrawGuys)
@@ -324,9 +333,9 @@ template<typename RandomAccessGuyRange>
 void DrawGuys(
     RenderTarget& target,
     RandomAccessGuyRange const& guyList,
-    TimeDirection playerDirection)
+    TimeDirection const playerDirection)
 {
-    foreach(const Guy& guy, guyList) {
+    foreach(Guy const& guy, guyList) {
         //Doesn't seem necessary -- could you give an example where strange stuff happens? Did this get fixed by flicker fix?
         //if (guy.getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
         {
@@ -391,7 +400,7 @@ template<typename RandomAccessButtonRange>
 void DrawButtons(
     RenderTarget& target,
     RandomAccessButtonRange const& buttonList,
-    TimeDirection playerDirection)
+    TimeDirection const playerDirection)
 {
     foreach(Button const& button, buttonList)
     {
@@ -420,7 +429,7 @@ template<typename RandomAccessPlatformRange>
 void DrawPlatforms(
     RenderTarget& target,
     RandomAccessPlatformRange const& platformList,
-    TimeDirection playerDirection)
+    TimeDirection const playerDirection)
 {
     foreach (Platform const& platform, platformList) {
         PositionAndColour const pnc(
@@ -448,7 +457,7 @@ template<typename RandomAccessPortalRange>
 void DrawPortals(
     RenderTarget& target,
     RandomAccessPortalRange const& portalList,
-    TimeDirection playerDirection)
+    TimeDirection const playerDirection)
 {
 
     foreach(Portal const& portal, portalList)
@@ -477,7 +486,7 @@ void DrawPortals(
 void DrawTimeline(
     RenderTarget& target,
     TimeEngine::FrameListList const& waves,
-    FrameID playerFrame)
+    FrameID const playerFrame)
 {
     bool pixelsWhichHaveBeenDrawnIn[640] = {};
     foreach(FrameUpdateSet const& lists, waves) {
@@ -523,15 +532,29 @@ struct IsActualObject {
         return obj.getPauseLevel() == 0;
     }
 };
-
+struct CompareIndicies {
+    template<typename IndexableType>
+    bool operator()(IndexableType const& l, IndexableType const& r) {
+        return l.getIndex() < r.getIndex();
+    }
+};
 
 template<typename BidirectionalGuyRange>
 TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
 {
+#if 0
     return boost::begin(
         guyRange 
         | boost::adaptors::reversed 
         | boost::adaptors::filtered(IsActualObject()))->getTimeDirection();
+#endif
+    //Linear search version used because frame data is no longer sorted.
+    //when the sorting issue is resolved the old version should be used again
+    //(I will come back to the sorting issue after the new pause time is finished)
+    return boost::max_element(
+        guyRange | boost::adaptors::filtered(IsActualObject()),
+        CompareIndicies()
+    )->getTimeDirection();
 }
 
 
@@ -563,8 +586,8 @@ boost::multi_array<bool, 2> MakeWall()
     E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 D
 #undef D
 #undef E
-    //.at() used in case this `wall' becomes non-square or 0 size.
-    boost::array<boost::multi_array<bool, 2>::index, 2> wallShape = {{ wall.at(0).size(), wall.size() }};
+    //.at() used in case `wall' becomes non-square or 0 size.
+    boost::array<boost::multi_array<bool, 2>::index, 2> const wallShape = {{ wall.at(0).size(), wall.size() }};
     boost::multi_array<bool, 2> actualWall(wallShape);
     for (unsigned int i = 0; i < wall.size(); ++i) {
         for (unsigned int j = 0; j < wall.at(i).size(); ++j) {
@@ -574,7 +597,7 @@ boost::multi_array<bool, 2> MakeWall()
     return actualWall;
 }
 
-Level MakeLevel(const boost::multi_array<bool, 2>& wall)
+Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
     ObjectList<Normal>  newObjectList;
     //newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS, 0));

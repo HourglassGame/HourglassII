@@ -100,7 +100,7 @@ private:
     //Intentionally undefined
     Universe& operator=(const Universe&);
 
-    //This is a reference to allow rebinding when performing 2-part construction.
+    //This is pointer rather than a reference to allow rebinding when performing 2-part construction.
     Frame* initiatorFrame_;
     std::vector<Frame> frames_;
     const PauseInitiatorID* initiatorID_;

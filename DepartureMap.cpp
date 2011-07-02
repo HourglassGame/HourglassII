@@ -62,7 +62,7 @@ void EditDepartureMap::makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)
         map_.insert(value_type(frame, MapType::mapped_type()));
     }
 }
-void EditDepartureMap::setDeparture(Frame* time, std::map<Frame*, ObjectList<Edit> >& departingObjects)
+void EditDepartureMap::setDeparture(Frame* time, std::map<Frame*, ObjectList<FirstEdit> >& departingObjects)
 {
     map_[time].swap(departingObjects);
 }

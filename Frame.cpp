@@ -285,16 +285,16 @@ end:
     return changedTimes;
 }
 
-FrameUpdateSet Frame::updateEditDeparturesFromHere(std::map<Frame*, ObjectList<Edit> >& newDeparture)
+FrameUpdateSet Frame::updateEditDeparturesFromHere(std::map<Frame*, ObjectList<FirstEdit> >& newDeparture)
 {
     FrameUpdateSet changedTimes;
 
     //filter so that things can safely depart to the null frame
     //such departures do not create arrivals or updated frames, but are saved as departures.
-    typedef boost::filtered_range<FrameNotNull<Edit>, std::map<Frame*, ObjectList<Edit> > > filtered_range_t;
+    typedef boost::filtered_range<FrameNotNull<FirstEdit>, std::map<Frame*, ObjectList<FirstEdit> > > filtered_range_t;
 
-    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<Edit>()));
-    filtered_range_t oldDepartureFiltered(editDepartures_ | boost::adaptors::filtered(FrameNotNull<Edit>()));    
+    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<FirstEdit>()));
+    filtered_range_t oldDepartureFiltered(editDepartures_ | boost::adaptors::filtered(FrameNotNull<FirstEdit>()));    
     
     boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
     const boost::range_iterator<filtered_range_t>::type nend(boost::end(newDepartureFiltered));
@@ -344,7 +344,7 @@ FrameUpdateSet Frame::updateEditDeparturesFromHere(std::map<Frame*, ObjectList<E
     }
 end:
     editDepartures_.swap(newDeparture);
-    std::map<Frame*, ObjectList<Edit> > deleter;
+    std::map<Frame*, ObjectList<FirstEdit> > deleter;
     deleter.swap(newDeparture);
     return changedTimes;
 }
@@ -361,10 +361,10 @@ ObjectPtrList<Normal>  Frame::getPrePhysics() const
     return retv;
 }
 
-ObjectPtrList<Edit>  Frame::getPreEdits() const
+ObjectPtrList<FirstEdit>  Frame::getPreEdits() const
 {
-    ObjectPtrList<Edit>  retv;
-    typedef tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type value_t;
+    ObjectPtrList<FirstEdit>  retv;
+    typedef tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type value_t;
     foreach (const value_t& value, editArrivals_) {
         retv.add(*value.second);
     }
@@ -416,15 +416,15 @@ void Frame::clearArrival(Frame const* toClear)
     assert(didErase && "Should only call Erase when the element does exist");
 }
 
-void Frame::insertEditArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type& toInsert)
+void Frame::insertEditArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type& toInsert)
 {
     bool didInsert(editArrivals_.insert(toInsert));
     (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
-void Frame::changeEditArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type& toChange)
+void Frame::changeEditArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type& toChange)
 {
-    tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::accessor access;
+    tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::accessor access;
     if (editArrivals_.find(access, toChange.first))
     {
         access->second = toChange.second;

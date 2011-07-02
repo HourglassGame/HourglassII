@@ -35,7 +35,7 @@ public:
                 currentWinFrame(NcurrentWinFrame)
     	{}
     	std::map<Frame*, ObjectList<Normal> > departures;
-        std::map<Frame*, ObjectList<Edit> > edits;
+        std::map<Frame*, ObjectList<FirstEdit> > edits;
     	bool currentPlayerFrame;
     	bool nextPlayerFrame;
     	bool currentWinFrame;
@@ -53,7 +53,7 @@ private:
 //Apply edits to departures from time.
 std::map<Frame*, ObjectList<Normal> > departureEditFunction(
     const std::map<Frame*, ObjectList<Normal> >& departures,
-	const ObjectPtrList<Edit>& edits,
+	const ObjectPtrList<FirstEdit>& edits,
 	const Frame* time);
 }
 #endif //HG_PHYSICS_ENGINE_H

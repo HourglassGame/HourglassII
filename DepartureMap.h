@@ -35,7 +35,7 @@ private:
 
 class EditDepartureMap {
     typedef
-    boost::unordered_map<Frame*, std::map<Frame*, ObjectList<Edit> > > MapType;
+    boost::unordered_map<Frame*, std::map<Frame*, ObjectList<FirstEdit> > > MapType;
 public:
     typedef MapType::value_type value_type;
     typedef MapType::iterator iterator;
@@ -43,7 +43,7 @@ public:
     EditDepartureMap();
     //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
     void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor);
-    void setDeparture(Frame* time, std::map<Frame*, ObjectList<Edit> >& departingObjects);
+    void setDeparture(Frame* time, std::map<Frame*, ObjectList<FirstEdit> >& departingObjects);
 
     iterator begin();
     iterator end();

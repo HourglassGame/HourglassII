@@ -33,7 +33,7 @@ public:
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered    
     FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture);
-    FrameUpdateSet updateEditDeparturesFromHere(std::map<Frame*, ObjectList<Edit> >& newDeparture);
+    FrameUpdateSet updateEditDeparturesFromHere(std::map<Frame*, ObjectList<FirstEdit> >& newDeparture);
     
     //assignment
     Frame& operator=(const Frame&)
@@ -47,7 +47,7 @@ public:
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
     ObjectPtrList<Normal>  getPrePhysics() const;
-    ObjectPtrList<Edit>  getPreEdits() const;
+    ObjectPtrList<FirstEdit>  getPreEdits() const;
     
     ObjectPtrList<Normal> getFlattenedArrivals() const;
     
@@ -113,8 +113,8 @@ private:
     void changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange);
     void clearArrival(Frame const* toClear);
     
-    void insertEditArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type const& toInsert);
-    void changeEditArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*>::value_type const& toChange);
+    void insertEditArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type const& toInsert);
+    void changeEditArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type const& toChange);
     void clearEditArrival(Frame const* toClear);
     /** Position of frame within universe_ */
     std::size_t frameNumber_;
@@ -129,8 +129,8 @@ private:
     
     std::map<Frame*, ObjectList<Normal> > rawDepartures_;
     
-    std::map<Frame*, ObjectList<Edit> > editDepartures_;
-    tbb::concurrent_hash_map<Frame const*, ObjectList<Edit> const*> editArrivals_;
+    std::map<Frame*, ObjectList<FirstEdit> > editDepartures_;
+    tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*> editArrivals_;
 
 
 };

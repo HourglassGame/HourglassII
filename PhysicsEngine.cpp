@@ -19,7 +19,7 @@
 #define foreach BOOST_FOREACH
 
 namespace hg {
-static const int JUMP_SPEED 	= -550;
+enum { JUMP_SPEED 	= -550 };
 
 PhysicsEngine::PhysicsEngine(
     const Environment& env,
@@ -64,7 +64,7 @@ namespace {
     template<typename RandomAccessGuyRange>
     void guyStep(
         const Environment& env,
-        const RandomAccessGuyRange& oldGuyList,
+        const RandomAccessGuyRange& guyArrivalList,
         Frame* time,
         const std::vector<InputList>& playerInput,
         std::vector<ObjectAndTime<Guy> >& nextGuy,
@@ -350,7 +350,7 @@ void departureEditFunction(
 #endif
 std::map<Frame*, ObjectList<Normal> > departureEditFunction(
     const std::map<Frame*, ObjectList<Normal> >& departures,
-	const ObjectPtrList<Edit>& /*edits*/,
+	const ObjectPtrList<FirstEdit>& /*edits*/,
 	const Frame* /*time*/)
 {
     //No edits.
@@ -714,7 +714,7 @@ namespace {
 template<typename RandomAccessGuyRange>
 void guyStep(
     const Environment& env,
-    const RandomAccessGuyRange& oldGuyList,
+    const RandomAccessGuyRange& guyArrivalList,
     Frame* time,
     const std::vector<InputList>& playerInput,
     std::vector<ObjectAndTime<Guy> >& nextGuy,
@@ -736,44 +736,44 @@ void guyStep(
     std::vector<char> squished;
     std::vector<char> facing;
 
-    x.reserve(boost::distance(oldGuyList));
-    y.reserve(boost::distance(oldGuyList));
-    xspeed.reserve(boost::distance(oldGuyList));
-    yspeed.reserve(boost::distance(oldGuyList));
-    supported.reserve(boost::distance(oldGuyList));
-    supportedSpeed.reserve(boost::distance(oldGuyList));
-    squished.reserve(boost::distance(oldGuyList));
-    facing.reserve(boost::distance(oldGuyList));
+    x.reserve(boost::distance(guyArrivalList));
+    y.reserve(boost::distance(guyArrivalList));
+    xspeed.reserve(boost::distance(guyArrivalList));
+    yspeed.reserve(boost::distance(guyArrivalList));
+    supported.reserve(boost::distance(guyArrivalList));
+    supportedSpeed.reserve(boost::distance(guyArrivalList));
+    squished.reserve(boost::distance(guyArrivalList));
+    facing.reserve(boost::distance(guyArrivalList));
 
     // position, velocity, collisions
     // check collisions in Y direction then do the same in X direction
-    for (std::size_t i(0), isize(boost::distance(oldGuyList)); i < isize; ++i)
+    for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
     {
-        if (oldGuyList[i].getRelativeToPortal() == -1)
+        if (guyArrivalList[i].getRelativeToPortal() == -1)
         {
-            x.push_back(oldGuyList[i].getX());
-            y.push_back(oldGuyList[i].getY());
+            x.push_back(guyArrivalList[i].getX());
+            y.push_back(guyArrivalList[i].getY());
         }
         else
         {
-            Portal relativePortal(nextPortal[oldGuyList[i].getRelativeToPortal()]);
-            x.push_back(relativePortal.getX() + oldGuyList[i].getX());
-            y.push_back(relativePortal.getY() + oldGuyList[i].getY());
+            Portal relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
+            x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
+            y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
         }
         supportedSpeed.push_back(0);
         xspeed.push_back(0);
-        yspeed.push_back(oldGuyList[i].getYspeed() + env.gravity);
+        yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
         supported.push_back(false);
         squished.push_back(false);
-        facing.push_back(oldGuyList[i].getFacing());
+        facing.push_back(guyArrivalList[i].getFacing());
 
-        if (oldGuyList[i].getIndex() < playerInput.size() && oldGuyList[i].getPauseLevel() == 0)
+        if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getPauseLevel() == 0)
         {
-            std::size_t relativeIndex(oldGuyList[i].getIndex());
+            std::size_t relativeIndex(guyArrivalList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
 
-            int width = oldGuyList[i].getWidth();
-            int height = oldGuyList[i].getHeight();
+            int width = guyArrivalList[i].getWidth();
+            int height = guyArrivalList[i].getHeight();
 
             // chonofrag with platforms
 			foreach (const Platform& platform, nextPlatform)
@@ -781,7 +781,7 @@ void guyStep(
 				int pX(platform.getX());
 				int pY(platform.getY());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * oldGuyList[i].getTimeDirection() == hg::FORWARDS && platform.getPauseLevel() == 0)
+				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS && platform.getPauseLevel() == 0)
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -804,9 +804,9 @@ void guyStep(
             std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
             // jump
-            if (oldGuyList[i].getSupported() && input.getUp())
+            if (guyArrivalList[i].getSupported() && input.getUp())
             {
-                yspeed[i] = oldGuyList[i].getSupportedSpeed() + JUMP_SPEED;
+                yspeed[i] = guyArrivalList[i].getSupportedSpeed() + JUMP_SPEED;
             }
 
             // Y direction collisions
@@ -835,7 +835,7 @@ void guyStep(
 							supportedSpeed[i] = 0;
 						}
 					}
-					else if (boxDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE)
+					else if (boxDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE)
 					{
 						if (newY+height >= boxY-boxYspeed && newY+height-yspeed[i] <= boxY)
 						{
@@ -869,7 +869,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * oldGuyList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -878,17 +878,17 @@ void guyStep(
                 int pHeight(platform.getHeight());
 
                 if (IntersectingRectanglesExclusive(x[i], newY, width, height,
-                		pX-pDirection * oldGuyList[i].getTimeDirection() * platform.getXspeed(), pY, pWidth, pHeight))
+                		pX-pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed(), pY, pWidth, pHeight))
                 {
                     if (newY+height/2 < pY+pHeight/2)
                     {
                         newY = pY-height;
-                        xspeed[i] = pDirection * oldGuyList[i].getTimeDirection() * platform.getXspeed();
+                        xspeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
                         bottom = true;
                         if (platform.getPauseLevel() == 0)
                         {
-                        	supportedSpeed[i] = pDirection * oldGuyList[i].getTimeDirection() * platform.getYspeed();
+                        	supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
                         }
                         else
                         {
@@ -950,7 +950,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection*oldGuyList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -1009,23 +1009,23 @@ void guyStep(
     std::vector<int> carrySize;
     std::vector<TimeDirection> carryDirection;
     std::vector<int> carryPauseLevel;
-    carry.reserve(oldGuyList.size());
-    carrySize.reserve(oldGuyList.size());
-    carryDirection.reserve(oldGuyList.size());
-    carryPauseLevel.reserve(oldGuyList.size());
+    carry.reserve(guyArrivalList.size());
+    carrySize.reserve(guyArrivalList.size());
+    carryDirection.reserve(guyArrivalList.size());
+    carryPauseLevel.reserve(guyArrivalList.size());
     // box carrying
-    for (std::size_t i(0), isize(boost::distance(oldGuyList)); i < isize; ++i)
+    for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
     {
 
-        carry.push_back(oldGuyList[i].getBoxCarrying());
+        carry.push_back(guyArrivalList[i].getBoxCarrying());
         carrySize.push_back(0);
         carryDirection.push_back(hg::INVALID);
         carryPauseLevel.push_back(0);
 
-        if (oldGuyList[i].getIndex() < playerInput.size() && oldGuyList[i].getPauseLevel() == 0 && not squished[i])
+        if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getPauseLevel() == 0 && not squished[i])
         {
 
-            std::size_t relativeIndex(oldGuyList[i].getIndex());
+            std::size_t relativeIndex(guyArrivalList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
 
             if (carry[i])
@@ -1033,10 +1033,10 @@ void guyStep(
                 bool droppable = false;
                 if (input.getDown() && supported[i])
                 {
-                    int width(oldGuyList[i].getWidth());
-                    int dropX(x[i] - oldGuyList[i].getBoxCarrySize());
+                    int width(guyArrivalList[i].getWidth());
+                    int dropX(x[i] - guyArrivalList[i].getBoxCarrySize());
                     int dropY(y[i]);
-                    int dropSize(oldGuyList[i].getBoxCarrySize());
+                    int dropSize(guyArrivalList[i].getBoxCarrySize());
 
                     if (facing[i])
                     {
@@ -1070,11 +1070,11 @@ void guyStep(
                         if (droppable)
                         {
                         	makeBoxAndTimeWithPortals(nextBox, nextPortal, dropX, dropY, 0, yspeed[i],
-                        			dropSize, -1, oldGuyList[i].getBoxCarryDirection(), oldGuyList[i].getBoxPauseLevel(), time);
+                        			dropSize, -1, guyArrivalList[i].getBoxCarryDirection(), guyArrivalList[i].getBoxPauseLevel(), time);
 
-                            if (oldGuyList[i].getBoxPauseLevel() != 0)
+                            if (guyArrivalList[i].getBoxPauseLevel() != 0)
                             {
-                                int pauseLevel = oldGuyList[i].getBoxPauseLevel();
+                                int pauseLevel = guyArrivalList[i].getBoxPauseLevel();
                                 Frame* parTime = time;
                                 int pauseLevelChange = 1;
                                 while (pauseLevel > 0)
@@ -1089,8 +1089,8 @@ void guyStep(
                                             Box
                                             (
                                                 dropX, dropY, 0, yspeed[i],
-                                                dropSize, -1, -1, oldGuyList[i].getBoxCarryDirection(),
-                                                oldGuyList[i].getBoxPauseLevel()-pauseLevelChange
+                                                dropSize, -1, -1, guyArrivalList[i].getBoxCarryDirection(),
+                                                guyArrivalList[i].getBoxPauseLevel()-pauseLevelChange
                                             ),
                                             true
                                         )
@@ -1111,17 +1111,17 @@ void guyStep(
 
                 if (!droppable)
                 {
-                    carrySize[i] = oldGuyList[i].getBoxCarrySize();
-                    carryDirection[i] = oldGuyList[i].getBoxCarryDirection();
-                    carryPauseLevel[i] = oldGuyList[i].getBoxPauseLevel();
+                    carrySize[i] = guyArrivalList[i].getBoxCarrySize();
+                    carryDirection[i] = guyArrivalList[i].getBoxCarryDirection();
+                    carryPauseLevel[i] = guyArrivalList[i].getBoxPauseLevel();
                 }
             }
             else
             {
                 if (input.getDown())
                 {
-                    int width = oldGuyList[i].getWidth();
-                    int height = oldGuyList[i].getHeight();
+                    int width = guyArrivalList[i].getWidth();
+                    int height = guyArrivalList[i].getHeight();
 
                     for (size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
                     {
@@ -1162,29 +1162,29 @@ void guyStep(
     }
     // colliding with pickups?
     // time travel
-    for (std::size_t i(0), size(oldGuyList.size()); i != size; ++i)
+    for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
     {
     	if (squished[i])
 		{
 			continue;
 		}
-        if (oldGuyList[i].getPauseLevel() != 0)
+        if (guyArrivalList[i].getPauseLevel() != 0)
         {
             nextGuy.push_back(
                 ObjectAndTime<Guy>(
-                    oldGuyList[i],
-                    nextFrame(time, oldGuyList[i].getTimeDirection())));
+                    guyArrivalList[i],
+                    nextFrame(time, guyArrivalList[i].getTimeDirection())));
         }
-        else if (oldGuyList[i].getIndex() < playerInput.size())
+        else if (guyArrivalList[i].getIndex() < playerInput.size())
         {
-            std::size_t relativeIndex(oldGuyList[i].getIndex());
+            const std::size_t relativeIndex(guyArrivalList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
             int nextCarryPauseLevel = carryPauseLevel[i];
             int relativeToPortal = -1;
             int illegalPortal = -1;
 
             // add departure for guy at the appropriate time
-            TimeDirection nextTimeDirection = oldGuyList[i].getTimeDirection();
+            TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
             Frame* nextTime(nextFrame(time, nextTimeDirection));
             assert(time);
 
@@ -1215,14 +1215,14 @@ void guyStep(
             {
                 normalDeparture = false;
                 PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
-                nextTime = getEntryFrame(getSubUniverse(time, pauseID), oldGuyList[i].getTimeDirection());
+                nextTime = getEntryFrame(getSubUniverse(time, pauseID), guyArrivalList[i].getTimeDirection());
 
                 pauseTimes.push_back(pauseID);
             }
             else if (input.getUse() == true)
             {
-                int mx = x[i] + oldGuyList[i].getWidth() / 2;
-                int my = y[i] + oldGuyList[i].getHeight() / 2;
+                const int mx = x[i] + guyArrivalList[i].getWidth() / 2;
+                const int my = y[i] + guyArrivalList[i].getHeight() / 2;
                 for (unsigned int j = 0; j < nextPortal.size(); ++j)
                 {
                     int px = nextPortal[j].getX();
@@ -1264,11 +1264,11 @@ void guyStep(
 				int py = nextPortal[j].getY();
 				int pw = nextPortal[j].getWidth();
 				int ph = nextPortal[j].getHeight();
-				if (RectangleWithinInclusive(x[i], y[i], oldGuyList[i].getWidth(), oldGuyList[i].getHeight(), px, py, pw, ph)
+				if (RectangleWithinInclusive(x[i], y[i], guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(), px, py, pw, ph)
 					&& nextPortal[j].getPauseLevel() == 0 && nextPortal[j].getActive()
 					&& nextPortal[j].getCharges() != 0 && nextPortal[j].getFallable())
 				{
-					if (oldGuyList[i].getIllegalPortal() != -1 && j == static_cast<unsigned int>(oldGuyList[i].getIllegalPortal()))
+					if (guyArrivalList[i].getIllegalPortal() != -1 && j == static_cast<unsigned int>(guyArrivalList[i].getIllegalPortal()))
 					{
 						illegalPortal = j;
 					}
@@ -1315,7 +1315,7 @@ void guyStep(
                 ObjectAndTime<Guy>(
                     Guy(
                         x[i], y[i], xspeed[i], yspeed[i],
-                        oldGuyList[i].getWidth(), oldGuyList[i].getHeight(),
+                        guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
                         illegalPortal, relativeToPortal, supported[i], supportedSpeed[i], facing[i],
                         carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
                         nextTimeDirection, 0,
@@ -1327,7 +1327,7 @@ void guyStep(
         }
         else
         {
-            assert(oldGuyList[i].getIndex() == playerInput.size());
+            assert(guyArrivalList[i].getIndex() == playerInput.size());
             nextPlayerFrame = true;
         }
     }
