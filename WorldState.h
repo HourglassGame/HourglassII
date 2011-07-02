@@ -70,7 +70,9 @@ private:
     FrameUpdateSet frameUpdateSet_;
     //Stores the physical properties of the world and uses them to turn arrivals into departures.
     PhysicsEngine physics_;
-    //The frame containing the guy with the largest overall relative index - who has arrived but not yet departed.
+    //The set of frames containing the guys with the largest overall relative index - who has arrived but not yet departed.
+    //The important thing about nextPlayerFrames_ is that it must hold at least the set of frames that will have their 
+    //departures changed by the addition of new player input without the changing of arrivals.
     ConcurrentTimeSet nextPlayerFrames_;
     //The frame containing the guy with the largest relative index who has both arrived and departed.
     ConcurrentTimeSet currentPlayerFrames_;
