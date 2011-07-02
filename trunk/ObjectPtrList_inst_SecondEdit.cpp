@@ -1,5 +1,5 @@
 #include "ObjectPtrList_def.h"
 #include "ObjectListTypes.h"
 namespace hg {
-    template class ObjectPtrList<Edit>;
+    //template class ObjectPtrList<SecondEdit>;
 }

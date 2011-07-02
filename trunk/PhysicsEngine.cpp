@@ -1122,31 +1122,32 @@ void guyStep(
                 {
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
-
-                    for (size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
+                    //CAREFUL - loop modifies nextBox
+                    for (std::vector<ObjectAndTime<Box> >::iterator nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end()); nextBoxIt != nextBoxEnd; ++nextBoxIt)
                     {
-                        int boxX = nextBox[j].object.getX();
-                        int boxY = nextBox[j].object.getY();
-                        int boxSize = nextBox[j].object.getSize();
+                        int boxX = nextBoxIt->object.getX();
+                        int boxY = nextBoxIt->object.getY();
+                        int boxSize = nextBoxIt->object.getSize();
                         if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize)&& (y[i]+height > boxY))
                         {
                             carry[i] = true;
                             carrySize[i] = boxSize;
-                            carryDirection[i] = nextBox[j].object.getTimeDirection();
-                            carryPauseLevel[i] = nextBox[j].object.getPauseLevel();
-                            if (nextBox[j].object.getPauseLevel() != 0)
+                            carryDirection[i] = nextBoxIt->object.getTimeDirection();
+                            carryPauseLevel[i] = nextBoxIt->object.getPauseLevel();
+                            if (nextBoxIt->object.getPauseLevel() != 0)
                             {
                                 newDepartures[getInitiatorFrame(getUniverse(time))].add(
                                     RemoteDepartureEdit<Thief, Box>(
                                         getInitiatorID(getUniverse(time)),
                                         Box(
-                                            boxX, boxY, nextBox[j].object.getXspeed(), nextBox[j].object.getYspeed(),
-                                            boxSize, nextBox[j].object.getIllegalPortal(), nextBox[j].object.getRelativeToPortal(),
+                                            boxX, boxY, nextBoxIt->object.getXspeed(), nextBoxIt->object.getYspeed(),
+                                            boxSize, nextBoxIt->object.getIllegalPortal(), nextBoxIt->object.getRelativeToPortal(),
                                             carryDirection[i], carryPauseLevel[i]-1
                                         ),
                                         true));
                             }
-                            nextBox.erase(nextBox.begin() + j);
+                            nextBoxIt = nextBox.erase(nextBoxIt);
+                            nextBoxEnd = nextBox.end();
                             break;
                         }
                     }
