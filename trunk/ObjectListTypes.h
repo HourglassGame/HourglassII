@@ -23,7 +23,8 @@ namespace hg {
         RemoteDepartureEdit<Extra,Box>,
         RemoteDepartureEdit<Extra,Guy> > Normal;
 
-    typedef boost::fusion::vector<> Edit;
+    typedef boost::fusion::vector<> FirstEdit;
+    typedef boost::fusion::vector<> SecondEdit;
 }
 #endif //HG_ARRIVAL_DEPARTURE_TYPES_H
 

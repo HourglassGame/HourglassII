@@ -13,22 +13,28 @@ void FrameUpdateSet::add(Frame* frame)
 }
 void FrameUpdateSet::add(FrameUpdateSet const& other)
 {
-    updateSet_.insert(other.updateSet_.begin(), other.updateSet_.end());
+    updateSet_.insert(
+        other.updateSet_.begin(),
+        other.updateSet_.end());
 }
 void FrameUpdateSet::swap(FrameUpdateSet& other)
 {
     updateSet_.swap(other.updateSet_);
 }
-FrameUpdateSet::const_iterator FrameUpdateSet::begin() const {
+FrameUpdateSet::const_iterator
+    FrameUpdateSet::begin() const {
     return updateSet_.begin();
 }
-FrameUpdateSet::const_iterator FrameUpdateSet::end() const {
+FrameUpdateSet::const_iterator
+    FrameUpdateSet::end() const {
     return updateSet_.end();
 }
-FrameUpdateSet::iterator FrameUpdateSet::begin() {
+FrameUpdateSet::iterator
+    FrameUpdateSet::begin() {
     return updateSet_.begin();
 }
-FrameUpdateSet::iterator FrameUpdateSet::end() {
+FrameUpdateSet::iterator
+    FrameUpdateSet::end() {
     return updateSet_.end();
 }
 std::size_t FrameUpdateSet::size() const {
@@ -37,7 +43,9 @@ std::size_t FrameUpdateSet::size() const {
 bool FrameUpdateSet::empty() const {
     return updateSet_.empty();
 }
-bool operator==(FrameUpdateSet const& lhs, FrameUpdateSet const& rhs)
+bool operator==(
+    FrameUpdateSet const& lhs,
+    FrameUpdateSet const& rhs)
 {
     return boost::equal(lhs,rhs);
 }

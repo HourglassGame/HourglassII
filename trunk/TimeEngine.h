@@ -17,13 +17,13 @@ public:
     typedef std::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
-        Frame const* currentPlayerFrame() {
+        Frame const* currentPlayerFrame() const {
             return currentPlayerFrame_;
         }
-        Frame const* nextPlayerFrame() {
+        Frame const* nextPlayerFrame() const {
             return nextPlayerFrame_;
         }
-        FrameListList const& updatedFrames() {
+        FrameListList const& updatedFrames() const {
             return *updatedFrames_;
         }
         void swap(RunResult& other)

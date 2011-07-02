@@ -24,7 +24,7 @@ struct ExecuteFrame
     {
         std::pair<
             std::map<Frame*, ObjectList<Normal> >,
-            std::map<Frame*, ObjectList<Edit> > >
+            std::map<Frame*, ObjectList<FirstEdit> > >
                 departures(thisptr_.getDeparturesFromFrame(time));
         departureMap_.setDeparture(time, departures.first);
     }
@@ -48,7 +48,7 @@ struct NewExecuteFrame
     {
         std::pair<
             std::map<Frame*, ObjectList<Normal> >,
-            std::map<Frame*, ObjectList<Edit> > >
+            std::map<Frame*, ObjectList<FirstEdit> > >
                 departures(thisptr_.getDeparturesFromFrame(time));
         rawDepartureMap_.setDeparture(time, departures.first);
         editDepartureMap_.setDeparture(time, departures.second);
@@ -78,10 +78,11 @@ private:
     DepartureMap& departureMap_;
 };
 
-WorldState::WorldState(std::size_t timelineLength,
-                       const FrameID& guyStartTime,
-                       const PhysicsEngine& physics,
-                       const ObjectList<Normal> & initialObjects) :
+WorldState::WorldState(
+    std::size_t timelineLength,
+    const FrameID& guyStartTime,
+    const PhysicsEngine& physics,
+    const ObjectList<Normal> & initialObjects) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
@@ -148,7 +149,7 @@ Frame* WorldState::getFrame(const FrameID& whichFrame)
 
 std::pair<
     std::map<Frame*, ObjectList<Normal> >,
-    std::map<Frame*, ObjectList<Edit> > >
+    std::map<Frame*, ObjectList<FirstEdit> > >
 WorldState::getDeparturesFromFrame(Frame* frame)
 {
     PhysicsEngine::PhysicsReturnT retv(
@@ -174,7 +175,7 @@ WorldState::getDeparturesFromFrame(Frame* frame)
         currentWinFrames_.remove(frame);
     }
     return
-    std::pair<std::map<Frame*, ObjectList<Normal> >, std::map<Frame*, ObjectList<Edit> > >(
+    std::pair<std::map<Frame*, ObjectList<Normal> >, std::map<Frame*, ObjectList<FirstEdit> > >(
         retv.departures,
         retv.edits);
 }
@@ -236,7 +237,6 @@ void WorldState::addNewInputData(const InputList& newInputData)
     playerInput_.push_back(newInputData);
     for (ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end()); it != end; ++it) {
         frameUpdateSet_.add(*it);
-        //cout << "adding frame: " << nextPlayerFrame_.frame() << "\n";
     }
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one
