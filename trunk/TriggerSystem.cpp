@@ -207,7 +207,6 @@ std::vector<Platform> getPlatformDepartures(
     {
         const PlatformDestination& destination(
             boost::begin(destinations)[platform.getIndex()]);
-        assert(platform.getPauseLevel() == 0);
         
         PositionAndVelocity horizontal(
             destination.
@@ -227,8 +226,7 @@ std::vector<Platform> getPlatformDepartures(
                 horizontal.velocity, vertical.velocity,
                 platform.getWidth(), platform.getHeight(),
                 platform.getIndex(),
-                platform.getTimeDirection(),
-                platform.getPauseLevel()));
+                platform.getTimeDirection()));
     }
     return nextPlatform;
 }
@@ -255,10 +253,6 @@ ObjectList<Normal>  TriggerSystem::calculateStaticDepartures(
     const Frame* time) const
 {
     (void)time;
-    assert(
-        isNullFrame(
-            getInitiatorFrame(getUniverse(time)))
-        && "There really is no way for the trigger system to work with pause time (I think?)");
     std::vector<char> buttonState(
         calculateButtonState(
             buttonCount_,
@@ -284,8 +278,7 @@ ObjectList<Normal>  TriggerSystem::calculateStaticDepartures(
                 button.getWidth(), button.getHeight(),
                 button.getIndex(),
                 buttonState[button.getIndex()],
-                button.getTimeDirection(),
-                button.getPauseLevel()));
+                button.getTimeDirection()));
     }
     retv.addRange(
         snapAttachments(

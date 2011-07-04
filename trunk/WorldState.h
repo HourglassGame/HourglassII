@@ -53,14 +53,9 @@ public:
     Frame* getFrame(FrameID const& whichFrame);
 private:
     friend struct ExecuteFrame;
-    friend struct NewExecuteFrame;
-    friend struct EditDepartures;
-    std::pair<
-        std::map<Frame*, ObjectList<Normal> >,
-        std::map<Frame*, ObjectList<FirstEdit> > >
-    getDeparturesFromFrame(Frame* frame);
+    std::map<Frame*, ObjectList<Normal> >
+        getDeparturesFromFrame(Frame* frame);
     
-    std::map<Frame*, ObjectList<Normal> > getEditedDeparturesFromFrame(Frame const* frame);
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to
     //the input for the guy with the index corresponding to that element.

@@ -22,56 +22,10 @@ struct ExecuteFrame
     }
     void operator()(Frame* time) const
     {
-        std::pair<
-            std::map<Frame*, ObjectList<Normal> >,
-            std::map<Frame*, ObjectList<FirstEdit> > >
-                departures(thisptr_.getDeparturesFromFrame(time));
-        departureMap_.setDeparture(time, departures.first);
-    }
-private:
-    WorldState& thisptr_;
-    DepartureMap& departureMap_;
-};
-
-struct NewExecuteFrame
-{
-    NewExecuteFrame(
-        WorldState& thisptr,
-        RawDepartureMap& rawDepartureMap,
-        EditDepartureMap& editDepartureMap):
-            thisptr_(thisptr),
-            rawDepartureMap_(rawDepartureMap),
-            editDepartureMap_(editDepartureMap)
-    {
-    }
-    void operator()(Frame* time) const
-    {
-        std::pair<
-            std::map<Frame*, ObjectList<Normal> >,
-            std::map<Frame*, ObjectList<FirstEdit> > >
-                departures(thisptr_.getDeparturesFromFrame(time));
-        rawDepartureMap_.setDeparture(time, departures.first);
-        editDepartureMap_.setDeparture(time, departures.second);
-    }
-private:
-    WorldState& thisptr_;
-    RawDepartureMap& rawDepartureMap_;
-    EditDepartureMap& editDepartureMap_;
-};
-
-struct EditDepartures
-{
-    EditDepartures(
-        WorldState& thisptr,
-        DepartureMap& departureMap):
-            thisptr_(thisptr),
-            departureMap_(departureMap)
-    {
-    }
-    void operator()(Frame* time) const
-    {
-        std::map<Frame*, ObjectList<Normal> > editedDepartures(thisptr_.getEditedDeparturesFromFrame(time));
-        departureMap_.setDeparture(time, editedDepartures);
+        //departures is moved into departureMap_, and so must be declared separately
+        //(until r-value references become more widely supported)
+        std::map<Frame*, ObjectList<Normal> > departures(thisptr_.getDeparturesFromFrame(time));
+        departureMap_.setDeparture(time, departures);
     }
 private:
     WorldState& thisptr_;
@@ -147,10 +101,8 @@ Frame* WorldState::getFrame(const FrameID& whichFrame)
     return timeline_.getFrame(whichFrame);
 }
 
-std::pair<
-    std::map<Frame*, ObjectList<Normal> >,
-    std::map<Frame*, ObjectList<FirstEdit> > >
-WorldState::getDeparturesFromFrame(Frame* frame)
+std::map<Frame*, ObjectList<Normal> >
+    WorldState::getDeparturesFromFrame(Frame* frame)
 {
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(frame->getPrePhysics(),
@@ -174,36 +126,16 @@ WorldState::getDeparturesFromFrame(Frame* frame)
     else {
         currentWinFrames_.remove(frame);
     }
-    return
-    std::pair<std::map<Frame*, ObjectList<Normal> >, std::map<Frame*, ObjectList<FirstEdit> > >(
-        retv.departures,
-        retv.edits);
-}
-
-std::map<Frame*, ObjectList<Normal> > WorldState::getEditedDeparturesFromFrame(Frame const* frame)
-{
-    return departureEditFunction(
-        frame->getRawDepartures(),
-        frame->getPreEdits(),
-        frame);
+    return retv.departures;
 }
 
 FrameUpdateSet WorldState::executeWorld()
 {
-    EditDepartureMap newEditDepartures;
-    newEditDepartures.makeSpaceFor(frameUpdateSet_);
-    RawDepartureMap newRawDepartures;
-    newRawDepartures.makeSpaceFor(frameUpdateSet_);
+    DepartureMap newDepartures;
+    newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet, NewExecuteFrame(*this, newRawDepartures, newEditDepartures));
-    //Need to rerun frames whose raw departures have changed
-    FrameUpdateSet editUpdateSet(timeline_.setNewRawDepartures(newRawDepartures));
-    //Also need to rerun frames to which Edit arrivals have changed
-    editUpdateSet.add(timeline_.updateWithNewEditDepartures(newEditDepartures));
-    DepartureMap newDepartures;
-    newDepartures.makeSpaceFor(editUpdateSet);
-    parallel_for_each(editUpdateSet, EditDepartures(*this, newDepartures));
+    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
     timeline_.updateWithNewDepartures(newDepartures).swap(frameUpdateSet_);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 

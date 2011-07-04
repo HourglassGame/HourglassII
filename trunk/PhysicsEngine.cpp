@@ -32,11 +32,11 @@ namespace {
     template<typename Object>
     struct ObjectAndTime
     {
-        ObjectAndTime(const Object& nobject,
-                Frame* nTime) :
+        ObjectAndTime(
+            Object const& nobject,
+            Frame* nTime) :
                 object(nobject),
-                time(nTime)
-        {}
+                time(nTime) {}
         Object object;
         Frame* time;
     };
@@ -47,35 +47,20 @@ namespace {
             toSortObjectListOf.second.sort();
         }
     };
-    ObjectList<Normal>  calculatePausedStaticDepartures(const ObjectPtrList<Normal> & arrivals) {
-        ObjectList<Normal>  retv;
-        foreach (const Platform& platform, arrivals.getList<Platform>()) {
-            retv.add(platform);
-        }
-        foreach (const Button& button, arrivals.getList<Button>()) {
-            retv.add(button);
-        }
-        foreach (const Portal& portal, arrivals.getList<Portal>()) {
-            retv.add(portal);
-        }
-        return retv;
-    }
     
     template<typename RandomAccessGuyRange>
     void guyStep(
-        const Environment& env,
-        const RandomAccessGuyRange& guyArrivalList,
+        Environment const& env,
+        RandomAccessGuyRange const& guyArrivalList,
         Frame* time,
-        const std::vector<InputList>& playerInput,
+        std::vector<InputList> const& playerInput,
         std::vector<ObjectAndTime<Guy> >& nextGuy,
         std::vector<ObjectAndTime<Box> >& nextBox,
-        const std::vector<Platform>& nextPlatform,
-        const std::vector<Portal>& nextPortal,
-        std::map<Frame*, ObjectList<Normal> >& newDepartures,
+        std::vector<Platform> const& nextPlatform,
+        std::vector<Portal> const& nextPortal,
         bool& currentPlayerFrame,
         bool& nextPlayerFrame,
-        bool& winFrame,
-        std::vector<PauseInitiatorID>& pauseTimes);
+        bool& winFrame);
     
     template <
         typename RandomAccessBoxRange,
@@ -101,74 +86,58 @@ namespace {
 		int size,
 		int oldIllegalPortal,
 		TimeDirection oldTimeDirection,
-		int pauseLevel,
 		Frame* time);
 
     bool explodeBoxesUpwards(
         std::vector<int>& x,
-        const std::vector<int>& xTemp,
+        std::vector<int> const& xTemp,
         std::vector<int>& y,
-        const std::vector<int>& size,
-                             const std::vector<std::vector<std::size_t> >& links,
+        std::vector<int> const& size,
+        std::vector<std::vector<std::size_t> > const& links,
         bool firstTime,
         std::vector<char>& toBeSquished,
-        const std::vector<int>& bound,
+        std::vector<int> const& bound,
         std::size_t index,
         int boundSoFar);
 
     bool explodeBoxes(
         std::vector<int>& pos,
-        const std::vector<int>& size,
-                      const std::vector<std::vector<std::size_t> >& links,
+        std::vector<int> const& size,
+        std::vector<std::vector<std::size_t> > const& links,
         std::vector<char>& toBeSquished,
-        const std::vector<int>& bound,
+        std::vector<int> const& bound,
         std::size_t index,
         int boundSoFar,
         int sign);
 
     void recursiveBoxCollision(
         std::vector<int>& majorAxis,
-        const std::vector<int>& minorAxis,
-        const std::vector<int>& size,
-        const std::vector<char>& squished,
+        std::vector<int> const& minorAxis,
+        std::vector<int> const& size,
+        std::vector<char> const& squished,
         std::vector<std::size_t>& boxesSoFar,
         std::size_t index);
         
-    template <
-        typename Type,
-        typename RandomAccessThiefRange,
-        typename RandomAccessExtraRange>
+    template <typename Type>
     void buildDeparturesForComplexEntities(
-        const std::vector<ObjectAndTime<Type> >& next,
-        const RandomAccessThiefRange& thieves,
-        const RandomAccessExtraRange& extras,
+        std::vector<ObjectAndTime<Type> > const& next,
         std::map<Frame*, ObjectList<Normal> >& newDepartures,
-        Frame* time,
-        std::vector<PauseInitiatorID>& pauseTimes);
+        Frame* time);
 
     template <class Type>
     void buildDeparturesForReallySimpleThings(
-        const std::vector<Type>& next,
+        std::vector<Type> const& next,
         std::map<Frame*, ObjectList<Normal> >& newDepartures,
-        Frame* time,
-        std::vector<PauseInitiatorID>& pauseTimes);
+        Frame* time);
         
-    template<
-        typename RandomAccessBoxEditRangeA,
-        typename RandomAccessBoxEditRangeB,
-        typename RandomAccessGuyEditRange>
     void buildDepartures(
-        const std::vector<ObjectAndTime<Box> >& nextBox,
-        const std::vector<Platform>& nextPlatform,
-        const std::vector<Portal>& nextPortal,
-        const std::vector<Button>& nextButton,
-        const std::vector<ObjectAndTime<Guy> >& nextGuy,
-        const RandomAccessBoxEditRangeA& boxThieves,
-        const RandomAccessBoxEditRangeB& extraBoxes,
-        const RandomAccessGuyEditRange& extraGuys,
+        std::vector<ObjectAndTime<Box> > const& nextBox,
+        std::vector<Platform> const& nextPlatform,
+        std::vector<Portal> const& nextPortal,
+        std::vector<Button> const& nextButton,
+        std::vector<ObjectAndTime<Guy> > const& nextGuy,
         std::map<Frame*, ObjectList<Normal> >& newDepartures,
-        Frame* time,
-        std::vector<PauseInitiatorID>& pauseTimes);
+        Frame* time);
         
     //bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
     bool wallAtExclusive(const Environment& env, int x, int y, int w, int h);
@@ -182,19 +151,26 @@ namespace {
 
 
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
-    const ObjectPtrList<Normal> & arrivals,
+    ObjectPtrList<Normal> const& arrivals,
     Frame* time,
-    const std::vector<InputList>& playerInput) const
+    std::vector<InputList> const& playerInput) const
 {
     /*Static?*/ObjectList<Normal>  staticDepartures(
-        isNullFrame(getInitiatorFrame(getUniverse(time))) ? 
-            triggerSystem_.calculateStaticDepartures(arrivals, playerInput, time):
-            calculatePausedStaticDepartures(arrivals));
+        triggerSystem_.calculateStaticDepartures(arrivals, playerInput, time));
+/*
+    StaticObjectList<Normal>  staticDepartures(
+        triggerSystem_.calculateStaticDepartures(triggerArrivals));*/
 
     std::vector<ObjectAndTime<Box> > nextBox;
 
     // boxes do their crazy wizz-bang collision algorithm
-    boxCollisionAlogorithm(env_, arrivals.getList<Box>(), nextBox, staticDepartures.getList<Platform>(), staticDepartures.getList<Portal>(), time);
+    boxCollisionAlogorithm(
+        env_,
+        arrivals.getList<Box>(),
+        nextBox,
+        staticDepartures.getList<Platform>(),
+        staticDepartures.getList<Portal>(),
+        time);
 
     bool currentPlayerFrame(false);
     bool nextPlayerFrame(false);
@@ -203,8 +179,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     std::vector<ObjectAndTime<Guy> > nextGuy;
     
     std::map<Frame*, ObjectList<Normal> > newDepartures;
-
-    std::vector<PauseInitiatorID> pauseTimes;
 
     // guys simple collision algorithm
     guyStep(
@@ -216,11 +190,9 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         nextBox,
         staticDepartures.getList<Platform>(),
         staticDepartures.getList<Portal>(),
-        newDepartures,
         currentPlayerFrame,
         nextPlayerFrame,
-        winFrame,
-        pauseTimes);
+        winFrame);
 
     buildDepartures(
         nextBox,
@@ -228,485 +200,62 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         staticDepartures.getList<Portal>(),
         staticDepartures.getList<Button>(),
         nextGuy,
-        arrivals.getList<RemoteDepartureEdit<Thief,Box> >(),
-        arrivals.getList<RemoteDepartureEdit<Extra,Box> >(),
-        arrivals.getList<RemoteDepartureEdit<Extra,Guy> >(),
         newDepartures,
-        time,
-        pauseTimes);
+        time);
 
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
-    boost::for_each(newDepartures,SortObjectList());
+    boost::for_each(newDepartures, SortObjectList());
+    
+    /*TriggerObjectList triggerDepartures(
+        triggerSystem_.calculateTriggerDepartures(newDepartures, playerInput, time));*/
+    
     // add data to departures
     return PhysicsReturnT(newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame);
 }
-#if 0
-template <typename Type, typename RandomAccessEditRange>
-void addPausedDepartures(
-		ObjectList<Normal> & departures,
-		Type& thing,
-		int pauseLevel,
-		Frame* time,
-		Frame* boundryTime)
-{
-
-	if (boundryTime == 0) // add the pause object to every subframe
-	{
-		foreach (Universe* child, time->getChildrenUniverseList())
-		{
-			foreach(Time* childFrame, child->getFrameList())
-			{
-				departures.add(Type(thing, childFrame, pauseLevel));
-				addPausedDepartures(departures, thing, pauseLevel + 1, childFrame, boundryTime);
-			}
-		}
-	}
-	else
-	{
-		if (thing.getTimeDirection() == hg::FORWARDS) // add the pause object to subframes after boundryTime
-		{
-			foreach (Universe* child, time->getChildrenUniverseList())
-			{
-				foreach(Time* childFrame, child->getFrameList())
-				{
-					if (childFrame > boundryTime)
-					{
-						departures.add(Type(thing, childFrame, pauseLevel));
-						addPausedDepartures(departures, thing, pauseLevel + 1, childFrame, boundryTime);
-					}
-				}
-			}
-		}
-		else // add the pause object to subframes before boundryTime
-		{
-			foreach (Universe* child, time->getChildrenUniverseList())
-			{
-				foreach(Time* childFrame, child->getFrameList())
-				{
-					if (childFrame < boundryTime)
-					{
-						departures.add(Type(thing, childFrame, pauseLevel));
-						addPausedDepartures(departures, thing, pauseLevel + 1, childFrame, boundryTime);
-					}
-				}
-			}
-		}
-	}
-}
-
-
-template <typename Type, typename RandomAccessEditRange> // Type is Box, Guy etc..
-void departureEditFunction(
-		std::map<Frame*, ObjectList<Normal> >& departures,
-		std::map<Frame*,  ObjectList<Normal> >& editDepartures,
-		Frame* time)
-{
-	typedef std::pair<Frame*,ObjectList<Normal> > framePair;
-
-	// adds normal departures as pause objects
-	foreach (const framePair& value, departures)
-	{
-		foreach (Type& thing, value.second().getListRef<Type>())
-	    {
-			if (thing.getPauseLevel() == 0) // pause things are added to departures while departures is being iterated over
-			{
-				if (value.first().getParent() == time.getParent()) // same universe
-				{
-					addPausedDepartures(value.second(), thing, 1, time, 0);
-				}
-				else // child of time
-				{
-					addPausedDepartures(value.second(), thing, 1, time, value.first());
-					// Pause departures should be fully added only to all preceeding universes for forwards objects
-					// and to subsequent universes for reverse objects
-					// * value.first() is the first frame in a pause time for fowards objects.
-					// 		This means they will be added to all pause universes before the one they departed to.
-					// * value.first() is the last frame in a pause time for reverse objects.
-					// 		This means they will be added to all pause universes after the one they departed to.
-				}
-			}
-	    }
-	}
-
-	// add extras
-	// extras consist of a Type and a boundryTime
-	foreach (const framePair& value, editDepartures)
-	{
-		foreach (Extra<Type>& extra, value.second().getExtraListRef<Type>())
-		{
-			Type& thing = extra.getObject();
-			Frame* thingParent = value.first();
-			for (int i = 0; i < thing.getPauseLevel(); ++i)
-			{
-				thingParent = thingParent.getParentFrame();
-			}
-			addPausedDepartures(thingParent.getCorrespondingDepartureObjectList(), thing, 1, time, extra.getBoundryTime());
-			thingParent.getCorrespondingDepartureObjectList.add(thing, 0, value.first().nextTime(thing->timeDirection));
-		}
-	}
-
-}
-
-#endif
-std::map<Frame*, ObjectList<Normal> > departureEditFunction(
-    const std::map<Frame*, ObjectList<Normal> >& departures,
-	const ObjectPtrList<FirstEdit>& /*edits*/,
-	const Frame* /*time*/)
-{
-    //No edits.
-    return departures;
-}
-
 
 namespace {
 template <
-    typename Type,
-    typename RandomAccessThiefRange,
-    typename RandomAccessExtraRange>
+    typename Type>
 void buildDeparturesForComplexEntities(
     const std::vector<ObjectAndTime<Type> >& next,
-    const RandomAccessThiefRange& thieves,
-    const RandomAccessExtraRange& extras,
-    std::map<Frame*, ObjectList<Normal> >& newDepartures,
-    Frame* time,
-    std::vector<PauseInitiatorID>& pauseTimes)
+    std::map<Frame*, ObjectList<Normal> >& newDepartures)
 {
-    // builds departures for something that can move in complex ways throughout pause frames
-    // adding, removal etc... things like guys and boxes
     foreach (const ObjectAndTime<Type>& thingAndTime, next)
     {
-        const Type& thing(thingAndTime.object);
-
-        // the index of the next normal departure for a thing
-        Frame* nextTime(nextFrame(time,thing.getTimeDirection()));
-
-        if (thingAndTime.time != nextTime)
-        {
-            newDepartures[thingAndTime.time].add(thing);
-            goto buildNext;
-        }
-
-        // check if the departure is to be stolen
-        typedef RemoteDepartureEdit<Thief, Type> thief_t;
-        foreach (const thief_t& thief, thieves)
-        {
-            if (thief.getDeparture() == thing)
-            {
-                // by now the departure is known to be stolen
-                // if the departure is a pause departure the departure a level up must also be stolen
-                if (thing.getPauseLevel() != 0)
-                {
-                    newDepartures[getInitiatorFrame(getUniverse(time))].add
-                    (
-                        RemoteDepartureEdit<Thief, Type>
-                        (
-                            getInitiatorID(getUniverse(time)),
-                            Type(thing, thing.getTimeDirection(), thing.getPauseLevel()-1),
-                            true
-                        )
-                    );
-                }
-
-                // adds pause time departures to pause times before this one
-                // also adds pause time departure to the pause time that stole the departue
-                foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-                {
-                    newDepartures[
-                        getEntryFrame(
-                            getSubUniverse(time, pauseTime),
-                            thing.getTimeDirection())
-                    ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
-
-                    if (pauseTime == thief.getOrigin())
-                    {
-                        // the current thing is finished, goto next one
-                        goto buildNext;
-                    }
-                }
-                assert(false && "pauseTimes must have a element that is equal to thief origin");
-            }
-        }
-
-        // the depature is not stolen for this thing
-
-        // if this is the end of the universe depart to null-frame as workaround for flicker
-        if (!nextFrameInSameUniverse(time, thing.getTimeDirection()))
-        {
-            newDepartures[0].add(thing);
-            // if this is a normal time thing add an extra to propagate into later pause times
-            // do not do so for root universe (no parent)
-            if (thing.getPauseLevel() == 0 && !isNullFrame(getInitiatorFrame(getUniverse(time))))
-            {
-            	newDepartures[getInitiatorFrame(getUniverse(time))].add(
-            		RemoteDepartureEdit<Extra,Type>(
-						getInitiatorID(getUniverse(time)),
-						thing,
-						true));
-            }
-        }
-        //otherwise depart normally
-        else
-        {
-            // simply depart to next frame
-            newDepartures[nextTime].add(thing);
-        }
-
-        // add pause time departure to all spawned pause times
-        foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-        {
-            newDepartures[
-                getEntryFrame(
-                    getSubUniverse(time, pauseTime),
-                    thing.getTimeDirection())
-            ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
-        }
-        buildNext:;
+        newDepartures[thingAndTime.time].add(thingAndTime.object);
     }
-
-    // For Guy Shooting the following loop must be executed in WorldState::executeWorld after all normal executions
-    // It must be executed for every frame that has changed departures from that executeWorld step
-    // This must be executed for every frame changed frame until there are no more thiefs added
-    // (this only occurs at one spot in the loop, it thieves properly from nested pause time)
-    // Parallel execution is desirable and may be mandatory, may as well do it to be safe
-    // Once this happens in WorldState there will be no 1 frame delay as extra Guys propagate through and as such the next
-    // player frame invariant will not be broken.
-
-    // special departures for things, from pause time
-    // these things are pause time things that have changed location in pause time
-    typedef RemoteDepartureEdit<Extra, Type> extra_t;
-    foreach (const extra_t& extra, extras)
-    {
-        const Type& thing(extra.getDeparture());
-
-        // the index of the next normal departure for a thing
-        Frame* nextTime(nextFrame(time,thing.getTimeDirection()));
-        
-        // check if the departure is to be stolen
-        typedef RemoteDepartureEdit<Thief, Type> thief_t;
-        foreach (const thief_t& thief, thieves)
-        {
-            if (thief.getDeparture() == thing)
-            {
-                // by now the departure is known to be stolen
-                // if the departure is a pause departure the departure a level up must also be stolen
-                if (thing.getPauseLevel() != 0)
-                {
-                    newDepartures[getInitiatorFrame(getUniverse(time))].add(
-                        RemoteDepartureEdit<Thief, Type>(
-                            getInitiatorID(getUniverse(time)),
-                            Type(
-                                thing,
-                                thing.getTimeDirection(),
-                                thing.getPauseLevel()-1),
-                            true));
-                }
-
-                // adds pause time departures to pause times before this one
-                // also adds pause time departure to the pause time that stole the departue
-                // CHANGE FROM NORMAL THING HANDLING: only add to pause times that occur after the extra thing pause time
-                foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-                {
-                    if (extra.getOrigin() < pauseTime)
-                    {
-                        newDepartures[
-                            getEntryFrame(
-                                getSubUniverse(time, pauseTime),
-                                thing.getTimeDirection())
-                        ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
-                    }
-
-                    if (thief.getOrigin() == pauseTime)
-                    {
-                        // the thing is finished, goto next one
-                        goto buildNextExtra;
-                    }
-                }
-                assert(false && "pauseTimes must have a element that is equal to thief origin");
-            }
-        }
-        // the depature is not stolen for this thing
-
-        // if this is the end of the universe depart to null-frame as workaround for flicker
-        if (thing.getPauseLevel() != 0 && !nextFrameInSameUniverse(time, thing.getTimeDirection()))
-        {
-        	newDepartures[0].add(thing);
-        }
-        else if (extra.getPropIntoNormal())
-        {
-            // simply depart to next frame
-            newDepartures[nextTime].add(thing);
-        }
-
-        // CHANGE FROM NORMAL THING HANDLING: add pause time departure to pause times after the current one
-        foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-        {
-            if (extra.getOrigin() < pauseTime)
-            {
-                newDepartures[
-                    getEntryFrame(
-                        getSubUniverse(time, pauseTime),
-                        thing.getTimeDirection())
-                ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
-            }
-        }
-        buildNextExtra:;
-    }
-
 }
 
 template <class Type>
 void buildDeparturesForReallySimpleThings(
     const std::vector<Type>& next,
     std::map<Frame*, ObjectList<Normal> >& newDepartures,
-    Frame* time,
-    std::vector<PauseInitiatorID>& pauseTimes)
+    Frame* time)
 {
     foreach (const Type& thing, next)
     {
-        Frame* nextTime(nextFrame(time, thing.getTimeDirection()));
-
-        if (thing.getPauseLevel() == 0 || nextFrameInSameUniverse(time, thing.getTimeDirection()))
-        {
-            newDepartures[nextTime].add(thing);
-        }
-        else
-        {
-            //workaround for flicker, object departs to null frame and so never arrives anywhere
-            newDepartures[0].add(thing);
-        }
-
-        foreach (const PauseInitiatorID& pauseTime, pauseTimes)
-        {
-            newDepartures[
-                getEntryFrame(getSubUniverse(time, pauseTime),
-                thing.getTimeDirection())
-            ].add(Type(thing, thing.getTimeDirection(), thing.getPauseLevel()+1));
-        }
+        newDepartures[nextFrame(time, thing.getTimeDirection())].add(thing);
     }
 }
 
-template<
-    typename RandomAccessBoxEditRangeA,
-    typename RandomAccessBoxEditRangeB,
-    typename RandomAccessGuyEditRange>
 void buildDepartures(
-    const std::vector<ObjectAndTime<Box> >& nextBox,
-    const std::vector<Platform>& nextPlatform,
-    const std::vector<Portal>& nextPortal,
-    const std::vector<Button>& nextButton,
-    const std::vector<ObjectAndTime<Guy> >& nextGuy,
-    const RandomAccessBoxEditRangeA& boxThieves,
-    const RandomAccessBoxEditRangeB& extraBoxes,
-    const RandomAccessGuyEditRange& extraGuys,
+    std::vector<ObjectAndTime<Box> > const& nextBox,
+    std::vector<Platform> const& nextPlatform,
+    std::vector<Portal> const& nextPortal,
+    std::vector<Button> const& nextButton,
+    std::vector<ObjectAndTime<Guy> > const& nextGuy,
     std::map<Frame*, ObjectList<Normal> >& newDepartures,
-    Frame* time,
-    std::vector<PauseInitiatorID>& pauseTimes)
+    Frame* time)
 {
+    //Complex vs simple is a bit pointless at this stage
+    //The real issue is static vs time-traveling - 
+    //and this should be fixed by the new trigger system
+    buildDeparturesForComplexEntities(nextBox, newDepartures);
+    buildDeparturesForComplexEntities(nextGuy, newDepartures);
 
-    // pause times initiated in the frame must be sorted
-    boost::sort(pauseTimes);
-
-    buildDeparturesForComplexEntities(nextBox, boxThieves, extraBoxes, newDepartures, time, pauseTimes);
-
-    // build departures for guys
-    foreach (const ObjectAndTime<Guy>& guyAndTime, nextGuy)
-    {
-        const Guy& guyData(guyAndTime.object);
-
-        Frame* nextTime(nextFrame(time, guyData.getTimeDirection()));
-
-        // Depart to next frame but do not depart if the guy is paused and it is the end of a pause time
-        if (guyAndTime.time == nextTime)
-        {
-            if (guyData.getPauseLevel() == 0 || nextFrameInSameUniverse(time, guyData.getTimeDirection()))
-            {
-                newDepartures[nextTime].add(guyData);
-            }
-            else {
-                //if it is end of pause time and guy is paused then add departure to null-frame as workaround for flicker
-                newDepartures[0].add(guyData);
-            }
-
-        }
-        else
-        {
-            newDepartures[guyAndTime.time].add(guyData);
-        }
-
-        // Add extra departures if departing from pause time so that subsequent pause times in the same parent frame see
-        // this guy's state at the end of its pause time. Pause times are ordered.
-        if (nextTime && !nextFrameInSameUniverse(time, guyData.getTimeDirection()) && guyData.getPauseLevel() == 0)
-        {
-            int universes(nextFramePauseLevelDifference(time, guyData.getTimeDirection()));
-            Frame* parTime(time);
-            do
-            {
-                const PauseInitiatorID& parInit(getInitiatorID(getUniverse(parTime)));
-                parTime = getInitiatorFrame(getUniverse(parTime));
-                // This should be the ONLY place extra guys are added.
-                // REMEMBER: PAUSE TIME GUNS DO NOT WORK
-                newDepartures[parTime].add(
-                    RemoteDepartureEdit<Extra,Guy>(
-                        parInit,
-                        Guy(guyData, Guy::increment_pause_level_tag()),
-                        false));
-                --universes;
-            }
-            while (universes > 0);
-        }
-
-
-        if (!isNullFrame(guyAndTime.time) && getInitiatorFrame(getUniverse(guyAndTime.time)) == time)
-        {
-            // if the guy is departing to paused don't add it to pause times after this one
-            const PauseInitiatorID& pauseID(getInitiatorID(getUniverse(guyAndTime.time)));
-            foreach (const PauseInitiatorID& pauseTime, pauseTimes) {
-                if (pauseID == pauseTime) {
-                    break;
-                }
-                newDepartures[
-                    getEntryFrame(getSubUniverse(time, pauseTime), guyData.getTimeDirection())
-                ].add(Guy(guyData, Guy::increment_pause_level_tag()));
-            }
-        }
-        else
-        {
-            // add pause guy to every pause time universe from this frame
-            foreach (const PauseInitiatorID& pauseTime, pauseTimes) {
-                newDepartures[
-                    getEntryFrame(getSubUniverse(time, pauseTime),guyData.getTimeDirection())
-                ].add(Guy(guyData, Guy::increment_pause_level_tag()));
-            }
-        }
-    }
-
-    // build departure for extra guys (purely graphical things to do with pause order)
-    typedef RemoteDepartureEdit<Extra, Guy> extra_t;
-    foreach (const extra_t& extraGuy, extraGuys)
-    {
-        // add pause time departure to pause times after the current one
-        foreach (const PauseInitiatorID& pauseTime, pauseTimes | boost::adaptors::reversed)
-        {
-            if (extraGuy.getOrigin() < pauseTime)
-            {
-                newDepartures[
-                    getEntryFrame(
-                        getSubUniverse(time,pauseTime),
-                        extraGuy.getDeparture().getTimeDirection())
-                ].add(Guy(extraGuy.getDeparture()));
-            }
-            else
-            {
-                //pauseTimes is sorted (in ascending order)
-                break;
-            }
-        }
-    }
-
-    // simple things
-    buildDeparturesForReallySimpleThings(nextPlatform, newDepartures, time, pauseTimes);
-    buildDeparturesForReallySimpleThings(nextButton, newDepartures, time, pauseTimes);
-    buildDeparturesForReallySimpleThings(nextPortal, newDepartures, time, pauseTimes);
+    buildDeparturesForReallySimpleThings(nextPlatform, newDepartures, time);
+    buildDeparturesForReallySimpleThings(nextButton, newDepartures, time);
+    buildDeparturesForReallySimpleThings(nextPortal, newDepartures, time);
 }
 }//namespace
 
@@ -721,11 +270,9 @@ void guyStep(
     std::vector<ObjectAndTime<Box> >& nextBox,
     const std::vector<Platform>& nextPlatform,
     const std::vector<Portal>& nextPortal,
-    std::map<Frame*, ObjectList<Normal> >& newDepartures,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
-    bool& winFrame,
-    std::vector<PauseInitiatorID>& pauseTimes)
+    bool& winFrame)
 {
     std::vector<int> x;
     std::vector<int> y;
@@ -756,24 +303,24 @@ void guyStep(
         }
         else
         {
-            Portal relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
+            Portal const& relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
         }
-        supportedSpeed.push_back(0);
         xspeed.push_back(0);
         yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
         supported.push_back(false);
+        supportedSpeed.push_back(0);
         squished.push_back(false);
         facing.push_back(guyArrivalList[i].getFacing());
 
-        if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getPauseLevel() == 0)
+        if (guyArrivalList[i].getIndex() < playerInput.size())
         {
             std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            const InputList& input = playerInput[relativeIndex];
+            InputList const& input(playerInput[relativeIndex]);
 
-            int width = guyArrivalList[i].getWidth();
-            int height = guyArrivalList[i].getHeight();
+            int const width(guyArrivalList[i].getWidth());
+            int const height(guyArrivalList[i].getHeight());
 
             // chonofrag with platforms
 			foreach (const Platform& platform, nextPlatform)
@@ -781,7 +328,7 @@ void guyStep(
 				int pX(platform.getX());
 				int pY(platform.getY());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS && platform.getPauseLevel() == 0)
+				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -810,9 +357,9 @@ void guyStep(
             }
 
             // Y direction collisions
-            int newY = y[i] + yspeed[i];
+            int newY(y[i] + yspeed[i]);
 
-            // box collision (only occurs in Y direction
+            // box collision (only occurs in Y direction)
             for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 			{
 				int boxX(nextBox[j].object.getX());
@@ -823,21 +370,9 @@ void guyStep(
 				TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
 				if (x[i] < boxX+boxSize && x[i]+width > boxX)
 				{
-					if (nextBox[j].object.getPauseLevel() > 0)
+					if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
 					{
-						if (newY+height >= boxY && newY+height-yspeed[i] <= boxY)
-						{
-							boxThatIamStandingOn = j;
-							newY = boxY-height;
-							xspeed[i] = 0;
-							supported[i] = true;
-							bottom = true;
-							supportedSpeed[i] = 0;
-						}
-					}
-					else if (boxDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE)
-					{
-						if (newY+height >= boxY-boxYspeed && newY+height-yspeed[i] <= boxY)
+						if (newY + height >= boxY-boxYspeed && newY + height-yspeed[i] <= boxY)
 						{
 							boxThatIamStandingOn = j;
 							newY = boxY-height-boxYspeed;
@@ -869,7 +404,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -877,8 +412,9 @@ void guyStep(
                 int pWidth(platform.getWidth());
                 int pHeight(platform.getHeight());
 
-                if (IntersectingRectanglesExclusive(x[i], newY, width, height,
-                		pX-pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed(), pY, pWidth, pHeight))
+                if (IntersectingRectanglesExclusive(
+                        x[i], newY, width, height,
+                		pX - pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed(), pY, pWidth, pHeight))
                 {
                     if (newY+height/2 < pY+pHeight/2)
                     {
@@ -886,14 +422,7 @@ void guyStep(
                         xspeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
                         bottom = true;
-                        if (platform.getPauseLevel() == 0)
-                        {
-                        	supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
-                        }
-                        else
-                        {
-                        	supportedSpeed[i] = 0;
-                        }
+                        supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
                     }
                     else
                     {
@@ -950,7 +479,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -1004,15 +533,22 @@ void guyStep(
             y[i] = newY;
         }
     }
+    assert(boost::distance(x) == boost::distance(guyArrivalList));
+    assert(boost::distance(y) == boost::distance(guyArrivalList));
+    assert(boost::distance(xspeed) == boost::distance(guyArrivalList));
+    assert(boost::distance(yspeed) == boost::distance(guyArrivalList));
+    assert(boost::distance(supported) == boost::distance(guyArrivalList));
+    assert(boost::distance(supportedSpeed) == boost::distance(guyArrivalList));
+    assert(boost::distance(squished) == boost::distance(guyArrivalList));
+    assert(boost::distance(facing) == boost::distance(guyArrivalList));
+
 
     std::vector<char> carry;
     std::vector<int> carrySize;
     std::vector<TimeDirection> carryDirection;
-    std::vector<int> carryPauseLevel;
     carry.reserve(guyArrivalList.size());
     carrySize.reserve(guyArrivalList.size());
     carryDirection.reserve(guyArrivalList.size());
-    carryPauseLevel.reserve(guyArrivalList.size());
     // box carrying
     for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
     {
@@ -1020,28 +556,21 @@ void guyStep(
         carry.push_back(guyArrivalList[i].getBoxCarrying());
         carrySize.push_back(0);
         carryDirection.push_back(hg::INVALID);
-        carryPauseLevel.push_back(0);
 
-        if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getPauseLevel() == 0 && not squished[i])
+        if (guyArrivalList[i].getIndex() < playerInput.size() && !squished[i])
         {
-
-            std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            const InputList& input = playerInput[relativeIndex];
+            std::size_t const relativeIndex(guyArrivalList[i].getIndex());
+            InputList const& input(playerInput[relativeIndex]);
 
             if (carry[i])
             {
-                bool droppable = false;
+                bool droppable(false);
                 if (input.getDown() && supported[i])
                 {
                     int width(guyArrivalList[i].getWidth());
-                    int dropX(x[i] - guyArrivalList[i].getBoxCarrySize());
+                    int dropX(facing[i] ? x[i] + width : x[i] - guyArrivalList[i].getBoxCarrySize());
                     int dropY(y[i]);
                     int dropSize(guyArrivalList[i].getBoxCarrySize());
-
-                    if (facing[i])
-                    {
-                    	dropX = x[i] + width;
-                    }
 
                     if (!wallAtExclusive(env, dropX, dropY, dropSize, dropSize))
                     {
@@ -1069,42 +598,21 @@ void guyStep(
 
                         if (droppable)
                         {
-                        	makeBoxAndTimeWithPortals(nextBox, nextPortal, dropX, dropY, 0, yspeed[i],
-                        			dropSize, -1, guyArrivalList[i].getBoxCarryDirection(), guyArrivalList[i].getBoxPauseLevel(), time);
-
-                            if (guyArrivalList[i].getBoxPauseLevel() != 0)
-                            {
-                                int pauseLevel = guyArrivalList[i].getBoxPauseLevel();
-                                Frame* parTime = time;
-                                int pauseLevelChange = 1;
-                                while (pauseLevel > 0)
-                                {
-                                    PauseInitiatorID parInit(getInitiatorID(getUniverse(parTime)));
-                                    parTime = getInitiatorFrame(getUniverse(parTime));
-                                    newDepartures[parTime].add
-                                    (
-                                        RemoteDepartureEdit<Extra, Box>
-                                        (
-                                            parInit,
-                                            Box
-                                            (
-                                                dropX, dropY, 0, yspeed[i],
-                                                dropSize, -1, -1, guyArrivalList[i].getBoxCarryDirection(),
-                                                guyArrivalList[i].getBoxPauseLevel()-pauseLevelChange
-                                            ),
-                                            true
-                                        )
-
-                                    );
-                                    --pauseLevel;
-                                    ++pauseLevelChange;
-                                }
-                            }
+                        	makeBoxAndTimeWithPortals(
+                                nextBox,
+                                nextPortal,
+                                dropX,
+                                dropY,
+                                0,
+                                yspeed[i],
+                                dropSize,
+                                -1,
+                                guyArrivalList[i].getBoxCarryDirection(),
+                                time);
 
                             carry[i] = false;
                             carrySize[i] = 0;
                             carryDirection[i] = hg::INVALID;
-                            carryPauseLevel[i] = 0;
                         }
                     }
                 }
@@ -1113,7 +621,6 @@ void guyStep(
                 {
                     carrySize[i] = guyArrivalList[i].getBoxCarrySize();
                     carryDirection[i] = guyArrivalList[i].getBoxCarryDirection();
-                    carryPauseLevel[i] = guyArrivalList[i].getBoxPauseLevel();
                 }
             }
             else
@@ -1133,19 +640,7 @@ void guyStep(
                             carry[i] = true;
                             carrySize[i] = boxSize;
                             carryDirection[i] = nextBoxIt->object.getTimeDirection();
-                            carryPauseLevel[i] = nextBoxIt->object.getPauseLevel();
-                            if (nextBoxIt->object.getPauseLevel() != 0)
-                            {
-                                newDepartures[getInitiatorFrame(getUniverse(time))].add(
-                                    RemoteDepartureEdit<Thief, Box>(
-                                        getInitiatorID(getUniverse(time)),
-                                        Box(
-                                            boxX, boxY, nextBoxIt->object.getXspeed(), nextBoxIt->object.getYspeed(),
-                                            boxSize, nextBoxIt->object.getIllegalPortal(), nextBoxIt->object.getRelativeToPortal(),
-                                            carryDirection[i], carryPauseLevel[i]-1
-                                        ),
-                                        true));
-                            }
+
                             nextBoxIt = nextBox.erase(nextBoxIt);
                             nextBoxEnd = nextBox.end();
                             break;
@@ -1156,31 +651,29 @@ void guyStep(
                 {
                     carrySize[i] = 0;
                     carryDirection[i] = hg::INVALID;
-                    carryPauseLevel[i] = 0;
                 }
             }
         }
     }
+    assert(boost::distance(carry) == boost::distance(guyArrivalList));
+    assert(boost::distance(carrySize) == boost::distance(guyArrivalList));
+    assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
+
     // colliding with pickups?
     // time travel
     for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
     {
     	if (squished[i])
 		{
+            assert(guyArrivalList[i].getIndex() != playerInput.size()
+                    && "nextPlayerFrame must always be set for guys with"
+                       " index == playerInput.size()");
 			continue;
 		}
-        if (guyArrivalList[i].getPauseLevel() != 0)
-        {
-            nextGuy.push_back(
-                ObjectAndTime<Guy>(
-                    guyArrivalList[i],
-                    nextFrame(time, guyArrivalList[i].getTimeDirection())));
-        }
-        else if (guyArrivalList[i].getIndex() < playerInput.size())
+        if (guyArrivalList[i].getIndex() < playerInput.size())
         {
             const std::size_t relativeIndex(guyArrivalList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
-            int nextCarryPauseLevel = carryPauseLevel[i];
             int relativeToPortal = -1;
             int illegalPortal = -1;
 
@@ -1202,23 +695,6 @@ void guyStep(
                 nextTimeDirection *= -1;
                 nextTime = nextFrame(time, nextTimeDirection);
                 carryDirection[i] *= -1;
-
-                if (!nextFrameInSameUniverse(time, nextTimeDirection))
-                {
-                    nextCarryPauseLevel -= nextFramePauseLevelDifference(time, nextTimeDirection);
-                    if (nextCarryPauseLevel < 0)
-                    {
-                        nextCarryPauseLevel = 0;
-                    }
-                }
-            }
-            else if (input.getAbility() == hg::PAUSE_TIME && getFrameNumber(time) == 3000) // FOR TESTING, REMOVE EVENTUALLY
-            {
-                normalDeparture = false;
-                PauseInitiatorID pauseID = PauseInitiatorID(pauseinitiatortype::GUY, relativeIndex, 500);
-                nextTime = getEntryFrame(getSubUniverse(time, pauseID), guyArrivalList[i].getTimeDirection());
-
-                pauseTimes.push_back(pauseID);
             }
             else if (input.getUse() == true)
             {
@@ -1230,7 +706,7 @@ void guyStep(
                     int py = nextPortal[j].getY();
                     int pw = nextPortal[j].getWidth();
                     int ph = nextPortal[j].getHeight();
-                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph) && nextPortal[j].getPauseLevel() == 0 &&
+                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph) &&
                             nextPortal[j].getActive() && nextPortal[j].getCharges() != 0) // charges not fully implemented
                     {
                         if (nextPortal[j].getWinner())
@@ -1265,9 +741,12 @@ void guyStep(
 				int py = nextPortal[j].getY();
 				int pw = nextPortal[j].getWidth();
 				int ph = nextPortal[j].getHeight();
-				if (RectangleWithinInclusive(x[i], y[i], guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(), px, py, pw, ph)
-					&& nextPortal[j].getPauseLevel() == 0 && nextPortal[j].getActive()
-					&& nextPortal[j].getCharges() != 0 && nextPortal[j].getFallable())
+                
+				if (PointInRectangleInclusive(
+                        x[i] + guyArrivalList[i].getWidth()/2, y[i] + guyArrivalList[i].getHeight()/2,
+                        px, py, pw, ph)
+					&& nextPortal[j].getActive() && nextPortal[j].getCharges() != 0 
+                    && nextPortal[j].getFallable())
 				{
 					if (guyArrivalList[i].getIllegalPortal() != -1 && j == static_cast<unsigned int>(guyArrivalList[i].getIllegalPortal()))
 					{
@@ -1294,18 +773,6 @@ void guyStep(
 				}
 			}
 
-            if (normalDeparture)
-            {
-                if (!nextFrameInSameUniverse(time, nextTimeDirection))
-                {
-                    nextCarryPauseLevel -= nextFramePauseLevelDifference(time, nextTimeDirection);
-                    if (nextCarryPauseLevel < 0)
-                    {
-                        nextCarryPauseLevel = 0;
-                    }
-                }
-            }
-
             if (playerInput.size() - 1 == relativeIndex)
             {
                 currentPlayerFrame = true;
@@ -1315,12 +782,22 @@ void guyStep(
             nextGuy.push_back(
                 ObjectAndTime<Guy>(
                     Guy(
-                        x[i], y[i], xspeed[i], yspeed[i],
+                        x[i], y[i],
+                        xspeed[i], yspeed[i],
                         guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
-                        illegalPortal, relativeToPortal, supported[i], supportedSpeed[i], facing[i],
-                        carry[i], carrySize[i], carryDirection[i], nextCarryPauseLevel,
-                        nextTimeDirection, 0,
-                        relativeIndex+1
+                        
+                        illegalPortal,
+                        relativeToPortal,
+                        supported[i],
+                        supportedSpeed[i],
+                        facing[i],
+                        
+                        carry[i],
+                        carrySize[i],
+                        carryDirection[i],
+                        
+                        nextTimeDirection,
+                        relativeIndex + 1
                     ),
                     nextTime
                 )
@@ -1346,45 +823,41 @@ void makeBoxAndTimeWithPortals(
 		int size,
 		int oldIllegalPortal,
 		TimeDirection oldTimeDirection,
-		int pauseLevel,
 		Frame* time)
 {
 	int relativeToPortal = -1;
 	int illegalPortal = -1;
 	Frame* nextTime(nextFrame(time, oldTimeDirection));
 
-	if (pauseLevel == 0)
-	{
-		for (unsigned int i = 0; i < nextPortal.size(); ++i)
-		{
-			int px = nextPortal[i].getX();
-			int py = nextPortal[i].getY();
-			int pw = nextPortal[i].getWidth();
-			int ph = nextPortal[i].getHeight();
-			if (RectangleWithinInclusive(x, y, size, size, px, py, pw, ph)
-				&& nextPortal[i].getPauseLevel() == 0 && nextPortal[i].getActive()
-				&& nextPortal[i].getCharges() != 0 && nextPortal[i].getFallable())
-			{
-				if (oldIllegalPortal != -1 && i == static_cast<unsigned int>(oldIllegalPortal))
-				{
-					illegalPortal = i;
-				}
-				else
-				{
-					Frame* portalTime(
-                        nextPortal[i].getRelativeTime() ?
-                        getArbitraryFrame(getUniverse(time), getFrameNumber(time) + nextPortal[i].getTimeDestination()):
-                        getArbitraryFrame(getUniverse(time), nextPortal[i].getTimeDestination()));
-					nextTime = portalTime ? nextFrame(portalTime, oldTimeDirection) : 0;
-					illegalPortal = nextPortal[i].getIllegalDestination();
-					relativeToPortal = nextPortal[i].getDestinationIndex();
-					x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
-					y = y - nextPortal[i].getY() + nextPortal[i].getYdestination();
-					break;
-				}
-			}
-		}
-	}
+    for (unsigned i = 0; i < nextPortal.size(); ++i)
+    {
+        int px = nextPortal[i].getX();
+        int py = nextPortal[i].getY();
+        int pw = nextPortal[i].getWidth();
+        int ph = nextPortal[i].getHeight();
+        if (PointInRectangleInclusive(x + size/2, y + size/2, px, py, pw, ph)
+            && nextPortal[i].getActive() && nextPortal[i].getCharges() != 0
+            && nextPortal[i].getFallable())
+        {
+            if (oldIllegalPortal != -1 && i == static_cast<unsigned>(oldIllegalPortal))
+            {
+                illegalPortal = i;
+            }
+            else
+            {
+                Frame* portalTime(
+                    nextPortal[i].getRelativeTime() ?
+                    getArbitraryFrame(getUniverse(time), getFrameNumber(time) + nextPortal[i].getTimeDestination()):
+                    getArbitraryFrame(getUniverse(time), nextPortal[i].getTimeDestination()));
+                nextTime = portalTime ? nextFrame(portalTime, oldTimeDirection) : 0;
+                illegalPortal = nextPortal[i].getIllegalDestination();
+                relativeToPortal = nextPortal[i].getDestinationIndex();
+                x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
+                y = y - nextPortal[i].getY() + nextPortal[i].getYdestination();
+                break;
+            }
+        }
+    }
 
 	nextBox.push_back
 	(
@@ -1397,8 +870,7 @@ void makeBoxAndTimeWithPortals(
 				size,
 				illegalPortal,
 				relativeToPortal,
-				oldTimeDirection,
-				pauseLevel),
+				oldTimeDirection),
 			nextTime
 		)
 	);
@@ -1406,16 +878,16 @@ void makeBoxAndTimeWithPortals(
 
 bool explodeBoxes(
     std::vector<int>& pos,
-    const std::vector<int>& size,
-    const std::vector<std::vector<std::size_t> >& links,
+    std::vector<int> const& size,
+    std::vector<std::vector<std::size_t> > const& links,
     std::vector<char>& toBeSquished,
-    const std::vector<int>& bound,
+    std::vector<int> const& bound,
     std::size_t index,
     int boundSoFar,
     int sign)
 {
-	// sign = 1, small to large (eg left to right)
-	// sign = -1, large to small (eg right to left)
+	// sign = 1, small to large (left to right / top to bottom)
+	// sign = -1, large to small (right to left / bottom to top)
 	pos[index] = boundSoFar;
 
 	bool subSquished = false;
@@ -1550,45 +1022,35 @@ void boxCollisionAlogorithm(
 	std::vector<int> xTemp(oldBoxList.size());
 	std::vector<int> yTemp(oldBoxList.size());
 	std::vector<int> size(oldBoxList.size());
-	std::vector<char> squished(oldBoxList.size(), false);
+	std::vector<char> squished(oldBoxList.size());
 
-	// Make a list of pause boxes, these are collided with like platforms.
-	std::vector<BoxConstPtr> pauseBoxes;
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
-		if (oldBoxList[i].getPauseLevel() != 0)
-		{
-			pauseBoxes.push_back(BoxConstPtr(oldBoxList[i]));
-			squished[i] = true; // squished is equivelent to paused as they do not do things
-		}
-		else
-		{
-			if (oldBoxList[i].getRelativeToPortal() == -1)
-			{
-				xTemp[i] = oldBoxList[i].getX();
-				yTemp[i] = oldBoxList[i].getY();
-			}
-			else
-			{
-				Portal relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
-				xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
-				yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
-			}
-			x[i] = xTemp[i] + oldBoxList[i].getXspeed();
-			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
-			size[i] = oldBoxList[i].getSize();
-		}
+        if (oldBoxList[i].getRelativeToPortal() == -1)
+        {
+            xTemp[i] = oldBoxList[i].getX();
+            yTemp[i] = oldBoxList[i].getY();
+        }
+        else
+        {
+            Portal const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
+            xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
+            yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
+        }
+        x[i] = xTemp[i] + oldBoxList[i].getXspeed();
+        y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
+        size[i] = oldBoxList[i].getSize();
 	}
 
 	// Destroy boxes that are overlapping with platforms
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
-		foreach (const Platform& platform, nextPlatform)
+		foreach (Platform const& platform, nextPlatform)
 		{
 			int pX(platform.getX());
 			int pY(platform.getY());
 			TimeDirection pDirection(platform.getTimeDirection());
-			if (pDirection * oldBoxList[i].getTimeDirection() == hg::FORWARDS && platform.getPauseLevel() == 0)
+			if (pDirection * oldBoxList[i].getTimeDirection() == hg::FORWARDS)
 			{
 				pX -= platform.getXspeed();
 				pY -= platform.getYspeed();
@@ -1604,7 +1066,7 @@ void boxCollisionAlogorithm(
 	}
 
 	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-	std::vector<char> toBeSquished(oldBoxList.size(), false);
+	std::vector<char> toBeSquished(oldBoxList.size());
 
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
@@ -1638,10 +1100,10 @@ void boxCollisionAlogorithm(
 	bool firstTimeThrough = true;
 	while (thereAreStillThingsToDo)
 	{
-		std::vector<int> top(oldBoxList.size(), 0);
-		std::vector<int> bottom(oldBoxList.size(), 0);
-		std::vector<int> left(oldBoxList.size(), 0);
-		std::vector<int> right(oldBoxList.size(), 0);
+		std::vector<int> top(oldBoxList.size());
+		std::vector<int> bottom(oldBoxList.size());
+		std::vector<int> left(oldBoxList.size());
+		std::vector<int> right(oldBoxList.size());
 
 		std::vector<std::vector<std::size_t> > topLinks(oldBoxList.size());
 		std::vector<std::vector<std::size_t> > bottomLinks(oldBoxList.size());
@@ -1650,17 +1112,12 @@ void boxCollisionAlogorithm(
 
 		thereAreStillThingsToDo = false;
 
-		// collide boxes with platforms, walls and paused boxes to discover the hard bounds on the system
+		// collide boxes with platforms and walls to discover the hard bounds on the system
 		// if a box moves thereAreStillThingsToDo
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
 			{
-				topLinks[i] = std::vector<std::size_t>();
-				bottomLinks[i] = std::vector<std::size_t>();
-				rightLinks[i] = std::vector<std::size_t>();
-				leftLinks[i] = std::vector<std::size_t>();
-
 				// Check inside a wall, velocity independent which is why it is so complex
 				bool topRightDiagonal = (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) < (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize());
 				bool topLeftDiagonal = (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) + (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize()) < env.wall.segmentSize();
@@ -1743,51 +1200,13 @@ void boxCollisionAlogorithm(
 					}
 				}
 
-				// Inside paused box
-				for (std::size_t j(0), jsize(pauseBoxes.size()); j < jsize; ++j)
-				{
-					int boxX = pauseBoxes[j].getX();
-					int boxY = pauseBoxes[j].getY();
-					int boxSize = pauseBoxes[j].getSize();
-					if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], boxX, boxY, boxSize, boxSize))
-					{
-						if (std::abs(x[i] - boxX) < std::abs(y[i] - boxY)) // top or bot
-						{
-							if (y[i] < boxY) // box above platform
-							{
-								y[i] = boxY - size[i];
-								bottom[i] = y[i];
-								x[i] = xTemp[i];
-							}
-							else // box below platform
-							{
-								y[i] = boxY + boxSize;
-								top[i] = y[i];
-							}
-						}
-						else // left or right
-						{
-							if (x[i] < boxX) // box left of platform
-							{
-								x[i] = boxX - size[i];
-								right[i] = x[i];
-							}
-							else // box right of platform
-							{
-								x[i] = boxX + boxSize;
-								left[i] = x[i];
-							}
-						}
-					}
-				}
-
 				// Check inside a platform
 				foreach (const Platform& platform, nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
 					TimeDirection pDirection(platform.getTimeDirection());
-					if (pDirection * oldBoxList[i].getTimeDirection() == hg::REVERSE && platform.getPauseLevel() == 0)
+					if (pDirection * oldBoxList[i].getTimeDirection() == hg::REVERSE)
 					{
 						pX -= platform.getXspeed();
 						pY -= platform.getYspeed();
@@ -1803,7 +1222,7 @@ void boxCollisionAlogorithm(
 							{
 								y[i] = pY - size[i];
 								bottom[i] = y[i];
-								if (platform.getPauseLevel() == 0 && firstTimeThrough)
+								if (firstTimeThrough)
 								{
 									x[i] = xTemp[i] + pDirection * oldBoxList[i].getTimeDirection() * platform.getXspeed();
 								}
@@ -1833,8 +1252,6 @@ void boxCollisionAlogorithm(
 						}
 					}
 				}
-
-
 			}
 		}
 
@@ -1882,7 +1299,7 @@ void boxCollisionAlogorithm(
 		}
 
 		// propagate through vertical collision links to reposition and explode
-		std::vector<char> toBeSquished(oldBoxList.size(), false);
+		std::vector<char> toBeSquished(oldBoxList.size());
 
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
@@ -1913,7 +1330,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				for (unsigned int j = 0; j < i; ++j)
+				for (unsigned j = 0; j < i; ++j)
 				{
 					if (j != i && !squished[j])
 					{
@@ -1986,7 +1403,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				std::vector<std::size_t> pass(0);
+				std::vector<std::size_t> pass;
 				recursiveBoxCollision(y, x, size, squished, pass, i);
 			}
 		}
@@ -1996,12 +1413,12 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				std::vector<std::size_t> pass(0);
+				std::vector<std::size_t> pass;
 				recursiveBoxCollision(x, y, size, squished, pass, i);
 			}
 		}
 
-		// Check if I must do what Has To Be Done (again)
+		// Check if I Must do What has Tobe Done (again)
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
@@ -2021,30 +1438,36 @@ void boxCollisionAlogorithm(
 	// get this junk out of here
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
-        //Boxes cant be squished in pause time (right?)
-        if (oldBoxList[i].getPauseLevel() != 0) {
-            nextBox.push_back
-			(
-				ObjectAndTime<Box>(
-					Box(oldBoxList[i]),
-					nextFrame(time, oldBoxList[i].getTimeDirection())
-				)
-			);
-        }
-		else if (!squished[i])
+		if (!squished[i])
 		{
 			if (oldBoxList[i].getRelativeToPortal() == -1)
 			{
-				makeBoxAndTimeWithPortals(nextBox, nextPortal, x[i], y[i],
-						x[i] - oldBoxList[i].getX(), y[i] - oldBoxList[i].getY(), size[i],
-						oldBoxList[i].getIllegalPortal(), oldBoxList[i].getTimeDirection(), 0, time);
+				makeBoxAndTimeWithPortals(
+                    nextBox,
+                    nextPortal,
+                    x[i],
+                    y[i],
+                    x[i] - oldBoxList[i].getX(),
+                    y[i] - oldBoxList[i].getY(),
+                    size[i],
+                    oldBoxList[i].getIllegalPortal(),
+                    oldBoxList[i].getTimeDirection(),
+                    time);
 			}
 			else
 			{
-				Portal relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
-				makeBoxAndTimeWithPortals(nextBox, nextPortal, x[i], y[i],
-						x[i] - relativePortal.getX() - oldBoxList[i].getX(), y[i] -  relativePortal.getY() - oldBoxList[i].getY(),
-						size[i], oldBoxList[i].getIllegalPortal(), oldBoxList[i].getTimeDirection(), 0, time);
+				Portal const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
+				makeBoxAndTimeWithPortals(
+                    nextBox,
+                    nextPortal,
+                    x[i],
+                    y[i],
+                    x[i] - relativePortal.getX() - oldBoxList[i].getX(),
+                    y[i] - relativePortal.getY() - oldBoxList[i].getY(),
+                    size[i],
+                    oldBoxList[i].getIllegalPortal(),
+                    oldBoxList[i].getTimeDirection(),
+                    time);
 			}
 
 		}

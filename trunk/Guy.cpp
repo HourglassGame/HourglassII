@@ -16,11 +16,10 @@ Guy::Guy(
     bool boxCarrying,
     int boxCarrySize,
     TimeDirection boxCarryDirection,
-    int boxPauseLevel,
 
     TimeDirection timeDirection,
-    int pauseLevel,
     std::size_t index) :
+        index_(index),
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),
         width_(width), height_(height),
@@ -35,15 +34,12 @@ Guy::Guy(
         boxCarrying_(boxCarrying),
         boxCarrySize_(boxCarrySize),
         boxCarryDirection_(boxCarryDirection),
-        boxPauseLevel_(boxPauseLevel),
 
-        timeDirection_(timeDirection),
-        pauseLevel_(pauseLevel),
-        index_(index)
+        timeDirection_(timeDirection)
 {
 }
 
-Guy::Guy(const Guy& other, Guy::increment_pause_level_tag) :
+Guy::Guy(const Guy& other, TimeDirection timeDirection) :
         x_(other.x_), y_(other.y_),
         xspeed_(other.xspeed_), yspeed_(other.yspeed_),
         width_(other.width_), height_(other.height_),
@@ -58,33 +54,8 @@ Guy::Guy(const Guy& other, Guy::increment_pause_level_tag) :
         boxCarrying_(other.boxCarrying_),
         boxCarrySize_(other.boxCarrySize_),
         boxCarryDirection_(other.boxCarryDirection_),
-        boxPauseLevel_(other.boxPauseLevel_),
-
-        timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_ + 1),
-        index_(other.index_/*std::numeric_limits<std::size_t>::max()*/)
-{
-}
-
-Guy::Guy(const Guy& other, TimeDirection timeDirection, int pauseLevel) :
-        x_(other.x_), y_(other.y_),
-        xspeed_(other.xspeed_), yspeed_(other.yspeed_),
-        width_(other.width_), height_(other.height_),
-
-        illegalPortal_(other.illegalPortal_),
-        relativeToPortal_(other.relativeToPortal_),
-        supported_(other.supported_),
-        supportedSpeed_(other.supportedSpeed_),
-
-        facing_(other.facing_),
-
-        boxCarrying_(other.boxCarrying_),
-        boxCarrySize_(other.boxCarrySize_),
-        boxCarryDirection_(other.boxCarryDirection_),
-        boxPauseLevel_(other.boxPauseLevel_),
 
         timeDirection_(timeDirection),
-        pauseLevel_(pauseLevel),
         index_(other.index_)
 {
 }
@@ -106,16 +77,11 @@ bool Guy::operator==(const Guy& other) const
         && (boxCarrying_ == other.boxCarrying_)
         && (boxCarrySize_ == other.boxCarrySize_)
         && (boxCarryDirection_ == other.boxCarryDirection_)
-        && (boxPauseLevel_ == other.boxPauseLevel_)
-        && (timeDirection_ == other.timeDirection_)
-        && (pauseLevel_ == other.pauseLevel_);
+        && (timeDirection_ == other.timeDirection_);
 }
 
 bool Guy::operator<(const Guy& other) const
 {
-    return
-        pauseLevel_ == other.pauseLevel_ ?
-            index_ < other.index_ :
-            other.pauseLevel_ < pauseLevel_;
+    return index_ < other.index_;
 }
 }//namespace hg
