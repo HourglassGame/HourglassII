@@ -13,7 +13,7 @@ public:
         int xspeed, int yspeed,
         int width, int height,
         
-        int illegalPortal_,
+        int illegalPortal,
         int relativeToPortal,
         bool supported,
         int supportedSpeed,
@@ -23,17 +23,13 @@ public:
         bool boxCarrying,
     	int boxCarrySize,
     	TimeDirection boxCarryDirection,
-    	int boxPauseLevel,
         
         TimeDirection timeDirection,
-    	int pauseLevel,
         std::size_t index);
 
+    Guy(const Guy& other, TimeDirection nTimeDirection);
     
-    struct increment_pause_level_tag {};
-    Guy(const Guy& other, increment_pause_level_tag);
-    Guy(const Guy& other, TimeDirection nTimeDirection, int nPauseLevel);
-    
+    std::size_t getIndex() const { return index_; }
     int getX()      const { return x_; }
     int getY()      const { return y_; }
     int getXspeed() const { return xspeed_; }
@@ -52,17 +48,16 @@ public:
     int getBoxCarrySize()  const { return boxCarrySize_; }
     TimeDirection 
         getBoxCarryDirection() const { return boxCarryDirection_; }
-    int getBoxPauseLevel() const { return boxPauseLevel_; }
 
     TimeDirection
         getTimeDirection() const { return timeDirection_; }
-    int getPauseLevel()    const { return pauseLevel_; }
-    std::size_t getIndex() const { return index_; }
+
 
     bool operator==(const Guy& other) const;
     bool operator<(const Guy& second) const;
     
 private:
+    std::size_t index_;
     int x_;
     int y_;
     int xspeed_;
@@ -80,11 +75,8 @@ private:
     bool boxCarrying_;
     int boxCarrySize_;
     TimeDirection boxCarryDirection_;
-    int boxPauseLevel_;
 
     TimeDirection timeDirection_;
-    int pauseLevel_;
-    std::size_t index_;
 };
 
 class GuyConstPtr : boost::totally_ordered<GuyConstPtr>
@@ -111,11 +103,9 @@ public:
     int getBoxCarrySize()  const { return guy_->getBoxCarrySize(); }
     TimeDirection 
         getBoxCarryDirection() const { return guy_->getBoxCarryDirection(); }
-    int getBoxPauseLevel() const { return guy_->getBoxPauseLevel(); }
 
     TimeDirection
         getTimeDirection() const { return guy_->getTimeDirection(); }
-    int getPauseLevel()    const { return guy_->getPauseLevel(); }
     std::size_t getIndex() const { return guy_->getIndex(); }
 
     bool operator==(GuyConstPtr const& other) const { return *guy_ == *other.guy_; }

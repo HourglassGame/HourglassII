@@ -16,7 +16,6 @@ public:
         int width, int height,
         std::size_t index,
         TimeDirection timeDirection,
-        int pauseLevel,
         int charges,
         bool active,
         int xDestination, int yDestination,
@@ -26,18 +25,17 @@ public:
         bool fallable,
         bool winner);
     Portal(int x, int y, int xspeed, int yspeed, const Portal& other);
-    Portal(const Portal& other, TimeDirection timeDirection, int pauseLevel);
-
+    Portal(const Portal& other, TimeDirection timeDirection);
+    
+    std::size_t getIndex()  const { return index_; }
     int getX()              const { return x_; }
     int getY()              const { return y_; }
     int getXspeed()         const { return xspeed_; }
     int getYspeed()         const { return yspeed_; }
     int getWidth()          const { return width_; }
     int getHeight()         const { return height_; }
-    std::size_t getIndex()  const { return index_; }
     TimeDirection
         getTimeDirection()  const { return timeDirection_; }
-    int getPauseLevel()     const { return pauseLevel_; }
     int getCharges()        const { return charges_; }
     bool getActive()        const { return active_; }
     int getXdestination()   const { return xDestination_; }
@@ -53,15 +51,14 @@ public:
     bool operator<(const Portal& second) const;
 
 private:
+    std::size_t index_;
     int x_;
     int y_;
     int xspeed_;
     int yspeed_;
     int width_;
     int height_;
-    std::size_t index_;
     TimeDirection timeDirection_;
-    int pauseLevel_;
     int charges_;
     bool active_;
     int xDestination_;
@@ -82,16 +79,15 @@ public:
     typedef Portal base_type;
     Portal const& get() const { return *portal_; }
 
+    std::size_t getIndex()  const { return portal_->getIndex(); }
     int getX()              const { return portal_->getX(); }
     int getY()              const { return portal_->getY(); }
     int getXspeed()         const { return portal_->getXspeed(); }
     int getYspeed()         const { return portal_->getYspeed(); }
     int getWidth()          const { return portal_->getWidth(); }
     int getHeight()         const { return portal_->getHeight(); }
-    std::size_t getIndex()  const { return portal_->getIndex(); }
     TimeDirection
         getTimeDirection()  const { return portal_->getTimeDirection(); }
-    int getPauseLevel()     const { return portal_->getPauseLevel(); }
     int getCharges()        const { return portal_->getCharges(); }
     bool getActive()        const { return portal_->getActive(); }
     int getXdestination()   const { return portal_->getXdestination(); }

@@ -6,7 +6,6 @@
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 #include "TriggerSystem.h"
-#include "RemoteDepartureEdit.h"
 #include "Environment.h"
 
 #include <vector>
@@ -29,13 +28,11 @@ public:
     		bool NnextPlayerFrame,
     		bool NcurrentWinFrame) :
                 departures(Ndepartures),
-                edits(),
                 currentPlayerFrame(NcurrentPlayerFrame),
                 nextPlayerFrame(NnextPlayerFrame),
                 currentWinFrame(NcurrentWinFrame)
     	{}
     	std::map<Frame*, ObjectList<Normal> > departures;
-        std::map<Frame*, ObjectList<FirstEdit> > edits;
     	bool currentPlayerFrame;
     	bool nextPlayerFrame;
     	bool currentWinFrame;
@@ -50,10 +47,5 @@ private:
     Environment env_;
     TriggerSystem triggerSystem_;
 };
-//Apply edits to departures from time.
-std::map<Frame*, ObjectList<Normal> > departureEditFunction(
-    const std::map<Frame*, ObjectList<Normal> >& departures,
-	const ObjectPtrList<FirstEdit>& edits,
-	const Frame* time);
-}
+}//namespace hg
 #endif //HG_PHYSICS_ENGINE_H

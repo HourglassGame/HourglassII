@@ -7,111 +7,64 @@ Box::Box(
     int size,
     int illegalPortal,
     int relativeToPortal,
-    TimeDirection timeDirection,
-    int pauseLevel):
-        x_(x),
-        y_(y),
-        xspeed_(xspeed),
-        yspeed_(yspeed),
+    TimeDirection timeDirection):
+        x_(x), y_(y),
+        xspeed_(xspeed), yspeed_(yspeed),
         size_(size),
         illegalPortal_(illegalPortal),
         relativeToPortal_(relativeToPortal),
-        timeDirection_(timeDirection),
-        pauseLevel_(pauseLevel)
+        timeDirection_(timeDirection)
 {
 }
 
-Box::Box(Box const& other, hg::TimeDirection timeDirection, int pauseLevel) :
-        x_(other.x_),
-        y_(other.y_),
-        xspeed_(other.xspeed_),
-        yspeed_(other.yspeed_),
+Box::Box(Box const& other, hg::TimeDirection timeDirection) :
+        x_(other.x_), y_(other.y_),
+        xspeed_(other.xspeed_), yspeed_(other.yspeed_),
         size_(other.size_),
         illegalPortal_(other.illegalPortal_),
         relativeToPortal_(other.relativeToPortal_),
-        timeDirection_(timeDirection),
-        pauseLevel_(pauseLevel)
+        timeDirection_(timeDirection)
 {
 }
 
 bool Box::operator==(Box const& other) const
 {
     return (x_ == other.x_)
-           && (y_ == other.y_)
-           && (xspeed_ == other.xspeed_)
-           && (yspeed_ == other.yspeed_)
-           && (size_ == other.size_)
-           && (illegalPortal_ == other.illegalPortal_)
-           && (relativeToPortal_ == other.relativeToPortal_)
-           && (timeDirection_ == other.timeDirection_)
-           && (pauseLevel_ == other.pauseLevel_);
+        && (y_ == other.y_)
+        && (xspeed_ == other.xspeed_)
+        && (yspeed_ == other.yspeed_)
+        && (size_ == other.size_)
+        && (illegalPortal_ == other.illegalPortal_)
+        && (relativeToPortal_ == other.relativeToPortal_)
+        && (timeDirection_ == other.timeDirection_);
 }
 
 bool Box::operator<(const Box& other) const
 {
-    if (x_ == other.x_)
-    {
-        if (y_ == other.y_)
-        {
-            if (xspeed_ == other.xspeed_)
-            {
-                if (yspeed_ == other.yspeed_)
-                {
-                    if (timeDirection_ == other.timeDirection_)
-                    {
-                        if (size_ == other.size_)
-                        {
-                            if (pauseLevel_ == other.pauseLevel_)
-                            {
-                            	if (illegalPortal_ == other.illegalPortal_)
-								{
-                            		if (relativeToPortal_ == other.relativeToPortal_)
-									{
+    if (x_ == other.x_) {
+        if (y_ == other.y_) {
+            if (xspeed_ == other.xspeed_) {
+                if (yspeed_ == other.yspeed_) {
+                    if (size_ == other.size_) {
+                        if (illegalPortal_ == other.illegalPortal_) {
+                            if (relativeToPortal_ == other.relativeToPortal_) {
+                                if (timeDirection_ == other.timeDirection_){
 										return false;
-									}
-									else
-									{
-										return relativeToPortal_ < other.relativeToPortal_;
-									}
-								}
-								else
-								{
-									return illegalPortal_ < other.illegalPortal_;
-								}
+                                }
+                                return timeDirection_ < other.timeDirection_;
                             }
-                            else
-                            {
-                                return pauseLevel_ < other.pauseLevel_;
-                            }
+                            return relativeToPortal_ < other.relativeToPortal_;
                         }
-                        else
-                        {
-                            return size_ < other.size_;
-                        }
+                        return illegalPortal_ < other.illegalPortal_;
                     }
-                    else
-                    {
-                        return timeDirection_ < other.timeDirection_;
-                    }
+                    return size_ < other.size_;
                 }
-                else
-                {
-                    return yspeed_ < other.yspeed_;
-                }
+                return yspeed_ < other.yspeed_;
             }
-            else
-            {
-                return xspeed_ < other.xspeed_;
-            }
+            return xspeed_ < other.xspeed_;
         }
-        else
-        {
-            return y_ < other.y_;
-        }
+        return y_ < other.y_;
     }
-    else
-    {
-        return x_ < other.x_;
-    }
+    return x_ < other.x_;
 }
 }//namespace hg

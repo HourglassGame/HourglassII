@@ -21,7 +21,6 @@ private:
     int mouseRight;
     int mouseX;
     int mouseY;
-    int pause;
 };
 }
 #endif //HG_INPUT_H

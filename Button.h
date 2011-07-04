@@ -16,10 +16,9 @@ public:
         int width, int height,
         std::size_t index,
         bool state,
-        TimeDirection timeDirection,
-        int pauseLevel);
+        TimeDirection timeDirection);
     Button(int x, int y, int xspeed, int yspeed, const Button& other);
-    Button(const Button& other, TimeDirection timeDirection, int pauseLevel);
+    Button(const Button& other, TimeDirection timeDirection);
 
     int getX()      const { return x_; }
     int getY()      const { return y_; }
@@ -31,7 +30,6 @@ public:
     bool getState() const { return state_; }
     TimeDirection
         getTimeDirection() const { return timeDirection_; }
-    int getPauseLevel() const { return pauseLevel_; }
 
     bool operator==(Button const& other) const;
     bool operator<(Button const& other) const;
@@ -46,7 +44,6 @@ private:
     std::size_t index_;
     bool state_;
     TimeDirection timeDirection_;
-    int pauseLevel_;
 };
 class ButtonConstPtr : boost::totally_ordered<ButtonConstPtr>
 {
@@ -64,7 +61,6 @@ public:
     bool getState() const { return button_->getState(); }
     TimeDirection
         getTimeDirection() const { return button_->getTimeDirection(); }
-    int getPauseLevel() const { return button_->getPauseLevel(); }
 
     bool operator==(ButtonConstPtr const& other) const { return *button_ == *other.button_; }
     bool operator<(ButtonConstPtr const& other) const { return *button_ < *other.button_; }

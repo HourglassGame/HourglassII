@@ -26,25 +26,10 @@ public:
     // returns the normal next frame for things moving in direction TimeDirection
     FrameID nextFrame(TimeDirection direction) const;
 
-    // returns the number of universes up that the next frame is
-    // (0 for in same universe)
-    unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
+    bool nextFrameInSameUniverse(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
     FrameID arbitraryFrameInUniverse(std::size_t frameNumber) const;
-
-    // returns the frame that spawned the universe that this frame is in
-    FrameID parentFrame() const;
-
-    // returns frameID of child frame in the universe defined by the first 2 arguments with frameNumber as
-    //'distance' from the start of the universe This function cannot return nullFrame,
-    //place assert to assure frameNumber is never greater pauseLength
-    FrameID arbitraryChildFrame(const PauseInitiatorID& initatorID, std::size_t frameNumber) const;
-
-    // returns the frameID of child frame at beginning or end of universe defined by first 2 arguments,
-    //FORWARDS returns arbitaryChildFrame frameNumber 0 and REVERSE returns with the last frame of the
-    //universe cannot return nullFrame,
-    FrameID entryChildFrame(const PauseInitiatorID& initatorID, TimeDirection direction) const;
 
     bool operator==(const FrameID& other) const;
 
@@ -53,13 +38,11 @@ public:
     bool isValidFrame() const;
 
     std::size_t getFrameNumber() const;
-    const UniverseID& universe() const;
+    UniverseID const& getUniverse() const;
 private:
     //positiong of frame within universeID_
     std::size_t frame_;
     UniverseID universeID_;
-    //Private function access
-    template<typename Name> static typename Name::Return p(typename Name::Args);
 };
 //Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
 std::size_t hash_value(const FrameID& toHash);

@@ -2,7 +2,6 @@
 #define HG_FRAME_H
 
 #include "TimeDirection.h"
-#include "PauseInitiatorID.h"
 #include "ObjectList.h"
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
@@ -23,7 +22,6 @@ namespace hg {
 //Arrivals and departures are also held by
 class Frame {
 public:
-    typedef boost::unordered_map<PauseInitiatorID, Universe> SubUniverseMap;
     //copy-construction -- quite dangerous, because frames are identified by their address
     //public to allow use in standard containers in Universe
     Frame(const Frame& other);
@@ -33,7 +31,6 @@ public:
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered    
     FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture);
-    FrameUpdateSet updateEditDeparturesFromHere(std::map<Frame*, ObjectList<FirstEdit> >& newDeparture);
     
     //assignment
     Frame& operator=(const Frame&)
@@ -47,12 +44,6 @@ public:
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
     ObjectPtrList<Normal>  getPrePhysics() const;
-    ObjectPtrList<FirstEdit>  getPreEdits() const;
-    
-    ObjectPtrList<Normal> getFlattenedArrivals() const;
-    
-    void setRawDepartures(std::map<Frame*, ObjectList<Normal> >& newDeparture);
-    std::map<Frame*, ObjectList<Normal> > const& getRawDepartures() const;
 
     /**
      * Returns a flattened view of the departures from 'time' for passing to the front-end.
@@ -60,12 +51,11 @@ public:
      * "Departing to `toUniverse'" is defined as "departing to a frame that is either in `toUniverse',
      * or the nullFrame". "in `toUniverse'" does not include frames in a subUniverse of `toUniverse'.
      */
-    ObjectPtrList<Normal>  getPostPhysics(/*Universe const& toUniverse*//*const PauseInitiatorID& whichPrePause*/) const;
+    ObjectPtrList<Normal>  getPostPhysics() const;
 
     //Used for adding arrivals from permanent departure frame
     void addArrival(Frame const* source, ObjectList<Normal> const* arrival);
-    //template<typename ListTypes>
-    //void newAddArrival(Frame const* source, typename ObjectList<ListTypes> const* arrival);
+
 private:
     friend class FrameID;
     friend class Universe;
@@ -74,28 +64,17 @@ private:
     //Private to enforce use of non-member variants.
     Frame const* nextFrame(TimeDirection direction) const;
     Frame* nextFrame(TimeDirection direction);
-    unsigned int nextFramePauseLevelDifference(TimeDirection direction) const;
     bool nextFrameInSameUniverse(TimeDirection direction) const;
-    Universe& getSubUniverse(PauseInitiatorID const& initiatorID);
     Universe const& getUniverse() const;
     Universe& getUniverse();
     std::size_t getFrameNumber() const;
-    boost::select_second_const_range<SubUniverseMap>
-        getSubUniverseList() const;
     
     friend Frame const* nextFrame(Frame const* frame, TimeDirection direction);
     friend Frame* nextFrame(Frame* frame, TimeDirection direction);
     friend bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
-    friend unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection direction);
     friend Universe& getUniverse(Frame * frame);
     friend Universe const& getUniverse(Frame const* frame);
-    friend Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID);
     friend std::size_t getFrameNumber(Frame const* frame);
-    
-    //Returns a range of the sub-universes of frame. This range is not in any particular order,
-    // and does not include info on the initiatorIDs of the sub-universes.
-    friend boost::select_second_const_range<SubUniverseMap>
-        getSubUniverseList(Frame const* frame);
 
     //Temporal comparison. Frames compare equal to themselves and all their parents or children.
     //Frames compare greater than or less than all other frames.
@@ -106,33 +85,19 @@ private:
     //You cannot rely on such things as a == b && b == c => a == c
     //usage: a <op> b => compare(a, b) <op> 0
     friend int compare(Frame const* l, Frame const* r, TimeDirection direction);
-    
-    unsigned int nextFramePauseLevelDifferenceAux(TimeDirection direction, unsigned int accumulator) const;
 
     void insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert);
     void changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange);
     void clearArrival(Frame const* toClear);
     
-    void insertEditArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type const& toInsert);
-    void changeEditArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*>::value_type const& toChange);
-    void clearEditArrival(Frame const* toClear);
     /** Position of frame within universe_ */
     std::size_t frameNumber_;
     /** Back-link to universe which this frame is in */
     Universe& universe_;
-    SubUniverseMap subUniverses_;
     
-    //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame* 
-    //(guy feeling only, but I think that is sort of how the old system worked.)
+    //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
     std::map<Frame*, ObjectList<Normal> > departures_;
     tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*> arrivals_;
-    
-    std::map<Frame*, ObjectList<Normal> > rawDepartures_;
-    
-    std::map<Frame*, ObjectList<FirstEdit> > editDepartures_;
-    tbb::concurrent_hash_map<Frame const*, ObjectList<FirstEdit> const*> editArrivals_;
-
-
 };
 //<Undefined to call with NullFrame>
 //Frame* nextFrame(Frame const* frame, TimeDirection direction);

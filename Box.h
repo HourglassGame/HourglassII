@@ -12,9 +12,8 @@ public:
         int size,
         int illegalPortal,
         int relativeToPortal,
-        TimeDirection timeDirection,
-        int pauseLevel);
-    Box(Box const& other, TimeDirection timeDirection, int pauseLevel);
+        TimeDirection timeDirection);
+    Box(Box const& other, TimeDirection timeDirection);
 
     int getX()      const { return x_; }
     int getY()      const { return y_; }
@@ -27,7 +26,6 @@ public:
 	int getRelativeToPortal() const { return relativeToPortal_; }
     TimeDirection 
         getTimeDirection()    const { return timeDirection_; }
-    int getPauseLevel()       const { return pauseLevel_; }
 
     bool operator==(const Box& other) const;
     bool operator<(const Box& other) const;
@@ -44,7 +42,6 @@ private:
     int relativeToPortal_;
 
     TimeDirection timeDirection_;
-    int pauseLevel_;
 };
 
 class BoxConstPtr : boost::totally_ordered<BoxConstPtr>
@@ -65,7 +62,6 @@ public:
 	int getRelativeToPortal() const { return box_->getRelativeToPortal(); }
     TimeDirection 
         getTimeDirection()    const { return box_->getTimeDirection(); }
-    int getPauseLevel()       const { return box_->getPauseLevel(); }
 
     bool operator==(const BoxConstPtr& other) const { return *box_ == *other.box_; }
     bool operator<(const BoxConstPtr& other) const { return *box_ < *other.box_; }

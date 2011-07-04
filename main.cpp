@@ -517,21 +517,8 @@ void DrawTimeline(
                 25,
                 Colour(200,200,0)));
     }
-    target.Draw(
-        Shape::Rectangle(
-            (3000.f/10800.f)*640-1,
-            10,
-            (3000.f/10800.f)*640+2,
-            25,
-            Colour(0,255,0)));
 }
-struct IsActualObject {
-    template<typename Object>
-    bool operator()(Object const& obj) const
-    {
-        return obj.getPauseLevel() == 0;
-    }
-};
+
 struct CompareIndicies {
     template<typename IndexableType>
     bool operator()(IndexableType const& l, IndexableType const& r) {
@@ -542,19 +529,9 @@ struct CompareIndicies {
 template<typename BidirectionalGuyRange>
 TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
 {
-#if 0
     return boost::begin(
         guyRange 
-        | boost::adaptors::reversed 
-        | boost::adaptors::filtered(IsActualObject()))->getTimeDirection();
-#endif
-    //Linear search version used because frame data is no longer sorted.
-    //when the sorting issue is resolved the old version should be used again
-    //(I will come back to the sorting issue after the new pause time is finished)
-    return boost::max_element(
-        guyRange | boost::adaptors::filtered(IsActualObject()),
-        CompareIndicies()
-    )->getTimeDirection();
+        | boost::adaptors::reversed)->getTimeDirection();
 }
 
 
@@ -600,17 +577,17 @@ boost::multi_array<bool, 2> MakeWall()
 Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
     ObjectList<Normal>  newObjectList;
-    //newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS, 0));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, false, 0, false, 0, INVALID, 0, FORWARDS, 0, 0));
-    newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE, 0));
-    newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS, 0));
-    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, 0, -1, true, 0, -16000, 0, 120, true, 0, true, false));
+    //newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, false, false, 0, INVALID, FORWARDS, 0));
+    newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE));
+    newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS));
+    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, -1, true, 0, -16000, 0, 120, true, 0, true, false));
     newObjectList.sort();
     return
         Level(

@@ -26,10 +26,6 @@ public:
      * whose arrivals have changed.
      */
     FrameUpdateSet updateWithNewDepartures(DepartureMap& newDepartures);
-    FrameUpdateSet updateWithNewEditDepartures(EditDepartureMap& newEditDepartures);
-    
-    //Returns the set of frames whose departures have changed.
-    FrameUpdateSet setNewRawDepartures(RawDepartureMap& newRawDepartures);
 
     /**
      * Creates the arrivals for those objects initially in the level.

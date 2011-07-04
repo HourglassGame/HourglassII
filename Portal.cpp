@@ -10,7 +10,6 @@ Portal::Portal(
     std::size_t index,
     
     TimeDirection timeDirection,
-    int pauseLevel,
     
     int charges,
     bool active,
@@ -21,14 +20,12 @@ Portal::Portal(
     int illegalDestination,
     bool fallable,
     bool winner) :
+        index_(index),
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),
         width_(width), height_(height),
         
-        index_(index),
-        
         timeDirection_(timeDirection),
-        pauseLevel_(pauseLevel),
         
         charges_(charges),
         active_(active),
@@ -44,14 +41,13 @@ Portal::Portal(
            && "the max value is reserved for representing invalid/null indices");
 }
 Portal::Portal(int x, int y, int xspeed, int yspeed, const Portal& other) :
+        index_(other.index_),
+        
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),
         width_(other.width_), height_(other.height_),
         
-        index_(other.index_),
-        
         timeDirection_(other.timeDirection_),
-        pauseLevel_(other.pauseLevel_),
         
         charges_(other.charges_),
         active_(other.active_),
@@ -63,15 +59,14 @@ Portal::Portal(int x, int y, int xspeed, int yspeed, const Portal& other) :
         fallable_(other.fallable_),
         winner_(other.winner_)
 {}
-Portal::Portal(const Portal& other, hg::TimeDirection timeDirection, int pauseLevel) :
+Portal::Portal(const Portal& other, hg::TimeDirection timeDirection) :
+        index_(other.index_),
         x_(other.x_), y_(other.y_),
         xspeed_(other.xspeed_), yspeed_(other.yspeed_),
         width_(other.width_), height_(other.height_),
-        
-        index_(other.index_),
+
         timeDirection_(timeDirection),
         
-        pauseLevel_(pauseLevel),
         charges_(other.charges_),
         active_(other.active_),
         xDestination_(other.xDestination_), yDestination_(other.yDestination_),
@@ -91,7 +86,6 @@ bool Portal::operator==(const Portal& other) const
         && (y_ == other.y_)
         && (xspeed_ == other.xspeed_)
         && (yspeed_ == other.yspeed_)
-        && (pauseLevel_ == other.pauseLevel_)
         && (charges_ == other.charges_)
         && (active_ == other.active_)
         && (destinationIndex_ == other.destinationIndex_)

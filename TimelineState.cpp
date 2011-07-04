@@ -24,44 +24,6 @@ struct UpdateDeparturesFromTime
     ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
 };
 
-struct UpdateEditDeparturesFromTime
-{
-    UpdateEditDeparturesFromTime(ConcurrentFrameUpdateSet& framesWithChangedEditArrivals) :
-            framesWithChangedEditArrivals_(framesWithChangedEditArrivals)
-    {
-    }
-    void operator()(EditDepartureMap::value_type& newDeparture) const
-    {
-        framesWithChangedEditArrivals_.add(newDeparture.first->updateEditDeparturesFromHere(newDeparture.second));
-    }
-    ConcurrentFrameUpdateSet& framesWithChangedEditArrivals_;
-};
-
-struct SetNewRawDepartures
-{
-    SetNewRawDepartures(ConcurrentFrameUpdateSet& framesWithChangedRawDepartures) :
-            framesWithChangedRawDepartures_(framesWithChangedRawDepartures)
-    {
-    }
-    void operator()(RawDepartureMap::value_type& newRawDeparture) const
-    {
-        if (newRawDeparture.first->getRawDepartures() != newRawDeparture.second) {
-            FrameUpdateSet frame;
-            frame.add(newRawDeparture.first);
-            framesWithChangedRawDepartures_.add(frame);
-            newRawDeparture.first->setRawDepartures(newRawDeparture.second);
-        }
-    }
-    ConcurrentFrameUpdateSet& framesWithChangedRawDepartures_;
-};
-FrameUpdateSet TimelineState::setNewRawDepartures(RawDepartureMap& newRawDepartures)
-{
-    ConcurrentFrameUpdateSet framesWithChangedRawDepartures;
-    parallel_for_each(newRawDepartures, SetNewRawDepartures(framesWithChangedRawDepartures));
-    return framesWithChangedRawDepartures.merge();
-}
-
-
 TimelineState::TimelineState(std::size_t timelineLength) :
         universe_(timelineLength)
 {
@@ -71,13 +33,6 @@ FrameUpdateSet TimelineState::updateWithNewDepartures(DepartureMap& newDeparture
 {
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(newDepartures, UpdateDeparturesFromTime(framesWithChangedArrivals));
-    return framesWithChangedArrivals.merge();
-}
-
-FrameUpdateSet TimelineState::updateWithNewEditDepartures(EditDepartureMap& newDepartures)
-{
-    ConcurrentFrameUpdateSet framesWithChangedArrivals;
-    parallel_for_each(newDepartures, UpdateEditDeparturesFromTime(framesWithChangedArrivals));
     return framesWithChangedArrivals.merge();
 }
 
