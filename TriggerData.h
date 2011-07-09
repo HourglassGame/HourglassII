@@ -3,23 +3,24 @@
 #include "SortWeakerThanEquality_fwd.h"
 #include <boost/operators.hpp>
 #include "ConstPtr_of_fwd.h"
+#include <vector>
 #include <cstddef>
 namespace hg
 {
 class TriggerData : boost::totally_ordered<TriggerData>
 {
 public:
-    TriggerData(std::size_t index, int value);
+    TriggerData(std::size_t index, std::vector<int> const& value);
 
     std::size_t getIndex() const { return index_; }
-    int getValue()         const { return value_; }
+    std::vector<int> const& getValue() const { return value_; }
     
     bool operator==(const TriggerData& other) const;
     bool operator<(const TriggerData& second) const;
     
 private:
     std::size_t index_;
-    int value_;
+    std::vector<int> value_;
 
 };
 class TriggerDataConstPtr : boost::totally_ordered<TriggerDataConstPtr>
@@ -29,7 +30,7 @@ public:
     typedef TriggerData base_type;
     TriggerData const& get() const { return *triggerData_; }
     std::size_t getIndex() const { return triggerData_->getIndex(); }
-    int getValue()         const { return triggerData_->getValue(); }
+    std::vector<int> const& getValue()         const { return triggerData_->getValue(); }
     
     bool operator==(const TriggerDataConstPtr& other) const { return *triggerData_ < *other.triggerData_; }
     bool operator<(const TriggerDataConstPtr& other) const { return *triggerData_ < *other.triggerData_;}

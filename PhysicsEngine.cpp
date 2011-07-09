@@ -155,12 +155,17 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     Frame* time,
     std::vector<InputList> const& playerInput) const
 {
+    
     /*Static?*/ObjectList<Normal>  staticDepartures(
         triggerSystem_.calculateStaticDepartures(arrivals, playerInput, time));
-/*
-    StaticObjectList<Normal>  staticDepartures(
-        triggerSystem_.calculateStaticDepartures(triggerArrivals));*/
 
+    #if 0
+    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState());
+    
+    //{extra boxes, collision, death, portal, pickup, arrival location}    
+    PhysicsAffectingStuff const physicsTriggerStuff(
+        triggerFrameState.calculatePhysicsAffectingStuff(arrivals.getList<TriggerData>()));
+    #endif
     std::vector<ObjectAndTime<Box> > nextBox;
 
     // boxes do their crazy wizz-bang collision algorithm
@@ -205,10 +210,19 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
     boost::for_each(newDepartures, SortObjectList());
+    #if 0
+    //need to add in glitz, and a way to get glitz to the front-end
+    //...
     
-    /*TriggerObjectList triggerDepartures(
-        triggerSystem_.calculateTriggerDepartures(newDepartures, playerInput, time));*/
-    
+    //Also, trigger departures (obviously)
+    std::map<Frame*, std::vector<TriggerData> > triggerDepartures(
+        triggerSystem_.calculateTriggerDepartures(newDepartures, playerInput, time));
+
+    foreach (triggerDeparture, triggerDepartures) {
+        //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
+        newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
+    }
+    #endif
     // add data to departures
     return PhysicsReturnT(newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame);
 }

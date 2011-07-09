@@ -9,9 +9,73 @@
 #include "ObjectListTypes.h"
 #include "InputList.h"
 #include "Frame_fwd.h"
+#include "Box.h"
+#include "Collision.h"
+#include "PortalArea.h"
+#include "PickupArea.h"
+#include "KillerArea.h"
+#include "ArrivalLocation.h"
+#include "RectangleGlitz.h"
 #include <vector>
+#include <map>
 namespace hg
 {
+
+struct PhysicsAffectingStuff {
+    std::vector<Box> additionalBoxes;
+    std::vector<Collision> collisions;
+    std::vector<PortalArea> portals;
+    std::vector<PickupArea> pickups;
+    std::vector<KillerArea> killers;
+    //guaranteed to always contain elements at each index that could possibly be indexed
+    //ie- arrivalLocations will always be the same length for a particular NewTriggerSystem
+    std::vector<ArrivalLocation> arrivalLocations;
+};
+class NewTriggerSystem;
+//Does the actual work, 1 created per frame
+//Has a life cycle:
+//[Created ->
+//  calculate physics affecting stuff from trigger arrivals ->
+//  Have callins called ->
+//  calculate glitz and trigger departures]
+class TriggerFrameState {
+public:
+    //physics affecting stuff
+    template<typename TriggerDataConstPtrRange>
+    PhysicsAffectingStuff calculatePhysicsAffectingStuff(TriggerDataConstPtrRange const& triggerArrivals);
+    
+    //Callins --
+    //ObjectT can be Box or Guy atm
+    template<typename ObjectT>
+    bool shouldPort(int responsiblePortalIndex, ObjectT const& potentialPorter);
+    template<typename ObjectT>
+    bool shouldPickup(int responsiblePickupIndex, ObjectT const& potentialPickuper);
+    template<typename ObjectT>
+    bool shouldDie(int responsibleKillerIndex, ObjectT const& potentialDier);
+    
+    //Calls could be interleaved/these two could be made one function which returns a pair.
+    std::vector<RectangleGlitz> 
+        getGlitz(std::map<Frame*, ObjectList<Normal> > const& departures) const;
+
+    std::map<Frame*, std::vector<TriggerData> >
+        getTriggerDepartures(std::map<Frame*, ObjectList<Normal> > const& departures) const;
+
+private:
+    //Allows the implementation of NewTriggerSystem to actually construct these TriggerFrameState objects.
+    friend class NewTriggerSystem;
+    TriggerFrameState();
+    TriggerFrameState(TriggerFrameState const&);
+    TriggerFrameState& operator=(TriggerFrameState const&);
+    /**private data**/
+};
+//Factory for TriggerFrameStates
+class NewTriggerSystem {
+    public:
+    TriggerFrameState getFrameState() const;
+};
+
+///*** IGNORE THE FOLLOWING CODE --- IT IS ONLY HERE FOR SUPPORT OF THE OLD SYSTEM ***
+
 //definition: Statically identifiable object -- object which never arrives more than once in a particular frame
 //                                              [note: which therefore can be unabiguouly identified by its index]
 //A pluggable component for the physics engine which allows arbitrary code to be executed to calculate the departures
