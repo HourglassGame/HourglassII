@@ -40,9 +40,9 @@ public:
 
     // executes frame and returns departures
     PhysicsEngine::PhysicsReturnT executeFrame(
-        const ObjectPtrList<Normal> & arrivals,
+        ObjectPtrList<Normal> const& arrivals,
         Frame* time,
-        const std::vector<InputList>& playerInput) const;
+        std::vector<InputList> const& playerInput) const;
 private:
     Environment env_;
     TriggerSystem triggerSystem_;
