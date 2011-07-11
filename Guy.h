@@ -2,6 +2,7 @@
 #define HG_GUY_H
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
+#include <map>
 #include <cstdlib>
 #include "SortWeakerThanEquality_fwd.h"
 #include "ConstPtr_of_fwd.h"
@@ -18,6 +19,7 @@ public:
         bool supported,
         int supportedSpeed,
     	
+        std::map<int,int> pickups,
         bool facing,
     	
         bool boxCarrying,
@@ -42,6 +44,8 @@ public:
     bool getSupported()       const { return supported_; }
     int getSupportedSpeed()   const { return supportedSpeed_; }
     
+    std::map<int,int> getPickups() const { return pickups_;}
+
     int getFacing()        const { return facing_;}
 
     bool getBoxCarrying()  const { return boxCarrying_; }
@@ -70,6 +74,7 @@ private:
     bool supported_;
     int supportedSpeed_;
 
+    std::map<int,int> pickups_;
     bool facing_; // <- false, -> true
 
     bool boxCarrying_;
@@ -97,6 +102,8 @@ public:
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
     
+    std::map<int,int> getPickups() const { return guy_->getPickups();}
+
     int getFacing()        const { return guy_->getFacing();}
 
     bool getBoxCarrying()  const { return guy_->getBoxCarrying(); }

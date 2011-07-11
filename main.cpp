@@ -155,6 +155,7 @@ int main()
         return EXIT_FAILURE;
     }
 #endif //HG_COMPILE_TESTS
+
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
@@ -584,7 +585,7 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
     newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, false, false, 0, INVALID, FORWARDS, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, std::map<int,int>(), false, false, 0, INVALID, FORWARDS, 0));
     newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE));
     newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS));
     newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, -1, true, 0, -16000, 0, 120, true, 0, true, false));

@@ -3,7 +3,8 @@
 #include "TimeDirection.h"
 namespace hg {
 enum PickupType {
-    kTimeJump
+    timeJump = 0,
+    reverseTime = 1
 };
 class PickupArea {
 public:

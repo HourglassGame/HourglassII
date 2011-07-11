@@ -674,6 +674,18 @@ void guyStep(
     assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
 
     // colliding with pickups?
+    std::map<int,std::map<int,int> > pickups = std::map<int,std::map<int,int> >();
+    // map only holds values for guys which have changed pickup count as that shouldn't happen too often
+	/*for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
+	{
+		if (pickup not taken && colliding with pickup && lua callin returns true)
+		{
+			mark this pickup as taken
+			pickups[i] = std::map<int,int>(guyArrivalList[i].getPickups());
+			pickups[i][pickupAreaThatICollidedWith.getType()] += 1; // because the default value of an int is 0
+		}
+	}*/
+
     // time travel
     for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
     {
@@ -698,12 +710,13 @@ void guyStep(
 
             bool normalDeparture = true;
 
-            if (input.getAbility() == hg::TIME_JUMP)
+            if (input.getAbility() == hg::TIME_JUMP /* && ((!pickups[i].empty() && pickups[i][jumpNumber]) || guyArrivalList[i].getPickups()[jumpNumber]) */ )
             {
+            	// decrement pickups
                 nextTime = getArbitraryFrame(getUniverse(time), input.getFrameIdParam(0).getFrameNumber());
                 normalDeparture = false;
             }
-            else if (input.getAbility() == hg::TIME_REVERSE)
+            else if (input.getAbility() == hg::TIME_REVERSE) // etc... from above
             {
                 normalDeparture = false;
                 nextTimeDirection *= -1;
@@ -804,6 +817,8 @@ void guyStep(
                         relativeToPortal,
                         supported[i],
                         supportedSpeed[i],
+
+                        pickups[i].empty() ? guyArrivalList[i].getPickups() : pickups[i],
                         facing[i],
                         
                         carry[i],
