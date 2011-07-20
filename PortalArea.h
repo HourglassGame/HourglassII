@@ -5,7 +5,6 @@ namespace hg {
 class PortalArea {
 public:
     PortalArea(
-        int index,
         int x,
         int y,
         int width,
@@ -22,7 +21,6 @@ public:
         bool fallable,
         bool winner
         ) :
-            index_(index),
             x_(x),
             y_(y),
             width_(width),
@@ -34,33 +32,31 @@ public:
             xDestination_(xDestination),
             yDestination_(yDestination),
             relativeTime_(relativeTime),
-            timeDestination_(timeDirection),
+            timeDestination_(timeDestination),
             illegalDestination_(illegalDestination),
             fallable_(fallable),
             winner_(winner)
             {
             }
-    int getIndex()  const { return index_; }
     int getX()      const { return x_; }
     int getY()      const { return y_; }
     int getWidth()  const { return width_; }
     int getHeight() const { return height_; }
-    int getXSpeed() const { return xSpeed_; }
-    int getYSpeed() const { return ySpeed_; }
+    int getXspeed() const { return xSpeed_; }
+    int getYspeed() const { return ySpeed_; }
     
     TimeDirection
         getTimeDirection() const { return timeDirection_; }
     
     int getDestinationIndex() const { return destinationIndex_; }
-    int getXDestination() const { return xDestination_; }
-    int getYDestination() const { return yDestination_; }
+    int getXdestination() const { return xDestination_; }
+    int getYdestination() const { return yDestination_; }
     bool getRelativeTime() const { return relativeTime_; }
     int getTimeDestination() const { return timeDestination_; }
     int getIllegalDestination() const { return illegalDestination_; }
     bool getFallable() const { return fallable_; }
     bool getWinner() const { return winner_; }
 private:
-    int index_;
     int x_;
     int y_;
     int width_;

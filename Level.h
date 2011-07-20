@@ -17,14 +17,14 @@ public:
         Environment const& nenvironment,
         ObjectList<Normal> const& ninitialObjects,
         FrameID const& nguyStartTime,
-        TriggerSystem const& ntriggerSystem);
+        NewOldTriggerSystem const& nnewOldTriggerSystem);
 
     unsigned speedOfTime;
     std::size_t timeLineLength;
     Environment environment;
     ObjectList<Normal> initialObjects;
     FrameID guyStartTime;
-    TriggerSystem triggerSystem;
+    NewOldTriggerSystem newOldTriggerSystem;
 };
 }
 #endif //HG_LEVEL_H

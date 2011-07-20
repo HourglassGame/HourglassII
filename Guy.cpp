@@ -11,7 +11,7 @@ Guy::Guy(
     bool supported,
     int supportedSpeed,
 
-    std::map<int,int> pickups,
+    std::map<int,int> const& pickups,
     bool facing,
 
     bool boxCarrying,
@@ -76,7 +76,7 @@ bool Guy::operator==(const Guy& other) const
         && (relativeToPortal_ == other.relativeToPortal_)
         && (supported_ == other.supported_)
         && (supportedSpeed_ == other.supportedSpeed_)
-        && (pickups_ == other.pickups_) // todo, check if map::operator== exists. If not write some ugly thing just above or use a different implementation of map
+        && (pickups_ == other.pickups_)
         && (facing_ == other.facing_)
         && (boxCarrying_ == other.boxCarrying_)
         && (boxCarrySize_ == other.boxCarrySize_)

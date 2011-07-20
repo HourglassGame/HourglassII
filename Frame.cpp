@@ -16,15 +16,18 @@ Frame::Frame(std::size_t frameNumber, Universe& universe):
         frameNumber_(frameNumber),
         universe_(universe),
         departures_(),
-        arrivals_()
+        arrivals_(),
+        glitz_()
 {
 }
 //copy-construction
+//Should only be used for emplacing Frames in Universe because frames are identified by their address.
 Frame::Frame(const Frame& other) :
         frameNumber_(other.frameNumber_),
         universe_(other.universe_),
-        departures_(other.departures_),
-        arrivals_(other.arrivals_)
+        departures_((assert(other.departures_.empty()),other.departures_)),
+        arrivals_((assert(other.arrivals_.empty()),other.arrivals_)),
+        glitz_((assert(other.glitz_.empty()),other.glitz_))
 {
 }
 Frame const* Frame::nextFrame(TimeDirection direction) const {

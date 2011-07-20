@@ -6,13 +6,13 @@ Level::Level(
     Environment const& nenvironment,
     ObjectList<Normal> const& ninitialObjects,
     FrameID const& nguyStartTime,
-    TriggerSystem const& ntriggerSystem) :
+    NewOldTriggerSystem const& nnewOldTriggerSystem) :
         speedOfTime(nspeedOfTime),
         timeLineLength(ntimeLineLength),
         environment(nenvironment),
         initialObjects(ninitialObjects),
         guyStartTime(nguyStartTime),
-        triggerSystem(ntriggerSystem)
+        newOldTriggerSystem(nnewOldTriggerSystem)
 {
 }
 }

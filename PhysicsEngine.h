@@ -17,22 +17,25 @@ class PhysicsEngine
 {
 public:
     PhysicsEngine(
-        const Environment& env,
-        const TriggerSystem& triggerSystem);
+        Environment const& env,
+        NewOldTriggerSystem const& newTriggerSystem);
 
     struct PhysicsReturnT
     {
     	PhysicsReturnT(
-            const std::map<Frame*, ObjectList<Normal> >& Ndepartures,
+            std::map<Frame*, ObjectList<Normal> > const& Ndepartures,
+            std::vector<RectangleGlitz> const& Nglitz,
             bool NcurrentPlayerFrame,
     		bool NnextPlayerFrame,
     		bool NcurrentWinFrame) :
                 departures(Ndepartures),
+                glitz(Nglitz),
                 currentPlayerFrame(NcurrentPlayerFrame),
                 nextPlayerFrame(NnextPlayerFrame),
                 currentWinFrame(NcurrentWinFrame)
     	{}
     	std::map<Frame*, ObjectList<Normal> > departures;
+        std::vector<RectangleGlitz> glitz;
     	bool currentPlayerFrame;
     	bool nextPlayerFrame;
     	bool currentWinFrame;
@@ -45,7 +48,7 @@ public:
         std::vector<InputList> const& playerInput) const;
 private:
     Environment env_;
-    TriggerSystem triggerSystem_;
+    NewOldTriggerSystem newTriggerSystem_;
 };
 }//namespace hg
 #endif //HG_PHYSICS_ENGINE_H
