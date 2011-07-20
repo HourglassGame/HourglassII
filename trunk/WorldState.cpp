@@ -51,30 +51,9 @@ WorldState::WorldState(
     {
         std::map<Frame*, ObjectList<Normal> > initialArrivals;
 
-        // platforms
-        for (std::vector<Platform>::const_iterator it(initialObjects.getList<Platform>().begin()),
-                end(initialObjects.getList<Platform>().end()); it != end; ++it)
-        {
-            initialArrivals[getEntryFrame(timeline_.getUniverse(),it->getTimeDirection())].add(*it);
-        }
-
         // boxes
         for (std::vector<Box>::const_iterator it(initialObjects.getList<Box>().begin()),
                 end(initialObjects.getList<Box>().end()); it != end; ++it)
-        {
-            initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
-        }
-
-        // portals
-        for (std::vector<Portal>::const_iterator it(initialObjects.getList<Portal>().begin()),
-                end(initialObjects.getList<Portal>().end()); it != end; ++it)
-        {
-            initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
-        }
-
-        // buttons
-        for (std::vector<Button>::const_iterator it(initialObjects.getList<Button>().begin()),
-                end(initialObjects.getList<Button>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
         }
@@ -126,6 +105,7 @@ std::map<Frame*, ObjectList<Normal> >
     else {
         currentWinFrames_.remove(frame);
     }
+    frame->setGlitzFromHere(retv.glitz);
     return retv.departures;
 }
 

@@ -5,6 +5,7 @@
 #include "ObjectList.h"
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
+#include "RectangleGlitz.h"
 
 #include <boost/fusion/container/vector.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -32,11 +33,17 @@ public:
     //newDeparture may get its contents pilfered    
     FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture);
     
+    void setGlitzFromHere(std::vector<RectangleGlitz> const& newGlitz) { glitz_ = newGlitz; }
+    std::vector<RectangleGlitz> const& getGlitzFromHere() const { return glitz_; }
+
     //assignment
     Frame& operator=(const Frame&)
     {
-        //Should never be called. Needed for vector<Frame>::push_back to compile
-        //(in Universe construction), but I have already reserved space.
+        //Should never be called. Needed for push_back(vector<Frame>, FrameRange) to compile
+        //(in Universe construction). I am inserting into the back of the vector, so it shouldn't
+        //be needed. (I think this is relying on non-standard behaviour, but it is worth is, as it works
+        //on all our target compilers and provides a check against frame assignment (a very dangerous thing to do))
+        //If it causes problems in the future then just change this to a standard operator= implementation.
         assert(false);
         return *this;
     }
@@ -98,6 +105,8 @@ private:
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
     std::map<Frame*, ObjectList<Normal> > departures_;
     tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*> arrivals_;
+    
+    std::vector<RectangleGlitz> glitz_;
 };
 //<Undefined to call with NullFrame>
 //Frame* nextFrame(Frame const* frame, TimeDirection direction);

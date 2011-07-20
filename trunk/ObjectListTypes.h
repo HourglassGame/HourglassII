@@ -3,9 +3,6 @@
 
 #include "Guy.h"
 #include "Box.h"
-#include "Button.h"
-#include "Platform.h"
-#include "Portal.h"
 #include "TriggerData.h"
 
 #include <boost/fusion/container/vector.hpp>
@@ -14,9 +11,6 @@ namespace hg {
         boost::fusion::vector<
             Guy,
             Box,
-            Button,
-            Platform,
-            Portal,
             TriggerData
         > Normal;
 }

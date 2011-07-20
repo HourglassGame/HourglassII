@@ -8,7 +8,7 @@ public:
         int x, int y,
         int width, int height,
         int xSpeed, int ySpeed,
-        int forwardsColour, int reverseColour,
+        unsigned forwardsColour, unsigned reverseColour,
         TimeDirection timeDirection) :
             x_(x), y_(y),
             width_(width), height_(height),
@@ -22,8 +22,8 @@ public:
     int getHeight() const { return height_; }
     int getXspeed() const { return xSpeed_; }
     int getYspeed() const { return ySpeed_; }
-    int getForwardsColour() const { return forwardsColour_; }
-    int getReverseColour() const { return reverseColour_; }
+    unsigned getForwardsColour() const { return forwardsColour_; }
+    unsigned getReverseColour() const { return reverseColour_; }
     TimeDirection 
         getTimeDirection() const { return timeDirection_; }
         
@@ -37,8 +37,8 @@ private:
     
     //Colour packed as |RRRRRRRR|GGGGGGGG|BBBBBBBB|*unused*|
     //Why? -- because lua is all ints, and I can't be bothered with a better interface for such a temporary thing.
-    int forwardsColour_;
-    int reverseColour_;
+    unsigned forwardsColour_;
+    unsigned reverseColour_;
     TimeDirection timeDirection_;
 };
 }//namespace hg

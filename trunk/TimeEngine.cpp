@@ -8,7 +8,7 @@ TimeEngine::TimeEngine(const Level& level) :
         speedOfTime(level.speedOfTime),
         worldState(level.timeLineLength,
                    level.guyStartTime,
-                   PhysicsEngine(level.environment, level.triggerSystem),
+                   PhysicsEngine(level.environment, level.newOldTriggerSystem),
                    level.initialObjects)
 
 {

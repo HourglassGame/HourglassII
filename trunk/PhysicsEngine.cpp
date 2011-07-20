@@ -22,10 +22,10 @@ namespace hg {
 enum { JUMP_SPEED 	= -550 };
 
 PhysicsEngine::PhysicsEngine(
-    const Environment& env,
-    const TriggerSystem& triggerSystem) :
+    Environment const& env,
+    NewOldTriggerSystem const& newTriggerSystem) :
         env_(env),
-        triggerSystem_(triggerSystem)
+        newTriggerSystem_(newTriggerSystem)
 {
 }
 namespace {
@@ -56,8 +56,8 @@ namespace {
         std::vector<InputList> const& playerInput,
         std::vector<ObjectAndTime<Guy> >& nextGuy,
         std::vector<ObjectAndTime<Box> >& nextBox,
-        std::vector<Platform> const& nextPlatform,
-        std::vector<Portal> const& nextPortal,
+        std::vector<Collision> const& nextPlatform,
+        std::vector<PortalArea> const& nextPortal,
         bool& currentPlayerFrame,
         bool& nextPlayerFrame,
         bool& winFrame);
@@ -132,9 +132,9 @@ namespace {
         
     void buildDepartures(
         std::vector<ObjectAndTime<Box> > const& nextBox,
-        std::vector<Platform> const& nextPlatform,
-        std::vector<Portal> const& nextPortal,
-        std::vector<Button> const& nextButton,
+        //std::vector<Platform> const& nextPlatform,
+        //std::vector<Portal> const& nextPortal,
+        //std::vector<Button> const& nextButton,
         std::vector<ObjectAndTime<Guy> > const& nextGuy,
         std::map<Frame*, ObjectList<Normal> >& newDepartures,
         Frame* time);
@@ -155,17 +155,12 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     Frame* time,
     std::vector<InputList> const& playerInput) const
 {
-    
-    /*Static?*/ObjectList<Normal>  staticDepartures(
-        triggerSystem_.calculateStaticDepartures(arrivals, playerInput, time));
-
-    #if 0
-    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState());
+    NewOldTriggerFrameState triggerFrameState(newTriggerSystem_.getFrameState());
     
     //{extra boxes, collision, death, portal, pickup, arrival location}    
     PhysicsAffectingStuff const physicsTriggerStuff(
         triggerFrameState.calculatePhysicsAffectingStuff(arrivals.getList<TriggerData>()));
-    #endif
+
     std::vector<ObjectAndTime<Box> > nextBox;
 
     // boxes do their crazy wizz-bang collision algorithm
@@ -173,8 +168,8 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         env_,
         arrivals.getList<Box>(),
         nextBox,
-        staticDepartures.getList<Platform>(),
-        staticDepartures.getList<Portal>(),
+        physicsTriggerStuff.collisions/*staticDepartures.getList<Platform>()*/,
+        physicsTriggerStuff.portals/*staticDepartures.getList<Portal>()*/,
         time);
 
     bool currentPlayerFrame(false);
@@ -193,38 +188,41 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         playerInput,
         nextGuy,
         nextBox,
-        staticDepartures.getList<Platform>(),
-        staticDepartures.getList<Portal>(),
+        physicsTriggerStuff.collisions/*staticDepartures.getList<Platform>()*/,
+        physicsTriggerStuff.portals/*staticDepartures.getList<Portal>()*/,
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);
 
     buildDepartures(
         nextBox,
-        staticDepartures.getList<Platform>(),
-        staticDepartures.getList<Portal>(),
-        staticDepartures.getList<Button>(),
+        //staticDepartures.getList<Platform>(),
+        //staticDepartures.getList<Portal>(),
+        //staticDepartures.getList<Button>(),
         nextGuy,
         newDepartures,
         time);
 
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
     boost::for_each(newDepartures, SortObjectList());
-    #if 0
-    //need to add in glitz, and a way to get glitz to the front-end
-    //...
-    
-    //Also, trigger departures (obviously)
-    std::map<Frame*, std::vector<TriggerData> > triggerDepartures(
-        triggerSystem_.calculateTriggerDepartures(newDepartures, playerInput, time));
 
-    foreach (triggerDeparture, triggerDepartures) {
+    std::pair<
+        std::map<Frame*, std::vector<TriggerData> >,
+        std::vector<RectangleGlitz>
+    > triggerDeparturesAndGlitz(
+        triggerFrameState.getTriggerDeparturesAndGlitz(
+            newDepartures,
+            time));
+    typedef std::map<Frame*, std::vector<TriggerData> >::value_type triggerDeparture_t;
+    foreach (triggerDeparture_t const& triggerDeparture, triggerDeparturesAndGlitz.first) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
-    #endif
+
+    //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
+    boost::for_each(newDepartures, SortObjectList());
     // add data to departures
-    return PhysicsReturnT(newDepartures, currentPlayerFrame, nextPlayerFrame, winFrame);
+    return PhysicsReturnT(newDepartures, triggerDeparturesAndGlitz.second, currentPlayerFrame, nextPlayerFrame, winFrame);
 }
 
 namespace {
@@ -254,22 +252,23 @@ void buildDeparturesForReallySimpleThings(
 
 void buildDepartures(
     std::vector<ObjectAndTime<Box> > const& nextBox,
-    std::vector<Platform> const& nextPlatform,
-    std::vector<Portal> const& nextPortal,
-    std::vector<Button> const& nextButton,
+    //std::vector<Platform> const& nextPlatform,
+    //std::vector<Portal> const& nextPortal,
+    //std::vector<Button> const& nextButton,
     std::vector<ObjectAndTime<Guy> > const& nextGuy,
     std::map<Frame*, ObjectList<Normal> >& newDepartures,
     Frame* time)
 {
+    (void)time;
     //Complex vs simple is a bit pointless at this stage
     //The real issue is static vs time-traveling - 
     //and this should be fixed by the new trigger system
     buildDeparturesForComplexEntities(nextBox, newDepartures);
     buildDeparturesForComplexEntities(nextGuy, newDepartures);
 
-    buildDeparturesForReallySimpleThings(nextPlatform, newDepartures, time);
-    buildDeparturesForReallySimpleThings(nextButton, newDepartures, time);
-    buildDeparturesForReallySimpleThings(nextPortal, newDepartures, time);
+   // buildDeparturesForReallySimpleThings(nextPlatform, newDepartures, time);
+   // buildDeparturesForReallySimpleThings(nextButton, newDepartures, time);
+   // buildDeparturesForReallySimpleThings(nextPortal, newDepartures, time);
 }
 }//namespace
 
@@ -282,8 +281,8 @@ void guyStep(
     const std::vector<InputList>& playerInput,
     std::vector<ObjectAndTime<Guy> >& nextGuy,
     std::vector<ObjectAndTime<Box> >& nextBox,
-    const std::vector<Platform>& nextPlatform,
-    const std::vector<Portal>& nextPortal,
+    const std::vector<Collision>& nextPlatform,
+    const std::vector<PortalArea>& nextPortal,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame)
@@ -317,7 +316,7 @@ void guyStep(
         }
         else
         {
-            Portal const& relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
+            PortalArea const& relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
         }
@@ -337,7 +336,7 @@ void guyStep(
             int const height(guyArrivalList[i].getHeight());
 
             // chonofrag with platforms
-			foreach (const Platform& platform, nextPlatform)
+			foreach (const Collision& platform, nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -413,7 +412,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            foreach (const Platform& platform, nextPlatform)
+            foreach (const Collision& platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -488,7 +487,7 @@ void guyStep(
             }
 
             // platform collision
-            foreach (const Platform& platform, nextPlatform)
+            foreach (const Collision& platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -674,7 +673,7 @@ void guyStep(
     assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
 
     // colliding with pickups?
-    std::map<int,std::map<int,int> > pickups = std::map<int,std::map<int,int> >();
+    std::map<int,std::map<int,int> > pickups;
     // map only holds values for guys which have changed pickup count as that shouldn't happen too often
 	/*for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
 	{
@@ -733,8 +732,9 @@ void guyStep(
                     int py = nextPortal[j].getY();
                     int pw = nextPortal[j].getWidth();
                     int ph = nextPortal[j].getHeight();
-                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph) &&
-                            nextPortal[j].getActive() && nextPortal[j].getCharges() != 0) // charges not fully implemented
+                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph) /*&&
+                            nextPortal[j].getActive() && nextPortal[j].getCharges() != 0*/
+                            /*&&shouldPort() TODO*/) // charges not fully implemented
                     {
                         if (nextPortal[j].getWinner())
                         {
@@ -772,7 +772,8 @@ void guyStep(
 				if (PointInRectangleInclusive(
                         x[i] + guyArrivalList[i].getWidth()/2, y[i] + guyArrivalList[i].getHeight()/2,
                         px, py, pw, ph)
-					&& nextPortal[j].getActive() && nextPortal[j].getCharges() != 0 
+					/*&& nextPortal[j].getActive() && nextPortal[j].getCharges() != 0 */
+                    /*&& shouldPort() TODO */
                     && nextPortal[j].getFallable())
 				{
 					if (guyArrivalList[i].getIllegalPortal() != -1 && j == static_cast<unsigned int>(guyArrivalList[i].getIllegalPortal()))
@@ -865,7 +866,8 @@ void makeBoxAndTimeWithPortals(
         int pw = nextPortal[i].getWidth();
         int ph = nextPortal[i].getHeight();
         if (PointInRectangleInclusive(x + size/2, y + size/2, px, py, pw, ph)
-            && nextPortal[i].getActive() && nextPortal[i].getCharges() != 0
+            /*&& nextPortal[i].getActive() && nextPortal[i].getCharges() != 0*/
+            /*&& shouldPort()  TODO*/
             && nextPortal[i].getFallable())
         {
             if (oldIllegalPortal != -1 && i == static_cast<unsigned>(oldIllegalPortal))
@@ -1062,7 +1064,7 @@ void boxCollisionAlogorithm(
         }
         else
         {
-            Portal const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
+            PortalArea const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
             xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
             yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
         }
@@ -1074,7 +1076,7 @@ void boxCollisionAlogorithm(
 	// Destroy boxes that are overlapping with platforms
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
-		foreach (Platform const& platform, nextPlatform)
+		foreach (Collision const& platform, nextPlatform)
 		{
 			int pX(platform.getX());
 			int pY(platform.getY());
@@ -1230,7 +1232,7 @@ void boxCollisionAlogorithm(
 				}
 
 				// Check inside a platform
-				foreach (const Platform& platform, nextPlatform)
+				foreach (const Collision& platform, nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
@@ -1485,7 +1487,7 @@ void boxCollisionAlogorithm(
 			}
 			else
 			{
-				Portal const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
+				PortalArea const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
 				makeBoxAndTimeWithPortals(
                     nextBox,
                     nextPortal,

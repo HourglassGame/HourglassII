@@ -19,7 +19,7 @@ public:
         bool supported,
         int supportedSpeed,
     	
-        std::map<int,int> pickups,
+        std::map<int,int> const& pickups,
         bool facing,
     	
         bool boxCarrying,
@@ -44,7 +44,7 @@ public:
     bool getSupported()       const { return supported_; }
     int getSupportedSpeed()   const { return supportedSpeed_; }
     
-    std::map<int,int> getPickups() const { return pickups_;}
+    std::map<int,int> const& getPickups() const { return pickups_;}
 
     int getFacing()        const { return facing_;}
 
@@ -102,7 +102,7 @@ public:
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
     
-    std::map<int,int> getPickups() const { return guy_->getPickups();}
+    std::map<int,int> const& getPickups() const { return guy_->getPickups();}
 
     int getFacing()        const { return guy_->getFacing();}
 

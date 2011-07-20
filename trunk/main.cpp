@@ -43,14 +43,13 @@ void custom_free(void* p);
 
 void* custom_malloc(std::size_t size)
 {
-    //puts("m");
-    return nedalloc::nedmalloc(size);
     //return scalable_malloc(size);
+    //return malloc(size);
+    return nedalloc::nedmalloc(size);
 }
 
 void custom_free(void* p)
 {
-    //puts("f");
     //scalable_free(p);
     //free(p);
     if (p) {
@@ -61,11 +60,10 @@ void custom_free(void* p)
 void* operator new(std::size_t size) throw(std::bad_alloc)
 {
     while (true) {
-        void* pointer(custom_malloc(size));
-        if (pointer) {
+        if (void* pointer = custom_malloc(size)) {
             return pointer;
         }
-        else if (std::new_handler handler = std::set_new_handler(0)) {
+        if (std::new_handler handler = std::set_new_handler(0)) {
             std::set_new_handler(handler);
             (*handler)();
         }
@@ -82,24 +80,17 @@ void operator delete(void *p) throw()
 
 void* operator new(std::size_t size, std::nothrow_t const&) throw()
 {
-    while (true) {
-        void* pointer(custom_malloc(size));
-        if (pointer) {
-            return pointer;
-        }
-        else if (std::new_handler handler = std::set_new_handler(0)) {
-            std::set_new_handler(handler);
-            (*handler)();
-        }
-        else {
-            throw 0;
-        }
+    try {
+        return ::operator new(size);
+    }
+    catch (std::bad_alloc&) {
+        return 0;
     }
 }
 
 void operator delete(void *p, std::nothrow_t const&) throw()
 {
-    custom_free(p);
+    ::operator delete(p);
 }
 
 void* operator new[](std::size_t size) throw(std::bad_alloc)
@@ -128,19 +119,19 @@ using namespace std;
 using namespace sf;
 using namespace boost;
 namespace {
-    void Draw(RenderWindow& target, const ObjectPtrList<Normal> & frame, const boost::multi_array<bool, 2>& wall, TimeDirection playerDirection);
+    void Draw(
+        RenderWindow& target,
+        const ObjectPtrList<Normal> & frame,
+        std::vector<RectangleGlitz> const& glitz,
+        const boost::multi_array<bool, 2>& wall,
+        TimeDirection playerDirection);
     void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame);
     void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
+    void DrawGlitz(RenderTarget& target, std::vector<RectangleGlitz> const& glitz, TimeDirection playerDirection);
     template<typename RandomAccessBoxRange>
     void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDirection playerDirection);
     template<typename RandomAccessGuyRange>
     void DrawGuys(RenderTarget& target, const RandomAccessGuyRange& guyList, TimeDirection playerDirection);
-    template<typename RandomAccessButtonRange>
-    void DrawButtons(RenderTarget& target, const RandomAccessButtonRange& buttonList, TimeDirection playerDirection);
-    template<typename RandomAccessPlatformRange>
-    void DrawPlatforms(RenderTarget& target, const RandomAccessPlatformRange& platformList, TimeDirection playerDirection);
-    template<typename RandomAccessPortalRange>
-    void DrawPortals(RenderTarget& target, const RandomAccessPortalRange& portalList, TimeDirection playerDirection);
     template<typename BidirectionalGuyRange>
     TimeDirection findCurrentGuyDirection(const BidirectionalGuyRange& guyRange);
 
@@ -196,6 +187,7 @@ int main()
                 Draw(
                     app,
                     frameData,
+                    waveInfo.currentPlayerFrame()->getGlitzFromHere(),
                     wall,
                     currentGuyDirection);
             }
@@ -204,10 +196,12 @@ int main()
                 FrameID const inertialFrame(inertia.getFrame());
                 drawnFrame = inertialFrame;
                 if (inertialFrame.isValidFrame()) {
-                    Draw(app, timeEngine.getFrame(inertialFrame)->getPostPhysics(), wall, inertia.getTimeDirection());
+                    Frame* frame(timeEngine.getFrame(inertialFrame));
+                    Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, inertia.getTimeDirection());
                 }
                 else {
-                    Draw(app, timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800)))->getPostPhysics(), wall, FORWARDS);
+                    Frame* frame(timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800))));
+                    Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, FORWARDS);
                 }
             }
             DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame);
@@ -257,16 +251,15 @@ int main()
 namespace  {
 void Draw(
     RenderWindow& target,
-    ObjectPtrList<Normal> const& frame,
-    boost::multi_array<bool, 2> const& wall,
-    TimeDirection const playerDirection)
+    const ObjectPtrList<Normal> & frame,
+    std::vector<RectangleGlitz> const& glitz,
+    const boost::multi_array<bool, 2>& wall,
+    TimeDirection playerDirection)
 {
     DrawWall(target, wall);
-    DrawPortals(target, frame.getList<Portal>(), playerDirection);
+    DrawGlitz(target, glitz, playerDirection);
     DrawBoxes(target, frame.getList<Box>(), playerDirection);
     DrawGuys(target, frame.getList<Guy>(), playerDirection);
-    DrawButtons(target, frame.getList<Button>(), playerDirection);
-    DrawPlatforms(target, frame.getList<Platform>(), playerDirection);
 }
 
 void DrawWall(
@@ -286,6 +279,39 @@ void DrawWall(
                         32u*(j+1),
                         Colour()));
             }
+        }
+    }
+}
+
+
+//Interprets colour as |RRRRRRRR|GGGGGGGG|BBBBBBBB|--------|
+Colour interpretAsColour(unsigned colour)
+{
+    return Colour((colour & 0xFF000000) >> 24, (colour & 0xFF0000) >> 16, (colour & 0xFF00) >> 8);
+}
+
+void DrawGlitz(RenderTarget& target, std::vector<RectangleGlitz> const& glitz, TimeDirection playerDirection)
+{
+    foreach (RectangleGlitz const& rectangleGlitz, glitz) {
+        if (playerDirection == rectangleGlitz.getTimeDirection()) {
+            target.Draw(
+                Shape::Rectangle(
+                    rectangleGlitz.getX()/100,
+                    rectangleGlitz.getY()/100,
+                    (rectangleGlitz.getX() + rectangleGlitz.getWidth())/100,
+                    (rectangleGlitz.getY() + rectangleGlitz.getHeight())/100,
+                    interpretAsColour(rectangleGlitz.getForwardsColour())));
+        }
+        else {
+            int const x(rectangleGlitz.getX() - rectangleGlitz.getXspeed());
+            int const y(rectangleGlitz.getY() - rectangleGlitz.getYspeed());
+            target.Draw(
+                Shape::Rectangle(
+                    x/100,
+                    y/100,
+                    (x + rectangleGlitz.getWidth())/100,
+                    (y + rectangleGlitz.getHeight())/100,
+                    interpretAsColour(rectangleGlitz.getReverseColour())));
         }
     }
 }
@@ -397,93 +423,6 @@ void DrawGuys(
     }
 }
 
-template<typename RandomAccessButtonRange>
-void DrawButtons(
-    RenderTarget& target,
-    RandomAccessButtonRange const& buttonList,
-    TimeDirection const playerDirection)
-{
-    foreach(Button const& button, buttonList)
-    {
-        Vector2<int> const pos(
-            playerDirection == button.getTimeDirection() ?
-                Vector2<int>(
-                    button.getX(),
-                    button.getY()) :
-                Vector2<int>(
-                    button.getX() - button.getXspeed(),
-                    button.getY() - button.getYspeed()));
-
-        target.Draw(
-            Shape::Rectangle(
-                pos.x/100,
-                pos.y/100,
-                (pos.x+button.getWidth())/100,
-                (pos.y+button.getHeight())/100,
-                button.getState() ?
-                    Colour(150,255,150) :
-                    Colour(255,150,150)));
-    }
-}
-
-template<typename RandomAccessPlatformRange>
-void DrawPlatforms(
-    RenderTarget& target,
-    RandomAccessPlatformRange const& platformList,
-    TimeDirection const playerDirection)
-{
-    foreach (Platform const& platform, platformList) {
-        PositionAndColour const pnc(
-            playerDirection == platform.getTimeDirection() ?
-                PositionAndColour(
-                    platform.getX(),
-                    platform.getY(),
-                    Colour(50,0,0)) :
-                PositionAndColour(
-                    platform.getX() - platform.getXspeed(),
-                    platform.getY() - platform.getYspeed(),
-                    Colour(0,0,50)));
-
-        target.Draw(
-            Shape::Rectangle(
-                pnc.x/100,
-                pnc.y/100,
-                (pnc.x+platform.getWidth())/100,
-                (pnc.y+platform.getHeight())/100,
-                pnc.colour));
-    }
-}
-
-template<typename RandomAccessPortalRange>
-void DrawPortals(
-    RenderTarget& target,
-    RandomAccessPortalRange const& portalList,
-    TimeDirection const playerDirection)
-{
-
-    foreach(Portal const& portal, portalList)
-    {
-        PositionAndColour const pnc(
-            playerDirection == portal.getTimeDirection() ?
-                PositionAndColour(
-                    portal.getX(),
-                    portal.getY(),
-                    Colour(120,120,120)) :
-                PositionAndColour(
-                    portal.getX()-portal.getXspeed(),
-                    portal.getY()-portal.getYspeed(),
-                    Colour(120,120,120)));
-
-        target.Draw(
-            Shape::Rectangle(
-                pnc.x/100,
-                pnc.y/100,
-                (pnc.x+portal.getWidth())/100,
-                (pnc.y+portal.getHeight())/100,
-                pnc.colour));
-    }
-}
-
 void DrawTimeline(
     RenderTarget& target,
     TimeEngine::FrameListList const& waves,
@@ -575,6 +514,82 @@ boost::multi_array<bool, 2> MakeWall()
     return actualWall;
 }
 
+NewOldTriggerSystem makeNewOldTriggerSystem()
+{
+    std::vector<ProtoPortal> protoPortals;
+    protoPortals.push_back(
+        ProtoPortal(
+            Attachment(0,-4200,-3200),
+            4200,
+            4200,
+            FORWARDS,
+            0,
+            0,
+            -16000,
+            true,
+            120,
+            0,
+            true,
+            false));
+    
+    std::vector<ProtoPlatform> protoPlatforms;
+    protoPlatforms.push_back(
+        ProtoPlatform(
+            6400,
+            1600,
+            FORWARDS,
+            1,
+            0,
+            PlatformDestinationPair(
+                PlatformDestination(
+                    PlatformDestinationComponent(
+                        22400,
+                        200,
+                        50,
+                        50),
+                    PlatformDestinationComponent(
+                        43800,
+                        300,
+                        50,
+                        50)),
+                PlatformDestination(
+                    PlatformDestinationComponent(
+                        38400,
+                        200,
+                        50,
+                        50),
+                    PlatformDestinationComponent(
+                        43800,
+                        300,
+                        20,
+                        20)))));
+    
+    std::vector<ProtoButton> protoButtons;
+    protoButtons.push_back(
+        ProtoButton(
+            Attachment(0,3200,-800),
+            3200,
+            800,
+            FORWARDS,
+            0));
+    
+    std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
+    
+    std::vector<int> defaultPlatformPositionAndVelocity;
+    defaultPlatformPositionAndVelocity.push_back(38400);
+    defaultPlatformPositionAndVelocity.push_back(43800);
+    defaultPlatformPositionAndVelocity.push_back(0);
+    defaultPlatformPositionAndVelocity.push_back(0);
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
+    
+    return NewOldTriggerSystem(
+        protoPortals,
+        protoPlatforms,
+        protoButtons,
+        triggerOffsetsAndDefaults);
+}
+
 Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
     ObjectList<Normal>  newObjectList;
@@ -586,10 +601,8 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
     newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
     newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, std::map<int,int>(), false, false, 0, INVALID, FORWARDS, 0));
-    newObjectList.add(Button(30400, 44000, 0, 0, 3200, 800, 0, false, REVERSE));
-    newObjectList.add(Platform(38400, 44800, 0, 0, 6400, 1600, 0, FORWARDS));
-    newObjectList.add(Portal(20400, 30800, 0, 0, 4200, 4200, 0, FORWARDS, -1, true, 0, -16000, 0, 120, true, 0, true, false));
     newObjectList.sort();
+    
     return
         Level(
             3,
@@ -601,37 +614,6 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
                 30),
             ObjectList<Normal> (newObjectList),
             FrameID(0,UniverseID(10800)),
-            TriggerSystem(
-                1,
-                0,
-                std::vector<int>(),
-                std::vector<PlatformDestinationPair>(
-                    1,
-                    PlatformDestinationPair(
-                        PlatformDestination(
-                            PlatformDestinationComponent(
-                                22400,
-                                200,
-                                50,
-                                50),
-                            PlatformDestinationComponent(
-                                43800,
-                                300,
-                                50,
-                                50)),
-                        PlatformDestination(
-                            PlatformDestinationComponent(
-                                38400,
-                                200,
-                                50,
-                                50),
-                            PlatformDestinationComponent(
-                                43800,
-                                300,
-                                20,
-                                20)))),
-                AttachmentMap(
-                    std::vector<Attachment>(1, Attachment(0,3200,-800)),
-                    std::vector<Attachment>(1, Attachment(0,-4200,-3200)))));
+            makeNewOldTriggerSystem());
 }
 }
