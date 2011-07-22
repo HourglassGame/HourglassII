@@ -24,9 +24,23 @@ struct UpdateDeparturesFromTime
     ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
 };
 
+
+
 TimelineState::TimelineState(std::size_t timelineLength) :
         universe_(timelineLength)
 {
+}
+
+TimelineState::TimelineState(BOOST_RV_REF(TimelineState) other) :
+    universe_(boost::move(other.universe_)),
+    permanentDepartures_(boost::move(other.permanentDepartures_))
+{
+}
+TimelineState& TimelineState::operator=(BOOST_RV_REF(TimelineState) other)
+{
+    universe_ = boost::move(other.universe_);
+    permanentDepartures_= boost::move(other.permanentDepartures_);
+    return *this;
 }
 
 FrameUpdateSet TimelineState::updateWithNewDepartures(DepartureMap& newDepartures)

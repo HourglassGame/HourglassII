@@ -24,6 +24,13 @@
 #include <boost/range/algorithm/max_element.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/irange.hpp>
+#include <boost/filesystem.hpp>
+
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
+
+#include <fstream>
 
 #include <boost/bind.hpp>
 
@@ -119,6 +126,8 @@ using namespace std;
 using namespace sf;
 using namespace boost;
 namespace {
+    void initialseCurrentPath(int argc, char const* const argv[]);
+    void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool, 2> const& wall, Inertia& inertia, InputList const& input);
     void Draw(
         RenderWindow& target,
         const ObjectPtrList<Normal> & frame,
@@ -137,79 +146,140 @@ namespace {
 
     boost::multi_array<bool, 2> MakeWall();
     Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
+    
+    std::vector<InputList> loadReplay();
+    void saveReplay(std::vector<InputList> const& replay);
 }
 
-int main()
+int main(int argc, char const* const argv[])
 {
 #ifdef HG_COMPILE_TESTS
     if(!hg::getTestDriver().passesAllTests()) {
         return EXIT_FAILURE;
     }
 #endif //HG_COMPILE_TESTS
-
+    initialseCurrentPath(argc, argv);
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
+    
     boost::multi_array<bool, 2> const wall(MakeWall());
-    TimeEngine timeEngine(MakeLevel(wall));
+    TimeEngine timeEngine(MakeLevel(boost::multi_array<bool, 2>(wall)));
     hg::Input input;
     hg::Inertia inertia;
-    while (app.IsOpened())
-    {
+    std::vector<InputList> replay;
+    std::vector<InputList>::const_iterator currentReplayIt(replay.begin());
+    std::vector<InputList>::const_iterator currentReplayEnd(replay.end());
+    while (app.IsOpened()) {
         Event event;
         while (app.GetEvent(event))
         {
+            //States + transitions:
+            //Not really a state machine!
+            //Playing game -> new game + playing game               Keybinding: R
+            //playing game -> new game + playig replay              Keybinding: L
+
+            //playing replay -> new game + playing game             Keybinding: R
+            //playing replay -> new game + playing replay           Keybinding: L
+            //playing replay -> playing game                        Keybinding: P or <get to end of replay>
             switch (event.Type) {
             case sf::Event::Closed:
                 app.Close();
+                goto breakmainloop;
+            case sf::Event::KeyPressed:
+                switch(event.Key.Code) {
+                case sf::Key::R:
+                    currentReplayIt = replay.end();
+                    currentReplayEnd = replay.end();
+                    timeEngine = TimeEngine(MakeLevel(wall));
+                    break;
+                case sf::Key::L:
+                    loadReplay().swap(replay);
+                    currentReplayIt = replay.begin();
+                    currentReplayEnd = replay.end();
+                    timeEngine = TimeEngine(MakeLevel(wall));
+                    break;
+                case sf::Key::P:
+                    currentReplayIt = replay.end();
+                    currentReplayEnd = replay.end();
+                    break;
+                case sf::Key::S:
+                    saveReplay(timeEngine.getReplayData());
+                    break;
+                default:
+                    break;
+                }
                 break;
             default:
                 break;
             }
         }
-        input.updateState(app.GetInput());
-        //cout << "called from main" << endl;
-        std::vector<std::size_t> framesExecutedList;
         try {
-            FrameID drawnFrame;
-            TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input.AsInputList()));
-            boost::push_back(
-                framesExecutedList,
-                waveInfo.updatedFrames() 
-                    | boost::adaptors::transformed(
-                        boost::bind(boost::distance<FrameUpdateSet>, _1)));
-            
-            if (waveInfo.currentPlayerFrame()) {
-                ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
-                TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
-                inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
-                drawnFrame = FrameID(waveInfo.currentPlayerFrame());
-                Draw(
-                    app,
-                    frameData,
-                    waveInfo.currentPlayerFrame()->getGlitzFromHere(),
-                    wall,
-                    currentGuyDirection);
+            if (currentReplayIt != currentReplayEnd) {
+                runStep(timeEngine, app, wall, inertia, *currentReplayIt);
+                ++currentReplayIt;
             }
             else {
-                inertia.run();
-                FrameID const inertialFrame(inertia.getFrame());
-                drawnFrame = inertialFrame;
-                if (inertialFrame.isValidFrame()) {
-                    Frame* frame(timeEngine.getFrame(inertialFrame));
-                    Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, inertia.getTimeDirection());
-                }
-                else {
-                    Frame* frame(timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800))));
-                    Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, FORWARDS);
-                }
+                input.updateState(app.GetInput());
+                runStep(timeEngine, app, wall, inertia, input.AsInputList());
             }
-            DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame);
         }
         catch (hg::PlayerVictoryException& playerWon) {
             cout << "Congratulations, a winner is you!\n";
             return EXIT_SUCCESS;
         }
+    }
+    breakmainloop:
+    return EXIT_SUCCESS;
+}
+
+namespace  {
+void initialseCurrentPath(int argc, char const* const argv[])
+{
+#ifdef __APPLE__ && __MACH__
+    assert(argc >= 1);
+    current_path(boost::filesystem::path(argv[0]).remove_filename()/"../Resources/");
+#endif
+}
+
+void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool, 2> const& wall, Inertia& inertia, InputList const& input)
+{
+        std::vector<std::size_t> framesExecutedList;
+        FrameID drawnFrame;
+        TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input));
+        boost::push_back(
+            framesExecutedList,
+            waveInfo.updatedFrames() 
+                | boost::adaptors::transformed(
+                    boost::bind(boost::distance<FrameUpdateSet>, _1)));
+        
+        if (waveInfo.currentPlayerFrame()) {
+            ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
+            TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
+            inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
+            drawnFrame = FrameID(waveInfo.currentPlayerFrame());
+            Draw(
+                app,
+                frameData,
+                waveInfo.currentPlayerFrame()->getGlitzFromHere(),
+                wall,
+                currentGuyDirection);
+        }
+        else {
+            inertia.run();
+            FrameID const inertialFrame(inertia.getFrame());
+            drawnFrame = inertialFrame;
+            if (inertialFrame.isValidFrame()) {
+                Frame* frame(timeEngine.getFrame(inertialFrame));
+                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, inertia.getTimeDirection());
+            }
+            else {
+                Frame* frame(timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800))));
+                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, FORWARDS);
+            }
+        }
+        DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame);
+
         {
             stringstream numberOfFramesExecutedString;
             if (!boost::empty(framesExecutedList)) {
@@ -244,11 +314,8 @@ int main()
             app.Draw(fpsglyph);
         }
         app.Display();
-    }
-    return EXIT_SUCCESS;
 }
 
-namespace  {
 void Draw(
     RenderWindow& target,
     const ObjectPtrList<Normal> & frame,
@@ -474,6 +541,27 @@ TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
         | boost::adaptors::reversed)->getTimeDirection();
 }
 
+//These are required to match each other, and to produce a 
+//replay that can be saved on one machine and loaded on any other
+//that is running HourglassII. That is, the replays myst be portable.
+//The current implementations approximate this, but they should be improved!
+std::vector<InputList> loadReplay()
+{
+    std::ifstream ifs("replay");
+    std::vector<InputList> replay;
+    if (ifs.is_open()) {
+        boost::archive::text_iarchive ia(ifs);
+        ia >> replay;
+    }
+    return replay;
+}
+void saveReplay(std::vector<InputList> const& replay)
+{
+    std::ofstream ofs("replay");
+    boost::archive::text_oarchive oa(ofs);
+    oa << replay;
+}
+
 
 boost::multi_array<bool, 2> MakeWall()
 {
@@ -593,7 +681,7 @@ NewOldTriggerSystem makeNewOldTriggerSystem()
 Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
     ObjectList<Normal>  newObjectList;
-    //newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 17600, -1000, -500, 3200, -1, -1, FORWARDS));
@@ -612,7 +700,7 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
                     3200,
                     wall),
                 30),
-            ObjectList<Normal> (newObjectList),
+            boost::move(newObjectList),
             FrameID(0,UniverseID(10800)),
             makeNewOldTriggerSystem());
 }

@@ -2,7 +2,7 @@
 #define HG_PARALLEL_FOR_EACH_H
 #include <boost/range.hpp>
 #include <tbb/parallel_do.h>
-//#include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 namespace hg {
 //Const and non-const version to allow both const ranges and modifying Functions
 template<typename SinglePassRange, typename Func>

@@ -8,6 +8,7 @@
 #include "ConcurrentTimeSet.h"
 #include "InputList.h"
 
+#include <boost/move/move.hpp>
 #include <vector>
 
 #include "Frame_fwd.h"
@@ -22,12 +23,17 @@ public:
      * Creates a new world state.
      * Throws an exception if the world state is not consistent.
      */
+    //Exception Safety: Strong
     WorldState(
         std::size_t timelineLength,
         FrameID const& guyStartTime,
         PhysicsEngine const& physics,
         ObjectList<Normal> const& initialObjects);
 
+    //Exception Safety: Weak
+    WorldState(BOOST_RV_REF(WorldState) other);
+    //Exception Safety: Weak
+    WorldState& operator=(BOOST_RV_REF(WorldState) other);
     /**
      * Updates the state of the world once.
      * Throws PlayerVictoryException if the player has won
@@ -76,6 +82,7 @@ private:
     //(or whatever the win condition is) and not the following frames when the
     //win condition has been met at some previous time.
     ConcurrentTimeSet currentWinFrames_;
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(WorldState)
 };
 }
 #endif //HG_WORLD_STATE_H

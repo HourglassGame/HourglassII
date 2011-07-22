@@ -29,6 +29,9 @@ public:
     //only has safe concurrent access when called with different frames
     void add(Frame* toAdd);
     void remove(Frame* toRemove);
+    void swap(ConcurrentTimeSet& other) {
+        set_.swap(other.set_);
+    }
     void clear() {
         set_.clear();
     }

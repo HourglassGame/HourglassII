@@ -16,6 +16,7 @@
 #include "KillerArea.h"
 #include "ArrivalLocation.h"
 #include "RectangleGlitz.h"
+//#include "SimpleLuaCpp.h"
 #include <vector>
 #include <map>
 namespace hg
@@ -32,16 +33,9 @@ struct PhysicsAffectingStuff {
     std::vector<ArrivalLocation> arrivalLocations;
 };
 class NewTriggerSystem;
-#if 0
-//RAII class for lua_State.
-struct LuaState {
-    LuaState() {
-        ptr = lua_newstate();
-    }
-    ~LuaStae() {}
-    lua_State* ptr;    
-};
-#endif
+
+
+
 //Does the actual work, 1 created per frame
 //Has a life cycle:
 //[Created ->
@@ -52,7 +46,10 @@ class TriggerFrameState {
 public:
     //physics affecting stuff
     template<typename TriggerDataConstPtrRange>
-    PhysicsAffectingStuff calculatePhysicsAffectingStuff(TriggerDataConstPtrRange const& triggerArrivals);
+    PhysicsAffectingStuff calculatePhysicsAffectingStuff(
+        boost::transformed_range<
+            GetBase<TriggerDataConstPtr>,
+            std::vector<TriggerDataConstPtr> const> const& triggerArrivals);
     
     //Callins --
     //ObjectT can be Box or Guy atm
@@ -77,6 +74,7 @@ private:
     TriggerFrameState(TriggerFrameState const&);
     TriggerFrameState& operator=(TriggerFrameState const&);
     /**private data**/
+    //LuaState luaState_;
 };
 //Factory for TriggerFrameStates
 class NewTriggerSystem {
@@ -104,7 +102,7 @@ class NewOldTriggerFrameState {
 public:
     PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
-            boost::transformed_range<GetBase<TriggerDataConstPtr>, std::vector<TriggerDataConstPtr> const > const& triggerArrivals);
+            boost::transformed_range<GetBase<TriggerDataConstPtr>, std::vector<TriggerDataConstPtr> const> const& triggerArrivals);
    
     template<typename ObjectT>
     bool shouldPort(
@@ -143,6 +141,8 @@ private:
     std::vector<std::vector<int> > triggers;
     std::vector<RectangleGlitz> glitzStore;
     NewOldTriggerSystem const& triggerSystem;
+    
+    //LuaState lsTest;
 };
 
 //The stuff needed to create a PortalArea, given trigger arrivals

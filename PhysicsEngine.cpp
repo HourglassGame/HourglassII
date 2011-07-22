@@ -1127,8 +1127,8 @@ void boxCollisionAlogorithm(
 	}
 
 	// do all the other things until there are no more things to do
-	bool thereAreStillThingsToDo = true;
-	bool firstTimeThrough = true;
+	bool thereAreStillThingsToDo(true);
+	bool firstTimeThrough(true);
 	while (thereAreStillThingsToDo)
 	{
 		std::vector<int> top(oldBoxList.size());
@@ -1150,8 +1150,14 @@ void boxCollisionAlogorithm(
 			if (!squished[i])
 			{
 				// Check inside a wall, velocity independent which is why it is so complex
-				bool topRightDiagonal = (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) < (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize());
-				bool topLeftDiagonal = (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) + (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize()) < env.wall.segmentSize();
+				bool topRightDiagonal(
+                    (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize())
+                     <
+                    (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize()));
+				bool topLeftDiagonal(
+                    (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) + (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize())
+                     <
+                    env.wall.segmentSize());
 				if (env.wall.at(x[i], y[i])) // top left
 				{
 					if (env.wall.at(x[i]+size[i], y[i]) || !(env.wall.at(x[i], y[i]+size[i]) || topRightDiagonal)) // top right
@@ -1363,37 +1369,36 @@ void boxCollisionAlogorithm(
 			{
 				for (unsigned j = 0; j < i; ++j)
 				{
-					if (j != i && !squished[j])
+					if (j != i 
+                        && !squished[j] 
+                        && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
 					{
-						if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
-						{
-							if (std::abs(x[i] - x[j]) < std::abs(y[i] - y[j])) // top or bot
-							{
-								//if (y[i] < y[j]) // i above j
-								//{
-								//	bottomLinks[i].push_back(j);
-								//	topLinks[j].push_back(i);
-								//}
-								//else // i below j
-								//{
-								//	topLinks[i].push_back(j);
-								//	bottomLinks[j].push_back(i);
-								//}
-							}
-							else // left or right
-							{
-								if (x[i] < x[j]) // i left of j
-								{
-									rightLinks[i].push_back(j);
-									leftLinks[j].push_back(i);
-								}
-								else // i right of j
-								{
-									leftLinks[i].push_back(j);
-									rightLinks[j].push_back(i);
-								}
-							}
-						}
+                        if (std::abs(x[i] - x[j]) < std::abs(y[i] - y[j])) // top or bot
+                        {
+                            //if (y[i] < y[j]) // i above j
+                            //{
+                            //	bottomLinks[i].push_back(j);
+                            //	topLinks[j].push_back(i);
+                            //}
+                            //else // i below j
+                            //{
+                            //	topLinks[i].push_back(j);
+                            //	bottomLinks[j].push_back(i);
+                            //}
+                        }
+                        else // left or right
+                        {
+                            if (x[i] < x[j]) // i left of j
+                            {
+                                rightLinks[i].push_back(j);
+                                leftLinks[j].push_back(i);
+                            }
+                            else // i right of j
+                            {
+                                leftLinks[i].push_back(j);
+                                rightLinks[j].push_back(i);
+                            }
+                        }
 					}
 				}
 			}
@@ -1440,7 +1445,7 @@ void boxCollisionAlogorithm(
 		}
 
 		// And now in that other dimension!
-		for (long i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
 			{
@@ -1448,7 +1453,7 @@ void boxCollisionAlogorithm(
 				recursiveBoxCollision(x, y, size, squished, pass, i);
 			}
 		}
-
+        
 		// Check if I Must do What has Tobe Done (again)
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{

@@ -4,6 +4,8 @@
 #include "Frame.h"
 #include "FrameID_fwd.h"
 #include "TimeDirection.h"
+#include <boost/move/move.hpp>
+#include <boost/container/vector.hpp>
 #include <vector>
 
 namespace hg {
@@ -12,14 +14,17 @@ public:
     //creates a top level universe
     explicit Universe(std::size_t timelineLength);
     
+    Universe(BOOST_RV_REF(Universe) other);
+    Universe& operator=(BOOST_RV_REF(Universe) other);
+    
     //Conversion from FrameID to equivalent Frame* within this universe
-    //The universe must be a top level universe, and the FrameID must
-    //correspond to a frame that could actually be in the universe.
+    //whichFrame must correspond to a frame that could actually 
+    //be in the universe.
     Frame* getFrame(const FrameID& whichFrame);
 private:
     friend class Frame;
     friend class UniverseID;
-    
+    void fixFramesUniverses();
     //private to enforce use of non-member variants
     //(this is not as important for Universe as for Frame*, but anyway)
     //<UniverseT interface>
@@ -43,19 +48,13 @@ private:
     Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     //returns the length of this Universe's timeline
     std::size_t getTimelineLength(Universe const& universe);
-
     
     friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
     friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(Universe const& universe);
 
-    //Intentionally undefined
-    //These may be needed later for doing smart stuff with networked multiplayer and 
-    //pre-calculated levels.
-    Universe(const Universe& other);
-    Universe& operator=(const Universe&);
-
-    std::vector<Frame> frames_;
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(Universe)
+    boost::container::vector<Frame> frames_;
 };
 }
 #endif //HG_UNIVERSE_H

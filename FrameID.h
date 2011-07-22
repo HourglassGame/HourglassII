@@ -8,6 +8,12 @@
 
 #include <cstddef>
 
+namespace boost {
+    namespace serialization {
+        class access;
+    }
+}
+
 namespace hg {
 //Class following original intention of FrameID. May be too slow for back-end use,
 //Compliments Frame* by not requiring a central authority (ie the base universe) to be used
@@ -40,6 +46,14 @@ public:
     std::size_t getFrameNumber() const;
     UniverseID const& getUniverse() const;
 private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        (void)version;
+        ar & frame_;
+        ar & universeID_;
+    }
     //positiong of frame within universeID_
     std::size_t frame_;
     UniverseID universeID_;

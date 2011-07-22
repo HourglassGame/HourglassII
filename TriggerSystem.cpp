@@ -251,13 +251,20 @@ std::vector<RectangleGlitz> calculatePortalGlitz(std::vector<PortalArea> const& 
 
 PhysicsAffectingStuff
     NewOldTriggerFrameState::calculatePhysicsAffectingStuff(
-        boost::transformed_range<GetBase<TriggerDataConstPtr>, std::vector<TriggerDataConstPtr> const > const& triggerArrivals)
+        boost::transformed_range<
+            GetBase<TriggerDataConstPtr>,
+            std::vector<TriggerDataConstPtr> const > const& triggerArrivals)
 {
-    typedef boost::transformed_range<GetBase<TriggerDataConstPtr>, std::vector<TriggerDataConstPtr> const > TriggerDataConstPtrRange;
+    typedef boost::transformed_range<
+        GetBase<TriggerDataConstPtr>,
+        std::vector<TriggerDataConstPtr> const > TriggerDataConstPtrRange;
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
     std::vector<std::vector<int> > apparentTriggers;
-    boost::push_back(apparentTriggers, triggerSystem.triggerOffsetsAndDefaults | boost::adaptors::transformed(GetTriggerValue()));
+    boost::push_back(
+        apparentTriggers,
+        triggerSystem.triggerOffsetsAndDefaults | boost::adaptors::transformed(GetTriggerValue()));
+    
     foreach (TriggerDataConstPtrRange::value_type const& arrival, triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }

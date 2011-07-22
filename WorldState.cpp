@@ -75,6 +75,29 @@ WorldState::WorldState(
     }
 }
 
+WorldState::WorldState(BOOST_RV_REF(WorldState) other) :
+        timeline_(boost::move(other.timeline_)),
+        playerInput_(other.playerInput_),
+        frameUpdateSet_(other.frameUpdateSet_),
+        physics_(other.physics_),
+        nextPlayerFrames_(other.nextPlayerFrames_),
+        currentPlayerFrames_(other.currentPlayerFrames_),
+        currentWinFrames_(other.currentWinFrames_)
+{
+}
+
+WorldState& WorldState::operator=(BOOST_RV_REF(WorldState) other)
+{
+    timeline_ = boost::move(other.timeline_);
+    playerInput_.swap(other.playerInput_);
+    frameUpdateSet_.swap(other.frameUpdateSet_);
+    physics_ = other.physics_;
+    nextPlayerFrames_.swap(other.nextPlayerFrames_);
+    currentPlayerFrames_.swap(other.currentPlayerFrames_);
+    currentWinFrames_.swap(other.currentWinFrames_);
+    return *this;
+}
+
 Frame* WorldState::getFrame(const FrameID& whichFrame)
 {
     return timeline_.getFrame(whichFrame);
