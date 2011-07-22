@@ -8,6 +8,12 @@
 #include "FrameID_fwd.h"
 #include "Universe_fwd.h"
 
+namespace boost {
+    namespace serialization {
+        class access;
+    }
+}
+
 namespace hg {
 //Uniquely identifies a particular universe.
 struct UniverseID {
@@ -21,6 +27,13 @@ struct UniverseID {
     bool operator==(const UniverseID& other) const;
     bool operator<(const UniverseID& other) const;
 private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        (void)version;
+        ar & timelineLength_;
+    }
     friend class Universe;
     friend class FrameID;
     friend std::size_t hash_value(const UniverseID& toHash);

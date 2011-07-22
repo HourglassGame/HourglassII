@@ -3,8 +3,8 @@ namespace hg {
 Level::Level(
     unsigned nspeedOfTime,
     std::size_t ntimeLineLength,
-    Environment const& nenvironment,
-    ObjectList<Normal> const& ninitialObjects,
+    BOOST_RV_REF(Environment) nenvironment,
+    BOOST_RV_REF(ObjectList<Normal>) ninitialObjects,
     FrameID const& nguyStartTime,
     NewOldTriggerSystem const& nnewOldTriggerSystem) :
         speedOfTime(nspeedOfTime),

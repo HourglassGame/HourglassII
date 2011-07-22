@@ -67,12 +67,12 @@ template<typename ObjectT>
 boost::transformed_range<GetBase<typename ConstPtr_of<ObjectT>::type>,const typename vector_of<typename ConstPtr_of<ObjectT>::type >::type>
 ObjectPtrList<ListTypes>::getList() const
 {
-    return boost::adaptors::transform(
+    return 
         boost::fusion::deref(
-                boost::fusion::find<
-                    typename vector_of<typename ConstPtr_of<ObjectT>::type >::type
-                >(list_)), 
-        GetBase<typename ConstPtr_of<ObjectT>::type>());
+            boost::fusion::find<
+                typename vector_of<typename ConstPtr_of<ObjectT>::type >::type
+            >(list_))
+        | boost::adaptors::transformed(GetBase<typename ConstPtr_of<ObjectT>::type>());
 }
 template<typename ListTypes>
 template<typename SinglePassRange>

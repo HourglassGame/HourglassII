@@ -1,10 +1,16 @@
+#ifndef HG_INPUT_LIST_H
+#define HG_INPUT_LIST_H
 #include "FrameID.h"
 #include "Ability.h"
 
 #include <cassert>
 
-#ifndef HG_INPUT_LIST_H
-#define HG_INPUT_LIST_H
+namespace boost {
+    namespace serialization {
+        class access;
+    }
+}
+
 namespace hg {
 class InputList
 {
@@ -48,6 +54,22 @@ private:
         frameIdParamCount(0)
     {
     }
+    
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        (void)version;
+        ar & left;
+        ar & right;
+        ar & up;
+        ar & down;
+        ar & use;
+        ar & ability;
+        ar & frameIdParams;
+        ar & frameIdParamCount;
+    }
+    
     bool left;
     bool right;
     bool up;

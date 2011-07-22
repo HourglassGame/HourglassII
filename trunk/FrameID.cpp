@@ -11,7 +11,7 @@
 
 namespace hg {
 FrameID::FrameID() :
-        frame_(std::numeric_limits<std::size_t>::max()),
+        frame_(0),
         universeID_(0)
 {
 }
@@ -24,7 +24,7 @@ FrameID::FrameID(std::size_t time, const UniverseID& nuniverse) :
 //Creates a FrameID corresponding to the given Frame*
 FrameID::FrameID(const Frame* toConvert) :
         frame_(toConvert->frameNumber_),
-        universeID_(getTimelineLength(toConvert->universe_))
+        universeID_(getTimelineLength(*toConvert->universe_))
 {
 }
 FrameID FrameID::nextFrame(TimeDirection direction) const
@@ -62,7 +62,7 @@ bool FrameID::isValidFrame() const {
     return
     frame_ < universeID_.timelineLength() ?
         true :
-        (assert(frame_ == std::numeric_limits<std::size_t>::max()),
+        (assert(frame_ == 0),
         assert(universeID_.timelineLength() == 0),
         false);
 }

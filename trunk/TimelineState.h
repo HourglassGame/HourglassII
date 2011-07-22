@@ -1,11 +1,15 @@
 #ifndef HG_ARRIVAL_DEPARTURE_MAP_H
 #define HG_ARRIVAL_DEPARTURE_MAP_H
 
-#include <map>
+
 #include "Universe.h"
 #include "ObjectList.h"
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
+
+#include <boost/move/move.hpp>
+#include <boost/container/map.hpp>
+#include <map>
 
 #include "FrameID_fwd.h"
 #include "Frame_fwd.h"
@@ -19,7 +23,10 @@ public:
     /**
      * Constructs a timeline state of length timeLength containing no arrivals or departures.
      */
-    TimelineState(std::size_t timelineLength);
+    explicit TimelineState(std::size_t timelineLength);
+
+    TimelineState(BOOST_RV_REF(TimelineState) other);
+    TimelineState& operator=(BOOST_RV_REF(TimelineState) other);
 
     /**
      * Updates the timeline with new departures and returns the set of frames
@@ -44,7 +51,8 @@ public:
     }
 private:
     Universe universe_;
-    std::map<Frame*, ObjectList<Normal> > permanentDepartures_;
+    boost::container::map<Frame*, ObjectList<Normal> > permanentDepartures_;
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimelineState)
 };
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H

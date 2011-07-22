@@ -2,20 +2,26 @@
 #define HG_FRAME_UPDATE_SET_H
 
 #include <boost/unordered_set.hpp>
-#include <set>
+#include <boost/move/move.hpp>
 namespace hg {
 class Frame;
+//At some stage consider making this into a lazily sorted vector.
+//The common use case is add, add, add, add ..., read, read, read, read...,
+//so it would probably be faster.
 class FrameUpdateSet {
 public:
     FrameUpdateSet();
+    
+    FrameUpdateSet(FrameUpdateSet const& other);
+    FrameUpdateSet& operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other);
+    FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other);
+    FrameUpdateSet& operator=(BOOST_RV_REF(FrameUpdateSet) other);
 
     void add(Frame* frame);
     void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);
 
-    //typedef ConcurrentTimeSet SetType;
     typedef boost::unordered_set<Frame*> SetType;
-    //typedef std::set<Frame*> SetType;
 
     //Privacy leak here, it is an error to use FrameUpdateSet::const_iterator as anything more than a ForwardIterator
     //I should define my own iterator class, but I can't be bothered right now
@@ -32,6 +38,7 @@ public:
     bool empty() const;
 private:
     SetType updateSet_;
+    BOOST_COPYABLE_AND_MOVABLE(FrameUpdateSet)
 };
 bool operator==(FrameUpdateSet const& lhs, FrameUpdateSet const& rhs);
 }

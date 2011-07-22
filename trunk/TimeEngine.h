@@ -10,13 +10,32 @@
 #include "InputList_fwd.h"
 #include "Level_fwd.h"
 #include "Frame_fwd.h"
+#include <boost/move/move.hpp>
+#include <boost/container/vector.hpp>
 namespace hg {
+//TimeEngines are moveable but noncopyable
+//This is not due to any underlying limitation, but simply
+//because the use of Frame pointers makes
+//writing a correct copy assignment operator or constructor
+//a rather involved task.
+
+//If the capability to copy time engines becomes important then
+//copying operations can be added.
 class TimeEngine
 {
 public:
-    typedef std::vector<FrameUpdateSet> FrameListList;
+    typedef boost::container::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
+        RunResult(
+            Frame const* currentPlayerFrame,
+            Frame const* nextPlayerFrame,
+            BOOST_RV_REF(FrameListList) updatedFrames) :
+                currentPlayerFrame_(currentPlayerFrame),
+                nextPlayerFrame_(nextPlayerFrame),
+                updatedFrames_(updatedFrames)
+        {
+        }
         Frame const* currentPlayerFrame() const {
             return currentPlayerFrame_;
         }
@@ -24,19 +43,12 @@ public:
             return nextPlayerFrame_;
         }
         FrameListList const& updatedFrames() const {
-            return *updatedFrames_;
-        }
-        void swap(RunResult& other)
-        {
-            boost::swap(currentPlayerFrame_, other.currentPlayerFrame_);
-            boost::swap(nextPlayerFrame_, other.nextPlayerFrame_);
-            boost::swap(updatedFrames_, other.updatedFrames_);
+            return updatedFrames_;
         }
     private:
-        friend class TimeEngine;
         Frame const* currentPlayerFrame_;
         Frame const* nextPlayerFrame_;
-        FrameListList const* updatedFrames_;
+        FrameListList updatedFrames_;
     };
 
     /**
@@ -47,30 +59,37 @@ public:
      * and so must be propagated through from the start and the end)
      * Throws InvalidLevelException if level is not correct
      * A correct level has exacty one guy.
+     * Exception Safety: Strong
      */
-    TimeEngine(Level const& level);
+    explicit TimeEngine(Level const& level);
 
+
+    TimeEngine(BOOST_RV_REF(TimeEngine) o);
+    TimeEngine& operator=(BOOST_RV_REF(TimeEngine) o);
 
     /**
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
      * and a list of the frames which were updated in each propagation round. The current player frame is the last
      * in which the player had input.
+     * Exception Safety: Weak
      */
     RunResult runToNextPlayerFrame(InputList const& newInputData);
 
     /**
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
+     * Non-const only so a non-const Frame* can be returned.
+     * Please investigate this constness further!
+     * Exception Safety: No Throw
      */
     Frame* getFrame(FrameID const& whichFrame);
+    // Exception Safety: Strong
     std::vector<InputList> getReplayData() const;
 private:
     unsigned int speedOfTime;
     //state of world at end of last executed frame
     WorldState worldState;
-    //Stores the lists of frames which were updated for each step of the execution.
-    //This is a member of TimeEngine for performance reasons alone;
-    //(logically a new one is created with each call to runToNextPlayerFrame).
-    FrameListList updatedList;
+    
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimeEngine)
 };
 }
 #endif //HG_TIME_ENGINE_H

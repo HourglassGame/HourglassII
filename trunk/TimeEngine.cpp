@@ -14,20 +14,31 @@ TimeEngine::TimeEngine(const Level& level) :
 {
 }
 
+TimeEngine::TimeEngine(BOOST_RV_REF(TimeEngine) o) :
+    speedOfTime(o.speedOfTime),
+    worldState(boost::move(o.worldState))
+{
+}
+TimeEngine& TimeEngine::operator=(BOOST_RV_REF(TimeEngine) o)
+{
+    speedOfTime = o.speedOfTime;
+    worldState = boost::move(o.worldState);
+    return *this;
+}
+
 TimeEngine::RunResult
     TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
-    updatedList.clear();
-    updatedList.resize(speedOfTime);
+    FrameListList updatedList;
+    updatedList.reserve(speedOfTime);
     for (unsigned int i(0); i < speedOfTime; ++i) {
-        worldState.executeWorld().swap(updatedList[i]);
+        updatedList.push_back(worldState.executeWorld());
     }
-    TimeEngine::RunResult retv;
-    retv.currentPlayerFrame_ = worldState.getCurrentPlayerFrame();
-    retv.nextPlayerFrame_ = worldState.getNextPlayerFrame();
-    retv.updatedFrames_ = &updatedList;
-    return retv;
+    return RunResult(
+        worldState.getCurrentPlayerFrame(),
+        worldState.getNextPlayerFrame(),
+        updatedList);
 }
 
 std::vector<InputList> TimeEngine::getReplayData() const

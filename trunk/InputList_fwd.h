@@ -1,1 +1,1 @@
-namespace hg {  class InputList; }
+namespace hg { class InputList; }

@@ -4,27 +4,41 @@
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/foreach.hpp>
 
 #include <functional>
 #include <cassert>
+#define foreach BOOST_FOREACH
 namespace hg {
-namespace {
-struct ConstructFrame : std::unary_function<std::size_t, Frame> {
-    ConstructFrame(Universe& universe) : universe_(universe) {}
-    Frame operator()(std::size_t frameNumber) const {
-        return Frame(frameNumber, universe_);
+//Updates the universe_ pointers in frames_
+void Universe::fixFramesUniverses()
+{
+    foreach (Frame& frame, frames_) {
+        frame.correctUniverse(*this);
     }
-private:
-    Universe& universe_;
-};
 }
+
+Universe::Universe(BOOST_RV_REF(Universe) other)
+{
+    frames_.swap(other.frames_);
+    fixFramesUniverses();
+}
+Universe& Universe::operator=(BOOST_RV_REF(Universe) other)
+{
+    frames_.swap(other.frames_);
+    fixFramesUniverses();
+    return *this;
+}
+
 //creates a top level universe
 Universe::Universe(std::size_t timelineLength) :
         frames_()
 {
     assert(timelineLength > 0);
-    boost::push_back(frames_, boost::irange<std::size_t>(0, timelineLength)
-                     | boost::adaptors::transformed(ConstructFrame(*this)));
+    frames_.reserve(timelineLength);
+    foreach (std::size_t i, boost::irange<std::size_t>(0, timelineLength)) {
+        frames_.emplace_back(i, UniverseParcel(*this));
+    }
 }
 
 Frame* Universe::getEntryFrame(TimeDirection direction)

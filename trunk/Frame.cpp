@@ -12,27 +12,23 @@
 #include <cassert>
 #define foreach BOOST_FOREACH
 namespace hg {
-Frame::Frame(std::size_t frameNumber, Universe& universe):
+Frame::Frame(std::size_t frameNumber, UniverseParcel const& universe):
         frameNumber_(frameNumber),
-        universe_(universe),
+        universe_(universe.universe_),
         departures_(),
         arrivals_(),
         glitz_()
 {
 }
-//copy-construction
-//Should only be used for emplacing Frames in Universe because frames are identified by their address.
-Frame::Frame(const Frame& other) :
-        frameNumber_(other.frameNumber_),
-        universe_(other.universe_),
-        departures_((assert(other.departures_.empty()),other.departures_)),
-        arrivals_((assert(other.arrivals_.empty()),other.arrivals_)),
-        glitz_((assert(other.glitz_.empty()),other.glitz_))
+
+void Frame::correctUniverse(Universe& newUniverse)
 {
+    universe_ = &newUniverse;
 }
+
 Frame const* Frame::nextFrame(TimeDirection direction) const {
     assert(direction != INVALID);
-    return nextFrameInSameUniverse(direction) ? universe_.getArbitraryFrame(frameNumber_ + direction) : 0;
+    return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
 }
 
 Frame* Frame::nextFrame(TimeDirection direction) {
@@ -43,14 +39,14 @@ Frame* Frame::nextFrame(TimeDirection direction) {
 
 bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
     return (frameNumber_ != 0 && direction == REVERSE)
-            || (frameNumber_ != universe_.getTimelineLength() - 1 && direction == FORWARDS);
+            || (frameNumber_ != universe_->getTimelineLength() - 1 && direction == FORWARDS);
 }
 
 Universe const& Frame::getUniverse() const {
-    return universe_;
+    return *universe_;
 }
 Universe& Frame::getUniverse() {
-    return universe_;
+    return *universe_;
 }
 std::size_t Frame::getFrameNumber() const {
     return frameNumber_;
