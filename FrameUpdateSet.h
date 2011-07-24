@@ -2,7 +2,6 @@
 #define HG_FRAME_UPDATE_SET_H
 
 #include <boost/unordered_set.hpp>
-#include <boost/move/move.hpp>
 namespace hg {
 class Frame;
 //At some stage consider making this into a lazily sorted vector.
@@ -13,9 +12,7 @@ public:
     FrameUpdateSet();
 
     FrameUpdateSet(FrameUpdateSet const& other);
-    FrameUpdateSet& operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other);
-    FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other);
-    FrameUpdateSet& operator=(BOOST_RV_REF(FrameUpdateSet) other);
+    FrameUpdateSet& operator=(FrameUpdateSet const& other);
     void add(Frame* frame);
     void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);
@@ -37,7 +34,6 @@ public:
     bool empty() const;
 private:
     SetType updateSet_;
-    BOOST_COPYABLE_AND_MOVABLE(FrameUpdateSet)
 };
 bool operator==(FrameUpdateSet const& lhs, FrameUpdateSet const& rhs);
 }

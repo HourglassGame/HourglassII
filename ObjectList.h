@@ -14,7 +14,6 @@
 #include <boost/range.hpp>
 
 #include <boost/operators.hpp>
-#include <boost/move/move.hpp>
 
 namespace hg {
 // Object list stores all data sent between frames or to rendering engine
@@ -24,9 +23,7 @@ class ObjectList : boost::equality_comparable<ObjectList<ListTypes> >
 public:
     ObjectList();
     ObjectList(ObjectList const& other);
-    ObjectList& operator=(BOOST_COPY_ASSIGN_REF(ObjectList) other);
-    ObjectList(BOOST_RV_REF(ObjectList) other);
-    ObjectList& operator=(BOOST_RV_REF(ObjectList) other);
+    ObjectList& operator=(ObjectList const& other);
     
     template<typename ObjectT>
     typename vector_of<ObjectT>::type const& getList() const;
@@ -55,7 +52,6 @@ private:
         ListTypes,
         vector_of<boost::mpl::_1> >::type ListType;
     ListType list_;
-    BOOST_COPYABLE_AND_MOVABLE(ObjectList)
 };
 template<typename ObjectT>
 void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r);

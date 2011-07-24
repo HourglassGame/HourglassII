@@ -11,19 +11,9 @@ FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const& other) :
         updateSet_(other.updateSet_)
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other)
+FrameUpdateSet& FrameUpdateSet::operator=(FrameUpdateSet const& other)
 {
     updateSet_ = other.updateSet_;
-    return *this;
-}
-FrameUpdateSet::FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other) :
-        updateSet_()
-{
-    updateSet_.swap(other.updateSet_);
-}
-FrameUpdateSet& FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) other)
-{
-    updateSet_.swap(other.updateSet_);
     return *this;
 }
 void FrameUpdateSet::add(Frame* frame)

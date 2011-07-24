@@ -12,9 +12,9 @@
 #include <cassert>
 #define foreach BOOST_FOREACH
 namespace hg {
-Frame::Frame(std::size_t frameNumber, UniverseParcel const& universe):
+Frame::Frame(std::size_t frameNumber, Universe& universe):
         frameNumber_(frameNumber),
-        universe_(universe.universe_),
+        universe_(&universe),
         departures_(),
         arrivals_(),
         glitz_()
@@ -91,7 +91,7 @@ namespace {
     };
 }
 
-FrameUpdateSet Frame::updateDeparturesFromHere(BOOST_RV_REF(FrameDeparturesT) newDeparture)
+FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT& newDeparture)
 {
     FrameUpdateSet changedTimes;
 
@@ -149,10 +149,10 @@ FrameUpdateSet Frame::updateDeparturesFromHere(BOOST_RV_REF(FrameDeparturesT) ne
         ++ni;
     }
 end:
-    departures_ = boost::move(newDeparture);
+    departures_.swap(newDeparture);
     //attempt to put the deletion of the old departures_
     //into the parallel region of the program's execution
-    newDeparture = FrameDeparturesT();
+    FrameDeparturesT().swap(newDeparture);
     return changedTimes;
 }
 

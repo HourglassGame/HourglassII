@@ -47,6 +47,7 @@ public:
         return allocate(n);
     }
     void deallocate(pointer p, size_type n) const {
+        (void)n;
         nedfree(p);
     }
     size_type max_size() const {

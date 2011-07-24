@@ -22,7 +22,8 @@ struct ExecuteFrame
     }
     void operator()(Frame* time) const
     {
-        departureMap_.setDeparture(time, thisptr_.getDeparturesFromFrame(time));
+        PhysicsEngine::FrameDepartureT departuresFromTime(thisptr_.getDeparturesFromFrame(time));
+        departureMap_.setDeparture(time, departuresFromTime);
     }
 private:
     WorldState& thisptr_;
@@ -45,10 +46,10 @@ WorldState::WorldState(
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
-        boost::container::map<Frame*, ObjectList<Normal> > initialArrivals;
+        std::map<Frame*, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        for (mt::boost::container::vector<Box>::type::const_iterator it(initialObjects.getList<Box>().begin()),
+        for (mt::std::vector<Box>::type::const_iterator it(initialObjects.getList<Box>().begin()),
                 end(initialObjects.getList<Box>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
@@ -71,27 +72,15 @@ WorldState::WorldState(
     }
 }
 
-WorldState::WorldState(BOOST_RV_REF(WorldState) other) :
-        timeline_(boost::move(other.timeline_)),
-        playerInput_(other.playerInput_),
-        frameUpdateSet_(other.frameUpdateSet_),
-        physics_(other.physics_),
-        nextPlayerFrames_(other.nextPlayerFrames_),
-        currentPlayerFrames_(other.currentPlayerFrames_),
-        currentWinFrames_(other.currentWinFrames_)
+void WorldState::swap(WorldState& other)
 {
-}
-
-WorldState& WorldState::operator=(BOOST_RV_REF(WorldState) other)
-{
-    timeline_ = boost::move(other.timeline_);
-    playerInput_.swap(other.playerInput_);
-    frameUpdateSet_.swap(other.frameUpdateSet_);
-    physics_ = other.physics_;
-    nextPlayerFrames_.swap(other.nextPlayerFrames_);
-    currentPlayerFrames_.swap(other.currentPlayerFrames_);
-    currentWinFrames_.swap(other.currentWinFrames_);
-    return *this;
+    boost::swap(timeline_, other.timeline_);
+    boost::swap(playerInput_, other.playerInput_);
+    boost::swap(frameUpdateSet_, other.frameUpdateSet_);
+    boost::swap(physics_, other.physics_);
+    boost::swap(nextPlayerFrames_, other.nextPlayerFrames_);
+    boost::swap(currentPlayerFrames_, other.currentPlayerFrames_);
+    boost::swap(currentWinFrames_, other.currentWinFrames_);
 }
 
 Frame* WorldState::getFrame(const FrameID& whichFrame)
@@ -124,7 +113,7 @@ PhysicsEngine::FrameDepartureT
     else {
         currentWinFrames_.remove(frame);
     }
-    frame->setGlitzFromHere(boost::move(retv.glitz));
+    frame->setGlitzFromHere(retv.glitz);
     return retv.departures;
 }
 

@@ -14,8 +14,8 @@ public:
     Level(
         unsigned nspeedOfTime,
         std::size_t ntimeLineLength,
-        BOOST_RV_REF(Environment) nenvironment,
-        BOOST_RV_REF(ObjectList<Normal>) ninitialObjects,
+        Environment const& nenvironment,
+        ObjectList<Normal> const& ninitialObjects,
         FrameID const& nguyStartTime,
         NewOldTriggerSystem const& nnewOldTriggerSystem);
 

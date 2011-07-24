@@ -7,8 +7,6 @@
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 
-#include <boost/move/move.hpp>
-#include <boost/container/map.hpp>
 #include <map>
 
 #include "FrameID_fwd.h"
@@ -24,10 +22,9 @@ public:
      * Constructs a timeline state of length timeLength containing no arrivals or departures.
      */
     explicit TimelineState(std::size_t timelineLength);
-
-    TimelineState(BOOST_RV_REF(TimelineState) other);
-    TimelineState& operator=(BOOST_RV_REF(TimelineState) other);
-
+    
+    void swap(TimelineState& other);
+    
     /**
      * Updates the timeline with new departures and returns the set of frames
      * whose arrivals have changed.
@@ -40,7 +37,7 @@ public:
      * This should only be called once.
      */
     //Consider moving this into constructor
-    void addArrivalsFromPermanentDepartureFrame(boost::container::map<Frame*, ObjectList<Normal> > const& initialArrivals);
+    void addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList<Normal> > const& initialArrivals);
 
     /**
      * Converts FrameID into Frame*
@@ -51,8 +48,11 @@ public:
     }
 private:
     Universe universe_;
-    boost::container::map<Frame*, ObjectList<Normal> > permanentDepartures_;
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimelineState)
+    std::map<Frame*, ObjectList<Normal> > permanentDepartures_;
+    //intentionally undefined
+    TimelineState(TimelineState const& other);
+    TimelineState& operator=(TimelineState const& other);
 };
+inline void swap(TimelineState& l, TimelineState& r) { l.swap(r); }
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H

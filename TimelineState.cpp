@@ -6,7 +6,7 @@
 #include "Frame.h"
 #include "FrameID.h"
 #include "ConcurrentFrameUpdateSet.h"
-
+#include <boost/swap.hpp>
 #include <cassert>
 #include <algorithm>
 
@@ -19,7 +19,7 @@ struct UpdateDeparturesFromTime
     }
     void operator()(DepartureMap::value_type& newDeparture) const
     {
-        framesWithChangedArrivals_.add(newDeparture.first->updateDeparturesFromHere(boost::move(newDeparture.second)));
+        framesWithChangedArrivals_.add(newDeparture.first->updateDeparturesFromHere(newDeparture.second));
     }
     ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
 };
@@ -27,26 +27,22 @@ TimelineState::TimelineState(std::size_t timelineLength) :
         universe_(timelineLength)
 {
 }
-TimelineState::TimelineState(BOOST_RV_REF(TimelineState) other) :
-    universe_(boost::move(other.universe_)),
-    permanentDepartures_(boost::move(other.permanentDepartures_))
+
+void TimelineState::swap(TimelineState& other)
 {
+    boost::swap(universe_, other.universe_);
+    boost::swap(permanentDepartures_, other.permanentDepartures_);
 }
-TimelineState& TimelineState::operator=(BOOST_RV_REF(TimelineState) other)
-{
-    universe_ = boost::move(other.universe_);
-    permanentDepartures_= boost::move(other.permanentDepartures_);
-    return *this;
-}
+
 FrameUpdateSet TimelineState::updateWithNewDepartures(DepartureMap& newDepartures)
 {
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(newDepartures, UpdateDeparturesFromTime(framesWithChangedArrivals));
     return framesWithChangedArrivals.merge();
 }
-void TimelineState::addArrivalsFromPermanentDepartureFrame(boost::container::map<Frame*, ObjectList<Normal> > const& initialArrivals)
+void TimelineState::addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList<Normal> > const& initialArrivals)
 {
-    for (boost::container::map<Frame*, ObjectList<Normal> >::const_iterator it(initialArrivals.begin()), end(initialArrivals.end()); it != end; ++it) {
+    for (std::map<Frame*, ObjectList<Normal> >::const_iterator it(initialArrivals.begin()), end(initialArrivals.end()); it != end; ++it) {
         permanentDepartures_[it->first].add(it->second);
         permanentDepartures_[it->first].sort();
         it->first->addArrival(0, &(permanentDepartures_[it->first]));

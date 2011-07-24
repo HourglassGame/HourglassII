@@ -3,50 +3,46 @@
 #include "Level.h"
 #include "Frame.h"
 
-namespace hg {
-TimeEngine::TimeEngine(BOOST_RV_REF(Level) level) :
-        speedOfTime(level.speedOfTime),
-        worldState(level.timeLineLength,
-                   level.guyStartTime,
-                   PhysicsEngine(boost::move(level.environment), level.newOldTriggerSystem),
-                   level.initialObjects)
+#include <boost/swap.hpp>
 
+namespace hg {
+TimeEngine::TimeEngine(Level const& level) :
+        speedOfTime_(level.speedOfTime),
+        worldState_(level.timeLineLength,
+                   level.guyStartTime,
+                   PhysicsEngine(level.environment, level.newOldTriggerSystem),
+                   level.initialObjects)
 {
+    
 }
-TimeEngine::TimeEngine(BOOST_RV_REF(TimeEngine) o) :
-    speedOfTime(o.speedOfTime),
-    worldState(boost::move(o.worldState))
-{
-}
-TimeEngine& TimeEngine::operator=(BOOST_RV_REF(TimeEngine) o)
-{
-    speedOfTime = o.speedOfTime;
-    worldState = boost::move(o.worldState);
-    return *this;
+
+void TimeEngine::swap(TimeEngine& other) {
+    boost::swap(speedOfTime_, other.speedOfTime_);
+    boost::swap(worldState_, other.worldState_);
 }
 
 TimeEngine::RunResult
 TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
-    worldState.addNewInputData(newInputData);
+    worldState_.addNewInputData(newInputData);
     FrameListList updatedList;
-    updatedList.reserve(speedOfTime);
-    for (unsigned int i(0); i < speedOfTime; ++i) {
-        updatedList.push_back(worldState.executeWorld());
+    updatedList.reserve(speedOfTime_);
+    for (unsigned int i(0); i < speedOfTime_; ++i) {
+        updatedList.push_back(worldState_.executeWorld());
     }
     return RunResult(
-        worldState.getCurrentPlayerFrame(),
-        worldState.getNextPlayerFrame(),
-        boost::move(updatedList));
+        worldState_.getCurrentPlayerFrame(),
+        worldState_.getNextPlayerFrame(),
+        updatedList);
 }
 
 std::vector<InputList> TimeEngine::getReplayData() const
 {
-    return worldState.getReplayData();
+    return worldState_.getReplayData();
 }
 
 Frame* TimeEngine::getFrame(const FrameID& whichFrame)
 {
-    return worldState.getFrame(whichFrame);
+    return worldState_.getFrame(whichFrame);
 }
 }//namespace hg

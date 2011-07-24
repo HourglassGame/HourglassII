@@ -18,7 +18,7 @@ void DepartureMap::makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)
         map_.insert(value_type(frame, MapType::mapped_type()));
     }
 }
-void DepartureMap::setDeparture(Frame* time, BOOST_RV_REF(MapType::mapped_type) departingObjects)
+void DepartureMap::setDeparture(Frame* time, MapType::mapped_type& departingObjects)
 {
     map_[time] = departingObjects;
 }

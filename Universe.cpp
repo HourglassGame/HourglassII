@@ -5,6 +5,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/foreach.hpp>
+#include <boost/swap.hpp>
 
 #include <functional>
 #include <cassert>
@@ -17,16 +18,12 @@ void Universe::fixFramesUniverses()
         frame.correctUniverse(*this);
     }
 }
-Universe::Universe(BOOST_RV_REF(Universe) other)
+
+void Universe::swap(Universe& other)
 {
-    frames_.swap(other.frames_);
+    boost::swap(frames_, other.frames_);
     fixFramesUniverses();
-}
-Universe& Universe::operator=(BOOST_RV_REF(Universe) other)
-{
-    frames_.swap(other.frames_);
-    fixFramesUniverses();
-    return *this;
+    other.fixFramesUniverses();
 }
 
 //creates a top level universe
@@ -36,7 +33,7 @@ Universe::Universe(std::size_t timelineLength) :
     assert(timelineLength > 0);
     frames_.reserve(timelineLength);
     foreach (std::size_t i, boost::irange<std::size_t>(0, timelineLength)) {
-        frames_.emplace_back(i, UniverseParcel(*this));
+        frames_.push_back(Frame(i, *this));
     }
 }
 Frame* Universe::getEntryFrame(TimeDirection direction)

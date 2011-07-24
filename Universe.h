@@ -4,8 +4,6 @@
 #include "Frame.h"
 #include "FrameID_fwd.h"
 #include "TimeDirection.h"
-#include <boost/move/move.hpp>
-#include <boost/container/vector.hpp>
 #include <vector>
 #include "Universe_fwd.h"
 namespace hg {
@@ -14,8 +12,7 @@ public:
     //creates a top level universe
     explicit Universe(std::size_t timelineLength);
     
-    Universe(BOOST_RV_REF(Universe) other);
-    Universe& operator=(BOOST_RV_REF(Universe) other);
+    void swap(Universe& other);
     
     //Conversion from FrameID to equivalent Frame* within this universe
     //whichFrame must correspond to a frame that could actually 
@@ -52,8 +49,12 @@ private:
     friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(Universe const& universe);
 
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(Universe)
-    boost::container::vector<Frame> frames_;
+    std::vector<Frame> frames_;
+    
+    //intentionally undefined
+    Universe(Universe const& other);
+    Universe& operator=(Universe const& other);
 };
+inline void swap(Universe& l, Universe& r) { l.swap(r); }
 }
 #endif //HG_UNIVERSE_H

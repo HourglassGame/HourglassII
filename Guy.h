@@ -2,7 +2,7 @@
 #define HG_GUY_H
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
-#include "mt/boost/container/map.hpp"
+#include "mt/std/map"
 #include <cstdlib>
 #include "SortWeakerThanEquality_fwd.h"
 #include "ConstPtr_of_fwd.h"
@@ -19,7 +19,7 @@ public:
         bool supported,
         int supportedSpeed,
     	
-        mt::boost::container::map<int,int>::type const& pickups,
+        mt::std::map<int,int>::type const& pickups,
         bool facing,
     	
         bool boxCarrying,
@@ -44,7 +44,7 @@ public:
     bool getSupported()       const { return supported_; }
     int getSupportedSpeed()   const { return supportedSpeed_; }
     
-    mt::boost::container::map<int,int>::type const& getPickups() const { return pickups_;}
+    mt::std::map<int,int>::type const& getPickups() const { return pickups_;}
 
     int getFacing()        const { return facing_;}
 
@@ -74,7 +74,7 @@ private:
     bool supported_;
     int supportedSpeed_;
 
-    mt::boost::container::map<int,int>::type pickups_;
+    mt::std::map<int,int>::type pickups_;
     bool facing_; // <- false, -> true
 
     bool boxCarrying_;
@@ -102,7 +102,7 @@ public:
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
     
-    mt::boost::container::map<int,int>::type const& getPickups() const { return guy_->getPickups();}
+    mt::std::map<int,int>::type const& getPickups() const { return guy_->getPickups();}
 
     int getFacing()        const { return guy_->getFacing();}
 

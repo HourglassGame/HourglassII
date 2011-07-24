@@ -24,14 +24,14 @@ namespace hg
 {
 
 struct PhysicsAffectingStuff {
-    mt::boost::container::vector<Box>::type additionalBoxes;
-    mt::boost::container::vector<Collision>::type collisions;
-    mt::boost::container::vector<PortalArea>::type portals;
-    mt::boost::container::vector<PickupArea>::type pickups;
-    mt::boost::container::vector<KillerArea>::type killers;
+    mt::std::vector<Box>::type additionalBoxes;
+    mt::std::vector<Collision>::type collisions;
+    mt::std::vector<PortalArea>::type portals;
+    mt::std::vector<PickupArea>::type pickups;
+    mt::std::vector<KillerArea>::type killers;
     //guaranteed to always contain elements at each index that could possibly be indexed
     //ie- arrivalLocations will always be the same length for a particular NewTriggerSystem
-    mt::boost::container::vector<ArrivalLocation>::type arrivalLocations;
+    mt::std::vector<ArrivalLocation>::type arrivalLocations;
 };
 class NewTriggerSystem;
 
@@ -57,7 +57,7 @@ public:
         calculatePhysicsAffectingStuff(
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
+                mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
    
     template<typename ObjectT>
     bool shouldPort(
@@ -82,19 +82,19 @@ public:
     }
     
     std::pair<
-        mt::boost::container::map<Frame*, mt::boost::container::vector<TriggerData>::type >::type,
-        mt::boost::container::vector<RectangleGlitz>::type
+        mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
+        mt::std::vector<RectangleGlitz>::type
     > 
         getTriggerDeparturesAndGlitz(
-            mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
+            mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
             Frame* currentFrame);
 private:
     friend class NewOldTriggerSystem;
     NewOldTriggerFrameState(NewOldTriggerSystem const& triggerSys);
     
-    mt::boost::container::vector<PositionAndVelocity2D>::type buttonStore;
-    mt::boost::container::vector<mt::boost::container::vector<int>::type >::type triggers;
-    mt::boost::container::vector<RectangleGlitz>::type glitzStore;
+    mt::std::vector<PositionAndVelocity2D>::type buttonStore;
+    mt::std::vector<mt::std::vector<int>::type >::type triggers;
+    mt::std::vector<RectangleGlitz>::type glitzStore;
     NewOldTriggerSystem const& triggerSystem;
     
     //LuaState lsTest;
@@ -102,7 +102,7 @@ private:
 
 //The stuff needed to create a PortalArea, given trigger arrivals
 struct ProtoPortal {
-    PortalArea calculatePortalArea(mt::boost::container::vector<Collision>::type const&) const;
+    PortalArea calculatePortalArea(mt::std::vector<Collision>::type const&) const;
     ProtoPortal(
         Attachment const& attachment,
         int width,
@@ -168,7 +168,7 @@ struct ProtoPlatform {
 
     //uses trigger arrivals to generate Collision
     Collision calculateCollision(
-            mt::boost::container::vector<mt::boost::container::vector<int>::type>::type const&) const;
+            mt::std::vector<mt::std::vector<int>::type>::type const&) const;
     int width_;
     int height_;
     TimeDirection timeDirection_;
@@ -198,7 +198,7 @@ struct ProtoButton {
 
 
     PositionAndVelocity2D calculatePositionAndVelocity2D(
-            mt::boost::container::vector<Collision>::type const& collisions) const;
+            mt::std::vector<Collision>::type const& collisions) const;
     //See comment in ProtoPortal that explains the meaning of attachment_.
     Attachment attachment_;
     int width_;
@@ -217,13 +217,13 @@ public:
     }
     
     NewOldTriggerSystem(
-        boost::container::vector<ProtoPortal> const& protoPortals,
-        boost::container::vector<ProtoPlatform> const& protoPlatforms,
-        boost::container::vector<ProtoButton> const& protoButtons,
-        boost::container::vector<
+        std::vector<ProtoPortal> const& protoPortals,
+        std::vector<ProtoPlatform> const& protoPlatforms,
+        std::vector<ProtoButton> const& protoButtons,
+        std::vector<
             std::pair<
                 int,
-                boost::container::vector<int>
+                std::vector<int>
             >
         > const& ntriggerOffsetsAndDefaults) :
             protoPortals_(protoPortals),
@@ -241,16 +241,16 @@ private:
     //However, it shows how constant stuff does not need to be sent through time.
     //In this case platforms just need to send their positions and velocities through time
     //and portals don't need to send anything, as they are just attached to platforms.
-    boost::container::vector<ProtoPortal> protoPortals_;
-    boost::container::vector<ProtoPlatform> protoPlatforms_;
-    boost::container::vector<ProtoButton> protoButtons_;
+    std::vector<ProtoPortal> protoPortals_;
+    std::vector<ProtoPlatform> protoPlatforms_;
+    std::vector<ProtoButton> protoButtons_;
 
     //if we have Trigger trigger, and
     //int id = trigger.getIndex(); then
     //triggerOffsetsAndDefaults[id].first is the frame offset to which trigger departs and
     //triggerOffsetsAndDefaults[id].second is the default value to use of trigger in frames
     //where it does not arrive.
-    boost::container::vector<std::pair<int, boost::container::vector<int> > > triggerOffsetsAndDefaults;
+    std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
     
     friend class NewOldTriggerFrameState;
 };
