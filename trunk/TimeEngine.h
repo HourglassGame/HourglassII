@@ -10,8 +10,8 @@
 #include "InputList_fwd.h"
 #include "Level.h"
 #include "Frame.h"
-#include <boost/move/move.hpp>
-#include <boost/container/vector.hpp>
+
+#include <boost/swap.hpp>
 namespace hg {
 //TimeEngines are moveable but noncopyable
 //This is not due to any underlying limitation, but simply
@@ -24,17 +24,18 @@ namespace hg {
 class TimeEngine
 {
 public:
-    typedef boost::container::vector<FrameUpdateSet> FrameListList;
+    typedef std::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
         RunResult(
             Frame const* currentPlayerFrame,
             Frame const* nextPlayerFrame,
-            BOOST_RV_REF(FrameListList) updatedFrames) :
+            FrameListList& updatedFrames) :
                 currentPlayerFrame_(currentPlayerFrame),
                 nextPlayerFrame_(nextPlayerFrame),
-                updatedFrames_(updatedFrames)
+                updatedFrames_()
         {
+            boost::swap(updatedFrames_, updatedFrames);
         }
         Frame const* currentPlayerFrame() const {
             return currentPlayerFrame_;
@@ -61,9 +62,9 @@ public:
      * A correct level has exacty one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(BOOST_RV_REF(Level) level);
-    TimeEngine(BOOST_RV_REF(TimeEngine) o);
-    TimeEngine& operator=(BOOST_RV_REF(TimeEngine) o);
+    explicit TimeEngine(Level const& level);
+    
+    void swap(TimeEngine& other);
 
     /**
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
@@ -83,11 +84,13 @@ public:
     // Exception Safety: Strong
     std::vector<InputList> getReplayData() const;
 private:
-    unsigned int speedOfTime;
+    unsigned int speedOfTime_;
     //state of world at end of last executed frame
-    WorldState worldState;
+    WorldState worldState_;
     
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimeEngine)
+    //intentionally undefined
+    TimeEngine(TimeEngine const& other);
+    TimeEngine& operator=(TimeEngine const& other);
 };
 }
 #endif //HG_TIME_ENGINE_H

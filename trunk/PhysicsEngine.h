@@ -12,7 +12,6 @@
 #include <vector>
 #include "mt/std/map"
 #include "mt/std/vector"
-#include <boost/move/move.hpp>
 
 #include "Frame_fwd.h"
 namespace hg {
@@ -20,15 +19,15 @@ class PhysicsEngine
 {
 public:
     PhysicsEngine(
-        BOOST_RV_REF(Environment) env,
+        Environment const& env,
         NewOldTriggerSystem const& newTriggerSystem);
-    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
-    typedef mt::boost::container::vector<RectangleGlitz>::type NewGlitzType;
+    typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
+    typedef mt::std::vector<RectangleGlitz>::type NewGlitzType;
     struct PhysicsReturnT
     {
     	PhysicsReturnT(
-            BOOST_RV_REF(FrameDepartureT) Ndepartures,
-            BOOST_RV_REF(NewGlitzType) Nglitz,
+            FrameDepartureT const& Ndepartures,
+            NewGlitzType const& Nglitz,
             bool NcurrentPlayerFrame,
     		bool NnextPlayerFrame,
     		bool NcurrentWinFrame) :

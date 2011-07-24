@@ -11,28 +11,18 @@
 
 #include <tbb/concurrent_hash_map.h>
 #include "mt/boost/container/map.hpp"
-#include "mt/boost/container/vector.hpp"
+#include "mt/std/vector"
 
 #include "Universe_fwd.h"
 #include "FrameUpdateSet_fwd.h"
 #include "FrameID_fwd.h"
 namespace hg {
-//Used for working around the crappy perfect forwarding emulation
-//in Universe by passing a non-const universe reference
-//through a const UniverseParcel reference.
-struct UniverseParcel
-{
-    UniverseParcel(Universe& universe) : universe_(&universe){}
-    Universe* universe_;
-};
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
-    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
-    typedef mt::boost::container::vector<RectangleGlitz>::type FrameGlitzT;
+    typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
+    typedef mt::std::vector<RectangleGlitz>::type FrameGlitzT;
 public:
-    Frame(const Frame&) { assert(false); }
-    Frame& operator=(const Frame&) { assert(false); }
-    Frame(std::size_t frameNumber, UniverseParcel const& universe);
+    Frame(std::size_t frameNumber, Universe& universe);
     
     
     //These "correct" functions are for rearranging pointers when universes get copied.
@@ -41,9 +31,9 @@ public:
 
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
-    FrameUpdateSet updateDeparturesFromHere(BOOST_RV_REF(FrameDeparturesT) newDeparture);
+    FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT& newDeparture);
     
-    void setGlitzFromHere(BOOST_RV_REF(FrameGlitzT) newGlitz) { glitz_ = newGlitz; }
+    void setGlitzFromHere(FrameGlitzT& newGlitz) { glitz_.swap(newGlitz); }
     FrameGlitzT const& getGlitzFromHere() const { return glitz_; }
 
     /**
