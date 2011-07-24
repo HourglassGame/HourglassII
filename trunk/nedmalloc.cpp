@@ -1,5 +1,4 @@
 #include "nedmalloc.h"
-
 #ifdef WIN32
 #include <malloc.h>
 #endif
@@ -5848,11 +5847,12 @@ void **nedindependent_calloc(size_t elemsno, size_t elemsize, void **chunks) THR
 {
     return nedpindependent_calloc(0, elemsno, elemsize, chunks);
 }
+/*
 void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC
 {
     return nedpindependent_comalloc(0, elems, sizes, chunks);
 }
-
+*/
 struct threadcacheblk_t;
 typedef struct threadcacheblk_t threadcacheblk;
 struct threadcacheblk_t
@@ -6635,6 +6635,7 @@ void **nedpindependent_calloc(nedpool *p, size_t elemsno, size_t elemsize, void 
               ret=mspace_independent_calloc(m, elemsno, elemsize, chunks));
     return ret;
 }
+/*
 void **nedpindependent_comalloc(nedpool *p, size_t elems, size_t *sizes, void **chunks) THROWSPEC
 {
     void **ret;
@@ -6649,7 +6650,7 @@ void **nedpindependent_comalloc(nedpool *p, size_t elems, size_t *sizes, void **
               ret=mspace_independent_comalloc(m, elems, adjustedsizes, chunks));
     return ret;
 }
-
+*/
 #if defined(__cplusplus)
 }
 #endif

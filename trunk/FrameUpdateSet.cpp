@@ -2,11 +2,11 @@
 #include <boost/range/algorithm/equal.hpp>
 #include <cassert>
 namespace hg {
+
 FrameUpdateSet::FrameUpdateSet() :
         updateSet_()
 {
 }
-
 FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const& other) :
         updateSet_(other.updateSet_)
 {
@@ -26,7 +26,6 @@ FrameUpdateSet& FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) other)
     updateSet_.swap(other.updateSet_);
     return *this;
 }
-
 void FrameUpdateSet::add(Frame* frame)
 {
     assert(frame);

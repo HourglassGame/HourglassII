@@ -10,8 +10,9 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
+#include <boost/foreach.hpp>
 #include <functional>
-
+#define foreach BOOST_FOREACH
 namespace hg {
 template<typename ListType>
 ObjectPtrList<ListType>::ObjectPtrList() :
@@ -20,25 +21,18 @@ ObjectPtrList<ListType>::ObjectPtrList() :
 }
 
 namespace {
-
-template <typename T>
-struct ConstAddressOf : std::unary_function<T const&, typename ConstPtr_of<T>::type>
-{
-    typename ConstPtr_of<T>::type operator()(T const& t) const
-    {
-        return typename ConstPtr_of<T>::type(t);
-    }
-};
 struct InsertAddresses
 {
-    template<typename Container, typename SinglePassRange>
-    void operator()(Container& toInsertInto, SinglePassRange const& toInsert) const
+    template<typename Container, typename ForwardRange>
+    void operator()(Container& toInsertInto, ForwardRange const& toInsert) const
     {
-        boost::push_back(
-            toInsertInto,
-            toInsert |
-                boost::adaptors::transformed(
-                    ConstAddressOf<typename boost::range_value<SinglePassRange>::type>()));
+        toInsertInto.reserve(boost::distance(toInsertInto) + boost::distance(toInsert));
+        typedef typename boost::range_value<ForwardRange>::type value_t;
+        foreach (
+           value_t const& obj,
+           toInsert) {
+            toInsertInto.push_back(typename ConstPtr_of<value_t>::type(obj));
+        }
     }
 };
 }//namespace

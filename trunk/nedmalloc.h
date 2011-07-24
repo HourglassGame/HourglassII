@@ -123,7 +123,7 @@ EXTSPEC int    nedmalloc_trim(size_t pad) THROWSPEC;
 EXTSPEC void   nedmalloc_stats(void) THROWSPEC;
 EXTSPEC size_t nedmalloc_footprint(void) THROWSPEC;
 EXTSPEC MALLOCATTR void **nedindependent_calloc(size_t elemsno, size_t elemsize, void **chunks) THROWSPEC;
-EXTSPEC MALLOCATTR void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC;
+//EXTSPEC MALLOCATTR void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC;
 
 /* These are the pool functions */
 struct nedpool_t;
@@ -169,7 +169,7 @@ EXTSPEC int    nedpmalloc_trim(nedpool *p, size_t pad) THROWSPEC;
 EXTSPEC void   nedpmalloc_stats(nedpool *p) THROWSPEC;
 EXTSPEC size_t nedpmalloc_footprint(nedpool *p) THROWSPEC;
 EXTSPEC MALLOCATTR void **nedpindependent_calloc(nedpool *p, size_t elemsno, size_t elemsize, void **chunks) THROWSPEC;
-EXTSPEC MALLOCATTR void **nedpindependent_comalloc(nedpool *p, size_t elems, size_t *sizes, void **chunks) THROWSPEC;
+//EXTSPEC MALLOCATTR void **nedpindependent_comalloc(nedpool *p, size_t elems, size_t *sizes, void **chunks) THROWSPEC;
 
 }
 

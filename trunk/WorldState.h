@@ -17,6 +17,7 @@ namespace hg {
 struct ExecuteFrame;
 struct NewExecuteFrame;
 struct EditDepartures;
+
 class WorldState {
 public:
     /**
@@ -59,7 +60,7 @@ public:
     Frame* getFrame(FrameID const& whichFrame);
 private:
     friend struct ExecuteFrame;
-    std::map<Frame*, ObjectList<Normal> >
+    PhysicsEngine::FrameDepartureT
         getDeparturesFromFrame(Frame* frame);
     
     TimelineState timeline_;

@@ -3,24 +3,24 @@
 #include "SortWeakerThanEquality_fwd.h"
 #include <boost/operators.hpp>
 #include "ConstPtr_of_fwd.h"
-#include <vector>
+#include "mt/boost/container/vector.hpp"
 #include <cstddef>
 namespace hg
 {
 class TriggerData : boost::totally_ordered<TriggerData>
 {
 public:
-    TriggerData(std::size_t index, std::vector<int> const& value);
+    TriggerData(std::size_t index, mt::boost::container::vector<int>::type const& value);
 
     std::size_t getIndex() const { return index_; }
-    std::vector<int> const& getValue() const { return value_; }
+    mt::boost::container::vector<int>::type const& getValue() const { return value_; }
     
     bool operator==(const TriggerData& other) const;
     bool operator<(const TriggerData& second) const;
     
 private:
     std::size_t index_;
-    std::vector<int> value_;
+    mt::boost::container::vector<int>::type value_;
 
 };
 class TriggerDataConstPtr : boost::totally_ordered<TriggerDataConstPtr>
@@ -30,7 +30,7 @@ public:
     typedef TriggerData base_type;
     TriggerData const& get() const { return *triggerData_; }
     std::size_t getIndex() const { return triggerData_->getIndex(); }
-    std::vector<int> const& getValue()         const { return triggerData_->getValue(); }
+    mt::boost::container::vector<int>::type const& getValue() const { return triggerData_->getValue(); }
     
     bool operator==(const TriggerDataConstPtr& other) const { return *triggerData_ < *other.triggerData_; }
     bool operator<(const TriggerDataConstPtr& other) const { return *triggerData_ < *other.triggerData_;}

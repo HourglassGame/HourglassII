@@ -38,4 +38,3 @@ namespace hg {
 }
 
 #endif //HG_ENVIRONMENT_H
-

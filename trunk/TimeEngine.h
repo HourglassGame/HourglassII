@@ -8,8 +8,8 @@
 #include <boost/swap.hpp>
 
 #include "InputList_fwd.h"
-#include "Level_fwd.h"
-#include "Frame_fwd.h"
+#include "Level.h"
+#include "Frame.h"
 #include <boost/move/move.hpp>
 #include <boost/container/vector.hpp>
 namespace hg {
@@ -61,9 +61,7 @@ public:
      * A correct level has exacty one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(Level const& level);
-
-
+    explicit TimeEngine(BOOST_RV_REF(Level) level);
     TimeEngine(BOOST_RV_REF(TimeEngine) o);
     TimeEngine& operator=(BOOST_RV_REF(TimeEngine) o);
 

@@ -28,6 +28,7 @@
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
+
 #include <boost/serialization/vector.hpp>
 
 #include <fstream>
@@ -39,87 +40,8 @@
 #include <iostream>
 
 #include <cmath>
-#include "nedmalloc.h"
-//#include "tbb/scalable_allocator.h"
-#include <new>
 
 typedef sf::Color Colour;
-
-void* custom_malloc(std::size_t size);
-void custom_free(void* p);
-
-void* custom_malloc(std::size_t size)
-{
-    //return scalable_malloc(size);
-    //return malloc(size);
-    return nedalloc::nedmalloc(size);
-}
-
-void custom_free(void* p)
-{
-    //scalable_free(p);
-    //free(p);
-    if (p) {
-        nedalloc::nedfree(p);
-    }
-}
-
-void* operator new(std::size_t size) throw(std::bad_alloc)
-{
-    while (true) {
-        if (void* pointer = custom_malloc(size)) {
-            return pointer;
-        }
-        if (std::new_handler handler = std::set_new_handler(0)) {
-            std::set_new_handler(handler);
-            (*handler)();
-        }
-        else {
-            throw std::bad_alloc();
-        }
-    }
-}
-
-void operator delete(void *p) throw()
-{
-    custom_free(p);
-}
-
-void* operator new(std::size_t size, std::nothrow_t const&) throw()
-{
-    try {
-        return ::operator new(size);
-    }
-    catch (std::bad_alloc&) {
-        return 0;
-    }
-}
-
-void operator delete(void *p, std::nothrow_t const&) throw()
-{
-    ::operator delete(p);
-}
-
-void* operator new[](std::size_t size) throw(std::bad_alloc)
-{
-    return ::operator new(size);
-}
-
-void operator delete[](void *p) throw()
-{
-    ::operator delete(p);
-}
-
-void* operator new[](std::size_t size, std::nothrow_t const& nothrow) throw()
-{
-    return ::operator new(size, nothrow);
-}
-
-void operator delete[](void *p, std::nothrow_t const& nothrow) throw()
-{
-    ::operator delete(p, nothrow);
-}
-
 #define foreach BOOST_FOREACH
 using namespace hg;
 using namespace std;
@@ -130,13 +52,13 @@ namespace {
     void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool, 2> const& wall, Inertia& inertia, InputList const& input);
     void Draw(
         RenderWindow& target,
-        const ObjectPtrList<Normal> & frame,
-        std::vector<RectangleGlitz> const& glitz,
-        const boost::multi_array<bool, 2>& wall,
+        ObjectPtrList<Normal> const& frame,
+        mt::boost::container::vector<RectangleGlitz>::type const& glitz,
+        boost::multi_array<bool, 2> const& wall,
         TimeDirection playerDirection);
     void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame);
     void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
-    void DrawGlitz(RenderTarget& target, std::vector<RectangleGlitz> const& glitz, TimeDirection playerDirection);
+    void DrawGlitz(RenderTarget& target, mt::boost::container::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection);
     template<typename RandomAccessBoxRange>
     void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDirection playerDirection);
     template<typename RandomAccessGuyRange>
@@ -236,7 +158,7 @@ int main(int argc, char const* const argv[])
 namespace  {
 void initialseCurrentPath(int argc, char const* const argv[])
 {
-#ifdef __APPLE__ && __MACH__
+#if defined(__APPLE__) && defined(__MACH__)
     assert(argc >= 1);
     current_path(boost::filesystem::path(argv[0]).remove_filename()/"../Resources/");
 #endif
@@ -244,14 +166,17 @@ void initialseCurrentPath(int argc, char const* const argv[])
 
 void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool, 2> const& wall, Inertia& inertia, InputList const& input)
 {
-        std::vector<std::size_t> framesExecutedList;
+        boost::container::vector<std::size_t> framesExecutedList;
         FrameID drawnFrame;
         TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input));
-        boost::push_back(
-            framesExecutedList,
-            waveInfo.updatedFrames() 
-                | boost::adaptors::transformed(
-                    boost::bind(boost::distance<FrameUpdateSet>, _1)));
+
+        framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
+        foreach (
+            FrameUpdateSet const& updateSet,
+            waveInfo.updatedFrames())
+        {
+            framesExecutedList.push_back(boost::distance(updateSet));
+        }
         
         if (waveInfo.currentPlayerFrame()) {
             ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
@@ -318,9 +243,9 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
 
 void Draw(
     RenderWindow& target,
-    const ObjectPtrList<Normal> & frame,
-    std::vector<RectangleGlitz> const& glitz,
-    const boost::multi_array<bool, 2>& wall,
+    ObjectPtrList<Normal> const& frame,
+    mt::boost::container::vector<RectangleGlitz>::type const& glitz,
+    boost::multi_array<bool, 2> const& wall,
     TimeDirection playerDirection)
 {
     DrawWall(target, wall);
@@ -351,13 +276,13 @@ void DrawWall(
 }
 
 
-//Interprets colour as |RRRRRRRR|GGGGGGGG|BBBBBBBB|--------|
+//Interprets colour as |...|RRRRRRRR|GGGGGGGG|BBBBBBBB|--------|
 Colour interpretAsColour(unsigned colour)
 {
     return Colour((colour & 0xFF000000) >> 24, (colour & 0xFF0000) >> 16, (colour & 0xFF00) >> 8);
 }
 
-void DrawGlitz(RenderTarget& target, std::vector<RectangleGlitz> const& glitz, TimeDirection playerDirection)
+void DrawGlitz(RenderTarget& target, mt::boost::container::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection)
 {
     foreach (RectangleGlitz const& rectangleGlitz, glitz) {
         if (playerDirection == rectangleGlitz.getTimeDirection()) {
@@ -604,7 +529,7 @@ boost::multi_array<bool, 2> MakeWall()
 
 NewOldTriggerSystem makeNewOldTriggerSystem()
 {
-    std::vector<ProtoPortal> protoPortals;
+    boost::container::vector<ProtoPortal> protoPortals;
     protoPortals.push_back(
         ProtoPortal(
             Attachment(0,-4200,-3200),
@@ -620,7 +545,7 @@ NewOldTriggerSystem makeNewOldTriggerSystem()
             true,
             false));
     
-    std::vector<ProtoPlatform> protoPlatforms;
+    boost::container::vector<ProtoPlatform> protoPlatforms;
     protoPlatforms.push_back(
         ProtoPlatform(
             6400,
@@ -652,7 +577,7 @@ NewOldTriggerSystem makeNewOldTriggerSystem()
                         20,
                         20)))));
     
-    std::vector<ProtoButton> protoButtons;
+    boost::container::vector<ProtoButton> protoButtons;
     protoButtons.push_back(
         ProtoButton(
             Attachment(0,3200,-800),
@@ -661,10 +586,10 @@ NewOldTriggerSystem makeNewOldTriggerSystem()
             FORWARDS,
             0));
     
-    std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
+    boost::container::vector<std::pair<int, boost::container::vector<int> > > triggerOffsetsAndDefaults;
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, boost::container::vector<int>(1)));
     
-    std::vector<int> defaultPlatformPositionAndVelocity;
+    boost::container::vector<int> defaultPlatformPositionAndVelocity;
     defaultPlatformPositionAndVelocity.push_back(38400);
     defaultPlatformPositionAndVelocity.push_back(43800);
     defaultPlatformPositionAndVelocity.push_back(0);
@@ -688,7 +613,7 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
     newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, std::map<int,int>(), false, false, 0, INVALID, FORWARDS, 0));
+    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, mt::boost::container::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0));
     newObjectList.sort();
     
     return

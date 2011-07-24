@@ -10,8 +10,8 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/foreach.hpp>
 
-#include <map>
-#include <vector>
+#include "mt/std/map"
+#include "mt/std/vector"
 
 #include <cassert>
 #include <cmath>
@@ -22,7 +22,7 @@ namespace hg {
 enum { JUMP_SPEED 	= -550 };
 
 PhysicsEngine::PhysicsEngine(
-    Environment const& env,
+    BOOST_RV_REF(Environment) env,
     NewOldTriggerSystem const& newTriggerSystem) :
         env_(env),
         newTriggerSystem_(newTriggerSystem)
@@ -54,10 +54,10 @@ namespace {
         RandomAccessGuyRange const& guyArrivalList,
         Frame* time,
         std::vector<InputList> const& playerInput,
-        std::vector<ObjectAndTime<Guy> >& nextGuy,
-        std::vector<ObjectAndTime<Box> >& nextBox,
-        std::vector<Collision> const& nextPlatform,
-        std::vector<PortalArea> const& nextPortal,
+        mt::boost::container::vector<ObjectAndTime<Guy> >::type& nextGuy,
+        mt::boost::container::vector<ObjectAndTime<Box> >::type& nextBox,
+        mt::boost::container::vector<Collision>::type const& nextPlatform,
+        mt::boost::container::vector<PortalArea>::type const& nextPortal,
         bool& currentPlayerFrame,
         bool& nextPlayerFrame,
         bool& winFrame);
@@ -69,7 +69,7 @@ namespace {
     void boxCollisionAlogorithm(
         const Environment& env,
         const RandomAccessBoxRange& oldBoxList,
-        std::vector<ObjectAndTime<Box> >& nextBox,
+        mt::boost::container::vector<ObjectAndTime<Box> >::type& nextBox,
         const RandomAccessPlatformRange& nextPlatform,
         const RandomAccessPortalRange& nextPortal,
         Frame* time);
@@ -77,7 +77,7 @@ namespace {
     template <
 		typename RandomAccessPortalRange>
     void makeBoxAndTimeWithPortals(
-		std::vector<ObjectAndTime<Box> >& nextBox,
+		mt::boost::container::vector<ObjectAndTime<Box> >::type& nextBox,
 		const RandomAccessPortalRange& nextPortal,
 		int x,
 		int y,
@@ -89,54 +89,44 @@ namespace {
 		Frame* time);
 
     bool explodeBoxesUpwards(
-        std::vector<int>& x,
-        std::vector<int> const& xTemp,
-        std::vector<int>& y,
-        std::vector<int> const& size,
-        std::vector<std::vector<std::size_t> > const& links,
+        mt::boost::container::vector<int>::type& x,
+        mt::boost::container::vector<int>::type const& xTemp,
+        mt::boost::container::vector<int>::type& y,
+        mt::boost::container::vector<int>::type const& size,
+        mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type const& links,
         bool firstTime,
-        std::vector<char>& toBeSquished,
-        std::vector<int> const& bound,
+        mt::boost::container::vector<char>& toBeSquished,
+        mt::boost::container::vector<int> const& bound,
         std::size_t index,
         int boundSoFar);
 
     bool explodeBoxes(
-        std::vector<int>& pos,
-        std::vector<int> const& size,
-        std::vector<std::vector<std::size_t> > const& links,
-        std::vector<char>& toBeSquished,
-        std::vector<int> const& bound,
+        mt::boost::container::vector<int>::type& pos,
+        mt::boost::container::vector<int>::type const& size,
+        mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type const& links,
+        mt::boost::container::vector<char>::type& toBeSquished,
+        mt::boost::container::vector<int>::type const& bound,
         std::size_t index,
         int boundSoFar,
         int sign);
 
     void recursiveBoxCollision(
-        std::vector<int>& majorAxis,
-        std::vector<int> const& minorAxis,
-        std::vector<int> const& size,
-        std::vector<char> const& squished,
-        std::vector<std::size_t>& boxesSoFar,
+        mt::boost::container::vector<int>::type& majorAxis,
+        mt::boost::container::vector<int>::type const& minorAxis,
+        mt::boost::container::vector<int>::type const& size,
+        mt::boost::container::vector<char>::type const& squished,
+        mt::boost::container::vector<std::size_t>::type& boxesSoFar,
         std::size_t index);
         
     template <typename Type>
     void buildDeparturesForComplexEntities(
-        std::vector<ObjectAndTime<Type> > const& next,
-        std::map<Frame*, ObjectList<Normal> >& newDepartures,
-        Frame* time);
-
-    template <class Type>
-    void buildDeparturesForReallySimpleThings(
-        std::vector<Type> const& next,
-        std::map<Frame*, ObjectList<Normal> >& newDepartures,
-        Frame* time);
+        typename mt::boost::container::vector<ObjectAndTime<Type> >::type const& next,
+        PhysicsEngine::FrameDepartureT& newDepartures);
         
     void buildDepartures(
-        std::vector<ObjectAndTime<Box> > const& nextBox,
-        //std::vector<Platform> const& nextPlatform,
-        //std::vector<Portal> const& nextPortal,
-        //std::vector<Button> const& nextButton,
-        std::vector<ObjectAndTime<Guy> > const& nextGuy,
-        std::map<Frame*, ObjectList<Normal> >& newDepartures,
+        mt::boost::container::vector<ObjectAndTime<Box> >::type const& nextBox,
+        mt::boost::container::vector<ObjectAndTime<Guy> >::type const& nextGuy,
+        PhysicsEngine::FrameDepartureT& newDepartures,
         Frame* time);
         
     //bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
@@ -161,7 +151,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     PhysicsAffectingStuff const physicsTriggerStuff(
         triggerFrameState.calculatePhysicsAffectingStuff(arrivals.getList<TriggerData>()));
 
-    std::vector<ObjectAndTime<Box> > nextBox;
+    mt::boost::container::vector<ObjectAndTime<Box> >::type nextBox;
 
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
@@ -176,9 +166,9 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     bool nextPlayerFrame(false);
     bool winFrame(false);
 
-    std::vector<ObjectAndTime<Guy> > nextGuy;
+    mt::boost::container::vector<ObjectAndTime<Guy> >::type nextGuy;
     
-    std::map<Frame*, ObjectList<Normal> > newDepartures;
+    FrameDepartureT newDepartures;
 
     // guys simple collision algorithm
     guyStep(
@@ -188,32 +178,31 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         playerInput,
         nextGuy,
         nextBox,
-        physicsTriggerStuff.collisions/*staticDepartures.getList<Platform>()*/,
-        physicsTriggerStuff.portals/*staticDepartures.getList<Portal>()*/,
+        physicsTriggerStuff.collisions,
+        physicsTriggerStuff.portals,
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);
 
     buildDepartures(
         nextBox,
-        //staticDepartures.getList<Platform>(),
-        //staticDepartures.getList<Portal>(),
-        //staticDepartures.getList<Button>(),
         nextGuy,
         newDepartures,
         time);
 
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
     boost::for_each(newDepartures, SortObjectList());
-
+    typedef mt::boost::container::map<
+                Frame*,
+                mt::boost::container::vector<TriggerData>::type>::type triggerDepartures_t;
     std::pair<
-        std::map<Frame*, std::vector<TriggerData> >,
-        std::vector<RectangleGlitz>
+        triggerDepartures_t,
+        mt::boost::container::vector<RectangleGlitz>::type
     > triggerDeparturesAndGlitz(
         triggerFrameState.getTriggerDeparturesAndGlitz(
             newDepartures,
             time));
-    typedef std::map<Frame*, std::vector<TriggerData> >::value_type triggerDeparture_t;
+    typedef triggerDepartures_t::value_type triggerDeparture_t;
     foreach (triggerDeparture_t const& triggerDeparture, triggerDeparturesAndGlitz.first) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
@@ -222,79 +211,56 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
     boost::for_each(newDepartures, SortObjectList());
     // add data to departures
-    return PhysicsReturnT(newDepartures, triggerDeparturesAndGlitz.second, currentPlayerFrame, nextPlayerFrame, winFrame);
+    return PhysicsReturnT(boost::move(newDepartures), boost::move(triggerDeparturesAndGlitz.second), currentPlayerFrame, nextPlayerFrame, winFrame);
 }
 
 namespace {
-template <
-    typename Type>
+template<typename Type>
 void buildDeparturesForComplexEntities(
-    const std::vector<ObjectAndTime<Type> >& next,
-    std::map<Frame*, ObjectList<Normal> >& newDepartures)
+    typename mt::boost::container::vector<ObjectAndTime<Type> >::type const& next,
+    PhysicsEngine::FrameDepartureT& newDepartures)
 {
-    foreach (const ObjectAndTime<Type>& thingAndTime, next)
+    foreach (ObjectAndTime<Type> const& thingAndTime, next)
     {
         newDepartures[thingAndTime.time].add(thingAndTime.object);
     }
 }
 
-template <class Type>
-void buildDeparturesForReallySimpleThings(
-    const std::vector<Type>& next,
-    std::map<Frame*, ObjectList<Normal> >& newDepartures,
-    Frame* time)
-{
-    foreach (const Type& thing, next)
-    {
-        newDepartures[nextFrame(time, thing.getTimeDirection())].add(thing);
-    }
-}
-
 void buildDepartures(
-    std::vector<ObjectAndTime<Box> > const& nextBox,
-    //std::vector<Platform> const& nextPlatform,
-    //std::vector<Portal> const& nextPortal,
-    //std::vector<Button> const& nextButton,
-    std::vector<ObjectAndTime<Guy> > const& nextGuy,
-    std::map<Frame*, ObjectList<Normal> >& newDepartures,
+    mt::boost::container::vector<ObjectAndTime<Box> >::type const& nextBox,
+    mt::boost::container::vector<ObjectAndTime<Guy> >::type const& nextGuy,
+    PhysicsEngine::FrameDepartureT& newDepartures,
     Frame* time)
 {
     (void)time;
-    //Complex vs simple is a bit pointless at this stage
-    //The real issue is static vs time-traveling - 
-    //and this should be fixed by the new trigger system
-    buildDeparturesForComplexEntities(nextBox, newDepartures);
-    buildDeparturesForComplexEntities(nextGuy, newDepartures);
-
-   // buildDeparturesForReallySimpleThings(nextPlatform, newDepartures, time);
-   // buildDeparturesForReallySimpleThings(nextButton, newDepartures, time);
-   // buildDeparturesForReallySimpleThings(nextPortal, newDepartures, time);
+    buildDeparturesForComplexEntities<Box>(nextBox, newDepartures);
+    buildDeparturesForComplexEntities<Guy>(nextGuy, newDepartures);
 }
 }//namespace
 
 namespace {
 template<typename RandomAccessGuyRange>
 void guyStep(
-    const Environment& env,
-    const RandomAccessGuyRange& guyArrivalList,
+    Environment const& env,
+    RandomAccessGuyRange const& guyArrivalList,
     Frame* time,
-    const std::vector<InputList>& playerInput,
-    std::vector<ObjectAndTime<Guy> >& nextGuy,
-    std::vector<ObjectAndTime<Box> >& nextBox,
-    const std::vector<Collision>& nextPlatform,
-    const std::vector<PortalArea>& nextPortal,
+    std::vector<InputList> const& playerInput,
+    mt::boost::container::vector<ObjectAndTime<Guy> >::type& nextGuy,
+    mt::boost::container::vector<ObjectAndTime<Box> >::type& nextBox,
+    mt::boost::container::vector<Collision>::type const& nextPlatform,
+    mt::boost::container::vector<PortalArea>::type const& nextPortal,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame)
 {
-    std::vector<int> x;
-    std::vector<int> y;
-    std::vector<int> xspeed;
-    std::vector<int> yspeed;
-    std::vector<char> supported;
-    std::vector<int> supportedSpeed;
-    std::vector<char> squished;
-    std::vector<char> facing;
+    mt::boost::container::vector<int>::type x;
+    mt::boost::container::vector<int>::type y;
+    mt::boost::container::vector<int>::type xspeed;
+    mt::boost::container::vector<int>::type yspeed;
+    mt::boost::container::vector<char>::type supported;
+    mt::boost::container::vector<int>::type supportedSpeed;
+    mt::boost::container::vector<char>::type squished;
+    mt::boost::container::vector<char>::type facing;
 
     x.reserve(boost::distance(guyArrivalList));
     y.reserve(boost::distance(guyArrivalList));
@@ -556,16 +522,15 @@ void guyStep(
     assert(boost::distance(facing) == boost::distance(guyArrivalList));
 
 
-    std::vector<char> carry;
-    std::vector<int> carrySize;
-    std::vector<TimeDirection> carryDirection;
+    mt::boost::container::vector<char>::type carry;
+    mt::boost::container::vector<int>::type carrySize;
+    mt::boost::container::vector<TimeDirection>::type carryDirection;
     carry.reserve(guyArrivalList.size());
     carrySize.reserve(guyArrivalList.size());
     carryDirection.reserve(guyArrivalList.size());
     // box carrying
     for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
     {
-
         carry.push_back(guyArrivalList[i].getBoxCarrying());
         carrySize.push_back(0);
         carryDirection.push_back(hg::INVALID);
@@ -643,7 +608,7 @@ void guyStep(
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
                     //CAREFUL - loop modifies nextBox
-                    for (std::vector<ObjectAndTime<Box> >::iterator nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end()); nextBoxIt != nextBoxEnd; ++nextBoxIt)
+                    for (mt::boost::container::vector<ObjectAndTime<Box> >::type::iterator nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end()); nextBoxIt != nextBoxEnd; ++nextBoxIt)
                     {
                         int boxX = nextBoxIt->object.getX();
                         int boxY = nextBoxIt->object.getY();
@@ -673,14 +638,14 @@ void guyStep(
     assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
 
     // colliding with pickups?
-    std::map<int,std::map<int,int> > pickups;
+    mt::boost::container::map<int, mt::boost::container::map<int,int>::type >::type pickups;
     // map only holds values for guys which have changed pickup count as that shouldn't happen too often
 	/*for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
 	{
 		if (pickup not taken && colliding with pickup && lua callin returns true)
 		{
 			mark this pickup as taken
-			pickups[i] = std::map<int,int>(guyArrivalList[i].getPickups());
+			pickups[i] = mt::boost::container::map<int,int>::type(guyArrivalList[i].getPickups());
 			pickups[i][pickupAreaThatICollidedWith.getType()] += 1; // because the default value of an int is 0
 		}
 	}*/
@@ -844,7 +809,7 @@ void guyStep(
 template <
     typename RandomAccessPortalRange>
 void makeBoxAndTimeWithPortals(
-		std::vector<ObjectAndTime<Box> >& nextBox,
+		mt::boost::container::vector<ObjectAndTime<Box> >::type& nextBox,
 		const RandomAccessPortalRange& nextPortal,
 		int x,
 		int y,
@@ -908,11 +873,11 @@ void makeBoxAndTimeWithPortals(
 }
 
 bool explodeBoxes(
-    std::vector<int>& pos,
-    std::vector<int> const& size,
-    std::vector<std::vector<std::size_t> > const& links,
-    std::vector<char>& toBeSquished,
-    std::vector<int> const& bound,
+    mt::boost::container::vector<int>::type& pos,
+    mt::boost::container::vector<int>::type const& size,
+    mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type const& links,
+    mt::boost::container::vector<char>::type& toBeSquished,
+    mt::boost::container::vector<int>::type const& bound,
     std::size_t index,
     int boundSoFar,
     int sign)
@@ -947,14 +912,14 @@ bool explodeBoxes(
 }
 
 bool explodeBoxesUpwards(
-    std::vector<int>& x,
-    const std::vector<int>& xTemp,
-    std::vector<int>& y,
-    const std::vector<int>& size,
-    const std::vector<std::vector<std::size_t> >& links,
+    mt::boost::container::vector<int>::type& x,
+    mt::boost::container::vector<int>::type const& xTemp,
+    mt::boost::container::vector<int>::type& y,
+    mt::boost::container::vector<int>::type const& size,
+    mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type const& links,
     bool firstTime,
-    std::vector<char>& toBeSquished,
-    const std::vector<int>& bound,
+    mt::boost::container::vector<char>::type& toBeSquished,
+    mt::boost::container::vector<int>::type const& bound,
     std::size_t index,
     int boundSoFar)
 {
@@ -999,11 +964,11 @@ bool explodeBoxesUpwards(
 }
 
 void recursiveBoxCollision(
-    std::vector<int>& majorAxis,
-    const std::vector<int>& minorAxis,
-    const std::vector<int>& size,
-    const std::vector<char>& squished,
-    std::vector<std::size_t>& boxesSoFar,
+    mt::boost::container::vector<int>::type& majorAxis,
+    mt::boost::container::vector<int>::type const& minorAxis,
+    mt::boost::container::vector<int>::type const& size,
+    mt::boost::container::vector<char>::type const& squished,
+    mt::boost::container::vector<std::size_t>::type& boxesSoFar,
     std::size_t index)
 {
 	boxesSoFar.push_back(index);
@@ -1040,20 +1005,20 @@ template <
     typename RandomAccessPortalRange,
     typename RandomAccessPlatformRange>
 void boxCollisionAlogorithm(
-    const Environment& env,
-    const RandomAccessBoxRange& oldBoxList,
-    std::vector<ObjectAndTime<Box> >& nextBox,
-    const RandomAccessPlatformRange& nextPlatform,
-    const RandomAccessPortalRange& nextPortal,
+    Environment const& env,
+    RandomAccessBoxRange const& oldBoxList,
+    mt::boost::container::vector<ObjectAndTime<Box> >::type& nextBox,
+    RandomAccessPlatformRange const& nextPlatform,
+    RandomAccessPortalRange const& nextPortal,
     Frame* time)
 {
 
-	std::vector<int> x(oldBoxList.size());
-	std::vector<int> y(oldBoxList.size());
-	std::vector<int> xTemp(oldBoxList.size());
-	std::vector<int> yTemp(oldBoxList.size());
-	std::vector<int> size(oldBoxList.size());
-	std::vector<char> squished(oldBoxList.size());
+	mt::boost::container::vector<int>::type x(oldBoxList.size());
+	mt::boost::container::vector<int>::type y(oldBoxList.size());
+	mt::boost::container::vector<int>::type xTemp(oldBoxList.size());
+	mt::boost::container::vector<int>::type yTemp(oldBoxList.size());
+	mt::boost::container::vector<int>::type size(oldBoxList.size());
+	mt::boost::container::vector<char>::type squished(oldBoxList.size());
 
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
@@ -1097,7 +1062,7 @@ void boxCollisionAlogorithm(
 	}
 
 	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-	std::vector<char> toBeSquished(oldBoxList.size());
+	mt::boost::container::vector<char>::type toBeSquished(oldBoxList.size());
 
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
@@ -1131,15 +1096,15 @@ void boxCollisionAlogorithm(
 	bool firstTimeThrough(true);
 	while (thereAreStillThingsToDo)
 	{
-		std::vector<int> top(oldBoxList.size());
-		std::vector<int> bottom(oldBoxList.size());
-		std::vector<int> left(oldBoxList.size());
-		std::vector<int> right(oldBoxList.size());
+		mt::boost::container::vector<int>::type top(oldBoxList.size());
+		mt::boost::container::vector<int>::type bottom(oldBoxList.size());
+		mt::boost::container::vector<int>::type left(oldBoxList.size());
+		mt::boost::container::vector<int>::type right(oldBoxList.size());
 
-		std::vector<std::vector<std::size_t> > topLinks(oldBoxList.size());
-		std::vector<std::vector<std::size_t> > bottomLinks(oldBoxList.size());
-		std::vector<std::vector<std::size_t> > rightLinks(oldBoxList.size());
-		std::vector<std::vector<std::size_t> > leftLinks(oldBoxList.size());
+		mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type topLinks(oldBoxList.size());
+		mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type bottomLinks(oldBoxList.size());
+		mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type rightLinks(oldBoxList.size());
+		mt::boost::container::vector<mt::std::vector<std::size_t>::type >::type leftLinks(oldBoxList.size());
 
 		thereAreStillThingsToDo = false;
 
@@ -1238,7 +1203,7 @@ void boxCollisionAlogorithm(
 				}
 
 				// Check inside a platform
-				foreach (const Collision& platform, nextPlatform)
+				foreach (Collision const& platform, nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
@@ -1336,7 +1301,7 @@ void boxCollisionAlogorithm(
 		}
 
 		// propagate through vertical collision links to reposition and explode
-		std::vector<char> toBeSquished(oldBoxList.size());
+		mt::boost::container::vector<char>::type toBeSquished(oldBoxList.size());
 
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
@@ -1439,7 +1404,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				std::vector<std::size_t> pass;
+			    mt::boost::container::vector<std::size_t>::type pass;
 				recursiveBoxCollision(y, x, size, squished, pass, i);
 			}
 		}
@@ -1449,7 +1414,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				std::vector<std::size_t> pass;
+			    mt::boost::container::vector<std::size_t>::type pass;
 				recursiveBoxCollision(x, y, size, squished, pass, i);
 			}
 		}
@@ -1510,12 +1475,12 @@ void boxCollisionAlogorithm(
 	}
 }
 #if 0
-bool wallAtInclusive(const Environment& env, int x, int y, int w, int h)
+bool wallAtInclusive(Environment const& env, int x, int y, int w, int h)
 {
     return env.wall.at(x, y) || env.wall.at(x+w, y) || env.wall.at(x, y+h) || env.wall.at(x+w, y+h);
 }
 #endif
-bool wallAtExclusive(const Environment& env, int x, int y, int w, int h)
+bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
 {
     return env.wall.at(x+1, y+1) || env.wall.at(x+w-1, y+1) || env.wall.at(x+1, y+h-1) || env.wall.at(x+w-1, y+h-1);
 }

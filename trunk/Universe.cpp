@@ -17,7 +17,6 @@ void Universe::fixFramesUniverses()
         frame.correctUniverse(*this);
     }
 }
-
 Universe::Universe(BOOST_RV_REF(Universe) other)
 {
     frames_.swap(other.frames_);
@@ -40,7 +39,6 @@ Universe::Universe(std::size_t timelineLength) :
         frames_.emplace_back(i, UniverseParcel(*this));
     }
 }
-
 Frame* Universe::getEntryFrame(TimeDirection direction)
 {
     assert(!frames_.empty());
@@ -83,11 +81,9 @@ Frame* getArbitraryFrame(Universe& universe,std::size_t frameNumber)
 std::size_t getTimelineLength(Universe const& universe) {
     return universe.getTimelineLength();
 }
-
 Frame* Universe::getFrame(const FrameID& whichFrame)
 {
     assert(getTimelineLength() == whichFrame.getUniverse().timelineLength());
     return getArbitraryFrame(whichFrame.getFrameNumber());
 }
-
 }

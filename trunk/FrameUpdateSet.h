@@ -11,12 +11,11 @@ class Frame;
 class FrameUpdateSet {
 public:
     FrameUpdateSet();
-    
+
     FrameUpdateSet(FrameUpdateSet const& other);
     FrameUpdateSet& operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other);
     FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other);
     FrameUpdateSet& operator=(BOOST_RV_REF(FrameUpdateSet) other);
-
     void add(Frame* frame);
     void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);

@@ -22,16 +22,12 @@ struct ExecuteFrame
     }
     void operator()(Frame* time) const
     {
-        //departures is moved into departureMap_, and so must be declared separately
-        //(until r-value references become more widely supported)
-        std::map<Frame*, ObjectList<Normal> > departures(thisptr_.getDeparturesFromFrame(time));
-        departureMap_.setDeparture(time, departures);
+        departureMap_.setDeparture(time, thisptr_.getDeparturesFromFrame(time));
     }
 private:
     WorldState& thisptr_;
     DepartureMap& departureMap_;
 };
-
 WorldState::WorldState(
     std::size_t timelineLength,
     const FrameID& guyStartTime,
@@ -49,10 +45,10 @@ WorldState::WorldState(
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
-        std::map<Frame*, ObjectList<Normal> > initialArrivals;
+        boost::container::map<Frame*, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        for (std::vector<Box>::const_iterator it(initialObjects.getList<Box>().begin()),
+        for (mt::boost::container::vector<Box>::type::const_iterator it(initialObjects.getList<Box>().begin()),
                 end(initialObjects.getList<Box>().end()); it != end; ++it)
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
@@ -103,7 +99,7 @@ Frame* WorldState::getFrame(const FrameID& whichFrame)
     return timeline_.getFrame(whichFrame);
 }
 
-std::map<Frame*, ObjectList<Normal> >
+PhysicsEngine::FrameDepartureT
     WorldState::getDeparturesFromFrame(Frame* frame)
 {
     PhysicsEngine::PhysicsReturnT retv(
@@ -128,7 +124,7 @@ std::map<Frame*, ObjectList<Normal> >
     else {
         currentWinFrames_.remove(frame);
     }
-    frame->setGlitzFromHere(retv.glitz);
+    frame->setGlitzFromHere(boost::move(retv.glitz));
     return retv.departures;
 }
 

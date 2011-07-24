@@ -1,0 +1,22 @@
+#ifndef HG_MT_STD_MAP
+#define HG_MT_STD_MAP
+#include "../../multi_thread_allocator.h"
+#include <set>
+namespace hg {
+namespace mt {
+namespace std{
+template<
+	typename Key,
+	typename Compare = ::std::less<Key> >
+struct set {
+	typedef
+		::std::set<
+			Key,
+			Compare,
+			typename multi_thread_allocator<Key>::type
+		> type;
+};
+}
+}
+}
+#endif //HG_MT_STD_MAP
