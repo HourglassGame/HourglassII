@@ -140,11 +140,18 @@ int main(int argc, char const* const argv[])
             if (currentReplayIt != currentReplayEnd) {
                 runStep(timeEngine, app, wall, inertia, *currentReplayIt);
                 ++currentReplayIt;
+                sf::String replayGlyph("R");
+                replayGlyph.SetColor(Colour(255,0,0));
+                replayGlyph.SetPosition(580, 32);
+                replayGlyph.SetSize(32.f);
+                app.Draw(replayGlyph);
             }
             else {
                 input.updateState(app.GetInput());
                 runStep(timeEngine, app, wall, inertia, input.AsInputList());
             }
+
+            app.Display();
         }
         catch (hg::PlayerVictoryException& playerWon) {
             cout << "Congratulations, a winner is you!\n";
@@ -238,7 +245,6 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
             fpsglyph.SetSize(8.f);
             app.Draw(fpsglyph);
         }
-        app.Display();
 }
 
 void Draw(

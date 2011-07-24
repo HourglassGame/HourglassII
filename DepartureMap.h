@@ -7,7 +7,7 @@
 
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
-#include "mt/boost/container/map.hpp"
+#include "mt/std/map"
 #include <boost/unordered_map.hpp>
 namespace hg {
 class DepartureMap {
