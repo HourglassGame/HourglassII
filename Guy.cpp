@@ -11,7 +11,7 @@ Guy::Guy(
     bool supported,
     int supportedSpeed,
 
-    std::map<int,int> const& pickups,
+    mt::boost::container::map<int,int>::type const& pickups,
     bool facing,
 
     bool boxCarrying,
@@ -42,6 +42,8 @@ Guy::Guy(
 }
 
 Guy::Guy(const Guy& other, TimeDirection timeDirection) :
+        index_(other.index_),
+
         x_(other.x_), y_(other.y_),
         xspeed_(other.xspeed_), yspeed_(other.yspeed_),
         width_(other.width_), height_(other.height_),
@@ -58,8 +60,7 @@ Guy::Guy(const Guy& other, TimeDirection timeDirection) :
         boxCarrySize_(other.boxCarrySize_),
         boxCarryDirection_(other.boxCarryDirection_),
 
-        timeDirection_(timeDirection),
-        index_(other.index_)
+        timeDirection_(timeDirection)
 {
 }
 

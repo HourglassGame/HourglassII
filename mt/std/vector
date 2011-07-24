@@ -1,0 +1,19 @@
+#ifndef HG_MT_STD_VECTOR
+#define HG_MT_STD_VECTOR
+#include "../../multi_thread_allocator.h"
+#include <vector>
+namespace hg {
+namespace mt {
+namespace std{
+template<typename T>
+struct vector {
+	typedef
+		::std::vector<
+			T,
+			typename multi_thread_allocator<T>::type
+		> type;
+};
+}
+}
+}
+#endif //HG_MT_STD_VECTOR

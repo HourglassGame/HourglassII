@@ -16,8 +16,6 @@
 #include <boost/operators.hpp>
 #include <boost/move/move.hpp>
 
-#include <vector>
-
 namespace hg {
 // Object list stores all data sent between frames or to rendering engine
 template<typename ListTypes>

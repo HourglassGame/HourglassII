@@ -40,7 +40,7 @@ public:
      * This should only be called once.
      */
     //Consider moving this into constructor
-    void addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList<Normal> >& initialArrivals);
+    void addArrivalsFromPermanentDepartureFrame(boost::container::map<Frame*, ObjectList<Normal> > const& initialArrivals);
 
     /**
      * Converts FrameID into Frame*

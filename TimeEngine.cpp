@@ -4,16 +4,15 @@
 #include "Frame.h"
 
 namespace hg {
-TimeEngine::TimeEngine(const Level& level) :
+TimeEngine::TimeEngine(BOOST_RV_REF(Level) level) :
         speedOfTime(level.speedOfTime),
         worldState(level.timeLineLength,
                    level.guyStartTime,
-                   PhysicsEngine(level.environment, level.newOldTriggerSystem),
+                   PhysicsEngine(boost::move(level.environment), level.newOldTriggerSystem),
                    level.initialObjects)
 
 {
 }
-
 TimeEngine::TimeEngine(BOOST_RV_REF(TimeEngine) o) :
     speedOfTime(o.speedOfTime),
     worldState(boost::move(o.worldState))
@@ -27,7 +26,7 @@ TimeEngine& TimeEngine::operator=(BOOST_RV_REF(TimeEngine) o)
 }
 
 TimeEngine::RunResult
-    TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
+TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
 {
     worldState.addNewInputData(newInputData);
     FrameListList updatedList;
@@ -38,7 +37,7 @@ TimeEngine::RunResult
     return RunResult(
         worldState.getCurrentPlayerFrame(),
         worldState.getNextPlayerFrame(),
-        updatedList);
+        boost::move(updatedList));
 }
 
 std::vector<InputList> TimeEngine::getReplayData() const

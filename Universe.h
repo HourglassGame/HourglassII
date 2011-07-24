@@ -7,7 +7,7 @@
 #include <boost/move/move.hpp>
 #include <boost/container/vector.hpp>
 #include <vector>
-
+#include "Universe_fwd.h"
 namespace hg {
 class Universe {
 public:
@@ -48,7 +48,6 @@ private:
     Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     //returns the length of this Universe's timeline
     std::size_t getTimelineLength(Universe const& universe);
-    
     friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
     friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(Universe const& universe);

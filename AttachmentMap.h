@@ -27,32 +27,5 @@ struct Attachment
     //offset to apply to platform position to get y position of attached thing
     int yOffset;
 };
-
-class AttachmentMap
-{
-public:
-    AttachmentMap(const std::vector<Attachment>& newButtonAttachments,
-                  const std::vector<Attachment>& newPortalAttachments) :
-            buttonAttachments(newButtonAttachments),
-            portalAttachments(newPortalAttachments)
-    {
-    }
-
-    const std::vector<Attachment>& getButtonAttachmentRef() const
-    {
-        return buttonAttachments;
-    }
-    const std::vector<Attachment>& getPortalAttachmentRef() const
-    {
-        return portalAttachments;
-    }
-
-private:
-    //Lists of attachments:
-    //buttonAttachments[n] contains the Attachment information for the button with index n
-    std::vector<Attachment> buttonAttachments;
-    //See above -- portalAttachments are the same.
-    std::vector<Attachment> portalAttachments;
-};
 }
 #endif //HG_ATTACHMENT_MAP_H

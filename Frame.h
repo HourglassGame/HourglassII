@@ -9,10 +9,9 @@
 #include <boost/fusion/container/vector.hpp>
 #include <boost/range/adaptor/map.hpp>
 
-//LOLOLOL all 3 types of map needed (:
 #include <tbb/concurrent_hash_map.h>
-#include <boost/unordered_map.hpp>
-#include <map>
+#include "mt/boost/container/map.hpp"
+#include "mt/boost/container/vector.hpp"
 
 #include "Universe_fwd.h"
 #include "FrameUpdateSet_fwd.h"
@@ -28,6 +27,8 @@ struct UniverseParcel
 };
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
+    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
+    typedef mt::boost::container::vector<RectangleGlitz>::type FrameGlitzT;
 public:
     Frame(const Frame&) { assert(false); }
     Frame& operator=(const Frame&) { assert(false); }
@@ -37,13 +38,13 @@ public:
     //These "correct" functions are for rearranging pointers when universes get copied.
     //Changes universe_
     void correctUniverse(Universe& newUniverse);
-    
+
     //returns the frames whose arrivals are changed
-    //newDeparture may get its contents pilfered    
-    FrameUpdateSet updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture);
+    //newDeparture may get its contents pilfered
+    FrameUpdateSet updateDeparturesFromHere(BOOST_RV_REF(FrameDeparturesT) newDeparture);
     
-    void setGlitzFromHere(std::vector<RectangleGlitz> const& newGlitz) { glitz_ = newGlitz; }
-    std::vector<RectangleGlitz> const& getGlitzFromHere() const { return glitz_; }
+    void setGlitzFromHere(BOOST_RV_REF(FrameGlitzT) newGlitz) { glitz_ = newGlitz; }
+    FrameGlitzT const& getGlitzFromHere() const { return glitz_; }
 
     /**
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
@@ -60,7 +61,6 @@ public:
 
     //Used for adding arrivals from permanent departure frame
     void addArrival(Frame const* source, ObjectList<Normal> const* arrival);
-
 
 private:
     friend class FrameID;
@@ -102,10 +102,10 @@ private:
     Universe* universe_;
     
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
-    std::map<Frame*, ObjectList<Normal> > departures_;
+    FrameDeparturesT departures_;
     tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*> arrivals_;
     
-    std::vector<RectangleGlitz> glitz_;
+    FrameGlitzT glitz_;
 
 };
 //<Undefined to call with NullFrame>

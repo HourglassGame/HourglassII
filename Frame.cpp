@@ -84,20 +84,20 @@ bool isNullFrame(Frame const* frame) {
 
 namespace {
     template<typename ListTypes>
-    struct FrameNotNull : std::unary_function<const std::pair<Frame*, ObjectList<ListTypes> >&, bool> {
-        bool operator()(const typename std::pair<Frame*, ObjectList<ListTypes> >& pair) const {
+    struct FrameNotNull : std::unary_function<std::pair<Frame* const, ObjectList<ListTypes> > const&, bool> {
+        bool operator()(typename std::pair<Frame* const, ObjectList<ListTypes> > const& pair) const {
             return !isNullFrame(pair.first);
         }
     };
 }
 
-FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList<Normal> >& newDeparture)
+FrameUpdateSet Frame::updateDeparturesFromHere(BOOST_RV_REF(FrameDeparturesT) newDeparture)
 {
     FrameUpdateSet changedTimes;
 
     //filter so that things can safely depart to the null frame
     //such departures do not create arrivals or updated frames, but are saved as departures.
-    typedef boost::filtered_range<FrameNotNull<Normal>, std::map<Frame*, ObjectList<Normal> > > filtered_range_t;
+    typedef boost::filtered_range<FrameNotNull<Normal>, FrameDeparturesT> filtered_range_t;
 
     filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<Normal>()));
     filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull<Normal>()));    
@@ -149,16 +149,21 @@ FrameUpdateSet Frame::updateDeparturesFromHere(std::map<Frame*, ObjectList<Norma
         ++ni;
     }
 end:
-    departures_.swap(newDeparture);
-    std::map<Frame*, ObjectList<Normal> > deleter;
-    deleter.swap(newDeparture);
+    departures_ = boost::move(newDeparture);
+    //attempt to put the deletion of the old departures_
+    //into the parallel region of the program's execution
+    newDeparture = FrameDeparturesT();
     return changedTimes;
 }
 
 ObjectPtrList<Normal>  Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal>  retv;
-    foreach (ObjectList<Normal> const& value, arrivals_ | boost::adaptors::map_values | boost::adaptors::indirected)
+    foreach (
+        ObjectList<Normal> const& value,
+        arrivals_
+            | boost::adaptors::map_values
+            | boost::adaptors::indirected)
     {
         retv.add(value);
     }

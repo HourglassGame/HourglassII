@@ -10,14 +10,17 @@
 #include <boost/range.hpp>
 #define foreach BOOST_FOREACH
 namespace hg {
-Collision ProtoPlatform::calculateCollision(std::vector<std::vector<int> > const& triggers) const
+Collision ProtoPlatform::calculateCollision(
+        mt::boost::container::vector<
+            mt::boost::container::vector<int>::type
+        >::type const& triggers) const
 {
         PlatformDestination const& destination(
             triggers[buttonTriggerID_].front() ?
             destinations_.onDestination :
             destinations_.offDestination);
         
-        std::vector<int> const& lastStateTrigger(triggers[lastStateTriggerID_]);
+        mt::boost::container::vector<int>::type const& lastStateTrigger(triggers[lastStateTriggerID_]);
         
         PositionAndVelocity horizontal(
             destination.
@@ -39,7 +42,8 @@ Collision ProtoPlatform::calculateCollision(std::vector<std::vector<int> > const
                 timeDirection_);
 }
 
-PortalArea ProtoPortal::calculatePortalArea(std::vector<Collision> const& collisions) const
+PortalArea ProtoPortal::calculatePortalArea(
+        mt::boost::container::vector<Collision>::type const& collisions) const
 {
     int x;
     int y;
@@ -98,7 +102,8 @@ PortalArea ProtoPortal::calculatePortalArea(std::vector<Collision> const& collis
         winner_);
 }
 
-PositionAndVelocity2D ProtoButton::calculatePositionAndVelocity2D(std::vector<Collision> const& collisions) const
+PositionAndVelocity2D ProtoButton::calculatePositionAndVelocity2D(
+        mt::boost::container::vector<Collision>::type const& collisions) const
 {
     int x;
     int y;
@@ -135,31 +140,34 @@ PositionAndVelocity2D ProtoButton::calculatePositionAndVelocity2D(std::vector<Co
 
 namespace {
 struct GetTriggerValue : 
-    std::unary_function<std::pair<int, std::vector<int> > const&, std::vector<int> >
+    std::unary_function<
+        std::pair<int, boost::container::vector<int> > const&,
+        mt::boost::container::vector<int>::type
+    >
 {
-    std::vector<int> operator()(
-        std::pair<int, std::vector<int> > const& offsetAndTrigger) const
+    mt::boost::container::vector<int>::type operator()(
+        std::pair<int, boost::container::vector<int> > const& offsetAndTrigger) const
     {
-        return offsetAndTrigger.second;
+        return mt::boost::container::vector<int>::type(offsetAndTrigger.second.begin(), offsetAndTrigger.second.end());
     }
 };
 
-std::vector<Collision> calculatePlatforms(
-    std::vector<ProtoPlatform> const& protoPlatforms,
-    std::vector<std::vector<int> > const& triggers)
+mt::boost::container::vector<Collision>::type calculatePlatforms(
+    boost::container::vector<ProtoPlatform> const& protoPlatforms,
+    mt::boost::container::vector<mt::boost::container::vector<int>::type>::type const& triggers)
 {
-    std::vector<Collision> retv;
+    mt::boost::container::vector<Collision>::type retv;
     retv.reserve(boost::distance(protoPlatforms));
     foreach (ProtoPlatform const& proto, protoPlatforms) {
         retv.push_back(proto.calculateCollision(triggers));
     }
     return retv;
 }
-std::vector<PortalArea> calculatePortals(
-    std::vector<ProtoPortal> const& protoPortals,
-    std::vector<Collision> const& collisionAreas)
+mt::boost::container::vector<PortalArea>::type calculatePortals(
+    boost::container::vector<ProtoPortal> const& protoPortals,
+    mt::boost::container::vector<Collision>::type const& collisionAreas)
 {
-    std::vector<PortalArea> retv;
+    mt::boost::container::vector<PortalArea>::type retv;
     retv.reserve(boost::distance(collisionAreas));
     foreach (ProtoPortal const& protoPortal, protoPortals) {
         retv.push_back(protoPortal.calculatePortalArea(collisionAreas));
@@ -174,10 +182,10 @@ ArrivalLocation calculateArrivalLocation(PortalArea const& portal) {
         portal.getTimeDirection());
 }
 
-std::vector<ArrivalLocation> calculateArrivalLocations(
-    std::vector<PortalArea> const& portals)
+mt::boost::container::vector<ArrivalLocation>::type calculateArrivalLocations(
+    mt::boost::container::vector<PortalArea>::type const& portals)
 {
-    std::vector<ArrivalLocation> retv;
+    mt::boost::container::vector<ArrivalLocation>::type retv;
     retv.reserve(boost::distance(portals));
     foreach (PortalArea const& portal, portals) {
         retv.push_back(calculateArrivalLocation(portal));
@@ -185,11 +193,11 @@ std::vector<ArrivalLocation> calculateArrivalLocations(
     return retv;
 }
 
-std::vector<PositionAndVelocity2D> calculateButtons(
-    std::vector<ProtoButton> const& protoButtons,
-    std::vector<Collision> const& collisions)
+mt::boost::container::vector<PositionAndVelocity2D>::type calculateButtons(
+    boost::container::vector<ProtoButton> const& protoButtons,
+    mt::boost::container::vector<Collision>::type const& collisions)
 {
-    std::vector<PositionAndVelocity2D> retv;
+    mt::boost::container::vector<PositionAndVelocity2D>::type retv;
     retv.reserve(boost::distance(collisions));
     foreach (ProtoButton const& protoButton, protoButtons) {
         retv.push_back(protoButton.calculatePositionAndVelocity2D(collisions));
@@ -197,16 +205,16 @@ std::vector<PositionAndVelocity2D> calculateButtons(
     return retv;
 }
 void fillPlatformTriggers(
-    std::vector<std::vector<int> >& triggers,
-    std::vector<ProtoPlatform> const& protoPlatforms,
-    std::vector<Collision> const& collisions)
+    mt::boost::container::vector<mt::boost::container::vector<int>::type>::type& triggers,
+    boost::container::vector<ProtoPlatform> const& protoPlatforms,
+    mt::boost::container::vector<Collision>::type const& collisions)
 {
     //assert(boost::distance(protoPlatforms) == boost::distance(collisions));
     for (std::size_t i(0), end(boost::distance(protoPlatforms)); i != end; ++i)
     {
         ProtoPlatform const& protoPlatform(protoPlatforms[i]);
         Collision const& collision(collisions[i]);
-        std::vector<int>& triggerData(triggers[protoPlatform.lastStateTriggerID_]);
+        mt::boost::container::vector<int>::type& triggerData(triggers[protoPlatform.lastStateTriggerID_]);
         triggerData.reserve(4);
         triggerData.push_back(collision.getX());
         triggerData.push_back(collision.getY());
@@ -215,9 +223,10 @@ void fillPlatformTriggers(
     }
 }
 
-std::vector<RectangleGlitz> calculatePlatformGlitz(std::vector<Collision> const& collisions)
+mt::boost::container::vector<RectangleGlitz>::type
+    calculatePlatformGlitz(mt::boost::container::vector<Collision>::type const& collisions)
 {
-    std::vector<RectangleGlitz> retv;
+    mt::boost::container::vector<RectangleGlitz>::type retv;
     retv.reserve(boost::distance(collisions));
     foreach(Collision const& collision, collisions) {
         retv.push_back(
@@ -231,9 +240,9 @@ std::vector<RectangleGlitz> calculatePlatformGlitz(std::vector<Collision> const&
     return retv;
 }
 
-std::vector<RectangleGlitz> calculatePortalGlitz(std::vector<PortalArea> const& portals)
+mt::boost::container::vector<RectangleGlitz>::type calculatePortalGlitz(mt::boost::container::vector<PortalArea>::type const& portals)
 {
-    std::vector<RectangleGlitz> retv;
+    mt::boost::container::vector<RectangleGlitz>::type retv;
     retv.reserve(boost::distance(portals));
     foreach(PortalArea const& portal, portals) {
         retv.push_back(
@@ -253,17 +262,22 @@ PhysicsAffectingStuff
     NewOldTriggerFrameState::calculatePhysicsAffectingStuff(
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            std::vector<TriggerDataConstPtr> const > const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
 {
     typedef boost::transformed_range<
         GetBase<TriggerDataConstPtr>,
-        std::vector<TriggerDataConstPtr> const > TriggerDataConstPtrRange;
+        boost::container::vector<TriggerDataConstPtr> const > TriggerDataConstPtrRange;
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
-    std::vector<std::vector<int> > apparentTriggers;
-    boost::push_back(
-        apparentTriggers,
-        triggerSystem.triggerOffsetsAndDefaults | boost::adaptors::transformed(GetTriggerValue()));
+    mt::boost::container::vector<mt::boost::container::vector<int>::type>::type apparentTriggers;
+    apparentTriggers.reserve(boost::distance(triggerSystem.triggerOffsetsAndDefaults));
+    typedef std::pair<int, boost::container::vector<int> > TriggerOffsetAndDefault;
+    foreach (TriggerOffsetAndDefault const& offsetAndDefault, triggerSystem.triggerOffsetsAndDefaults) {
+        apparentTriggers.push_back(
+            mt::boost::container::vector<int>::type(
+                    offsetAndDefault.second.begin(),
+                    offsetAndDefault.second.end()));
+    }
     
     foreach (TriggerDataConstPtrRange::value_type const& arrival, triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
@@ -334,13 +348,13 @@ bool temporalIntersectingExclusive(ProtoButton const& protoA, PositionAndVelocit
 }
 
 
-std::vector<char> calculateButtonStates(
-    std::vector<ProtoButton> const& protoButtons,
-    std::vector<PositionAndVelocity2D> const& buttonPositions,
-    std::map<Frame*, ObjectList<Normal> > const& departures)
+mt::boost::container::vector<char>::type calculateButtonStates(
+    boost::container::vector<ProtoButton> const& protoButtons,
+    mt::boost::container::vector<PositionAndVelocity2D>::type const& buttonPositions,
+    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures)
 {
     //assert(boost::distance(protoButtons) == boost::distance(buttonPositions));
-    std::vector<char> buttonStates(boost::distance(protoButtons), false);
+    mt::boost::container::vector<char>::type buttonStates(boost::distance(protoButtons), false);
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i) {
         foreach(ObjectList<Normal> const& objectList, departures | boost::adaptors::map_values) {
             foreach(const Box& box, objectList.getList<Box>()) {
@@ -361,14 +375,14 @@ std::vector<char> calculateButtonStates(
     return buttonStates;
 }
 
-std::vector<RectangleGlitz> calculateButtonGlitz(
-    std::vector<ProtoButton> const& protoButtons,
-    std::vector<char> const& buttonStates,
-    std::vector<PositionAndVelocity2D> const& buttonStore)
+mt::boost::container::vector<RectangleGlitz>::type calculateButtonGlitz(
+    boost::container::vector<ProtoButton> const& protoButtons,
+    mt::boost::container::vector<char>::type const& buttonStates,
+    mt::boost::container::vector<PositionAndVelocity2D>::type const& buttonStore)
 {
     assert(boost::distance(protoButtons) == boost::distance(buttonStates));
     assert(boost::distance(protoButtons) == boost::distance(buttonStore));
-    std::vector<RectangleGlitz> retv;
+    mt::boost::container::vector<RectangleGlitz>::type retv;
     retv.reserve(boost::distance(protoButtons));
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i) {
         unsigned colour(buttonStates[i]?0x96FF9600u:0xFF969600u);
@@ -379,16 +393,14 @@ std::vector<RectangleGlitz> calculateButtonGlitz(
                 buttonStore[i].getXspeed(), buttonStore[i].getYspeed(),
                 colour, colour,
                 protoButtons[i].timeDirection_));
-        //std::cout << "retv.back().getY(): " << retv.back().getX() << "\n";
-        //assert(retv.back().getX() == 41600);
     }
     return retv;
 }
 
 void fillButtonTriggers(
-    std::vector<std::vector<int> >& triggers,
-    std::vector<ProtoButton> const& protoButtons,
-    std::vector<char> const& states)
+    mt::boost::container::vector<mt::boost::container::vector<int>::type>::type& triggers,
+    boost::container::vector<ProtoButton> const& protoButtons,
+    mt::boost::container::vector<char>::type const& states)
 {
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i)
     {
@@ -396,13 +408,13 @@ void fillButtonTriggers(
     }
 }
 
-std::map<Frame*, std::vector<TriggerData> > calculateActualTriggerDepartures(
-    std::vector<std::vector<int> > const& triggers,
-    std::vector<std::pair<int, std::vector<int> > > const& triggerOffsetsAndDefaults,
+mt::boost::container::map<Frame*, mt::boost::container::vector<TriggerData>::type >::type calculateActualTriggerDepartures(
+    BOOST_RV_REF(mt::boost::container::vector<mt::boost::container::vector<int>::type>::type) triggers,
+    boost::container::vector<std::pair<int, boost::container::vector<int> > > const& triggerOffsetsAndDefaults,
     Frame* currentFrame)
 {
     assert(boost::distance(triggers) == boost::distance(triggerOffsetsAndDefaults));
-    std::map<Frame*, std::vector<TriggerData> > retv;
+    mt::boost::container::map<Frame*, mt::boost::container::vector<TriggerData>::type >::type retv;
     Universe& universe(getUniverse(currentFrame));
     for (std::size_t i(0), end(boost::distance(triggers)); i != end; ++i)
     {
@@ -410,7 +422,7 @@ std::map<Frame*, std::vector<TriggerData> > calculateActualTriggerDepartures(
             getArbitraryFrame(
                 universe, 
                 getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[i].first)].push_back(
-                    TriggerData(i, triggers[i]));
+                    TriggerData(i, boost::move(triggers[i])));
     }
     return retv;
 }
@@ -419,23 +431,23 @@ std::map<Frame*, std::vector<TriggerData> > calculateActualTriggerDepartures(
 
 
 std::pair<
-    std::map<Frame*, std::vector<TriggerData> >,
-    std::vector<RectangleGlitz>
+    mt::boost::container::map<Frame*, mt::boost::container::vector<TriggerData>::type >::type,
+    mt::boost::container::vector<RectangleGlitz>::type
 > 
 NewOldTriggerFrameState::getTriggerDeparturesAndGlitz(
-    std::map<Frame*, ObjectList<Normal> > const& departures,
+    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
     //These are the states that are apparent in the buttonGlitz
     //These are also the states that travel through time to affect
     //platforms at their nextframes.
-    std::vector<char> buttonStates(calculateButtonStates(triggerSystem.protoButtons_, buttonStore, departures));
+    mt::boost::container::vector<char>::type buttonStates(calculateButtonStates(triggerSystem.protoButtons_, buttonStore, departures));
 
     boost::push_back(glitzStore, calculateButtonGlitz(triggerSystem.protoButtons_, buttonStates, buttonStore));
     
     fillButtonTriggers(triggers, triggerSystem.protoButtons_, buttonStates);
     
-    return std::make_pair(calculateActualTriggerDepartures(triggers, triggerSystem.triggerOffsetsAndDefaults, currentFrame), glitzStore);
+    return std::make_pair(calculateActualTriggerDepartures(boost::move(triggers), triggerSystem.triggerOffsetsAndDefaults, currentFrame), glitzStore);
 }
 
 NewOldTriggerFrameState::NewOldTriggerFrameState(NewOldTriggerSystem const& triggerSys) :

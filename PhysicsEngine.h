@@ -7,9 +7,12 @@
 #include "ObjectListTypes.h"
 #include "TriggerSystem.h"
 #include "Environment.h"
+#include "multi_thread_allocator.h"
 
 #include <vector>
-#include <map>
+#include "mt/std/map"
+#include "mt/std/vector"
+#include <boost/move/move.hpp>
 
 #include "Frame_fwd.h"
 namespace hg {
@@ -17,14 +20,15 @@ class PhysicsEngine
 {
 public:
     PhysicsEngine(
-        Environment const& env,
+        BOOST_RV_REF(Environment) env,
         NewOldTriggerSystem const& newTriggerSystem);
-
+    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
+    typedef mt::boost::container::vector<RectangleGlitz>::type NewGlitzType;
     struct PhysicsReturnT
     {
     	PhysicsReturnT(
-            std::map<Frame*, ObjectList<Normal> > const& Ndepartures,
-            std::vector<RectangleGlitz> const& Nglitz,
+            BOOST_RV_REF(FrameDepartureT) Ndepartures,
+            BOOST_RV_REF(NewGlitzType) Nglitz,
             bool NcurrentPlayerFrame,
     		bool NnextPlayerFrame,
     		bool NcurrentWinFrame) :
@@ -34,8 +38,8 @@ public:
                 nextPlayerFrame(NnextPlayerFrame),
                 currentWinFrame(NcurrentWinFrame)
     	{}
-    	std::map<Frame*, ObjectList<Normal> > departures;
-        std::vector<RectangleGlitz> glitz;
+    	FrameDepartureT departures;
+    	NewGlitzType glitz;
     	bool currentPlayerFrame;
     	bool nextPlayerFrame;
     	bool currentWinFrame;
