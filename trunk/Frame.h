@@ -10,7 +10,7 @@
 #include <boost/range/adaptor/map.hpp>
 
 #include <tbb/concurrent_hash_map.h>
-#include "mt/boost/container/map.hpp"
+#include "mt/std/map"
 #include "mt/std/vector"
 
 #include "Universe_fwd.h"
