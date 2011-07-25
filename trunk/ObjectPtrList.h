@@ -16,9 +16,9 @@
 
 namespace hg {
 template <typename ObjectConstPtr>
-struct GetBase : std::unary_function<ObjectConstPtr, typename ObjectConstPtr::base_type>
+struct GetBase : std::unary_function<ObjectConstPtr, typename ObjectConstPtr::base_type const&>
 {
-    typename ObjectConstPtr::base_type
+    typename ObjectConstPtr::base_type const&
         operator()(ObjectConstPtr ptr) const
     {
         return ptr.get();

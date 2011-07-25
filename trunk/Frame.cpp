@@ -32,9 +32,8 @@ Frame const* Frame::nextFrame(TimeDirection direction) const {
 }
 
 Frame* Frame::nextFrame(TimeDirection direction) {
-    //these const_casts are well defined as frames are always in universes,
-    //and their underlying objects are always non-const.
-    return const_cast<Frame*>(const_cast<Frame const*>(this)->nextFrame(direction));
+    assert(direction != INVALID);
+    return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
 }
 
 bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
@@ -153,6 +152,7 @@ end:
     //attempt to put the deletion of the old departures_
     //into the parallel region of the program's execution
     FrameDeparturesT().swap(newDeparture);
+    changedTimes.make_set();
     return changedTimes;
 }
 

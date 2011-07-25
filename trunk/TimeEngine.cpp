@@ -36,7 +36,7 @@ TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
         updatedList);
 }
 
-std::vector<InputList> TimeEngine::getReplayData() const
+std::vector<InputList> const& TimeEngine::getReplayData() const
 {
     return worldState_.getReplayData();
 }

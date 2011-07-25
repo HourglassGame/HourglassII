@@ -66,6 +66,7 @@ WorldState::WorldState(
     frameUpdateSet_.add(getEntryFrame(timeline_.getUniverse(), REVERSE));
     //Guys without input can still affect stuff, and so must be run
     frameUpdateSet_.add(guyStartFrame);
+    frameUpdateSet_.make_set();
     //** run level for a while
     for (std::size_t i(0); i < timelineLength; ++i) {
         executeWorld();
@@ -158,6 +159,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
     for (ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end()); it != end; ++it) {
         frameUpdateSet_.add(*it);
     }
+    frameUpdateSet_.make_set();
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one
     // of four categories prior to this being called:

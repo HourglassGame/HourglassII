@@ -82,7 +82,7 @@ public:
      */
     Frame* getFrame(FrameID const& whichFrame);
     // Exception Safety: Strong
-    std::vector<InputList> getReplayData() const;
+    std::vector<InputList> const& getReplayData() const;
 private:
     unsigned int speedOfTime_;
     //state of world at end of last executed frame
