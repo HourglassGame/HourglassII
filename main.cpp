@@ -211,7 +211,22 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
             }
         }
         DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame);
-
+        {
+            stringstream currentPlayerIndex;
+            currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
+            sf::String currentPlayerGlyph(currentPlayerIndex.str());
+            currentPlayerGlyph.SetPosition(580, 423);
+            currentPlayerGlyph.SetSize(10.f);
+            app.Draw(currentPlayerGlyph);
+        }
+        {
+            stringstream frameNumberString;
+            frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
+            sf::String frameNumberGlyph(frameNumberString.str());
+            frameNumberGlyph.SetPosition(580, 435);
+            frameNumberGlyph.SetSize(8.f);
+            app.Draw(frameNumberGlyph);
+        }
         {
             stringstream numberOfFramesExecutedString;
             if (!boost::empty(framesExecutedList)) {

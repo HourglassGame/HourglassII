@@ -1,13 +1,14 @@
 #ifndef HG_FRAME_UPDATE_SET_H
 #define HG_FRAME_UPDATE_SET_H
 
-#include <boost/unordered_set.hpp>
+#include <vector>
+#include <boost/operators.hpp>
 namespace hg {
 class Frame;
 //At some stage consider making this into a lazily sorted vector.
 //The common use case is add, add, add, add ..., read, read, read, read...,
 //so it would probably be faster.
-class FrameUpdateSet {
+class FrameUpdateSet : boost::equality_comparable<FrameUpdateSet> {
 public:
     FrameUpdateSet();
 
@@ -17,7 +18,8 @@ public:
     void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);
 
-    typedef boost::unordered_set<Frame*> SetType;
+    void make_set();
+    typedef std::vector<Frame*> SetType;
 
     //Privacy leak here, it is an error to use FrameUpdateSet::const_iterator as anything more than a ForwardIterator
     //I should define my own iterator class, but I can't be bothered right now
@@ -32,9 +34,14 @@ public:
     iterator end();
     std::size_t size() const;
     bool empty() const;
+    bool operator==(FrameUpdateSet const& other);
 private:
+#ifndef NDEBUG
+    bool isSet_;
+#endif
     SetType updateSet_;
 };
-bool operator==(FrameUpdateSet const& lhs, FrameUpdateSet const& rhs);
+inline void swap(FrameUpdateSet& l, FrameUpdateSet& r) { l.swap(r); }
+
 }
 #endif //HG_FRAME_UPDATE_SET_H

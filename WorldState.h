@@ -52,7 +52,7 @@ public:
     Frame* getNextPlayerFrame();
     Frame* getCurrentPlayerFrame();
 
-    std::vector<InputList> getReplayData() const { return playerInput_; }
+    std::vector<InputList> const& getReplayData() const { return playerInput_; }
 
     Frame* getFrame(FrameID const& whichFrame);
 private:

@@ -877,7 +877,7 @@ bool explodeBoxes(
     mt::std::vector<int>::type const& size,
     mt::std::vector<mt::std::vector<std::size_t>::type >::type const& links,
     mt::std::vector<char>::type& toBeSquished,
-    mt::std::vector<int>::type const& bound,
+    mt::std::vector<std::pair<bool, int> >::type const& bound,
     std::size_t index,
     int boundSoFar,
     int sign)
@@ -903,7 +903,7 @@ bool explodeBoxes(
             || subSquished;
 	}
 
-	if (subSquished || (bound[index] != 0 && bound[index] * sign <= boundSoFar * sign))
+	if (subSquished || (bound[index].first && bound[index].second * sign <= boundSoFar * sign))
 	{
 		toBeSquished[index] = true;
 		return true;
@@ -919,7 +919,7 @@ bool explodeBoxesUpwards(
     mt::std::vector<mt::std::vector<std::size_t>::type >::type const& links,
     bool firstTime,
     mt::std::vector<char>::type& toBeSquished,
-    mt::std::vector<int>::type const& bound,
+    mt::std::vector<std::pair<bool, int> >::type const& bound,
     std::size_t index,
     int boundSoFar)
 {
@@ -955,14 +955,13 @@ bool explodeBoxesUpwards(
             || subSquished;
 	}
 
-	if (subSquished || (bound[index] != 0 && bound[index] >= boundSoFar))
+	if (subSquished || (bound[index].first && bound[index].second >= boundSoFar))
 	{
 		toBeSquished[index] = true;
 		return true;
 	}
 	return false;
 }
-
 void recursiveBoxCollision(
     mt::std::vector<int>::type& majorAxis,
     mt::std::vector<int>::type const& minorAxis,
@@ -1012,7 +1011,6 @@ void boxCollisionAlogorithm(
     RandomAccessPortalRange const& nextPortal,
     Frame* time)
 {
-
 	mt::std::vector<int>::type x(oldBoxList.size());
 	mt::std::vector<int>::type y(oldBoxList.size());
 	mt::std::vector<int>::type xTemp(oldBoxList.size());
@@ -1096,10 +1094,10 @@ void boxCollisionAlogorithm(
 	bool firstTimeThrough(true);
 	while (thereAreStillThingsToDo)
 	{
-		mt::std::vector<int>::type top(oldBoxList.size());
-		mt::std::vector<int>::type bottom(oldBoxList.size());
-		mt::std::vector<int>::type left(oldBoxList.size());
-		mt::std::vector<int>::type right(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> >::type top(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> >::type bottom(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> >::type left(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> >::type right(oldBoxList.size());
 
 		mt::std::vector<mt::std::vector<std::size_t>::type >::type topLinks(oldBoxList.size());
 		mt::std::vector<mt::std::vector<std::size_t>::type >::type bottomLinks(oldBoxList.size());
@@ -1115,12 +1113,15 @@ void boxCollisionAlogorithm(
 			if (!squished[i])
 			{
 				// Check inside a wall, velocity independent which is why it is so complex
-				bool topRightDiagonal(
+				//true iff the top-left corner of the box is in the top-right half of a wall segment
+                bool topRightDiagonal(
                     (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize())
                      <
                     (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize()));
+                //true iff the top-left corner of the box is in the top-left half of a wall segment
 				bool topLeftDiagonal(
-                    (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize()) + (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize())
+                    (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize())
+                     + (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize())
                      <
                     env.wall.segmentSize());
 				if (env.wall.at(x[i], y[i])) // top left
@@ -1128,21 +1129,21 @@ void boxCollisionAlogorithm(
 					if (env.wall.at(x[i]+size[i], y[i]) || !(env.wall.at(x[i], y[i]+size[i]) || topRightDiagonal)) // top right
 					{
 						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						top[i] = y[i];
+						top[i] = std::make_pair(true, y[i]);
 						if (env.wall.at(x[i], y[i]+size[i])) // bottom left
 						{
 							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-							left[i] = x[i];
+							left[i] = std::make_pair(true, x[i]);
 						}
 					}
 					else // bottom left
 					{
 						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						left[i] = x[i];
+						left[i] = std::make_pair(true, x[i]);
 						if (env.wall.at(x[i]+size[i], y[i]+size[i])) // bottom right
 						{
 							y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-							bottom[i] = y[i];
+							bottom[i] = std::make_pair(true, y[i]);
 							x[i] = xTemp[i];
 						}
 					}
@@ -1153,23 +1154,23 @@ void boxCollisionAlogorithm(
 					if (!(topLeftDiagonal || env.wall.at(x[i]+size[i], y[i]+size[i])))
 					{
 						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						left[i] = x[i];
+						left[i] = std::make_pair(true, x[i]);
 						if (env.wall.at(x[i]+size[i], y[i]+size[i])) // bottom right
 						{
 							y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-							bottom[i] = y[i];
+							bottom[i] = std::make_pair(true, y[i]);
 							x[i] = xTemp[i];
 						}
 					}
 					else
 					{
 						y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						bottom[i] = y[i];
+						bottom[i] = std::make_pair(true, y[i]);
 						x[i] = xTemp[i];
 						if (env.wall.at(x[i]+size[i], y[i])) // top right
 						{
 							x[i] = ((x[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-							right[i] = x[i];
+							right[i] = std::make_pair(true, x[i]);
 						}
 					}
 
@@ -1179,13 +1180,13 @@ void boxCollisionAlogorithm(
 					if (!env.wall.at(x[i]+size[i], y[i]) && topRightDiagonal)
 					{
 						y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						bottom[i] = y[i];
+						bottom[i] = std::make_pair(true, y[i]);
 						x[i] = xTemp[i];
 					}
 					else
 					{
 						x[i] = ((x[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						right[i] = x[i];
+						right[i] = std::make_pair(true, x[i]);
 					}
 				}
 				else if (env.wall.at(x[i]+size[i], y[i])) // only top right
@@ -1193,12 +1194,12 @@ void boxCollisionAlogorithm(
 					if (!topRightDiagonal)
 					{
 						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						top[i] = y[i];
+						top[i] = std::make_pair(true, y[i]);
 					}
 					else
 					{
 						x[i] = ((x[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						right[i] = x[i];
+						right[i] = std::make_pair(true, x[i]);
 					}
 				}
 
@@ -1223,7 +1224,7 @@ void boxCollisionAlogorithm(
 							if (y[i] + size[i]/2 < pY + pHeight/2) // box above platform
 							{
 								y[i] = pY - size[i];
-								bottom[i] = y[i];
+								bottom[i] = std::make_pair(true, y[i]);
 								if (firstTimeThrough)
 								{
 									x[i] = xTemp[i] + pDirection * oldBoxList[i].getTimeDirection() * platform.getXspeed();
@@ -1236,7 +1237,7 @@ void boxCollisionAlogorithm(
 							else
 							{
 								y[i] = pY + pHeight;
-								top[i] = y[i];
+								top[i] = std::make_pair(true, y[i]);
 							}
 						}
 						else // left or right
@@ -1244,12 +1245,12 @@ void boxCollisionAlogorithm(
 							if (x[i] + size[i]/2 < pX + pWidth/2) // box left of platform
 							{
 								x[i] = pX - size[i];
-								right[i] = x[i];
+								right[i] = std::make_pair(true, x[i]);
 							}
 							else
 							{
 								x[i] = pX + pWidth;
-								left[i] = x[i];
+								left[i] = std::make_pair(true, x[i]);
 							}
 						}
 					}
@@ -1307,13 +1308,13 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				if (bottom[i] != 0)
+				if (bottom[i].first)
 				{
-					explodeBoxesUpwards(x, xTemp, y, size, topLinks, firstTimeThrough, toBeSquished, top, i, bottom[i]);
+					explodeBoxesUpwards(x, xTemp, y, size, topLinks, firstTimeThrough, toBeSquished, top, i, bottom[i].second);
 				}
-				if (top[i] != 0)
+				if (top[i].first)
 				{
-					explodeBoxes(y, size, bottomLinks, toBeSquished, bottom, i, top[i], 1);
+					explodeBoxes(y, size, bottomLinks, toBeSquished, bottom, i, top[i].second, 1);
 				}
 			}
 		}
@@ -1379,13 +1380,13 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				if (right[i] != 0)
+				if (right[i].first)
 				{
-					explodeBoxes(x, size, leftLinks, toBeSquished, left, i, right[i], -1);
+					explodeBoxes(x, size, leftLinks, toBeSquished, left, i, right[i].second, -1);
 				}
-				if (left[i] != 0)
+				if (left[i].first)
 				{
-					explodeBoxes(x, size, rightLinks, toBeSquished, right, i, left[i], 1);
+					explodeBoxes(x, size, rightLinks, toBeSquished, right, i, left[i].second, 1);
 				}
 			}
 		}
@@ -1435,7 +1436,7 @@ void boxCollisionAlogorithm(
 
 		firstTimeThrough = false;
 	}
-
+    
 	// get this junk out of here
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
