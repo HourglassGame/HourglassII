@@ -200,13 +200,14 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
         else {
             inertia.run();
             FrameID const inertialFrame(inertia.getFrame());
-            drawnFrame = inertialFrame;
             if (inertialFrame.isValidFrame()) {
+                drawnFrame = inertialFrame;
                 Frame* frame(timeEngine.getFrame(inertialFrame));
                 Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, inertia.getTimeDirection());
             }
             else {
-                Frame* frame(timeEngine.getFrame(FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800))));
+                drawnFrame = FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800));
+                Frame* frame(timeEngine.getFrame(drawnFrame));
                 Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, FORWARDS);
             }
         }
