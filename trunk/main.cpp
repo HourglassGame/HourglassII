@@ -216,7 +216,7 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
             stringstream currentPlayerIndex;
             currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
             sf::String currentPlayerGlyph(currentPlayerIndex.str());
-            currentPlayerGlyph.SetPosition(580, 423);
+            currentPlayerGlyph.SetPosition(580, 433);
             currentPlayerGlyph.SetSize(10.f);
             app.Draw(currentPlayerGlyph);
         }
@@ -224,7 +224,7 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
             stringstream frameNumberString;
             frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
             sf::String frameNumberGlyph(frameNumberString.str());
-            frameNumberGlyph.SetPosition(580, 435);
+            frameNumberGlyph.SetPosition(580, 445);
             frameNumberGlyph.SetSize(8.f);
             app.Draw(frameNumberGlyph);
         }
@@ -241,17 +241,9 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
                 }
             }
             sf::String numberOfFramesExecutedGlyph(numberOfFramesExecutedString.str());
-            numberOfFramesExecutedGlyph.SetPosition(580, 445);
+            numberOfFramesExecutedGlyph.SetPosition(580, 455);
             numberOfFramesExecutedGlyph.SetSize(8.f);
             app.Draw(numberOfFramesExecutedGlyph);
-        }
-        {
-            stringstream memorystring;
-            memorystring << nedalloc::nedmalloc_footprint() << "B";
-            sf::String memoryglyph(memorystring.str());
-            memoryglyph.SetPosition(580, 455);
-            memoryglyph.SetSize(8.f);
-            app.Draw(memoryglyph);
         }
         {
             stringstream fpsstring;
@@ -304,9 +296,8 @@ Colour interpretAsColour(unsigned colour)
     return Colour((colour & 0xFF000000) >> 24, (colour & 0xFF0000) >> 16, (colour & 0xFF00) >> 8);
 }
 
-void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection)
+void DrawParticularGlitz(RenderTarget& target, RectangleGlitz const& rectangleGlitz, TimeDirection playerDirection)
 {
-    foreach (RectangleGlitz const& rectangleGlitz, glitz) {
         if (playerDirection == rectangleGlitz.getTimeDirection()) {
             target.Draw(
                 Shape::Rectangle(
@@ -327,6 +318,12 @@ void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const
                     (y + rectangleGlitz.getHeight())/100,
                     interpretAsColour(rectangleGlitz.getReverseColour())));
         }
+}
+
+void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection)
+{
+    foreach (RectangleGlitz const& rectangleGlitz, glitz) {
+        DrawParticularGlitz(target, rectangleGlitz, playerDirection);
     }
 }
 
@@ -627,7 +624,7 @@ NewOldTriggerSystem makeNewOldTriggerSystem()
 
 Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
-    ObjectList<Normal>  newObjectList;
+    ObjectList<Normal> newObjectList;
     newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS));
