@@ -26,7 +26,6 @@ FrameUpdateSet ConcurrentFrameUpdateSet::merge()
 {
     FrameUpdateSet retv;
     threadLocalMap_.combine_each(FrameUpdateSetCombiner(retv));
-    retv.make_set();
     return retv;
 }
 }
