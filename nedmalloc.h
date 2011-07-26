@@ -60,6 +60,7 @@ DEALINGS IN THE SOFTWARE.
     This version of nedalloc has been modified by Evan Wallace and others
     as detailed in the svn repository:
     https://hourglassii.svn.sourceforge.net/svnroot/hourglassii
+    It was originally based on nedalloc v1.05 15th June 2008
 */
 
 
@@ -123,6 +124,7 @@ EXTSPEC int    nedmalloc_trim(size_t pad) THROWSPEC;
 EXTSPEC void   nedmalloc_stats(void) THROWSPEC;
 EXTSPEC size_t nedmalloc_footprint(void) THROWSPEC;
 EXTSPEC MALLOCATTR void **nedindependent_calloc(size_t elemsno, size_t elemsize, void **chunks) THROWSPEC;
+//disabled due to use of alloca
 //EXTSPEC MALLOCATTR void **nedindependent_comalloc(size_t elems, size_t *sizes, void **chunks) THROWSPEC;
 
 /* These are the pool functions */
@@ -169,6 +171,7 @@ EXTSPEC int    nedpmalloc_trim(nedpool *p, size_t pad) THROWSPEC;
 EXTSPEC void   nedpmalloc_stats(nedpool *p) THROWSPEC;
 EXTSPEC size_t nedpmalloc_footprint(nedpool *p) THROWSPEC;
 EXTSPEC MALLOCATTR void **nedpindependent_calloc(nedpool *p, size_t elemsno, size_t elemsize, void **chunks) THROWSPEC;
+//disabled due to use of alloca
 //EXTSPEC MALLOCATTR void **nedpindependent_comalloc(nedpool *p, size_t elems, size_t *sizes, void **chunks) THROWSPEC;
 
 }
