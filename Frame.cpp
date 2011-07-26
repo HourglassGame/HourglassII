@@ -152,7 +152,6 @@ end:
     //attempt to put the deletion of the old departures_
     //into the parallel region of the program's execution
     FrameDeparturesT().swap(newDeparture);
-    changedTimes.make_set();
     return changedTimes;
 }
 
