@@ -52,6 +52,8 @@ public:
     //Used for adding arrivals from permanent departure frame
     void addArrival(Frame const* source, ObjectList<Normal> const* arrival);
 
+    std::size_t getFrameNumberButOnlyForDebug() const {return frameNumber_;}
+
 private:
     friend class FrameID;
     friend class Universe;
