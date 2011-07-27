@@ -1036,9 +1036,16 @@ void boxCollisionAlogorithm(
         size[i] = oldBoxList[i].getSize();
 	}
 
-	// Destroy boxes that are overlapping with platforms
+	// Destroy boxes that are overlapping with platforms and walls
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
+		if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i]+size[i]-1, yTemp[i])
+				&& env.wall.at(xTemp[i], yTemp[i]+size[i]-1) && env.wall.at(xTemp[i]+size[i], yTemp[i]+size[i]-1))
+		{
+			squished[i] = true;
+			continue;
+		}
+
 		foreach (Collision const& platform, nextPlatform)
 		{
 			int pX(platform.getX());
@@ -1090,10 +1097,11 @@ void boxCollisionAlogorithm(
 	}
 
 	// do all the other things until there are no more things to do
-	bool thereAreStillThingsToDo(true);
+	bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
 	bool firstTimeThrough(true);
 	while (thereAreStillThingsToDo)
 	{
+
 		mt::std::vector<std::pair<bool,int> >::type top(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type bottom(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type left(oldBoxList.size());
@@ -1106,99 +1114,235 @@ void boxCollisionAlogorithm(
 
 		thereAreStillThingsToDo = false;
 
-		// collide boxes with platforms and walls to discover the hard bounds on the system
-		// if a box moves thereAreStillThingsToDo
+		//*** collide boxes with platforms and walls to discover the hard bounds on the system ***//
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
 			{
-				// Check inside a wall, velocity independent which is why it is so complex
-				//true iff the top-left corner of the box is in the top-right half of a wall segment
-                bool topRightDiagonal(
-                    (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize())
-                     <
-                    (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize()));
-                //true iff the top-left corner of the box is in the top-left half of a wall segment
-				bool topLeftDiagonal(
-                    (y[i] - (y[i]/env.wall.segmentSize())*env.wall.segmentSize())
-                     + (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize())
-                     <
-                    env.wall.segmentSize());
-				if (env.wall.at(x[i], y[i])) // top left
+				//** Check inside a wall, velocity independent which is why it is so complex **//
+
+				// intial keep-it-inside-the-level step
+				if (x[i] <= 0 || y[i] <= 0 || x[i] + size[i] > env.wall.roomWidth() || y[i] + size[i] > env.wall.roomHeight())
 				{
-					if (env.wall.at(x[i]+size[i], y[i]) || !(env.wall.at(x[i], y[i]+size[i]) || topRightDiagonal)) // top right
+					int xOut = x[i] + size[i] - env.wall.roomWidth();
+					int yOut = y[i] + size[i] - env.wall.roomHeight();
+					if (x[i] < 0 && (y[i] > 0 || x[i] < y[i]) && (yOut <= 0 || -x[i] > yOut))
 					{
-						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						top[i] = std::make_pair(true, y[i]);
-						if (env.wall.at(x[i], y[i]+size[i])) // bottom left
+						y[i] = y[i] - (x[i]-env.wall.segmentSize()/2)*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
+						x[i] = env.wall.segmentSize()/2;
+					}
+					else if (y[i] < 0 && (x[i] > 0 || y[i] < x[i]) && (xOut <= 0 || -y[i] > xOut))
+					{
+						x[i] = x[i] - (y[i]-env.wall.segmentSize()/2)*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
+						y[i] = env.wall.segmentSize()/2;
+					}
+					else if (xOut > 0 && (y[i] > 0 || xOut > -y[i]) && (yOut <= 0 || xOut > yOut))
+					{
+						y[i] = y[i] - (xOut+env.wall.segmentSize()/2+size[i])*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
+						x[i] = env.wall.roomWidth() - env.wall.segmentSize()/2 - size[i];
+					}
+					else if (yOut > 0 && (x[i] > 0 || yOut > -x[i]) && (xOut <= 0 || yOut > xOut))
+					{
+						x[i] = x[i] - (yOut+env.wall.segmentSize()/2+size[i])*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
+						y[i] = env.wall.roomHeight() - env.wall.segmentSize()/2 - size[i];
+					}
+				}
+
+				// TryAgainWithMoreInterpolation is only to be triggered only when moving
+				// the box by size[i] will ensure that the box still collides with the wall
+				// it is attempted to be moved out of.
+				if (false)
+				{
+					TryAgainWithMoreInterpolation:;
+					if (std::abs(x[i]-xTemp[i]) < std::abs(y[i]-yTemp[i]))
+					{
+						x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
+						y[i] = y[i] - env.wall.segmentSize()*(y[i]-yTemp[i])/std::abs(y[i]-yTemp[i]);
+					}
+					else
+					{
+						y[i] = y[i] - env.wall.segmentSize()*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
+						x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(x[i]-xTemp[i]);
+					}
+				}
+
+				top[i] = std::make_pair(false, 0);
+				bottom[i] = std::make_pair(false, 0);
+				left[i] = std::make_pair(false, 0);
+				right[i] = std::make_pair(false, 0);
+
+				// Normal case; box does not have 2 or more sides lined up on the wallmap.
+				bool w00,w10,w01,w11;
+
+				if (size[i] <= env.wall.segmentSize())
+				{
+					// purely a speedup for this case
+					w00 = env.wall.at(x[i], y[i]);
+					w10 = env.wall.at(x[i]+size[i]-1, y[i]);
+					w01 = env.wall.at(x[i], y[i]+size[i]-1);
+					w11 = env.wall.at(x[i]+size[i]-1, y[i]+size[i]-1);
+				}
+				else
+				{
+					// Extra collision for box size greater than wall size (would handle other case too)
+					w00 = false;
+					w10 = false;
+					w01 = false;
+					w11 = false;
+
+					int xOff = 0;
+					while (xOff < size[i])
+					{
+						xOff += env.wall.segmentSize();
+						if (xOff > size[i]-1)
+						{
+							xOff = size[i]-1;
+						}
+						int yOff = 0;
+						while (yOff < size[i])
+						{
+							yOff += env.wall.segmentSize();
+							if (yOff > size[i]-1)
+							{
+								yOff = size[i]-1;
+							}
+							// the collision test bit
+							if (!w00)
+							{
+								w00 = env.wall.at(x[i]+size[i]-xOff, y[i]+size[i]-yOff);
+							}
+							if (!w10)
+							{
+								w10 = env.wall.at(x[i]+yOff, y[i]+size[i]-yOff);
+							}
+							if (!w01)
+							{
+								w01 = env.wall.at(x[i]+size[i]-xOff, y[i]+yOff);
+							}
+							if (!w01)
+							{
+								w01 = env.wall.at(x[i]+xOff, y[i]+yOff);
+							}
+						}
+					}
+				}
+
+				// collide with walls based on corner status
+				if (w00)
+				{
+					if (w11)
+					{
+						if (w10)
+						{
+							if (w01)
+							{
+								goto TryAgainWithMoreInterpolation;
+							}
+							else
+							{
+								x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+								right[i] = std::make_pair(true, x[i]);
+								y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+								top[i] = std::make_pair(true, y[i]);
+							}
+						}
+						else if (w01 || !env.wall.inTopRightTriangle(x[i],y[i])) // this triangle check needs improvement for rectangles
 						{
 							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
 							left[i] = std::make_pair(true, x[i]);
-						}
-					}
-					else // bottom left
-					{
-						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						left[i] = std::make_pair(true, x[i]);
-						if (env.wall.at(x[i]+size[i], y[i]+size[i])) // bottom right
-						{
-							y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+							y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
 							bottom[i] = std::make_pair(true, y[i]);
-							x[i] = xTemp[i];
 						}
-					}
-
-				}
-				else if (env.wall.at(x[i], y[i]+size[i])) // bottom left and not top left
-				{
-					if (!(topLeftDiagonal || env.wall.at(x[i]+size[i], y[i]+size[i])))
-					{
-						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-						left[i] = std::make_pair(true, x[i]);
-						if (env.wall.at(x[i]+size[i], y[i]+size[i])) // bottom right
+						else
 						{
-							y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-							bottom[i] = std::make_pair(true, y[i]);
-							x[i] = xTemp[i];
-						}
-					}
-					else
-					{
-						y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						bottom[i] = std::make_pair(true, y[i]);
-						x[i] = xTemp[i];
-						if (env.wall.at(x[i]+size[i], y[i])) // top right
-						{
-							x[i] = ((x[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+							x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
 							right[i] = std::make_pair(true, x[i]);
+							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+							top[i] = std::make_pair(true, y[i]);
+						}
+
+					}
+					else if (w10)
+					{
+						if (w01)
+						{
+							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+							left[i] = std::make_pair(true, x[i]);
+							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+							top[i] = std::make_pair(true, y[i]);
+						}
+						else
+						{
+							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+							top[i] = std::make_pair(true, y[i]);
 						}
 					}
-
-				}
-				else if (env.wall.at(x[i]+size[i], y[i]+size[i])) // no left and bottom right
-				{
-					if (!env.wall.at(x[i]+size[i], y[i]) && topRightDiagonal)
+					else if (w01 || env.wall.inTopRightTriangle(x[i],y[i]))
 					{
-						y[i] = ((y[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						bottom[i] = std::make_pair(true, y[i]);
-						x[i] = xTemp[i];
+						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+						left[i] = std::make_pair(true, x[i]);
 					}
 					else
-					{
-						x[i] = ((x[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-						right[i] = std::make_pair(true, x[i]);
-					}
-				}
-				else if (env.wall.at(x[i]+size[i], y[i])) // only top right
-				{
-					if (!topRightDiagonal)
 					{
 						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
 						top[i] = std::make_pair(true, y[i]);
 					}
+				}
+				else if (w10)
+				{
+					if (w01)
+					{
+						if (w11 || env.wall.inTopLeftTriangle(x[i]+size[i]-1,y[i])) // this triangle check needs improvement for rectangles
+						{
+							x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+							right[i] = std::make_pair(true, x[i]);
+							y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+							bottom[i] = std::make_pair(true, y[i]);
+						}
+						else
+						{
+							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+							left[i] = std::make_pair(true, x[i]);
+							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+							top[i] = std::make_pair(true, y[i]);
+						}
+					}
+					else if (w11 || env.wall.inTopLeftTriangle(x[i]+size[i]-1,y[i]))
+					{
+						x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+						right[i] = std::make_pair(true, x[i]);
+					}
 					else
 					{
-						x[i] = ((x[i]+size[i])/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+						top[i] = std::make_pair(true, y[i]);
+					}
+				}
+				else if (w01)
+				{
+					if (w11 || env.wall.inTopLeftTriangle(x[i],y[i]+size[i]-1))
+					{
+						y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+						bottom[i] = std::make_pair(true, y[i]);
+						x[i] = xTemp[i];
+					}
+					else
+					{
+						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+						left[i] = std::make_pair(true, x[i]);
+					}
+				}
+				else if (w11)
+				{
+					if (env.wall.inTopRightTriangle(x[i]+size[i]-1,y[i]+size[i]-1))
+					{
+						y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+						bottom[i] = std::make_pair(true, y[i]);
+						x[i] = xTemp[i];
+					}
+					else
+					{
+						x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
 						right[i] = std::make_pair(true, x[i]);
 					}
 				}

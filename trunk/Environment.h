@@ -16,26 +16,36 @@ namespace hg {
         //Inlined for performance. Benefit needs to be tested.
         bool at(int x, int y) const
         {
-            if (x < 0 || y < 0)
-            {
-                return true;
-            }
+        	if (x < 0 || y < 0)
+			{
+				return true;
+			}
+        	unsigned aX(x/segmentSize_);
+			unsigned aY(y/segmentSize_);
 
-            unsigned aX(x/segmentSize_);
-            unsigned aY(y/segmentSize_);
-
-            if (aX < wallmap_.size() && aY < wallmap_[aX].size())
-            {
-                return wallmap_[aX][aY];
-            }
-            else
-            {
-                return true;
-            }
+			return (aX >= wallmap_.size() || aY >= wallmap_[aX].size()) || wallmap_[aX][aY];
         }
+
+        bool inTopLeftTriangle(int x, int y) const
+        {
+        	return (x - (x/segmentSize_)*segmentSize_ + y - (y/segmentSize_)*segmentSize_
+    				 < segmentSize_);
+        }
+
+        bool inTopRightTriangle(int x, int y) const
+        {
+        	return (x - (x/segmentSize_)*segmentSize_ > y - (y/segmentSize_)*segmentSize_);
+        }
+
         int segmentSize() const{
             return segmentSize_;
         }
+        int roomWidth() const{
+        	return static_cast<int>(wallmap_.shape()[0] * segmentSize_);
+		}
+		int roomHeight() const{
+			return static_cast<int>(wallmap_.shape()[1] * segmentSize_);
+		}
     private:
         int segmentSize_;
         boost::multi_array<bool, 2> wallmap_;
