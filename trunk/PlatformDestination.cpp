@@ -10,14 +10,36 @@ namespace hg {
             assert(a);
             return a / abs(a);
         }
-        //TODO - optimize/use at some stage
-        template<int power>
-        int pow(int num) {
-            int retv(1);
-            for(int i(0); i < power; ++i) {
+        unsigned pow(unsigned num, unsigned n) {
+            unsigned retv(1);
+            for(unsigned i(0); i < n; ++i) {
                 retv *= num;
             }
             return retv;
+        }
+        //Returns the integer square-root of num.
+        //That is: the greatest integer that is 
+        //less than or equal to the squareroot of num
+        unsigned isqrt(unsigned num) {
+            unsigned guess(1);
+            while (guess * guess <= num) {
+                ++guess;
+            }
+            return guess - 1;
+        }
+        //Returns the integer Nth-root of num.
+        //That is: the greatest integer that is 
+        //less than or equal to the Nth-root of num
+        unsigned inthrt(unsigned num, unsigned n) {
+            unsigned guess(1);
+            while (pow(guess, n) <= num) {
+                ++guess;
+            }
+            return guess - 1;
+        }
+        
+        int square(int num) {
+            return num * num;
         }
     }
 
@@ -58,18 +80,17 @@ namespace hg {
 					// if the platform can still stop if it fully accelerates
 					if (abs(pnv.position - desiredPosition_)
 							>
-                        (static_cast<int>(std::pow(static_cast<double>(
-                            pnv.velocity - direction * acceleration_), 2))
+                        (square(pnv.velocity - direction * acceleration_)
                          * 3 / (2 * deceleration_)))
 					{
 						// fully accelerate
 						pnv.velocity -= direction*acceleration_;
 					}
 					// if the platform can stop if it doesn't accelerate
-					else if (abs(pnv.position - desiredPosition_) > (static_cast<int>(std::pow(static_cast<double>(pnv.velocity),2))*3/(2*deceleration_)))
+					else if (abs(pnv.position - desiredPosition_) > (square(pnv.velocity)*3/(2*deceleration_)))
 					{
 						// set speed to required speed
-						pnv.velocity = -direction*static_cast<int>(std::floor(std::sqrt(static_cast<double>(abs(pnv.position - desiredPosition_)*deceleration_*2/3))));
+						pnv.velocity = -direction*isqrt(abs(pnv.position - desiredPosition_)*deceleration_*2/3);
 					}
 					else
 					{
