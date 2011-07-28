@@ -116,7 +116,8 @@ namespace {
         mt::std::vector<int>::type const& size,
         mt::std::vector<char>::type const& squished,
         mt::std::vector<std::size_t>::type& boxesSoFar,
-        std::size_t index);
+        std::size_t index,
+        int subtractionNumber);
         
     template <typename Type>
     void buildDeparturesForComplexEntities(
@@ -968,7 +969,8 @@ void recursiveBoxCollision(
     mt::std::vector<int>::type const& size,
     mt::std::vector<char>::type const& squished,
     mt::std::vector<std::size_t>::type& boxesSoFar,
-    std::size_t index)
+    std::size_t index,
+    int subtractionNumber) // horizontal wins a tie
 {
 	boxesSoFar.push_back(index);
 
@@ -978,7 +980,7 @@ void recursiveBoxCollision(
 			IntersectingRectanglesExclusive(
                 majorAxis[index], minorAxis[index], size[index], size[index],
                 majorAxis[i], minorAxis[i], size[i], size[i]) &&
-			std::abs(majorAxis[index] - majorAxis[i]) > std::abs(minorAxis[index] - minorAxis[i]))
+			std::abs(majorAxis[index] - majorAxis[i]) > std::abs(minorAxis[index] - minorAxis[i]) - subtractionNumber)
 		{
 			int overlap = -(majorAxis[index] + size[index] - majorAxis[i]); // index must move UP
 			if (majorAxis[i] < majorAxis[index])
@@ -994,7 +996,7 @@ void recursiveBoxCollision(
 			}
 			majorAxis[i] = majorAxis[i] + iMovement;
 
-			recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i);
+			recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i, subtractionNumber);
 		}
 	}
 }
@@ -1191,7 +1193,7 @@ void boxCollisionAlogorithm(
 					w11 = false;
 
 					int xOff = 0;
-					while (xOff < size[i])
+					while (xOff < size[i]-1)
 					{
 						xOff += env.wall.segmentSize();
 						if (xOff > size[i]-1)
@@ -1199,7 +1201,7 @@ void boxCollisionAlogorithm(
 							xOff = size[i]-1;
 						}
 						int yOff = 0;
-						while (yOff < size[i])
+						while (yOff < size[i]-1)
 						{
 							yOff += env.wall.segmentSize();
 							if (yOff > size[i]-1)
@@ -1426,19 +1428,6 @@ void boxCollisionAlogorithm(
 									bottomLinks[j].push_back(i);
 								}
 							}
-							else // left or right
-							{
-								//if (x[i] < x[j]) // i left of j
-								//{
-								//	rightLinks[i].push_back(j);
-								//	leftLinks[j].push_back(i);
-								//}
-								//else // i right of j
-								//{
-								//	leftLinks[i].push_back(j);
-								//	rightLinks[j].push_back(i);
-								//}
-							}
 						}
 					}
 				}
@@ -1483,20 +1472,7 @@ void boxCollisionAlogorithm(
                         && !squished[j] 
                         && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
 					{
-                        if (std::abs(x[i] - x[j]) < std::abs(y[i] - y[j])) // top or bot
-                        {
-                            //if (y[i] < y[j]) // i above j
-                            //{
-                            //	bottomLinks[i].push_back(j);
-                            //	topLinks[j].push_back(i);
-                            //}
-                            //else // i below j
-                            //{
-                            //	topLinks[i].push_back(j);
-                            //	bottomLinks[j].push_back(i);
-                            //}
-                        }
-                        else // left or right
+                        if (std::abs(x[i] - x[j]) >= std::abs(y[i] - y[j])) // left or right
                         {
                             if (x[i] < x[j]) // i left of j
                             {
@@ -1550,7 +1526,7 @@ void boxCollisionAlogorithm(
 			if (!squished[i])
 			{
 			    mt::std::vector<std::size_t>::type pass;
-				recursiveBoxCollision(y, x, size, squished, pass, i);
+				recursiveBoxCollision(y, x, size, squished, pass, i, 0);
 			}
 		}
 
@@ -1560,7 +1536,7 @@ void boxCollisionAlogorithm(
 			if (!squished[i])
 			{
 			    mt::std::vector<std::size_t>::type pass;
-				recursiveBoxCollision(x, y, size, squished, pass, i);
+				recursiveBoxCollision(x, y, size, squished, pass, i, 1);
 			}
 		}
         
@@ -1577,10 +1553,9 @@ void boxCollisionAlogorithm(
 				}
 			}
 		}
-
 		firstTimeThrough = false;
 	}
-    
+
 	// get this junk out of here
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
