@@ -280,15 +280,17 @@ void guyStep(
         {
             x.push_back(guyArrivalList[i].getX());
             y.push_back(guyArrivalList[i].getY());
+            xspeed.push_back(0);
+			yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
         }
         else
         {
             PortalArea const& relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
+            xspeed.push_back(0);
+			yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed() + env.gravity);
         }
-        xspeed.push_back(0);
-        yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
         supported.push_back(false);
         supportedSpeed.push_back(0);
         squished.push_back(false);
@@ -720,8 +722,8 @@ void guyStep(
 						normalDeparture = false;
 						illegalPortal = nextPortal[j].getIllegalDestination();
 						relativeToPortal = nextPortal[j].getDestinationIndex();
-						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
-						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
+						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
 						break;
                     }
                 }
@@ -760,8 +762,8 @@ void guyStep(
 						normalDeparture = false;
 						illegalPortal = nextPortal[j].getIllegalDestination();
 						relativeToPortal = nextPortal[j].getDestinationIndex();
-						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
-						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
+						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
 						break;
 					}
 				}
@@ -851,6 +853,8 @@ void makeBoxAndTimeWithPortals(
                 relativeToPortal = nextPortal[i].getDestinationIndex();
                 x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
                 y = y - nextPortal[i].getY() + nextPortal[i].getYdestination();
+                xspeed = xspeed - nextPortal[i].getXspeed();
+                yspeed = yspeed - nextPortal[i].getXspeed();
                 break;
             }
         }
@@ -1026,15 +1030,17 @@ void boxCollisionAlogorithm(
         {
             xTemp[i] = oldBoxList[i].getX();
             yTemp[i] = oldBoxList[i].getY();
+            x[i] = xTemp[i] + oldBoxList[i].getXspeed();
+			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
         }
         else
         {
             PortalArea const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
             xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
             yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
+            x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
+			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + relativePortal.getYspeed() + env.gravity;
         }
-        x[i] = xTemp[i] + oldBoxList[i].getXspeed();
-        y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
         size[i] = oldBoxList[i].getSize();
 	}
 

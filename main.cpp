@@ -523,7 +523,7 @@ boost::multi_array<bool, 2> MakeWall()
     E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
     E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
     E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
     E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
     E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
     E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
@@ -627,12 +627,12 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
     ObjectList<Normal> newObjectList;
 
     newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(46400, 14200, -10000, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(46400, 17600, -1000, -5000, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS));
-   newObjectList.add(Box(6400, 15600, 10000, -500, 3200, -1, -1, FORWARDS));
-    //newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
+    newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
 
     newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, mt::std::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0));
     newObjectList.sort();
