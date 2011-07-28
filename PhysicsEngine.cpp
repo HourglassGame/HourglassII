@@ -14,7 +14,6 @@
 #include "mt/std/vector"
 
 #include <cassert>
-#include <cmath>
 
 #define foreach BOOST_FOREACH
 
