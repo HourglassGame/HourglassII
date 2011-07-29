@@ -3,6 +3,7 @@
 #include <boost/range/algorithm/unique.hpp>
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/swap.hpp>
+#include <tbb/parallel_sort.h>
 #include <cassert>
 namespace hg {
 
@@ -45,7 +46,8 @@ void FrameUpdateSet::swap(FrameUpdateSet& other)
 void FrameUpdateSet::make_set() const
 {
     if (!isSet_) {
-        boost::erase(updateSet_, boost::unique<boost::return_found_end>(boost::sort(updateSet_)));
+        tbb::parallel_sort(updateSet_.begin(), updateSet_.end());
+        boost::erase(updateSet_, boost::unique<boost::return_found_end>(updateSet_));
         isSet_ = true;
     }
 }

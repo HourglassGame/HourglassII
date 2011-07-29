@@ -3,6 +3,8 @@
 
 #include <boost/range.hpp>
 #include <boost/operators.hpp>
+#include <istream>
+#include <ostream>
 #include <vector>
 
 #include "FrameID_fwd.h"
@@ -33,6 +35,16 @@ private:
     {
         (void)version;
         ar & timelineLength_;
+    }
+        inline friend std::ostream& operator<<(std::ostream& os, UniverseID const& toPrint)
+    {
+        os << toPrint.timelineLength_;
+        return os;
+    }
+    inline friend std::istream& operator>>(std::istream& is, UniverseID& toRead)
+    {
+        is >> toRead.timelineLength_;
+        return is;
     }
     friend class Universe;
     friend class FrameID;

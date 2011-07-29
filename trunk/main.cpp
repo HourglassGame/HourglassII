@@ -71,6 +71,8 @@ namespace {
     
     std::vector<InputList> loadReplay();
     void saveReplay(std::vector<InputList> const& replay);
+    void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend);
+    void generateReplay();
 }
 
 int main(int argc, char const* const argv[])
@@ -92,6 +94,10 @@ int main(int argc, char const* const argv[])
     std::vector<InputList> replay;
     std::vector<InputList>::const_iterator currentReplayIt(replay.begin());
     std::vector<InputList>::const_iterator currentReplayEnd(replay.end());
+    //Saves a replay continuously, butin a less nice format.
+    //Gets rewritten whenever the level is reset.
+    //Useful for tracking down crashes.
+    std::ofstream replayLogOut("replayLogOut");
     while (app.IsOpened()) {
         Event event;
         while (app.GetEvent(event))
@@ -128,6 +134,9 @@ int main(int argc, char const* const argv[])
                 case sf::Key::S:
                     saveReplay(timeEngine.getReplayData());
                     break;
+                case sf::Key::G:
+                    //Generate a replay from replayLogIn
+                    generateReplay();
                 default:
                     break;
                 }
@@ -138,6 +147,7 @@ int main(int argc, char const* const argv[])
         }
         try {
             if (currentReplayIt != currentReplayEnd) {
+                saveReplayLog(replayLogOut, *currentReplayIt);
                 runStep(timeEngine, app, wall, inertia, *currentReplayIt);
                 ++currentReplayIt;
                 sf::String replayGlyph("R");
@@ -148,6 +158,7 @@ int main(int argc, char const* const argv[])
             }
             else {
                 input.updateState(app.GetInput());
+                saveReplayLog(replayLogOut, input.AsInputList());
                 runStep(timeEngine, app, wall, inertia, input.AsInputList());
             }
 
@@ -505,7 +516,19 @@ void saveReplay(std::vector<InputList> const& replay)
     boost::archive::text_oarchive oa(ofs);
     oa << replay;
 }
-
+void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend)
+{
+    toAppendTo << toAppend << " " << std::flush;
+}
+void generateReplay()
+{
+    std::ifstream replayLogIn("replayLogIn");
+    if (replayLogIn.is_open()) {
+        std::vector<InputList> replay;
+        replay.assign(std::istream_iterator<InputList>(replayLogIn), std::istream_iterator<InputList>());
+        saveReplay(replay);
+    }
+}
 
 boost::multi_array<bool, 2> MakeWall()
 {

@@ -7,6 +7,8 @@
 #include "Frame_fwd.h"
 
 #include <cstddef>
+#include <istream>
+#include <ostream>
 
 namespace boost {
     namespace serialization {
@@ -53,6 +55,18 @@ private:
         (void)version;
         ar & frame_;
         ar & universeID_;
+    }
+    inline friend std::ostream& operator<<(std::ostream& os, FrameID const& toPrint)
+    {
+        os << toPrint.frame_ << " ";
+        os << toPrint.universeID_;
+        return os;
+    }
+    inline friend std::istream& operator>>(std::istream& is, FrameID& toRead)
+    {
+        is >> toRead.frame_;
+        is >> toRead.universeID_;
+        return is;
     }
     //positiong of frame within universeID_
     std::size_t frame_;
