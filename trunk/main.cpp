@@ -119,12 +119,16 @@ int main(int argc, char const* const argv[])
                 case sf::Key::R:
                     currentReplayIt = replay.end();
                     currentReplayEnd = replay.end();
+                    replayLogOut.close();
+                    replayLogOut.open("replayLogOut");
                     TimeEngine(MakeLevel(wall)).swap(timeEngine);
                     break;
                 case sf::Key::L:
                     loadReplay().swap(replay);
                     currentReplayIt = replay.begin();
                     currentReplayEnd = replay.end();
+                    replayLogOut.close();
+                    replayLogOut.open("replayLogOut");
                     TimeEngine(MakeLevel(wall)).swap(timeEngine);
                     break;
                 case sf::Key::P:
