@@ -3,6 +3,9 @@
 #include "FrameID.h"
 #include "Ability.h"
 
+#include <istream>
+#include <ostream>
+
 #include <cassert>
 
 namespace boost {
@@ -41,8 +44,6 @@ public:
         assert(false);
         return FrameID();
     }
-
-private:
     InputList() :
         left(false),
         right(false),
@@ -54,7 +55,10 @@ private:
         frameIdParamCount(0)
     {
     }
+private:
+
     
+    //Crappy serialization
     friend class boost::serialization::access;
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
@@ -79,6 +83,33 @@ private:
     Ability ability;
     FrameID frameIdParams;
     int frameIdParamCount;
+    //more crappy serialization
+    inline friend std::ostream& operator<<(std::ostream& os, InputList const& toPrint)
+    {
+        os << toPrint.left << " ";
+        os << toPrint.right << " ";
+        os << toPrint.up << " ";
+        os << toPrint.down << " ";
+        os << toPrint.use << " ";
+        os << toPrint.ability << " ";
+        os << toPrint.frameIdParams << " ";
+        os << toPrint.frameIdParamCount;
+        return os;
+    }
+    inline friend std::istream& operator>>(std::istream& is, InputList& toRead)
+    {
+        is >> toRead.left;
+        is >> toRead.right;
+        is >> toRead.up;
+        is >> toRead.down;
+        is >> toRead.use;
+        int ability;
+        is >> ability;
+        toRead.ability = static_cast<Ability>(ability);
+        is >> toRead.frameIdParams;
+        is >> toRead.frameIdParamCount;
+        return is;
+    }
 };
 }
 #endif //HG_INPUT_LIST_H
