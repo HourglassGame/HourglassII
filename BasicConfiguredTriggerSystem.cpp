@@ -141,7 +141,7 @@ PhysicsAffectingStuff
 {
     typedef boost::transformed_range<
         GetBase<TriggerDataConstPtr>,
-        std::vector<TriggerDataConstPtr> const > TriggerDataConstPtrRange;
+        std::vector<TriggerDataConstPtr> const > TriggerDataRange;
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
@@ -154,7 +154,7 @@ PhysicsAffectingStuff
                     offsetAndDefault.second.end()));
     }
     
-    foreach (TriggerDataConstPtrRange::value_type const& arrival, triggerArrivals) {
+    foreach (TriggerDataRange::value_type const& arrival, triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }
     

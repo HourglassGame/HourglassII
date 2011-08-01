@@ -65,7 +65,7 @@ namespace hg {
 			}
 			else
 			{
-				int direction(abs(pnv.position - desiredPosition_)/(pnv.position - desiredPosition_));
+				int direction(sign(pnv.position - desiredPosition_));
 
 				if (pnv.velocity * direction > 0)
 				{
@@ -75,28 +75,26 @@ namespace hg {
 						pnv.velocity = 0;
 					}
 				}
-				else
-				{
-					// if the platform can still stop if it fully accelerates
-					if (abs(pnv.position - desiredPosition_)
+                // if the platform can still stop if it fully accelerates
+				else if (abs(pnv.position - desiredPosition_)
 							>
                         (square(pnv.velocity - direction * acceleration_)
                          * 3 / (2 * deceleration_)))
-					{
-						// fully accelerate
-						pnv.velocity -= direction*acceleration_;
-					}
-					// if the platform can stop if it doesn't accelerate
-					else if (abs(pnv.position - desiredPosition_) > (square(pnv.velocity)*3/(2*deceleration_)))
-					{
-						// set speed to required speed
-						pnv.velocity = -direction*isqrt(abs(pnv.position - desiredPosition_)*deceleration_*2/3);
-					}
-					else
-					{
-						pnv.velocity += direction*deceleration_;
-					}
-				}
+                {
+                    // fully accelerate
+                    pnv.velocity -= direction*acceleration_;
+                }
+                // if the platform can stop if it doesn't accelerate
+                else if (abs(pnv.position - desiredPosition_) > (square(pnv.velocity)*3/(2*deceleration_)))
+                {
+                    // set speed to required speed
+                    pnv.velocity = -direction*isqrt(abs(pnv.position - desiredPosition_)*deceleration_*2/3);
+                }
+                else
+                {
+                    pnv.velocity += direction*deceleration_;
+                }
+				
 			}
 		}
 		else
