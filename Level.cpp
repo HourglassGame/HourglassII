@@ -4,15 +4,17 @@ Level::Level(
     unsigned nspeedOfTime,
     std::size_t ntimeLineLength,
     Environment const& nenvironment,
-    ObjectList<Normal> const& ninitialObjects,
+    ObjectList<NonGuyDynamic> const& ninitialObjects,
+    Guy const& ninitialGuy,
     FrameID const& nguyStartTime,
-    NewOldTriggerSystem const& nnewOldTriggerSystem) :
+    TriggerSystem const& ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timeLineLength(ntimeLineLength),
         environment(nenvironment),
         initialObjects(ninitialObjects),
+        initialGuy(ninitialGuy),
         guyStartTime(nguyStartTime),
-        newOldTriggerSystem(nnewOldTriggerSystem)
+        triggerSystem(ntriggerSystem)
 {
 }
 }

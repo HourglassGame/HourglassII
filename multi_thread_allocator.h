@@ -11,6 +11,7 @@ namespace hg {
     template<typename T> struct multi_thread_allocator {
         typedef tbb::scalable_allocator<T> type;
     };
+
     //Versions of the C library functions to use
     //when multiple threads may be performing allocations/deallocations
     //simultaneously.
@@ -18,5 +19,23 @@ namespace hg {
     inline void  multi_thread_free(void* p) { return scalable_free(p); }
     inline void* multi_thread_calloc(size_t n, size_t size) { return scalable_calloc(n, size); }
     inline void* multi_thread_realloc(void* p, size_t size) { return scalable_realloc(p, size); }
+    
+    inline void* multi_thread_operator_new(std::size_t size) {
+        while (true) {
+            if (void* pointer = multi_thread_malloc(size)) {
+                return pointer;
+            }
+            if (std::new_handler handler = std::set_new_handler(0)) {
+                std::set_new_handler(handler);
+                (*handler)();
+            }
+            else {
+                throw std::bad_alloc();
+            }
+        }
+    }
+    inline void multi_thread_operator_delete(void* p) {
+        multi_thread_free(p);
+    }
 }
 #endif //HG_MULTI_THREAD_ALLOCATOR_H

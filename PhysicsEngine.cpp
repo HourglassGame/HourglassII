@@ -22,9 +22,9 @@ enum { JUMP_SPEED 	= -550 };
 
 PhysicsEngine::PhysicsEngine(
     Environment const& env,
-    NewOldTriggerSystem const& newTriggerSystem) :
+    TriggerSystem const& triggerSystem) :
         env_(env),
-        newTriggerSystem_(newTriggerSystem)
+        triggerSystem_(triggerSystem)
 {
 }
 namespace {
@@ -145,7 +145,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     Frame* time,
     std::vector<InputList> const& playerInput) const
 {
-    NewOldTriggerFrameState triggerFrameState(newTriggerSystem_.getFrameState());
+    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState());
     
     //{extra boxes, collision, death, portal, pickup, arrival location}    
     PhysicsAffectingStuff const physicsTriggerStuff(

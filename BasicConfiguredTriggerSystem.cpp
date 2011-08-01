@@ -1,17 +1,18 @@
-#include "TriggerSystem.h"
-#include "Frame.h"
-#include "Universe.h"
-#include <boost/range/adaptor/transformed.hpp>
-#include <boost/range/adaptor/indirected.hpp>
-#include <boost/range/algorithm/find.hpp>
-#include <boost/range/algorithm_ext/push_back.hpp>
-#include <boost/call_traits.hpp>
-#include <boost/foreach.hpp>
-#include <boost/range.hpp>
-#define foreach BOOST_FOREACH
-#if 0
-namespace hg {
+/*
+ *  BasicConfiguredTriggerSystem.cpp
+ *  HourglassSetupTest
+ *
+ *  Created by Evan Wallace on 30/07/11.
+ *  Copyright 2011 Team Causality. All rights reserved.
+ *
+ */
 
+#include "BasicConfiguredTriggerSystem.h"
+#include "ProtoStuff.h"
+#include <boost/foreach.hpp>
+#include "Universe.h"
+#define foreach BOOST_FOREACH
+namespace hg {
 namespace {
 struct GetTriggerValue : 
     std::unary_function<
@@ -133,7 +134,7 @@ mt::std::vector<RectangleGlitz>::type calculatePortalGlitz(mt::std::vector<Porta
 }//namespace
 
 PhysicsAffectingStuff
-    NewOldTriggerFrameState::calculatePhysicsAffectingStuff(
+    BasicConfiguredTriggerFrameState::calculatePhysicsAffectingStuff(
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::std::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
@@ -308,7 +309,7 @@ std::pair<
     mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
     mt::std::vector<RectangleGlitz>::type
 > 
-NewOldTriggerFrameState::getTriggerDeparturesAndGlitz(
+BasicConfiguredTriggerFrameState::getTriggerDeparturesAndGlitz(
     mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
@@ -324,13 +325,11 @@ NewOldTriggerFrameState::getTriggerDeparturesAndGlitz(
     return std::make_pair(calculateActualTriggerDepartures(triggers, triggerSystem.triggerOffsetsAndDefaults, currentFrame), glitzStore);
 }
 
-NewOldTriggerFrameState::NewOldTriggerFrameState(NewOldTriggerSystem const& triggerSys) :
+BasicConfiguredTriggerFrameState::BasicConfiguredTriggerFrameState(BasicConfiguredTriggerSystem const& triggerSys) :
     buttonStore(),
     triggers(boost::distance(triggerSys.triggerOffsetsAndDefaults)),
     glitzStore(),
     triggerSystem(triggerSys)
 {
 }
-
 }//namespace hg
-#endif
