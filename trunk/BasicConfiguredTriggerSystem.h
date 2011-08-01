@@ -64,8 +64,8 @@ class BasicConfiguredTriggerSystem :
 {
     public:
     virtual TriggerFrameState getFrameState() const {
-        //Unfortunately this cannot be made into a function,
-        //due to the lack of perfect forwarding in C++03
+        //Unfortunately (due to the lack of perfect forwarding in C++03)
+        //this cannot be made into a function.
         //This should be the equivalent to:
         //  return new BasicConfiguredTriggerFrameState(*this);
         //except using a custom allocation function.

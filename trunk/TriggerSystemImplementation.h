@@ -27,7 +27,7 @@ class TriggerFrameStateImplementation
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
-                
+    
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter) = 0;
@@ -140,10 +140,10 @@ class TriggerFrameState
     //}
     //must release impl.
     //THIS MEANS THAT impl MUST HAVE BEEN ALLOCATED IN A SPECIAL WAY!!
-    TriggerFrameState(TriggerFrameStateImplementation* impl) :
+    explicit TriggerFrameState(TriggerFrameStateImplementation* impl) :
         impl_(impl)
     {}
-    TriggerFrameState(TriggerFrameStateMove_t const& trule) :
+    explicit TriggerFrameState(TriggerFrameStateMove_t const& trule) :
         impl_(0)
     {
         this->swap(*trule);
