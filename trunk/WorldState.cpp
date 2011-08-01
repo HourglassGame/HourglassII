@@ -31,9 +31,10 @@ private:
 };
 WorldState::WorldState(
     std::size_t timelineLength,
-    const FrameID& guyStartTime,
-    const PhysicsEngine& physics,
-    const ObjectList<Normal> & initialObjects) :
+    Guy const& initialGuy,
+    FrameID const& guyStartTime,
+    PhysicsEngine const& physics,
+    ObjectList<NonGuyDynamic> const& initialObjects) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
@@ -56,9 +57,8 @@ WorldState::WorldState(
         }
         
         // guy
-        assert(initialObjects.getList<Guy>().size() == 1
-               && "This should throw an exception rather than be an assert, but I can't be bothered right now");
-        initialArrivals[guyStartFrame].add(initialObjects.getList<Guy>()[0]);
+        assert(initialGuy.getIndex() == 0);
+        initialArrivals[guyStartFrame].add(initialGuy);
 
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }

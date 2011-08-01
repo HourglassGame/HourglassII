@@ -13,6 +13,10 @@ namespace hg {
             Box,
             TriggerData
         > Normal;
+    typedef
+        boost::fusion::vector<
+            Box
+        > NonGuyDynamic;
 }
 #endif //HG_ARRIVAL_DEPARTURE_TYPES_H
 

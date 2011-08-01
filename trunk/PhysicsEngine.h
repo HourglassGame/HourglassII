@@ -20,7 +20,7 @@ class PhysicsEngine
 public:
     PhysicsEngine(
         Environment const& env,
-        NewOldTriggerSystem const& newTriggerSystem);
+        TriggerSystem const& newTriggerSystem);
     typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
     typedef mt::std::vector<RectangleGlitz>::type NewGlitzType;
     struct PhysicsReturnT
@@ -51,7 +51,7 @@ public:
         std::vector<InputList> const& playerInput) const;
 private:
     Environment env_;
-    NewOldTriggerSystem newTriggerSystem_;
+    TriggerSystem triggerSystem_;
 };
 }//namespace hg
 #endif //HG_PHYSICS_ENGINE_H

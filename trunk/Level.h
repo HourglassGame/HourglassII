@@ -15,16 +15,18 @@ public:
         unsigned nspeedOfTime,
         std::size_t ntimeLineLength,
         Environment const& nenvironment,
-        ObjectList<Normal> const& ninitialObjects,
+        ObjectList<NonGuyDynamic> const& ninitialObjects,
+        Guy const& ninitialGuy,
         FrameID const& nguyStartTime,
-        NewOldTriggerSystem const& nnewOldTriggerSystem);
+        TriggerSystem const& ntriggerSystem);
 
     unsigned speedOfTime;
     std::size_t timeLineLength;
     Environment environment;
-    ObjectList<Normal> initialObjects;
+    ObjectList<NonGuyDynamic> initialObjects;
+    Guy initialGuy;
     FrameID guyStartTime;
-    NewOldTriggerSystem newOldTriggerSystem;
+    TriggerSystem triggerSystem;
 };
 }
 #endif //HG_LEVEL_H

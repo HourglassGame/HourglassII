@@ -26,9 +26,10 @@ public:
     //Exception Safety: Strong
     WorldState(
         std::size_t timelineLength,
+        Guy const& initialGuy,
         FrameID const& guyStartTime,
         PhysicsEngine const& physics,
-        ObjectList<Normal> const& initialObjects);
+        ObjectList<NonGuyDynamic> const& initialObjects);
 
     void swap(WorldState& other);
 

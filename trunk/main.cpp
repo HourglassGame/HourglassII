@@ -41,6 +41,8 @@
 
 #include <cmath>
 
+#include "BasicConfiguredTriggerSystem.h"
+
 typedef sf::Color Colour;
 #define foreach BOOST_FOREACH
 using namespace hg;
@@ -94,7 +96,7 @@ int main(int argc, char const* const argv[])
     std::vector<InputList> replay;
     std::vector<InputList>::const_iterator currentReplayIt(replay.begin());
     std::vector<InputList>::const_iterator currentReplayEnd(replay.end());
-    //Saves a replay continuously, butin a less nice format.
+    //Saves a replay continuously, but in a less nice format.
     //Gets rewritten whenever the level is reset.
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
@@ -458,20 +460,44 @@ void DrawTimeline(
     foreach(FrameUpdateSet const& lists, waves) {
         foreach (Frame* frame, lists) {
             if (frame) {
-                if (!pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(getFrameNumber(frame)/10800.*640)]) {
-                    target.Draw(
-                        Shape::Rectangle(
-                            static_cast<int>(getFrameNumber(frame)/10800.*640),
-                            10,
-                            static_cast<int>(getFrameNumber(frame)/10800.*640+1),
-                            25,
-                            Colour(250,0,0)));
-                    pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(getFrameNumber(frame)/10800.*640)] = true;
-                }
+                pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(getFrameNumber(frame)/10800.*640)] = true;
             }
             else {
                 assert(false && "I don't think that invalid frames can get updated");
             }
+        }
+        bool inWaveRegion = false;
+        int leftOfWaveRegion = 0;
+        for (int i = 0; i != sizeof(pixelsWhichHaveBeenDrawnIn) / sizeof(bool); ++i) {
+            bool pixelOn = pixelsWhichHaveBeenDrawnIn[i];
+            if (pixelOn) {
+                if (!inWaveRegion) {
+                    leftOfWaveRegion = i;
+                    inWaveRegion = true;
+                }
+            }
+            else {
+                if (inWaveRegion) {
+                    target.Draw(
+                        Shape::Rectangle(
+                            static_cast<int>(leftOfWaveRegion),
+                            10,
+                            static_cast<int>(i),
+                            25,
+                            Colour(250,0,0)));
+                    inWaveRegion = false;
+                }
+            }
+        }
+        //Draw when waves extend to far right.
+        if (inWaveRegion) {
+            target.Draw(
+                Shape::Rectangle(
+                    static_cast<int>(leftOfWaveRegion),
+                    10,
+                    static_cast<int>(640),
+                    25,
+                    Colour(250,0,0)));
         }
     }
     if (playerFrame.isValidFrame()) {
@@ -573,7 +599,7 @@ boost::multi_array<bool, 2> MakeWall()
     return actualWall;
 }
 
-NewOldTriggerSystem makeNewOldTriggerSystem()
+TriggerSystem makeBasicConfiguredTriggerSystem()
 {
     std::vector<ProtoPortal> protoPortals;
     protoPortals.push_back(
@@ -642,16 +668,17 @@ NewOldTriggerSystem makeNewOldTriggerSystem()
     defaultPlatformPositionAndVelocity.push_back(0);
     triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
     
-    return NewOldTriggerSystem(
-        protoPortals,
-        protoPlatforms,
-        protoButtons,
-        triggerOffsetsAndDefaults);
+    return TriggerSystem(
+        new BasicConfiguredTriggerSystem(
+            protoPortals,
+            protoPlatforms,
+            protoButtons,
+            triggerOffsetsAndDefaults));
 }
 
 Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
-    ObjectList<Normal> newObjectList;
+    ObjectList<NonGuyDynamic> newObjectList;
 
     newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS));
@@ -660,8 +687,7 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
     newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
     newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
-
-    newObjectList.add(Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, mt::std::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0));
+    
     newObjectList.sort();
     
     return
@@ -674,7 +700,8 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
                     wall),
                 30),
             newObjectList,
+            Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, mt::std::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0),
             FrameID(0,UniverseID(10800)),
-            makeNewOldTriggerSystem());
+            makeBasicConfiguredTriggerSystem());
 }
 }
