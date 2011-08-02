@@ -41,17 +41,17 @@ PositionAndVelocity2D snapAttachment(
     int y;
     int xSpeed;
     int ySpeed;
-    if (attachment_.platformIndex != std::numeric_limits<std::size_t>::max()) {
-        Collision const& collision(collisions[attachment_.platformIndex]);
-        if (collision.getTimeDirection() * timeDirection_ == FORWARDS) {
-            x = collision.getX() + attachment_.xOffset;
-            y = collision.getY() + attachment_.yOffset;
+    if (attachment.platformIndex != std::numeric_limits<std::size_t>::max()) {
+        Collision const& collision(collisions[attachment.platformIndex]);
+        if (collision.getTimeDirection() * timeDirection == FORWARDS) {
+            x = collision.getX() + attachment.xOffset;
+            y = collision.getY() + attachment.yOffset;
             xSpeed = collision.getXspeed();
             ySpeed = collision.getYspeed();
         }
         else {
-            x = collision.getX() - collision.getXspeed() + attachment_.xOffset;
-            y = collision.getY() - collision.getYspeed() + attachment_.yOffset;
+            x = collision.getX() - collision.getXspeed() + attachment.xOffset;
+            y = collision.getY() - collision.getYspeed() + attachment.yOffset;
             //Speed should be (departure location - arrival location), but unfortunately
             //portals neither depart nor arrive. speed = -collision.getspeed(); gives the correct result
             //See this example:
@@ -70,8 +70,8 @@ PositionAndVelocity2D snapAttachment(
         }
     }
     else {
-        x = attachment_.xOffset;
-        y = attachment_.yOffset;
+        x = attachment.xOffset;
+        y = attachment.yOffset;
         xSpeed = 0;
         ySpeed = 0;
     }
@@ -107,6 +107,6 @@ PortalArea ProtoPortal::calculatePortalArea(
 PositionAndVelocity2D ProtoButton::calculatePositionAndVelocity2D(
         mt::std::vector<Collision>::type const& collisions) const
 {
-    return snapAttachment(timeDirection_, attachment_, collisions)
+    return snapAttachment(timeDirection_, attachment_, collisions);
 }
 }

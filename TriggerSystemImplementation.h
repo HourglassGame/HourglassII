@@ -79,7 +79,7 @@ struct TriggerFrameStateMove_t
         return &tfs_;
     }
 private:
-    void operator=(TriggerFrameStateMove_t&);
+    TriggerFrameStateMove_t& operator=(TriggerFrameStateMove_t&);
 };
 
 //Moveable but non-copyable.
@@ -132,6 +132,7 @@ class TriggerFrameState
     //but may be swapped with a TriggerFrameState that does.
     TriggerFrameState() : impl_(0)
     {}
+
     //Takes ownership of impl
     //pre:
     //if (impl) {
@@ -143,10 +144,25 @@ class TriggerFrameState
     explicit TriggerFrameState(TriggerFrameStateImplementation* impl) :
         impl_(impl)
     {}
-    explicit TriggerFrameState(TriggerFrameStateMove_t const& trule) :
+    TriggerFrameState(TriggerFrameStateMove_t mover) :
         impl_(0)
     {
-        this->swap(*trule);
+        this->swap(*mover);
+    }
+    TriggerFrameState& operator=(TriggerFrameStateMove_t mover)
+    {
+        this->swap(*mover);
+        return *this;
+    }
+    TriggerFrameState(TriggerFrameState& other) :
+        impl_(0)
+    {
+        swap(other);
+    }
+    TriggerFrameState& operator=(TriggerFrameState& other)
+    {
+        swap(other);
+        return *this;
     }
     TriggerFrameStateMove_t move()
     {
