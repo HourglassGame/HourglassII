@@ -9,8 +9,10 @@
 
 #include "BasicConfiguredTriggerSystem.h"
 #include "ProtoStuff.h"
-#include <boost/foreach.hpp>
 #include "Universe.h"
+#include "CommonTriggerCode.h"
+
+#include <boost/foreach.hpp>
 #define foreach BOOST_FOREACH
 namespace hg {
 namespace {
@@ -139,25 +141,8 @@ PhysicsAffectingStuff
             GetBase<TriggerDataConstPtr>,
             mt::std::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
 {
-    typedef boost::transformed_range<
-        GetBase<TriggerDataConstPtr>,
-        std::vector<TriggerDataConstPtr> const > TriggerDataRange;
-    //trigger arrivals with defaults for places where none arrived in triggerArrivals
-    //index field replaced by position in list.
-    mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
-    apparentTriggers.reserve(boost::distance(triggerSystem.triggerOffsetsAndDefaults));
-    typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
-    foreach (TriggerOffsetAndDefault const& offsetAndDefault, triggerSystem.triggerOffsetsAndDefaults) {
-        apparentTriggers.push_back(
-            mt::std::vector<int>::type(
-                    offsetAndDefault.second.begin(),
-                    offsetAndDefault.second.end()));
-    }
-    
-    foreach (TriggerDataRange::value_type const& arrival, triggerArrivals) {
-        apparentTriggers[arrival.getIndex()] = arrival.getValue();
-    }
-    
+    mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers(
+        calculateApparentTriggers(triggerSystem.triggerOffsetsAndDefaults, triggerArrivals));
     PhysicsAffectingStuff retv;
     //platforms always exist
     retv.collisions = calculatePlatforms(triggerSystem.protoPlatforms_, apparentTriggers);

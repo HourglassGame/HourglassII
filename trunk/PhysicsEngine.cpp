@@ -57,6 +57,7 @@ namespace {
         mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
         mt::std::vector<Collision>::type const& nextPlatform,
         mt::std::vector<PortalArea>::type const& nextPortal,
+        mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
         bool& currentPlayerFrame,
         bool& nextPlayerFrame,
         bool& winFrame);
@@ -64,13 +65,15 @@ namespace {
     template <
         typename RandomAccessBoxRange,
         typename RandomAccessPortalRange,
-        typename RandomAccessPlatformRange>
+        typename RandomAccessPlatformRange,
+        typename RandomAccessArrivalLocationRange>
     void boxCollisionAlogorithm(
-        const Environment& env,
-        const RandomAccessBoxRange& oldBoxList,
+        Environment const& env,
+        RandomAccessBoxRange const& oldBoxList,
         mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
-        const RandomAccessPlatformRange& nextPlatform,
-        const RandomAccessPortalRange& nextPortal,
+        RandomAccessPlatformRange const& nextPlatform,
+        RandomAccessPortalRange const& nextPortal,
+        RandomAccessArrivalLocationRange const& arrivalLocations,
         Frame* time);
     
     template <
@@ -158,8 +161,9 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         env_,
         arrivals.getList<Box>(),
         nextBox,
-        physicsTriggerStuff.collisions/*staticDepartures.getList<Platform>()*/,
-        physicsTriggerStuff.portals/*staticDepartures.getList<Portal>()*/,
+        physicsTriggerStuff.collisions,
+        physicsTriggerStuff.portals,
+        physicsTriggerStuff.arrivalLocations,
         time);
 
     bool currentPlayerFrame(false);
@@ -180,6 +184,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         nextBox,
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
+        physicsTriggerStuff.arrivalLocations,
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);
@@ -249,6 +254,7 @@ void guyStep(
     mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
     mt::std::vector<Collision>::type const& nextPlatform,
     mt::std::vector<PortalArea>::type const& nextPortal,
+    mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame)
@@ -284,7 +290,7 @@ void guyStep(
         }
         else
         {
-            PortalArea const& relativePortal(nextPortal[guyArrivalList[i].getRelativeToPortal()]);
+            ArrivalLocation const& relativePortal(arrivalLocations[guyArrivalList[i].getRelativeToPortal()]);
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
             xspeed.push_back(0);
@@ -1007,13 +1013,15 @@ void recursiveBoxCollision(
 template <
     typename RandomAccessBoxRange,
     typename RandomAccessPortalRange,
-    typename RandomAccessPlatformRange>
+    typename RandomAccessPlatformRange,
+    typename RandomAccessArrivalLocationRange>
 void boxCollisionAlogorithm(
     Environment const& env,
     RandomAccessBoxRange const& oldBoxList,
     mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
+    RandomAccessArrivalLocationRange const& arrivalLocations,
     Frame* time)
 {
 	mt::std::vector<int>::type x(oldBoxList.size());
@@ -1034,7 +1042,7 @@ void boxCollisionAlogorithm(
         }
         else
         {
-            PortalArea const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
+            ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getRelativeToPortal()]);
             xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
             yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
             x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
@@ -1582,7 +1590,7 @@ void boxCollisionAlogorithm(
 			}
 			else
 			{
-				PortalArea const& relativePortal(nextPortal[oldBoxList[i].getRelativeToPortal()]);
+				ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getRelativeToPortal()]);
 				makeBoxAndTimeWithPortals(
                     nextBox,
                     nextPortal,
