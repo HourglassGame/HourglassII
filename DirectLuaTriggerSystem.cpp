@@ -539,7 +539,7 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
                 
                 lua_rawseti(L_.ptr, -2, j);
             }
-            lua_setfield(L_.ptr, -2, "guyes");
+            lua_setfield(L_.ptr, -2, "guys");
         }
         {
             lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Box>().size()), 0);
@@ -556,8 +556,10 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
                 lua_setfield(L_.ptr, -2, "xspeed");
                 lua_pushinteger(L_.ptr, box.getYspeed());
                 lua_setfield(L_.ptr, -2, "yspeed");
-                lua_pushinteger(L_.ptr, box.getSize());
-                lua_setfield(L_.ptr, -2, "size");
+                lua_pushinteger(L_.ptr, box.getWidth());
+                lua_setfield(L_.ptr, -2, "width");
+                lua_pushinteger(L_.ptr, box.getHeight());
+                lua_setfield(L_.ptr, -2, "height");
                 if (box.getIllegalPortal() != -1) {
                     lua_pushinteger(L_.ptr, box.getIllegalPortal() + 1);
                     lua_setfield(L_.ptr, -2, "illegalPortal");
@@ -573,7 +575,7 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             }
             lua_setfield(L_.ptr, -2, "boxes");
         }
-        lua_rawseti(L_.ptr, -1, i);
+        lua_rawseti(L_.ptr, -2, i);
     }
     //]
     //call function
@@ -609,7 +611,6 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
         triggers.push_back(TriggerData(index, value));
         lua_pop(L_.ptr, 1);
     }
-    std::cout << "triggers.size(): " << triggers.size() << "\n";
     //read glitz return value
     //Glitz  return value looks like this:
     /*
@@ -646,7 +647,6 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             lua_pop(L_.ptr, 1);
         }
     }
-    //std::cout << "glitz.size(): " << glitz.size() << "\n";
     
     //pop return values
     lua_pop(L_.ptr, 2);
