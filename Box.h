@@ -11,7 +11,7 @@ public:
         int xspeed, int yspeed,
         int size,
         int illegalPortal,
-        int relativeToPortal,
+        int arrivalBasis,
         TimeDirection timeDirection);
     Box(Box const& other, TimeDirection timeDirection);
 
@@ -23,7 +23,7 @@ public:
     int getWidth()  const { return size_; }
     int getHeight() const { return size_; }
     int getIllegalPortal()    const { return illegalPortal_; }
-	int getRelativeToPortal() const { return relativeToPortal_; }
+	int getArrivalBasis() const { return arrivalBasis_; }
     TimeDirection 
         getTimeDirection()    const { return timeDirection_; }
 
@@ -39,7 +39,7 @@ private:
     int size_;
 
     int illegalPortal_;
-    int relativeToPortal_;
+    int arrivalBasis_;
 
     TimeDirection timeDirection_;
 };
@@ -59,7 +59,7 @@ public:
     int getWidth()  const { return box_->getWidth(); }
     int getHeight() const { return box_->getHeight(); }
     int getIllegalPortal()    const { return box_->getIllegalPortal(); }
-	int getRelativeToPortal() const { return box_->getRelativeToPortal(); }
+	int getArrivalBasis() const { return box_->getArrivalBasis(); }
     TimeDirection 
         getTimeDirection()    const { return box_->getTimeDirection(); }
 

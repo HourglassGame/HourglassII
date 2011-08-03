@@ -87,6 +87,7 @@ PortalArea ProtoPortal::calculatePortalArea(
 {
     PositionAndVelocity2D pnv2D(snapAttachment(timeDirection_, attachment_, collisions));
     return PortalArea(
+        index_,
         pnv2D.getX(),
         pnv2D.getY(),
         width_,

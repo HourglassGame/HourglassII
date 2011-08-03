@@ -6,13 +6,13 @@ Box::Box(
     int xspeed, int yspeed,
     int size,
     int illegalPortal,
-    int relativeToPortal,
+    int arrivalBasis,
     TimeDirection timeDirection):
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),
         size_(size),
         illegalPortal_(illegalPortal),
-        relativeToPortal_(relativeToPortal),
+        arrivalBasis_(arrivalBasis),
         timeDirection_(timeDirection)
 {
 }
@@ -22,7 +22,7 @@ Box::Box(Box const& other, hg::TimeDirection timeDirection) :
         xspeed_(other.xspeed_), yspeed_(other.yspeed_),
         size_(other.size_),
         illegalPortal_(other.illegalPortal_),
-        relativeToPortal_(other.relativeToPortal_),
+        arrivalBasis_(other.arrivalBasis_),
         timeDirection_(timeDirection)
 {
 }
@@ -35,7 +35,7 @@ bool Box::operator==(Box const& other) const
         && (yspeed_ == other.yspeed_)
         && (size_ == other.size_)
         && (illegalPortal_ == other.illegalPortal_)
-        && (relativeToPortal_ == other.relativeToPortal_)
+        && (arrivalBasis_ == other.arrivalBasis_)
         && (timeDirection_ == other.timeDirection_);
 }
 
@@ -47,13 +47,13 @@ bool Box::operator<(const Box& other) const
                 if (yspeed_ == other.yspeed_) {
                     if (size_ == other.size_) {
                         if (illegalPortal_ == other.illegalPortal_) {
-                            if (relativeToPortal_ == other.relativeToPortal_) {
+                            if (arrivalBasis_ == other.arrivalBasis_) {
                                 if (timeDirection_ == other.timeDirection_){
 										return false;
                                 }
                                 return timeDirection_ < other.timeDirection_;
                             }
-                            return relativeToPortal_ < other.relativeToPortal_;
+                            return arrivalBasis_ < other.arrivalBasis_;
                         }
                         return illegalPortal_ < other.illegalPortal_;
                     }

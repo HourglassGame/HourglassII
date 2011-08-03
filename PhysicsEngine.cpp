@@ -281,7 +281,7 @@ void guyStep(
     // check collisions in Y direction then do the same in X direction
     for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
     {
-        if (guyArrivalList[i].getRelativeToPortal() == -1)
+        if (guyArrivalList[i].getArrivalBasis() == -1)
         {
             x.push_back(guyArrivalList[i].getX());
             y.push_back(guyArrivalList[i].getY());
@@ -290,7 +290,7 @@ void guyStep(
         }
         else
         {
-            ArrivalLocation const& relativePortal(arrivalLocations[guyArrivalList[i].getRelativeToPortal()]);
+            ArrivalLocation const& relativePortal(arrivalLocations[guyArrivalList[i].getArrivalBasis()]);
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
             xspeed.push_back(0);
@@ -672,7 +672,7 @@ void guyStep(
         {
             const std::size_t relativeIndex(guyArrivalList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
-            int relativeToPortal = -1;
+            int arrivalBasis = -1;
             int illegalPortal = -1;
 
             // add departure for guy at the appropriate time
@@ -726,7 +726,7 @@ void guyStep(
 						nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 						normalDeparture = false;
 						illegalPortal = nextPortal[j].getIllegalDestination();
-						relativeToPortal = nextPortal[j].getDestinationIndex();
+						arrivalBasis = nextPortal[j].getDestinationIndex();
 						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
 						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
 						break;
@@ -749,7 +749,7 @@ void guyStep(
                     /*&& shouldPort() TODO */
                     && nextPortal[j].getFallable())
 				{
-					if (guyArrivalList[i].getIllegalPortal() != -1 && j == static_cast<unsigned int>(guyArrivalList[i].getIllegalPortal()))
+					if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
 					{
 						illegalPortal = j;
 					}
@@ -766,7 +766,7 @@ void guyStep(
 						nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 						normalDeparture = false;
 						illegalPortal = nextPortal[j].getIllegalDestination();
-						relativeToPortal = nextPortal[j].getDestinationIndex();
+						arrivalBasis = nextPortal[j].getDestinationIndex();
 						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
 						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
 						break;
@@ -788,7 +788,7 @@ void guyStep(
                         guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
                         
                         illegalPortal,
-                        relativeToPortal,
+                        arrivalBasis,
                         supported[i],
                         supportedSpeed[i],
 
@@ -828,7 +828,7 @@ void makeBoxAndTimeWithPortals(
 		TimeDirection oldTimeDirection,
 		Frame* time)
 {
-	int relativeToPortal = -1;
+	int arrivalBasis = -1;
 	int illegalPortal = -1;
 	Frame* nextTime(nextFrame(time, oldTimeDirection));
 
@@ -843,7 +843,7 @@ void makeBoxAndTimeWithPortals(
             /*&& shouldPort()  TODO*/
             && nextPortal[i].getFallable())
         {
-            if (oldIllegalPortal != -1 && i == static_cast<unsigned>(oldIllegalPortal))
+            if (oldIllegalPortal != -1 && nextPortal[i].getIndex() == oldIllegalPortal)
             {
                 illegalPortal = i;
             }
@@ -855,7 +855,7 @@ void makeBoxAndTimeWithPortals(
                     getArbitraryFrame(getUniverse(time), nextPortal[i].getTimeDestination()));
                 nextTime = portalTime ? nextFrame(portalTime, oldTimeDirection) : 0;
                 illegalPortal = nextPortal[i].getIllegalDestination();
-                relativeToPortal = nextPortal[i].getDestinationIndex();
+                arrivalBasis = nextPortal[i].getDestinationIndex();
                 x = x - nextPortal[i].getX() + nextPortal[i].getXdestination();
                 y = y - nextPortal[i].getY() + nextPortal[i].getYdestination();
                 xspeed = xspeed - nextPortal[i].getXspeed();
@@ -875,7 +875,7 @@ void makeBoxAndTimeWithPortals(
 				yspeed,
 				size,
 				illegalPortal,
-				relativeToPortal,
+				arrivalBasis,
 				oldTimeDirection),
 			nextTime
 		)
@@ -1033,7 +1033,7 @@ void boxCollisionAlogorithm(
 
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
-        if (oldBoxList[i].getRelativeToPortal() == -1)
+        if (oldBoxList[i].getArrivalBasis() == -1)
         {
             xTemp[i] = oldBoxList[i].getX();
             yTemp[i] = oldBoxList[i].getY();
@@ -1042,7 +1042,7 @@ void boxCollisionAlogorithm(
         }
         else
         {
-            ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getRelativeToPortal()]);
+            ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
             xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
             yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
             x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
@@ -1574,7 +1574,7 @@ void boxCollisionAlogorithm(
 	{
 		if (!squished[i])
 		{
-			if (oldBoxList[i].getRelativeToPortal() == -1)
+			if (oldBoxList[i].getArrivalBasis() == -1)
 			{
 				makeBoxAndTimeWithPortals(
                     nextBox,
@@ -1590,7 +1590,7 @@ void boxCollisionAlogorithm(
 			}
 			else
 			{
-				ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getRelativeToPortal()]);
+				ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 				makeBoxAndTimeWithPortals(
                     nextBox,
                     nextPortal,

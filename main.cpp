@@ -24,6 +24,7 @@
 #include <boost/range/algorithm/max_element.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/irange.hpp>
+#include <boost/range/istream_range.hpp>
 #include <boost/filesystem.hpp>
 
 #include <boost/archive/text_iarchive.hpp>
@@ -42,6 +43,7 @@
 #include <cmath>
 
 #include "BasicConfiguredTriggerSystem.h"
+#include "DirectLuaTriggerSystem.h"
 
 typedef sf::Color Colour;
 #define foreach BOOST_FOREACH
@@ -352,7 +354,7 @@ void DrawBoxes(
 {
     foreach(Box const& box, boxList) {
         //see below (in DrawGuys)
-        //if (box.getRelativeToPortal() == -1) {
+        //if (box.getArrivalBasis() == -1) {
             if (playerDirection == box.getTimeDirection()) {
                 target.Draw(
                     Shape::Rectangle(
@@ -392,7 +394,7 @@ void DrawGuys(
 {
     foreach(Guy const& guy, guyList) {
         //Doesn't seem necessary -- could you give an example where strange stuff happens? Did this get fixed by flicker fix?
-        //if (guy.getRelativeToPortal() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
+        //if (guy.getArrivalBasis() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
         {
             
             PositionAndColour const pnc(
@@ -605,6 +607,7 @@ TriggerSystem makeBasicConfiguredTriggerSystem()
     protoPortals.push_back(
         ProtoPortal(
             Attachment(0,-4200,-3200),
+            0,
             4200,
             4200,
             FORWARDS,
@@ -676,6 +679,36 @@ TriggerSystem makeBasicConfiguredTriggerSystem()
             triggerOffsetsAndDefaults));
 }
 
+TriggerSystem makeDirectLuaTriggerSystem()
+{
+    std::vector<char> triggerSystemLuaChunk;
+    std::ifstream file("triggerSystem.lua");
+    if (!file.is_open()) {
+        assert(false);
+    }
+    while (!(file.eof() || file.fail())) {
+        char buffer[100];
+        file.read(buffer, 100);
+        triggerSystemLuaChunk.insert(triggerSystemLuaChunk.end(), buffer, buffer + file.gcount());
+    }
+
+    std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
+    
+    std::vector<int> defaultPlatformPositionAndVelocity;
+    defaultPlatformPositionAndVelocity.push_back(38400);
+    defaultPlatformPositionAndVelocity.push_back(43800);
+    defaultPlatformPositionAndVelocity.push_back(0);
+    defaultPlatformPositionAndVelocity.push_back(0);
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
+    return TriggerSystem(
+        new DirectLuaTriggerSystem(
+            triggerSystemLuaChunk,
+            triggerOffsetsAndDefaults,
+            1));
+
+}
+
 Level MakeLevel(boost::multi_array<bool, 2> const& wall)
 {
     ObjectList<NonGuyDynamic> newObjectList;
@@ -702,6 +735,6 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
             newObjectList,
             Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, mt::std::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0),
             FrameID(0,UniverseID(10800)),
-            makeBasicConfiguredTriggerSystem());
+            makeDirectLuaTriggerSystem());
 }
 }
