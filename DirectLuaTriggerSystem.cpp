@@ -108,7 +108,36 @@ bool readBooleanField(lua_State* L, char const* fieldName)
     return retv;
 }
 //Gives the value of the element at the top of the stack of L,
-//interpreted as a Collision.
+//interpreted as a Box.
+Box toBox(lua_State* L, int arrivalLocationsSize)
+{
+    assert(lua_istable(L, -1) && "a box must be a table");
+    int x(readIntField(L, "x"));
+    int y(readIntField(L, "y"));
+    int xspeed(readIntField(L, "xspeed"));
+    int yspeed(readIntField(L, "yspeed"));
+    int size(readIntField(L, "size"));
+    int illegalPortal(-1);
+    lua_getfield(L, -1, "illegalPortal");
+    if (!lua_isnil(L, -1)) {
+        assert(lua_isnumber(L, -1));
+        illegalPortal = static_cast<int>(lua_tonumber(L, -1)) - 1;
+        assert(0 <= illegalPortal);
+    }
+    lua_pop(L, 1);
+    int arrivalBasis(-1);
+    lua_getfield(L, -1, "arrivalBasis");
+    if (!lua_isnil(L, -1)) {
+        assert(lua_isnumber(L, -1));
+        arrivalBasis = static_cast<int>(lua_tonumber(L, -1)) - 1;
+        assert(0 <= arrivalBasis && arrivalBasis < arrivalLocationsSize);
+    }
+    lua_pop(L, 1);
+    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    
+    return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
+}
+
 Collision toCollision(lua_State* L)
 {
     assert(lua_istable(L, -1) && "a collision must be a table");
@@ -229,7 +258,18 @@ PhysicsAffectingStuff
     //contain any of the following:
     //An array-table called "additionalBoxes", containing
     //tables with the following format:
-    //  ... not specified yet ...
+    /*
+        {
+            x = <nuumber>,
+            y = <number>,
+            xspeed = <number>,
+            yspeed = <number>,
+            size = <number>,
+            illegalPortal = <nil or positive number>,
+            arrivalBasis = <nul or number in the range [1, arrivalLocationsSize]>
+            timeDirection = <'forwards' or 'reverse'>
+        }
+    */
     //An array-table called "collisions", containing
     //tables with the following format:
     /*
@@ -338,6 +378,13 @@ PhysicsAffectingStuff
     lua_getfield(L_.ptr, -1, "additionalBoxes");
     if (!lua_isnil(L_.ptr, -1)) {
         assert(false && "additionalBoxes not yet implemented!");
+        assert(lua_istable(L_.ptr, -1) && "additionalBoxes must be a table");
+        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+            lua_pushinteger(L_.ptr, i);
+            lua_gettable(L_.ptr, -2);
+            retv.additionalBoxes.push_back(toBox(L_.ptr, static_cast<int>(arrivalLocationsSize_)));
+            lua_pop(L_.ptr, 1);
+        }
     }
     lua_pop(L_.ptr, 1);
     
@@ -402,49 +449,199 @@ PhysicsAffectingStuff
     return retv;
 }
 
+
+namespace {
+void pushGuy(lua_State* L, Guy const& guy)
+{
+    lua_checkstack(L, 1);
+    lua_createtable(L, 0, 17);
+
+    lua_checkstack(L, 1);
+    lua_pushinteger(L, guy.getIndex());
+    lua_setfield(L, -2, "index");
+    lua_pushinteger(L, guy.getX());
+    lua_setfield(L, -2, "x");
+    lua_pushinteger(L, guy.getY());
+    lua_setfield(L, -2, "y");
+    lua_pushinteger(L, guy.getXspeed());
+    lua_setfield(L, -2, "xspeed");
+    lua_pushinteger(L, guy.getYspeed());
+    lua_setfield(L, -2, "yspeed");
+    lua_pushinteger(L, guy.getWidth());
+    lua_setfield(L, -2, "width");
+    lua_pushinteger(L, guy.getHeight());
+    lua_setfield(L, -2, "height");
+    if (guy.getIllegalPortal() != -1) {
+        lua_pushinteger(L, guy.getIllegalPortal() + 1);
+        lua_setfield(L, -2, "illegalPortal");
+    }
+    if (guy.getArrivalBasis() != -1) {
+        lua_pushinteger(L, guy.getArrivalBasis() + 1);
+        lua_setfield(L, -2, "arrivalBasis");
+    }
+    lua_pushboolean(L, guy.getSupported());
+    lua_setfield(L, -2, "supported");
+    if (guy.getSupported()) {
+        lua_pushinteger(L, guy.getSupportedSpeed());
+        lua_setfield(L, -2, "supportedSpeed");
+    }
+    
+    lua_pushboolean(L, guy.getFacing());
+    lua_setfield(L, -2, "facing");
+    
+    lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
+    typedef std::pair<int const, int> PickupPair;
+    foreach (PickupPair const& pickup, guy.getPickups()) {
+        lua_checkstack(L, 1);
+        lua_pushinteger(L, pickup.second);
+        lua_rawseti(L, -2, pickup.first);
+    }
+    lua_setfield(L, -2, "pickups");
+    
+    lua_pushboolean(L, guy.getBoxCarrying());
+    lua_setfield(L, -2, "boxCarrying");
+    if (guy.getBoxCarrying()) {
+        lua_checkstack(L, 1);
+        lua_pushinteger(L, guy.getBoxCarrySize());
+        lua_setfield(L, -2, "boxCarrySize");
+        lua_pushstring(L, guy.getBoxCarryDirection() == FORWARDS ? "forwards" : "reverse");
+        lua_setfield(L, -2, "boxCarryDirection");
+    }
+    lua_pushstring(L, guy.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
+    lua_setfield(L, -2, "timeDirection");
+}
+
+void pushBox(lua_State* L, Box const& box)
+{
+    lua_createtable(L, 0, 10);
+    lua_pushinteger(L, box.getX());
+    lua_setfield(L, -2, "x");
+    lua_pushinteger(L, box.getY());
+    lua_setfield(L, -2, "y");
+    lua_pushinteger(L, box.getXspeed());
+    lua_setfield(L, -2, "xspeed");
+    lua_pushinteger(L, box.getYspeed());
+    lua_setfield(L, -2, "yspeed");
+//TODO: better solution for the need(?)
+//for redundant width and height fields
+//in boxes that arises from using them 
+//in the same context as guys.
+    lua_pushinteger(L, box.getSize());
+    lua_setfield(L, -2, "size");
+    lua_pushinteger(L, box.getWidth());
+    lua_setfield(L, -2, "width");
+    lua_pushinteger(L, box.getHeight());
+    lua_setfield(L, -2, "height");
+    if (box.getIllegalPortal() != -1) {
+        lua_pushinteger(L, box.getIllegalPortal() + 1);
+        lua_setfield(L, -2, "illegalPortal");
+    }
+    if (box.getArrivalBasis() != -1) {
+        lua_pushinteger(L, box.getArrivalBasis() + 1);
+        lua_setfield(L, -2, "arrivalBasis");
+    }
+    lua_pushstring(L, box.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
+    lua_setfield(L, -2, "timeDirection");
+}
+
+//TODO: fix code duplication with box version
+bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Guy const& potentialXer)
+{
+    //push function to call
+    lua_checkstack(L, 1);
+    lua_getfield(L, -1, functionName);
+    assert(lua_isfunction(L, -1));
+    //push `self` argument
+    lua_checkstack(L, 1);
+    lua_pushvalue(L, -2);
+    //push `responsiblePortalIndex` argument
+    lua_checkstack(L, 1);
+    lua_pushinteger(L, responsibleXIndex + 1);
+    //push `potentialPorter` argument
+    lua_checkstack(L, 1);
+    pushGuy(L, potentialXer);
+    lua_checkstack(L, 1);
+    lua_pushstring(L, "guy");
+    lua_setfield(L, -2, "type");
+    //call function
+    lua_call(L, 3, 1);
+    //read return value
+    assert(lua_isboolean(L, -1));
+    bool retv(lua_toboolean(L, -1));
+    //pop return value
+    lua_pop(L, 1);
+    return retv;
+}
+bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Box const& potentialXer)
+{
+    //push function to call
+    lua_checkstack(L, 1);
+    lua_getfield(L, -1, functionName);
+    assert(lua_isfunction(L, -1));
+    //push `self` argument
+    lua_checkstack(L, 1);
+    lua_pushvalue(L, -2);
+    //push `responsiblePortalIndex` argument
+    lua_checkstack(L, 1);
+    lua_pushinteger(L, responsibleXIndex + 1);
+    //push `potentialPorter` argument
+    lua_checkstack(L, 1);
+    pushBox(L, potentialXer);
+    lua_checkstack(L, 1);
+    lua_pushstring(L, "box");
+    lua_setfield(L, -2, "type");
+    //call function
+    lua_call(L, 3, 1);
+    //read return value
+    assert(lua_isboolean(L, -1));
+    bool retv(lua_toboolean(L, -1));
+    //pop return value
+    lua_pop(L, 1);
+    return retv;
+}
+}
+
+//JUST TO BE PERFECTLY CLEAR:
+//`responsiblePortalIndex` does not refer to 
+//`portal.getIndex()` (which is just for illegal portals)
+//it refers to the `i` in `nextPortal[i]`.
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
     Guy const& potentialPorter)
 {
-#warning not yet implemented
-    return true;
+    return doShouldXFunction(L_.ptr, "shouldPort", responsiblePortalIndex, potentialPorter);
 }
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
     Box const& potentialPorter)
 {
-#warning not yet implemented
-    return true;
+    return doShouldXFunction(L_.ptr, "shouldPort", responsiblePortalIndex, potentialPorter);
 }
     
 bool DirectLuaTriggerFrameState::shouldPickup(
     int responsiblePickupIndex,
     Guy const& potentialPickuper)
 {
-#warning not yet implemented
-    return true;
+    return doShouldXFunction(L_.ptr, "shouldPickup", responsiblePickupIndex, potentialPickuper);
 }
 bool DirectLuaTriggerFrameState::shouldPickup(
     int responsiblePickupIndex,
     Box const& potentialPickuper)
 {
-#warning not yet implemented
-    return true;
+    return doShouldXFunction(L_.ptr, "shouldPickup", responsiblePickupIndex, potentialPickuper);
 }
     
 bool DirectLuaTriggerFrameState::shouldDie(
     int responsibleKillerIndex,
     Guy const& potentialDier)
 {
-#warning not yet implemented
-    return true;
+    return doShouldXFunction(L_.ptr, "shouldDie", responsibleKillerIndex, potentialDier);
 }
 bool DirectLuaTriggerFrameState::shouldDie(
     int responsibleKillerIndex,
     Box const& potentialDier)
 {
-#warning not yet implemented
-    return true;
+    return doShouldXFunction(L_.ptr, "shouldDie", responsibleKillerIndex, potentialDier);
 }
 
 std::pair<
@@ -480,63 +677,7 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             int j(0);
             foreach (Guy const& guy, departureSection.second.getList<Guy>()) {
                 ++j;
-                lua_checkstack(L_.ptr, 1);
-                lua_createtable(L_.ptr, 0, 17);
-
-                lua_checkstack(L_.ptr, 1);
-                lua_pushinteger(L_.ptr, guy.getIndex());
-                lua_setfield(L_.ptr, -2, "index");
-                lua_pushinteger(L_.ptr, guy.getX());
-                lua_setfield(L_.ptr, -2, "x");
-                lua_pushinteger(L_.ptr, guy.getY());
-                lua_setfield(L_.ptr, -2, "y");
-                lua_pushinteger(L_.ptr, guy.getXspeed());
-                lua_setfield(L_.ptr, -2, "xspeed");
-                lua_pushinteger(L_.ptr, guy.getYspeed());
-                lua_setfield(L_.ptr, -2, "yspeed");
-                lua_pushinteger(L_.ptr, guy.getWidth());
-                lua_setfield(L_.ptr, -2, "width");
-                lua_pushinteger(L_.ptr, guy.getHeight());
-                lua_setfield(L_.ptr, -2, "height");
-                if (guy.getIllegalPortal() != -1) {
-                    lua_pushinteger(L_.ptr, guy.getIllegalPortal() + 1);
-                    lua_setfield(L_.ptr, -2, "illegalPortal");
-                }
-                if (guy.getArrivalBasis() != -1) {
-                    lua_pushinteger(L_.ptr, guy.getArrivalBasis() + 1);
-                    lua_setfield(L_.ptr, -2, "arrivalBasis");
-                }
-                lua_pushboolean(L_.ptr, guy.getSupported());
-                lua_setfield(L_.ptr, -2, "supported");
-                if (guy.getSupported()) {
-                    lua_pushinteger(L_.ptr, guy.getSupportedSpeed());
-                    lua_setfield(L_.ptr, -2, "supportedSpeed");
-                }
-                
-                lua_pushboolean(L_.ptr, guy.getFacing());
-                lua_setfield(L_.ptr, -2, "facing");
-                
-                lua_createtable(L_.ptr, static_cast<int>(guy.getPickups().size()), 0);
-                typedef std::pair<int const, int> PickupPair;
-                foreach (PickupPair const& pickup, guy.getPickups()) {
-                    lua_checkstack(L_.ptr, 1);
-                    lua_pushinteger(L_.ptr, pickup.second);
-                    lua_rawseti(L_.ptr, -2, pickup.first);
-                }
-                lua_setfield(L_.ptr, -2, "pickups");
-                
-                lua_pushboolean(L_.ptr, guy.getBoxCarrying());
-                lua_setfield(L_.ptr, -2, "boxCarrying");
-                if (guy.getBoxCarrying()) {
-                    lua_checkstack(L_.ptr, 1);
-                    lua_pushinteger(L_.ptr, guy.getBoxCarrySize());
-                    lua_setfield(L_.ptr, -2, "boxCarrySize");
-                    lua_pushstring(L_.ptr, guy.getBoxCarryDirection() == FORWARDS ? "forwards" : "reverse");
-                    lua_setfield(L_.ptr, -2, "boxCarryDirection");
-                }
-                lua_pushstring(L_.ptr, guy.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
-                lua_setfield(L_.ptr, -2, "timeDirection");
-                
+                pushGuy(L_.ptr, guy);
                 lua_rawseti(L_.ptr, -2, j);
             }
             lua_setfield(L_.ptr, -2, "guys");
@@ -546,31 +687,7 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             int j(0);
             foreach (Box const& box, departureSection.second.getList<Box>()) {
                 ++j;
-                lua_createtable(L_.ptr, 0, 8);
-
-                lua_pushinteger(L_.ptr, box.getX());
-                lua_setfield(L_.ptr, -2, "x");
-                lua_pushinteger(L_.ptr, box.getY());
-                lua_setfield(L_.ptr, -2, "y");
-                lua_pushinteger(L_.ptr, box.getXspeed());
-                lua_setfield(L_.ptr, -2, "xspeed");
-                lua_pushinteger(L_.ptr, box.getYspeed());
-                lua_setfield(L_.ptr, -2, "yspeed");
-                lua_pushinteger(L_.ptr, box.getWidth());
-                lua_setfield(L_.ptr, -2, "width");
-                lua_pushinteger(L_.ptr, box.getHeight());
-                lua_setfield(L_.ptr, -2, "height");
-                if (box.getIllegalPortal() != -1) {
-                    lua_pushinteger(L_.ptr, box.getIllegalPortal() + 1);
-                    lua_setfield(L_.ptr, -2, "illegalPortal");
-                }
-                if (box.getArrivalBasis() != -1) {
-                    lua_pushinteger(L_.ptr, box.getArrivalBasis() + 1);
-                    lua_setfield(L_.ptr, -2, "arrivalBasis");
-                }
-                lua_pushstring(L_.ptr, box.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
-                lua_setfield(L_.ptr, -2, "timeDirection");
-                
+                pushBox(L_.ptr, box);
                 lua_rawseti(L_.ptr, -2, j);
             }
             lua_setfield(L_.ptr, -2, "boxes");
@@ -589,7 +706,7 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
         [3] = {100, 1020},
         [4] = {},
         [5] = {2131, 144, 70, 154}
-        [...] = {...},
+        [trigger index] = {trigger value},
         ...
     }
     */
