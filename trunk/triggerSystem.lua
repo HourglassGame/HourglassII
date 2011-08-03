@@ -1,6 +1,6 @@
 local function list_iter (t)
     local i = 0
-    local n = table.getn(t)
+    local n = #t
     return function ()
         i = i + 1
         if i <= n then return t[i] end
@@ -82,7 +82,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
             end
             local maxSpeed = destination.maxSpeed
             if math.abs(velocity) > maxSpeed then
-			    pnv.velocity = sign(velocity) * maxSpeed
+			    velocity = sign(velocity) * maxSpeed
 		    end
 		    position = position + velocity
             return {position = position, velocity = velocity}
@@ -221,7 +221,6 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
                 (ya == yb)
             )
     end
-
     local buttonStates = {}
     for i = 1, #protoButtons, 1 do
         local intersecting = false
@@ -231,13 +230,19 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
                 if intersecting 
                     or temporalIntersectingExclusive(
                         protoButtons[i], buttonPositionsAndVelocities[i], box)
-                then break end
+                then
+                    intersecting = true
+                    break
+                end
             end
-            for guy in list_iter(objectList.guyes) do
+            for guy in list_iter(objectList.guys) do
                 if intersecting 
                     or temporalIntersectingExclusive(
                         protoButtons[i], buttonPositionsAndVelocities[i], guy)
-                then break end
+                then 
+                    intersecting = true
+                    break
+                end
             end
         end
         buttonStates[i] = intersecting
@@ -339,21 +344,21 @@ return {
     shouldPickup = function(self, responsiblePickupIndex, dynamicObject) return true end,
     shouldDie = function(self, responsibleKillerIndex, dynamicObject) return true end,
     getTriggerDeparturesAndGlitz = function(self, departures)
-            local buttonStates =
-                calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)
+        local buttonStates =
+            calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)
+    
+        for i = 1, #self.protoButtons, 1 do
+            table.insert(
+                self.outputGlitz,
+                calculateButtonGlitz(
+                    self.protoButtons[i],
+                    self.buttonPositionsAndVelocities[i],
+                    buttonStates[i]))
+        end
         
-            for i = 1, #self.protoButtons, 1 do
-                table.insert(
-                    self.outputGlitz,
-                    calculateButtonGlitz(
-                        self.protoButtons[i],
-                        self.buttonPositionsAndVelocities[i],
-                        buttonStates[i]))
-            end
-            
-            fillButtonTriggers(self.outputTriggers, self.protoButtons, buttonStates)
-            
-            return self.outputTriggers, self.outputGlitz
+        fillButtonTriggers(self.outputTriggers, self.protoButtons, buttonStates)
+        
+        return self.outputTriggers, self.outputGlitz
     end,
     --as an extension, built-in buttons/collision/etc lists (which get run and solved separately)?
     --[[======private data=======]]--
@@ -412,7 +417,7 @@ return {
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 38400,
+                        desiredPosition = 43800,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 20
