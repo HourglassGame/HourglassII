@@ -267,22 +267,15 @@ void fillButtonTriggers(
         triggers[protoButtons[i].triggerID_].push_back(states[i]);
     }
 }
-
-mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type calculateActualTriggerDepartures(
-    mt::std::vector<mt::std::vector<int>::type>::type const& triggers,
-    std::vector<std::pair<int, std::vector<int> > > const& triggerOffsetsAndDefaults,
-    Frame* currentFrame)
+mt::std::vector<TriggerData>::type
+    createTriggerListFromTriggerValueList(
+        mt::std::vector<mt::std::vector<int>::type>::type const& triggerValues)
 {
-    assert(boost::distance(triggers) == boost::distance(triggerOffsetsAndDefaults));
-    mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type retv;
-    Universe& universe(getUniverse(currentFrame));
-    for (std::size_t i(0), end(boost::distance(triggers)); i != end; ++i)
+    mt::std::vector<TriggerData>::type retv;
+    retv.reserve(triggerValues.size());
+    for(std::size_t i(0), end(triggerValues.size()); i != end; ++i)
     {
-        retv[
-            getArbitraryFrame(
-                universe, 
-                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[i].first)].push_back(
-                    TriggerData(i, triggers[i]));
+        retv.push_back(TriggerData(i, triggerValues[i]));
     }
     return retv;
 }
@@ -307,7 +300,13 @@ BasicConfiguredTriggerFrameState::getTriggerDeparturesAndGlitz(
     
     fillButtonTriggers(triggers, triggerSystem.protoButtons_, buttonStates);
     
-    return std::make_pair(calculateActualTriggerDepartures(triggers, triggerSystem.triggerOffsetsAndDefaults, currentFrame), glitzStore);
+    
+    
+    return
+        std::make_pair(
+            calculateActualTriggerDepartures(
+                createTriggerListFromTriggerValueList(triggers), triggerSystem.triggerOffsetsAndDefaults, currentFrame),
+            glitzStore);
 }
 
 BasicConfiguredTriggerFrameState::BasicConfiguredTriggerFrameState(BasicConfiguredTriggerSystem const& triggerSys) :

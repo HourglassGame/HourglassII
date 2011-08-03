@@ -27,6 +27,7 @@ struct ProtoPortal {
     PortalArea calculatePortalArea(mt::std::vector<Collision>::type const&) const;
     ProtoPortal(
         Attachment const& attachment,
+        int index,
         int width,
         int height,
         TimeDirection timeDirection,
@@ -56,7 +57,8 @@ private:
     //If attachment_.platformIndex == std::numeric_limits<std::size_t>::max()
     //then attachment_.xOffset and atachment_.yOffset give the absolute position of the portal.
     //Otherwise they give the position relative to the platform with index == attachment_.platformIndex
-    Attachment attachment_;    
+    Attachment attachment_;
+    int index_;
     int width_;
     int height_;
     TimeDirection timeDirection_;

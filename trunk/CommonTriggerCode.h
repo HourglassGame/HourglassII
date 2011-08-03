@@ -4,6 +4,8 @@
 #include "TriggerData.h"
 #include "ObjectPtrList.h"
 #include <boost/foreach.hpp>
+#include "Frame.h"
+#include "Universe.h"
 #define foreach BOOST_FOREACH
 namespace hg {
 typedef boost::transformed_range<
@@ -32,6 +34,25 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     }
     return apparentTriggers;
 }
+
+inline mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type calculateActualTriggerDepartures(
+    mt::std::vector<TriggerData>::type const& triggers,
+    std::vector<std::pair<int, std::vector<int> > > const& triggerOffsetsAndDefaults,
+    Frame* currentFrame)
+{
+    mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type retv;
+    Universe& universe(getUniverse(currentFrame));
+    for (std::size_t i(0), end(boost::distance(triggers)); i != end; ++i)
+    {
+        retv[
+            getArbitraryFrame(
+                universe, 
+                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[i].first)].push_back(
+                    triggers[i]);
+    }
+    return retv;
+}
+
 }
 #endif //HG_COMMON_TRIGGER_CODE_H
 

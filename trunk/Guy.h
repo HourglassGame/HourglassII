@@ -15,7 +15,7 @@ public:
         int width, int height,
         
         int illegalPortal,
-        int relativeToPortal,
+        int arrivalBasis,
         bool supported,
         int supportedSpeed,
     	
@@ -40,7 +40,7 @@ public:
     int getHeight() const { return height_; }
     
     int getIllegalPortal()    const { return illegalPortal_; }
-    int getRelativeToPortal() const { return relativeToPortal_; }
+    int getArrivalBasis() const { return arrivalBasis_; }
     bool getSupported()       const { return supported_; }
     int getSupportedSpeed()   const { return supportedSpeed_; }
     
@@ -70,7 +70,7 @@ private:
     int height_;
 
     int illegalPortal_;
-    int relativeToPortal_;
+    int arrivalBasis_;
     bool supported_;
     int supportedSpeed_;
 
@@ -98,7 +98,7 @@ public:
     int getHeight() const { return guy_->getHeight(); }
     
     int getIllegalPortal()    const { return guy_->getIllegalPortal(); }
-    int getRelativeToPortal() const { return guy_->getRelativeToPortal(); }
+    int getArrivalBasis() const { return guy_->getArrivalBasis(); }
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
     

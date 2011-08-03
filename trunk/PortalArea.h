@@ -5,6 +5,7 @@ namespace hg {
 class PortalArea {
 public:
     PortalArea(
+        int index,
         int x,
         int y,
         int width,
@@ -21,6 +22,7 @@ public:
         bool fallable,
         bool winner
         ) :
+            index_(index),
             x_(x),
             y_(y),
             width_(width),
@@ -38,6 +40,13 @@ public:
             winner_(winner)
             {
             }
+    //Index is used for identifying illegal-portals
+    //Maybe we should add a simple way for
+    //triggers to attach information to guys.
+    //This would allow `shouldPort` to manage
+    //illegal-portals.
+    int getIndex()    const { return index_; }
+    
     int getX()      const { return x_; }
     int getY()      const { return y_; }
     int getWidth()  const { return width_; }
@@ -57,6 +66,7 @@ public:
     bool getFallable() const { return fallable_; }
     bool getWinner() const { return winner_; }
 private:
+    int index_;
     int x_;
     int y_;
     int width_;

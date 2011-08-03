@@ -7,7 +7,7 @@ Guy::Guy(
     int width, int height,
     
     int illegalPortal,
-    int relativeToPortal,
+    int arrivalBasis,
     bool supported,
     int supportedSpeed,
 
@@ -26,7 +26,7 @@ Guy::Guy(
         width_(width), height_(height),
 
         illegalPortal_(illegalPortal),
-        relativeToPortal_(relativeToPortal),
+        arrivalBasis_(arrivalBasis),
         supported_(supported),
         supportedSpeed_(supportedSpeed),
 
@@ -49,7 +49,7 @@ Guy::Guy(const Guy& other, TimeDirection timeDirection) :
         width_(other.width_), height_(other.height_),
 
         illegalPortal_(other.illegalPortal_),
-        relativeToPortal_(other.relativeToPortal_),
+        arrivalBasis_(other.arrivalBasis_),
         supported_(other.supported_),
         supportedSpeed_(other.supportedSpeed_),
 
@@ -74,7 +74,7 @@ bool Guy::operator==(const Guy& other) const
         && (width_ == other.width_)
         && (height_ == other.height_)
         && (illegalPortal_ == other.illegalPortal_)
-        && (relativeToPortal_ == other.relativeToPortal_)
+        && (arrivalBasis_ == other.arrivalBasis_)
         && (supported_ == other.supported_)
         && (supportedSpeed_ == other.supportedSpeed_)
         && (pickups_ == other.pickups_)
