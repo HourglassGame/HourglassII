@@ -86,6 +86,7 @@ int main(int argc, char const* const argv[])
         return EXIT_FAILURE;
     }
 #endif //HG_COMPILE_TESTS
+    try{
     initialseCurrentPath(argc, argv);
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
@@ -115,6 +116,9 @@ int main(int argc, char const* const argv[])
             //playing replay -> new game + playing replay           Keybinding: L
             //playing replay -> playing game                        Keybinding: P or <get to end of replay>
             switch (event.Type) {
+            case sf::Event::Resized:
+                std::cout << "resize event: width" << event.Size.Width << " height: " << event.Size.Height << "\n";
+                break;
             case sf::Event::Closed:
                 app.Close();
                 goto breakmainloop;
@@ -177,7 +181,11 @@ int main(int argc, char const* const argv[])
             return EXIT_SUCCESS;
         }
     }
-    breakmainloop:
+    breakmainloop:;
+    }
+    catch (tbb::captured_exception&) {
+        cout << "Exception Captured\n";
+    }
     return EXIT_SUCCESS;
 }
 
@@ -682,16 +690,17 @@ TriggerSystem makeBasicConfiguredTriggerSystem()
 TriggerSystem makeDirectLuaTriggerSystem()
 {
     std::vector<char> triggerSystemLuaChunk;
-    std::ifstream file("triggerSystem.lua");
-    if (!file.is_open()) {
-        assert(false);
+    std::ifstream file;
+    file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
+    file.open("triggerSystem.lua");
+    file.seekg(0, std::ios::end);
+    std::streampos length(file.tellg());
+    if (length) {
+        file.seekg(0, std::ios::beg);
+        triggerSystemLuaChunk.resize(static_cast<std::size_t>(length));
+        file.read(&triggerSystemLuaChunk.front(), static_cast<std::size_t>(length));
     }
-    while (!(file.eof() || file.fail())) {
-        char buffer[100];
-        file.read(buffer, 100);
-        triggerSystemLuaChunk.insert(triggerSystemLuaChunk.end(), buffer, buffer + file.gcount());
-    }
-
+    
     std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
     triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
     
