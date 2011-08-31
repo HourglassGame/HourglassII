@@ -1,6 +1,7 @@
 #ifndef HG_SIMPLE_LUA_CPP_H
 #define HG_SIMPLE_LUA_CPP_H
 #include "lua/lua.h"
+#include <cstdio>
 #include <boost/swap.hpp>
 #include <cassert>
 namespace hg {
