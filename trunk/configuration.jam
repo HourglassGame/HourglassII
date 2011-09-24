@@ -1,15 +1,13 @@
-boost_build_location = "/Users/evan/Programming/boost/boost_1_46_1/tools/build/v2/" ;
+boost_build_location = "/Users/evan/Programming/boost/boost_1_47_0/tools/build/v2/" ;
 
-boost_library_directory = "/Users/evan/Programming/boost/library/lib/" ;
-boost_header_directory = "/Users/evan/Programming/boost/library/include/" ;
+#boost_library_directory = "/Users/evan/Programming/boost/library/lib/" ;
+#boost_header_directory = "/Users/evan/Programming/boost/library/include/" ;
 
 debug_install_location = "/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Debug/" ;
 release_install_location = "/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Release/" ;
 
 threading_building_blocks_library = "/Users/evan/Programming/tbb/tbb/lib/libtbb.dylib" ;
-
 threading_building_blocks_malloc_library = "/Users/evan/Programming/tbb/tbb/lib/libtbbmalloc.dylib" ;
-
 threading_building_blocks_include_directory = "/Users/evan/Programming/tbb/tbb/include/" ;
 
 SFML_include_directory = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/include/" ;

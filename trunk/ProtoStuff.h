@@ -40,6 +40,7 @@ struct ProtoPortal {
         bool fallable,
         bool winner) :
     attachment_(attachment),
+    index_(index),
     width_(width),
     height_(height),
     timeDirection_(timeDirection),

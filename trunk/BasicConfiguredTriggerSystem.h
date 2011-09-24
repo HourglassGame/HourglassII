@@ -69,9 +69,8 @@ class BasicConfiguredTriggerSystem :
         //This should be the equivalent to:
         //  return new BasicConfiguredTriggerFrameState(*this);
         //except using a custom allocation function.
-        void* p(0);
+        void* p(multi_thread_operator_new(sizeof(BasicConfiguredTriggerFrameState)));
         try {
-            p = multi_thread_operator_new(sizeof(BasicConfiguredTriggerFrameState));
             return TriggerFrameState(new (p) BasicConfiguredTriggerFrameState(*this));
         }
         catch (...) {

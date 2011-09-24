@@ -1,12 +1,11 @@
 include configuration.jam ;
+import boost ;
+#these `usings` are required unless they have already been done in user-config.jam or site-config.jam -
+#in which case they must not be here.
+using boost : 1.47 : <root>/Users/evan/Programming/boost/boost_1_47_0/ ;
+using darwin : : /opt/local/bin/g++-mp-4.6 ;# /Developer-old/usr/bin/g++ ;
 
-using darwin : : /Developer-old/usr/bin/g++ ;
-
-alias boost_include
-    : # no sources
-    : # no build requirements
-    : # no default build
-    : <include>$(boost_header_directory) ;
+boost.use-project 1.47 ;
 
 lib threading_building_blocks
     :
@@ -23,20 +22,20 @@ lib threading_building_blocks_malloc
     ;
 
 lib SFML-system
-    : freetype
+    :
     : <file>$(SFML_system_library)
     :
-    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL ;
+    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL <library>freetype ;
 lib SFML-window
-    : freetype
+    :
     : <file>$(SFML_window_library)
     :
-    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL ;
+    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL <library>freetype <library>SFML-system ;
 lib SFML-graphics
-    : freetype
+    :
     : <file>$(SFML_graphics_library)
     :
-    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL ;
+    : <include>$(SFML_include_directory) <framework>CoreFoundation <framework>Cocoa <framework>OpenGL <library>freetype <library>SFML-window ;
 
 alias CoreFoundation
     :
@@ -53,18 +52,30 @@ alias OpenGL
     :
     :
     : <linkflags>"-framework OpenGL" ;
-lib freetype : : <file>"/usr/X11/lib/libfreetype.dylib" : : ;
+
+lib freetype : : <file>"/Users/evan/Programming/freetype/library/lib/libfreetype.a" : : ;
     
 alias staticlibcpp : : : : <linkflags>"-lstdc++-static" ;
 
 exe HourglassII 
-: [ glob *.cpp ] boost_include threading_building_blocks SFML-system SFML-window SFML-graphics staticlibcpp
-: <define>BOOST_MULTI_ARRAY_NO_GENERATORS <define>NDEBUG ;
+    : #sources
+    [ glob *.cpp lua/*.cpp ]
+    threading_building_blocks
+    threading_building_blocks_malloc
+    SFML-graphics
+    staticlibcpp
+    : #requirements
+    <library>/boost//serialization
+    <library>/boost//filesystem
+    <library>/boost//system
+    <define>BOOST_MULTI_ARRAY_NO_GENERATORS
+    <define>NDEBUG
+    ;
 
 alias Install : Install-exe Install-libs Install-plist Install-resources ;
 install Install-exe : HourglassII : <conditional>@exe_install_location_rule ;
-install Install-libs : threading_building_blocks : <conditional>@lib_install_location_rule ;
-install Install-resources : osx/HourglassSwirl.icns : <conditional>@resources_install_location_rule ;
+install Install-libs : threading_building_blocks threading_building_blocks_malloc : <conditional>@lib_install_location_rule ;
+install Install-resources : osx/HourglassSwirl.icns triggerSystem.lua : <conditional>@resources_install_location_rule ;
 install Install-plist : osx/Info.plist osx/PkgInfo : <conditional>@plist_install_location_rule ;
 
 rule exe_install_location_rule ( properties * )

@@ -222,7 +222,7 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
             )
     end
     local buttonStates = {}
-    for i = 1, #protoButtons, 1 do
+    for i = 1, #protoButtons do
         local intersecting = false
         for frame, objectList in pairs(departures) do
             if intersecting then break end
@@ -251,7 +251,7 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
 end
 
 local function fillCollisionTriggers(triggers, protoCollisions, collisions)
-    for i = 1, #protoCollisions, 1 do
+    for i = 1, #protoCollisions do
         triggers[protoCollisions[i].lastStateTriggerID] =
             {collisions[i].x, collisions[i].y, collisions[i].xspeed, collisions[i].yspeed}
     end
@@ -304,7 +304,7 @@ local function calculateButtonGlitz(protoButton, buttonPositionAndVelocity, butt
 end
 
 local function fillButtonTriggers(triggers, protoButtons, buttonStates)
-    for i = 1, #protoButtons, 1 do
+    for i = 1, #protoButtons do
         triggers[protoButtons[i].triggerID] = { buttonStates[i] and 1 or 0 }
     end
 end
@@ -347,7 +347,7 @@ return {
         local buttonStates =
             calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)
     
-        for i = 1, #self.protoButtons, 1 do
+        for i = 1, #self.protoButtons do
             table.insert(
                 self.outputGlitz,
                 calculateButtonGlitz(
