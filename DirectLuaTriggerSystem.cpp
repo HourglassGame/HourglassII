@@ -51,9 +51,42 @@ LuaState loadLuaStateFromVector(std::vector<char> const& luaData)
 }
 }
 
+TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
+{
+    SingleAssignmentPtr<LuaState>& sharedStatePtr(luaStates_->get());
+    if (!sharedStatePtr.get()) {
+        void* p(multi_thread_operator_new(sizeof(LuaState)));
+        try {
+            sharedStatePtr = new (p) LuaState();
+        }
+        catch (...) {
+            multi_thread_operator_delete(p);
+            throw;
+        }
+        *sharedStatePtr = loadLuaStateFromVector(compiledLuaChunk_);
+    }
+    //Unfortunately (due to the lack of perfect forwarding in C++03)
+    //this cannot be made into a function.
+    //This should be the equivalent to:
+    //  return new DirectLuaTriggerFrameState(
+    //      luaStates_.get(), triggerOffsetsAndDefaults_, arrivalLocationsSize_);
+    //except using a custom allocation function.
+    void* p(multi_thread_operator_new(sizeof(DirectLuaTriggerFrameState)));
+    try {
+        return TriggerFrameState(
+            new (p) DirectLuaTriggerFrameState(
+                *sharedStatePtr,
+                triggerOffsetsAndDefaults_,
+                arrivalLocationsSize_));
+    }
+    catch (...) {
+        multi_thread_operator_delete(p);
+        throw;
+    }
+}
 
 DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
-    std::vector<char> const& compiledLuaChunk,
+    LuaState& sharedState,
     std::vector<
         std::pair<
             int,
@@ -61,10 +94,11 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
         >
     > const& triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize) :
-        L_(loadLuaStateFromVector(compiledLuaChunk)),
+        L_(sharedState),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
+    lua_pushvalue(L_.ptr, -1);
     lua_call(L_.ptr, 0, 1);
 }
 namespace {
@@ -827,7 +861,7 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             forwardsColour = {r = <number>, g = <number>, b = <number>},
             reverseColour = {r = <number>, g = <number>, b = <number>},
             timeDirection = <'forwards' or 'reverse'>
-        }
+        },
         {
             <as above>
         },
@@ -850,7 +884,11 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
     return std::make_pair(calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame), glitz);
 }
 
-
+DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
+{
+    //Pop the table that was returned in the constructor
+    lua_pop(L_.ptr, 1);
+}
 
 
 

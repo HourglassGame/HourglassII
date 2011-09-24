@@ -1,16 +1,18 @@
 #ifndef HG_DIRECT_LUA_TRIGGER_SYSTEM_H
 #define HG_DIRECT_LUA_TRIGGER_SYSTEM_H
 #include "TriggerSystemImplementation.h"
+#include "SimpleLuaCpp.h"
+#include "ThreadLocal.h"
+#include "SingleAssignmentPtr.h"
 #include <string>
 #include <vector>
-#include "SimpleLuaCpp.h"
 namespace hg {
 class DirectLuaTriggerFrameState :
     public TriggerFrameStateImplementation
 {
     public:
     DirectLuaTriggerFrameState(
-        std::vector<char> const& compiledLuaChunk,
+        LuaState& sharedState,
         std::vector<
             std::pair<
                 int,
@@ -53,9 +55,9 @@ class DirectLuaTriggerFrameState :
     getTriggerDeparturesAndGlitz(
         mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame);
-
+    virtual ~DirectLuaTriggerFrameState();
 private:
-    LuaState L_;
+    LuaState& L_;
 
     std::vector<
             std::pair<
@@ -73,6 +75,49 @@ private:
     DirectLuaTriggerFrameState(DirectLuaTriggerFrameState& other);
     DirectLuaTriggerFrameState& operator=(DirectLuaTriggerFrameState& other);
 };
+
+
+//The behaviour of this class is somewhat strange and not particularly useful in general, so the use
+//of this class should be limited to cases where there are no better options.
+template<typename T>
+class lazy_ptr
+{
+public:
+    lazy_ptr() :
+        ptr_(new T())
+    {
+    }
+    //Notice that these do not actually copy their arguments.
+    //The arguments are not even moved. This is deliberate.
+    lazy_ptr(lazy_ptr const&) :
+        ptr_(new T())
+    {
+    }
+    lazy_ptr& operator=(lazy_ptr const&)
+    {
+        //nothing to do.
+    }
+    ~lazy_ptr()
+    {
+        delete ptr_;
+    }
+    T& operator*() const
+    {
+        return *ptr_;
+    }
+    T* operator->() const
+    {
+        return ptr_;
+    }
+    T* get() const
+    {
+        return ptr_;
+    }
+private:
+
+    T* ptr_;
+};
+
 class DirectLuaTriggerSystem :
     public TriggerSystemImplementation
 {
@@ -86,30 +131,13 @@ public:
                 >
         > const& triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
-    virtual TriggerFrameState getFrameState() const
-    {
-        //Unfortunately (due to the lack of perfect forwarding in C++03)
-        //this cannot be made into a function.
-        //This should be the equivalent to:
-        //  return new DirectLuaTriggerFrameState(compiledLuaChunk);
-        //except using a custom allocation function.
-        void* p(0);
-        try {
-            p = multi_thread_operator_new(sizeof(DirectLuaTriggerFrameState));
-            return TriggerFrameState(
-                new (p) DirectLuaTriggerFrameState(
-                    compiledLuaChunk_, triggerOffsetsAndDefaults_, arrivalLocationsSize_));
-        }
-        catch (...) {
-            multi_thread_operator_delete(p);
-            throw;
-        }
-    }
+    virtual TriggerFrameState getFrameState() const;
     virtual TriggerSystemImplementation* clone() const
     {
         return new DirectLuaTriggerSystem(*this);
     }
 private:
+    lazy_ptr<ThreadLocal<SingleAssignmentPtr<LuaState> > > luaStates_;
     std::vector<char> compiledLuaChunk_;
     std::vector<
         std::pair<

@@ -32,13 +32,14 @@ struct LuaStateMove_t
 private:
     void operator=(LuaStateMove_t&);
 };
+//#if 0
 //RAII class for lua_State.
 //Moveable but non-copyable, as I do not know
 //any way to copy a lua_State.
 struct LuaState {
     struct new_state_t {};
     LuaState();
-    LuaState(new_state_t);
+    explicit LuaState(new_state_t);
     LuaState(LuaState& other) :
         ptr(0)
     {
@@ -60,7 +61,6 @@ struct LuaState {
         return *this;
     }
 
-
     void swap(LuaState& other) {
         boost::swap(ptr, other.ptr);
     }
@@ -74,6 +74,35 @@ struct LuaState {
     lua_State* ptr;
     private:
 };
+//#endif
+#if 0
+//RAII class for lua_State.
+//Moveable but non-copyable, as I do not know
+//any way to copy a lua_State.
+struct LuaState {
+
+    struct new_state_t {};
+    LuaState();
+    explicit LuaState(new_state_t);
+    LuaState(BOOST_RV_REF(LuaState) other) :
+        ptr(0)
+    {
+        swap(other);
+    }
+    LuaState& operator=(BOOST_RV_REF(LuaState) other)
+    {
+        swap(other);
+        return *this;
+    }
+    void swap(LuaState& other) {
+        boost::swap(ptr, other.ptr);
+    }
+    ~LuaState();
+    lua_State* ptr;
+    private:
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)
+};
+#endif
 inline void swap(LuaState& l, LuaState& r) {
     return l.swap(r);
 }
