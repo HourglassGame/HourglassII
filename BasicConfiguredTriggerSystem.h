@@ -27,7 +27,8 @@ class BasicConfiguredTriggerFrameState :
         bool /*porterActionedPortal*/) { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
-        Box const& /*potentialPorter*/) { return true; }
+        Box const& /*potentialPorter*/,
+        bool /*porterActionedPortal*/) { return true; }
         
     virtual bool shouldPickup(
         int /*responsiblePickupIndex*/,
