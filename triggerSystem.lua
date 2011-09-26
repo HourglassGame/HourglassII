@@ -317,17 +317,19 @@ return {
         
         retv.additionalBoxes = {}
         
-        if frameNumber%300 == 0 then
-            retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
-        end
+        --if frameNumber%300 == 0 then
+        --   retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
+        --end
         
-        if frameNumber%200 == 0 then
+        if frameNumber%2000 == 0 then
             retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
         end
         
         retv.collisions = calculateCollisions(self.protoCollisions, triggerArrivals)
         retv.portals = calculatePortals(self.protoPortals, retv.collisions)
         retv.arrivalLocations = calculateArrivalLocations(retv.portals)
+        
+        self.portalActive = (triggerArrivals[3][1] == 1)
         
         self.buttonPositionsAndVelocities =
             calculateButtonPositionsAndVelocities(self.protoButtons, retv.collisions)
@@ -350,7 +352,9 @@ return {
     --corresponding to the callin type (portals/pickups/killers)
     --in particular, this means that this does *not* correspond to the 'index' field
     --of a portal (the 'index' field for identifying illegal portals, but not for this)
-    shouldPort = function(self, responsiblePortalIndex, dynamicObject, porterActionedPortal) return true end,
+    shouldPort = function(self, responsiblePortalIndex, dynamicObject, porterActionedPortal) 
+        return self.portalActive
+    end,
     shouldPickup = function(self, responsiblePickupIndex, dynamicObject) return true end,
     shouldDie = function(self, responsibleKillerIndex, dynamicObject) return true end,
     getTriggerDeparturesAndGlitz = function(self, departures)
@@ -443,6 +447,13 @@ return {
             height = 800,
             timeDirection = 'forwards',
             triggerID = 1
+        },
+        {
+            attachment = {platform = nil, xOffset = 3200, yOffset = 37600},
+            width = 3200,
+            height = 800,
+            timeDirection = 'forwards',
+            triggerID = 3
         }
     }
 }

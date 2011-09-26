@@ -58,6 +58,7 @@ namespace {
         mt::std::vector<Collision>::type const& nextPlatform,
         mt::std::vector<PortalArea>::type const& nextPortal,
         mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
+        TriggerFrameState& triggerFrameState,
         bool& currentPlayerFrame,
         bool& nextPlayerFrame,
         bool& winFrame);
@@ -75,6 +76,7 @@ namespace {
         RandomAccessPlatformRange const& nextPlatform,
         RandomAccessPortalRange const& nextPortal,
         RandomAccessArrivalLocationRange const& arrivalLocations,
+        TriggerFrameState& triggerFrameState,
         Frame* time);
     
     template <
@@ -89,6 +91,7 @@ namespace {
 		int size,
 		int oldIllegalPortal,
 		TimeDirection oldTimeDirection,
+		TriggerFrameState& triggerFrameState,
 		Frame* time);
 
     bool explodeBoxesUpwards(
@@ -166,6 +169,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
+        triggerFrameState,
         time);
 
     bool currentPlayerFrame(false);
@@ -187,6 +191,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
+        triggerFrameState,
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);
@@ -257,6 +262,7 @@ void guyStep(
     mt::std::vector<Collision>::type const& nextPlatform,
     mt::std::vector<PortalArea>::type const& nextPortal,
     mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
+    TriggerFrameState& triggerFrameState,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame)
@@ -596,6 +602,7 @@ void guyStep(
                                 dropSize,
                                 -1,
                                 guyArrivalList[i].getBoxCarryDirection(),
+                                triggerFrameState,
                                 time);
 
                             carry[i] = false;
@@ -707,9 +714,12 @@ void guyStep(
                     int py = nextPortal[j].getY();
                     int pw = nextPortal[j].getWidth();
                     int ph = nextPortal[j].getHeight();
-                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph) /*&&
-                            nextPortal[j].getActive() && nextPortal[j].getCharges() != 0*/
-                            /*&&shouldPort() TODO*/) // charges not fully implemented
+                    if (PointInRectangleInclusive(mx, my, px, py, pw, ph)
+                    		&& triggerFrameState.shouldPort(j,
+                    			Guy(x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
+                    			guyArrivalList[i].getIllegalPortal(),-1,
+                    			supported[i],supportedSpeed[i], pickups[i].empty() ? guyArrivalList[i].getPickups() : pickups[i], facing[i],
+                    			carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection(),relativeIndex),true))
                     {
                         if (nextPortal[j].getWinner())
                         {
@@ -737,44 +747,48 @@ void guyStep(
             }
 
             // falling through portals
-            for (unsigned int j = 0; j < nextPortal.size(); ++j)
-			{
-            	int px = nextPortal[j].getX();
-				int py = nextPortal[j].getY();
-				int pw = nextPortal[j].getWidth();
-				int ph = nextPortal[j].getHeight();
-                
-				if (PointInRectangleInclusive(
-                        x[i] + guyArrivalList[i].getWidth()/2, y[i] + guyArrivalList[i].getHeight()/2,
-                        px, py, pw, ph)
-					/*&& nextPortal[j].getActive() && nextPortal[j].getCharges() != 0 */
-                    /*&& shouldPort() TODO */
-                    && nextPortal[j].getFallable())
+            if (normalDeparture)
+            {
+				for (unsigned int j = 0; j < nextPortal.size(); ++j)
 				{
-					if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
+					int px = nextPortal[j].getX();
+					int py = nextPortal[j].getY();
+					int pw = nextPortal[j].getWidth();
+					int ph = nextPortal[j].getHeight();
+
+					if (PointInRectangleInclusive(
+							x[i] + guyArrivalList[i].getWidth()/2, y[i] + guyArrivalList[i].getHeight()/2,
+							px, py, pw, ph) && nextPortal[j].getFallable())
 					{
-						illegalPortal = j;
-					}
-					else
-					{
-						Frame* portalTime(
-                            nextPortal[j].getRelativeTime() ?
-                            getArbitraryFrame(
-                                getUniverse(time),
-                                getFrameNumber(time) + nextPortal[j].getTimeDestination()):
-                            getArbitraryFrame(
-                                getUniverse(time),
-                                nextPortal[j].getTimeDestination()));
-						nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
-						normalDeparture = false;
-						illegalPortal = nextPortal[j].getIllegalDestination();
-						arrivalBasis = nextPortal[j].getDestinationIndex();
-						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
-						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
-						break;
+						if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
+						{
+							illegalPortal = j;
+						}
+						else if (triggerFrameState.shouldPort(j,
+								Guy(x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
+								guyArrivalList[i].getIllegalPortal(),-1,
+								supported[i],supportedSpeed[i], pickups[i].empty() ? guyArrivalList[i].getPickups() : pickups[i], facing[i],
+								carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection(),relativeIndex),false))
+						{
+							Frame* portalTime(
+								nextPortal[j].getRelativeTime() ?
+								getArbitraryFrame(
+									getUniverse(time),
+									getFrameNumber(time) + nextPortal[j].getTimeDestination()):
+								getArbitraryFrame(
+									getUniverse(time),
+									nextPortal[j].getTimeDestination()));
+							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
+							normalDeparture = false;
+							illegalPortal = nextPortal[j].getIllegalDestination();
+							arrivalBasis = nextPortal[j].getDestinationIndex();
+							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
+							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
+							break;
+						}
 					}
 				}
-			}
+            }
 
             if (playerInput.size() - 1 == relativeIndex)
             {
@@ -828,6 +842,7 @@ void makeBoxAndTimeWithPortals(
 		int size,
 		int oldIllegalPortal,
 		TimeDirection oldTimeDirection,
+		TriggerFrameState& triggerFrameState,
 		Frame* time)
 {
 	int arrivalBasis = -1;
@@ -840,16 +855,13 @@ void makeBoxAndTimeWithPortals(
         int py = nextPortal[i].getY();
         int pw = nextPortal[i].getWidth();
         int ph = nextPortal[i].getHeight();
-        if (PointInRectangleInclusive(x + size/2, y + size/2, px, py, pw, ph)
-            /*&& nextPortal[i].getActive() && nextPortal[i].getCharges() != 0*/
-            /*&& shouldPort()  TODO*/
-            && nextPortal[i].getFallable())
+        if (PointInRectangleInclusive(x + size/2, y + size/2, px, py, pw, ph) && nextPortal[i].getFallable())
         {
             if (oldIllegalPortal != -1 && nextPortal[i].getIndex() == oldIllegalPortal)
             {
                 illegalPortal = i;
             }
-            else
+            else if (triggerFrameState.shouldPort(i, Box(x,y,xspeed,yspeed,size,oldIllegalPortal,-1,oldTimeDirection), false))
             {
                 Frame* portalTime(
                     nextPortal[i].getRelativeTime() ?
@@ -1025,6 +1037,7 @@ void boxCollisionAlogorithm(
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
+    TriggerFrameState& triggerFrameState,
     Frame* time)
 {
 	mt::std::vector<Box>::type oldBoxList;
@@ -1594,6 +1607,7 @@ void boxCollisionAlogorithm(
                     size[i],
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
+                    triggerFrameState,
                     time);
 			}
 			else
@@ -1609,6 +1623,7 @@ void boxCollisionAlogorithm(
                     size[i],
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
+                    triggerFrameState,
                     time);
 			}
 
