@@ -148,6 +148,7 @@ int main(int argc, char const* const argv[])
                 case sf::Key::G:
                     //Generate a replay from replayLogIn
                     generateReplay();
+                    break;
                 default:
                     break;
                 }
