@@ -482,7 +482,6 @@ PhysicsAffectingStuff
     //read 'additionalBoxes' table:
     lua_getfield(L_.ptr, -1, "additionalBoxes");
     if (!lua_isnil(L_.ptr, -1)) {
-        assert(false && "additionalBoxes not yet implemented!");
         assert(lua_istable(L_.ptr, -1) && "additionalBoxes must be a table");
         for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
