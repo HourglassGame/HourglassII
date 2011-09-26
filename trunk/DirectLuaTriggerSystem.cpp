@@ -322,6 +322,7 @@ RectangleGlitz toGlitz(lua_State* L)
 
 PhysicsAffectingStuff
     DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
+        Frame const* currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
@@ -452,6 +453,8 @@ PhysicsAffectingStuff
     lua_getfield(L_.ptr, -1, "calculatePhysicsAffectingStuff");
     //push `self` argument
     lua_pushvalue(L_.ptr, -2);
+    //push `frameNumber` argument
+    lua_pushinteger(L_.ptr, getFrameNumber(currentFrame));
     //push `triggerArrivals` argument [
     lua_createtable(L_.ptr, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
@@ -471,7 +474,7 @@ PhysicsAffectingStuff
     //]
     //call function
 
-    lua_call(L_.ptr, 2, 1);
+    lua_call(L_.ptr, 3, 1);
 
     //read return value
     //TODO: better handling of sparsely populated tables.

@@ -23,6 +23,7 @@ class DirectLuaTriggerFrameState :
     
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
+            Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);

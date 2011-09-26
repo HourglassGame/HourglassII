@@ -137,6 +137,7 @@ mt::std::vector<RectangleGlitz>::type calculatePortalGlitz(mt::std::vector<Porta
 
 PhysicsAffectingStuff
     BasicConfiguredTriggerFrameState::calculatePhysicsAffectingStuff(
+        Frame const* /*currentFrame*/,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::std::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
