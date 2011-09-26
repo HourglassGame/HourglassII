@@ -738,7 +738,7 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
                     wall),
                 30),
             newObjectList,
-            Guy(8700, 20000, 0, 0, 1600, 3200, 0, -1, false, 0, mt::std::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0),
+            Guy(8700, 20000, 0, 0, 2100, 3200, 0, -1, false, 0, mt::std::map<int,int>::type(), false, false, 0, INVALID, FORWARDS, 0),
             FrameID(0,UniverseID(10800)),
             makeDirectLuaTriggerSystem());
 }
