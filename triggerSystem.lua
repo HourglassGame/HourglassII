@@ -312,7 +312,7 @@ end
 return {
     --triggerArrivals have already had default values inserted by C++
     --for trigger indices that did not arrive by the time this is called
-    calculatePhysicsAffectingStuff = function(self, triggerArrivals)
+    calculatePhysicsAffectingStuff = function(self, frameNumber, triggerArrivals)
         local retv = {}
         
         retv.collisions = calculateCollisions(self.protoCollisions, triggerArrivals)

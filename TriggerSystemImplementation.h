@@ -24,6 +24,7 @@ class TriggerFrameStateImplementation
     public:
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
+            Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
@@ -89,11 +90,12 @@ class TriggerFrameState
     public:
     PhysicsAffectingStuff
     calculatePhysicsAffectingStuff(
+        Frame const* currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
     {
-        return impl_->calculatePhysicsAffectingStuff(triggerArrivals);
+        return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
     }
     template<typename ObjectT>
     bool shouldPort(
