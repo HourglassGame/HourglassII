@@ -698,14 +698,16 @@ TriggerSystem makeDirectLuaTriggerSystem()
     }
     
     std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1))); // button that control platform
     
-    std::vector<int> defaultPlatformPositionAndVelocity;
+    std::vector<int> defaultPlatformPositionAndVelocity; // platform
     defaultPlatformPositionAndVelocity.push_back(38400);
     defaultPlatformPositionAndVelocity.push_back(43800);
     defaultPlatformPositionAndVelocity.push_back(0);
     defaultPlatformPositionAndVelocity.push_back(0);
     triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
+
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1))); // button that controls portal
 
     return TriggerSystem(
         new DirectLuaTriggerSystem(
