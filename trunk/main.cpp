@@ -706,6 +706,7 @@ TriggerSystem makeDirectLuaTriggerSystem()
     defaultPlatformPositionAndVelocity.push_back(0);
     defaultPlatformPositionAndVelocity.push_back(0);
     triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
     return TriggerSystem(
         new DirectLuaTriggerSystem(
             triggerSystemLuaChunk,

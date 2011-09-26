@@ -10,8 +10,8 @@
 namespace hg {
 struct PhysicsAffectingStuff {
     mt::std::vector<Box>::type additionalBoxes;
-    mt::std::vector<Collision>::type collisions;
     mt::std::vector<PortalArea>::type portals;
+    mt::std::vector<Collision>::type collisions;
     mt::std::vector<PickupArea>::type pickups;
     mt::std::vector<KillerArea>::type killers;
     //guaranteed to always contain elements at each index that could possibly be indexed

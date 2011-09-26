@@ -70,6 +70,7 @@ namespace {
     void boxCollisionAlogorithm(
         Environment const& env,
         RandomAccessBoxRange const& oldBoxList,
+        mt::std::vector<Box>::type const& additionalBox,
         mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
         RandomAccessPlatformRange const& nextPlatform,
         RandomAccessPortalRange const& nextPortal,
@@ -160,6 +161,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boxCollisionAlogorithm(
         env_,
         arrivals.getList<Box>(),
+        physicsTriggerStuff.additionalBoxes,
         nextBox,
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
@@ -1017,13 +1019,19 @@ template <
     typename RandomAccessArrivalLocationRange>
 void boxCollisionAlogorithm(
     Environment const& env,
-    RandomAccessBoxRange const& oldBoxList,
+    RandomAccessBoxRange const& boxArrivalList,
+    mt::std::vector<Box>::type const& additionalBox,
     mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
     Frame* time)
 {
+	mt::std::vector<Box>::type oldBoxList;
+
+	boost::push_back(oldBoxList, boxArrivalList);
+	boost::push_back(oldBoxList, additionalBox);
+
 	mt::std::vector<int>::type x(oldBoxList.size());
 	mt::std::vector<int>::type y(oldBoxList.size());
 	mt::std::vector<int>::type xTemp(oldBoxList.size());
