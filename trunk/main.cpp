@@ -86,7 +86,6 @@ int main(int argc, char const* const argv[])
         return EXIT_FAILURE;
     }
 #endif //HG_COMPILE_TESTS
-    try{
     initialseCurrentPath(argc, argv);
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
@@ -176,16 +175,12 @@ int main(int argc, char const* const argv[])
 
             app.Display();
         }
-        catch (hg::PlayerVictoryException& playerWon) {
+        catch (hg::PlayerVictoryException&) {
             cout << "Congratulations, a winner is you!\n";
             return EXIT_SUCCESS;
         }
     }
-    breakmainloop:;
-    }
-    catch (tbb::captured_exception&) {
-        cout << "Exception Captured\n";
-    }
+    breakmainloop:
     return EXIT_SUCCESS;
 }
 
@@ -306,10 +301,10 @@ void DrawWall(
             if (wall[i][j]) {
                 target.Draw(
                     Shape::Rectangle(
-                        32u*i,
-                        32u*j,
-                        32u*(i+1),
-                        32u*(j+1),
+                        32.f*i,
+                        32.f*j,
+                        32.f*(i+1),
+                        32.f*(j+1),
                         Colour()));
             }
         }
@@ -328,10 +323,10 @@ void DrawParticularGlitz(RenderTarget& target, RectangleGlitz const& rectangleGl
         if (playerDirection == rectangleGlitz.getTimeDirection()) {
             target.Draw(
                 Shape::Rectangle(
-                    rectangleGlitz.getX()/100,
-                    rectangleGlitz.getY()/100,
-                    (rectangleGlitz.getX() + rectangleGlitz.getWidth())/100,
-                    (rectangleGlitz.getY() + rectangleGlitz.getHeight())/100,
+                    static_cast<float>(rectangleGlitz.getX()/100),
+                    static_cast<float>(rectangleGlitz.getY()/100),
+                    static_cast<float>((rectangleGlitz.getX() + rectangleGlitz.getWidth())/100),
+                    static_cast<float>((rectangleGlitz.getY() + rectangleGlitz.getHeight())/100),
                     interpretAsColour(rectangleGlitz.getForwardsColour())));
         }
         else {
@@ -339,10 +334,10 @@ void DrawParticularGlitz(RenderTarget& target, RectangleGlitz const& rectangleGl
             int const y(rectangleGlitz.getY() - rectangleGlitz.getYspeed());
             target.Draw(
                 Shape::Rectangle(
-                    x/100,
-                    y/100,
-                    (x + rectangleGlitz.getWidth())/100,
-                    (y + rectangleGlitz.getHeight())/100,
+                    static_cast<float>(x/100),
+                    static_cast<float>(y/100),
+                    static_cast<float>((x + rectangleGlitz.getWidth())/100),
+                    static_cast<float>((y + rectangleGlitz.getHeight())/100),
                     interpretAsColour(rectangleGlitz.getReverseColour())));
         }
 }
@@ -366,10 +361,10 @@ void DrawBoxes(
             if (playerDirection == box.getTimeDirection()) {
                 target.Draw(
                     Shape::Rectangle(
-                        box.getX()/100,
-                        box.getY()/100,
-                        (box.getX()+ box.getSize())/100,
-                        (box.getY()+box.getSize())/100,
+                        static_cast<float>(box.getX()/100),
+                        static_cast<float>(box.getY()/100),
+                        static_cast<float>((box.getX()+ box.getSize())/100),
+                        static_cast<float>((box.getY()+box.getSize())/100),
                         Colour(255,0,255)));
             }
             else {
@@ -377,10 +372,10 @@ void DrawBoxes(
                 int const y(box.getY()-box.getYspeed());
                 target.Draw(
                     Shape::Rectangle(
-                        x/100,
-                        y/100,
-                        (x + box.getSize())/100,
-                        (y + box.getSize())/100,
+                        static_cast<float>(x/100),
+                        static_cast<float>(y/100),
+                        static_cast<float>((x + box.getSize())/100),
+                        static_cast<float>((y + box.getSize())/100),
                         Colour(0,255,0)));
             }
       //  }
@@ -425,34 +420,34 @@ void DrawGuys(
             
             target.Draw(
                 Shape::Rectangle(
-                    left/100,
-                    top/100,
-                    right/100,
-                    bottom/100,
+                    static_cast<float>(left/100),
+                    static_cast<float>(top/100),
+                    static_cast<float>(right/100),
+                    static_cast<float>(bottom/100),
                     pnc.colour));
             
             target.Draw(
                 guy.getFacing() ?
                     Shape::Rectangle(
-                        hmid/100,
-                        top/100,
-                        right/100,
-                        vmid/100,
+                        static_cast<float>(hmid/100),
+                        static_cast<float>(top/100),
+                        static_cast<float>(right/100),
+                        static_cast<float>(vmid/100),
                         Colour(50,50,50)) :
                     Shape::Rectangle(
-                        left/100,
-                        top/100,
-                        hmid/100,
-                        vmid/100,
+                        static_cast<float>(left/100),
+                        static_cast<float>(top/100),
+                        static_cast<float>(hmid/100),
+                        static_cast<float>(vmid/100),
                         Colour(50,50,50)));
             
             if (guy.getBoxCarrying()) {
                 target.Draw(
                     Shape::Rectangle(
-                        (hmid - guy.getBoxCarrySize()/2)/100,
-                        (top - guy.getBoxCarrySize())/100,
-                        (hmid + guy.getBoxCarrySize()/2)/100,
-                        top/100,
+                        static_cast<float>((hmid - guy.getBoxCarrySize()/2)/100),
+                        static_cast<float>((top - guy.getBoxCarrySize())/100),
+                        static_cast<float>((hmid + guy.getBoxCarrySize()/2)/100),
+                        static_cast<float>(top/100),
                         playerDirection == guy.getBoxCarryDirection() ?
                             Colour(150,0,150) :
                             Colour(0,150,0)));
@@ -490,10 +485,10 @@ void DrawTimeline(
                 if (inWaveRegion) {
                     target.Draw(
                         Shape::Rectangle(
-                            static_cast<int>(leftOfWaveRegion),
-                            10,
-                            static_cast<int>(i),
-                            25,
+                            static_cast<float>(leftOfWaveRegion),
+                            10.f,
+                            static_cast<float>(i),
+                            25.f,
                             Colour(250,0,0)));
                     inWaveRegion = false;
                 }
@@ -503,20 +498,20 @@ void DrawTimeline(
         if (inWaveRegion) {
             target.Draw(
                 Shape::Rectangle(
-                    static_cast<int>(leftOfWaveRegion),
-                    10,
-                    static_cast<int>(640),
-                    25,
+                    static_cast<float>(leftOfWaveRegion),
+                    10.f,
+                    static_cast<float>(640),
+                    25.f,
                     Colour(250,0,0)));
         }
     }
     if (playerFrame.isValidFrame()) {
         target.Draw(
             Shape::Rectangle(
-                static_cast<int>(playerFrame.getFrameNumber()/10800.*640-1),
-                10,
-                static_cast<int>(playerFrame.getFrameNumber()/10800.*640+2),
-                25,
+                static_cast<float>(static_cast<int>(playerFrame.getFrameNumber()/10800.*640-1)),
+                10.f,
+                static_cast<float>(static_cast<int>(playerFrame.getFrameNumber()/10800.*640+2)),
+                25.f,
                 Colour(200,200,0)));
     }
 }
