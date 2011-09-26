@@ -315,15 +315,13 @@ return {
     calculatePhysicsAffectingStuff = function(self, frameNumber, triggerArrivals)
         local retv = {}
         
-        self.outputTriggers[3] = {triggerArrivals[3][1] + 1}
-        
         retv.additionalBoxes = {}
         
-        if triggerArrivals[3][1]%300 == 0 then
+        if frameNumber%300 == 0 then
             retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
         end
         
-        if triggerArrivals[3][1]%200 == 0 then
+        if frameNumber%200 == 0 then
             retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
         end
         
