@@ -756,7 +756,8 @@ bool DirectLuaTriggerFrameState::shouldPort(
 }
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
-    Box const& potentialPorter)
+    Box const& potentialPorter,
+    bool porterActionedPortal)
 {
     //push function to call
     lua_checkstack(L_.ptr, 1);
@@ -775,9 +776,8 @@ bool DirectLuaTriggerFrameState::shouldPort(
     lua_pushstring(L_.ptr, "box");
     lua_setfield(L_.ptr, -2, "type");
     //push `porterActionedPortal` argument
-    //Always false for boxes
     lua_checkstack(L_.ptr, 1);
-    lua_pushboolean(L_.ptr, false);
+    lua_pushboolean(L_.ptr, porterActionedPortal);
     //call function
     lua_call(L_.ptr, 4, 1);
     //read return value

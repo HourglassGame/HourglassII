@@ -32,10 +32,11 @@ class TriggerFrameStateImplementation
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter,
-        bool /*porterActionedPortal*/) = 0;
+        bool porterActionedPortal) = 0;
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Box const& potentialPorter) = 0;
+        Box const& potentialPorter,
+        bool porterActionedPortal) = 0;
         
     virtual bool shouldPickup(
         int responsiblePickupIndex,
@@ -101,9 +102,10 @@ class TriggerFrameState
     template<typename ObjectT>
     bool shouldPort(
         int responsiblePortalIndex,
-        ObjectT const& potentialPorter)
+        ObjectT const& potentialPorter,
+        bool porterActionedPortal)
     {
-        return impl_->shouldPort(responsiblePortalIndex, potentialPorter);
+        return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
     }
     template<typename ObjectT>
     bool shouldPickup(
