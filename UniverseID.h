@@ -18,7 +18,8 @@ namespace boost {
 
 namespace hg {
 //Uniquely identifies a particular universe.
-struct UniverseID {
+class UniverseID {
+public:
     //top level universeID
     //timelineLength is always length of top-level universe
     explicit UniverseID(std::size_t timelineLength);
