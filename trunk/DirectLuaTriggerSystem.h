@@ -30,7 +30,8 @@ class DirectLuaTriggerFrameState :
                 
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Guy const& potentialPorter);
+        Guy const& potentialPorter,
+        bool /*porterActionedPortal*/);
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Box const& potentialPorter);

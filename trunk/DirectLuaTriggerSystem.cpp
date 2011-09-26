@@ -660,7 +660,7 @@ void pushBox(lua_State* L, Box const& box)
     lua_setfield(L, -2, "timeDirection");
 }
 
-//TODO: fix code duplication with box version
+//TODO: fix code duplication with box version and portal version
 bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Guy const& potentialXer)
 {
     //push function to call
@@ -670,10 +670,10 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
     //push `self` argument
     lua_checkstack(L, 1);
     lua_pushvalue(L, -2);
-    //push `responsiblePortalIndex` argument
+    //push `responsibleXIndex` argument
     lua_checkstack(L, 1);
     lua_pushinteger(L, responsibleXIndex + 1);
-    //push `potentialPorter` argument
+    //push `potentialX` argument
     lua_checkstack(L, 1);
     pushGuy(L, potentialXer);
     lua_checkstack(L, 1);
@@ -697,10 +697,10 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
     //push `self` argument
     lua_checkstack(L, 1);
     lua_pushvalue(L, -2);
-    //push `responsiblePortalIndex` argument
+    //push `responsibleXIndex` argument
     lua_checkstack(L, 1);
     lua_pushinteger(L, responsibleXIndex + 1);
-    //push `potentialPorter` argument
+    //push `potentialX` argument
     lua_checkstack(L, 1);
     pushBox(L, potentialXer);
     lua_checkstack(L, 1);
@@ -723,15 +723,69 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
 //it refers to the `i` in `nextPortal[i]`.
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
-    Guy const& potentialPorter)
+    Guy const& potentialPorter,
+    bool porterActionedPortal)
 {
-    return doShouldXFunction(L_.ptr, "shouldPort", responsiblePortalIndex, potentialPorter);
+    //push function to call
+    lua_checkstack(L_.ptr, 1);
+    lua_getfield(L_.ptr, -1, "shouldPort");
+    assert(lua_isfunction(L_.ptr, -1));
+    //push `self` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushvalue(L_.ptr, -2);
+    //push `responsiblePortalIndex` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushinteger(L_.ptr, responsiblePortalIndex + 1);
+    //push `potentialPorter` argument
+    lua_checkstack(L_.ptr, 1);
+    pushGuy(L_.ptr, potentialPorter);
+    lua_checkstack(L_.ptr, 1);
+    lua_pushstring(L_.ptr, "guy");
+    lua_setfield(L_.ptr, -2, "type");
+    //push `porterActionedPortal` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushboolean(L_.ptr, porterActionedPortal);
+    //call function
+    lua_call(L_.ptr, 4, 1);
+    //read return value
+    assert(lua_isboolean(L_.ptr, -1));
+    bool retv(lua_toboolean(L_.ptr, -1));
+    //pop return value
+    lua_pop(L_.ptr, 1);
+    return retv;
 }
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
     Box const& potentialPorter)
 {
-    return doShouldXFunction(L_.ptr, "shouldPort", responsiblePortalIndex, potentialPorter);
+    //push function to call
+    lua_checkstack(L_.ptr, 1);
+    lua_getfield(L_.ptr, -1, "shouldPort");
+    assert(lua_isfunction(L_.ptr, -1));
+    //push `self` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushvalue(L_.ptr, -2);
+    //push `responsiblePortalIndex` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushinteger(L_.ptr, responsiblePortalIndex + 1);
+    //push `potentialPorter` argument
+    lua_checkstack(L_.ptr, 1);
+    pushBox(L_.ptr, potentialPorter);
+    lua_checkstack(L_.ptr, 1);
+    lua_pushstring(L_.ptr, "box");
+    lua_setfield(L_.ptr, -2, "type");
+    //push `porterActionedPortal` argument
+    //Always false for boxes
+    lua_checkstack(L_.ptr, 1);
+    lua_pushboolean(L_.ptr, false);
+    //call function
+    lua_call(L_.ptr, 4, 1);
+    //read return value
+    assert(lua_isboolean(L_.ptr, -1));
+    bool retv(lua_toboolean(L_.ptr, -1));
+    //pop return value
+    lua_pop(L_.ptr, 1);
+    return retv;
 }
     
 bool DirectLuaTriggerFrameState::shouldPickup(

@@ -31,7 +31,8 @@ class TriggerFrameStateImplementation
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Guy const& potentialPorter) = 0;
+        Guy const& potentialPorter,
+        bool /*porterActionedPortal*/) = 0;
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Box const& potentialPorter) = 0;

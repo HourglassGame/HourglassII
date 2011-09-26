@@ -23,7 +23,8 @@ class BasicConfiguredTriggerFrameState :
                 
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
-        Guy const& /*potentialPorter*/) { return true; }
+        Guy const& /*potentialPorter*/,
+        bool /*porterActionedPortal*/) { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Box const& /*potentialPorter*/) { return true; }
