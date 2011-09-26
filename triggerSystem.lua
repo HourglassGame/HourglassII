@@ -350,7 +350,7 @@ return {
     --corresponding to the callin type (portals/pickups/killers)
     --in particular, this means that this does *not* correspond to the 'index' field
     --of a portal (the 'index' field for identifying illegal portals, but not for this)
-    shouldPort = function(self, responsiblePortalIndex, dynamicObject) return true end,
+    shouldPort = function(self, responsiblePortalIndex, dynamicObject, porterActionedPortal) return true end,
     shouldPickup = function(self, responsiblePickupIndex, dynamicObject) return true end,
     shouldDie = function(self, responsibleKillerIndex, dynamicObject) return true end,
     getTriggerDeparturesAndGlitz = function(self, departures)
