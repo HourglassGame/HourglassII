@@ -201,7 +201,7 @@ Guy toGuy(lua_State* L)
     int arrivalBasis(readIntField(L, "arrivalBasis"));
     bool supported(readBooleanField(L, "supported"));
     int supportedSpeed(readIntField(L, "supportedSpeed"));
-    mt::std::map<int, int>::type pickups(readPickupsField(L, "pickups"));
+    mt::std::map<Ability,unsigned int>::type pickups(readPickupsField(L, "pickups"));
     bool facing(readBooleanField(L, "facing"));
     bool boxCarrying(readBooleanField(L, "boxCarrying"));
     int boxCarrySize(0);

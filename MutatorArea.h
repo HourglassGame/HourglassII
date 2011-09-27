@@ -22,7 +22,7 @@ public:
     int getHeight() const { return height_; }
     int getXspeed() const { return xSpeed_; }
     int getYspeed() const { return ySpeed_; }
-    int getCollsionOverlap() const { return collisionOverlap_; }
+    int getCollisionOverlap() const { return collisionOverlap_; }
     TimeDirection 
         getTimeDirection() const { return timeDirection_; }
         
