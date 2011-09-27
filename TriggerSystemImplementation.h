@@ -43,10 +43,10 @@ class TriggerFrameStateImplementation
         bool porterActionedPortal) = 0;
     
     virtual boost::optional<Guy> mutateObject(
-        std::vector<int> const& responsibleManipulatorIndices,
+        mt::std::vector<int>::type const& responsibleMutatorIndices,
         Guy const& objectToManipulate) = 0;
     virtual boost::optional<Box> mutateObject(
-        std::vector<int> const& responsibleManipulatorIndices,
+        mt::std::vector<int>::type const& responsibleMutatorIndices,
         Box const& objectToManipulate) = 0;
     
     virtual std::pair<
@@ -113,10 +113,10 @@ class TriggerFrameState
     
     template<typename ObjectT>
     boost::optional<ObjectT> mutateObject(
-        std::vector<int> const& responsibleManipulatorIndices,
+        mt::std::vector<int>::type const& responsibleMutatorIndices,
         ObjectT const& objectToManipulate)
     {
-        return impl_->mutateObject(responsibleManipulatorIndices, objectToManipulate);
+        return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate);
     }
     
     std::pair<

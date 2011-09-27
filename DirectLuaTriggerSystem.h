@@ -41,11 +41,11 @@ class DirectLuaTriggerFrameState :
         bool porterActionedPortal);
     
     virtual boost::optional<Guy> mutateObject(
-        std::vector<int> const& /*responsibleManipulatorIndices*/,
-        Guy const& objectToManipulate) { return boost::optional<Guy>(objectToManipulate); }
+        mt::std::vector<int>::type const& responsibleMutatorIndices,
+        Guy const& objectToManipulate);
     virtual boost::optional<Box> mutateObject(
-        std::vector<int> const& /*responsibleManipulatorIndices*/,
-        Box const& objectToManipulate) { return boost::optional<Box>(objectToManipulate); }
+        mt::std::vector<int>::type const& responsibleMutatorIndices,
+        Box const& objectToManipulate);
     
     virtual std::pair<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,

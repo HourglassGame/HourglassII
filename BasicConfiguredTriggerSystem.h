@@ -34,10 +34,10 @@ class BasicConfiguredTriggerFrameState :
         bool /*porterActionedPortal*/) { return true; }
     
     virtual boost::optional<Guy> mutateObject(
-        std::vector<int> const& /*responsibleManipulatorIndices*/,
+        mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
         Guy const& objectToManipulate) { return boost::optional<Guy>(objectToManipulate); }
     virtual boost::optional<Box> mutateObject(
-        std::vector<int> const& /*responsibleManipulatorIndices*/,
+        mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
         Box const& objectToManipulate) { return boost::optional<Box>(objectToManipulate); }
     
     virtual std::pair<

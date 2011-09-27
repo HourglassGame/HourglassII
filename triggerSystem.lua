@@ -360,6 +360,9 @@ return {
     shouldPort = function(self, responsiblePortalIndex, dynamicObject, porterActionedPortal) 
         return self.portalActive
     end,
+    mutateObject = function(self, responsibleManipulatorIndices, dynamicObject)
+        return dynamicObject
+    end,
     getTriggerDeparturesAndGlitz = function(self, departures)
         local buttonStates =
             calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)

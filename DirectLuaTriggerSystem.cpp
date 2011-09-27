@@ -173,6 +173,61 @@ Box toBox(lua_State* L, int arrivalLocationsSize)
     return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
 }
 
+mt::std::map<int, int>::type readPickupsField(lua_State* L, char const* /*fieldName*/)
+{
+    mt::std::map<int, int>::type retv;
+    assert(lua_istable(L, -1) && "pickups must be a table");
+    lua_pushnil(L);
+    while (lua_next(L, -1) != 0) {
+       retv[lua_tointeger(L, -2)] = lua_tointeger(L, -1);
+       lua_pop(L, 1);
+    }
+    return retv;
+}
+
+//Gives the value of the element at the top of the stack of L,
+//interpreted as a Guy.
+Guy toGuy(lua_State* L)
+{
+    assert(lua_istable(L, -1) && "a guy must be a table");
+    int index(readIntField(L, "index"));
+    int x(readIntField(L, "x"));            
+    int y(readIntField(L, "y"));
+    int xspeed(readIntField(L, "xspeed"));
+    int yspeed(readIntField(L, "yspeed"));
+    int width(readIntField(L, "width"));
+    int height(readIntField(L, "height"));
+    int illegalPortal(readIntField(L, "illegalPortal"));
+    int arrivalBasis(readIntField(L, "arrivalBasis"));
+    bool supported(readBooleanField(L, "supported"));
+    int supportedSpeed(readIntField(L, "supportedSpeed"));
+    mt::std::map<int, int>::type pickups(readPickupsField(L, "pickups"));
+    bool facing(readBooleanField(L, "facing"));
+    bool boxCarrying(readBooleanField(L, "boxCarrying"));
+    int boxCarrySize(0);
+    TimeDirection boxCarryDirection(INVALID);
+    if (boxCarrying) {
+        boxCarrySize = readIntField(L, "boxCarrySize");
+        boxCarryDirection = readTimeDirectionField(L, "boxCarryDirection");
+    }
+    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    return Guy(
+        x, y,
+        xspeed, yspeed,
+        width, height,
+        illegalPortal,
+        arrivalBasis,
+        supported,
+        supportedSpeed,
+        pickups,
+        facing,
+        boxCarrying,
+        boxCarrySize,
+        boxCarryDirection,
+        timeDirection,
+        index);
+}
+
 Collision toCollision(lua_State* L)
 {
     assert(lua_istable(L, -1) && "a collision must be a table");
@@ -789,6 +844,88 @@ bool DirectLuaTriggerFrameState::shouldPort(
     //read return value
     assert(lua_isboolean(L_.ptr, -1));
     bool retv(lua_toboolean(L_.ptr, -1));
+    //pop return value
+    lua_pop(L_.ptr, 1);
+    return retv;
+}
+
+
+//Unfortunately the current implementation allows lua to return all sorts of nonsensical things
+//for Guys (eg, change relative index, change illegalPortal, supportedSpeed etc.. none of these make much sense)
+boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
+    mt::std::vector<int>::type const& responsibleMutatorIndices,
+    Guy const& objectToManipulate)
+{
+    //push function to call
+    lua_checkstack(L_.ptr, 1);
+    lua_getfield(L_.ptr, -1, "mutateObject");
+    assert(lua_isfunction(L_.ptr, -1));
+    //push self argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushvalue(L_.ptr, -2);
+    //push responsibleMutatorIndices argument
+    lua_checkstack(L_.ptr, 2);
+    lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
+    //insert each triggerElement into the table for the particular trigger
+    int i(0);
+    foreach (int mutatorIndex, responsibleMutatorIndices) {
+        ++i;
+        lua_pushinteger(L_.ptr, mutatorIndex);
+        lua_rawseti(L_.ptr, -2, i);
+    }
+    //push dynamicObject argument
+    lua_checkstack(L_.ptr, 1);
+    pushGuy(L_.ptr, objectToManipulate);
+    lua_checkstack(L_.ptr, 1);
+    lua_pushstring(L_.ptr, "guy");
+    lua_setfield(L_.ptr, -2, "type");
+    //call function
+    lua_call(L_.ptr, 3, 1);
+    //read return value
+    boost::optional<Guy> retv;
+    if (!lua_isnil(L_.ptr, -1)) {
+        assert(lua_istable(L_.ptr, -1) && "mutated object must be a table");
+        retv = toGuy(L_.ptr);
+    }
+    //pop return value
+    lua_pop(L_.ptr, 1);
+    return retv;
+}
+boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
+    mt::std::vector<int>::type const& responsibleMutatorIndices,
+    Box const& objectToManipulate)
+{
+    //push function to call
+    lua_checkstack(L_.ptr, 1);
+    lua_getfield(L_.ptr, -1, "mutateObject");
+    assert(lua_isfunction(L_.ptr, -1));
+    //push self argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushvalue(L_.ptr, -2);
+    //push responsibleMutatorIndices argument
+    lua_checkstack(L_.ptr, 2);
+    lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
+    //insert each triggerElement into the table for the particular trigger
+    int i(0);
+    foreach (int mutatorIndex, responsibleMutatorIndices) {
+        ++i;
+        lua_pushinteger(L_.ptr, mutatorIndex);
+        lua_rawseti(L_.ptr, -2, i);
+    }
+    //push dynamicObject argument
+    lua_checkstack(L_.ptr, 1);
+    pushBox(L_.ptr, objectToManipulate);
+    lua_checkstack(L_.ptr, 1);
+    lua_pushstring(L_.ptr, "box");
+    lua_setfield(L_.ptr, -2, "type");
+    //call function
+    lua_call(L_.ptr, 3, 1);
+    //read return value
+    boost::optional<Box> retv;
+    if (!lua_isnil(L_.ptr, -1)) {
+        assert(lua_istable(L_.ptr, -1) && "mutated object must be a table");
+        retv = toBox(L_.ptr, arrivalLocationsSize_);
+    }
     //pop return value
     lua_pop(L_.ptr, 1);
     return retv;
