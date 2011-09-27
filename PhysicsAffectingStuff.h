@@ -13,7 +13,7 @@ struct PhysicsAffectingStuff {
     mt::std::vector<Collision>::type collisions;
     mt::std::vector<MutatorArea>::type mutators;
     //guaranteed to always contain elements at each index that could possibly be indexed
-    //ie- arrivalLocations will always be the same length for a particular NewTriggerSystem
+    //ie- arrivalLocations will always be the same length for a particular TriggerSystem
     mt::std::vector<ArrivalLocation>::type arrivalLocations;
 };
 }

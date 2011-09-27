@@ -33,6 +33,13 @@ class BasicConfiguredTriggerFrameState :
         Box const& /*potentialPorter*/,
         bool /*porterActionedPortal*/) { return true; }
     
+    virtual boost::optional<Guy> mutateObject(
+        std::vector<int> const& /*responsibleManipulatorIndices*/,
+        Guy const& objectToManipulate) { return boost::optional<Guy>(objectToManipulate); }
+    virtual boost::optional<Box> mutateObject(
+        std::vector<int> const& /*responsibleManipulatorIndices*/,
+        Box const& objectToManipulate) { return boost::optional<Box>(objectToManipulate); }
+    
     virtual std::pair<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
         mt::std::vector<RectangleGlitz>::type
