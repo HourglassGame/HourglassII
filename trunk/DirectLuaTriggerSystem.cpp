@@ -188,18 +188,15 @@ Ability toAbility(lua_State* L, int idx)
     }
 }
 
-mt::std::map<Ability, unsigned>::type readPickupsField(lua_State* L, char const* /*fieldName*/)
+mt::std::map<Ability, int>::type readPickupsField(lua_State* L, char const* /*fieldName*/)
 {
-    mt::std::map<Ability, unsigned>::type retv;
+    mt::std::map<Ability, int>::type retv;
     assert(lua_istable(L, -1) && "pickups must be a table");
     lua_pushnil(L);
     while (lua_next(L, -1) != 0) {
         lua_Integer abilityQuantity(lua_tointeger(L, -1));
         assert(abilityQuantity >= -1);
-        retv[toAbility(L, -2)] =
-          abilityQuantity >= 0 ?
-            static_cast<unsigned>(abilityQuantity) :
-            std::numeric_limits<unsigned>::max();
+        retv[toAbility(L, -2)] = abilityQuantity;
         lua_pop(L, 1);
     }
     return retv;
@@ -221,7 +218,7 @@ Guy toGuy(lua_State* L)
     int arrivalBasis(readIntField(L, "arrivalBasis"));
     bool supported(readBooleanField(L, "supported"));
     int supportedSpeed(readIntField(L, "supportedSpeed"));
-    mt::std::map<Ability,unsigned int>::type pickups(readPickupsField(L, "pickups"));
+    mt::std::map<Ability, int>::type pickups(readPickupsField(L, "pickups"));
     bool facing(readBooleanField(L, "facing"));
     bool boxCarrying(readBooleanField(L, "boxCarrying"));
     int boxCarrySize(0);
