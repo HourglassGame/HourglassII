@@ -94,6 +94,7 @@ PortalArea ProtoPortal::calculatePortalArea(
         height_,
         pnv2D.getXspeed(),
         pnv2D.getYspeed(),
+        collisionOverlap_,
         timeDirection_,
         destinationIndex_,
         xDestination_,

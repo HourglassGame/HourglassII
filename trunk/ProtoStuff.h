@@ -30,6 +30,7 @@ struct ProtoPortal {
         int index,
         int width,
         int height,
+        int collisionOverlap,
         TimeDirection timeDirection,
         int destinationIndex,
         int xDestination,
@@ -43,6 +44,7 @@ struct ProtoPortal {
     index_(index),
     width_(width),
     height_(height),
+    collisionOverlap_(collisionOverlap),
     timeDirection_(timeDirection),
     destinationIndex_(destinationIndex),
     xDestination_(xDestination),
@@ -62,6 +64,7 @@ private:
     int index_;
     int width_;
     int height_;
+    int collisionOverlap_;
     TimeDirection timeDirection_;
     int destinationIndex_;
     int xDestination_;

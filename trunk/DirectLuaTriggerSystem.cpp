@@ -201,6 +201,7 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
     int height(readIntField(L, "height"));
     int xspeed(readIntField(L, "xspeed"));
     int yspeed(readIntField(L, "yspeed"));
+    int collisionOverlap(readIntField(L, "collisionOverlap"));
     TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
     int destinationIndex(readIntField(L, "destinationIndex") - 1);
     assert(destinationIndex >= 0 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
@@ -230,6 +231,7 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
             x, y,
             width, height,
             xspeed, yspeed,
+            collisionOverlap,
             timeDirection, destinationIndex,
             xDestination, yDestination,
             relativeTime,
@@ -335,6 +337,7 @@ PhysicsAffectingStuff
             height = <positive number or 0>,
             xspeed = <number>,
             yspeed = <number>,
+            collisionOverlap = <number in range [0, 100]>,
             timeDirection = <'forwards' or 'backwards'>,
             destinationIndex = <number between 1 and arrivalLocationsSize inclusive>,
             xDestination = <number>,
@@ -347,33 +350,6 @@ PhysicsAffectingStuff
             illegalDestination = <positive number or nil>, 
             fallable = <boolean>,
             winner = <boolean>
-        }
-    */
-    //An array-table called "pickups", containing 
-    //tables with the following format:
-    /*
-        {
-            x = <number>,
-            y = <number>,
-            width = <number>,
-            height = <number>,
-            xspeed = <number>,
-            yspeed = <number>,
-            type = <'timeJump' or 'reverseTime'>,
-            timeDirection = <'forwards' or 'reverse'>
-        }
-    */
-    //An array-table called "killers", containing
-    //tables with the following format:
-    /*
-        {
-            x = <number>
-            y = <number>
-            width = <number>
-            height = <number>
-            xspeed = <number>
-            yspeed = <number>
-            timeDirection = <'forwards' or 'reverse'>
         }
     */
     //An array-table called "arrivalLocations", containing
