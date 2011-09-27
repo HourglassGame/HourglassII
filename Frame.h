@@ -72,16 +72,6 @@ private:
     friend Universe const& getUniverse(Frame const* frame);
     friend std::size_t getFrameNumber(Frame const* frame);
 
-    //Temporal comparison. Frames compare equal to themselves and all their parents or children.
-    //Frames compare greater than or less than all other frames.
-    //If l and r are in the same universe then l < r (direction) iff r can be obtained from l by calls to l = getNextFrame(l, direction)
-    //If l and r are in different universes then l < r (direction) iff 
-    //This comparison does not establish a total order.
-    //If l or r is the null frame then behaviour is undefined.
-    //You cannot rely on such things as a == b && b == c => a == c
-    //usage: a <op> b => compare(a, b) <op> 0
-    friend int compare(Frame const* l, Frame const* r, TimeDirection direction);
-
     void insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert);
     void changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange);
     void clearArrival(Frame const* toClear);
