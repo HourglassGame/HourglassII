@@ -614,6 +614,7 @@ TriggerSystem makeBasicConfiguredTriggerSystem()
             0,
             4200,
             4200,
+            50,
             FORWARDS,
             0,
             0,

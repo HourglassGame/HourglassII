@@ -12,6 +12,7 @@ public:
         int height,
         int xSpeed,
         int ySpeed,
+        int collisionOverlap,
         TimeDirection timeDirection,
         int destinationIndex,
         int xDestination,
@@ -20,7 +21,6 @@ public:
         int timeDestination,
         int illegalDestination,
         bool fallable,
-        int collisionOverlap,
         bool winner
         ) :
             index_(index),
@@ -30,6 +30,7 @@ public:
             height_(height),
             xSpeed_(xSpeed),
             ySpeed_(ySpeed),
+            collisionOverlap_(collisionOverlap),
             timeDirection_(timeDirection),
             destinationIndex_(destinationIndex),
             xDestination_(xDestination),
@@ -38,7 +39,6 @@ public:
             timeDestination_(timeDestination),
             illegalDestination_(illegalDestination),
             fallable_(fallable),
-            collisionOverlap_(collisionOverlap),
             winner_(winner)
             {
             }
@@ -56,6 +56,8 @@ public:
     int getXspeed() const { return xSpeed_; }
     int getYspeed() const { return ySpeed_; }
     
+    int getCollsionOverlap() const { return collisionOverlap_; }
+    
     TimeDirection
         getTimeDirection() const { return timeDirection_; }
     
@@ -66,7 +68,6 @@ public:
     int getTimeDestination() const { return timeDestination_; }
     int getIllegalDestination() const { return illegalDestination_; }
     bool getFallable() const { return fallable_; }
-    int getCollisionOverlap() const { return collisionOverlap_; };
     bool getWinner() const { return winner_; }
 private:
     int index_;
@@ -76,6 +77,7 @@ private:
     int height_;
     int xSpeed_;
     int ySpeed_;
+    int collisionOverlap_;
     TimeDirection timeDirection_;
     int destinationIndex_;
     int xDestination_;
@@ -84,9 +86,7 @@ private:
     int timeDestination_;
     int illegalDestination_;
     bool fallable_;
-    int collisionOverlap_;
     bool winner_;
-    
 };
 }//namespace hg
 #endif //HG_PORTAL_AREA_H
