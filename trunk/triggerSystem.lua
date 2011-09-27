@@ -1,3 +1,5 @@
+
+
 local function list_iter (t)
     local i = 0
     local n = #t
@@ -318,13 +320,15 @@ return {
         
         retv.additionalBoxes = {}
         
+        self.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
+        
         --if frameNumber%300 == 0 then
         --   retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
         --end
         
-        if frameNumber%2000 == 0 then
-            retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
-        end
+        --if frameNumber%2000 == 0 then
+        --    retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
+        --end
         
         retv.collisions = calculateCollisions(self.protoCollisions, triggerArrivals)
         retv.portals = calculatePortals(self.protoPortals, retv.collisions)
@@ -378,7 +382,16 @@ return {
         
         fillButtonTriggers(self.outputTriggers, self.protoButtons, buttonStates)
         
-        return self.outputTriggers, self.outputGlitz
+        if self.makeBox then
+            self.additionalBoxes = {
+                [1] = {
+                    box = {x = 12800, y = 6400, xspeed = -600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}, 
+                    targetFrame = 500
+                }
+            }
+        end
+        
+        return self.outputTriggers, self.outputGlitz, self.additionalBoxes
     end,
     --as an extension, built-in buttons/collision/etc lists (which get run and solved separately)?
     --[[======private data=======]]--
