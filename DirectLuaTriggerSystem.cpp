@@ -129,7 +129,8 @@ TimeDirection readTimeDirectionField(lua_State* L, char const* fieldName)
         retv = REVERSE;
     }
     else {
-        assert(false && "invalid string given as timeDirection");
+    	std::cout << timeDirectionString << std::endl;
+    	assert(false && "invalid string given as timeDirection");
     }
     lua_pop(L, 1);
     return retv;
@@ -1159,6 +1160,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
     //TODO - fix security hole here!
     luaL_openlibs(L.ptr);
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, "source chunk")) {
+    	 std::cout << lua_tostring(L.ptr, -1) << std::endl;
     	assert(false);
     }
     if(lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
