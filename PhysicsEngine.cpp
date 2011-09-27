@@ -757,7 +757,13 @@ void guyStep(
 
 			// Things that don't time travel (for example guns)
 
+			if (input.getAbility() == hg::TIME_GUN)
+			{
+
+			}
+
 			// Things that do time travel
+			// only one time travel thing can occur at a time
             bool normalDeparture = true;
 
             if (input.getAbility() == hg::TIME_JUMP /* && ((!pickups[i].empty() && pickups[i][jumpNumber]) || guyArrivalList[i].getPickups()[jumpNumber]) */ )
