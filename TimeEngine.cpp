@@ -9,7 +9,7 @@ namespace hg {
 TimeEngine::TimeEngine(Level const& level) :
         speedOfTime_(level.speedOfTime),
         worldState_(
-            level.timeLineLength,
+            level.timelineLength,
             level.initialGuy,
             level.guyStartTime,
             PhysicsEngine(level.environment, level.triggerSystem),

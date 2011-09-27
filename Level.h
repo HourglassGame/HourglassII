@@ -13,7 +13,7 @@ class Level {
 public:
     Level(
         unsigned nspeedOfTime,
-        std::size_t ntimeLineLength,
+        std::size_t ntimelineLength,
         Environment const& nenvironment,
         ObjectList<NonGuyDynamic> const& ninitialObjects,
         Guy const& ninitialGuy,
@@ -21,7 +21,7 @@ public:
         TriggerSystem const& ntriggerSystem);
 
     unsigned speedOfTime;
-    std::size_t timeLineLength;
+    std::size_t timelineLength;
     Environment environment;
     ObjectList<NonGuyDynamic> initialObjects;
     Guy initialGuy;
