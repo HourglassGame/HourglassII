@@ -27,7 +27,10 @@ class DirectLuaTriggerFrameState :
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
-                
+    
+    virtual bool shouldArrive(Guy const& potentialArriver);
+    virtual bool shouldArrive(Box const& potentialArriver);
+    
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter,
@@ -36,20 +39,6 @@ class DirectLuaTriggerFrameState :
         int responsiblePortalIndex,
         Box const& potentialPorter,
         bool porterActionedPortal);
-        
-    virtual bool shouldPickup(
-        int responsiblePickupIndex,
-        Guy const& potentialPickuper);
-    virtual bool shouldPickup(
-        int responsiblePickupIndex,
-        Box const& potentialPickuper);
-        
-    virtual bool shouldDie(
-        int responsibleKillerIndex,
-        Guy const& potentialDier);
-    virtual bool shouldDie(
-        int responsibleKillerIndex,
-        Box const& potentialDier);
     
     virtual std::pair<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,

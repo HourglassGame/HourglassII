@@ -132,24 +132,7 @@ TimeDirection readTimeDirectionField(lua_State* L, char const* fieldName)
     lua_pop(L, 1);
     return retv;
 }
-PickupType readPickupTypeField(lua_State* L, char const* fieldName)
-{
-    lua_getfield(L, -1, fieldName);
-    assert(lua_isstring(L, -1));
-    char const* pickupTypeString(lua_tostring(L, -1));
-    PickupType retv;
-    if (strcmp(pickupTypeString, "timeJump") == 0) {
-        retv = timeJump;
-    }
-    else if (strcmp(pickupTypeString, "reverseTime") == 0) {
-        retv = reverseTime;
-    }
-    else {
-        assert(false && "invalid string given as a pickup type");
-    }
-    lua_pop(L, 1);
-    return retv;
-}
+
 bool readBooleanField(lua_State* L, char const* fieldName)
 {
     lua_getfield(L, -1, fieldName);
@@ -255,35 +238,7 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
             fallable,
             winner);
 }
-PickupArea toPickup(lua_State* L)
-{
-    assert(lua_istable(L, -1) && "a pickup must be a table");
 
-    int x(readIntField(L, "x"));            
-    int y(readIntField(L, "y"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    PickupType type(readPickupTypeField(L, "type"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
-    
-    return PickupArea(x, y, width, height, xspeed, yspeed, type, timeDirection);
-}
-KillerArea toKiller(lua_State* L)
-{
-    assert(lua_istable(L, -1) && "a killer must be a table");
-
-    int x(readIntField(L, "x"));            
-    int y(readIntField(L, "y"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
-    
-    return KillerArea(x, y, width, height, xspeed, yspeed, timeDirection);
-}
 ArrivalLocation toArrivalLocation(lua_State* L)
 {
     int x(readIntField(L, "x"));
@@ -518,31 +473,6 @@ PhysicsAffectingStuff
     }
     lua_pop(L_.ptr, 1);
     
-    //read 'pickups' table
-    lua_getfield(L_.ptr, -1, "pickups");
-    if (!lua_isnil(L_.ptr, -1)) {
-        assert(lua_istable(L_.ptr, -1) && "pickups must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
-            lua_pushinteger(L_.ptr, i);
-            lua_gettable(L_.ptr, -2);
-            retv.pickups.push_back(toPickup(L_.ptr));
-            lua_pop(L_.ptr, 1);
-        }
-    }
-    lua_pop(L_.ptr, 1);
-    
-    //read 'killers' table
-    lua_getfield(L_.ptr, -1, "killers");
-    if (!lua_isnil(L_.ptr, -1)) {
-        assert(lua_istable(L_.ptr, -1) && "killers must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
-            lua_pushinteger(L_.ptr, i);
-            lua_gettable(L_.ptr, -2);
-            retv.killers.push_back(toKiller(L_.ptr));
-            lua_pop(L_.ptr, 1);
-        }
-    }
-    lua_pop(L_.ptr, 1);
     //read 'arrivalLocations' table
     lua_getfield(L_.ptr, -1, "arrivalLocations");
     assert(lua_istable(L_.ptr, -1) && "arrivalLocations must be a table");
@@ -717,6 +647,57 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
 }
 }
 
+
+//ARGH so much code duplication ):
+bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
+{
+    //push function to call
+    lua_checkstack(L_.ptr, 1);
+    lua_getfield(L_.ptr, -1, "shouldArrive");
+    assert(lua_isfunction(L_.ptr, -1));
+    //push `self` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushvalue(L_.ptr, -2);
+    //push `potentialArriver` argument
+    lua_checkstack(L_.ptr, 1);
+    pushGuy(L_.ptr, potentialArriver);
+    lua_checkstack(L_.ptr, 1);
+    lua_pushstring(L_.ptr, "guy");
+    lua_setfield(L_.ptr, -2, "type");
+    //call function
+    lua_call(L_.ptr, 2, 1);
+    //read return value
+    assert(lua_isboolean(L_.ptr, -1));
+    bool retv(lua_toboolean(L_.ptr, -1));
+    //pop return value
+    lua_pop(L_.ptr, 1);
+    return retv;
+}
+bool DirectLuaTriggerFrameState::shouldArrive(Box const& potentialArriver)
+{
+    //push function to call
+    lua_checkstack(L_.ptr, 1);
+    lua_getfield(L_.ptr, -1, "shouldArrive");
+    assert(lua_isfunction(L_.ptr, -1));
+    //push `self` argument
+    lua_checkstack(L_.ptr, 1);
+    lua_pushvalue(L_.ptr, -2);
+    //push `potentialArriver` argument
+    lua_checkstack(L_.ptr, 1);
+    pushBox(L_.ptr, potentialArriver);
+    lua_checkstack(L_.ptr, 1);
+    lua_pushstring(L_.ptr, "box");
+    lua_setfield(L_.ptr, -2, "type");
+    //call function
+    lua_call(L_.ptr, 2, 1);
+    //read return value
+    assert(lua_isboolean(L_.ptr, -1));
+    bool retv(lua_toboolean(L_.ptr, -1));
+    //pop return value
+    lua_pop(L_.ptr, 1);
+    return retv;
+}
+
 //JUST TO BE PERFECTLY CLEAR:
 //`responsiblePortalIndex` does not refer to 
 //`portal.getIndex()` (which is just for illegal portals)
@@ -786,32 +767,6 @@ bool DirectLuaTriggerFrameState::shouldPort(
     //pop return value
     lua_pop(L_.ptr, 1);
     return retv;
-}
-    
-bool DirectLuaTriggerFrameState::shouldPickup(
-    int responsiblePickupIndex,
-    Guy const& potentialPickuper)
-{
-    return doShouldXFunction(L_.ptr, "shouldPickup", responsiblePickupIndex, potentialPickuper);
-}
-bool DirectLuaTriggerFrameState::shouldPickup(
-    int responsiblePickupIndex,
-    Box const& potentialPickuper)
-{
-    return doShouldXFunction(L_.ptr, "shouldPickup", responsiblePickupIndex, potentialPickuper);
-}
-    
-bool DirectLuaTriggerFrameState::shouldDie(
-    int responsibleKillerIndex,
-    Guy const& potentialDier)
-{
-    return doShouldXFunction(L_.ptr, "shouldDie", responsibleKillerIndex, potentialDier);
-}
-bool DirectLuaTriggerFrameState::shouldDie(
-    int responsibleKillerIndex,
-    Box const& potentialDier)
-{
-    return doShouldXFunction(L_.ptr, "shouldDie", responsibleKillerIndex, potentialDier);
 }
 
 std::pair<

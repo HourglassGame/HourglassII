@@ -352,11 +352,12 @@ return {
     --corresponding to the callin type (portals/pickups/killers)
     --in particular, this means that this does *not* correspond to the 'index' field
     --of a portal (the 'index' field for identifying illegal portals, but not for this)
+    shouldArrive = function(self, dynamicObject)
+        return true
+    end,
     shouldPort = function(self, responsiblePortalIndex, dynamicObject, porterActionedPortal) 
         return self.portalActive
     end,
-    shouldPickup = function(self, responsiblePickupIndex, dynamicObject) return true end,
-    shouldDie = function(self, responsibleKillerIndex, dynamicObject) return true end,
     getTriggerDeparturesAndGlitz = function(self, departures)
         local buttonStates =
             calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)
