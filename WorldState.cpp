@@ -20,7 +20,7 @@ struct ExecuteFrame
             departureMap_(departureMap)
     {
     }
-    void operator()(Frame* const& time) const
+    void operator()(Frame* time) const
     {
         PhysicsEngine::FrameDepartureT departuresFromTime(thisptr_.getDeparturesFromFrame(time));
         departureMap_.setDeparture(time, departuresFromTime);
