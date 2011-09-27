@@ -9,6 +9,16 @@ local function list_iter (t)
     end
 end
 
+local function timeDirectionToInt(dir)
+    if dir == 'forwards' then
+        return 1
+    elseif dir == 'reverse' then
+        return -1
+    else
+        return 0
+    end
+end
+
 local function snapAttachment(objectTimeDirection, attachment, collisions)
     local x
     local y
@@ -306,6 +316,21 @@ local function calculateButtonGlitz(protoButton, buttonPositionAndVelocity, butt
     }
 end
 
+local function calculateMutatorGlitz(protoMutator)
+    return
+    {
+        x = protoMutator.x,
+        y = protoMutator.y,
+        width = protoMutator.width,
+        height = protoMutator.height,
+        xspeed = protoMutator.xspeed,
+        yspeed = protoMutator.yspeed,
+        forwardsColour = {r = 150, g = 150, b = 150},
+        reverseColour = {r = 150, g = 150, b = 150},
+        timeDirection = protoMutator.timeDirection
+    }
+end
+    
 local function fillButtonTriggers(triggers, protoButtons, buttonStates)
     for i = 1, #protoButtons do
         triggers[protoButtons[i].triggerID] = { buttonStates[i] and 1 or 0 }
@@ -318,7 +343,10 @@ return {
     calculatePhysicsAffectingStuff = function(self, frameNumber, triggerArrivals)
         local retv = {}
         
+        self.frameNumber = frameNumber
+        
         retv.additionalBoxes = {}
+        self.additionalEndBoxes = {}
         
         self.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
         
@@ -332,7 +360,7 @@ return {
         
         retv.collisions = calculateCollisions(self.protoCollisions, triggerArrivals)
         retv.portals = calculatePortals(self.protoPortals, retv.collisions)
-        retv.mutators = {}
+        retv.mutators = { [1] = self.protoMutators[1].data}
         retv.arrivalLocations = calculateArrivalLocations(retv.portals)
         
         self.portalActive = (triggerArrivals[3][1] == 1)
@@ -365,7 +393,7 @@ return {
         return self.portalActive
     end,
     mutateObject = function(self, responsibleManipulatorIndices, dynamicObject)
-        return dynamicObject
+        return self.protoMutators[1].effect(self, dynamicObject)
     end,
     getDepartureInformation = function(self, departures)
         local buttonStates =
@@ -380,14 +408,14 @@ return {
                     buttonStates[i]))
         end
         
+         table.insert(self.outputGlitz,calculateMutatorGlitz(self.protoMutators[1].data))
+        
         fillButtonTriggers(self.outputTriggers, self.protoButtons, buttonStates)
         
         if self.makeBox then
-            self.additionalBoxes = {
-                [1] = {
-                    box = {x = 12800, y = 6400, xspeed = -600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}, 
-                    targetFrame = 500
-                }
+            self.additionalEndBoxes[#self.additionalEndBoxes+1] = {
+                box = {x = 12800, y = 6400, xspeed = -600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = 'forwards'}, 
+                targetFrame = 500
             }
         end
         
@@ -458,6 +486,38 @@ return {
                     }
                 }
             }
+        }
+    },
+    protoMutators = {
+        {
+            data = {
+                x = 20000,
+                y = 32000,
+                xspeed = 0,
+                yspeed = 0,
+                width = 800,
+                height = 6400,
+                collisionOverlap = 0,
+                timeDirection = "forwards",
+            },
+            effect = function (self, object)
+                if object.type == "guy" and object.boxCarrying then
+                    --object.boxCarrying = false
+                    self.additionalEndBoxes[#self.additionalEndBoxes+1] = {
+                        box = {
+                            x = 12800, y = 6400, xspeed = 0, yspeed = 0, 
+                            size = object.boxCarrySize, 
+                            illegalPortal = nil, 
+                            arrivalBasis = nil, 
+                            timeDirection = object.boxCarryDirection}, 
+                        targetFrame = self.frameNumber+timeDirectionToInt(object.boxCarryDirection),
+                    }
+                end
+                if object.type == "box" then
+                    object.y = object.y - 12000
+                end
+                return object
+            end,
         }
     },
     protoButtons = {

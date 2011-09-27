@@ -709,6 +709,7 @@ void guyStep(
 						mutators[j].getWidth(), mutators[j].getHeight(),
 						mutators[j].getCollisionOverlap()))
 				{
+					std::cout << "collide" << std::endl;
 					mutatorCollisions.push_back(i);
 				}
 			}
@@ -737,6 +738,7 @@ void guyStep(
 					squished[i] = true;
 					continue;
 				}
+				std::cout << "stuff changed" << std::endl;
 				x[i] = newGuy->getX();
 				y[i] = newGuy->getY();
 				xspeed[i] = newGuy->getXspeed();
