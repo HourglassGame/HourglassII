@@ -8,6 +8,7 @@
 #include "ObjectListTypes.h"
 #include "Frame.h"
 #include "multi_thread_allocator.h"
+#include "ObjectAndTime.h"
 namespace hg {
 class BasicConfiguredTriggerSystem;
 class BasicConfiguredTriggerFrameState :
@@ -40,11 +41,12 @@ class BasicConfiguredTriggerFrameState :
         mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
         Box const& objectToManipulate) { return boost::optional<Box>(objectToManipulate); }
     
-    virtual std::pair<
-        mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-        mt::std::vector<RectangleGlitz>::type
-    > 
-    getTriggerDeparturesAndGlitz(
+    virtual boost::tuple<
+		mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
+		mt::std::vector<RectangleGlitz>::type,
+		mt::std::vector<ObjectAndTime<Box> >::type
+	>
+    getDepartureInformation(
         mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame);
     

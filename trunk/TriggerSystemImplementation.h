@@ -9,12 +9,14 @@
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
 #include "PhysicsAffectingStuff.h"
+#include "ObjectAndTime.h"
 #include "mt/std/vector"
 #include "mt/std/map"
 
 #include <boost/optional.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/swap.hpp>
+#include <boost/tuple/tuple.hpp>
 
 #include <utility>
 #include "Frame_fwd.h"
@@ -49,11 +51,12 @@ class TriggerFrameStateImplementation
         mt::std::vector<int>::type const& responsibleMutatorIndices,
         Box const& objectToManipulate) = 0;
     
-    virtual std::pair<
-        mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-        mt::std::vector<RectangleGlitz>::type
-    > 
-    getTriggerDeparturesAndGlitz(
+    virtual boost::tuple<
+		mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
+		mt::std::vector<RectangleGlitz>::type,
+		mt::std::vector<ObjectAndTime<Box> >::type
+	>
+    getDepartureInformation(
         mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame) = 0;
 
@@ -119,15 +122,16 @@ class TriggerFrameState
         return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate);
     }
     
-    std::pair<
-        mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-        mt::std::vector<RectangleGlitz>::type
-    > 
-        getTriggerDeparturesAndGlitz(
+    boost::tuple<
+		mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
+		mt::std::vector<RectangleGlitz>::type,
+		mt::std::vector<ObjectAndTime<Box> >::type
+	>
+        getDepartureInformation(
             mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
             Frame* currentFrame)
     {
-        return impl_->getTriggerDeparturesAndGlitz(departures, currentFrame);
+        return impl_->getDepartureInformation(departures, currentFrame);
     }
 
     //Default constructed TriggerFrameState may not have any functions called on it,
