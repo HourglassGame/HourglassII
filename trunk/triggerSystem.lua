@@ -328,6 +328,7 @@ return {
         
         retv.collisions = calculateCollisions(self.protoCollisions, triggerArrivals)
         retv.portals = calculatePortals(self.protoPortals, retv.collisions)
+        retv.mutators = {}
         retv.arrivalLocations = calculateArrivalLocations(retv.portals)
         
         self.portalActive = (triggerArrivals[3][1] == 1)

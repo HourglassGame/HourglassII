@@ -241,6 +241,28 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
             winner);
 }
 
+MutatorArea toMutatorArea(lua_State* L)
+{
+    assert(lua_istable(L, -1) && "a mutator must be a table");
+    
+    int x(readIntField(L, "x"));
+    int y(readIntField(L, "y"));
+    int width(readIntField(L, "width"));
+    int height(readIntField(L, "height"));
+    int xspeed(readIntField(L, "xspeed"));
+    int yspeed(readIntField(L, "yspeed"));
+    int collisionOverlap(readIntField(L, "collisionOverlap"));
+    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+
+    return
+        MutatorArea(
+            x, y,
+            width, height,
+            xspeed, yspeed,
+            collisionOverlap,
+            timeDirection);
+}
+
 ArrivalLocation toArrivalLocation(lua_State* L)
 {
     int x(readIntField(L, "x"));
@@ -352,6 +374,20 @@ PhysicsAffectingStuff
             winner = <boolean>
         }
     */
+    /*
+    //An array-table called "mutators", containing
+    //tables with the following format
+        {
+            x = <number>
+            y = <number>
+            width = <positive number or 0>
+            height = <positive number or 0>
+            xspeed = <number>
+            yspeed = <number>
+            collisionOverlap = <number in range [0, 100]>
+            timeDirection = <'forwards' or 'backwards'>
+        }
+    */
     //An array-table called "arrivalLocations", containing
     //tables with the following format
     /*
@@ -444,6 +480,19 @@ PhysicsAffectingStuff
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -2);
             retv.portals.push_back(toPortal(L_.ptr, arrivalLocationsSize_));
+            lua_pop(L_.ptr, 1);
+        }
+    }
+    lua_pop(L_.ptr, 1);
+    
+    //read 'mutators' table
+    lua_getfield(L_.ptr, -1, "mutators");
+    if (!lua_isnil(L_.ptr, -1)) {
+        assert(lua_istable(L_.ptr, -1) && "mutators must be a table");
+        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+            lua_pushinteger(L_.ptr, i);
+            lua_gettable(L_.ptr, -2);
+            retv.mutators.push_back(toMutatorArea(L_.ptr));
             lua_pop(L_.ptr, 1);
         }
     }

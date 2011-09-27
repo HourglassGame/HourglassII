@@ -12,6 +12,7 @@
 #include "mt/std/vector"
 #include "mt/std/map"
 
+#include <boost/optional.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/swap.hpp>
 
@@ -40,7 +41,14 @@ class TriggerFrameStateImplementation
         int responsiblePortalIndex,
         Box const& potentialPorter,
         bool porterActionedPortal) = 0;
-        
+    
+    virtual boost::optional<Guy> mutateObject(
+        std::vector<int> const& responsibleManipulatorIndices,
+        Guy const& objectToManipulate) = 0;
+    virtual boost::optional<Box> mutateObject(
+        std::vector<int> const& responsibleManipulatorIndices,
+        Box const& objectToManipulate) = 0;
+    
     virtual std::pair<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
         mt::std::vector<RectangleGlitz>::type
@@ -101,6 +109,14 @@ class TriggerFrameState
         bool porterActionedPortal)
     {
         return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
+    }
+    
+    template<typename ObjectT>
+    boost::optional<ObjectT> mutateObject(
+        std::vector<int> const& responsibleManipulatorIndices,
+        ObjectT const& objectToManipulate)
+    {
+        return impl_->mutateObject(responsibleManipulatorIndices, objectToManipulate);
     }
     
     std::pair<
