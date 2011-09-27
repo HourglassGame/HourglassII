@@ -65,7 +65,6 @@ private:
             std::pair<
                 int,
                 std::vector<int>
-
             >
         > const& triggerOffsetsAndDefaults_;
 
