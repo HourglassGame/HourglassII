@@ -419,7 +419,7 @@ return {
             }
         end
         
-        return self.outputTriggers, self.outputGlitz, self.additionalBoxes
+        return self.outputTriggers, self.outputGlitz, self.additionalEndBoxes
     end,
     --as an extension, built-in buttons/collision/etc lists (which get run and solved separately)?
     --[[======private data=======]]--
@@ -491,8 +491,8 @@ return {
     protoMutators = {
         {
             data = {
-                x = 20000,
-                y = 32000,
+                x = 50000,
+                y = 25600,
                 xspeed = 0,
                 yspeed = 0,
                 width = 800,
@@ -500,21 +500,20 @@ return {
                 collisionOverlap = 0,
                 timeDirection = "forwards",
             },
-            effect = function (self, object)
+            effect = function (self, object) -- butterfingers
                 if object.type == "guy" and object.boxCarrying then
-                    --object.boxCarrying = false
+                    object.boxCarrying = false
                     self.additionalEndBoxes[#self.additionalEndBoxes+1] = {
                         box = {
-                            x = 12800, y = 6400, xspeed = 0, yspeed = 0, 
+                            x = object.x + object.width/2 - object.boxCarrySize/2, 
+                            y = object.y - object.boxCarrySize, 
+                            xspeed = -object.xspeed, yspeed = -500, 
                             size = object.boxCarrySize, 
                             illegalPortal = nil, 
                             arrivalBasis = nil, 
                             timeDirection = object.boxCarryDirection}, 
                         targetFrame = self.frameNumber+timeDirectionToInt(object.boxCarryDirection),
                     }
-                end
-                if object.type == "box" then
-                    object.y = object.y - 12000
                 end
                 return object
             end,
