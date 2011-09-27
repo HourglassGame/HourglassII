@@ -21,6 +21,9 @@ class BasicConfiguredTriggerFrameState :
                 GetBase<TriggerDataConstPtr>,
                 mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
                 
+                
+    virtual bool shouldArrive(Guy const& /*potentialArriver*/) { return true; }
+    virtual bool shouldArrive(Box const& /*potentialArriver*/) { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Guy const& /*potentialPorter*/,
@@ -29,20 +32,6 @@ class BasicConfiguredTriggerFrameState :
         int /*responsiblePortalIndex*/,
         Box const& /*potentialPorter*/,
         bool /*porterActionedPortal*/) { return true; }
-        
-    virtual bool shouldPickup(
-        int /*responsiblePickupIndex*/,
-        Guy const& /*potentialPickuper*/) { return true; }
-    virtual bool shouldPickup(
-        int /*responsiblePickupIndex*/,
-        Box const& /*potentialPickuper*/) { return true; }
-        
-    virtual bool shouldDie(
-        int /*responsibleKillerIndex*/,
-        Guy const& /*potentialDier*/) { return true; }
-    virtual bool shouldDie(
-        int /*responsibleKillerIndex*/,
-        Box const& /*potentialDier*/) { return true; }
     
     virtual std::pair<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,

@@ -29,6 +29,9 @@ class TriggerFrameStateImplementation
                 GetBase<TriggerDataConstPtr>,
                 mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
     
+    virtual bool shouldArrive(Guy const& potentialArriver) = 0;
+    virtual bool shouldArrive(Box const& potentialArriver) = 0;
+    
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter,
@@ -38,20 +41,6 @@ class TriggerFrameStateImplementation
         Box const& potentialPorter,
         bool porterActionedPortal) = 0;
         
-    virtual bool shouldPickup(
-        int responsiblePickupIndex,
-        Guy const& potentialPickuper) = 0;
-    virtual bool shouldPickup(
-        int responsiblePickupIndex,
-        Box const& potentialPickuper) = 0;
-        
-    virtual bool shouldDie(
-        int responsibleKillerIndex,
-        Guy const& potentialDier) = 0;
-    virtual bool shouldDie(
-        int responsibleKillerIndex,
-        Box const& potentialDier) = 0;
-    
     virtual std::pair<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
         mt::std::vector<RectangleGlitz>::type
@@ -100,26 +89,18 @@ class TriggerFrameState
         return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
     }
     template<typename ObjectT>
+    bool shouldArrive(ObjectT const& potentialArriver)
+    {
+        return impl_->shouldArrive(potentialArriver);
+    }
+    
+    template<typename ObjectT>
     bool shouldPort(
         int responsiblePortalIndex,
         ObjectT const& potentialPorter,
         bool porterActionedPortal)
     {
         return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
-    }
-    template<typename ObjectT>
-    bool shouldPickup(
-        int responsiblePickupIndex,
-        ObjectT const& potentialPickuper)
-    {
-        return impl_->shouldPickup(responsiblePickupIndex, potentialPickuper);
-    }
-    template<typename ObjectT>
-    bool shouldDie(
-        int responsibleKillerIndex,
-        ObjectT const& potentialDier)
-    {
-        return impl_->shouldDie(responsibleKillerIndex, potentialDier);
     }
     
     std::pair<
