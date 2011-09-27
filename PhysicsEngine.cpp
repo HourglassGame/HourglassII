@@ -698,7 +698,7 @@ void guyStep(
 
             int newWidth = guyArrivalList[i].getWidth();
             int newHeight = guyArrivalList[i].getHeight();
-            mt::std::map<Ability,unsigned int>::type newPickups(guyArrivalList[i].getPickups());
+            mt::std::map<Ability, int>::type newPickups(guyArrivalList[i].getPickups());
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
             Frame* nextTime(nextFrame(time, nextTimeDirection));
