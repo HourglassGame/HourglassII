@@ -176,6 +176,30 @@ Box toBox(lua_State* L, int arrivalLocationsSize)
     return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
 }
 
+std::string abilityToString(Ability ability)
+{
+    switch (ability) {
+        case NO_ABILITY:
+        assert(false);
+        return std::string("noAbility");
+        break;
+        case TIME_JUMP:
+        return std::string("timeJump");
+        break;
+        case TIME_REVERSE:
+        return std::string("timeReverse");
+        break;
+        case TIME_GUN:
+        return std::string("timeGun");
+        break;
+        default:
+            assert(false);
+            return std::string("fix abilityToString(Ability ability) !!");
+            break;
+
+    }
+}
+
 Ability toAbility(lua_State* L, int idx = -1)
 {
     std::string abilityString(lua_tostring(L, idx));
@@ -184,6 +208,9 @@ Ability toAbility(lua_State* L, int idx = -1)
     }
     else if (abilityString == "timeReverse") {
         return TIME_REVERSE;
+    }
+    else if (abilityString == "timeGun") {
+        return TIME_GUN;
     }
     else {
         assert(false && "invalid ability string");
@@ -196,7 +223,7 @@ mt::std::map<Ability, int>::type toPickup(lua_State* L)
     assert(lua_istable(L, -1) && "pickups must be a table");
     mt::std::map<Ability, int>::type retv;
     lua_pushnil(L);
-    while (lua_next(L, -1) != 0) {
+    while (lua_next(L, -2) != 0) {
         lua_Integer abilityQuantity(lua_tointeger(L, -1));
         assert(abilityQuantity >= -1);
         retv[toAbility(L, -2)] = static_cast<int>(abilityQuantity);
@@ -225,10 +252,25 @@ Guy toGuy(lua_State* L)
     int yspeed(readIntField(L, "yspeed"));
     int width(readIntField(L, "width"));
     int height(readIntField(L, "height"));
-    int illegalPortal(readIntField(L, "illegalPortal"));
-    int arrivalBasis(readIntField(L, "arrivalBasis"));
+    int illegalPortal(-1);
+    lua_getfield(L, -1, "illegalPortal");
+    if (!lua_isnil(L, -1)) {
+        assert(lua_isnumber(L, -1));
+        illegalPortal = static_cast<int>(lua_tointeger(L, -1));
+    }
+    lua_pop(L, 1);
+    int arrivalBasis(-1);
+    lua_getfield(L, -1, "arrivalBasis");
+    if (!lua_isnil(L, -1)) {
+        assert(lua_isnumber(L, -1));
+        arrivalBasis = static_cast<int>(lua_tointeger(L, -1));
+    }
+    lua_pop(L, 1);
     bool supported(readBooleanField(L, "supported"));
-    int supportedSpeed(readIntField(L, "supportedSpeed"));
+    int supportedSpeed(0);
+    if (supported) {
+        supportedSpeed = readIntField(L, "supportedSpeed");
+    }
     mt::std::map<Ability, int>::type pickups(readPickupsField(L, "pickups"));
     bool facing(readBooleanField(L, "facing"));
     bool boxCarrying(readBooleanField(L, "boxCarrying"));
@@ -656,17 +698,18 @@ void pushGuy(lua_State* L, Guy const& guy)
         lua_setfield(L, -2, "supportedSpeed");
     }
     
-    lua_pushboolean(L, guy.getFacing());
-    lua_setfield(L, -2, "facing");
-    
     lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
-    typedef std::pair<int const, int> PickupPair;
+    typedef std::pair<Ability const, int> PickupPair;
     foreach (PickupPair const& pickup, guy.getPickups()) {
-        lua_checkstack(L, 1);
+        lua_checkstack(L, 2);
+        lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
-        lua_rawseti(L, -2, pickup.first);
+        lua_rawset(L, -2);
     }
     lua_setfield(L, -2, "pickups");
+    
+    lua_pushboolean(L, guy.getFacing());
+    lua_setfield(L, -2, "facing");
     
     lua_pushboolean(L, guy.getBoxCarrying());
     lua_setfield(L, -2, "boxCarrying");
@@ -1160,7 +1203,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
     //TODO - fix security hole here!
     luaL_openlibs(L.ptr);
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, "source chunk")) {
-    	 std::cout << lua_tostring(L.ptr, -1) << std::endl;
+        std::cout << lua_tostring(L.ptr, -1) << std::endl;
     	assert(false);
     }
     if(lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
