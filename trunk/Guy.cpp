@@ -11,7 +11,7 @@ Guy::Guy(
     bool supported,
     int supportedSpeed,
 
-    mt::std::map<int,int>::type const& pickups,
+    mt::std::map<Ability,unsigned int>::type const& pickups,
     bool facing,
 
     bool boxCarrying,
