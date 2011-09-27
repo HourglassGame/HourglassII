@@ -363,7 +363,7 @@ return {
     mutateObject = function(self, responsibleManipulatorIndices, dynamicObject)
         return dynamicObject
     end,
-    getTriggerDeparturesAndGlitz = function(self, departures)
+    getDepartureInformation = function(self, departures)
         local buttonStates =
             calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)
     

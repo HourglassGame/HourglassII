@@ -4,8 +4,10 @@
 #include "SimpleLuaCpp.h"
 #include "ThreadLocal.h"
 #include "SingleAssignmentPtr.h"
+#include "ObjectAndTime.h"
 #include <string>
 #include <vector>
+#include <boost/tuple/tuple.hpp>
 namespace hg {
 class DirectLuaTriggerFrameState :
     public TriggerFrameStateImplementation
@@ -47,11 +49,12 @@ class DirectLuaTriggerFrameState :
         mt::std::vector<int>::type const& responsibleMutatorIndices,
         Box const& objectToManipulate);
     
-    virtual std::pair<
+    virtual boost::tuple<
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-        mt::std::vector<RectangleGlitz>::type
+        mt::std::vector<RectangleGlitz>::type,
+        mt::std::vector<ObjectAndTime<Box> >::type
     > 
-    getTriggerDeparturesAndGlitz(
+    getDepartureInformation(
         mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame);
     virtual ~DirectLuaTriggerFrameState();
@@ -62,6 +65,7 @@ private:
             std::pair<
                 int,
                 std::vector<int>
+
             >
         > const& triggerOffsetsAndDefaults_;
 

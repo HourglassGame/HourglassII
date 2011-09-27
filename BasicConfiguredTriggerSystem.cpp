@@ -284,11 +284,12 @@ mt::std::vector<TriggerData>::type
 }//namespace
 
 
-std::pair<
+boost::tuple<
     mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-    mt::std::vector<RectangleGlitz>::type
+    mt::std::vector<RectangleGlitz>::type,
+    mt::std::vector<ObjectAndTime<Box> >::type
 > 
-BasicConfiguredTriggerFrameState::getTriggerDeparturesAndGlitz(
+BasicConfiguredTriggerFrameState::getDepartureInformation(
     mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
@@ -304,10 +305,11 @@ BasicConfiguredTriggerFrameState::getTriggerDeparturesAndGlitz(
     
     
     return
-        std::make_pair(
+        boost::make_tuple(
             calculateActualTriggerDepartures(
                 createTriggerListFromTriggerValueList(triggers), triggerSystem.triggerOffsetsAndDefaults, currentFrame),
-            glitzStore);
+                glitzStore,
+                mt::std::vector<ObjectAndTime<Box> >::type());
 }
 
 BasicConfiguredTriggerFrameState::BasicConfiguredTriggerFrameState(BasicConfiguredTriggerSystem const& triggerSys) :

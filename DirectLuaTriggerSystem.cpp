@@ -3,6 +3,8 @@
 #include "lua/lauxlib.h"
 #include "lua/lualib.h"
 #include "CommonTriggerCode.h"
+#include "ObjectAndTime.h"
+
 namespace hg {
 namespace {
 int lua_VectorWriter(
@@ -593,7 +595,7 @@ PhysicsAffectingStuff
     //pop return value
     lua_pop(L_.ptr, 1);
     
-    lua_getfield(L_.ptr, -1, "getTriggerDeparturesAndGlitz");
+    lua_getfield(L_.ptr, -1, "getDepartureInformation");
     //assert(lua_isfunction(L_.ptr, -1));
     lua_pop(L_.ptr, 1);
     //***** END EXCEPTION FREE REGION *****
@@ -956,17 +958,18 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     return retv;
 }
 
-std::pair<
+boost::tuple<
     mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-    mt::std::vector<RectangleGlitz>::type
+    mt::std::vector<RectangleGlitz>::type,
+    mt::std::vector<ObjectAndTime<Box> >::type
 > 
-DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
+DirectLuaTriggerFrameState::getDepartureInformation(
     mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
     //push function to call
     lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "getTriggerDeparturesAndGlitz");
+    lua_getfield(L_.ptr, -1, "getDepartureInformation");
     assert(lua_isfunction(L_.ptr, -1));
     //push `self` argument
     lua_checkstack(L_.ptr, 1);
@@ -1064,8 +1067,9 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             <as above>
         },
         ...
-    }
-    */
+    }*/
+
+    // get glitz departure
     mt::std::vector<RectangleGlitz>::type glitz;
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "glitz list must be a table");
@@ -1076,10 +1080,14 @@ DirectLuaTriggerFrameState::getTriggerDeparturesAndGlitz(
             lua_pop(L_.ptr, 1);
         }
     }
-    
+
+   // get extra boxes to depart
+   mt::std::vector<ObjectAndTime<Box> >::type newBox;
+   // lua stuff goes here
+
     //pop return values
     lua_pop(L_.ptr, 2);
-    return std::make_pair(calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame), glitz);
+    return boost::make_tuple(calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame), glitz, newBox);
 }
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
@@ -1102,7 +1110,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
     //TODO - fix security hole here!
     luaL_openlibs(L.ptr);
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, "source chunk")) {
-        assert(false);
+    	assert(false);
     }
     if(lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
         assert(false);

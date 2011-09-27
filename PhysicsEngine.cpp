@@ -10,6 +10,7 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/foreach.hpp>
 #include <boost/optional.hpp>
+#include <boost/tuple/tuple.hpp>
 
 #include "mt/std/map"
 #include "mt/std/vector"
@@ -33,17 +34,6 @@ PhysicsEngine::PhysicsEngine(
 {
 }
 namespace {
-    template<typename Object>
-    struct ObjectAndTime
-    {
-        ObjectAndTime(
-            Object const& nobject,
-            Frame* nTime) :
-                object(nobject),
-                time(nTime) {}
-        Object object;
-        Frame* time;
-    };
     struct SortObjectList
     {
         void operator()(std::pair<Frame* const, ObjectList<Normal> >& toSortObjectListOf) const
@@ -220,23 +210,28 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     typedef mt::std::map<
                 Frame*,
                 mt::std::vector<TriggerData>::type>::type triggerDepartures_t;
-    std::pair<
+
+    boost::tuple<
         triggerDepartures_t,
-        mt::std::vector<RectangleGlitz>::type
-    > triggerDeparturesAndGlitz(
-        triggerFrameState.getTriggerDeparturesAndGlitz(
+        mt::std::vector<RectangleGlitz>::type,
+        mt::std::vector<ObjectAndTime<Box> >::type
+    > triggerSystemDepartureInformation(
+        triggerFrameState.getDepartureInformation(
             newDepartures,
             time));
     typedef triggerDepartures_t::value_type triggerDeparture_t;
-    foreach (triggerDeparture_t const& triggerDeparture, triggerDeparturesAndGlitz.first) {
+    foreach (triggerDeparture_t const& triggerDeparture, triggerSystemDepartureInformation.get<0>()) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
 
+    // add extra boxes to newDepartures
+    buildDeparturesForComplexEntities<Box>(triggerSystemDepartureInformation.get<2>(), newDepartures);
+
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
     boost::for_each(newDepartures, SortObjectList());
     // add data to departures
-    return PhysicsReturnT(newDepartures, triggerDeparturesAndGlitz.second, currentPlayerFrame, nextPlayerFrame, winFrame);
+    return PhysicsReturnT(newDepartures, triggerSystemDepartureInformation.get<1>(), currentPlayerFrame, nextPlayerFrame, winFrame);
 }
 
 namespace {
