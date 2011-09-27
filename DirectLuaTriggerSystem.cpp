@@ -173,14 +173,34 @@ Box toBox(lua_State* L, int arrivalLocationsSize)
     return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
 }
 
-mt::std::map<int, int>::type readPickupsField(lua_State* L, char const* /*fieldName*/)
+Ability toAbility(lua_State* L, int idx)
 {
-    mt::std::map<int, int>::type retv;
+    std::string abilityString(lua_tostring(L, idx));
+    if (abilityString == "timeJump") {
+        return TIME_JUMP;
+    }
+    else if (abilityString == "timeReverse") {
+        return TIME_REVERSE;
+    }
+    else {
+        assert(false && "invalid ability string");
+        return NO_ABILITY;
+    }
+}
+
+mt::std::map<Ability, unsigned>::type readPickupsField(lua_State* L, char const* /*fieldName*/)
+{
+    mt::std::map<Ability, unsigned>::type retv;
     assert(lua_istable(L, -1) && "pickups must be a table");
     lua_pushnil(L);
     while (lua_next(L, -1) != 0) {
-       retv[lua_tointeger(L, -2)] = lua_tointeger(L, -1);
-       lua_pop(L, 1);
+        lua_Integer abilityQuantity(lua_tointeger(L, -1));
+        assert(abilityQuantity >= -1);
+        retv[toAbility(L, -2)] =
+          abilityQuantity >= 0 ?
+            static_cast<unsigned>(abilityQuantity) :
+            std::numeric_limits<unsigned>::max();
+        lua_pop(L, 1);
     }
     return retv;
 }
