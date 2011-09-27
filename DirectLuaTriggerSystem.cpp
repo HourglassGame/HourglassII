@@ -379,6 +379,22 @@ RectangleGlitz toGlitz(lua_State* L)
     TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
     return RectangleGlitz(x, y, width, height, xspeed, yspeed, forwardsColour, reverseColour, timeDirection);
 }
+
+Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocationsSize)
+{
+    lua_getfield(L, -1, fieldName);
+    Box retv(toBox(L, arrivalLocationsSize));
+    lua_pop(L, 1);
+    return retv;
+}
+
+ObjectAndTime<Box> toObjectAndTimeBox(lua_State* L, Frame* currentFrame, std::size_t arrivalLocationsSize)
+{
+    return ObjectAndTime<Box>(
+        readBoxField(L, "box", arrivalLocationsSize),
+        getArbitraryFrame(getUniverse(currentFrame), readIntField(L, "targetFrame")));
+}
+
 }
 
 PhysicsAffectingStuff
@@ -409,7 +425,7 @@ PhysicsAffectingStuff
             yspeed = <number>,
             size = <number>,
             illegalPortal = <nil or positive number>,
-            arrivalBasis = <nul or number in the range [1, arrivalLocationsSize]>
+            arrivalBasis = <nil or number in the range [1, arrivalLocationsSize]>
             timeDirection = <'forwards' or 'reverse'>
         }
     */
@@ -951,7 +967,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     boost::optional<Box> retv;
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "mutated object must be a table");
-        retv = toBox(L_.ptr, arrivalLocationsSize_);
+        retv = toBox(L_.ptr, static_cast<int>(arrivalLocationsSize_));
     }
     //pop return value
     lua_pop(L_.ptr, 1);
@@ -1011,7 +1027,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     }
     //]
     //call function
-    lua_call(L_.ptr, 2, 2);
+    lua_call(L_.ptr, 2, 3);
     
     //read triggers return value
     //Trigger return value looks like:
@@ -1026,9 +1042,9 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     }
     */
     mt::std::vector<TriggerData>::type triggers;
-    assert(lua_istable(L_.ptr, -2));
+    assert(lua_istable(L_.ptr, -3));
     lua_pushnil(L_.ptr);
-    while (lua_next(L_.ptr, -3) != 0) {
+    while (lua_next(L_.ptr, -4) != 0) {
         assert(lua_isnumber(L_.ptr, -2));
         int index(static_cast<int>(lua_tonumber(L_.ptr, -2)) - 1);
         mt::std::vector<int>::type value;
@@ -1071,22 +1087,55 @@ DirectLuaTriggerFrameState::getDepartureInformation(
 
     // get glitz departure
     mt::std::vector<RectangleGlitz>::type glitz;
-    if (!lua_isnil(L_.ptr, -1)) {
-        assert(lua_istable(L_.ptr, -1) && "glitz list must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+    if (!lua_isnil(L_.ptr, -2)) {
+        assert(lua_istable(L_.ptr, -2) && "glitz list must be a table");
+        for(std::size_t i(1), end(lua_objlen(L_.ptr, -2)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
-            lua_gettable(L_.ptr, -2);
+            lua_gettable(L_.ptr, -3);
             glitz.push_back(toGlitz(L_.ptr));
             lua_pop(L_.ptr, 1);
         }
     }
 
-   // get extra boxes to depart
-   mt::std::vector<ObjectAndTime<Box> >::type newBox;
-   // lua stuff goes here
+    // get extra boxes to depart
+    // Extra boxes look like this:
+    /*
+    {
+        {
+            box =
+            --should be same format as boxes in additionalBoxes
+            {
+                x = <nuumber>,
+                y = <number>,
+                xspeed = <number>,
+                yspeed = <number>,
+                size = <number>,
+                illegalPortal = <nil or positive number>,
+                arrivalBasis = <nil or number in the range [1, arrivalLocationsSize]>
+                timeDirection = <'forwards' or 'reverse'>
+            }
+            targetFrame = <number in range [0, timelineLength)>
 
+        },
+        {
+            <as above>
+        },
+        ...
+    }
+    */
+    mt::std::vector<ObjectAndTime<Box> >::type newBox;
+    if (!lua_isnil(L_.ptr, -1)) {
+        assert(lua_istable(L_.ptr, -1) && "extra boxes list must be a table");
+        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+            lua_pushinteger(L_.ptr, i);
+            lua_gettable(L_.ptr, -2);
+            newBox.push_back(toObjectAndTimeBox(L_.ptr, currentFrame, arrivalLocationsSize_));
+            lua_pop(L_.ptr, 1);
+        }
+    }
+    
     //pop return values
-    lua_pop(L_.ptr, 2);
+    lua_pop(L_.ptr, 3);
     return boost::make_tuple(calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame), glitz, newBox);
 }
 
