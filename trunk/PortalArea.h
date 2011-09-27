@@ -20,6 +20,7 @@ public:
         int timeDestination,
         int illegalDestination,
         bool fallable,
+        int collisionOverlap,
         bool winner
         ) :
             index_(index),
@@ -37,6 +38,7 @@ public:
             timeDestination_(timeDestination),
             illegalDestination_(illegalDestination),
             fallable_(fallable),
+            collisionOverlap_(collisionOverlap),
             winner_(winner)
             {
             }
@@ -64,6 +66,7 @@ public:
     int getTimeDestination() const { return timeDestination_; }
     int getIllegalDestination() const { return illegalDestination_; }
     bool getFallable() const { return fallable_; }
+    int getCollisionOverlap() const { return collisionOverlap_; };
     bool getWinner() const { return winner_; }
 private:
     int index_;
@@ -81,6 +84,7 @@ private:
     int timeDestination_;
     int illegalDestination_;
     bool fallable_;
+    int collisionOverlap_;
     bool winner_;
     
 };
