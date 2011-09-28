@@ -83,11 +83,16 @@ public:
     Frame* getFrame(FrameID const& whichFrame);
     // Exception Safety: Strong
     std::vector<InputList> const& getReplayData() const;
+    
+    Wall const& getWall() const { return wall_; }
 private:
     unsigned int speedOfTime_;
     //state of world at end of last executed frame
     WorldState worldState_;
-    
+    //Wall duplicated here, it is also in physics.
+    //This may not be ideal, but it simplifies a few things.
+    //No, this is probably plain silly. Please fix/justify.
+    Wall wall_;
     //intentionally undefined
     TimeEngine(TimeEngine const& other);
     TimeEngine& operator=(TimeEngine const& other);
