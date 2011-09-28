@@ -4,54 +4,8 @@
 #include "lua/lualib.h"
 #include "CommonTriggerCode.h"
 #include "ObjectAndTime.h"
-
+#include "LuaUtilities.h"
 namespace hg {
-namespace {
-int lua_VectorWriter(
-    lua_State *L,
-    const void* p,
-    size_t sz,
-    void* ud)
-{
-    (void)L;
-    std::vector<char>& vec(*static_cast<std::vector<char>*>(ud));
-    vec.insert(vec.end(), static_cast<char const*>(p), static_cast<char const*>(p) + sz);
-    return 0;
-}
-
-const char * lua_VectorReader (
-    lua_State *L,
-    void *ud,
-    size_t *size)
-{
-    (void)L;
-    std::pair<char const*, char const*>& data(*static_cast<std::pair<char const*, char const*>*> (ud));
-    if (data.first != data.second) {
-        const char* retv(data.first);
-        *size = data.second - data.first;
-        data.first = data.second;
-        return retv;
-    }
-    else {
-        return 0;
-    }
-}
-
-LuaState loadLuaStateFromVector(std::vector<char> const& luaData)
-{
-    std::pair<char const*, char const*> source_iterators;
-    if (!luaData.empty()) {
-        source_iterators.first = &luaData.front();
-        source_iterators.second = &luaData.front() + luaData.size();
-    }
-    LuaState L((LuaState::new_state_t()));
-    if (lua_load(L.ptr, lua_VectorReader, &source_iterators, "Trigger System")) {
-        assert(false);
-    }
-    luaL_openlibs(L.ptr);
-    return L;
-}
-}
 
 TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
 {
@@ -65,7 +19,7 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
             multi_thread_operator_delete(p);
             throw;
         }
-        *sharedStatePtr = loadLuaStateFromVector(compiledLuaChunk_);
+        *sharedStatePtr = loadLuaStateFromVector(compiledLuaChunk_, "triggerSystem");
     }
     //Unfortunately (due to the lack of perfect forwarding in C++03)
     //this cannot be made into a function.
@@ -104,57 +58,16 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
     lua_call(L_.ptr, 0, 1);
 }
 namespace {
-//Reads the field with name "fieldName" from table at the top of the stack of L
-//This field must hold a number representable as an int.
-//(behaviour if it isn't to come later)
-int readIntField(lua_State* L, char const* fieldName)
-{
-    lua_getfield(L, -1, fieldName);
-    assert(lua_isnumber(L, -1));
-    //TODO: better rounding!
-    int retv(static_cast<int>(lua_tointeger(L, -1)));
-    lua_pop(L, 1);
-    return retv;
-}
-TimeDirection readTimeDirectionField(lua_State* L, char const* fieldName)
-{
-    lua_getfield(L, -1, fieldName);
-    assert(lua_isstring(L, -1));
-    char const* timeDirectionString(lua_tostring(L, -1));
-    TimeDirection retv;
-    if (strcmp(timeDirectionString, "forwards") == 0) {
-        retv = FORWARDS;
-    }
-    else if (strcmp(timeDirectionString, "reverse") == 0) {
-        retv = REVERSE;
-    }
-    else {
-    	std::cout << timeDirectionString << std::endl;
-    	assert(false && "invalid string given as timeDirection");
-    }
-    lua_pop(L, 1);
-    return retv;
-}
-
-bool readBooleanField(lua_State* L, char const* fieldName)
-{
-    lua_getfield(L, -1, fieldName);
-    //TODO: better error checking
-    assert(lua_isboolean(L, -1));
-    bool retv(lua_toboolean(L, -1));
-    lua_pop(L, 1);
-    return retv;
-}
 //Gives the value of the element at the top of the stack of L,
 //interpreted as a Box.
 Box toBox(lua_State* L, int arrivalLocationsSize)
 {
     assert(lua_istable(L, -1) && "a box must be a table");
-    int x(readIntField(L, "x"));
-    int y(readIntField(L, "y"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    int size(readIntField(L, "size"));
+    int x(readField<int>(L, "x"));
+    int y(readField<int>(L, "y"));
+    int xspeed(readField<int>(L, "xspeed"));
+    int yspeed(readField<int>(L, "yspeed"));
+    int size(readField<int>(L, "size"));
     int illegalPortal(-1);
     lua_getfield(L, -1, "illegalPortal");
     if (!lua_isnil(L, -1)) {
@@ -171,7 +84,7 @@ Box toBox(lua_State* L, int arrivalLocationsSize)
         assert(0 <= arrivalBasis && arrivalBasis < arrivalLocationsSize);
     }
     lua_pop(L, 1);
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
     
     return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
 }
@@ -200,115 +113,17 @@ std::string abilityToString(Ability ability)
     }
 }
 
-Ability toAbility(lua_State* L, int idx = -1)
-{
-    std::string abilityString(lua_tostring(L, idx));
-    if (abilityString == "timeJump") {
-        return TIME_JUMP;
-    }
-    else if (abilityString == "timeReverse") {
-        return TIME_REVERSE;
-    }
-    else if (abilityString == "timeGun") {
-        return TIME_GUN;
-    }
-    else {
-        assert(false && "invalid ability string");
-        return NO_ABILITY;
-    }
-}
-
-mt::std::map<Ability, int>::type toPickup(lua_State* L)
-{
-    assert(lua_istable(L, -1) && "pickups must be a table");
-    mt::std::map<Ability, int>::type retv;
-    lua_pushnil(L);
-    while (lua_next(L, -2) != 0) {
-        lua_Integer abilityQuantity(lua_tointeger(L, -1));
-        assert(abilityQuantity >= -1);
-        retv[toAbility(L, -2)] = static_cast<int>(abilityQuantity);
-        lua_pop(L, 1);
-    }
-    return retv;
-}
-
-mt::std::map<Ability, int>::type readPickupsField(lua_State* L, char const* fieldName)
-{
-    lua_getfield(L, -1, fieldName);
-    mt::std::map<Ability, int>::type retv(toPickup(L));
-    lua_pop(L, 1);
-    return retv;
-}
-
-//Gives the value of the element at the top of the stack of L,
-//interpreted as a Guy.
-Guy toGuy(lua_State* L)
-{
-    assert(lua_istable(L, -1) && "a guy must be a table");
-    int index(readIntField(L, "index"));
-    int x(readIntField(L, "x"));            
-    int y(readIntField(L, "y"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    int illegalPortal(-1);
-    lua_getfield(L, -1, "illegalPortal");
-    if (!lua_isnil(L, -1)) {
-        assert(lua_isnumber(L, -1));
-        illegalPortal = static_cast<int>(lua_tointeger(L, -1));
-    }
-    lua_pop(L, 1);
-    int arrivalBasis(-1);
-    lua_getfield(L, -1, "arrivalBasis");
-    if (!lua_isnil(L, -1)) {
-        assert(lua_isnumber(L, -1));
-        arrivalBasis = static_cast<int>(lua_tointeger(L, -1));
-    }
-    lua_pop(L, 1);
-    bool supported(readBooleanField(L, "supported"));
-    int supportedSpeed(0);
-    if (supported) {
-        supportedSpeed = readIntField(L, "supportedSpeed");
-    }
-    mt::std::map<Ability, int>::type pickups(readPickupsField(L, "pickups"));
-    bool facing(readBooleanField(L, "facing"));
-    bool boxCarrying(readBooleanField(L, "boxCarrying"));
-    int boxCarrySize(0);
-    TimeDirection boxCarryDirection(INVALID);
-    if (boxCarrying) {
-        boxCarrySize = readIntField(L, "boxCarrySize");
-        boxCarryDirection = readTimeDirectionField(L, "boxCarryDirection");
-    }
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
-    return Guy(
-        x, y,
-        xspeed, yspeed,
-        width, height,
-        illegalPortal,
-        arrivalBasis,
-        supported,
-        supportedSpeed,
-        pickups,
-        facing,
-        boxCarrying,
-        boxCarrySize,
-        boxCarryDirection,
-        timeDirection,
-        index);
-}
-
 Collision toCollision(lua_State* L)
 {
     assert(lua_istable(L, -1) && "a collision must be a table");
 
-    int x(readIntField(L, "x"));            
-    int y(readIntField(L, "y"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    int x(readField<int>(L, "x"));            
+    int y(readField<int>(L, "y"));
+    int xspeed(readField<int>(L, "xspeed"));
+    int yspeed(readField<int>(L, "yspeed"));
+    int width(readField<int>(L, "width"));
+    int height(readField<int>(L, "height"));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
     
     return Collision(x, y, xspeed, yspeed, width, height, timeDirection);
 }
@@ -316,24 +131,24 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
 {
     assert(lua_istable(L, -1) && "a portal must be a table");
     
-    int index(readIntField(L, "index") - 1);
+    int index(readField<int>(L, "index") - 1);
     //TODO: better rounding!
     assert(index >= 0);
     
-    int x(readIntField(L, "x"));
-    int y(readIntField(L, "y"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    int collisionOverlap(readIntField(L, "collisionOverlap"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
-    int destinationIndex(readIntField(L, "destinationIndex") - 1);
+    int x(readField<int>(L, "x"));
+    int y(readField<int>(L, "y"));
+    int width(readField<int>(L, "width"));
+    int height(readField<int>(L, "height"));
+    int xspeed(readField<int>(L, "xspeed"));
+    int yspeed(readField<int>(L, "yspeed"));
+    int collisionOverlap(readField<int>(L, "collisionOverlap"));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
+    int destinationIndex(readField<int>(L, "destinationIndex") - 1);
     assert(destinationIndex >= 0 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
-    int xDestination(readIntField(L, "xDestination"));
-    int yDestination(readIntField(L, "yDestination"));
-    bool relativeTime(readBooleanField(L, "relativeTime"));
-    int timeDestination(readIntField(L, "timeDestination"));
+    int xDestination(readField<int>(L, "xDestination"));
+    int yDestination(readField<int>(L, "yDestination"));
+    bool relativeTime(readField<bool>(L, "relativeTime"));
+    int timeDestination(readField<int>(L, "timeDestination"));
     
     lua_getfield(L, -1, "illegalDestination");
     int illegalDestination;
@@ -347,8 +162,8 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
     }
     lua_pop(L, 1);
     
-    bool fallable(readBooleanField(L, "fallable"));
-    bool winner(readBooleanField(L, "winner"));
+    bool fallable(readField<bool>(L, "fallable"));
+    bool winner(readField<bool>(L, "winner"));
     
     return
         PortalArea(
@@ -370,14 +185,14 @@ MutatorArea toMutatorArea(lua_State* L)
 {
     assert(lua_istable(L, -1) && "a mutator must be a table");
     
-    int x(readIntField(L, "x"));
-    int y(readIntField(L, "y"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    int collisionOverlap(readIntField(L, "collisionOverlap"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    int x(readField<int>(L, "x"));
+    int y(readField<int>(L, "y"));
+    int width(readField<int>(L, "width"));
+    int height(readField<int>(L, "height"));
+    int xspeed(readField<int>(L, "xspeed"));
+    int yspeed(readField<int>(L, "yspeed"));
+    int collisionOverlap(readField<int>(L, "collisionOverlap"));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
 
     return
         MutatorArea(
@@ -390,11 +205,11 @@ MutatorArea toMutatorArea(lua_State* L)
 
 ArrivalLocation toArrivalLocation(lua_State* L)
 {
-    int x(readIntField(L, "x"));
-    int y(readIntField(L, "y"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    int x(readField<int>(L, "x"));
+    int y(readField<int>(L, "y"));
+    int xspeed(readField<int>(L, "xspeed"));
+    int yspeed(readField<int>(L, "yspeed"));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
     
     return ArrivalLocation(x, y, xspeed, yspeed, timeDirection);
 }
@@ -402,24 +217,24 @@ ArrivalLocation toArrivalLocation(lua_State* L)
 unsigned readColourField(lua_State* L, char const* fieldName)
 {
     lua_getfield(L, -1, fieldName);
-    unsigned r(readIntField(L, "r"));
-    unsigned g(readIntField(L, "g"));
-    unsigned b(readIntField(L, "b"));
+    unsigned r(readField<int>(L, "r"));
+    unsigned g(readField<int>(L, "g"));
+    unsigned b(readField<int>(L, "b"));
     lua_pop(L, 1);
     return r << 24 | g << 16 | b << 8;
 }
 
 RectangleGlitz toGlitz(lua_State* L)
 {
-    int x(readIntField(L, "x"));
-    int y(readIntField(L, "y"));
-    int width(readIntField(L, "width"));
-    int height(readIntField(L, "height"));
-    int xspeed(readIntField(L, "xspeed"));
-    int yspeed(readIntField(L, "yspeed"));
+    int x(readField<int>(L, "x"));
+    int y(readField<int>(L, "y"));
+    int width(readField<int>(L, "width"));
+    int height(readField<int>(L, "height"));
+    int xspeed(readField<int>(L, "xspeed"));
+    int yspeed(readField<int>(L, "yspeed"));
     unsigned forwardsColour(readColourField(L, "forwardsColour"));
     unsigned reverseColour(readColourField(L, "reverseColour"));
-    TimeDirection timeDirection(readTimeDirectionField(L, "timeDirection"));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
     return RectangleGlitz(x, y, width, height, xspeed, yspeed, forwardsColour, reverseColour, timeDirection);
 }
 
@@ -435,7 +250,7 @@ ObjectAndTime<Box> toObjectAndTimeBox(lua_State* L, Frame* currentFrame, std::si
 {
     return ObjectAndTime<Box>(
         readBoxField(L, "box", arrivalLocationsSize),
-        getArbitraryFrame(getUniverse(currentFrame), readIntField(L, "targetFrame")));
+        getArbitraryFrame(getUniverse(currentFrame), readField<int>(L, "targetFrame")));
 }
 
 }
@@ -591,7 +406,7 @@ PhysicsAffectingStuff
     lua_getfield(L_.ptr, -1, "additionalBoxes");
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "additionalBoxes must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -2);
             retv.additionalBoxes.push_back(toBox(L_.ptr, static_cast<int>(arrivalLocationsSize_)));
@@ -604,7 +419,7 @@ PhysicsAffectingStuff
     lua_getfield(L_.ptr, -1, "collisions");
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "collisions must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -2);
             retv.collisions.push_back(toCollision(L_.ptr));
@@ -617,7 +432,7 @@ PhysicsAffectingStuff
     lua_getfield(L_.ptr, -1, "portals");
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "portals must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -2);
             retv.portals.push_back(toPortal(L_.ptr, arrivalLocationsSize_));
@@ -630,7 +445,7 @@ PhysicsAffectingStuff
     lua_getfield(L_.ptr, -1, "mutators");
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "mutators must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -2);
             retv.mutators.push_back(toMutatorArea(L_.ptr));
@@ -642,7 +457,7 @@ PhysicsAffectingStuff
     //read 'arrivalLocations' table
     lua_getfield(L_.ptr, -1, "arrivalLocations");
     assert(lua_istable(L_.ptr, -1) && "arrivalLocations must be a table");
-    for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+    for (std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
         assert(end == arrivalLocationsSize_);
         lua_pushinteger(L_.ptr, i);
         lua_gettable(L_.ptr, -2);
@@ -972,7 +787,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     boost::optional<Guy> retv;
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "mutated object must be a table");
-        retv = toGuy(L_.ptr);
+        retv = to<Guy>(L_.ptr);
     }
     //pop return value
     lua_pop(L_.ptr, 1);
@@ -1093,7 +908,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
         int index(static_cast<int>(lua_tonumber(L_.ptr, -2)) - 1);
         mt::std::vector<int>::type value;
         assert(lua_istable(L_.ptr, -1) && "trigger value must be a table");
-        for(std::size_t k(1), end(lua_objlen(L_.ptr, -1)); k <= end; ++k) {
+        for (std::size_t k(1), end(lua_objlen(L_.ptr, -1)); k <= end; ++k) {
             lua_pushinteger(L_.ptr, k);
             lua_gettable(L_.ptr, -2);
             assert(lua_isnumber(L_.ptr, -1));
@@ -1133,7 +948,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     mt::std::vector<RectangleGlitz>::type glitz;
     if (!lua_isnil(L_.ptr, -2)) {
         assert(lua_istable(L_.ptr, -2) && "glitz list must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -2)); i <= end; ++i) {
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -2)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -3);
             glitz.push_back(toGlitz(L_.ptr));
@@ -1170,7 +985,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     mt::std::vector<ObjectAndTime<Box> >::type newBox;
     if (!lua_isnil(L_.ptr, -1)) {
         assert(lua_istable(L_.ptr, -1) && "extra boxes list must be a table");
-        for(std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -1)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -2);
             newBox.push_back(toObjectAndTimeBox(L_.ptr, currentFrame, arrivalLocationsSize_));

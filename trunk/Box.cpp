@@ -67,4 +67,18 @@ bool Box::operator<(const Box& other) const
     }
     return x_ < other.x_;
 }
+std::ostream& operator<<(std::ostream& str, Box const& b)
+{
+    return 
+      str << "{"
+          <<   "x=" << b.x_
+          << ", y=" << b.y_
+          << ", xspeed=" << b.xspeed_
+          << ", yspeed=" << b.yspeed_
+          << ", size=" << b.size_
+          << ", illegalPortal=" << b.illegalPortal_
+          << ", arrivalBasis=" << b.arrivalBasis_
+          << ", timeDirection=" << b.timeDirection_
+          << "}";
+}
 }//namespace hg

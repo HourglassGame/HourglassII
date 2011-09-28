@@ -2,6 +2,7 @@
 #include <limits>
 namespace hg {
 Guy::Guy(
+    std::size_t index,
     int x, int y,
     int xspeed, int yspeed,
     int width, int height,
@@ -18,8 +19,7 @@ Guy::Guy(
     int boxCarrySize,
     TimeDirection boxCarryDirection,
 
-    TimeDirection timeDirection,
-    std::size_t index) :
+    TimeDirection timeDirection) :
         index_(index),
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),

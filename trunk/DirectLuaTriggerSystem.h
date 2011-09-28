@@ -71,7 +71,7 @@ private:
     //Gives the size that arrivalLocations must always be,
     //for script-validation purposes.
     //If a portal specifies an destinationIndex that is
-    //larger than this
+    //larger than this, it is an error in the script and will be detected as such.
     std::size_t arrivalLocationsSize_;
 
     DirectLuaTriggerFrameState(DirectLuaTriggerFrameState& other);

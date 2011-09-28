@@ -717,7 +717,8 @@ void guyStep(
 			{
 				boost::optional<Guy> newGuy = triggerFrameState.mutateObject(
 					mutatorCollisions,
-					Guy(x[i], y[i],
+					Guy(relativeIndex,
+                        x[i], y[i],
 						xspeed[i], yspeed[i],
 						newWidth, newHeight,
 						guyArrivalList[i].getIllegalPortal(),
@@ -729,8 +730,7 @@ void guyStep(
 						carry[i],
 						carrySize[i],
 						carryDirection[i],
-						nextTimeDirection,
-						relativeIndex
+						nextTimeDirection
 					));
 				if (!newGuy)
 				{
@@ -789,10 +789,10 @@ void guyStep(
                     		newWidth, newHeight,
                     		nextPortal[j].getCollisionOverlap())
                     	&& triggerFrameState.shouldPort(j,
-							Guy(x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
+							Guy(relativeIndex, x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
 							guyArrivalList[i].getIllegalPortal(),-1,
 							supported[i],supportedSpeed[i], newPickups, facing[i],
-							carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection(),relativeIndex),true))
+							carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection()),true))
                     {
                         if (nextPortal[j].getWinner())
                         {
@@ -836,10 +836,10 @@ void guyStep(
 							illegalPortal = j;
 						}
 						else if (triggerFrameState.shouldPort(j,
-								Guy(x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
+								Guy(relativeIndex, x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
 								guyArrivalList[i].getIllegalPortal(),-1,
 								supported[i],supportedSpeed[i], newPickups, facing[i],
-								carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection(),relativeIndex),false))
+								carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection()),false))
 						{
 							Frame* portalTime(
 								nextPortal[j].getRelativeTime() ?
@@ -870,6 +870,7 @@ void guyStep(
             nextGuy.push_back(
                 ObjectAndTime<Guy>(
                     Guy(
+                        relativeIndex + 1,
                         x[i], y[i],
                         xspeed[i], yspeed[i],
                         newWidth, newHeight,
@@ -886,8 +887,7 @@ void guyStep(
                         carrySize[i],
                         carryDirection[i],
                         
-                        nextTimeDirection,
-                        relativeIndex + 1
+                        nextTimeDirection
                     ),
                     nextTime
                 )
