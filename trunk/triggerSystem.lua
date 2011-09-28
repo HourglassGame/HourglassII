@@ -214,7 +214,7 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
             yb = object.y
         else 
             xb = object.x - object.xspeed
-            yb = object.x - object.yspeed
+            yb = object.y - object.yspeed
         end
         local wb, hb = object.width, object.height
         return
