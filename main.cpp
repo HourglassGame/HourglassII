@@ -44,6 +44,7 @@
 
 #include "BasicConfiguredTriggerSystem.h"
 #include "DirectLuaTriggerSystem.h"
+#include "LevelLoader.h"
 
 typedef sf::Color Colour;
 #define foreach BOOST_FOREACH
@@ -92,7 +93,7 @@ int main(int argc, char const* const argv[])
     app.SetFramerateLimit(60);
     
     boost::multi_array<bool, 2> const wall(MakeWall());
-    TimeEngine timeEngine(MakeLevel(boost::multi_array<bool, 2>(wall)));
+    TimeEngine timeEngine(loadLevelFromFile("level.lua"));
     hg::Input input;
     hg::Inertia inertia;
     std::vector<InputList> replay;
@@ -128,7 +129,7 @@ int main(int argc, char const* const argv[])
                     currentReplayEnd = replay.end();
                     replayLogOut.close();
                     replayLogOut.open("replayLogOut");
-                    TimeEngine(MakeLevel(wall)).swap(timeEngine);
+                    TimeEngine(loadLevelFromFile("level.lua")).swap(timeEngine);
                     break;
                 case sf::Key::L:
                     loadReplay().swap(replay);
@@ -136,7 +137,7 @@ int main(int argc, char const* const argv[])
                     currentReplayEnd = replay.end();
                     replayLogOut.close();
                     replayLogOut.open("replayLogOut");
-                    TimeEngine(MakeLevel(wall)).swap(timeEngine);
+                    TimeEngine(loadLevelFromFile("level.lua")).swap(timeEngine);
                     break;
                 case sf::Key::P:
                     currentReplayIt = replay.end();
@@ -675,7 +676,7 @@ TriggerSystem makeBasicConfiguredTriggerSystem()
     defaultPlatformPositionAndVelocity.push_back(0);
     defaultPlatformPositionAndVelocity.push_back(0);
     triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
-    
+    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1))); // button that controls portal
     return TriggerSystem(
         new BasicConfiguredTriggerSystem(
             protoPortals,
@@ -742,7 +743,7 @@ Level MakeLevel(boost::multi_array<bool, 2> const& wall)
                     wall),
                 30),
             newObjectList,
-            Guy(8700, 20000, 0, 0, 2100, 3200, 0, -1, false, 0, mt::std::map<Ability, int>::type(), false, false, 0, INVALID, FORWARDS, 0),
+            Guy(0, 8700, 20000, 0, 0, 2100, 3200, 0, -1, false, 0, mt::std::map<Ability, int>::type(), false, false, 0, INVALID, FORWARDS),
             FrameID(0,UniverseID(10800)),
             makeDirectLuaTriggerSystem());
 }

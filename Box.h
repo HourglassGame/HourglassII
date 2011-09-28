@@ -3,6 +3,7 @@
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
 #include "ConstPtr_of_fwd.h"
+#include <ostream>
 namespace hg {
 class Box : boost::totally_ordered<Box>
 {
@@ -42,6 +43,8 @@ private:
     int arrivalBasis_;
 
     TimeDirection timeDirection_;
+    //For debugging
+    friend std::ostream& operator<<(std::ostream& str, Box const& b);
 };
 
 class BoxConstPtr : boost::totally_ordered<BoxConstPtr>

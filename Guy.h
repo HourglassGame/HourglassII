@@ -11,7 +11,8 @@ namespace hg {
 class Guy : boost::totally_ordered<Guy>
 {
 public:
-    Guy(int x, int y,
+    Guy(std::size_t index,
+        int x, int y,
         int xspeed, int yspeed,
         int width, int height,
         
@@ -27,8 +28,7 @@ public:
     	int boxCarrySize,
     	TimeDirection boxCarryDirection,
         
-        TimeDirection timeDirection,
-        std::size_t index);
+        TimeDirection timeDirection);
 
     Guy(const Guy& other, TimeDirection nTimeDirection);
     
@@ -91,6 +91,8 @@ public:
     GuyConstPtr(Guy const& guy) : guy_(&guy) {}
     typedef Guy base_type;
     Guy const& get() const   { return *guy_; }
+    
+    std::size_t getIndex() const { return guy_->getIndex(); }
     int getX()      const { return guy_->getX(); }
     int getY()      const { return guy_->getY(); }
     int getXspeed() const { return guy_->getXspeed(); }
@@ -114,7 +116,6 @@ public:
 
     TimeDirection
         getTimeDirection() const { return guy_->getTimeDirection(); }
-    std::size_t getIndex() const { return guy_->getIndex(); }
 
     bool operator==(GuyConstPtr const& other) const { return *guy_ == *other.guy_; }
     bool operator<(GuyConstPtr const& other) const { return *guy_ < *other.guy_; }
