@@ -54,15 +54,15 @@ using namespace sf;
 using namespace boost;
 namespace {
     void initialseCurrentPath(int argc, char const* const argv[]);
-    void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool, 2> const& wall, Inertia& inertia, InputList const& input);
+    void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input);
     void Draw(
         RenderWindow& target,
         ObjectPtrList<Normal> const& frame,
         mt::std::vector<RectangleGlitz>::type const& glitz,
-        boost::multi_array<bool, 2> const& wall,
+        Wall const& wall,
         TimeDirection playerDirection);
     void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame);
-    void DrawWall(RenderTarget& target, const boost::multi_array<bool, 2>& wallData);
+    void DrawWall(RenderTarget& target, Wall const& wallData);
     void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection);
     template<typename RandomAccessBoxRange>
     void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDirection playerDirection);
@@ -70,9 +70,6 @@ namespace {
     void DrawGuys(RenderTarget& target, const RandomAccessGuyRange& guyList, TimeDirection playerDirection);
     template<typename BidirectionalGuyRange>
     TimeDirection findCurrentGuyDirection(const BidirectionalGuyRange& guyRange);
-
-    boost::multi_array<bool, 2> MakeWall();
-    Level MakeLevel(const boost::multi_array<bool, 2>& wallData);
     
     std::vector<InputList> loadReplay();
     void saveReplay(std::vector<InputList> const& replay);
@@ -92,7 +89,6 @@ int main(int argc, char const* const argv[])
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
     
-    boost::multi_array<bool, 2> const wall(MakeWall());
     TimeEngine timeEngine(loadLevelFromFile("level.lua"));
     hg::Input input;
     hg::Inertia inertia;
@@ -161,7 +157,7 @@ int main(int argc, char const* const argv[])
         try {
             if (currentReplayIt != currentReplayEnd) {
                 saveReplayLog(replayLogOut, *currentReplayIt);
-                runStep(timeEngine, app, wall, inertia, *currentReplayIt);
+                runStep(timeEngine, app, inertia, *currentReplayIt);
                 ++currentReplayIt;
                 sf::String replayGlyph("R");
                 replayGlyph.SetColor(Colour(255,0,0));
@@ -172,7 +168,7 @@ int main(int argc, char const* const argv[])
             else {
                 input.updateState(app.GetInput());
                 saveReplayLog(replayLogOut, input.AsInputList());
-                runStep(timeEngine, app, wall, inertia, input.AsInputList());
+                runStep(timeEngine, app, inertia, input.AsInputList());
             }
 
             app.Display();
@@ -195,7 +191,7 @@ void initialseCurrentPath(int argc, char const* const argv[])
 #endif
 }
 
-void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool, 2> const& wall, Inertia& inertia, InputList const& input)
+void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input)
 {
         std::vector<std::size_t> framesExecutedList;
         FrameID drawnFrame;
@@ -218,7 +214,7 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
                 app,
                 frameData,
                 waveInfo.currentPlayerFrame()->getGlitzFromHere(),
-                wall,
+                timeEngine.getWall(),
                 currentGuyDirection);
         }
         else {
@@ -227,12 +223,12 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, boost::multi_array<bool,
             if (inertialFrame.isValidFrame()) {
                 drawnFrame = inertialFrame;
                 Frame* frame(timeEngine.getFrame(inertialFrame));
-                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, inertia.getTimeDirection());
+                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), inertia.getTimeDirection());
             }
             else {
                 drawnFrame = FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800));
                 Frame* frame(timeEngine.getFrame(drawnFrame));
-                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), wall, FORWARDS);
+                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), FORWARDS);
             }
         }
         DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame);
@@ -283,7 +279,7 @@ void Draw(
     RenderWindow& target,
     ObjectPtrList<Normal> const& frame,
     mt::std::vector<RectangleGlitz>::type const& glitz,
-    boost::multi_array<bool, 2> const& wall,
+    Wall const& wall,
     TimeDirection playerDirection)
 {
     DrawWall(target, wall);
@@ -294,20 +290,20 @@ void Draw(
 
 void DrawWall(
     sf::RenderTarget& target,
-    boost::multi_array<bool, 2> const& wall)
+    Wall const& wall)
 {
     target.Clear(Colour(255,255,255));
     
-    foreach (unsigned i, irange(0u, static_cast<unsigned>(wall.shape()[0]))) {
-        foreach (unsigned j, irange(0u, static_cast<unsigned>(wall.shape()[1]))) {
-            if (wall[i][j]) {
-                target.Draw(
-                    Shape::Rectangle(
-                        32.f*i,
-                        32.f*j,
-                        32.f*(i+1),
-                        32.f*(j+1),
-                        Colour()));
+    for (int i(0), iend(wall.roomWidth()); i != iend; i += wall.segmentSize()) {
+        for (int j(0), jend(wall.roomHeight()); j != jend; j += wall.segmentSize()) {
+            if (wall.at(i, j)) {
+              target.Draw(
+                sf::Shape::Rectangle(
+                  i/100.f,
+                  j/100.f,
+                  (i + wall.segmentSize())/100.f,
+                  (j + wall.segmentSize())/100.f,
+                  Colour()));
             }
         }
     }
@@ -565,186 +561,5 @@ void generateReplay()
         replay.assign(std::istream_iterator<InputList>(replayLogIn), std::istream_iterator<InputList>());
         saveReplay(replay);
     }
-}
-
-boost::multi_array<bool, 2> MakeWall()
-{
-    using namespace boost::assign;
-    vector<vector<char> > wall;
-    vector<char> row;
-
-#if defined E || defined D
-#error this madness has gone on quite long enough
-#endif
-#define E row +=
-#define D ; wall.push_back(row); row.clear();
-    E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1 D
-    E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1 D
-    E 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1 D
-    E 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1 D
-    E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 D
-#undef D
-#undef E
-    //.at() used in case `wall' becomes non-square or 0 size.
-    boost::array<boost::multi_array<bool, 2>::index, 2> const wallShape = {{ wall.at(0).size(), wall.size() }};
-    boost::multi_array<bool, 2> actualWall(wallShape);
-    for (unsigned int i = 0; i < wall.size(); ++i) {
-        for (unsigned int j = 0; j < wall.at(i).size(); ++j) {
-            actualWall[j][i] = wall.at(i).at(j);
-        }
-    }
-    return actualWall;
-}
-
-TriggerSystem makeBasicConfiguredTriggerSystem()
-{
-    std::vector<ProtoPortal> protoPortals;
-    protoPortals.push_back(
-        ProtoPortal(
-            Attachment(0,-4200,-3200),
-            0,
-            4200,
-            4200,
-            50,
-            FORWARDS,
-            0,
-            0,
-            -16000,
-            true,
-            120,
-            0,
-            true,
-            false));
-    
-    std::vector<ProtoPlatform> protoPlatforms;
-    protoPlatforms.push_back(
-        ProtoPlatform(
-            6400,
-            1600,
-            FORWARDS,
-            1,
-            0,
-            PlatformDestinationPair(
-                PlatformDestination(
-                    PlatformDestinationComponent(
-                        22400,
-                        200,
-                        50,
-                        50),
-                    PlatformDestinationComponent(
-                        43800,
-                        300,
-                        50,
-                        50)),
-                PlatformDestination(
-                    PlatformDestinationComponent(
-                        38400,
-                        200,
-                        50,
-                        50),
-                    PlatformDestinationComponent(
-                        43800,
-                        300,
-                        20,
-                        20)))));
-    
-    std::vector<ProtoButton> protoButtons;
-    protoButtons.push_back(
-        ProtoButton(
-            Attachment(0,3200,-800),
-            3200,
-            800,
-            FORWARDS,
-            0));
-    
-    std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1)));
-    
-    std::vector<int> defaultPlatformPositionAndVelocity;
-    defaultPlatformPositionAndVelocity.push_back(38400);
-    defaultPlatformPositionAndVelocity.push_back(43800);
-    defaultPlatformPositionAndVelocity.push_back(0);
-    defaultPlatformPositionAndVelocity.push_back(0);
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1))); // button that controls portal
-    return TriggerSystem(
-        new BasicConfiguredTriggerSystem(
-            protoPortals,
-            protoPlatforms,
-            protoButtons,
-            triggerOffsetsAndDefaults));
-}
-
-TriggerSystem makeDirectLuaTriggerSystem()
-{
-    std::vector<char> triggerSystemLuaChunk;
-    std::ifstream file;
-    file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
-    file.open("triggerSystem.lua");
-    file.seekg(0, std::ios::end);
-    std::streampos length(file.tellg());
-    if (length) {
-        file.seekg(0, std::ios::beg);
-        triggerSystemLuaChunk.resize(static_cast<std::size_t>(length));
-        file.read(&triggerSystemLuaChunk.front(), static_cast<std::size_t>(length));
-    }
-    
-    std::vector<std::pair<int, std::vector<int> > > triggerOffsetsAndDefaults;
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1))); // button that control platform
-    
-    std::vector<int> defaultPlatformPositionAndVelocity; // platform
-    defaultPlatformPositionAndVelocity.push_back(38400);
-    defaultPlatformPositionAndVelocity.push_back(43800);
-    defaultPlatformPositionAndVelocity.push_back(0);
-    defaultPlatformPositionAndVelocity.push_back(0);
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, defaultPlatformPositionAndVelocity));
-
-    triggerOffsetsAndDefaults.push_back(std::make_pair(1, std::vector<int>(1))); // button that controls portal
-
-    return TriggerSystem(
-        new DirectLuaTriggerSystem(
-            triggerSystemLuaChunk,
-            triggerOffsetsAndDefaults,
-            1));
-
-}
-
-Level MakeLevel(boost::multi_array<bool, 2> const& wall)
-{
-    ObjectList<NonGuyDynamic> newObjectList;
-
-    newObjectList.add(Box(32400, 8000, 0, -600, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(46400, 14200, -1000, -500, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(46400, 10800, -1000, -500, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(46400, 17600, -1000, -500, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(46400, 21600, -500, -500, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(6400, 15600, 1000, -500, 3200, -1, -1, FORWARDS));
-    newObjectList.add(Box(56400, 15600, 0, 0, 3200, -1, -1, FORWARDS));
-    
-    newObjectList.sort();
-    
-    return
-        Level(
-            3,
-            10800,
-            Environment(
-                Wall(
-                    3200,
-                    wall),
-                30),
-            newObjectList,
-            Guy(0, 8700, 20000, 0, 0, 2100, 3200, 0, -1, false, 0, mt::std::map<Ability, int>::type(), false, false, 0, INVALID, FORWARDS),
-            FrameID(0,UniverseID(10800)),
-            makeDirectLuaTriggerSystem());
 }
 }

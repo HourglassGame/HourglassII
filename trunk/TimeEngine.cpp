@@ -13,7 +13,8 @@ TimeEngine::TimeEngine(Level const& level) :
             level.initialGuy,
             level.guyStartTime,
             PhysicsEngine(level.environment, level.triggerSystem),
-            level.initialObjects)
+            level.initialObjects),
+        wall_(level.environment.wall)
 {
     
 }
