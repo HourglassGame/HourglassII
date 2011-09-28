@@ -50,6 +50,7 @@ namespace {
         std::vector<InputList> const& playerInput,
         mt::std::vector<ObjectAndTime<Guy> >::type& nextGuy,
         mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
+        mt::std::vector<char>::type& nextBoxNormalDeparture,
         mt::std::vector<Collision>::type const& nextPlatform,
         mt::std::vector<PortalArea>::type const& nextPortal,
         mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
@@ -70,6 +71,7 @@ namespace {
         RandomAccessBoxRange const& oldBoxList,
         mt::std::vector<Box>::type const& additionalBox,
         mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
+        mt::std::vector<char>::type& nextBoxNormalDeparture,
         RandomAccessPlatformRange const& nextPlatform,
         RandomAccessPortalRange const& nextPortal,
         RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -82,6 +84,7 @@ namespace {
 		typename RandomAccessMutatorRange>
     void makeBoxAndTimeWithPortalsAndMutators(
 		mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
+		mt::std::vector<char>::type& nextBoxNormalDeparture,
 		const RandomAccessPortalRange& nextPortal,
 		const RandomAccessMutatorRange& mutators,
 		int x,
@@ -139,6 +142,18 @@ namespace {
     //bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
     bool wallAtExclusive(const Environment& env, int x, int y, int w, int h);
         
+    unsigned int Raytrace(
+    		Environment const& env,
+    		int sx, int sy, int px, int py,
+    		mt::std::vector<ObjectAndTime<Box> >::type box,
+    		mt::std::vector<char>::type& nextBoxNormalDeparture,
+    		mt::std::vector<int>::type gx, // other guy things
+    		mt::std::vector<int>::type gy,
+    		mt::std::vector<int>::type gw,
+    		mt::std::vector<int>::type gh,
+    		mt::std::vector<char>::type shootable,
+    		int myIndex);
+
     bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
     bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
     bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
@@ -160,6 +175,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         triggerFrameState.calculatePhysicsAffectingStuff(time, arrivals.getList<TriggerData>()));
 
     mt::std::vector<ObjectAndTime<Box> >::type nextBox;
+    mt::std::vector<char>::type nextBoxNormalDeparture;
 
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
@@ -167,6 +183,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         arrivals.getList<Box>(),
         physicsTriggerStuff.additionalBoxes,
         nextBox,
+        nextBoxNormalDeparture,
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
@@ -190,6 +207,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         playerInput,
         nextGuy,
         nextBox,
+        nextBoxNormalDeparture,
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
@@ -267,6 +285,7 @@ void guyStep(
     std::vector<InputList> const& playerInput,
     mt::std::vector<ObjectAndTime<Guy> >::type& nextGuy,
     mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
+    mt::std::vector<char>::type& nextBoxNormalDeparture,
     mt::std::vector<Collision>::type const& nextPlatform,
     mt::std::vector<PortalArea>::type const& nextPortal,
     mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
@@ -282,7 +301,7 @@ void guyStep(
     mt::std::vector<int>::type yspeed;
     mt::std::vector<char>::type supported;
     mt::std::vector<int>::type supportedSpeed;
-    mt::std::vector<char>::type squished;
+    mt::std::vector<char>::type finishedWith;
     mt::std::vector<char>::type facing;
 
     x.reserve(boost::distance(guyArrivalList));
@@ -291,7 +310,7 @@ void guyStep(
     yspeed.reserve(boost::distance(guyArrivalList));
     supported.reserve(boost::distance(guyArrivalList));
     supportedSpeed.reserve(boost::distance(guyArrivalList));
-    squished.reserve(boost::distance(guyArrivalList));
+    finishedWith.reserve(boost::distance(guyArrivalList));
     facing.reserve(boost::distance(guyArrivalList));
 
     // position, velocity, collisions
@@ -316,13 +335,13 @@ void guyStep(
         }
         supported.push_back(false);
         supportedSpeed.push_back(0);
-        squished.push_back(false);
+        finishedWith.push_back(false);
         facing.push_back(guyArrivalList[i].getFacing());
 
         // Check with triggers if guy should affect frame
 		if (not triggerFrameState.shouldArrive(guyArrivalList[i]))
 		{
-			squished[i] = true;
+			finishedWith[i] = true;
 			continue;
 		}
 
@@ -351,7 +370,7 @@ void guyStep(
 
 				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
 				{
-					squished[i] = true;
+					finishedWith[i] = true;
 					continue;
 				}
 			}
@@ -375,40 +394,43 @@ void guyStep(
             // box collision (only occurs in Y direction)
             for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 			{
-				int boxX(nextBox[j].object.getX());
-				int boxY(nextBox[j].object.getY());
-				int boxXspeed(nextBox[j].object.getXspeed());
-				int boxYspeed(nextBox[j].object.getYspeed());
-				int boxSize(nextBox[j].object.getSize());
-				TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
-				if (x[i] < boxX+boxSize && x[i]+width > boxX)
-				{
-					if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
+            	if (nextBoxNormalDeparture[j])
+            	{
+            		int boxX(nextBox[j].object.getX());
+					int boxY(nextBox[j].object.getY());
+					int boxXspeed(nextBox[j].object.getXspeed());
+					int boxYspeed(nextBox[j].object.getYspeed());
+					int boxSize(nextBox[j].object.getSize());
+					TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
+					if (x[i] < boxX+boxSize && x[i]+width > boxX)
 					{
-						if (newY + height >= boxY-boxYspeed && newY + height-yspeed[i] <= boxY)
+						if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
 						{
-							boxThatIamStandingOn = j;
-							newY = boxY-height-boxYspeed;
-							xspeed[i] = -boxXspeed;
-							supported[i] = true;
-							bottom = true;
-							supportedSpeed[i] = -boxYspeed;
-						}
+							if (newY + height >= boxY-boxYspeed && newY + height-yspeed[i] <= boxY)
+							{
+								boxThatIamStandingOn = j;
+								newY = boxY-height-boxYspeed;
+								xspeed[i] = -boxXspeed;
+								supported[i] = true;
+								bottom = true;
+								supportedSpeed[i] = -boxYspeed;
+							}
 
-					}
-					else
-					{
-						if (newY+height >= boxY && newY-yspeed[i]+height <= boxY-boxYspeed)
+						}
+						else
 						{
-							boxThatIamStandingOn = j;
-							newY = boxY-height;
-							xspeed[i] = boxXspeed;
-							supported[i] = true;
-							bottom = true;
-							supportedSpeed[i] = boxYspeed;
+							if (newY+height >= boxY && newY-yspeed[i]+height <= boxY-boxYspeed)
+							{
+								boxThatIamStandingOn = j;
+								newY = boxY-height;
+								xspeed[i] = boxXspeed;
+								supported[i] = true;
+								bottom = true;
+								supportedSpeed[i] = boxYspeed;
+							}
 						}
 					}
-				}
+            	}
 			}
 
             // check platform collision in Y direction
@@ -467,7 +489,7 @@ void guyStep(
 
             if (bottom && top)
             {
-            	squished[i] = true;
+            	finishedWith[i] = true;
             	continue;
             }
 
@@ -534,7 +556,7 @@ void guyStep(
 
             if (left && right)
 			{
-				squished[i] = true;
+				finishedWith[i] = true;
 				continue;
 			}
 
@@ -552,25 +574,22 @@ void guyStep(
     assert(boost::distance(yspeed) == boost::distance(guyArrivalList));
     assert(boost::distance(supported) == boost::distance(guyArrivalList));
     assert(boost::distance(supportedSpeed) == boost::distance(guyArrivalList));
-    assert(boost::distance(squished) == boost::distance(guyArrivalList));
+    assert(boost::distance(finishedWith) == boost::distance(guyArrivalList));
     assert(boost::distance(facing) == boost::distance(guyArrivalList));
 
+    mt::std::vector<char>::type carry(guyArrivalList.size());
+    mt::std::vector<int>::type carrySize(guyArrivalList.size());
+    mt::std::vector<TimeDirection>::type carryDirection(guyArrivalList.size());
 
-    mt::std::vector<char>::type carry;
-    mt::std::vector<int>::type carrySize;
-    mt::std::vector<TimeDirection>::type carryDirection;
-    carry.reserve(guyArrivalList.size());
-    carrySize.reserve(guyArrivalList.size());
-    carryDirection.reserve(guyArrivalList.size());
     // box carrying
     for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
     {
-        carry.push_back(guyArrivalList[i].getBoxCarrying());
-        carrySize.push_back(0);
-        carryDirection.push_back(hg::INVALID);
-
-        if (guyArrivalList[i].getIndex() < playerInput.size() && !squished[i])
+        if (guyArrivalList[i].getIndex() < playerInput.size() && !finishedWith[i])
         {
+        	carry[i] = guyArrivalList[i].getBoxCarrying();
+			carrySize[i] = 0;
+			carryDirection[i] = hg::INVALID;
+
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
             InputList const& input(playerInput[relativeIndex]);
 
@@ -612,6 +631,7 @@ void guyStep(
                         {
                         	makeBoxAndTimeWithPortalsAndMutators(
                                 nextBox,
+                                nextBoxNormalDeparture,
                                 nextPortal,
                                 mutators,
                                 dropX,
@@ -641,24 +661,31 @@ void guyStep(
             {
                 if (input.getDown())
                 {
+
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
                     //CAREFUL - loop modifies nextBox
-                    for (mt::std::vector<ObjectAndTime<Box> >::type::iterator nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end()); nextBoxIt != nextBoxEnd; ++nextBoxIt)
+                    mt::std::vector<ObjectAndTime<Box> >::type::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
+					mt::std::vector<char>::type::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
+                    for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
                     {
-                        int boxX = nextBoxIt->object.getX();
-                        int boxY = nextBoxIt->object.getY();
-                        int boxSize = nextBoxIt->object.getSize();
-                        if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize)&& (y[i]+height > boxY))
-                        {
-                            carry[i] = true;
-                            carrySize[i] = boxSize;
-                            carryDirection[i] = nextBoxIt->object.getTimeDirection();
+                    	if (*nextBoxNormalDepartureIt)
+						{
+							int boxX = nextBoxIt->object.getX();
+							int boxY = nextBoxIt->object.getY();
+							int boxSize = nextBoxIt->object.getSize();
+							if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize)&& (y[i]+height > boxY))
+							{
+								carry[i] = true;
+								carrySize[i] = boxSize;
+								carryDirection[i] = nextBoxIt->object.getTimeDirection();
 
-                            nextBoxIt = nextBox.erase(nextBoxIt);
-                            nextBoxEnd = nextBox.end();
-                            break;
-                        }
+								nextBoxIt = nextBox.erase(nextBoxIt);
+								nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
+								nextBoxEnd = nextBox.end();
+								break;
+							}
+						}
                     }
                 }
                 else
@@ -673,38 +700,46 @@ void guyStep(
     assert(boost::distance(carrySize) == boost::distance(guyArrivalList));
     assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
 
+    mt::std::vector<int>::type newWidth(guyArrivalList.size());
+    mt::std::vector<int>::type newHeight(guyArrivalList.size());
+    mt::std::vector<mt::std::map<Ability, int>::type >::type newPickups(guyArrivalList.size());
+    mt::std::vector<int>::type illegalPortal(guyArrivalList.size());
+    // arrivalBasis is always -1 for normalDeparture
+
     // time travel, mutator and portal collision, item use
     for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
     {
-    	if (squished[i])
+    	if (finishedWith[i])
 		{
             assert(guyArrivalList[i].getIndex() != playerInput.size()
                     && "nextPlayerFrame must always be set for guys with"
                        " index == playerInput.size()");
 			continue;
 		}
+
         if (guyArrivalList[i].getIndex() < playerInput.size())
         {
             const std::size_t relativeIndex(guyArrivalList[i].getIndex());
             const InputList& input = playerInput[relativeIndex];
 
             int arrivalBasis = -1;
-            int illegalPortal = -1;
+            illegalPortal[i] = -1;
 
-            int newWidth = guyArrivalList[i].getWidth();
-            int newHeight = guyArrivalList[i].getHeight();
-            mt::std::map<Ability, int>::type newPickups(guyArrivalList[i].getPickups());
+            newWidth[i] = guyArrivalList[i].getWidth();
+            newHeight[i] = guyArrivalList[i].getHeight();
+            newPickups[i] = mt::std::map<Ability, int>::type(guyArrivalList[i].getPickups());
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
             Frame* nextTime(nextFrame(time, nextTimeDirection));
             assert(time);
 
-            // mutators
+            // Mutators
+            // Mutator and falling must occur first due to exact frame effects.
             mt::std::vector<int>::type mutatorCollisions;
 			for (unsigned j = 0; j < mutators.size(); ++j)
 			{
 				if (IntersectingRectanglesInclusiveCollisionOverlap(
-						x[i], y[i], newWidth, newHeight,
+						x[i], y[i], newWidth[i], newHeight[i],
 						mutators[j].getX(), mutators[j].getY(),
 						mutators[j].getWidth(), mutators[j].getHeight(),
 						mutators[j].getCollisionOverlap()))
@@ -720,12 +755,12 @@ void guyStep(
 					Guy(relativeIndex,
                         x[i], y[i],
 						xspeed[i], yspeed[i],
-						newWidth, newHeight,
+						newWidth[i], newHeight[i],
 						guyArrivalList[i].getIllegalPortal(),
 						-1,
 						supported[i],
 						supportedSpeed[i],
-						newPickups,
+						newPickups[i],
 						facing[i],
 						carry[i],
 						carrySize[i],
@@ -734,112 +769,53 @@ void guyStep(
 					));
 				if (!newGuy)
 				{
-					squished[i] = true;
+					finishedWith[i] = true;
 					continue;
 				}
 				x[i] = newGuy->getX();
 				y[i] = newGuy->getY();
 				xspeed[i] = newGuy->getXspeed();
 				yspeed[i] = newGuy->getYspeed();
-				newWidth = newGuy->getWidth();
-				newHeight = newGuy->getHeight();
-				illegalPortal = newGuy->getIllegalPortal();
-				arrivalBasis = newGuy->getArrivalBasis();
+				newWidth[i] = newGuy->getWidth();
+				newHeight[i] = newGuy->getHeight();
+				illegalPortal[i] = newGuy->getIllegalPortal();
+				// arrivalBasis is missing with good reason
 				supported[i] = newGuy->getSupported();
 				supportedSpeed[i] = newGuy->getSupportedSpeed();
-				newPickups = newGuy->getPickups();
+				newPickups[i] = newGuy->getPickups();
 				facing[i] = newGuy->getFacing();
 				carry[i] = newGuy->getBoxCarrying();
 				carrySize[i] = newGuy->getBoxCarrySize();
 				carryDirection[i] = newGuy->getBoxCarryDirection();
 				nextTimeDirection = newGuy->getTimeDirection();
-			}
-
-			// Things that don't time travel (for example guns)
-
-			if (input.getAbility() == hg::TIME_GUN)
-			{
-
+				// relativeIndex is missing for obvious reasons
 			}
 
 			// Things that do time travel
-			// only one time travel thing can occur at a time
+			// The occurance of one thing precludes subsequent ones
             bool normalDeparture = true;
 
-            if (input.getAbility() == hg::TIME_JUMP /* && ((!pickups[i].empty() && pickups[i][jumpNumber]) || guyArrivalList[i].getPickups()[jumpNumber]) */ )
-            {
-            	// decrement pickups
-                nextTime = getArbitraryFrame(getUniverse(time), input.getFrameIdParam(0).getFrameNumber());
-                normalDeparture = false;
-            }
-            else if (input.getAbility() == hg::TIME_REVERSE) // etc... from above
-            {
-                normalDeparture = false;
-                nextTimeDirection *= -1;
-                nextTime = nextFrame(time, nextTimeDirection);
-                carryDirection[i] *= -1;
-            }
-            else if (input.getUse() == true)
-            {
-                for (unsigned int j = 0; j < nextPortal.size(); ++j)
-                {
-                    if (IntersectingRectanglesInclusiveCollisionOverlap(
-                    		x[i], y[i], guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
-                    		nextPortal[j].getX(), nextPortal[j].getY(),
-                    		newWidth, newHeight,
-                    		nextPortal[j].getCollisionOverlap())
-                    	&& triggerFrameState.shouldPort(j,
-							Guy(relativeIndex, x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
-							guyArrivalList[i].getIllegalPortal(),-1,
-							supported[i],supportedSpeed[i], newPickups, facing[i],
-							carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection()),true))
-                    {
-                        if (nextPortal[j].getWinner())
-                        {
-                        	winFrame = true;
-                        	nextTime = 0;
-                        	break;
-                        }
-                        Frame* portalTime(
-                            nextPortal[j].getRelativeTime() ?
-                                getArbitraryFrame(
-                                    getUniverse(time),
-                                    getFrameNumber(time) + nextPortal[j].getTimeDestination()) :
-                                getArbitraryFrame(
-                                    getUniverse(time),
-                                    nextPortal[j].getTimeDestination()));
-						nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
-						normalDeparture = false;
-						illegalPortal = nextPortal[j].getIllegalDestination();
-						arrivalBasis = nextPortal[j].getDestinationIndex();
-						x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
-						y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
-						break;
-                    }
-                }
-            }
-
             // falling through portals
-            if (normalDeparture)
-            {
+			if (normalDeparture)
+			{
 				for (unsigned int j = 0; j < nextPortal.size(); ++j)
 				{
 					if (IntersectingRectanglesInclusiveCollisionOverlap(
-                    		x[i], y[i], guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
-                    		nextPortal[j].getX(), nextPortal[j].getY(),
-                    		newWidth, newHeight,
-                    		nextPortal[j].getCollisionOverlap())
+							x[i], y[i], newWidth[i], newHeight[i],
+							nextPortal[j].getX(), nextPortal[j].getY(),
+							nextPortal[j].getWidth(), nextPortal[j].getHeight(),
+							nextPortal[j].getCollisionOverlap())
 						&& nextPortal[j].getFallable())
 					{
 						if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
 						{
-							illegalPortal = j;
+							illegalPortal[i] = j;
 						}
 						else if (triggerFrameState.shouldPort(j,
-								Guy(relativeIndex, x[i], y[i],xspeed[i], yspeed[i],guyArrivalList[i].getWidth(), guyArrivalList[i].getHeight(),
-								guyArrivalList[i].getIllegalPortal(),-1,
-								supported[i],supportedSpeed[i], newPickups, facing[i],
-								carry[i],carrySize[i], carryDirection[i],guyArrivalList[i].getTimeDirection()),false))
+								Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+								illegalPortal[i],-1,
+								supported[i],supportedSpeed[i], newPickups[i], facing[i],
+								carry[i],carrySize[i], carryDirection[i],nextTimeDirection),false))
 						{
 							Frame* portalTime(
 								nextPortal[j].getRelativeTime() ?
@@ -851,7 +827,7 @@ void guyStep(
 									nextPortal[j].getTimeDestination()));
 							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 							normalDeparture = false;
-							illegalPortal = nextPortal[j].getIllegalDestination();
+							illegalPortal[i] = nextPortal[j].getIllegalDestination();
 							arrivalBasis = nextPortal[j].getDestinationIndex();
 							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
 							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
@@ -859,7 +835,65 @@ void guyStep(
 						}
 					}
 				}
-            }
+			}
+
+			// for single frame effects
+			// "forced" departures occur before those due to input
+			if (normalDeparture)
+			{
+				if (input.getAbility() == hg::TIME_JUMP /* && ((!pickups[i].empty() && pickups[i][jumpNumber]) || guyArrivalList[i].getPickups()[jumpNumber]) */ )
+				{
+					// decrement pickups
+					nextTime = getArbitraryFrame(getUniverse(time), input.getFrameIdParam(0).getFrameNumber());
+					normalDeparture = false;
+				}
+				else if (input.getAbility() == hg::TIME_REVERSE) // etc... from above
+				{
+					normalDeparture = false;
+					nextTimeDirection *= -1;
+					nextTime = nextFrame(time, nextTimeDirection);
+					carryDirection[i] *= -1;
+				}
+				else if (input.getUse() == true)
+				{
+					for (unsigned int j = 0; j < nextPortal.size(); ++j)
+					{
+						if (IntersectingRectanglesInclusiveCollisionOverlap(
+								x[i], y[i], newWidth[i], newHeight[i],
+								nextPortal[j].getX(), nextPortal[j].getY(),
+								nextPortal[j].getWidth(), nextPortal[j].getHeight(),
+								nextPortal[j].getCollisionOverlap())
+							&& (triggerFrameState.shouldPort(j,
+									Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+									illegalPortal[i],-1,
+									supported[i],supportedSpeed[i], newPickups[i], facing[i],
+									carry[i],carrySize[i], carryDirection[i],nextTimeDirection),true)))
+						{
+							if (nextPortal[j].getWinner())
+							{
+								winFrame = true;
+								nextTime = 0;
+								break;
+							}
+							Frame* portalTime(
+								nextPortal[j].getRelativeTime() ?
+									getArbitraryFrame(
+										getUniverse(time),
+										getFrameNumber(time) + nextPortal[j].getTimeDestination()) :
+									getArbitraryFrame(
+										getUniverse(time),
+										nextPortal[j].getTimeDestination()));
+							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
+							normalDeparture = false;
+							illegalPortal[i] = nextPortal[j].getIllegalDestination();
+							arrivalBasis = nextPortal[j].getDestinationIndex();
+							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
+							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
+							break;
+						}
+					}
+				}
+			}
 
             if (playerInput.size() - 1 == relativeIndex)
             {
@@ -867,37 +901,78 @@ void guyStep(
                 //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
 
-            nextGuy.push_back(
-                ObjectAndTime<Guy>(
-                    Guy(
-                        relativeIndex + 1,
-                        x[i], y[i],
-                        xspeed[i], yspeed[i],
-                        newWidth, newHeight,
-                        
-                        illegalPortal,
-                        arrivalBasis,
-                        supported[i],
-                        supportedSpeed[i],
+            if (not normalDeparture)
+            {
+            	nextGuy.push_back(
+					ObjectAndTime<Guy>(
+						Guy(
+                            relativeIndex + 1,
+							x[i], y[i],
+							xspeed[i], yspeed[i],
+							newWidth[i], newHeight[i],
 
-                        newPickups,
-                        facing[i],
-                        
-                        carry[i],
-                        carrySize[i],
-                        carryDirection[i],
-                        
-                        nextTimeDirection
-                    ),
-                    nextTime
-                )
-            );
+							illegalPortal[i],
+							arrivalBasis,
+							supported[i],
+							supportedSpeed[i],
+
+							newPickups[i],
+							facing[i],
+
+							carry[i],
+							carrySize[i],
+							carryDirection[i],
+
+							nextTimeDirection
+						),
+						nextTime
+					)
+				);
+            	finishedWith[i] = true;
+            }
         }
         else
         {
             assert(guyArrivalList[i].getIndex() == playerInput.size());
             nextPlayerFrame = true;
+            finishedWith[i] = true;
         }
+
+        // Only normal departures make it this far, time for inter-guy communication (eg guns)
+        // This can now occur because NO POSITION CHANGE IS POSSIBLE PAST THIS POINT
+		for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
+		{
+			if (finishedWith[i])
+			{
+				continue;
+			}
+			nextGuy.push_back(
+				ObjectAndTime<Guy>(
+					Guy(
+						guyArrivalList[i].getIndex() + 1,
+						x[i], y[i],
+						xspeed[i], yspeed[i],
+						newWidth[i], newHeight[i],
+
+						illegalPortal[i],
+						-1,
+						supported[i],
+						supportedSpeed[i],
+
+						newPickups[i],
+						facing[i],
+
+						carry[i],
+						carrySize[i],
+						carryDirection[i],
+
+						 guyArrivalList[i].getTimeDirection()
+					),
+					nextFrame(time, guyArrivalList[i].getTimeDirection())
+				)
+			);
+		}
+
     }
 }
 
@@ -906,6 +981,7 @@ template <
     typename RandomAccessMutatorRange>
 void makeBoxAndTimeWithPortalsAndMutators(
 		mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
+		mt::std::vector<char>::type& nextBoxNormalDeparture,
 		const RandomAccessPortalRange& portals,
 		const RandomAccessMutatorRange& mutators,
 		int x,
@@ -961,9 +1037,11 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		yspeed = newBox->getYspeed();
 		size = newBox->getSize();
 		illegalPortal = newBox->getIllegalPortal();
-		arrivalBasis = newBox->getArrivalBasis();
+		// arrivalBasis is not settable
 		oldTimeDirection = newBox->getTimeDirection();
 	}
+
+	bool normalDeparture = true;
 
 	// fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
@@ -991,10 +1069,13 @@ void makeBoxAndTimeWithPortalsAndMutators(
                 y = y - portals[i].getY() + portals[i].getYdestination();
                 xspeed = xspeed - portals[i].getXspeed();
                 yspeed = yspeed - portals[i].getXspeed();
+                normalDeparture = false;
                 break;
             }
         }
     }
+
+    nextBoxNormalDeparture.push_back(normalDeparture);
 
     // add box
 	nextBox.push_back
@@ -1153,6 +1234,7 @@ void boxCollisionAlogorithm(
     RandomAccessBoxRange const& boxArrivalList,
     mt::std::vector<Box>::type const& additionalBox,
     mt::std::vector<ObjectAndTime<Box> >::type& nextBox,
+    mt::std::vector<char>::type& nextBoxNormalDeparture,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -1734,6 +1816,7 @@ void boxCollisionAlogorithm(
 			{
 				makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
+                    nextBoxNormalDeparture,
                     nextPortal,
                     mutators,
                     x[i],
@@ -1751,6 +1834,7 @@ void boxCollisionAlogorithm(
 				ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 				makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
+                    nextBoxNormalDeparture,
                     nextPortal,
                     mutators,
                     x[i],
@@ -1777,6 +1861,93 @@ bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
 {
     return env.wall.at(x+1, y+1) || env.wall.at(x+w-1, y+1) || env.wall.at(x+1, y+h-1) || env.wall.at(x+w-1, y+h-1);
 }
+
+#if 0
+unsigned int Raytrace(
+		Environment const& env,
+		int sx, int sy, int px, int py, // start and position of target for trace
+		mt::std::vector<ObjectAndTime<Box> >::type box,
+		mt::std::vector<char>::type& nextBoxNormalDeparture,
+		mt::std::vector<int>::type gx, // other guy things
+		mt::std::vector<int>::type gy,
+		mt::std::vector<int>::type gw,
+		mt::std::vector<int>::type gh,
+		mt::std::vector<char>::type shootable,
+		int myIndex) // don't hit myself
+{
+	// starts in a wall all it can hit is a wall
+	if (env.wall.at(sx,sy))
+	{
+		return -1;
+	}
+
+	// shoot to the right if the direction has no length
+	if (sx == px && sy == py)
+	{
+		px = sx + 1;
+	}
+
+	int size = env.wall.segmentSize();
+
+	if (sx < px && sy >= py) // top right, x safe
+	{
+		// find wall distance
+		int tx = sx;
+		int ty = sy;
+		while (true)
+		{
+			int hDis = tx%size + size - sx;
+			int vDis = (ty-1)%size - sy;
+			if (vDis <= hDis * (py - sy)/(px - sx)) // both sides are non-positive
+			{
+				// next grid square on Right
+				tx = tx%size + size;
+				ty = tx * (py - sy)/(px - sx) + sy;
+				if (env.wall.at(tx,ty))
+				{
+					break;
+				}
+			}
+			else
+			{
+				// next grid square on Top
+				ty = (ty-1)%size;
+				tx = ty * (px - sx)/(py - sy) + sx; // it is known (py - sy) != 0
+				if (env.wall.at(tx,ty))
+				{
+					break;
+				}
+			}
+		}
+		int wallDistance = tx - sx;
+
+		// find all the boxes within wallDistance and on line
+		for (std::size_t j(0), jsize(box.size()); j < jsize; ++j)
+		{
+			// only shoot normal departure boxes
+			if (nextBoxNormalDeparture[j])
+			{
+
+			}
+		}
+
+	}
+	else if (sx >= px && sy > py) // top left, y safe
+	{
+
+	}
+	else if (sx > px && sy <= py) // bottom left, x safe
+	{
+
+	}
+	else // (sx <= px && sy < py) // bottom right, y safe
+	{
+		assert(sx <= px && sy < py);
+
+	}
+}
+#endif
+
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)
 {
     return

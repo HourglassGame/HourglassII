@@ -1,7 +1,7 @@
 #include "LuaUtilities.h"
 #include <fstream>
 #include <iostream>
-#include "lualib.h"
+#include "lua/lualib.h"
 
 //TODO everywhere:
 //* fix usage of lua_checkstack
