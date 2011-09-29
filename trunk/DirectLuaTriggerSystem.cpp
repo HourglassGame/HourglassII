@@ -526,7 +526,7 @@ void pushGuy(lua_State* L, Guy const& guy)
         lua_checkstack(L, 2);
         lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
-        lua_rawset(L, -2);
+        lua_rawset(L, -3);
     }
     lua_setfield(L, -2, "pickups");
     
