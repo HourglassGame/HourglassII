@@ -375,6 +375,13 @@ void guyStep(
 				}
 			}
 
+			// chonofrag with walls
+			if (wallAtExclusive(env, x[i], y[i], width, height))
+			{
+				finishedWith[i] = true;
+				continue;
+			}
+
             bool bottom = false;
             bool top = false;
             bool left = false;
@@ -817,6 +824,13 @@ void guyStep(
 								supported[i],supportedSpeed[i], newPickups[i], facing[i],
 								carry[i],carrySize[i], carryDirection[i],nextTimeDirection),false))
 						{
+							if (nextPortal[j].getWinner())
+							{
+								winFrame = true;
+								nextTime = 0;
+								finishedWith[i] = true;
+								break;
+							}
 							Frame* portalTime(
 								nextPortal[j].getRelativeTime() ?
 								getArbitraryFrame(
@@ -841,18 +855,28 @@ void guyStep(
 			// "forced" departures occur before those due to input
 			if (normalDeparture)
 			{
-				if (input.getAbility() == hg::TIME_JUMP /* && ((!pickups[i].empty() && pickups[i][jumpNumber]) || guyArrivalList[i].getPickups()[jumpNumber]) */ )
+				mt::std::map<Ability, int>::type::iterator timeJump(newPickups[i].find(TIME_JUMP));
+				mt::std::map<Ability, int>::type::iterator timeReverse(newPickups[i].find(TIME_REVERSE));
+
+				if (input.getAbility() == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
 				{
-					// decrement pickups
 					nextTime = getArbitraryFrame(getUniverse(time), input.getFrameIdParam(0).getFrameNumber());
 					normalDeparture = false;
+					if (timeJump->second > 0)
+					{
+						newPickups[i][hg::TIME_JUMP] = timeJump->second - 1;
+					}
 				}
-				else if (input.getAbility() == hg::TIME_REVERSE) // etc... from above
+				else if (input.getAbility() == hg::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
 				{
 					normalDeparture = false;
 					nextTimeDirection *= -1;
 					nextTime = nextFrame(time, nextTimeDirection);
 					carryDirection[i] *= -1;
+					if (timeReverse->second > 0)
+					{
+						newPickups[i][hg::TIME_REVERSE] = timeReverse->second - 1;
+					}
 				}
 				else if (input.getUse() == true)
 				{
@@ -873,6 +897,7 @@ void guyStep(
 							{
 								winFrame = true;
 								nextTime = 0;
+								finishedWith[i] = true;
 								break;
 							}
 							Frame* portalTime(
