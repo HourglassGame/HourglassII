@@ -937,43 +937,42 @@ void guyStep(
             nextPlayerFrame = true;
             finishedWith[i] = true;
         }
-
-        // Only normal departures make it this far, time for inter-guy communication (eg guns)
-        // This can now occur because NO POSITION CHANGE IS POSSIBLE PAST THIS POINT
-		for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
-		{
-			if (finishedWith[i])
-			{
-				continue;
-			}
-			nextGuy.push_back(
-				ObjectAndTime<Guy>(
-					Guy(
-						guyArrivalList[i].getIndex() + 1,
-						x[i], y[i],
-						xspeed[i], yspeed[i],
-						newWidth[i], newHeight[i],
-
-						illegalPortal[i],
-						-1,
-						supported[i],
-						supportedSpeed[i],
-
-						newPickups[i],
-						facing[i],
-
-						carry[i],
-						carrySize[i],
-						carryDirection[i],
-
-						 guyArrivalList[i].getTimeDirection()
-					),
-					nextFrame(time, guyArrivalList[i].getTimeDirection())
-				)
-			);
-		}
-
     }
+
+    // Only normal departures make it this far, time for inter-guy communication (eg guns)
+    // This can now occur because NO POSITION CHANGE IS POSSIBLE PAST THIS POINT
+	for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
+	{
+		if (finishedWith[i])
+		{
+			continue;
+		}
+		nextGuy.push_back(
+			ObjectAndTime<Guy>(
+				Guy(
+					guyArrivalList[i].getIndex() + 1,
+					x[i], y[i],
+					xspeed[i], yspeed[i],
+					newWidth[i], newHeight[i],
+
+					illegalPortal[i],
+					-1,
+					supported[i],
+					supportedSpeed[i],
+
+					newPickups[i],
+					facing[i],
+
+					carry[i],
+					carrySize[i],
+					carryDirection[i],
+
+					 guyArrivalList[i].getTimeDirection()
+				),
+				nextFrame(time, guyArrivalList[i].getTimeDirection())
+			)
+		);
+	}
 }
 
 template <
