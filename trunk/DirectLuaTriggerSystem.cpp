@@ -143,8 +143,15 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
     int yspeed(readField<int>(L, "yspeed"));
     int collisionOverlap(readField<int>(L, "collisionOverlap"));
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
-    int destinationIndex(readField<int>(L, "destinationIndex") - 1);
-    assert(destinationIndex >= 0 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
+    
+    int destinationIndex(-1);
+    lua_getfield(L, -1, "destinationIndex");
+    if (!lua_isnil(L, -1)) {
+        destinationIndex = to<int>(L) - 1;
+        assert(destinationIndex >= 0 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
+    }
+    lua_pop(L, 1);
+    
     int xDestination(readField<int>(L, "xDestination"));
     int yDestination(readField<int>(L, "yDestination"));
     bool relativeTime(readField<bool>(L, "relativeTime"));
@@ -317,7 +324,7 @@ PhysicsAffectingStuff
             yspeed = <number>,
             collisionOverlap = <number in range [0, 100]>,
             timeDirection = <'forwards' or 'backwards'>,
-            destinationIndex = <number between 1 and arrivalLocationsSize inclusive>,
+            destinationIndex = <number between 1 and arrivalLocationsSize inclusive or nil>,
             xDestination = <number>,
             yDestination = <number>,
             relativeTime = <boolean>,
