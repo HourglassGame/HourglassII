@@ -355,7 +355,8 @@ void DrawBoxes(
 {
     foreach(Box const& box, boxList) {
         //see below (in DrawGuys)
-        //if (box.getArrivalBasis() == -1) {
+        if (box.getArrivalBasis() == -1)
+        {
             if (playerDirection == box.getTimeDirection()) {
                 target.Draw(
                     Shape::Rectangle(
@@ -376,7 +377,7 @@ void DrawBoxes(
                         static_cast<float>((y + box.getSize())/100),
                         Colour(0,255,0)));
             }
-      //  }
+        }
     }
 }
 
@@ -395,7 +396,7 @@ void DrawGuys(
 {
     foreach(Guy const& guy, guyList) {
         //Doesn't seem necessary -- could you give an example where strange stuff happens? Did this get fixed by flicker fix?
-        //if (guy.getArrivalBasis() == -1) // if it is drawn when going through portal it may be somewhere strange, use same workaround as end of pause time flicker
+        if (guy.getArrivalBasis() == -1)
         {
             
             PositionAndColour const pnc(
@@ -439,7 +440,8 @@ void DrawGuys(
                         static_cast<float>(vmid/100),
                         Colour(50,50,50)));
             
-            if (guy.getBoxCarrying()) {
+            if (guy.getBoxCarrying())
+            {
                 target.Draw(
                     Shape::Rectangle(
                         static_cast<float>((hmid - guy.getBoxCarrySize()/2)/100),
