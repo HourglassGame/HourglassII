@@ -26,7 +26,7 @@ Input::Input() :
         right(false),
         up(false),
         down(0),
-        space(false),
+        space(0),
         mouseLeft(0),
         mouseRight(false),
         mouseX(0),
@@ -40,7 +40,7 @@ void Input::updateState(const sf::Input& input)
     right = input.IsKeyDown(sf::Key::Right);
     up = input.IsKeyDown(sf::Key::Up);
     updatePress(down, input.IsKeyDown(sf::Key::Down));
-    space = input.IsKeyDown(sf::Key::Space);
+    updatePress(space, input.IsKeyDown(sf::Key::Space));
     updatePress(mouseLeft, input.IsMouseButtonDown(sf::Mouse::Left));
     updatePress(mouseRight, input.IsMouseButtonDown(sf::Mouse::Right));
     mouseX = input.GetMouseX()*100;
@@ -51,15 +51,15 @@ const InputList Input::AsInputList() const
 {
     if (mouseLeft == 1)
     {
-        return InputList(left, right, up, (down == 1) , space, hg::TIME_JUMP, FrameID(mouseX*10800/64000, UniverseID(10800)), 1);
+        return InputList(left, right, up, (down == 1) , (space == 1), hg::TIME_JUMP, FrameID(mouseX*10800/64000, UniverseID(10800)), 1);
     }
 
     if (mouseRight == 1)
     {
-        return InputList(left, right, up, (down == 1), space, hg::TIME_REVERSE, FrameID(), 0);
+        return InputList(left, right, up, (down == 1), (space == 1), hg::TIME_REVERSE, FrameID(), 0);
     }
 
-    return InputList(left, right, up, (down == 1), space, hg::NO_ABILITY, FrameID(), 0);
+    return InputList(left, right, up, (down == 1), (space == 1), hg::NO_ABILITY, FrameID(), 0);
 }
 }
 
