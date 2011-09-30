@@ -16,7 +16,7 @@ private:
     bool right;
     bool up;
     int down;
-    bool space;
+    int space;
     int mouseLeft;
     int mouseRight;
     int mouseX;
