@@ -22,6 +22,7 @@ TimeEngine::TimeEngine(Level const& level) :
 void TimeEngine::swap(TimeEngine& other) {
     boost::swap(speedOfTime_, other.speedOfTime_);
     boost::swap(worldState_, other.worldState_);
+    boost::swap(wall_, other.wall_);
 }
 
 TimeEngine::RunResult
