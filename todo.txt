@@ -1,0 +1,38 @@
+*** Unimplemented features/things to think about doing ***
+
+Remove Portals, replace with Mutators. Requirements:
+ * Pass player input when a guy collides with portal.
+ * Make mutator return ObjectAndTime.
+ * Note: No need to pass object and time as mutators happen before any other time travel.
+ * Remember to maintain the distinction between interactable boxes/guys and ones that 'left'.
+ * * Left if any of timeDirection, nextTime or arrival basis is not equal to the premutaed value
+ 
+Add lua-only data to Guys and Boxes.
+ * Think about type; Vector? Map? Map of vectors?
+ 
+Think about removing illegal portal? With the above 2 things implemented it is possible.
+
+Replace most frontend drawing with Glitz:
+ * Glitz created in C++ physics
+ * Passed to guy and box steps. Glitz added in there.
+ * Merged with trigger system Glitz?
+ * Current Guy is still used for drawing (time direction, inventory...)
+ 
+Add persistent Glitz?
+ * A new data type that creates appropriate Glitz
+ * Propagates through physics for an appropriate amount of time
+ * For persistent effects such as lasers or explosions
+ * Allow trigger system to create it? (this is for lazy "now I want explosion gfx")
+ 
+Time Guns
+ * Physics: Finish raytrace algo
+ * Requires persistent Glitz and line Glitz to visualise.
+ 
+Think about pause time
+ * A Guy that departs to it's current frame
+ * This seems to replicate the old pause time specs.
+ * Guy could shoot other guys, even into pause time.
+ * Works as long as nothing can interact with guy.
+ * Does not work for boxes as they'd chronofrag themselves, would work if they could go ethereal for pause.
+ * These pause times would be limited to a single agent. No 'alternate time stream' with 2 entities.
+ * Aka reverse or forwards time in pause time means nothing.
