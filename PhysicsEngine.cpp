@@ -828,7 +828,7 @@ void guyStep(
 							{
 								winFrame = true;
 								nextTime = 0;
-								finishedWith[i] = true;
+								normalDeparture = false;
 								break;
 							}
 							Frame* portalTime(
@@ -897,7 +897,7 @@ void guyStep(
 							{
 								winFrame = true;
 								nextTime = 0;
-								finishedWith[i] = true;
+								normalDeparture = false;
 								break;
 							}
 							Frame* portalTime(
