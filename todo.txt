@@ -5,7 +5,7 @@ Remove Portals, replace with Mutators. Requirements:
  * Make mutator return ObjectAndTime.
  * Note: No need to pass object and time as mutators happen before any other time travel.
  * Remember to maintain the distinction between interactable boxes/guys and ones that 'left'.
- * * Left if any of timeDirection, nextTime or arrival basis is not equal to the premutaed value
+   * Left if any of timeDirection, nextTime or arrival basis is not equal to the premutaed value
  
 Add lua-only data to Guys and Boxes.
  * Think about type; Vector? Map? Map of vectors?
@@ -42,4 +42,15 @@ Think about pause time
 Let currentPlayerFrame not have a player departure.
  * Add currentPlayerDirection
  * Remove current workarounds
- * * Mutator death and win portal should set currentPlayer stuff
+   * Mutator death and win portal should not stop currentPlayer setting
+
+Improve Input
+ * Send frame of relevant input with mutateObject on Guys
+ * Pass input in more raw form. Mouse position etc...
+ * Enum for key holding, 4 states:
+   * OFF (not held at all)
+   * PRESS (was off last time, now on)
+   * ON (is held down)
+   * RELEASE (was on last frame, now off)
+ * Remove hardcoded portal/mutator actioned.
+   
