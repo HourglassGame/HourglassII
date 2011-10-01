@@ -18,6 +18,8 @@ Replace most frontend drawing with Glitz:
  * Merged with trigger system Glitz?
  * Current Guy is still used for drawing (time direction, inventory...)
  
+Give lua ability to return foreground and background Glitz (before or after physics)
+ 
 Add persistent Glitz?
  * A new data type that creates appropriate Glitz
  * Propagates through physics for an appropriate amount of time
@@ -36,3 +38,8 @@ Think about pause time
  * Does not work for boxes as they'd chronofrag themselves, would work if they could go ethereal for pause.
  * These pause times would be limited to a single agent. No 'alternate time stream' with 2 entities.
  * Aka reverse or forwards time in pause time means nothing.
+ 
+Let currentPlayerFrame not have a player departure.
+ * Add currentPlayerDirection
+ * Remove current workarounds
+ * * Mutator death and win portal should set currentPlayer stuff
