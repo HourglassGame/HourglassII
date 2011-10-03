@@ -46,6 +46,11 @@ public:
     Universe& getUniverse() {
         return universe_;
     }
+    
+    Universe const& getUniverse() const {
+        return universe_;
+    }
+    
 private:
     Universe universe_;
     std::map<Frame*, ObjectList<Normal> > permanentDepartures_;

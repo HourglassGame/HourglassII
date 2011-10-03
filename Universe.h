@@ -18,13 +18,13 @@ public:
     //whichFrame must correspond to a frame that could actually 
     //be in the universe.
     Frame* getFrame(const FrameID& whichFrame);
+    
 private:
     friend class Frame;
     friend class UniverseID;
     void fixFramesUniverses();
-    //private to enforce use of non-member variants
-    //(this is not as important for Universe as for Frame*, but anyway)
-    //<UniverseT interface>
+    
+        //<UniverseT interface>
     //Returns the first frame in the universe for objects travelling
     //in TimeDirection direction.
     Frame* getEntryFrame(TimeDirection direction);
@@ -43,8 +43,7 @@ private:
     //Returns the frame with the index frameNumber within the universe, 
     //or the NullFrame if no such frame exists
     Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
-    //returns the length of this Universe's timeline
-    std::size_t getTimelineLength(Universe const& universe);
+    
     friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
     friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(Universe const& universe);
@@ -55,6 +54,9 @@ private:
     Universe(Universe const& other);
     Universe& operator=(Universe const& other);
 };
+Frame* getEntryFrame(Universe& universe, TimeDirection direction);
+Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
+std::size_t getTimelineLength(Universe const& universe);
 inline void swap(Universe& l, Universe& r) { l.swap(r); }
 }
 #endif //HG_UNIVERSE_H

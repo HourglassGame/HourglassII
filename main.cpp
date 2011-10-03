@@ -61,7 +61,7 @@ namespace {
         mt::std::vector<RectangleGlitz>::type const& glitz,
         Wall const& wall,
         TimeDirection playerDirection);
-    void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame);
+    void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame, std::size_t timelineLength);
     void DrawWall(RenderTarget& target, Wall const& wallData);
     void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection);
     template<typename RandomAccessBoxRange>
@@ -91,6 +91,7 @@ int main(int argc, char const* const argv[])
     
     TimeEngine timeEngine(loadLevelFromFile("level.lua"));
     hg::Input input;
+    input.setTimelineLength(timeEngine.getTimelineLength());
     hg::Inertia inertia;
     std::vector<InputList> replay;
     std::vector<InputList>::const_iterator currentReplayIt(replay.begin());
@@ -126,6 +127,7 @@ int main(int argc, char const* const argv[])
                     replayLogOut.close();
                     replayLogOut.open("replayLogOut");
                     TimeEngine(loadLevelFromFile("level.lua")).swap(timeEngine);
+                    input.setTimelineLength(timeEngine.getTimelineLength());
                     break;
                 case sf::Key::L:
                     loadReplay().swap(replay);
@@ -134,6 +136,7 @@ int main(int argc, char const* const argv[])
                     replayLogOut.close();
                     replayLogOut.open("replayLogOut");
                     TimeEngine(loadLevelFromFile("level.lua")).swap(timeEngine);
+                    input.setTimelineLength(timeEngine.getTimelineLength());
                     break;
                 case sf::Key::P:
                     currentReplayIt = replay.end();
@@ -166,7 +169,7 @@ int main(int argc, char const* const argv[])
                 app.Draw(replayGlyph);
             }
             else {
-                input.updateState(app.GetInput());
+                input.updateState(app.GetInput(), app.GetWidth());
                 saveReplayLog(replayLogOut, input.AsInputList());
                 runStep(timeEngine, app, inertia, input.AsInputList());
             }
@@ -193,86 +196,86 @@ void initialseCurrentPath(int argc, char const* const argv[])
 
 void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input)
 {
-        std::vector<std::size_t> framesExecutedList;
-        FrameID drawnFrame;
-        TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input));
+    std::vector<std::size_t> framesExecutedList;
+    FrameID drawnFrame;
+    TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input));
 
-        framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
-        foreach (
-            FrameUpdateSet const& updateSet,
-            waveInfo.updatedFrames())
-        {
-            framesExecutedList.push_back(boost::distance(updateSet));
-        }
-        
-        if (waveInfo.currentPlayerFrame()) {
-            ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
-            TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
-            inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
-            drawnFrame = FrameID(waveInfo.currentPlayerFrame());
-            Draw(
-                app,
-                frameData,
-                waveInfo.currentPlayerFrame()->getGlitzFromHere(),
-                timeEngine.getWall(),
-                currentGuyDirection);
+    framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
+    foreach (
+        FrameUpdateSet const& updateSet,
+        waveInfo.updatedFrames())
+    {
+        framesExecutedList.push_back(boost::distance(updateSet));
+    }
+    
+    if (waveInfo.currentPlayerFrame()) {
+        ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
+        TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
+        inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
+        drawnFrame = FrameID(waveInfo.currentPlayerFrame());
+        Draw(
+            app,
+            frameData,
+            waveInfo.currentPlayerFrame()->getGlitzFromHere(),
+            timeEngine.getWall(),
+            currentGuyDirection);
+    }
+    else {
+        inertia.run();
+        FrameID const inertialFrame(inertia.getFrame());
+        if (inertialFrame.isValidFrame()) {
+            drawnFrame = inertialFrame;
+            Frame* frame(timeEngine.getFrame(inertialFrame));
+            Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), inertia.getTimeDirection());
         }
         else {
-            inertia.run();
-            FrameID const inertialFrame(inertia.getFrame());
-            if (inertialFrame.isValidFrame()) {
-                drawnFrame = inertialFrame;
-                Frame* frame(timeEngine.getFrame(inertialFrame));
-                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), inertia.getTimeDirection());
+            drawnFrame = FrameID(abs(static_cast<int>((app.GetInput().GetMouseX()*static_cast<long>(timeEngine.getTimelineLength())/app.GetWidth()) % static_cast<long>(timeEngine.getTimelineLength()))), UniverseID(timeEngine.getTimelineLength()));
+            Frame* frame(timeEngine.getFrame(drawnFrame));
+            Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), FORWARDS);
+        }
+    }
+    DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame, timeEngine.getTimelineLength());
+    {
+        stringstream currentPlayerIndex;
+        currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
+        sf::String currentPlayerGlyph(currentPlayerIndex.str());
+        currentPlayerGlyph.SetPosition(580, 433);
+        currentPlayerGlyph.SetSize(10.f);
+        app.Draw(currentPlayerGlyph);
+    }
+    {
+        stringstream frameNumberString;
+        frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
+        sf::String frameNumberGlyph(frameNumberString.str());
+        frameNumberGlyph.SetPosition(580, 445);
+        frameNumberGlyph.SetSize(8.f);
+        app.Draw(frameNumberGlyph);
+    }
+    {
+        stringstream numberOfFramesExecutedString;
+        if (!boost::empty(framesExecutedList)) {
+            numberOfFramesExecutedString << *boost::begin(framesExecutedList);
+            foreach (
+                std::size_t num,
+                framesExecutedList 
+                | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
+            {
+                numberOfFramesExecutedString << ":" << num;
             }
-            else {
-                drawnFrame = FrameID(abs((app.GetInput().GetMouseX()*10800/640)%10800),UniverseID(10800));
-                Frame* frame(timeEngine.getFrame(drawnFrame));
-                Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), FORWARDS);
-            }
         }
-        DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame);
-        {
-            stringstream currentPlayerIndex;
-            currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
-            sf::String currentPlayerGlyph(currentPlayerIndex.str());
-            currentPlayerGlyph.SetPosition(580, 433);
-            currentPlayerGlyph.SetSize(10.f);
-            app.Draw(currentPlayerGlyph);
-        }
-        {
-            stringstream frameNumberString;
-            frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
-            sf::String frameNumberGlyph(frameNumberString.str());
-            frameNumberGlyph.SetPosition(580, 445);
-            frameNumberGlyph.SetSize(8.f);
-            app.Draw(frameNumberGlyph);
-        }
-        {
-            stringstream numberOfFramesExecutedString;
-            if (!boost::empty(framesExecutedList)) {
-                numberOfFramesExecutedString << *boost::begin(framesExecutedList);
-                foreach (
-                    std::size_t num,
-                    framesExecutedList 
-                    | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
-                {
-                    numberOfFramesExecutedString << ":" << num;
-                }
-            }
-            sf::String numberOfFramesExecutedGlyph(numberOfFramesExecutedString.str());
-            numberOfFramesExecutedGlyph.SetPosition(580, 455);
-            numberOfFramesExecutedGlyph.SetSize(8.f);
-            app.Draw(numberOfFramesExecutedGlyph);
-        }
-        {
-            stringstream fpsstring;
-            fpsstring << (1./app.GetFrameTime());
-            sf::String fpsglyph(fpsstring.str());
-            fpsglyph.SetPosition(600, 465);
-            fpsglyph.SetSize(8.f);
-            app.Draw(fpsglyph);
-        }
+        sf::String numberOfFramesExecutedGlyph(numberOfFramesExecutedString.str());
+        numberOfFramesExecutedGlyph.SetPosition(580, 455);
+        numberOfFramesExecutedGlyph.SetSize(8.f);
+        app.Draw(numberOfFramesExecutedGlyph);
+    }
+    {
+        stringstream fpsstring;
+        fpsstring << (1./app.GetFrameTime());
+        sf::String fpsglyph(fpsstring.str());
+        fpsglyph.SetPosition(600, 465);
+        fpsglyph.SetSize(8.f);
+        app.Draw(fpsglyph);
+    }
 }
 
 void Draw(
@@ -459,21 +462,22 @@ void DrawGuys(
 void DrawTimeline(
     RenderTarget& target,
     TimeEngine::FrameListList const& waves,
-    FrameID const playerFrame)
+    FrameID const playerFrame,
+    std::size_t timelineLength)
 {
-    bool pixelsWhichHaveBeenDrawnIn[640] = {};
+    std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
     foreach(FrameUpdateSet const& lists, waves) {
         foreach (Frame* frame, lists) {
             if (frame) {
-                pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>(getFrameNumber(frame)/10800.*640)] = true;
+                pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>((static_cast<double>(getFrameNumber(frame))/timelineLength)*target.GetView().GetRect().GetWidth())] = true;
             }
             else {
                 assert(false && "I don't think that invalid frames can get updated");
             }
         }
         bool inWaveRegion = false;
-        int leftOfWaveRegion = 0;
-        for (int i = 0; i != sizeof(pixelsWhichHaveBeenDrawnIn) / sizeof(bool); ++i) {
+        std::size_t leftOfWaveRegion = 0;
+        for (std::size_t i = 0; i != pixelsWhichHaveBeenDrawnIn.size(); ++i) {
             bool pixelOn = pixelsWhichHaveBeenDrawnIn[i];
             if (pixelOn) {
                 if (!inWaveRegion) {
@@ -500,7 +504,7 @@ void DrawTimeline(
                 Shape::Rectangle(
                     static_cast<float>(leftOfWaveRegion),
                     10.f,
-                    static_cast<float>(640),
+                    static_cast<float>(target.GetView().GetRect().GetWidth()),
                     25.f,
                     Colour(250,0,0)));
         }
@@ -508,9 +512,9 @@ void DrawTimeline(
     if (playerFrame.isValidFrame()) {
         target.Draw(
             Shape::Rectangle(
-                static_cast<float>(static_cast<int>(playerFrame.getFrameNumber()/10800.*640-1)),
+                static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()-1)),
                 10.f,
-                static_cast<float>(static_cast<int>(playerFrame.getFrameNumber()/10800.*640+2)),
+                static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()+2)),
                 25.f,
                 Colour(200,200,0)));
     }
