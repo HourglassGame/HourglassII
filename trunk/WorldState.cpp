@@ -7,6 +7,8 @@
 
 #include <boost/foreach.hpp>
 
+#include "Universe.h"
+
 #define foreach BOOST_FOREACH
 
 namespace hg {
@@ -62,12 +64,12 @@ WorldState::WorldState(
 
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }
-    frameUpdateSet_.add(getEntryFrame(timeline_.getUniverse(), FORWARDS));
-    frameUpdateSet_.add(getEntryFrame(timeline_.getUniverse(), REVERSE));
-    //Guys without input can still affect stuff, and so must be run
-    frameUpdateSet_.add(guyStartFrame);
+    //triggerSystem can create departures, so every frame must be initially run:
+    for (std::size_t i(0); i != timelineLength; ++i) {
+        frameUpdateSet_.add(getArbitraryFrame(timeline_.getUniverse(), i));
+    }
     //** run level for a while
-    for (std::size_t i(0); i < timelineLength; ++i) {
+    for (std::size_t i(0); i != timelineLength; ++i) {
         executeWorld();
     }
 }
@@ -86,6 +88,11 @@ void WorldState::swap(WorldState& other)
 Frame* WorldState::getFrame(const FrameID& whichFrame)
 {
     return timeline_.getFrame(whichFrame);
+}
+
+std::size_t WorldState::getTimelineLength() const
+{
+    return hg::getTimelineLength(timeline_.getUniverse());
 }
 
 PhysicsEngine::FrameDepartureT

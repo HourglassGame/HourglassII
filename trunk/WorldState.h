@@ -56,6 +56,8 @@ public:
     std::vector<InputList> const& getReplayData() const { return playerInput_; }
 
     Frame* getFrame(FrameID const& whichFrame);
+    
+    std::size_t getTimelineLength() const;
 private:
     friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT

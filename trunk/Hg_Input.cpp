@@ -30,11 +30,12 @@ Input::Input() :
         mouseLeft(0),
         mouseRight(false),
         mouseX(0),
-        mouseY(0)
+        mouseY(0),
+        timelineLength(0)
 {
 }
 
-void Input::updateState(const sf::Input& input)
+void Input::updateState(const sf::Input& input, int mouseXOfEndOfTimeline)
 {
     left = input.IsKeyDown(sf::Key::Left);
     right = input.IsKeyDown(sf::Key::Right);
@@ -45,13 +46,14 @@ void Input::updateState(const sf::Input& input)
     updatePress(mouseRight, input.IsMouseButtonDown(sf::Mouse::Right));
     mouseX = input.GetMouseX()*100;
     mouseY = input.GetMouseY()*100;
+    mouseTimelinePosition = input.GetMouseX() * timelineLength / static_cast<double>(mouseXOfEndOfTimeline);
 }
 
-const InputList Input::AsInputList() const
+InputList Input::AsInputList() const
 {
     if (mouseLeft == 1)
     {
-        return InputList(left, right, up, (down == 1) , (space == 1), hg::TIME_JUMP, FrameID(mouseX*10800/64000, UniverseID(10800)), 1);
+        return InputList(left, right, up, (down == 1) , (space == 1), hg::TIME_JUMP, FrameID(mouseTimelinePosition, UniverseID(timelineLength)), 1);
     }
 
     if (mouseRight == 1)
