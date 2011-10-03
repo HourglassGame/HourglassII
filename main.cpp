@@ -295,18 +295,18 @@ void DrawWall(
     sf::RenderTarget& target,
     Wall const& wall)
 {
-    target.Clear(Colour(255,255,255));
+    target.Clear(Colour(0,0,0));
     
     for (int i(0), iend(wall.roomWidth()); i != iend; i += wall.segmentSize()) {
         for (int j(0), jend(wall.roomHeight()); j != jend; j += wall.segmentSize()) {
-            if (wall.at(i, j)) {
+            if (!wall.at(i, j)) {
               target.Draw(
                 sf::Shape::Rectangle(
                   i/100.f,
                   j/100.f,
                   (i + wall.segmentSize())/100.f,
                   (j + wall.segmentSize())/100.f,
-                  Colour()));
+                  Colour(255,255,255)));
             }
         }
     }
