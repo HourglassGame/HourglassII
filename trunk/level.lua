@@ -65,7 +65,7 @@ return
             yspeed = 0,
             width = 1600,
             height = 3200,
-            pickups = {},
+            pickups = {timeJump = -1, timeReverse = -1},
             facing = false,
             boxCarrying = false,
             --these two fields are only needed
