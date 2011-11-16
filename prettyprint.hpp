@@ -204,15 +204,25 @@ namespace pretty_print
             if (delimiters_type::values.prefix != NULL)
                 stream << delimiters_type::values.prefix;
 
-            if (std::begin(_container) != std::end(_container))
-            for (TIter it = std::begin(_container), end = std::end(_container); ; )
             {
-                stream << *it;
+                using std::begin;
+                using std::end;
 
-                if (++it == end) break;
+                TIter it = begin(_container);
+                const TIter the_end = end(_container);
 
-                if (delimiters_type::values.delimiter != NULL)
-                    stream << delimiters_type::values.delimiter;
+                if (it != the_end)
+                {
+                    for ( ; ; )
+                    {
+                        stream << *it;
+
+                    if (++it == the_end) break;
+
+                    if (delimiters_type::values.delimiter != NULL)
+                        stream << delimiters_type::values.delimiter;
+                    }
+                }
             }
 
             if (delimiters_type::values.postfix != NULL)
@@ -413,6 +423,42 @@ template<typename T>
 inline pretty_print::array_wrapper_n<T> pretty_print_array(const T * const a, size_t n)
 {
   return pretty_print::array_wrapper_n<T>(a, n);
+}
+
+
+// A wrapper for hash-table based containers that offer local iterators to each bucket.
+// Usage: std::cout << bucket_print(m, 4) << std::endl;  (Prints bucket 5 of container m.)
+
+namespace pretty_print
+{
+    template <typename T>
+    struct bucket_print_wrapper
+    {
+        typedef typename T::const_local_iterator const_iterator;
+        typedef typename T::size_type size_type;
+
+        const_iterator begin() const
+        {
+            return m_map.cbegin(n);
+        }
+
+        const_iterator end() const
+        {
+            return m_map.cend(n);
+        }
+
+        bucket_print_wrapper(const T & m, size_type bucket) : m_map(m), n(bucket) { }
+
+    private:
+        const T & m_map;
+        const size_type n;
+    };
+} // namespace pretty_print
+
+template <typename T> pretty_print::bucket_print_wrapper<T>
+bucket_print(const T & m, typename T::size_type n)
+{
+    return pretty_print::bucket_print_wrapper<T>(m, n);
 }
 
 
