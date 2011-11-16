@@ -1,2 +1,0 @@
-include configuration.jam ;
-boost-build $(boost_build_location) ;
