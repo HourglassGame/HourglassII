@@ -23,37 +23,35 @@ def upload(revision):
         + ["evanwallace,hourglassii@frs.sourceforge.net"
            +":/home/frs/project/h/ho/hourglassii/Release/OSX/"])
 
-#Attempts to update to specified repository revision
-#(or to the HEAD revision, if None is specified)
-#Returns the actual revision that was updated to.
-def svn_up(revision=None):
+#Attempts to update to HEAD
+def svn_up():
     print("Updating...")
-    output = subprocess.check_output(
-        ["svn"] + ["up"])
-    print(output)
-    #Sad hack to get latest revision number.
-    #Should fix.
-    #return int(re.search(r"At revision ([0-9]*)\.", str(output)).group(1))
-
+    output = subprocess.check_output(["svn"] + ["up"])
+    print("Updated to revision",
+      re.search(r"At revision ([0-9]*)\.", str(output)).group(1))
 
 #returns the current revision of the working copy
 def svnversion():
- return int(subprocess.check_output(["svnversion"]))
+    return int(
+      re.search(
+        r"Last Changed Rev: ([0-9]*)",
+        str(subprocess.check_output(["svn", "info"]))).group(1))
 
 current_revision = svnversion()
 while True:
     try:
         svn_up()
-        if svnversion() > current_revision:
-            current_revision = svnversion()
-            print("Building revision ", current_revision, " ...")
+        revision = svnversion()
+        if revision > current_revision:
+            current_revision = revision
+            print("Building revision", current_revision, "...")
             build()
             print("Finished building, uploading...")
             upload(current_revision)
             shutil.rmtree("build")
-            print("Finished uploading revision ", current_revision)
+            print("Finished uploading.")
         else:
-            print("Going to sleep")
+            print("Going to sleep.")
             time.sleep(60)
     except (KeyboardInterrupt, SystemExit):
         raise
