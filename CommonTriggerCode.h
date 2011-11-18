@@ -3,10 +3,10 @@
 #include "mt/std/vector"
 #include "TriggerData.h"
 #include "ObjectPtrList.h"
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 #include "Frame.h"
 #include "Universe.h"
-#define foreach BOOST_FOREACH
+
 namespace hg {
 typedef boost::transformed_range<
             GetBase<TriggerDataConstPtr>,

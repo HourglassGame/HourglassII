@@ -8,7 +8,7 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 #include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -17,7 +17,7 @@
 
 #include <cassert>
 
-#define foreach BOOST_FOREACH
+
 
 namespace hg {
 enum {

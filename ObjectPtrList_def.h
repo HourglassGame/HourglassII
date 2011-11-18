@@ -10,9 +10,9 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 #include <functional>
-#define foreach BOOST_FOREACH
+
 namespace hg {
 template<typename ListType>
 ObjectPtrList<ListType>::ObjectPtrList() :

@@ -5,11 +5,11 @@
 #include "ParallelForEach.h"
 #include "Frame.h"
 
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 
 #include "Universe.h"
 
-#define foreach BOOST_FOREACH
+
 
 namespace hg {
 
