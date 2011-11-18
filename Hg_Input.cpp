@@ -46,7 +46,7 @@ void Input::updateState(const sf::Input& input, int mouseXOfEndOfTimeline)
     updatePress(mouseRight, input.IsMouseButtonDown(sf::Mouse::Right));
     mouseX = input.GetMouseX()*100;
     mouseY = input.GetMouseY()*100;
-    mouseTimelinePosition = input.GetMouseX() * timelineLength / static_cast<double>(mouseXOfEndOfTimeline);
+    mouseTimelinePosition = static_cast<int>(input.GetMouseX() * timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
 }
 
 InputList Input::AsInputList() const
