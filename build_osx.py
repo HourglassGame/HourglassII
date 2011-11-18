@@ -149,8 +149,8 @@ def create_bundle(
     #delete lipo'd exe
     os.remove(universal_exe)
 
-def create_redistributable(bundle_path):
-    subprocess.call(["hdiutil", "create", "-srcfolder", bundle_path, "build/HourglassII.dmg"])
+def create_redistributable():
+    subprocess.call(["hdiutil", "create", "-srcfolder", "build/HourglassII.app", "build/HourglassII.dmg"])
 
 
 
@@ -205,32 +205,37 @@ dlls = [tbb_dll, tbb_malloc_dll]
 
 files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
 
-def iota():
-    num = 0
-    while True:
-        yield num
-        num += 1
 
-filenamegenerator = ("build/intermediate/" + str(num) for num in iota())
+def main():
+    def iota():
+        num = 0
+        while True:
+            yield num
+            num += 1
 
-if os.path.exists("build"):
-    shutil.rmtree("build")
-os.mkdir("build")
-os.mkdir("build/intermediate")
+    filenamegenerator = ("build/intermediate/" + str(num) for num in iota())
 
-#build bundle
-create_bundle(
-    filenamegenerator,
-    compilers,
-    archs,
-    files_to_compile,
-    defines,
-    includes,
-    library_directories,
-    libraries,
-    dlls)
+    if os.path.exists("build"):
+        shutil.rmtree("build")
+    os.mkdir("build")
+    os.mkdir("build/intermediate")
 
-#build release package
-subprocess.call(["hdiutil", "create", "-srcfolder", "build/HourglassII.app", "build/HourglassII.dmg"])
+    #build bundle
+    create_bundle(
+        filenamegenerator,
+        compilers,
+        archs,
+        files_to_compile,
+        defines,
+        includes,
+        library_directories,
+        libraries,
+        dlls)
 
-shutil.rmtree("build/intermediate")
+    #build release package
+    create_redistributable()
+
+    shutil.rmtree("build/intermediate")
+
+if __name__ == "__main__":
+    main()
