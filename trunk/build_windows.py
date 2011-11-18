@@ -125,6 +125,7 @@ libstd_cxx_dll = "C:/MinGW/bin/libstdc++-6.dll"
 
 compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
+seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
 defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI"]
 
@@ -170,3 +171,7 @@ create_bundle(
     dlls)
 
 shutil.rmtree("build/intermediate")
+
+#build release package
+os.chdir("build")
+subprocess.call([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
