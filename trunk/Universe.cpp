@@ -4,12 +4,12 @@
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 #include <boost/swap.hpp>
 
 #include <functional>
 #include <cassert>
-#define foreach BOOST_FOREACH
+
 namespace hg {
 //Updates the universe_ pointers in frames_
 void Universe::fixFramesUniverses()

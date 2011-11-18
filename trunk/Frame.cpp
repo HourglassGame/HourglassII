@@ -2,7 +2,7 @@
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
 #include "Universe.h"
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -10,7 +10,7 @@
 #include <functional>
 #include <utility>
 #include <cassert>
-#define foreach BOOST_FOREACH
+
 namespace hg {
 Frame::Frame(std::size_t frameNumber, Universe& universe):
         frameNumber_(frameNumber),

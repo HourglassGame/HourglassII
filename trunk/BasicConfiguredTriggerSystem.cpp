@@ -12,8 +12,8 @@
 #include "Universe.h"
 #include "CommonTriggerCode.h"
 
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
+#include "Foreach.h"
+
 namespace hg {
 namespace {
 struct GetTriggerValue : 

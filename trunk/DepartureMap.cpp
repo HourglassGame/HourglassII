@@ -1,8 +1,8 @@
 #include "DepartureMap.h"
 #include "FrameUpdateSet.h"
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 
-#define foreach BOOST_FOREACH
+
 namespace hg {
 DepartureMap::DepartureMap() :
         map_()

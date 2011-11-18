@@ -16,7 +16,7 @@
 
 #include <boost/multi_array.hpp>
 #include <boost/assign.hpp>
-#include <boost/foreach.hpp>
+#include "Foreach.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -47,7 +47,7 @@
 #include "LevelLoader.h"
 
 typedef sf::Color Colour;
-#define foreach BOOST_FOREACH
+
 using namespace hg;
 using namespace std;
 using namespace sf;
