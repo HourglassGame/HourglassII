@@ -131,8 +131,6 @@ def create_bundle(
         +["-framework", "OpenGL"])
 
     #build app bundle
-    if os.path.exists("build/HourglassII.app"):
-        shutil.rmtree("build/HourglassII.app")
     os.mkdir("build/HourglassII.app")
     os.mkdir("build/HourglassII.app/Contents")
     os.mkdir("build/HourglassII.app/Contents/MacOS")
