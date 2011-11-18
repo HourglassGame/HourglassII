@@ -27,19 +27,25 @@ def upload(revision):
 #(or to the HEAD revision, if None is specified)
 #Returns the actual revision that was updated to.
 def svn_up(revision=None):
+    print("Updating...")
     output = subprocess.check_output(
-        ["svn"] + ["up"]
-        + ((["-r"] + [str(revision)]) if revision else []))
+        ["svn"] + ["up"])
+    print(output)
     #Sad hack to get latest revision number.
     #Should fix.
-    return int(re.search(r"At revision ([0-9]*)\.", str(output)).group(1))
+    #return int(re.search(r"At revision ([0-9]*)\.", str(output)).group(1))
 
-current_revision = svn_up()
+
+#returns the current revision of the working copy
+def svnversion():
+ return int(subprocess.check_output(["svnversion"]))
+
+current_revision = svnversion()
 while True:
     try:
-        revision = svn_up(current_revision)
-        if revision > current_revision:
-            current_revision = revision
+        svn_up()
+        if svnversion() > current_revision:
+            current_revision = svnversion()
             print("Building revision ", current_revision, " ...")
             build()
             print("Finished building, uploading...")
