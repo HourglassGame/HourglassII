@@ -139,8 +139,8 @@ def create_bundle(
     os.mkdir("build/HourglassII.app/Contents/Resources")
     os.mkdir("build/HourglassII.app/Contents/Frameworks")
     shutil.copy(universal_exe, "build/HourglassII.app/Contents/MacOS/HourglassII")
-    shutil.copy(tbb_dll, "build/HourglassII.app/Contents/Frameworks/libtbb.dylib")
-    shutil.copy(tbb_malloc_dll, "build/HourglassII.app/Contents/Frameworks/libtbbmalloc.dylib")
+    for dll in dlls:
+        shutil.copy(dll, "build/HourglassII.app/Contents/Frameworks/")
     shutil.copy("osx/Info.plist", "build/HourglassII.app/Contents/Info.plist")
     shutil.copy("osx/PkgInfo", "build/HourglassII.app/Contents/PkgInfo")
     shutil.copy("level.lua", "build/HourglassII.app/Contents/Resources/level.lua")
