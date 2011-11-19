@@ -28,14 +28,14 @@ def svn_up():
     print("Updating...")
     output = subprocess.check_output(["svn"] + ["up"])
     print("Updated to revision",
-      re.search(r"At revision ([0-9]*)\.", str(output)).group(1))
+      re.search(r"^((At revision )|(Updated to revision ))([0-9]*)\.$", output.decode("UTF-8"), re.MULTILINE).group(4))
 
 #returns the current revision of the working copy
 def svnversion():
     return int(
       re.search(
         r"Last Changed Rev: ([0-9]*)",
-        str(subprocess.check_output(["svn", "info"]))).group(1))
+        subprocess.check_output(["svn", "info"]).decode("UTF-8")).group(1))
 
 current_revision = svnversion()
 while True:
