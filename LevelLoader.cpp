@@ -12,31 +12,28 @@ Level loadLevelFromFile(std::string const& filename)
     LuaState levelGenerator(loadLuaStateFromVector(levelChunk, "Level"));
     lua_State* L(levelGenerator.ptr);
     //Call function
-    lua_call(L, 0, 1);
+    lua_call(L, 0, 0);
 
-    //read return [
+    //read the appropriate globals [
     //read speedOfTime
-    unsigned speedOfTime(readField<int>(L, "speedOfTime"));
+    unsigned speedOfTime(readGlobal<int>(L, "speedOfTime"));
     //read timelineLength
-    std::size_t timelineLength(readField<int>(L, "timelineLength"));
+    std::size_t timelineLength(readGlobal<int>(L, "timelineLength"));
     //read environment [
-    Environment environment(readField<Environment>(L, "environment"));
-
+    Environment environment(readGlobal<Environment>(L, "environment"));
     //] read environment
     //read initial objects [
-    ObjectList<NonGuyDynamic> initialArrivals(readField<InitialObjects>(L, "initialArrivals").list);
+    ObjectList<NonGuyDynamic> initialArrivals(readGlobal<InitialObjects>(L, "initialArrivals").list);
     //] read initial objects
     //read initial guy [
-    InitialGuyArrival initialGuy(readField<InitialGuyArrival>(L, "initialGuy"));
+    InitialGuyArrival initialGuy(readGlobal<InitialGuyArrival>(L, "initialGuy"));
     Guy const& guyArrival(initialGuy.arrival);
     FrameID guyStartTime(initialGuy.arrivalTime, UniverseID(timelineLength));
     //] read initial guy
     //read trigger system [
-    TriggerSystem triggerSystem(readField<TriggerSystem>(L, "triggerSystem"));
+    TriggerSystem triggerSystem(readGlobal<TriggerSystem>(L, "triggerSystem"));
     //] read trigger system
-    //] read return
-    //pop return
-    lua_pop(L, 1);
+    //] read globals
     return Level(speedOfTime, timelineLength, environment, initialArrivals, guyArrival, guyStartTime, triggerSystem);
 }
 } //namespace hg
