@@ -145,33 +145,36 @@ dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll, libstd_cxx_dll]
 
 files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
 rc_file = "windows/resource.rc"
+def main():
+    def iota():
+        num = 0
+        while True:
+            yield num
+            num += 1
 
-def iota():
-    num = 0
-    while True:
-        yield num
-        num += 1
+    filenamegenerator = ("build/intermediate/" + str(num) for num in iota())
 
-filenamegenerator = ("build/intermediate/" + str(num) for num in iota())
+    if os.path.exists("build"):
+        shutil.rmtree("build")
+    os.mkdir("build")
+    os.mkdir("build/intermediate")
 
-if os.path.exists("build"):
-    shutil.rmtree("build")
-os.mkdir("build")
-os.mkdir("build/intermediate")
+    create_bundle(
+        filenamegenerator,
+        compiler, rc_compiler,
+        files_to_compile,
+        rc_file,
+        defines,
+        includes,
+        library_directories,
+        libraries,
+        dlls)
 
-create_bundle(
-    filenamegenerator,
-    compiler, rc_compiler,
-    files_to_compile,
-    rc_file,
-    defines,
-    includes,
-    library_directories,
-    libraries,
-    dlls)
+    shutil.rmtree("build/intermediate")
 
-shutil.rmtree("build/intermediate")
+    #build release package
+    os.chdir("build")
+    subprocess.call([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
 
-#build release package
-os.chdir("build")
-subprocess.call([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
+if __name__ == "__main__":
+    main()
