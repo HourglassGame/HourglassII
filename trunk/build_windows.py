@@ -101,17 +101,17 @@ def create_bundle(
     shutil.copy("level.lua", "build/HourglassII/level.lua")
     os.remove(executable)
 
-boost_include = "C:/Boost/include/boost-1_47/"
+boost_include = "C:/Boost/include/boost-1_48/"
 sfml_inlcude = "F:/Programming/libraries/SFML-1.6-sdk-windows-mingw/SFML-1.6/include/"
 tbb_include = "F:/Programming/libraries/tbb40_233oss/include/"
 
-boost_library_directory = "C:/Boost/lib"
+boost_library_directory = "C:/Boost/lib/"
 sfml_library_directory = "F:/Programming/libraries/SFML-1.6-sdk-windows-mingw/SFML-1.6/lib/"
 tbb_library_directory = "F:/Programming/libraries/tbb40_233oss/build/windows_ia32_gcc_mingw_release/"
 
-boost_serialization_lib = "boost_serialization-mgw45-mt-1_47"
-boost_filesystem_lib = "boost_filesystem-mgw45-mt-1_47"
-boost_system_lib = "boost_system-mgw45-mt-1_47"
+boost_serialization_lib = "boost_serialization-mgw45-mt-1_48"
+boost_filesystem_lib = "boost_filesystem-mgw45-mt-1_48"
+boost_system_lib = "boost_system-mgw45-mt-1_48"
 sfml_system_lib = "sfml-system-s"
 sfml_window_lib = "sfml-window-s"
 sfml_graphics_lib = "sfml-graphics-s"
