@@ -55,7 +55,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
         arrivalLocationsSize_(arrivalLocationsSize)
 {
     lua_pushvalue(L_.ptr, -1);
-    lua_call(L_.ptr, 0, 1);
+    lua_call(L_.ptr, 0, 0);
 }
 namespace {
 //Gives the value of the element at the top of the stack of L,
@@ -380,9 +380,7 @@ PhysicsAffectingStuff
     //TODO fix this!
     
     //push function to call
-    lua_getfield(L_.ptr, -1, "calculatePhysicsAffectingStuff");
-    //push `self` argument
-    lua_pushvalue(L_.ptr, -2);
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "calculatePhysicsAffectingStuff");
     //push `frameNumber` argument
     lua_pushinteger(L_.ptr, getFrameNumber(currentFrame));
     //push `triggerArrivals` argument [
@@ -404,7 +402,7 @@ PhysicsAffectingStuff
     //]
     //call function
 
-    lua_call(L_.ptr, 3, 1);
+    lua_call(L_.ptr, 2, 1);
 
     //read return value
     //TODO: better handling of sparsely populated tables.
@@ -474,10 +472,6 @@ PhysicsAffectingStuff
     lua_pop(L_.ptr, 1);
     
     //pop return value
-    lua_pop(L_.ptr, 1);
-    
-    lua_getfield(L_.ptr, -1, "getDepartureInformation");
-    //assert(lua_isfunction(L_.ptr, -1));
     lua_pop(L_.ptr, 1);
     //***** END EXCEPTION FREE REGION *****
     return retv;
@@ -583,23 +577,16 @@ void pushBox(lua_State* L, Box const& box)
 bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Guy const& potentialXer)
 {
     //push function to call
-    lua_checkstack(L, 1);
-    lua_getfield(L, -1, functionName);
+    lua_getfield(L, LUA_GLOBALSINDEX, functionName);
     assert(lua_isfunction(L, -1));
-    //push `self` argument
-    lua_checkstack(L, 1);
-    lua_pushvalue(L, -2);
     //push `responsibleXIndex` argument
-    lua_checkstack(L, 1);
     lua_pushinteger(L, responsibleXIndex + 1);
     //push `potentialX` argument
-    lua_checkstack(L, 1);
     pushGuy(L, potentialXer);
-    lua_checkstack(L, 1);
     lua_pushstring(L, "guy");
     lua_setfield(L, -2, "type");
     //call function
-    lua_call(L, 3, 1);
+    lua_call(L, 2, 1);
     //read return value
     assert(lua_isboolean(L, -1));
     bool retv(lua_toboolean(L, -1));
@@ -610,23 +597,16 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
 bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Box const& potentialXer)
 {
     //push function to call
-    lua_checkstack(L, 1);
-    lua_getfield(L, -1, functionName);
+    lua_getfield(L, LUA_GLOBALSINDEX, functionName);
     assert(lua_isfunction(L, -1));
-    //push `self` argument
-    lua_checkstack(L, 1);
-    lua_pushvalue(L, -2);
     //push `responsibleXIndex` argument
-    lua_checkstack(L, 1);
     lua_pushinteger(L, responsibleXIndex + 1);
     //push `potentialX` argument
-    lua_checkstack(L, 1);
     pushBox(L, potentialXer);
-    lua_checkstack(L, 1);
     lua_pushstring(L, "box");
     lua_setfield(L, -2, "type");
     //call function
-    lua_call(L, 3, 1);
+    lua_call(L, 2, 1);
     //read return value
     assert(lua_isboolean(L, -1));
     bool retv(lua_toboolean(L, -1));
@@ -641,20 +621,14 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
 bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "shouldArrive");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "shouldArrive");
     assert(lua_isfunction(L_.ptr, -1));
-    //push `self` argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push `potentialArriver` argument
-    lua_checkstack(L_.ptr, 1);
     pushGuy(L_.ptr, potentialArriver);
-    lua_checkstack(L_.ptr, 1);
     lua_pushstring(L_.ptr, "guy");
     lua_setfield(L_.ptr, -2, "type");
     //call function
-    lua_call(L_.ptr, 2, 1);
+    lua_call(L_.ptr, 1, 1);
     //read return value
     assert(lua_isboolean(L_.ptr, -1));
     bool retv(lua_toboolean(L_.ptr, -1));
@@ -665,20 +639,14 @@ bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 bool DirectLuaTriggerFrameState::shouldArrive(Box const& potentialArriver)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "shouldArrive");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "shouldArrive");
     assert(lua_isfunction(L_.ptr, -1));
-    //push `self` argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push `potentialArriver` argument
-    lua_checkstack(L_.ptr, 1);
     pushBox(L_.ptr, potentialArriver);
-    lua_checkstack(L_.ptr, 1);
     lua_pushstring(L_.ptr, "box");
     lua_setfield(L_.ptr, -2, "type");
     //call function
-    lua_call(L_.ptr, 2, 1);
+    lua_call(L_.ptr, 1, 1);
     //read return value
     assert(lua_isboolean(L_.ptr, -1));
     bool retv(lua_toboolean(L_.ptr, -1));
@@ -697,26 +665,18 @@ bool DirectLuaTriggerFrameState::shouldPort(
     bool porterActionedPortal)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "shouldPort");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "shouldPort");
     assert(lua_isfunction(L_.ptr, -1));
-    //push `self` argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push `responsiblePortalIndex` argument
-    lua_checkstack(L_.ptr, 1);
     lua_pushinteger(L_.ptr, responsiblePortalIndex + 1);
     //push `potentialPorter` argument
-    lua_checkstack(L_.ptr, 1);
     pushGuy(L_.ptr, potentialPorter);
-    lua_checkstack(L_.ptr, 1);
     lua_pushstring(L_.ptr, "guy");
     lua_setfield(L_.ptr, -2, "type");
     //push `porterActionedPortal` argument
-    lua_checkstack(L_.ptr, 1);
     lua_pushboolean(L_.ptr, porterActionedPortal);
     //call function
-    lua_call(L_.ptr, 4, 1);
+    lua_call(L_.ptr, 3, 1);
     //read return value
     assert(lua_isboolean(L_.ptr, -1));
     bool retv(lua_toboolean(L_.ptr, -1));
@@ -730,26 +690,18 @@ bool DirectLuaTriggerFrameState::shouldPort(
     bool porterActionedPortal)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "shouldPort");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "shouldPort");
     assert(lua_isfunction(L_.ptr, -1));
-    //push `self` argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push `responsiblePortalIndex` argument
-    lua_checkstack(L_.ptr, 1);
     lua_pushinteger(L_.ptr, responsiblePortalIndex + 1);
     //push `potentialPorter` argument
-    lua_checkstack(L_.ptr, 1);
     pushBox(L_.ptr, potentialPorter);
-    lua_checkstack(L_.ptr, 1);
     lua_pushstring(L_.ptr, "box");
     lua_setfield(L_.ptr, -2, "type");
     //push `porterActionedPortal` argument
-    lua_checkstack(L_.ptr, 1);
     lua_pushboolean(L_.ptr, porterActionedPortal);
     //call function
-    lua_call(L_.ptr, 4, 1);
+    lua_call(L_.ptr, 3, 1);
     //read return value
     assert(lua_isboolean(L_.ptr, -1));
     bool retv(lua_toboolean(L_.ptr, -1));
@@ -766,14 +718,9 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     Guy const& objectToManipulate)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "mutateObject");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "mutateObject");
     assert(lua_isfunction(L_.ptr, -1));
-    //push self argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push responsibleMutatorIndices argument
-    lua_checkstack(L_.ptr, 2);
     lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
@@ -783,13 +730,11 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
         lua_rawseti(L_.ptr, -2, i);
     }
     //push dynamicObject argument
-    lua_checkstack(L_.ptr, 1);
     pushGuy(L_.ptr, objectToManipulate);
-    lua_checkstack(L_.ptr, 1);
     lua_pushstring(L_.ptr, "guy");
     lua_setfield(L_.ptr, -2, "type");
     //call function
-    lua_call(L_.ptr, 3, 1);
+    lua_call(L_.ptr, 2, 1);
     //read return value
     boost::optional<Guy> retv;
     if (!lua_isnil(L_.ptr, -1)) {
@@ -805,14 +750,9 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     Box const& objectToManipulate)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "mutateObject");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "mutateObject");
     assert(lua_isfunction(L_.ptr, -1));
-    //push self argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push responsibleMutatorIndices argument
-    lua_checkstack(L_.ptr, 2);
     lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
@@ -822,13 +762,11 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
         lua_rawseti(L_.ptr, -2, i);
     }
     //push dynamicObject argument
-    lua_checkstack(L_.ptr, 1);
     pushBox(L_.ptr, objectToManipulate);
-    lua_checkstack(L_.ptr, 1);
     lua_pushstring(L_.ptr, "box");
     lua_setfield(L_.ptr, -2, "type");
     //call function
-    lua_call(L_.ptr, 3, 1);
+    lua_call(L_.ptr, 2, 1);
     //read return value
     boost::optional<Box> retv;
     if (!lua_isnil(L_.ptr, -1)) {
@@ -850,12 +788,8 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     Frame* currentFrame)
 {
     //push function to call
-    lua_checkstack(L_.ptr, 1);
-    lua_getfield(L_.ptr, -1, "getDepartureInformation");
+    lua_getfield(L_.ptr, LUA_GLOBALSINDEX, "getDepartureInformation");
     assert(lua_isfunction(L_.ptr, -1));
-    //push `self` argument
-    lua_checkstack(L_.ptr, 1);
-    lua_pushvalue(L_.ptr, -2);
     //push `departures` argument [
     //TODO find out if sparse arrays count as
     //array elements or non-array elements
@@ -893,7 +827,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     }
     //]
     //call function
-    lua_call(L_.ptr, 2, 3);
+    lua_call(L_.ptr, 1, 3);
     
     //read triggers return value
     //Trigger return value looks like:
@@ -1007,11 +941,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
 {
-    //Pop the table that was returned in the constructor
-    lua_pop(L_.ptr, 1);
 }
-
-
 
 namespace {
 std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {

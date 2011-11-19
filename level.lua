@@ -436,90 +436,8 @@ local function fillButtonTriggers(triggers, protoButtons, buttonStates)
     end
 end
 
-return {
-    --triggerArrivals have already had default values inserted by C++
-    --for trigger indices that did not arrive by the time this is called
-    calculatePhysicsAffectingStuff = function(self, frameNumber, triggerArrivals)
-        local retv = {}
-        
-        self.frameNumber = frameNumber
-        
-        retv.additionalBoxes = {}
-        self.additionalEndBoxes = {}
-        
-        self.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
-        
-        --if frameNumber%300 == 0 then
-        --   retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
-        --end
-        
-        --if frameNumber%2000 == 0 then
-        --    retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
-        --end
-        
-        retv.collisions = calculateCollisions(self.protoCollisions, triggerArrivals)
-        retv.portals = calculatePortals(self.protoPortals, retv.collisions)
-        retv.mutators = { [1] = self.protoMutators[1].data}
-        retv.arrivalLocations = calculateArrivalLocations(retv.portals)
-        
-        self.portalActive = (triggerArrivals[3][1] == 1)
-        
-        self.buttonPositionsAndVelocities =
-            calculateButtonPositionsAndVelocities(self.protoButtons, retv.collisions)
-         
-        fillCollisionTriggers(self.outputTriggers, self.protoCollisions, retv.collisions)
-        
-        for collision in list_iter(retv.collisions) do
-            table.insert(self.outputGlitz, calculateCollisionGlitz(collision))
-        end
-        
-        for portal in list_iter(retv.portals) do
-            table.insert(self.outputGlitz, calculatePortalGlitz(portal))
-        end
-        
-        return retv
-    end,
-    --responsible*Index gives the position in the list of the thing that
-    --is responsible for the callin happening.
-    --By 'the list' I mean the list of objects returned from calculatePhysicsAffectingStuff
-    --corresponding to the callin type (portals/pickups/killers)
-    --in particular, this means that this does *not* correspond to the 'index' field
-    --of a portal (the 'index' field for identifying illegal portals, but not for this)
-    shouldArrive = function(self, dynamicObject)
-        return true
-    end,
-    shouldPort = function(self, responsiblePortalIndex, dynamicObject, porterActionedPortal) 
-        return self.portalActive
-    end,
-    mutateObject = function(self, responsibleManipulatorIndices, dynamicObject)
-        return self.protoMutators[1].effect(self, dynamicObject)
-    end,
-    getDepartureInformation = function(self, departures)
-        local buttonStates =
-            calculateButtonStates(self.protoButtons, self.buttonPositionsAndVelocities, departures)
-    
-        for i = 1, #self.protoButtons do
-            table.insert(
-                self.outputGlitz,
-                calculateButtonGlitz(
-                    self.protoButtons[i],
-                    self.buttonPositionsAndVelocities[i],
-                    buttonStates[i]))
-        end
-        
-         table.insert(self.outputGlitz,calculateMutatorGlitz(self.protoMutators[1].data))
-        
-        fillButtonTriggers(self.outputTriggers, self.protoButtons, buttonStates)
-        
-        if self.makeBox then
-            self.additionalEndBoxes[#self.additionalEndBoxes+1] = {
-                box = {x = 12800, y = 6400, xspeed = -600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = 'forwards'}, 
-                targetFrame = 500
-            }
-        end
-        
-        return self.outputTriggers, self.outputGlitz, self.additionalEndBoxes
-    end,
+local tempStore = 
+{
     --mutable store data:
     buttonPositionsAndVelocities = {},
     outputTriggers = {},
@@ -633,6 +551,93 @@ return {
         }
     }
 }
+
+--==Callin Definitions==--
+--triggerArrivals have already had default values inserted by C++
+--for trigger indices that did not arrive by the time this is called
+function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
+    local retv = {}
+    
+    tempStore.frameNumber = frameNumber
+    
+    retv.additionalBoxes = {}
+    tempStore.additionalEndBoxes = {}
+    
+    tempStore.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
+    
+    --if frameNumber%300 == 0 then
+    --   retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
+    --end
+    
+    --if frameNumber%2000 == 0 then
+    --    retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
+    --end
+    
+    retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals)
+    retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions)
+    retv.mutators = { [1] = tempStore.protoMutators[1].data}
+    retv.arrivalLocations = calculateArrivalLocations(retv.portals)
+    
+    tempStore.portalActive = (triggerArrivals[3][1] == 1)
+    
+    tempStore.buttonPositionsAndVelocities =
+        calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions)
+     
+    fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions)
+    
+    for collision in list_iter(retv.collisions) do
+        table.insert(tempStore.outputGlitz, calculateCollisionGlitz(collision))
+    end
+    
+    for portal in list_iter(retv.portals) do
+        table.insert(tempStore.outputGlitz, calculatePortalGlitz(portal))
+    end
+    
+    return retv
+end
+
+--responsible*Index gives the position in the list of the thing that
+--is responsible for the callin happening.
+--By 'the list' I mean the list of objects returned from calculatePhysicsAffectingStuff
+--corresponding to the callin type (portals/pickups/killers)
+--in particular, this means that this does *not* correspond to the 'index' field
+--of a portal (the 'index' field for identifying illegal portals, but not for this)
+function shouldArrive(dynamicObject)
+    return true
+end
+function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal) 
+    return tempStore.portalActive
+end
+function mutateObject(responsibleManipulatorIndices, dynamicObject)
+    return tempStore.protoMutators[1].effect(tempStore, dynamicObject)
+end
+    
+function getDepartureInformation(departures)
+    local buttonStates =
+        calculateButtonStates(tempStore.protoButtons, tempStore.buttonPositionsAndVelocities, departures)
+
+    for i = 1, #tempStore.protoButtons do
+        table.insert(
+            tempStore.outputGlitz,
+            calculateButtonGlitz(
+                tempStore.protoButtons[i],
+                tempStore.buttonPositionsAndVelocities[i],
+                buttonStates[i]))
+    end
+    
+    table.insert(tempStore.outputGlitz, calculateMutatorGlitz(tempStore.protoMutators[1].data))
+    
+    fillButtonTriggers(tempStore.outputTriggers, tempStore.protoButtons, buttonStates)
+    
+    if tempStore.makeBox then
+        tempStore.additionalEndBoxes[#tempStore.additionalEndBoxes+1] = {
+            box = {x = 12800, y = 6400, xspeed = -600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = 'forwards'}, 
+            targetFrame = 500
+        }
+    end
+    
+    return tempStore.outputTriggers, tempStore.outputGlitz, tempStore.additionalEndBoxes
+end
     ]===],
 
 
