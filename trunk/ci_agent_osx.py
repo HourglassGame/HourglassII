@@ -57,5 +57,6 @@ while True:
         raise
     except:
         print("Unexpected error:", sys.exc_info())
+        time.sleep(1)
         pass
 
