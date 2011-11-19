@@ -175,6 +175,6 @@ def main():
     #build release package
     os.chdir("build")
     subprocess.call([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
-
+    os.chdir("..")
 if __name__ == "__main__":
     main()
