@@ -18,8 +18,6 @@ def upload(revision):
     #scp file
     subprocess.call(
         ["F:/Program Files/PuTTY/pscp.exe"]
-        + ["-batch"]
-        + ["-i","F:/User~Docs/Keven/Workspace/ssh_key/id_dsa"]
         + [release_filename]
         + ["evanwallace,hourglassii@frs.sourceforge.net"
            +":/home/frs/project/h/ho/hourglassii/Release/Windows/"])
@@ -34,7 +32,6 @@ def svn_up():
 
 def svnversion():
     print("Getting current working version...")
-    
     output = subprocess.check_output(["svn", "info"]).decode("UTF-8")
     version = int(
       re.search(r"Last Changed Rev: ([0-9]*)", output).group(1))
@@ -52,7 +49,7 @@ while True:
             build()
             print("Finished building, uploading...")
             upload(current_revision)
-            shutil.rmtree("build")
+            shutil.rmtree("build/")
             print("Finished uploading.")
         else:
             print("Going to sleep.")
