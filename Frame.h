@@ -5,7 +5,7 @@
 #include "ObjectList.h"
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
-#include "RectangleGlitz.h"
+#include "FrameView.h"
 #include <boost/fusion/container/vector.hpp>
 #include <boost/range/adaptor/map.hpp>
 
@@ -20,10 +20,8 @@ namespace hg {
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
     typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
-    typedef mt::std::vector<RectangleGlitz>::type FrameGlitzT;
 public:
     Frame(std::size_t frameNumber, Universe& universe);
-    
     
     //These "correct" functions are for rearranging pointers when universes get copied.
     //Changes universe_
@@ -32,10 +30,9 @@ public:
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
     FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT& newDeparture);
-    
-    void setGlitzFromHere(FrameGlitzT& newGlitz) { glitz_.swap(newGlitz); }
-    FrameGlitzT const& getGlitzFromHere() const { return glitz_; }
 
+    void setView(FrameView& newView) { view_.swap(newView); }
+    FrameView const& getView() const { return view_; }
     /**
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
@@ -84,9 +81,8 @@ private:
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
     FrameDeparturesT departures_;
     tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*> arrivals_;
-    
-    FrameGlitzT glitz_;
 
+    FrameView view_;
 };
 //<Undefined to call with NullFrame>
 //Frame* nextFrame(Frame const* frame, TimeDirection direction);

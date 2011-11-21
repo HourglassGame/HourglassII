@@ -5,6 +5,7 @@
 
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/adaptor/map.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
@@ -36,9 +37,9 @@ PhysicsEngine::PhysicsEngine(
 namespace {
     struct SortObjectList
     {
-        void operator()(std::pair<Frame* const, ObjectList<Normal> >& toSortObjectListOf) const
+        void operator()(ObjectList<Normal>& toSort) const
         {
-            toSortObjectListOf.second.sort();
+            toSort.sort();
         }
     };
     
@@ -160,6 +161,7 @@ namespace {
     bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
     bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, int buffer);
     bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
+    FrameView makeFrameView(PhysicsEngine::FrameDepartureT const&, mt::std::vector<RectangleGlitz>::type const&);
 }
 
 
@@ -224,7 +226,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         time);
 
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
-    boost::for_each(newDepartures, SortObjectList());
+    boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
     typedef mt::std::map<
                 Frame*,
                 mt::std::vector<TriggerData>::type>::type triggerDepartures_t;
@@ -247,9 +249,14 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     buildDeparturesForComplexEntities<Box>(triggerSystemDepartureInformation.get<2>(), newDepartures);
 
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
-    boost::for_each(newDepartures, SortObjectList());
+    boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
     // add data to departures
-    return PhysicsReturnT(newDepartures, triggerSystemDepartureInformation.get<1>(), currentPlayerFrame, nextPlayerFrame, winFrame);
+    return PhysicsReturnT(
+        newDepartures,
+        makeFrameView(newDepartures, triggerSystemDepartureInformation.get<1>()),
+        currentPlayerFrame,
+        nextPlayerFrame,
+        winFrame);
 }
 
 namespace {
@@ -277,6 +284,149 @@ void buildDepartures(
 }//namespace
 
 namespace {
+template<typename T>
+    void pushBidirectional(
+        T const& obj,
+        unsigned forwardsColour, unsigned reverseColour,
+        mt::std::vector<Glitz>::type& forwardsGlitz,
+        mt::std::vector<Glitz>::type& reverseGlitz)
+{
+    Glitz sameDirectionGlitz(
+        obj.getX(), obj.getY(),
+        obj.getWidth(), obj.getHeight(),
+        forwardsColour);
+    
+    Glitz oppositeDirectionGlitz(
+        obj.getX() - obj.getXspeed(), obj.getY() - obj.getYspeed(),
+        obj.getWidth(), obj.getHeight(),
+        reverseColour);
+    
+    forwardsGlitz.push_back(
+        obj.getTimeDirection() == FORWARDS ?
+        sameDirectionGlitz:oppositeDirectionGlitz);
+    
+    reverseGlitz.push_back(
+        obj.getTimeDirection() == REVERSE ?
+        sameDirectionGlitz:oppositeDirectionGlitz);
+}
+
+void pushGuyGlitz(
+    Guy const& guy,
+    mt::std::vector<Glitz>::type& forwardsGlitz,
+    mt::std::vector<Glitz>::type& reverseGlitz)
+{
+    //Guys with arrivalBasis == -1 have positions that are relative
+    //to an arrival basis. This means that interpreting their positions
+    //as departure positions is flat out wrong.
+    //Not drawing them at all is also wrong (because it causes guys to disappear).
+    //The correct thing to do is to draw where they departed from.
+    //This is now possible, but requires a little bit of restructuring of physics.
+    //Doing this drawing right here in this way is quite silly, and is only temporary.
+    if (guy.getArrivalBasis() == -1)
+    {
+        //Forwards View
+        {
+            struct PNC {
+                PNC(int nx, int ny, unsigned ncolour):
+                    x(nx), y(ny), colour(ncolour) {}
+                int x; int y; unsigned colour;
+            } const pnc = 
+                guy.getTimeDirection() == FORWARDS ?
+                    PNC(guy.getX(), guy.getY(), 0x96960000u) :
+                    PNC(guy.getX() - guy.getXspeed(), guy.getY() - guy.getYspeed(), 0x00009600u);
+            
+            int const left(pnc.x);
+            int const top(pnc.y);
+            int const halfwidth(guy.getWidth()/2);
+            int const halfheight(guy.getHeight()/2);
+            int const hmid(pnc.x+halfwidth);
+            
+            forwardsGlitz.push_back(Glitz(left, top, guy.getWidth(), guy.getHeight(), pnc.colour));
+            forwardsGlitz.push_back(
+                guy.getFacing() ?
+                    Glitz(hmid, top, halfwidth, halfheight, 0x32323200u) :
+                    Glitz(left, top, halfwidth, halfheight, 0x32323200u));
+            
+            if (guy.getBoxCarrying())
+            {
+                forwardsGlitz.push_back(
+                    Glitz(
+                        hmid - guy.getBoxCarrySize()/2,
+                        top - guy.getBoxCarrySize(),
+                        guy.getBoxCarrySize(),
+                        guy.getBoxCarrySize(),
+                        guy.getBoxCarryDirection() == FORWARDS ? 
+                          0x96009600u : 0x00960000u));
+            }
+        }
+        //Reverse View
+        {
+            struct PNC {
+                PNC(int nx, int ny, unsigned ncolour):
+                    x(nx), y(ny), colour(ncolour) {}
+                int x; int y; unsigned colour;
+            } const pnc = 
+                guy.getTimeDirection() == REVERSE ?
+                    PNC(guy.getX(), guy.getY(), 0x96960000u) :
+                    PNC(guy.getX() - guy.getXspeed(), guy.getY() - guy.getYspeed(), 0x00009600u);
+
+            int const left(pnc.x);
+            int const top(pnc.y);
+            int const halfwidth(guy.getWidth()/2);
+            int const halfheight(guy.getHeight()/2);
+            int const hmid(pnc.x+halfwidth);
+
+            reverseGlitz.push_back(Glitz(left, top, guy.getWidth(), guy.getHeight(), pnc.colour));
+            reverseGlitz.push_back(
+                guy.getFacing() ?
+                    Glitz(hmid, top, halfwidth, halfheight, 0x32323200u) :
+                    Glitz(left, top, halfwidth, halfheight, 0x32323200u));
+
+            if (guy.getBoxCarrying())
+            {
+                reverseGlitz.push_back(
+                    Glitz(
+                        hmid - guy.getBoxCarrySize()/2,
+                        top - guy.getBoxCarrySize(),
+                        guy.getBoxCarrySize(),
+                        guy.getBoxCarrySize(),
+                        guy.getBoxCarryDirection() == REVERSE ? 
+                          0x96009600u : 0x00960000u));
+            }
+        }
+    }
+}
+
+//This is temporary, it is an adaptor to allow the old values to be used by he new interface.
+//The new version should be properly integrated into guy/box step and so on.
+FrameView makeFrameView(
+    PhysicsEngine::FrameDepartureT const& departures,
+    mt::std::vector<RectangleGlitz>::type const& glitzlist)
+{
+    mt::std::vector<Glitz>::type forwardsGlitz;
+    mt::std::vector<Glitz>::type reverseGlitz;
+    foreach (RectangleGlitz const& glitz, glitzlist) {
+        pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), forwardsGlitz, reverseGlitz);
+    }
+    ObjectPtrList<Normal>  flattenedDepartures;
+    foreach (ObjectList<Normal> const& value, departures | boost::adaptors::map_values)
+    {
+        flattenedDepartures.add(value);
+    }
+    flattenedDepartures.sort();
+    foreach (Box const& box, flattenedDepartures.getList<Box>()) {
+        if (box.getArrivalBasis() == -1) {
+            pushBidirectional(box, 0xFF00FF00u, 0x00FF00FFu, forwardsGlitz, reverseGlitz);
+        }
+    }
+    mt::std::vector<GuyOutputInfo>::type guyInfo;
+    foreach (Guy const& guy, flattenedDepartures.getList<Guy>()) {
+        pushGuyGlitz(guy, forwardsGlitz, reverseGlitz);
+        guyInfo.push_back(GuyOutputInfo(guy.getTimeDirection()));
+    }
+    return FrameView(forwardsGlitz, reverseGlitz, guyInfo);
+}
+
 template<typename RandomAccessGuyRange>
 void guyStep(
     Environment const& env,

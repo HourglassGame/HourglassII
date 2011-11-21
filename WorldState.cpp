@@ -9,8 +9,6 @@
 
 #include "Universe.h"
 
-
-
 namespace hg {
 
 struct ExecuteFrame
@@ -31,6 +29,7 @@ private:
     WorldState& thisptr_;
     DepartureMap& departureMap_;
 };
+
 WorldState::WorldState(
     std::size_t timelineLength,
     Guy const& initialGuy,
@@ -120,7 +119,7 @@ PhysicsEngine::FrameDepartureT
     else {
         currentWinFrames_.remove(frame);
     }
-    frame->setGlitzFromHere(retv.glitz);
+    frame->setView(retv.view);
     return retv.departures;
 }
 
