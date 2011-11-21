@@ -1,4 +1,3 @@
-import build_windows
 import sys
 import time
 import re
@@ -7,7 +6,10 @@ import shutil
 import traceback
 import os.path
 import os
+import imp
 def build():
+    import build_windows
+    imp.reload(build_windows)
     build_windows.main()
     pass
 
@@ -35,19 +37,18 @@ def svnversion():
     return int(
       re.search(r"Last Changed Rev: ([0-9]*)", subprocess.check_output(["svn", "info"]).decode("UTF-8")).group(1))
 
-current_revision = svnversion()
-while True:
+
+def main()
     try:
-        if os.path.exists("build/"):
-            shutil.rmtree("build/")
+        current_revision = svnversion()
         svn_up()
         revision = svnversion()
         if revision > current_revision:
-            current_revision = revision
             print("Building revision", current_revision, "...")
             build()
             print("Finished building, uploading...")
             upload(current_revision)
+            shutil.rmtree("build")
             print("Finished uploading.")
         else:
             print("Going to sleep.")
@@ -58,4 +59,5 @@ while True:
         print("Unexpected error:")
         traceback.print_exc()
         time.sleep(1)
-        pass
+
+if __name__ == "__main__": main()
