@@ -24,4 +24,3 @@ void FrameView::swap(FrameView& other)
     boost::swap(guyInformation_, other.guyInformation_);
 }
 }//namespace hg
-
