@@ -180,7 +180,7 @@ int main(int argc, char const* const argv[])
 }
 
 namespace  {
-void initialseCurrentPath(int, char const* const argv[])
+void initialseCurrentPath(int argc, char const* const argv[])
 {
 #if defined(__APPLE__) && defined(__MACH__)
     assert(argc >= 1);
