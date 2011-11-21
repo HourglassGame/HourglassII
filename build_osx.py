@@ -201,10 +201,8 @@ libraries = [
 
 dlls = [tbb_dll, tbb_malloc_dll]
 
-files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
-
-
 def main():
+    files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
     def iota():
         num = 0
         while True:

@@ -142,10 +142,9 @@ libraries = [
 
 dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll, libstd_cxx_dll]
 
-
-files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
 rc_file = "windows/resource.rc"
 def main():
+    files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
     def iota():
         num = 0
         while True:
