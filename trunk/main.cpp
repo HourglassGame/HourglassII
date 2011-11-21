@@ -57,17 +57,11 @@ namespace {
     void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input);
     void Draw(
         RenderWindow& target,
-        ObjectPtrList<Normal> const& frame,
-        mt::std::vector<RectangleGlitz>::type const& glitz,
-        Wall const& wall,
-        TimeDirection playerDirection);
+        mt::std::vector<Glitz>::type const& glitz,
+        Wall const& wall);
     void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame, std::size_t timelineLength);
     void DrawWall(RenderTarget& target, Wall const& wallData);
-    void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection);
-    template<typename RandomAccessBoxRange>
-    void DrawBoxes(RenderTarget& target, const RandomAccessBoxRange& boxList, TimeDirection playerDirection);
-    template<typename RandomAccessGuyRange>
-    void DrawGuys(RenderTarget& target, const RandomAccessGuyRange& guyList, TimeDirection playerDirection);
+    void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
     TimeDirection findCurrentGuyDirection(const BidirectionalGuyRange& guyRange);
     
@@ -186,12 +180,17 @@ int main(int argc, char const* const argv[])
 }
 
 namespace  {
-void initialseCurrentPath(int argc, char const* const argv[])
+void initialseCurrentPath(int, char const* const argv[])
 {
 #if defined(__APPLE__) && defined(__MACH__)
     assert(argc >= 1);
     current_path(boost::filesystem::path(argv[0]).remove_filename()/"../Resources/");
 #endif
+}
+
+mt::std::vector<Glitz>::type const& getGlitzForDirection(FrameView const& view, TimeDirection timeDirection)
+{
+    return timeDirection == FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
 void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input)
@@ -209,16 +208,14 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputL
     }
     
     if (waveInfo.currentPlayerFrame()) {
-        ObjectPtrList<Normal> const& frameData(waveInfo.currentPlayerFrame()->getPostPhysics());
-        TimeDirection currentGuyDirection(findCurrentGuyDirection(frameData.getList<Guy>()));
+        FrameView const& view(waveInfo.currentPlayerFrame()->getView());
+        TimeDirection currentGuyDirection(findCurrentGuyDirection(view.getGuyInformation()));
         inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
         drawnFrame = FrameID(waveInfo.currentPlayerFrame());
         Draw(
             app,
-            frameData,
-            waveInfo.currentPlayerFrame()->getGlitzFromHere(),
-            timeEngine.getWall(),
-            currentGuyDirection);
+            getGlitzForDirection(view, currentGuyDirection),
+            timeEngine.getWall());
     }
     else {
         inertia.run();
@@ -226,12 +223,22 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputL
         if (inertialFrame.isValidFrame()) {
             drawnFrame = inertialFrame;
             Frame* frame(timeEngine.getFrame(inertialFrame));
-            Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), inertia.getTimeDirection());
+            Draw(app,
+                 getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
+                 timeEngine.getWall());
         }
         else {
-            drawnFrame = FrameID(abs(static_cast<int>((app.GetInput().GetMouseX()*static_cast<long>(timeEngine.getTimelineLength())/app.GetWidth()) % static_cast<long>(timeEngine.getTimelineLength()))), UniverseID(timeEngine.getTimelineLength()));
+            drawnFrame =
+              FrameID(
+                abs(
+                  static_cast<int>(
+                    (app.GetInput().GetMouseX() * static_cast<long>(timeEngine.getTimelineLength()) / app.GetWidth())
+                     % static_cast<long>(timeEngine.getTimelineLength()))),
+                UniverseID(timeEngine.getTimelineLength()));
             Frame* frame(timeEngine.getFrame(drawnFrame));
-            Draw(app, frame->getPostPhysics(), frame->getGlitzFromHere(), timeEngine.getWall(), FORWARDS);
+            Draw(app,
+                 getGlitzForDirection(frame->getView(), FORWARDS),
+                 timeEngine.getWall());
         }
     }
     DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame, timeEngine.getTimelineLength());
@@ -280,15 +287,11 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputL
 
 void Draw(
     RenderWindow& target,
-    ObjectPtrList<Normal> const& frame,
-    mt::std::vector<RectangleGlitz>::type const& glitz,
-    Wall const& wall,
-    TimeDirection playerDirection)
+    mt::std::vector<Glitz>::type const& glitz,
+    Wall const& wall)
 {
     DrawWall(target, wall);
-    DrawGlitz(target, glitz, playerDirection);
-    DrawBoxes(target, frame.getList<Box>(), playerDirection);
-    DrawGuys(target, frame.getList<Guy>(), playerDirection);
+    DrawGlitz(target, glitz);
 }
 
 void DrawWall(
@@ -318,145 +321,19 @@ Colour interpretAsColour(unsigned colour)
 {
     return Colour((colour & 0xFF000000) >> 24, (colour & 0xFF0000) >> 16, (colour & 0xFF00) >> 8);
 }
-
-void DrawParticularGlitz(RenderTarget& target, RectangleGlitz const& rectangleGlitz, TimeDirection playerDirection)
+void DrawParticularGlitz(RenderTarget& target, Glitz const& glitz)
 {
-        if (playerDirection == rectangleGlitz.getTimeDirection()) {
-            target.Draw(
-                Shape::Rectangle(
-                    static_cast<float>(rectangleGlitz.getX()/100),
-                    static_cast<float>(rectangleGlitz.getY()/100),
-                    static_cast<float>((rectangleGlitz.getX() + rectangleGlitz.getWidth())/100),
-                    static_cast<float>((rectangleGlitz.getY() + rectangleGlitz.getHeight())/100),
-                    interpretAsColour(rectangleGlitz.getForwardsColour())));
-        }
-        else {
-            int const x(rectangleGlitz.getX() - rectangleGlitz.getXspeed());
-            int const y(rectangleGlitz.getY() - rectangleGlitz.getYspeed());
-            target.Draw(
-                Shape::Rectangle(
-                    static_cast<float>(x/100),
-                    static_cast<float>(y/100),
-                    static_cast<float>((x + rectangleGlitz.getWidth())/100),
-                    static_cast<float>((y + rectangleGlitz.getHeight())/100),
-                    interpretAsColour(rectangleGlitz.getReverseColour())));
-        }
+    target.Draw(
+        Shape::Rectangle(
+            static_cast<float>(glitz.getX()/100),
+            static_cast<float>(glitz.getY()/100),
+            static_cast<float>((glitz.getX() + glitz.getWidth())/100),
+            static_cast<float>((glitz.getY() + glitz.getHeight())/100),
+            interpretAsColour(glitz.getColour())));
 }
-
-void DrawGlitz(RenderTarget& target, mt::std::vector<RectangleGlitz>::type const& glitz, TimeDirection playerDirection)
+void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList)
 {
-    foreach (RectangleGlitz const& rectangleGlitz, glitz) {
-        DrawParticularGlitz(target, rectangleGlitz, playerDirection);
-    }
-}
-
-template<typename RandomAccessBoxRange>
-void DrawBoxes(
-    RenderTarget& target,
-    RandomAccessBoxRange const& boxList,
-    TimeDirection const playerDirection)
-{
-    foreach(Box const& box, boxList) {
-        //see below (in DrawGuys)
-        if (box.getArrivalBasis() == -1)
-        {
-            if (playerDirection == box.getTimeDirection()) {
-                target.Draw(
-                    Shape::Rectangle(
-                        static_cast<float>(box.getX()/100),
-                        static_cast<float>(box.getY()/100),
-                        static_cast<float>((box.getX()+ box.getSize())/100),
-                        static_cast<float>((box.getY()+box.getSize())/100),
-                        Colour(255,0,255)));
-            }
-            else {
-                int const x(box.getX()-box.getXspeed());
-                int const y(box.getY()-box.getYspeed());
-                target.Draw(
-                    Shape::Rectangle(
-                        static_cast<float>(x/100),
-                        static_cast<float>(y/100),
-                        static_cast<float>((x + box.getSize())/100),
-                        static_cast<float>((y + box.getSize())/100),
-                        Colour(0,255,0)));
-            }
-        }
-    }
-}
-
-struct PositionAndColour
-{ 
-    PositionAndColour(int nx, int ny, Colour const& ncolour) :
-        x(nx), y(ny), colour(ncolour) {}
-    int x; int y; Colour colour;
-};
-
-template<typename RandomAccessGuyRange>
-void DrawGuys(
-    RenderTarget& target,
-    RandomAccessGuyRange const& guyList,
-    TimeDirection const playerDirection)
-{
-    foreach(Guy const& guy, guyList) {
-        //Doesn't seem necessary -- could you give an example where strange stuff happens? Did this get fixed by flicker fix?
-        if (guy.getArrivalBasis() == -1)
-        {
-            
-            PositionAndColour const pnc(
-                playerDirection == guy.getTimeDirection() ? 
-                    PositionAndColour(
-                        guy.getX(),
-                        guy.getY(),
-                        Colour(150,150,0)) : 
-                    PositionAndColour(
-                        guy.getX() - guy.getXspeed(),
-                        guy.getY() - guy.getYspeed(),
-                        Colour(0,0,150)));
-            
-            int const left(pnc.x);
-            int const top(pnc.y);
-            int const vmid(pnc.y+guy.getHeight()/2);
-            int const hmid(pnc.x+guy.getWidth()/2);
-            int const right(pnc.x+guy.getWidth());
-            int const bottom(pnc.y+guy.getHeight());
-            
-            target.Draw(
-                Shape::Rectangle(
-                    static_cast<float>(left/100),
-                    static_cast<float>(top/100),
-                    static_cast<float>(right/100),
-                    static_cast<float>(bottom/100),
-                    pnc.colour));
-            
-            target.Draw(
-                guy.getFacing() ?
-                    Shape::Rectangle(
-                        static_cast<float>(hmid/100),
-                        static_cast<float>(top/100),
-                        static_cast<float>(right/100),
-                        static_cast<float>(vmid/100),
-                        Colour(50,50,50)) :
-                    Shape::Rectangle(
-                        static_cast<float>(left/100),
-                        static_cast<float>(top/100),
-                        static_cast<float>(hmid/100),
-                        static_cast<float>(vmid/100),
-                        Colour(50,50,50)));
-            
-            if (guy.getBoxCarrying())
-            {
-                target.Draw(
-                    Shape::Rectangle(
-                        static_cast<float>((hmid - guy.getBoxCarrySize()/2)/100),
-                        static_cast<float>((top - guy.getBoxCarrySize())/100),
-                        static_cast<float>((hmid + guy.getBoxCarrySize()/2)/100),
-                        static_cast<float>(top/100),
-                        playerDirection == guy.getBoxCarryDirection() ?
-                            Colour(150,0,150) :
-                            Colour(0,150,0)));
-            }
-        }
-    }
+    foreach (Glitz const& glitz, glitzList) DrawParticularGlitz(target, glitz);
 }
 
 void DrawTimeline(
@@ -530,9 +407,7 @@ struct CompareIndicies {
 template<typename BidirectionalGuyRange>
 TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
 {
-    return boost::begin(
-        guyRange 
-        | boost::adaptors::reversed)->getTimeDirection();
+    return boost::begin(guyRange | boost::adaptors::reversed)->getTimeDirection();
 }
 
 //These are required to match each other, and to produce a 

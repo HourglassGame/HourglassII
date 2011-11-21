@@ -5,6 +5,7 @@
 #include "CommonTriggerCode.h"
 #include "ObjectAndTime.h"
 #include "LuaUtilities.h"
+#include <iostream>
 namespace hg {
 
 TriggerFrameState DirectLuaTriggerSystem::getFrameState() const

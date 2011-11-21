@@ -17,7 +17,7 @@ Frame::Frame(std::size_t frameNumber, Universe& universe):
         universe_(&universe),
         departures_(),
         arrivals_(),
-        glitz_()
+        view_()
 {
 }
 
@@ -155,7 +155,7 @@ end:
     return changedTimes;
 }
 
-ObjectPtrList<Normal>  Frame::getPrePhysics() const
+ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal>  retv;
     foreach (
@@ -170,7 +170,7 @@ ObjectPtrList<Normal>  Frame::getPrePhysics() const
     return retv;
 }
 
-ObjectPtrList<Normal>  Frame::getPostPhysics() const
+ObjectPtrList<Normal> Frame::getPostPhysics() const
 {
     ObjectPtrList<Normal>  retv;
     foreach (ObjectList<Normal> const& value, departures_ | boost::adaptors::map_values)

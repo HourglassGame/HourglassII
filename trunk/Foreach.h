@@ -9,4 +9,4 @@
     #define foreach BOOST_FOREACH
 #endif
 
-#endif HG_FOREACH_H
+#endif //HG_FOREACH_H

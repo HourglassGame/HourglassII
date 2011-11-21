@@ -27,18 +27,18 @@ public:
     {
     	PhysicsReturnT(
             FrameDepartureT const& Ndepartures,
-            NewGlitzType const& Nglitz,
+            FrameView const& Nview,
             bool NcurrentPlayerFrame,
     		bool NnextPlayerFrame,
     		bool NcurrentWinFrame) :
                 departures(Ndepartures),
-                glitz(Nglitz),
+                view(Nview),
                 currentPlayerFrame(NcurrentPlayerFrame),
                 nextPlayerFrame(NnextPlayerFrame),
                 currentWinFrame(NcurrentWinFrame)
     	{}
     	FrameDepartureT departures;
-    	NewGlitzType glitz;
+        FrameView view;
     	bool currentPlayerFrame;
     	bool nextPlayerFrame;
     	bool currentWinFrame;
