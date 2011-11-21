@@ -16,8 +16,8 @@ class FrameView {
 public:
     FrameView();
     FrameView(
-        mt::std::vector<Glitz>::type const&  forwardsGlitz,
-        mt::std::vector<Glitz>::type const&  reverseGlitz,
+        mt::std::vector<Glitz>::type const& forwardsGlitz,
+        mt::std::vector<Glitz>::type const& reverseGlitz,
         mt::std::vector<GuyOutputInfo>::type const& guyInformation);
     
     void swap(FrameView& other);
