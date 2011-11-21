@@ -38,7 +38,7 @@ def svnversion():
       re.search(r"Last Changed Rev: ([0-9]*)", subprocess.check_output(["svn", "info"]).decode("UTF-8")).group(1))
 
 
-def main()
+def main():
     try:
         current_revision = svnversion()
         svn_up()
