@@ -44,10 +44,10 @@ def main():
         svn_up()
         revision = svnversion()
         if revision > current_revision:
-            print("Building revision", current_revision, "...")
+            print("Building revision", revision, "...")
             build()
             print("Finished building, uploading...")
-            upload(current_revision)
+            upload(revision)
             shutil.rmtree("build")
             print("Finished uploading.")
         else:
