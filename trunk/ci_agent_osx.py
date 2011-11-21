@@ -1,10 +1,12 @@
-import build_osx
 import subprocess
 import shutil
 import re
 import sys
 import time
+import imp
 def build():
+    import build_osx
+    imp.reload(build_osx)
     build_osx.main()
     pass
 
@@ -37,17 +39,16 @@ def svnversion():
         r"Last Changed Rev: ([0-9]*)",
         subprocess.check_output(["svn", "info"]).decode("UTF-8")).group(1))
 
-current_revision = svnversion()
-while True:
+def main():
     try:
+        current_revision = svnversion()
         svn_up()
         revision = svnversion()
         if revision > current_revision:
-            current_revision = revision
-            print("Building revision", current_revision, "...")
+            print("Building revision", revision, "...")
             build()
             print("Finished building, uploading...")
-            upload(current_revision)
+            upload(revision)
             shutil.rmtree("build")
             print("Finished uploading.")
         else:
@@ -58,5 +59,6 @@ while True:
     except:
         print("Unexpected error:", sys.exc_info())
         time.sleep(1)
-        pass
 
+if __name__ == "__main__":
+    main()
