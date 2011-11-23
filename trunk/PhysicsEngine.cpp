@@ -9,7 +9,6 @@
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
-#include "Foreach.h"
 #include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 
@@ -240,7 +239,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
             newDepartures,
             time));
     typedef triggerDepartures_t::value_type triggerDeparture_t;
-    foreach (triggerDeparture_t const& triggerDeparture, triggerSystemDepartureInformation.get<0>()) {
+    for (triggerDeparture_t const& triggerDeparture: triggerSystemDepartureInformation.get<0>()) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
@@ -265,7 +264,7 @@ void buildDeparturesForComplexEntities(
     typename mt::std::vector<ObjectAndTime<Type> >::type const& next,
     PhysicsEngine::FrameDepartureT& newDepartures)
 {
-    foreach (ObjectAndTime<Type> const& thingAndTime, next)
+	for (auto const& thingAndTime: next)
     {
         newDepartures[thingAndTime.time].add(thingAndTime.object);
     }
@@ -405,22 +404,22 @@ FrameView makeFrameView(
 {
     mt::std::vector<Glitz>::type forwardsGlitz;
     mt::std::vector<Glitz>::type reverseGlitz;
-    foreach (RectangleGlitz const& glitz, glitzlist) {
+    for (auto const& glitz: glitzlist) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), forwardsGlitz, reverseGlitz);
     }
     ObjectPtrList<Normal>  flattenedDepartures;
-    foreach (ObjectList<Normal> const& value, departures | boost::adaptors::map_values)
+    for (auto const& objectList: departures | boost::adaptors::map_values)
     {
-        flattenedDepartures.add(value);
+        flattenedDepartures.add(objectList);
     }
     flattenedDepartures.sort();
-    foreach (Box const& box, flattenedDepartures.getList<Box>()) {
+    for (auto const& box: flattenedDepartures.getList<Box>()) {
         if (box.getArrivalBasis() == -1) {
             pushBidirectional(box, 0xFF00FF00u, 0x00FF00FFu, forwardsGlitz, reverseGlitz);
         }
     }
     mt::std::vector<GuyOutputInfo>::type guyInfo;
-    foreach (Guy const& guy, flattenedDepartures.getList<Guy>()) {
+    for (auto const& guy: flattenedDepartures.getList<Guy>()) {
         pushGuyGlitz(guy, forwardsGlitz, reverseGlitz);
         guyInfo.push_back(GuyOutputInfo(guy.getTimeDirection()));
     }
@@ -505,7 +504,7 @@ void guyStep(
             int const height(guyArrivalList[i].getHeight());
 
             // chonofrag with platforms
-			foreach (const Collision& platform, nextPlatform)
+			for (Collision const& platform: nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -591,7 +590,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            foreach (const Collision& platform, nextPlatform)
+            for (Collision const& platform: nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -666,7 +665,7 @@ void guyStep(
             }
 
             // platform collision
-            foreach (const Collision& platform, nextPlatform)
+            for (Collision const& platform: nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -1472,7 +1471,7 @@ void boxCollisionAlogorithm(
 				continue;
 			}
 
-			foreach (Collision const& platform, nextPlatform)
+			for (Collision const& platform: nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -1775,7 +1774,7 @@ void boxCollisionAlogorithm(
 				}
 
 				// Check inside a platform
-				foreach (Collision const& platform, nextPlatform)
+				for (Collision const& platform: nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());

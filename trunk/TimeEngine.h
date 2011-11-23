@@ -12,6 +12,7 @@
 #include "Frame.h"
 
 #include <boost/swap.hpp>
+#include <utility>
 namespace hg {
 //TimeEngines are moveable but noncopyable
 //This is not due to any underlying limitation, but simply
@@ -27,16 +28,6 @@ public:
     typedef std::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
-        RunResult(
-            Frame const* currentPlayerFrame,
-            Frame const* nextPlayerFrame,
-            FrameListList& updatedFrames) :
-                currentPlayerFrame_(currentPlayerFrame),
-                nextPlayerFrame_(nextPlayerFrame),
-                updatedFrames_()
-        {
-            boost::swap(updatedFrames_, updatedFrames);
-        }
         Frame const* currentPlayerFrame() const {
             return currentPlayerFrame_;
         }
@@ -46,7 +37,6 @@ public:
         FrameListList const& updatedFrames() const {
             return updatedFrames_;
         }
-    private:
         Frame const* currentPlayerFrame_;
         Frame const* nextPlayerFrame_;
         FrameListList updatedFrames_;
@@ -59,10 +49,10 @@ public:
      * (objects begin at all points in time throughout the level,
      * and so must be propagated through from the start and the end)
      * Throws InvalidLevelException if level is not correct
-     * A correct level has exacty one guy.
+     * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(Level const& level);
+    explicit TimeEngine(Level&& level);
     
     void swap(TimeEngine& other);
 
@@ -87,6 +77,15 @@ public:
     Wall const& getWall() const { return wall_; }
     
     std::size_t getTimelineLength() const { return worldState_.getTimelineLength(); }
+
+    //Signal that the execution of the constructor or runToNextPlayerFrame should stop.
+    //This should result in an `InterruptionException` being thrown
+    //from the relevant function.
+    //This may be called while either of those functions are running.
+    //A TimeEngine which has been interrupted may only be assigned to or destructed.
+    //All other operations on a TimeEngine which has previously been
+    //interrupted are undefined.
+    void interrupt() { worldState_.interrupt(); }
 private:
     unsigned int speedOfTime_;
     //state of world at end of last executed frame

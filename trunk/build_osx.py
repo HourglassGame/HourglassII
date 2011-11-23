@@ -3,7 +3,7 @@ import subprocess
 import glob
 import shutil
 import os
-class basic_gxx_compiler:
+class basic_gxx11_compiler:
     def __init__(self, cxxbinary, ccbinary):
         self.cxx = cxxbinary
         self.cc = ccbinary
@@ -13,13 +13,13 @@ class basic_gxx_compiler:
                 [self.cxx]
                 + list(map(lambda d: "-D" + d, defines))
                 + list(map(lambda i: "-I" + i, include_directories))
-                + self.additional_flags
                 + ["-O3"]
                 + ["-mmacosx-version-min=10.4"]
+                + ["-std=gnu++0x"]
                 + ["-c"] + [source]
                 + ["-o"] + [output], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
     def do_link(self, sources, output, library_directories, libraries, additional_linker_flags):
         try:
@@ -27,30 +27,16 @@ class basic_gxx_compiler:
                 [self.cc]
                 + list(map(lambda L: "-L" + L, library_directories))
                 + list(map(lambda l: "-l" + l, libraries))
-                + self.additional_flags
                 + additional_linker_flags
                 + ["-shared-libgcc"]
                 + ["-lstdc++-static"]
                 + ["-mmacosx-version-min=10.4"]
+                + ["-std=gnu++0x"]
                 + ["-o"] + [output]
                 + sources, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
-
-class osx_gxx_compiler:
-    def __init__(self, cxxbinary, ldbinary, target_arch):
-        self.basic_compiler = basic_gxx_compiler(cxxbinary, ldbinary)
-        self.basic_compiler.additional_flags = ["-arch", target_arch]
-    def do_compile(self, source, output, defines, include_directories):
-        self.basic_compiler.do_compile(source, output, defines, include_directories)
-    def do_link(self, sources, output, library_directories, libraries, additional_linker_flags):
-        self.basic_compiler.do_link(sources, output, library_directories, libraries, additional_linker_flags)
-
-class osx_compiler_set:
-    def __init__(self, cxxbinary, ccbinary):
-        self.x86_64 = osx_gxx_compiler(cxxbinary, ccbinary, "x86_64")
-        self.i386 = osx_gxx_compiler(cxxbinary, ccbinary, "i386")
 
 def build_thin_binary(
     filenamegenerator,
@@ -72,58 +58,21 @@ def build_thin_binary(
     for o in objects:
         os.remove(o)
 
-def build_universal_binary(
-        filenamegenerator,
-        compiler_set,
-        archs,
-        sources, output,
-        defines, include_directories,
-        library_directories, libraries,
-        additional_linker_flags):
-    thin_binaries = []
-    for arch in archs:
-        assert getattr(compilers, arch) != None, "No known way of compiling for architecture: " + arch
-        thin_binary = filenamegenerator.__next__()
-        build_thin_binary(
-            filenamegenerator,
-            getattr(compilers, arch),
-            sources,
-            thin_binary,
-            defines,
-            includes,
-            library_directories,
-            libraries,
-            additional_linker_flags)
-        thin_binaries.append(thin_binary)
-
-    #lipo resulting files
-    subprocess.call(
-        ["lipo"]
-        + thin_binaries
-        + ["-create"]
-        + ["-output"] + [output])
-
-    #delete thin binaries
-    for b in thin_binaries:
-        os.remove(b)
-
 
 def create_bundle(
     filenamegenerator,
     compilers,
-    archs,
     files_to_compile,
     defines,
     includes,
     library_directories,
     libraries,
     dlls):
-    universal_exe = filenamegenerator.__next__()
-    build_universal_binary(
+    executable_binary = filenamegenerator.__next__()
+    build_thin_binary(
         filenamegenerator,
         compilers,
-        archs,
-        files_to_compile, universal_exe,
+        files_to_compile, executable_binary,
         defines, includes,
         library_directories, libraries,
         ["-framework", "CoreFoundation"]
@@ -136,7 +85,7 @@ def create_bundle(
     os.mkdir("build/HourglassII.app/Contents/MacOS")
     os.mkdir("build/HourglassII.app/Contents/Resources")
     os.mkdir("build/HourglassII.app/Contents/Frameworks")
-    shutil.copy(universal_exe, "build/HourglassII.app/Contents/MacOS/HourglassII")
+    shutil.copy(executable_binary, "build/HourglassII.app/Contents/MacOS/HourglassII")
     for dll in dlls:
         shutil.copy(dll, "build/HourglassII.app/Contents/Frameworks/")
     shutil.copy("osx/Info.plist", "build/HourglassII.app/Contents/Info.plist")
@@ -144,13 +93,11 @@ def create_bundle(
     shutil.copy("level.lua", "build/HourglassII.app/Contents/Resources/level.lua")
     shutil.copy("osx/HourglassSwirl.icns", "build/HourglassII.app/Contents/Resources/HourglassSwirl.icns")
 
-    #delete lipo'd exe
-    os.remove(universal_exe)
+    #delete executable
+    os.remove(executable_binary)
 
 def create_redistributable():
     subprocess.call(["hdiutil", "create", "-srcfolder", "build/HourglassII.app", "build/HourglassII.dmg"])
-
-
 
 #configuration: library locations, some configuration of toolsets
 #the configuration is here for now in order to get it done
@@ -160,6 +107,7 @@ boost_library_directory = "/Users/evan/Programming/boost/library/lib/"
 boost_serialization_lib = "boost_serialization"
 boost_filesystem_lib = "boost_filesystem"
 boost_system_lib = "boost_system"
+boost_thread_lib = "boost_thread"
 
 sfml_inlcude = "/Users/evan/Programming/SFML/library/include/"
 sfml_library_directory = "/Users/evan/Programming/SFML/library/lib/"
@@ -178,13 +126,9 @@ tbb_malloc_dll = "/Users/evan/Programming/tbb/library/lib/libtbbmalloc.dylib"
 freetype_library_directory = "/Users/evan/Programming/freetype/library/lib/"
 freetype_lib = "freetype"
 
-compilers = osx_compiler_set("/Developer-old/usr/bin/g++", "/Developer-old/usr/bin/gcc")
-
-
+compiler = basic_gxx11_compiler("/opt/local/bin/g++-mp-4.6", "/opt/local/bin/gcc-mp-4.6")
 
 #Read the config into the internal variables:
-archs = ["x86_64", "i386"]
-
 defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI"]
 
 includes = [boost_include, sfml_inlcude, tbb_include]
@@ -194,7 +138,7 @@ library_directories = [
      tbb_library_directory, freetype_library_directory]
 
 libraries = [
-     boost_serialization_lib, boost_filesystem_lib, boost_system_lib,
+     boost_serialization_lib, boost_filesystem_lib, boost_system_lib, boost_thread_lib,
      sfml_system_lib, sfml_window_lib, sfml_graphics_lib,
      tbb_lib, tbb_malloc_lib,
      freetype_lib]
@@ -219,8 +163,7 @@ def main():
     #build bundle
     create_bundle(
         filenamegenerator,
-        compilers,
-        archs,
+        compiler,
         files_to_compile,
         defines,
         includes,

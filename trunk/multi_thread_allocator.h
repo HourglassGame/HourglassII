@@ -3,13 +3,13 @@
 //The purpose of this file is to provide a single place that needs to be changed
 //to modify the memory allocation used in the regions of the code that execute concurrently.
 
-#include <tbb/scalable_allocator.h>
+#include "scalable_allocator.h"
 namespace hg {
     //Metafunction to calculate the allocator type to use
     //when multiple threads may be performing allocations/deallocations
     //simultaneously.
     template<typename T> struct multi_thread_allocator {
-        typedef tbb::scalable_allocator<T> type;
+        typedef hg::tbb_scalable_allocator<T> type;
     };
 
     //Versions of the C library functions to use
@@ -36,6 +36,21 @@ namespace hg {
     }
     inline void multi_thread_operator_delete(void* p) {
         multi_thread_free(p);
+    }
+
+    //Equivalent to:
+    //  new T(args),
+    //except using a custom allocation function.
+    template<typename T, typename... Args>
+    T* multi_thread_new(Args&&...args){
+    	void* p(multi_thread_operator_new(sizeof(T)));
+    	try {
+    		return new (p) T(std::forward<Args>(args)...);
+    	}
+    	catch (...) {
+    		multi_thread_operator_delete(p);
+    		throw;
+    	}
     }
 }
 #endif //HG_MULTI_THREAD_ALLOCATOR_H

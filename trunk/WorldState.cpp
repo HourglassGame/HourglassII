@@ -4,45 +4,25 @@
 #include "PlayerVictoryException.h"
 #include "ParallelForEach.h"
 #include "Frame.h"
-
-#include "Foreach.h"
-
 #include "Universe.h"
 
+#include <utility>
+
 namespace hg {
-
-struct ExecuteFrame
-{
-    ExecuteFrame(
-        WorldState& thisptr,
-        DepartureMap& departureMap):
-            thisptr_(thisptr),
-            departureMap_(departureMap)
-    {
-    }
-    void operator()(Frame* time) const
-    {
-        PhysicsEngine::FrameDepartureT departuresFromTime(thisptr_.getDeparturesFromFrame(time));
-        departureMap_.setDeparture(time, departuresFromTime);
-    }
-private:
-    WorldState& thisptr_;
-    DepartureMap& departureMap_;
-};
-
 WorldState::WorldState(
     std::size_t timelineLength,
-    Guy const& initialGuy,
-    FrameID const& guyStartTime,
-    PhysicsEngine const& physics,
-    ObjectList<NonGuyDynamic> const& initialObjects) :
+    Guy&& initialGuy,
+    FrameID&& guyStartTime,
+    PhysicsEngine&& physics,
+    ObjectList<NonGuyDynamic>&& initialObjects) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
-        physics_(physics),
+        physics_(std::move(physics)),
         nextPlayerFrames_(),
         currentPlayerFrames_(),
-        currentWinFrames_()
+        currentWinFrames_(),
+        task_group_context_()
 {
     assert(guyStartTime.isValidFrame());
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
@@ -51,10 +31,9 @@ WorldState::WorldState(
         std::map<Frame*, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        for (mt::std::vector<Box>::type::const_iterator it(initialObjects.getList<Box>().begin()),
-                end(initialObjects.getList<Box>().end()); it != end; ++it)
+        for (auto const& box: initialObjects.getList<Box>())
         {
-            initialArrivals[getEntryFrame(timeline_.getUniverse(), it->getTimeDirection())].add(*it);
+            initialArrivals[getEntryFrame(timeline_.getUniverse(), box.getTimeDirection())].add(box);
         }
         
         // guy
@@ -129,8 +108,11 @@ FrameUpdateSet WorldState::executeWorld()
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
-    timeline_.updateWithNewDepartures(newDepartures).swap(frameUpdateSet_);
+    parallel_for_each(returnSet,
+    	[this, &newDepartures](Frame* frame) {
+    		newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame)); },
+    		task_group_context_);
+    frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures, task_group_context_);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
             && "How can a consistent reality have a guy win in multiple frames?");

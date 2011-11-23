@@ -10,7 +10,6 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
-#include "Foreach.h"
 #include <functional>
 
 namespace hg {
@@ -27,11 +26,9 @@ struct InsertAddresses
     void operator()(Container& toInsertInto, ForwardRange const& toInsert) const
     {
         toInsertInto.reserve(boost::distance(toInsertInto) + boost::distance(toInsert));
-        typedef typename boost::range_value<ForwardRange>::type value_t;
-        foreach (
-           value_t const& obj,
-           toInsert) {
-            toInsertInto.push_back(typename ConstPtr_of<value_t>::type(obj));
+        for (auto const& obj: toInsert) {
+            toInsertInto.push_back(
+            		typename ConstPtr_of<typename boost::range_value<ForwardRange>::type>::type(obj));
         }
     }
 };

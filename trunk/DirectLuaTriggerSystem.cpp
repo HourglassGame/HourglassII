@@ -10,36 +10,16 @@ namespace hg {
 
 TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
 {
-    SingleAssignmentPtr<LuaState>& sharedStatePtr(luaStates_->get());
-    if (!sharedStatePtr.get()) {
-        void* p(multi_thread_operator_new(sizeof(LuaState)));
-        try {
-            sharedStatePtr = new (p) LuaState();
-        }
-        catch (...) {
-            multi_thread_operator_delete(p);
-            throw;
-        }
-        *sharedStatePtr = loadLuaStateFromVector(compiledLuaChunk_, "triggerSystem");
+    LuaState& sharedState(luaStates_->get());
+    if (!sharedState.ptr) {
+        sharedState = loadLuaStateFromVector(compiledLuaChunk_, "triggerSystem");
     }
-    //Unfortunately (due to the lack of perfect forwarding in C++03)
-    //this cannot be made into a function.
-    //This should be the equivalent to:
-    //  return new DirectLuaTriggerFrameState(
-    //      luaStates_.get(), triggerOffsetsAndDefaults_, arrivalLocationsSize_);
-    //except using a custom allocation function.
-    void* p(multi_thread_operator_new(sizeof(DirectLuaTriggerFrameState)));
-    try {
-        return TriggerFrameState(
-            new (p) DirectLuaTriggerFrameState(
-                *sharedStatePtr,
-                triggerOffsetsAndDefaults_,
-                arrivalLocationsSize_));
-    }
-    catch (...) {
-        multi_thread_operator_delete(p);
-        throw;
-    }
+
+	return TriggerFrameState(
+		multi_thread_new<DirectLuaTriggerFrameState>(
+			sharedState,
+			triggerOffsetsAndDefaults_,
+			arrivalLocationsSize_));
 }
 
 DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
@@ -96,21 +76,15 @@ std::string abilityToString(Ability ability)
         case NO_ABILITY:
         assert(false);
         return std::string("noAbility");
-        break;
         case TIME_JUMP:
         return std::string("timeJump");
-        break;
         case TIME_REVERSE:
         return std::string("timeReverse");
-        break;
         case TIME_GUN:
         return std::string("timeGun");
-        break;
         default:
             assert(false);
             return std::string("fix abilityToString(Ability ability) !!");
-            break;
-
     }
 }
 
@@ -388,12 +362,12 @@ PhysicsAffectingStuff
     lua_createtable(L_.ptr, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
     int i(0);
-    foreach (mt::std::vector<int>::type const& apparentTrigger, apparentTriggers) {
+    for (auto const& apparentTrigger: apparentTriggers) {
         ++i;
         lua_createtable(L_.ptr, static_cast<int>(apparentTrigger.size()), 0);
         //insert each triggerElement into the table for the particular trigger
         int j(0);
-        foreach (int triggerElement, apparentTrigger) {
+        for (int triggerElement: apparentTrigger) {
             ++j;
             lua_pushinteger(L_.ptr, triggerElement);
             lua_rawseti(L_.ptr, -2, j);
@@ -517,7 +491,7 @@ void pushGuy(lua_State* L, Guy const& guy)
     
     lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
     typedef std::pair<Ability const, int> PickupPair;
-    foreach (PickupPair const& pickup, guy.getPickups()) {
+    for (auto const& pickup: guy.getPickups()) {
         lua_checkstack(L, 2);
         lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
@@ -725,7 +699,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
-    foreach (int mutatorIndex, responsibleMutatorIndices) {
+    for (int mutatorIndex: responsibleMutatorIndices) {
         ++i;
         lua_pushinteger(L_.ptr, mutatorIndex);
         lua_rawseti(L_.ptr, -2, i);
@@ -757,7 +731,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
-    foreach (int mutatorIndex, responsibleMutatorIndices) {
+    for (int mutatorIndex: responsibleMutatorIndices) {
         ++i;
         lua_pushinteger(L_.ptr, mutatorIndex);
         lua_rawseti(L_.ptr, -2, i);
@@ -797,8 +771,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     lua_checkstack(L_.ptr, 1);
     lua_createtable(L_.ptr, static_cast<int>(departures.size()), 0);
     int i(0);
-    typedef std::pair<Frame* const, ObjectList<Normal> > departure_t;
-    foreach (departure_t const& departureSection, departures)
+    for (auto const& departureSection: departures)
     {
         ++i;
         lua_checkstack(L_.ptr, 1);
@@ -807,7 +780,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
             lua_checkstack(L_.ptr, 1);
             lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Guy>().size()), 0);
             int j(0);
-            foreach (Guy const& guy, departureSection.second.getList<Guy>()) {
+            for (auto const& guy: departureSection.second.getList<Guy>()) {
                 ++j;
                 pushGuy(L_.ptr, guy);
                 lua_rawseti(L_.ptr, -2, j);
@@ -817,7 +790,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
         {
             lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Box>().size()), 0);
             int j(0);
-            foreach (Box const& box, departureSection.second.getList<Box>()) {
+            for (auto const& box: departureSection.second.getList<Box>()) {
                 ++j;
                 pushBox(L_.ptr, box);
                 lua_rawseti(L_.ptr, -2, j);

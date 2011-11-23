@@ -64,29 +64,8 @@ class TriggerFrameStateImplementation
 };
 
 class TriggerFrameState;
-//Serves a similar purpose to auto_ptr_ref, allows TriggerFrameStates to be returned from functions
-struct TriggerFrameStateMove_t
-{
-    TriggerFrameState& tfs_;
-    explicit TriggerFrameStateMove_t(TriggerFrameState& tfs):
-        tfs_(tfs)
-    {}
-
-    TriggerFrameState& operator*() const
-    {
-        return tfs_;
-    }
-
-    TriggerFrameState* operator->() const
-    {
-        return &tfs_;
-    }
-private:
-    TriggerFrameStateMove_t& operator=(TriggerFrameStateMove_t&);
-};
-
-//Moveable but non-copyable.
-//Moveable using the move() member function, and also with swap().
+//Movable but non-copyable.
+//Movable using the move() member function, and also with swap().
 class TriggerFrameState
 {
     public:
@@ -150,33 +129,15 @@ class TriggerFrameState
     explicit TriggerFrameState(TriggerFrameStateImplementation* impl) :
         impl_(impl)
     {}
-    TriggerFrameState(TriggerFrameStateMove_t mover) :
-        impl_(0)
-    {
-        this->swap(*mover);
-    }
-    TriggerFrameState& operator=(TriggerFrameStateMove_t mover)
-    {
-        this->swap(*mover);
-        return *this;
-    }
-    TriggerFrameState(TriggerFrameState& other) :
+    TriggerFrameState(TriggerFrameState&& other) :
         impl_(0)
     {
         swap(other);
     }
-    TriggerFrameState& operator=(TriggerFrameState& other)
+    TriggerFrameState& operator=(TriggerFrameState&& other)
     {
         swap(other);
         return *this;
-    }
-    TriggerFrameStateMove_t move()
-    {
-        return TriggerFrameStateMove_t(*this);
-    }
-    operator TriggerFrameStateMove_t()
-    {
-        return move();
     }
     void swap(TriggerFrameState& other)
     {

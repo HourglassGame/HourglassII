@@ -3,11 +3,13 @@
 #include "mt/std/vector"
 #include "TriggerData.h"
 #include "ObjectPtrList.h"
-#include "Foreach.h"
 #include "Frame.h"
 #include "Universe.h"
+#include "multi_thread_allocator.h"
+#include <utility>
 
 namespace hg {
+
 typedef boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::std::vector<TriggerDataConstPtr>::type const > TriggerDataRange;
@@ -22,14 +24,14 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
     apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
-    foreach (TriggerOffsetAndDefault const& offsetAndDefault, triggerOffsetsAndDefaults) {
+    for (auto const& offsetAndDefault: triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
             mt::std::vector<int>::type(
                     offsetAndDefault.second.begin(),
                     offsetAndDefault.second.end()));
     }
     
-    foreach (TriggerDataRange::value_type const& arrival, triggerArrivals) {
+    for (auto const& arrival: triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }
     return apparentTriggers;

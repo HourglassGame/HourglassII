@@ -65,19 +65,9 @@ class BasicConfiguredTriggerSystem :
 {
     public:
     virtual TriggerFrameState getFrameState() const {
-        //Unfortunately (due to the lack of perfect forwarding in C++03)
-        //this cannot be made into a function.
-        //This should be the equivalent to:
-        //  return new BasicConfiguredTriggerFrameState(*this);
-        //except using a custom allocation function.
-        void* p(multi_thread_operator_new(sizeof(BasicConfiguredTriggerFrameState)));
-        try {
-            return TriggerFrameState(new (p) BasicConfiguredTriggerFrameState(*this));
-        }
-        catch (...) {
-            multi_thread_operator_delete(p);
-            throw;
-        }
+    	return
+    	    TriggerFrameState(
+    	        multi_thread_new<BasicConfiguredTriggerFrameState>(*this));
     }
     
     virtual BasicConfiguredTriggerSystem* clone() const {

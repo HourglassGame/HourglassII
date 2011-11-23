@@ -3,7 +3,7 @@
 #include <boost/swap.hpp>
 #include <cassert>
 namespace hg {
-//It is desireable for this to be a smart reference
+//It is desirable for this to be a smart reference
 //(rather than a smart pointer)
 //but this is not possible in C++ ):
 template<typename Cloneable>
@@ -30,6 +30,16 @@ public:
         boost::swap(*this, other);
         return *this;
     }
+    clone_ptr(clone_ptr&& other) :
+    	obj(0)
+    {
+    	boost::swap(obj, other.obj);
+    }
+    clone_ptr& operator=(clone_ptr&& other)
+	{
+		boost::swap(obj, other.obj);
+		return *this;
+	}
     void swap(clone_ptr& other) {
         boost::swap(obj, other.obj);
     }
