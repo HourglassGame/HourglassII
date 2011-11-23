@@ -6,14 +6,14 @@
 #include <boost/swap.hpp>
 
 namespace hg {
-TimeEngine::TimeEngine(Level const& level) :
+TimeEngine::TimeEngine(Level&& level) :
         speedOfTime_(level.speedOfTime),
         worldState_(
             level.timelineLength,
-            level.initialGuy,
-            level.guyStartTime,
-            PhysicsEngine(level.environment, level.triggerSystem),
-            level.initialObjects),
+            std::move(level.initialGuy),
+            std::move(level.guyStartTime),
+            PhysicsEngine(level.environment, std::move(level.triggerSystem)),
+            std::move(level.initialObjects)),
         wall_(level.environment.wall)
 {
     
@@ -34,10 +34,10 @@ TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
     for (unsigned int i(0); i < speedOfTime_; ++i) {
         updatedList.push_back(worldState_.executeWorld());
     }
-    return RunResult(
+    return RunResult{
         worldState_.getCurrentPlayerFrame(),
         worldState_.getNextPlayerFrame(),
-        updatedList);
+        std::move(updatedList)};
 }
 
 std::vector<InputList> const& TimeEngine::getReplayData() const

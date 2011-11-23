@@ -12,9 +12,7 @@ public:
     //a TriggerSystem without a TriggerSystemImplementation
     //is only useful for swapping into a TriggerSystem with an implementation
     //as an O(1) operation.
-    TriggerSystem() :
-        impl_()
-    {}
+    TriggerSystem() = default;
     //Takes ownership of impl
     TriggerSystem(TriggerSystemImplementation* impl) :
         impl_(impl)

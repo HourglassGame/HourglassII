@@ -4,7 +4,6 @@
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
-#include "Foreach.h"
 #include <boost/swap.hpp>
 
 #include <functional>
@@ -14,7 +13,7 @@ namespace hg {
 //Updates the universe_ pointers in frames_
 void Universe::fixFramesUniverses()
 {
-    foreach (Frame& frame, frames_) {
+    for (auto& frame: frames_) {
         frame.correctUniverse(*this);
     }
 }
@@ -32,7 +31,7 @@ Universe::Universe(std::size_t timelineLength) :
 {
     assert(timelineLength > 0);
     frames_.reserve(timelineLength);
-    foreach (std::size_t i, boost::irange<std::size_t>(0, timelineLength)) {
+    for (auto i: boost::irange<std::size_t>(0, timelineLength)) {
         frames_.push_back(Frame(i, *this));
     }
 }

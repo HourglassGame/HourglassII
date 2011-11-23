@@ -26,10 +26,10 @@ public:
     //Exception Safety: Strong
     WorldState(
         std::size_t timelineLength,
-        Guy const& initialGuy,
-        FrameID const& guyStartTime,
-        PhysicsEngine const& physics,
-        ObjectList<NonGuyDynamic> const& initialObjects);
+        Guy&& initialGuy,
+        FrameID&& guyStartTime,
+        PhysicsEngine&& physics,
+        ObjectList<NonGuyDynamic>&& initialObjects);
 
     void swap(WorldState& other);
 
@@ -58,6 +58,8 @@ public:
     Frame* getFrame(FrameID const& whichFrame);
     
     std::size_t getTimelineLength() const;
+
+    void interrupt() { task_group_context_.cancel_group_execution(); }
 private:
     friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT
@@ -83,9 +85,10 @@ private:
     //(or whatever the win condition is) and not the following frames when the
     //win condition has been met at some previous time.
     ConcurrentTimeSet currentWinFrames_;
-    //intentionally undefined
-    WorldState(WorldState const& other);
-    WorldState& operator=(WorldState const& other);
+    tbb::task_group_context task_group_context_;
+
+    WorldState(WorldState const& other) = delete;
+    WorldState& operator=(WorldState const& other) = delete;
 };
 inline void swap(WorldState& l, WorldState& r) { l.swap(r); }
 }

@@ -12,84 +12,19 @@ inline int panic (lua_State* L) {
     return 0;
 }
 
-struct LuaState;
-struct LuaStateMove_t
-{
-    LuaState& L_;
-    explicit LuaStateMove_t(LuaState& L):
-        L_(L)
-    {}
-
-    LuaState& operator*() const
-    {
-        return L_;
-    }
-
-    LuaState* operator->() const
-    {
-        return &L_;
-    }
-private:
-    void operator=(LuaStateMove_t&);
-};
-//#if 0
 //RAII class for lua_State.
-//Moveable but non-copyable, as I do not know
+//Movable but non-copyable, as I do not know
 //any way to copy a lua_State.
 struct LuaState {
     struct new_state_t {};
     LuaState();
     explicit LuaState(new_state_t);
-    LuaState(LuaState& other) :
+    LuaState(LuaState&& other) :
         ptr(0)
     {
         swap(other);
     }
-    LuaState& operator=(LuaState& other)
-    {
-        swap(other);
-        return *this;
-    }
-    LuaState(LuaStateMove_t mover) :
-        ptr(0)
-    {
-        swap(*mover);
-    }
-    LuaState& operator=(LuaStateMove_t mover)
-    {
-        swap(*mover);
-        return *this;
-    }
-
-    void swap(LuaState& other) {
-        boost::swap(ptr, other.ptr);
-    }
-    LuaStateMove_t move() {
-        return LuaStateMove_t(*this);
-    }
-    operator LuaStateMove_t() {
-        return move();
-    }
-    ~LuaState();
-    lua_State* ptr;
-    private:
-};
-//#endif
-#if 0
-//RAII class for lua_State.
-//Moveable but non-copyable, as I do not know
-//any way to copy a lua_State.
-struct LuaState {
-
-    struct new_state_t {};
-    LuaState();
-    explicit LuaState(new_state_t);
-    LuaState(BOOST_RV_REF(LuaState) other) :
-        ptr(0)
-    {
-        swap(other);
-    }
-    LuaState& operator=(BOOST_RV_REF(LuaState) other)
+    LuaState& operator=(LuaState&& other)
     {
         swap(other);
         return *this;
@@ -99,10 +34,8 @@ struct LuaState {
     }
     ~LuaState();
     lua_State* ptr;
-    private:
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)
 };
-#endif
+
 inline void swap(LuaState& l, LuaState& r) {
     return l.swap(r);
 }

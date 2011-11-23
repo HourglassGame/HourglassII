@@ -43,5 +43,4 @@ LuaState::~LuaState()
         lua_close(ptr);
     }
 }
-
 }

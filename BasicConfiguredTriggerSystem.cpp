@@ -1,18 +1,7 @@
-/*
- *  BasicConfiguredTriggerSystem.cpp
- *  HourglassSetupTest
- *
- *  Created by Evan Wallace on 30/07/11.
- *  Copyright 2011 Team Causality. All rights reserved.
- *
- */
-
 #include "BasicConfiguredTriggerSystem.h"
 #include "ProtoStuff.h"
 #include "Universe.h"
 #include "CommonTriggerCode.h"
-
-#include "Foreach.h"
 
 namespace hg {
 namespace {
@@ -35,7 +24,7 @@ mt::std::vector<Collision>::type calculatePlatforms(
 {
     mt::std::vector<Collision>::type retv;
     retv.reserve(boost::distance(protoPlatforms));
-    foreach (ProtoPlatform const& proto, protoPlatforms) {
+    for (auto const& proto: protoPlatforms) {
         retv.push_back(proto.calculateCollision(triggers));
     }
     return retv;
@@ -46,7 +35,7 @@ mt::std::vector<PortalArea>::type calculatePortals(
 {
     mt::std::vector<PortalArea>::type retv;
     retv.reserve(boost::distance(collisionAreas));
-    foreach (ProtoPortal const& protoPortal, protoPortals) {
+    for (auto const& protoPortal: protoPortals) {
         retv.push_back(protoPortal.calculatePortalArea(collisionAreas));
     }
     return retv;
@@ -64,7 +53,7 @@ mt::std::vector<ArrivalLocation>::type calculateArrivalLocations(
 {
     mt::std::vector<ArrivalLocation>::type retv;
     retv.reserve(boost::distance(portals));
-    foreach (PortalArea const& portal, portals) {
+    for (auto const& portal: portals) {
         retv.push_back(calculateArrivalLocation(portal));
     }
     return retv;
@@ -76,7 +65,7 @@ mt::std::vector<PositionAndVelocity2D>::type calculateButtons(
 {
     mt::std::vector<PositionAndVelocity2D>::type retv;
     retv.reserve(boost::distance(collisions));
-    foreach (ProtoButton const& protoButton, protoButtons) {
+    for (auto const& protoButton: protoButtons) {
         retv.push_back(protoButton.calculatePositionAndVelocity2D(collisions));
     }
     return retv;
@@ -105,7 +94,7 @@ mt::std::vector<RectangleGlitz>::type
 {
     mt::std::vector<RectangleGlitz>::type retv;
     retv.reserve(boost::distance(collisions));
-    foreach(Collision const& collision, collisions) {
+    for (auto const& collision: collisions) {
         retv.push_back(
             RectangleGlitz(
                 collision.getX(), collision.getY(),
@@ -120,8 +109,8 @@ mt::std::vector<RectangleGlitz>::type
 mt::std::vector<RectangleGlitz>::type calculatePortalGlitz(mt::std::vector<PortalArea>::type const& portals)
 {
     mt::std::vector<RectangleGlitz>::type retv;
-    retv.reserve(boost::distance(portals));
-    foreach(PortalArea const& portal, portals) {
+    retv.reserve(static_cast<unsigned long>(boost::distance(portals)));
+    for (auto const& portal: portals) {
         retv.push_back(
             RectangleGlitz(
                 portal.getX(), portal.getY(),
@@ -217,13 +206,13 @@ mt::std::vector<char>::type calculateButtonStates(
     //assert(boost::distance(protoButtons) == boost::distance(buttonPositions));
     mt::std::vector<char>::type buttonStates(boost::distance(protoButtons), false);
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i) {
-        foreach(ObjectList<Normal> const& objectList, departures | boost::adaptors::map_values) {
-            foreach(const Box& box, objectList.getList<Box>()) {
+        for(auto objectList: departures | boost::adaptors::map_values) {
+        	for (auto const& box: objectList.getList<Box>()) {
                 if (temporalIntersectingExclusive(protoButtons[i], buttonPositions[i], box)) {
                     goto intersecting;
                 }
             }
-            foreach(const Guy& guy, objectList.getList<Guy>()) {
+        	for (auto const& guy: objectList.getList<Guy>()) {
                 if (temporalIntersectingExclusive(protoButtons[i], buttonPositions[i], guy)) {
                     goto intersecting;
                 }
@@ -244,7 +233,7 @@ mt::std::vector<RectangleGlitz>::type calculateButtonGlitz(
     assert(boost::distance(protoButtons) == boost::distance(buttonStates));
     assert(boost::distance(protoButtons) == boost::distance(buttonStore));
     mt::std::vector<RectangleGlitz>::type retv;
-    retv.reserve(boost::distance(protoButtons));
+    retv.reserve(static_cast<unsigned long>(boost::distance(protoButtons)));
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i) {
         unsigned colour(buttonStates[i]?0x96FF9600u:0xFF969600u);
         retv.push_back(

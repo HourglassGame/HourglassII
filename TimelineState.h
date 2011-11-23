@@ -29,7 +29,8 @@ public:
      * Updates the timeline with new departures and returns the set of frames
      * whose arrivals have changed.
      */
-    FrameUpdateSet updateWithNewDepartures(DepartureMap& newDepartures);
+    FrameUpdateSet updateWithNewDepartures(
+    	DepartureMap& newDepartures, tbb::task_group_context& context);
 
     /**
      * Creates the arrivals for those objects initially in the level.
@@ -37,7 +38,8 @@ public:
      * This should only be called once.
      */
     //Consider moving this into constructor
-    void addArrivalsFromPermanentDepartureFrame(std::map<Frame*, ObjectList<Normal> > const& initialArrivals);
+    void addArrivalsFromPermanentDepartureFrame(
+    	std::map<Frame*, ObjectList<Normal> > const& initialArrivals);
 
     /**
      * Converts FrameID into Frame*

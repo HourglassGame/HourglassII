@@ -1,26 +1,19 @@
 #include "DepartureMap.h"
 #include "FrameUpdateSet.h"
-#include "Foreach.h"
-
-
+#include <utility>
 namespace hg {
-DepartureMap::DepartureMap() :
-        map_()
-{
-}
-
-void DepartureMap::makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor)
+void DepartureMap::makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor)
 {
     map_.rehash(toMakeSpaceFor.size());
     //removes the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
-    foreach(Frame* frame, toMakeSpaceFor)
+    for (auto frame: toMakeSpaceFor)
     {
         map_.insert(value_type(frame, MapType::mapped_type()));
     }
 }
-void DepartureMap::setDeparture(Frame* time, MapType::mapped_type& departingObjects)
+void DepartureMap::setDeparture(Frame* time, MapType::mapped_type&& departingObjects)
 {
-    map_[time] = departingObjects;
+    map_[time] = std::move(departingObjects);
 }
 
 DepartureMap::iterator DepartureMap::begin()

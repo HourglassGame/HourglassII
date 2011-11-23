@@ -16,7 +16,6 @@
 
 #include <boost/multi_array.hpp>
 #include <boost/assign.hpp>
-#include "Foreach.h"
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -200,8 +199,8 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputL
     TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input));
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
-    foreach (
-        FrameUpdateSet const& updateSet,
+    for (
+        auto updateSet:
         waveInfo.updatedFrames())
     {
         framesExecutedList.push_back(boost::distance(updateSet));
@@ -262,8 +261,8 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputL
         stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
-            foreach (
-                std::size_t num,
+            for (
+                std::size_t num:
                 framesExecutedList 
                 | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
             {
@@ -333,7 +332,7 @@ void DrawParticularGlitz(RenderTarget& target, Glitz const& glitz)
 }
 void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList)
 {
-    foreach (Glitz const& glitz, glitzList) DrawParticularGlitz(target, glitz);
+	for (auto const& glitz: glitzList) DrawParticularGlitz(target, glitz);
 }
 
 void DrawTimeline(
@@ -343,10 +342,14 @@ void DrawTimeline(
     std::size_t timelineLength)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
-    foreach(FrameUpdateSet const& lists, waves) {
-        foreach (Frame* frame, lists) {
+    for (FrameUpdateSet const& wave: waves) {
+    	for (auto frame: wave) {
             if (frame) {
-                pixelsWhichHaveBeenDrawnIn[static_cast<std::size_t>((static_cast<double>(getFrameNumber(frame))/timelineLength)*target.GetView().GetRect().GetWidth())] = true;
+                pixelsWhichHaveBeenDrawnIn[
+                    static_cast<std::size_t>(
+                        (static_cast<double>(getFrameNumber(frame))/timelineLength)
+                        *target.GetView().GetRect().GetWidth())
+                    ] = true;
             }
             else {
                 assert(false && "I don't think that invalid frames can get updated");

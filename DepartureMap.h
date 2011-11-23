@@ -20,10 +20,9 @@ public:
     typedef MapType::value_type value_type;
     typedef MapType::iterator iterator;
     typedef MapType::const_iterator const_iterator;
-    DepartureMap();
     //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
-    void makeSpaceFor(const FrameUpdateSet& toMakeSpaceFor);
-    void setDeparture(Frame* time, MapType::mapped_type& departingObjects);
+    void makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor);
+    void setDeparture(Frame* time, MapType::mapped_type&& departingObjects);
     iterator begin();
     iterator end();
     const_iterator begin() const;

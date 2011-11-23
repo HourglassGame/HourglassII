@@ -3,7 +3,6 @@
 #include "TriggerSystemImplementation.h"
 #include "SimpleLuaCpp.h"
 #include "ThreadLocal.h"
-#include "SingleAssignmentPtr.h"
 #include "ObjectAndTime.h"
 #include <string>
 #include <vector>
@@ -79,25 +78,39 @@ private:
 };
 
 
-//The behaviour of this class is somewhat strange and not particularly useful in general, so the use
-//of this class should be limited to cases where there are no better options.
+//The behaviour of this class is somewhat strange and not particularly useful
+//in general, so the use of this class should be limited to cases where there
+//are no better options.
+//!!WARNING - The const members of this class cannot be regarded as
+//free of race conditions!! Mutable is in use.
 template<typename T>
 class lazy_ptr
 {
 public:
     lazy_ptr() :
-        ptr_(new T())
+        ptr_(nullptr)
     {
     }
     //Notice that these do not actually copy their arguments.
     //The arguments are not even moved. This is deliberate.
     lazy_ptr(lazy_ptr const&) :
-        ptr_(new T())
+        ptr_(nullptr)
     {
     }
     lazy_ptr& operator=(lazy_ptr const&)
     {
         //nothing to do.
+    	return *this;
+    }
+    lazy_ptr(lazy_ptr&& other) :
+    	ptr_(nullptr)
+    {
+    	boost::swap(ptr_, other.ptr_);
+    }
+    lazy_ptr& operator=(lazy_ptr&& other)
+    {
+    	boost::swap(ptr_, other.ptr_);
+    	return *this;
     }
     ~lazy_ptr()
     {
@@ -105,19 +118,21 @@ public:
     }
     T& operator*() const
     {
+    	if (!ptr_) ptr_ = new T();
         return *ptr_;
     }
     T* operator->() const
     {
+    	if (!ptr_) ptr_ = new T();
         return ptr_;
     }
     T* get() const
     {
+    	if (!ptr_) ptr_ = new T();
         return ptr_;
     }
 private:
-
-    T* ptr_;
+    mutable T* ptr_;
 };
 
 class DirectLuaTriggerSystem :
@@ -139,7 +154,14 @@ public:
         return new DirectLuaTriggerSystem(*this);
     }
 private:
-    lazy_ptr<ThreadLocal<SingleAssignmentPtr<LuaState> > > luaStates_;
+    //lazy_ptr because TriggerSystemImplementations must
+    //be cloneable, but there is no way to copy
+    //a LuaState (or by extension a ThreadLocal<LuaState>).
+    //lazy_ptr side-steps this problem by making a fresh
+    //instance of the ThreadLocal<LuaState> at every step.
+    //luaStates_ a cache, so ignoring its contents does not cause
+    //any problems.
+    lazy_ptr<ThreadLocal<LuaState>> luaStates_;
     std::vector<char> compiledLuaChunk_;
     std::vector<
         std::pair<
