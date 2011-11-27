@@ -27,13 +27,20 @@ Level loadLevelFromFile(std::string const& filename)
     //] read initial objects
     //read initial guy [
     InitialGuyArrival initialGuy(readGlobal<InitialGuyArrival>(L, "initialGuy"));
-    Guy const& guyArrival(initialGuy.arrival);
+    Guy& guyArrival(initialGuy.arrival);
     FrameID guyStartTime(initialGuy.arrivalTime, UniverseID(timelineLength));
     //] read initial guy
     //read trigger system [
     TriggerSystem triggerSystem(readGlobal<TriggerSystem>(L, "triggerSystem"));
     //] read trigger system
     //] read globals
-    return Level(speedOfTime, timelineLength, environment, initialArrivals, guyArrival, guyStartTime, triggerSystem);
+    return Level(
+    	std::move(speedOfTime),
+    	std::move(timelineLength),
+    	std::move(environment),
+    	std::move(initialArrivals),
+    	std::move(guyArrival),
+    	std::move(guyStartTime),
+    	std::move(triggerSystem));
 }
 } //namespace hg

@@ -460,7 +460,7 @@ local tempStore =
             timeDestination = 120,
             illegalDestination = 1,
             fallable = true,
-            winner = false
+            winner = true
         }
     },
     protoCollisions = {

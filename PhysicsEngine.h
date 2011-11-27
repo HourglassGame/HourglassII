@@ -21,6 +21,8 @@ public:
     PhysicsEngine(
         Environment const& env,
         TriggerSystem const& newTriggerSystem);
+    PhysicsEngine(PhysicsEngine&&) = default;
+    PhysicsEngine& operator=(PhysicsEngine&&) = default;
     typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
     typedef mt::std::vector<RectangleGlitz>::type NewGlitzType;
     struct PhysicsReturnT

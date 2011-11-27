@@ -24,7 +24,7 @@ void TimelineState::swap(TimelineState& other)
 
 FrameUpdateSet
 TimelineState::updateWithNewDepartures(
-	DepartureMap& newDepartures, tbb::task_group_context& context)
+	DepartureMap& newDepartures/*, tbb::task_group_context& context*/)
 {
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(
@@ -32,8 +32,8 @@ TimelineState::updateWithNewDepartures(
     	[&framesWithChangedArrivals]
     	(DepartureMap::value_type& newDeparture) {
 			framesWithChangedArrivals.add(
-				newDeparture.first->updateDeparturesFromHere(newDeparture.second)); },
-		context);
+				newDeparture.first->updateDeparturesFromHere(newDeparture.second)); }/*,
+		context*/);
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(

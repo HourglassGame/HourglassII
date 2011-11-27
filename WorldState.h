@@ -8,6 +8,8 @@
 #include "ConcurrentTimeSet.h"
 #include "InputList.h"
 
+#include <tbb/task.h>
+
 #include <vector>
 
 #include "Frame_fwd.h"
@@ -29,9 +31,13 @@ public:
         Guy&& initialGuy,
         FrameID&& guyStartTime,
         PhysicsEngine&& physics,
-        ObjectList<NonGuyDynamic>&& initialObjects);
+        ObjectList<NonGuyDynamic>&& initialObjects/*,
+        ProgressMonitor& monitor*/);
 
     void swap(WorldState& other);
+
+    WorldState(WorldState&& other) = default;
+    WorldState& operator=(WorldState&& other) = default;
 
     /**
      * Updates the state of the world once.
@@ -59,7 +65,6 @@ public:
     
     std::size_t getTimelineLength() const;
 
-    void interrupt() { task_group_context_.cancel_group_execution(); }
 private:
     friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT
@@ -85,7 +90,6 @@ private:
     //(or whatever the win condition is) and not the following frames when the
     //win condition has been met at some previous time.
     ConcurrentTimeSet currentWinFrames_;
-    tbb::task_group_context task_group_context_;
 
     WorldState(WorldState const& other) = delete;
     WorldState& operator=(WorldState const& other) = delete;

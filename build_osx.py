@@ -15,7 +15,8 @@ class basic_gxx11_compiler:
                 + list(map(lambda i: "-I" + i, include_directories))
                 + ["-O3"]
                 + ["-mmacosx-version-min=10.4"]
-                + ["-std=gnu++0x"]
+                + ["-std=c++0x"]
+                #+ ["-ggdb"]
                 + ["-c"] + [source]
                 + ["-o"] + [output], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -30,8 +31,10 @@ class basic_gxx11_compiler:
                 + additional_linker_flags
                 + ["-shared-libgcc"]
                 + ["-lstdc++-static"]
+                #+ ["-static-libstdc++"]
                 + ["-mmacosx-version-min=10.4"]
-                + ["-std=gnu++0x"]
+                + ["-std=c++0x"]
+                #+ ["-ggdb"]
                 + ["-o"] + [output]
                 + sources, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -55,8 +58,8 @@ def build_thin_binary(
     compiler.do_link(objects, output, library_directories, libraries, additional_linker_flags)
 
     #delete object files
-    for o in objects:
-        os.remove(o)
+    #for o in objects:
+    #    os.remove(o)
 
 
 def create_bundle(
@@ -122,11 +125,13 @@ tbb_malloc_lib = "tbbmalloc"
 
 tbb_dll = "/Users/evan/Programming/tbb/library/lib/libtbb.dylib"
 tbb_malloc_dll = "/Users/evan/Programming/tbb/library/lib/libtbbmalloc.dylib"
+libgcc_dll = "/Users/evan/Programming/GCCStuff/builddir/Install-root/lib/libgcc_s.1.dylib"
 
 freetype_library_directory = "/Users/evan/Programming/freetype/library/lib/"
 freetype_lib = "freetype"
 
-compiler = basic_gxx11_compiler("/opt/local/bin/g++-mp-4.6", "/opt/local/bin/gcc-mp-4.6")
+compiler = basic_gxx11_compiler("/Users/evan/Programming/GCCStuff/builddir/Install-root/bin/g++",
+                                "/Users/evan/Programming/GCCStuff/builddir/Install-root/bin/gcc")
 
 #Read the config into the internal variables:
 defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI"]
@@ -143,7 +148,7 @@ libraries = [
      tbb_lib, tbb_malloc_lib,
      freetype_lib]
 
-dlls = [tbb_dll, tbb_malloc_dll]
+dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll]
 
 def main():
     files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
@@ -174,7 +179,7 @@ def main():
     #build release package
     create_redistributable()
 
-    shutil.rmtree("build/intermediate")
+    #shutil.rmtree("build/intermediate")
 
 if __name__ == "__main__":
     main()

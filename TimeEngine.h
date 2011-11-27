@@ -3,6 +3,7 @@
 
 #include "WorldState.h"
 #include "FrameUpdateSet.h"
+#include "ProgressMonitor.h"
 
 #include <vector>
 #include <boost/swap.hpp>
@@ -14,7 +15,7 @@
 #include <boost/swap.hpp>
 #include <utility>
 namespace hg {
-//TimeEngines are moveable but noncopyable
+//TimeEngines are movable but non-copyable.
 //This is not due to any underlying limitation, but simply
 //because the use of Frame pointers makes
 //writing a correct copy assignment operator or constructor
@@ -41,7 +42,8 @@ public:
         Frame const* nextPlayerFrame_;
         FrameListList updatedFrames_;
     };
-
+    TimeEngine(TimeEngine&& other) = default;
+    TimeEngine& operator=(TimeEngine&& other) = default;
     /**
      * Constructs a new TimeEngine with the given Level
      *
@@ -52,8 +54,8 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(Level&& level);
-    
+    explicit TimeEngine(Level&& level/*, ProgressMonitor& monitor*/);
+
     void swap(TimeEngine& other);
 
     /**
@@ -77,15 +79,6 @@ public:
     Wall const& getWall() const { return wall_; }
     
     std::size_t getTimelineLength() const { return worldState_.getTimelineLength(); }
-
-    //Signal that the execution of the constructor or runToNextPlayerFrame should stop.
-    //This should result in an `InterruptionException` being thrown
-    //from the relevant function.
-    //This may be called while either of those functions are running.
-    //A TimeEngine which has been interrupted may only be assigned to or destructed.
-    //All other operations on a TimeEngine which has previously been
-    //interrupted are undefined.
-    void interrupt() { worldState_.interrupt(); }
 private:
     unsigned int speedOfTime_;
     //state of world at end of last executed frame
@@ -95,8 +88,9 @@ private:
     //No, this is probably plain silly. Please fix/justify.
     Wall wall_;
     //intentionally undefined
-    TimeEngine(TimeEngine const& other);
-    TimeEngine& operator=(TimeEngine const& other);
+    TimeEngine(TimeEngine const& other) = delete;
+    TimeEngine& operator=(TimeEngine const& other) = delete;
+
 };
 }
 #endif //HG_TIME_ENGINE_H

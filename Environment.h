@@ -5,6 +5,19 @@ namespace hg {
     //stores the wall (the static environment over which the game is played)
     class Wall {
     public:
+    	Wall(Wall const& other) = default;
+    	Wall& operator=(Wall const& other) = default;
+    	Wall(Wall&& other) :
+    		segmentSize_(other.segmentSize_),
+    		wallmap_(other.wallmap_)
+    	{
+    	}
+    	Wall& operator=(Wall&& other)
+    	{
+    		segmentSize_ = other.segmentSize_;
+    		wallmap_ = other.wallmap_;
+    		return *this;
+    	}
         Wall(
             int segmentSize,
             boost::multi_array<bool, 2> const& wallmap) :
@@ -34,7 +47,7 @@ namespace hg {
 
         bool inTopRightTriangle(int x, int y) const
         {
-        	return (x - (x/segmentSize_)*segmentSize_ > y - (y/segmentSize_)*segmentSize_);
+        	return x - (x/segmentSize_)*segmentSize_ > y - (y/segmentSize_)*segmentSize_;
         }
 
         int segmentSize() const{
@@ -54,6 +67,10 @@ namespace hg {
     //in which the game is played.
     //That is - the wall and gravity
     struct Environment {
+    	Environment(Environment&& other) = default;
+    	Environment& operator=(Environment&& other) = default;
+    	Environment(Environment const& other) = default;
+    	Environment& operator=(Environment const& other) = default;
         Environment(Wall const& nWall, int nGravity):
             wall(nWall),
             gravity(nGravity)

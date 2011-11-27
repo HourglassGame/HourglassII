@@ -34,15 +34,15 @@ public:
     
     tbb_scalable_allocator() : alloc() {}
     tbb_scalable_allocator(tbb_scalable_allocator const& other)
-        : alloc(other.alloc) {}
+        : alloc() {}
     template<typename U>
     tbb_scalable_allocator(tbb_scalable_allocator<U> const& other)
-        : alloc(other.alloc) {}
+        : alloc() {}
     tbb_scalable_allocator(tbb_scalable_allocator&& other)
-        : alloc(std::move(other.alloc)) {}
+        : alloc() {}
     template<typename U>
     tbb_scalable_allocator(tbb_scalable_allocator&& other)
-        : alloc(std::move(other.alloc)) {}
+        : alloc() {}
     
     template<typename C, typename... Args>
     void construct(C* c, Args&&... args) {

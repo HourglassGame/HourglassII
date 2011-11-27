@@ -14,11 +14,11 @@ public:
     Level(
         unsigned nspeedOfTime,
         std::size_t ntimelineLength,
-        Environment const& nenvironment,
-        ObjectList<NonGuyDynamic> const& ninitialObjects,
-        Guy const& ninitialGuy,
-        FrameID const& nguyStartTime,
-        TriggerSystem const& ntriggerSystem);
+        Environment&& nenvironment,
+        ObjectList<NonGuyDynamic>&& ninitialObjects,
+        Guy&& ninitialGuy,
+        FrameID&& nguyStartTime,
+        TriggerSystem&& ntriggerSystem);
 
     unsigned speedOfTime;
     std::size_t timelineLength;
