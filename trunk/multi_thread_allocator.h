@@ -37,10 +37,11 @@ namespace hg {
     inline void multi_thread_operator_delete(void* p) {
         multi_thread_free(p);
     }
-
-    //Equivalent to:
-    //  new T(args),
-    //except using a custom allocation function.
+    //multi_thread_new<T>(args...)
+    //is equivalent to:
+    //  new T(args...),
+    //except that it performs its allocation
+    //using `multi_thread_operator_new`.
     template<typename T, typename... Args>
     T* multi_thread_new(Args&&...args){
     	void* p(multi_thread_operator_new(sizeof(T)));

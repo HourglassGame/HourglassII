@@ -25,6 +25,16 @@ class ConcurrentTimeSet {
     typedef tbb::concurrent_hash_map<Frame*, Empty, BoostHashCompare<Frame*> > SetType;
 public:
     ConcurrentTimeSet();
+    ConcurrentTimeSet(ConcurrentTimeSet&& other) noexcept :
+    	set_()
+    {
+        set_.swap(other.set_);
+   	}
+    ConcurrentTimeSet& operator=(ConcurrentTimeSet&& other) noexcept
+    {
+        set_.swap(other.set_);
+        return *this;
+    }
     //Must never try to add or remove a particular frame concurrently,
     //only has safe concurrent access when called with different frames
     void add(Frame* toAdd);

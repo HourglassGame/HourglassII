@@ -12,6 +12,8 @@ public:
     //creates a top level universe
     explicit Universe(std::size_t timelineLength);
     
+    Universe(Universe&& other);
+    Universe& operator=(Universe&& other);
     void swap(Universe& other);
     
     //Conversion from FrameID to equivalent Frame* within this universe
@@ -25,7 +27,7 @@ private:
     void fixFramesUniverses();
     
         //<UniverseT interface>
-    //Returns the first frame in the universe for objects travelling
+    //Returns the first frame in the universe for objects traveling
     //in TimeDirection direction.
     Frame* getEntryFrame(TimeDirection direction);
     //Returns the frame with the index frameNumber within the universe, 
@@ -37,7 +39,7 @@ private:
     //Returns the frame which this Universe is a sub universe of.
     //The top level universe is a sub universe of the NullFrame
     Frame* getInitiatorFrame(Universe const& universe);
-    //Returns the first frame in the universe for objects travelling
+    //Returns the first frame in the universe for objects traveling
     //in TimeDirection direction.
     Frame* getEntryFrame(Universe& universe, TimeDirection direction);
     //Returns the frame with the index frameNumber within the universe, 
@@ -50,9 +52,8 @@ private:
 
     std::vector<Frame> frames_;
     
-    //intentionally undefined
-    Universe(Universe const& other);
-    Universe& operator=(Universe const& other);
+    Universe(Universe const& other) = delete;
+    Universe& operator=(Universe const& other) = delete;
 };
 Frame* getEntryFrame(Universe& universe, TimeDirection direction);
 Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);

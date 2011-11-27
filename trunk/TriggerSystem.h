@@ -17,7 +17,11 @@ public:
     TriggerSystem(TriggerSystemImplementation* impl) :
         impl_(impl)
     {}
-    
+    TriggerSystem(TriggerSystem const&) = default;
+    TriggerSystem& operator=(TriggerSystem const&) = default;
+    TriggerSystem(TriggerSystem&&) = default;
+    TriggerSystem& operator=(TriggerSystem&&) = default;
+
     void swap(TriggerSystem& other) {
         impl_.swap(other.impl_);
     }

@@ -10,6 +10,21 @@
 #include <cassert>
 
 namespace hg {
+Universe::Universe(Universe&& other) :
+	frames_(std::move(other.frames_))
+{
+	assert(!frames_.empty());
+	fixFramesUniverses();
+}
+Universe& Universe::operator=(Universe&& other)
+{
+	assert(!other.frames_.empty());
+	frames_ = std::move(other.frames_);
+	assert(!frames_.empty());
+	fixFramesUniverses();
+	return *this;
+}
+
 //Updates the universe_ pointers in frames_
 void Universe::fixFramesUniverses()
 {
@@ -27,13 +42,14 @@ void Universe::swap(Universe& other)
 
 //creates a top level universe
 Universe::Universe(std::size_t timelineLength) :
-        frames_()
+    frames_()
 {
     assert(timelineLength > 0);
     frames_.reserve(timelineLength);
     for (auto i: boost::irange<std::size_t>(0, timelineLength)) {
         frames_.push_back(Frame(i, *this));
     }
+	assert(!frames_.empty());
 }
 Frame* Universe::getEntryFrame(TimeDirection direction)
 {

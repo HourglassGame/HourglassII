@@ -25,11 +25,19 @@
 #include <boost/range/irange.hpp>
 #include <boost/range/istream_range.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
+#include <boost/utility/typed_in_place_factory.hpp>
+
+#include <boost/function.hpp>
+
+#include <functional>
 
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 
 #include <boost/serialization/vector.hpp>
+
+#include <tbb/concurrent_queue.h>
 
 #include <fstream>
 
@@ -38,12 +46,15 @@
 #include <cstddef>
 //#include <debug/vector>
 #include <iostream>
+#include <utility>
 
 #include <cmath>
 
 #include "BasicConfiguredTriggerSystem.h"
 #include "DirectLuaTriggerSystem.h"
 #include "LevelLoader.h"
+#include "ConcurrentQueue.h"
+#include "move_function.h"
 
 typedef sf::Color Colour;
 
@@ -53,7 +64,7 @@ using namespace sf;
 using namespace boost;
 namespace {
     void initialseCurrentPath(int argc, char const* const argv[]);
-    void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input);
+    void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEngine::RunResult const& waveInfo);
     void Draw(
         RenderWindow& target,
         mt::std::vector<Glitz>::type const& glitz,
@@ -62,29 +73,62 @@ namespace {
     void DrawWall(RenderTarget& target, Wall const& wallData);
     void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
-    TimeDirection findCurrentGuyDirection(const BidirectionalGuyRange& guyRange);
+    TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange);
     
     std::vector<InputList> loadReplay();
     void saveReplay(std::vector<InputList> const& replay);
     void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend);
     void generateReplay();
+    template<typename F>
+    auto enqueue_task(ConcurrentQueue<move_function<void()>>& queue, F f) -> boost::unique_future<decltype(f())>
+    {
+        boost::packaged_task<decltype(f())> task(f);
+        boost::unique_future<decltype(f())> future(task.get_future());
+        queue.push(move_function<void()>(std::move(task)));
+        return std::move(future);
+    }
 }
 
+
+//Please note that main is the most horrible part of HourglassII at this time.
+//The entire front end/UI is a massive pile of hacks mounted on hacks.
+//On the other hand, code from TimeEngine downwards is generally well-designed
+//and logical.
 int main(int argc, char const* const argv[])
 {
+
 #ifdef HG_COMPILE_TESTS
     if(!hg::getTestDriver().passesAllTests()) {
         return EXIT_FAILURE;
     }
 #endif //HG_COMPILE_TESTS
     initialseCurrentPath(argc, argv);
+
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
-    
-    TimeEngine timeEngine(loadLevelFromFile("level.lua"));
+    ProgressMonitor monitor;
+
+    ConcurrentQueue<move_function<void()>> timeEngineTaskQueue;
+    boost::thread timeEngineThread(
+    	[&timeEngineTaskQueue]{
+    		while (!boost::this_thread::interruption_requested()) {
+    			timeEngineTaskQueue.pop()();
+    		}
+    	});
+
+    boost::unique_future<TimeEngine> futureTimeEngine(
+    	enqueue_task(
+    		timeEngineTaskQueue,
+    		[]{return TimeEngine(loadLevelFromFile("level.lua"));}));
+
+    //timeEngine would be a boost::optional if boost::optional supported r-value refs
+    std::unique_ptr<TimeEngine> timeEngine;
+
+    enum {LOADING_LEVEL, RUNNING_LEVEL, AWAITING_INPUT} state(LOADING_LEVEL);
+
     hg::Input input;
-    input.setTimelineLength(timeEngine.getTimelineLength());
+
     hg::Inertia inertia;
     std::vector<InputList> replay;
     std::vector<InputList>::const_iterator currentReplayIt(replay.begin());
@@ -93,88 +137,165 @@ int main(int argc, char const* const argv[])
     //Gets rewritten whenever the level is reset.
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
+    boost:unique_future<TimeEngine::RunResult> futureRunResult;
+    bool runningFromReplay(false);
     while (app.IsOpened()) {
-        Event event;
-        while (app.GetEvent(event))
-        {
-            //States + transitions:
-            //Not really a state machine!
-            //Playing game -> new game + playing game               Keybinding: R
-            //playing game -> new game + playig replay              Keybinding: L
+    	switch (state) {
+			case LOADING_LEVEL:
+			{
+				Event event;
+				while (app.GetEvent(event))
+				{
+					switch(event.Type) {
+						//TODO - if (closed or canceled) {cancel_loading(); exit();}
+					}
+				}
+				if (futureTimeEngine.is_ready()) {
+					timeEngine = std::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
+					input.setTimelineLength(timeEngine->getTimelineLength());
+					state = AWAITING_INPUT;
+				}
+				sf::String loadingGlyph("Loading Level...");
+				loadingGlyph.SetColor(Colour(255,255,255));
+				loadingGlyph.SetPosition(520, 450);
+				loadingGlyph.SetSize(12.f);
+				app.Clear();
+				app.Draw(loadingGlyph);
+				app.Display();
+				break;
+			}
+			case AWAITING_INPUT:
+			{
+				InputList inputList;
+				if (currentReplayIt != currentReplayEnd) {
+					inputList = *currentReplayIt;
+					++currentReplayIt;
+					runningFromReplay = true;
+				}
+				else {
+					input.updateState(app.GetInput(), app.GetWidth());
+					inputList = input.AsInputList();
+					runningFromReplay = false;
+				}
+				saveReplayLog(replayLogOut, inputList);
+				boost::packaged_task<TimeEngine::RunResult> timeEngineRunningTask(
+					[&timeEngine, inputList]{return timeEngine->runToNextPlayerFrame(inputList);});
+				futureRunResult = timeEngineRunningTask.get_future();
+				timeEngineTaskQueue.push(move_function<void()>(std::move(timeEngineRunningTask)));
+				state = RUNNING_LEVEL;
+				break;
+			}
+			case RUNNING_LEVEL:
+			{
+				Event event;
+				while (app.GetEvent(event))
+				{
+					//States + transitions:
+					//Not really a state machine!
+					//Playing game -> new game + playing game               Keybinding: R
+					//playing game -> new game + playing replay             Keybinding: L
 
-            //playing replay -> new game + playing game             Keybinding: R
-            //playing replay -> new game + playing replay           Keybinding: L
-            //playing replay -> playing game                        Keybinding: P or <get to end of replay>
-            switch (event.Type) {
-            case sf::Event::Resized:
-                std::cout << "resize event: width" << event.Size.Width << " height: " << event.Size.Height << "\n";
-                break;
-            case sf::Event::Closed:
-                app.Close();
-                goto breakmainloop;
-            case sf::Event::KeyPressed:
-                switch(event.Key.Code) {
-                case sf::Key::R:
-                    currentReplayIt = replay.end();
-                    currentReplayEnd = replay.end();
-                    replayLogOut.close();
-                    replayLogOut.open("replayLogOut");
-                    TimeEngine(loadLevelFromFile("level.lua")).swap(timeEngine);
-                    input.setTimelineLength(timeEngine.getTimelineLength());
-                    break;
-                case sf::Key::L:
-                    loadReplay().swap(replay);
-                    currentReplayIt = replay.begin();
-                    currentReplayEnd = replay.end();
-                    replayLogOut.close();
-                    replayLogOut.open("replayLogOut");
-                    TimeEngine(loadLevelFromFile("level.lua")).swap(timeEngine);
-                    input.setTimelineLength(timeEngine.getTimelineLength());
-                    break;
-                case sf::Key::P:
-                    currentReplayIt = replay.end();
-                    currentReplayEnd = replay.end();
-                    break;
-                case sf::Key::S:
-                    saveReplay(timeEngine.getReplayData());
-                    break;
-                case sf::Key::G:
-                    //Generate a replay from replayLogIn
-                    generateReplay();
-                    break;
-                default:
-                    break;
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        try {
-            if (currentReplayIt != currentReplayEnd) {
-                saveReplayLog(replayLogOut, *currentReplayIt);
-                runStep(timeEngine, app, inertia, *currentReplayIt);
-                ++currentReplayIt;
-                sf::String replayGlyph("R");
-                replayGlyph.SetColor(Colour(255,0,0));
-                replayGlyph.SetPosition(580, 32);
-                replayGlyph.SetSize(32.f);
-                app.Draw(replayGlyph);
-            }
-            else {
-                input.updateState(app.GetInput(), app.GetWidth());
-                saveReplayLog(replayLogOut, input.AsInputList());
-                runStep(timeEngine, app, inertia, input.AsInputList());
-            }
-
-            app.Display();
-        }
-        catch (hg::PlayerVictoryException&) {
-            cout << "Congratulations, a winner is you!\n";
-            return EXIT_SUCCESS;
-        }
+					//playing replay -> new game + playing game             Keybinding: R
+					//playing replay -> new game + playing replay           Keybinding: L
+					//playing replay -> playing game                        Keybinding: P or <get to end of replay>
+					switch (event.Type) {
+					case sf::Event::Closed:
+						//TODO - add something which cancels the execution of the time engine
+						app.Close();
+						goto breakmainloop;
+					case sf::Event::KeyPressed:
+						switch(event.Key.Code) {
+						//Restart
+						case sf::Key::R:
+							currentReplayIt = replay.end();
+							currentReplayEnd = replay.end();
+							replayLogOut.close();
+							replayLogOut.open("replayLogOut");
+							//TODO - cancel time engine execution
+							futureRunResult.wait();
+						    futureTimeEngine =
+						    	enqueue_task(
+						    		timeEngineTaskQueue,
+						    		[]{return TimeEngine(loadLevelFromFile("level.lua"));});
+							state = LOADING_LEVEL;
+							goto continuemainloop;
+						//Load replay
+						case sf::Key::L:
+							replay = loadReplay();
+							currentReplayIt = replay.begin();
+							currentReplayEnd = replay.end();
+							replayLogOut.close();
+							replayLogOut.open("replayLogOut");
+							//TODO - cancel time engine execution
+							futureRunResult.wait();
+						    futureTimeEngine =
+						    	enqueue_task(
+						    		timeEngineTaskQueue,
+						    		[]{return TimeEngine(loadLevelFromFile("level.lua"));});
+							state = LOADING_LEVEL;
+							goto continuemainloop;
+						//Interrupt replay and begin Playing
+						case sf::Key::P:
+							currentReplayIt = replay.end();
+							currentReplayEnd = replay.end();
+							break;
+						//Save replay
+						case sf::Key::S:
+							//TODO - possible allow finer-grained access
+							//to replay data, even when the step has not
+							//yet completely finished. (ie allow access as soon as
+							//the new input is pushed into the vector, rather than
+							//waiting until the execution is totally finished as
+							//we do now).
+							futureRunResult.wait();
+							saveReplay(timeEngine->getReplayData());
+							break;
+						//Generate a replay from replayLogIn
+						case sf::Key::G:
+							generateReplay();
+							break;
+						default:
+							break;
+						}
+						break;
+					default:
+						break;
+					}
+				}
+				if (futureRunResult.is_ready()) {
+					try {
+						runStep(*timeEngine, app, inertia, futureRunResult.get());
+					}
+					catch (PlayerVictoryException&) {
+						std::cout << "Congratulations, a winner is you" << std::endl;
+						goto breakmainloop;
+					}
+					catch (std::bad_alloc&) {
+						std::cout << "oops... ran out of memory ):" << std::endl;
+						goto breakmainloop;
+					}
+					if (runningFromReplay) {
+						sf::String replayGlyph("R");
+						replayGlyph.SetColor(Colour(255,0,0));
+						replayGlyph.SetPosition(580, 32);
+						replayGlyph.SetSize(32.f);
+						app.Draw(replayGlyph);
+					}
+					app.Display();
+					state = AWAITING_INPUT;
+				}
+				break;
+			}
+    	}
+    	Sleep(.001f);
+    	continuemainloop:
+    	;
     }
+
     breakmainloop:
+    timeEngineThread.interrupt();
+    timeEngineThread.join();
+
     return EXIT_SUCCESS;
 }
 
@@ -192,11 +313,10 @@ mt::std::vector<Glitz>::type const& getGlitzForDirection(FrameView const& view, 
     return timeDirection == FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
-void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, InputList const& input)
+void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEngine::RunResult const& waveInfo)
 {
     std::vector<std::size_t> framesExecutedList;
     FrameID drawnFrame;
-    TimeEngine::RunResult const waveInfo(timeEngine.runToNextPlayerFrame(input));
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
     for (

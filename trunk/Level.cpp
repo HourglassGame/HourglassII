@@ -1,20 +1,21 @@
 #include "Level.h"
+#include <utility>
 namespace hg {
 Level::Level(
     unsigned nspeedOfTime,
     std::size_t ntimelineLength,
-    Environment const& nenvironment,
-    ObjectList<NonGuyDynamic> const& ninitialObjects,
-    Guy const& ninitialGuy,
-    FrameID const& nguyStartTime,
-    TriggerSystem const& ntriggerSystem) :
+    Environment&& nenvironment,
+    ObjectList<NonGuyDynamic>&& ninitialObjects,
+    Guy&& ninitialGuy,
+    FrameID&& nguyStartTime,
+    TriggerSystem&& ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timelineLength(ntimelineLength),
-        environment(nenvironment),
-        initialObjects(ninitialObjects),
-        initialGuy(ninitialGuy),
-        guyStartTime(nguyStartTime),
-        triggerSystem(ntriggerSystem)
+        environment(std::move(nenvironment)),
+        initialObjects(std::move(ninitialObjects)),
+        initialGuy(std::move(ninitialGuy)),
+        guyStartTime(std::move(nguyStartTime)),
+        triggerSystem(std::move(ntriggerSystem))
 {
 }
 }

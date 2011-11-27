@@ -7,6 +7,8 @@
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 
+#include <tbb/task.h>
+
 #include <map>
 
 #include "FrameID_fwd.h"
@@ -23,6 +25,9 @@ public:
      */
     explicit TimelineState(std::size_t timelineLength);
     
+    TimelineState(TimelineState&& other) = default;
+    TimelineState& operator=(TimelineState&& other) = default;
+
     void swap(TimelineState& other);
     
     /**
@@ -30,7 +35,7 @@ public:
      * whose arrivals have changed.
      */
     FrameUpdateSet updateWithNewDepartures(
-    	DepartureMap& newDepartures, tbb::task_group_context& context);
+    	DepartureMap& newDepartures/*, tbb::task_group_context& context*/);
 
     /**
      * Creates the arrivals for those objects initially in the level.
@@ -45,11 +50,11 @@ public:
      * Converts FrameID into Frame*
      */
     Frame* getFrame(FrameID const& whichFrame);
-    Universe& getUniverse() {
+    Universe& getUniverse() noexcept {
         return universe_;
     }
     
-    Universe const& getUniverse() const {
+    Universe const& getUniverse() const noexcept {
         return universe_;
     }
     

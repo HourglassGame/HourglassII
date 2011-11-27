@@ -25,10 +25,9 @@ public:
         obj(new_clone(*other.obj))
     {
     }
-    clone_ptr& operator=(clone_ptr other)
+    clone_ptr& operator=(clone_ptr const& other)
     {
-        boost::swap(*this, other);
-        return *this;
+        return *this = clone_ptr<Cloneable>(other);
     }
     clone_ptr(clone_ptr&& other) :
     	obj(0)

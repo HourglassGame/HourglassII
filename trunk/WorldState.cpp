@@ -14,24 +14,30 @@ WorldState::WorldState(
     Guy&& initialGuy,
     FrameID&& guyStartTime,
     PhysicsEngine&& physics,
-    ObjectList<NonGuyDynamic>&& initialObjects) :
+    ObjectList<NonGuyDynamic>&& initialObjects/*,
+    ProgressMonitor& monitor*/) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
         physics_(std::move(physics)),
         nextPlayerFrames_(),
         currentPlayerFrames_(),
-        currentWinFrames_(),
-        task_group_context_()
+        currentWinFrames_()/*,
+        task_group_context_()*/
 {
     assert(guyStartTime.isValidFrame());
+    /*
+    monitor.setInterruptionFunction(
+    	boost::function<void()>(
+    		[&task_group_context_]{ task_group_context_.cancel_group_execution(); }));
+    */
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
         std::map<Frame*, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        for (auto const& box: initialObjects.getList<Box>())
+        for (Box const& box: initialObjects.getList<Box>())
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), box.getTimeDirection())].add(box);
         }
@@ -46,7 +52,7 @@ WorldState::WorldState(
     for (std::size_t i(0); i != timelineLength; ++i) {
         frameUpdateSet_.add(getArbitraryFrame(timeline_.getUniverse(), i));
     }
-    //** run level for a while
+    //Run level for a while
     for (std::size_t i(0); i != timelineLength; ++i) {
         executeWorld();
     }
@@ -61,9 +67,10 @@ void WorldState::swap(WorldState& other)
     boost::swap(nextPlayerFrames_, other.nextPlayerFrames_);
     boost::swap(currentPlayerFrames_, other.currentPlayerFrames_);
     boost::swap(currentWinFrames_, other.currentWinFrames_);
+    //boost::swap(task_group_context_, other.task_group_context_);
 }
 
-Frame* WorldState::getFrame(const FrameID& whichFrame)
+Frame* WorldState::getFrame(FrameID const& whichFrame)
 {
     return timeline_.getFrame(whichFrame);
 }
@@ -110,13 +117,13 @@ FrameUpdateSet WorldState::executeWorld()
     frameUpdateSet_.swap(returnSet);
     parallel_for_each(returnSet,
     	[this, &newDepartures](Frame* frame) {
-    		newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame)); },
-    		task_group_context_);
-    frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures, task_group_context_);
+    		newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame)); }/*,
+    		task_group_context_*/);
+    frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures/*, task_group_context_*/);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
             && "How can a consistent reality have a guy win in multiple frames?");
-        throw PlayerVictoryException();
+        throw boost::enable_current_exception(PlayerVictoryException());
     }
     return returnSet;
 }
@@ -180,7 +187,7 @@ Frame* WorldState::getNextPlayerFrame()
 {
     if (!nextPlayerFrames_.empty()) {
         assert(nextPlayerFrames_.size() == 1);
-        return *(nextPlayerFrames_.begin());
+        return *nextPlayerFrames_.begin();
     }
     else {
         return 0;
