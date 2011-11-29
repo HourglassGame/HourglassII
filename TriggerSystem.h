@@ -1,9 +1,8 @@
 #ifndef HG_TRIGGER_SYSTEM_H
 #define HG_TRIGGER_SYSTEM_H
-
 #include "TriggerSystemImplementation.h"
 #include "clone_ptr.h"
-
+#include "move.h"
 namespace hg
 {
 class TriggerSystem {
@@ -12,15 +11,26 @@ public:
     //a TriggerSystem without a TriggerSystemImplementation
     //is only useful for swapping into a TriggerSystem with an implementation
     //as an O(1) operation.
-    TriggerSystem() = default;
+    TriggerSystem() : impl_() {}
     //Takes ownership of impl
     TriggerSystem(TriggerSystemImplementation* impl) :
         impl_(impl)
     {}
-    TriggerSystem(TriggerSystem const&) = default;
-    TriggerSystem& operator=(TriggerSystem const&) = default;
-    TriggerSystem(TriggerSystem&&) = default;
-    TriggerSystem& operator=(TriggerSystem&&) = default;
+    TriggerSystem(TriggerSystem const& other) : impl_(other.impl_) {}
+    TriggerSystem& operator=(TriggerSystem const& other)
+    {
+        impl_ = other.impl_;
+        return *this;
+    }
+    TriggerSystem(TriggerSystem&& other) :
+        impl_(hg::move(other.impl_))
+    {
+    }
+    TriggerSystem& operator=(TriggerSystem&& other)
+    {
+        impl_ = hg::move(other.impl_);
+        return *this;
+    }
 
     void swap(TriggerSystem& other) {
         impl_.swap(other.impl_);

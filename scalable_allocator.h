@@ -1,7 +1,7 @@
 #ifndef HG_TBB_ALLOCATOR_H
 #define HG_TBB_ALLOCATOR_H
 #include <tbb/scalable_allocator.h>
-#include <type_traits>
+#include "forward.h"
 #include <utility>
 namespace hg {
 //Adapts tbb::scalable_allocator to meet C++11 allocator requirements
@@ -33,28 +33,28 @@ public:
     size_type max_size() const { return alloc.max_size(); }
     
     tbb_scalable_allocator() : alloc() {}
-    tbb_scalable_allocator(tbb_scalable_allocator const& other)
+    tbb_scalable_allocator(tbb_scalable_allocator const&)
         : alloc() {}
     template<typename U>
-    tbb_scalable_allocator(tbb_scalable_allocator<U> const& other)
+    tbb_scalable_allocator(tbb_scalable_allocator<U> const&)
         : alloc() {}
-    tbb_scalable_allocator(tbb_scalable_allocator&& other)
+    tbb_scalable_allocator(tbb_scalable_allocator&&)
         : alloc() {}
     template<typename U>
-    tbb_scalable_allocator(tbb_scalable_allocator&& other)
+    tbb_scalable_allocator(tbb_scalable_allocator&&)
         : alloc() {}
     
     template<typename C, typename... Args>
     void construct(C* c, Args&&... args) {
-        ::new(static_cast<void*>(c)) C(std::forward<Args>(args)...);
+        ::new(static_cast<void*>(c)) C(hg::forward<Args>(args)...);
     }
     template<typename C>
     void destroy(C* c) { c->~C(); }
     
     tbb_scalable_allocator<T> select_on_container_copy_construction() { return *this; }
-    typedef std::false_type propagate_on_container_copy_assignment;
-    typedef std::false_type propagate_on_container_move_assignment;
-    typedef std::false_type propagate_on_container_swap;
+    //typedef std::false_type propagate_on_container_copy_assignment;
+    //typedef std::false_type propagate_on_container_move_assignment;
+    //typedef std::false_type propagate_on_container_swap;
 };
 
 template<typename T, typename U>

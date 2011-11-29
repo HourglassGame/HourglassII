@@ -7,6 +7,8 @@
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 
+#include "move.h"
+
 #include <tbb/task.h>
 
 #include <map>
@@ -25,8 +27,18 @@ public:
      */
     explicit TimelineState(std::size_t timelineLength);
     
-    TimelineState(TimelineState&& other) = default;
-    TimelineState& operator=(TimelineState&& other) = default;
+    TimelineState(TimelineState&& other) :
+        universe_(hg::move(other.universe_)),
+        permanentDepartures_()
+    {
+        permanentDepartures_.swap(other.permanentDepartures_);
+    }
+    TimelineState& operator=(TimelineState&& other)
+    {
+        universe_ = hg::move(other.universe_);
+        permanentDepartures_.swap(other.permanentDepartures_);
+        return *this;
+    }
 
     void swap(TimelineState& other);
     
@@ -50,11 +62,11 @@ public:
      * Converts FrameID into Frame*
      */
     Frame* getFrame(FrameID const& whichFrame);
-    Universe& getUniverse() noexcept {
+    Universe& getUniverse() {
         return universe_;
     }
     
-    Universe const& getUniverse() const noexcept {
+    Universe const& getUniverse() const {
         return universe_;
     }
     

@@ -12,6 +12,8 @@
 #include <vector>
 #include "mt/std/map"
 #include "mt/std/vector"
+#include <utility>
+#include "move.h"
 
 #include "Frame_fwd.h"
 namespace hg {
@@ -21,8 +23,16 @@ public:
     PhysicsEngine(
         Environment const& env,
         TriggerSystem const& newTriggerSystem);
-    PhysicsEngine(PhysicsEngine&&) = default;
-    PhysicsEngine& operator=(PhysicsEngine&&) = default;
+    PhysicsEngine(PhysicsEngine&& other) :
+        env_(hg::move(other.env_)),
+        triggerSystem_(hg::move(other.triggerSystem_))
+    {}
+    PhysicsEngine& operator=(PhysicsEngine&& other)
+    {
+        env_ = hg::move(other.env_);
+        triggerSystem_ = hg::move(other.triggerSystem_);
+        return *this;
+    }
     typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
     typedef mt::std::vector<RectangleGlitz>::type NewGlitzType;
     struct PhysicsReturnT
@@ -55,5 +65,11 @@ private:
     Environment env_;
     TriggerSystem triggerSystem_;
 };
+inline void swap(PhysicsEngine& l, PhysicsEngine& r)
+{
+    PhysicsEngine temp(hg::move(l));
+    l = hg::move(r);
+    r = hg::move(temp);
+}
 }//namespace hg
 #endif //HG_PHYSICS_ENGINE_H

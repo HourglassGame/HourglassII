@@ -1,5 +1,6 @@
 #include "Level.h"
 #include <utility>
+#include "move.h"
 namespace hg {
 Level::Level(
     unsigned nspeedOfTime,
@@ -11,11 +12,11 @@ Level::Level(
     TriggerSystem&& ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timelineLength(ntimelineLength),
-        environment(std::move(nenvironment)),
-        initialObjects(std::move(ninitialObjects)),
-        initialGuy(std::move(ninitialGuy)),
-        guyStartTime(std::move(nguyStartTime)),
-        triggerSystem(std::move(ntriggerSystem))
+        environment(hg::move(nenvironment)),
+        initialObjects(hg::move(ninitialObjects)),
+        initialGuy(hg::move(ninitialGuy)),
+        guyStartTime(hg::move(nguyStartTime)),
+        triggerSystem(hg::move(ntriggerSystem))
 {
 }
 }

@@ -12,6 +12,8 @@
 #include <tbb/concurrent_hash_map.h>
 #include "mt/std/map"
 #include "mt/std/vector"
+#include "move.h"
+
 
 #include "Universe_fwd.h"
 #include "FrameUpdateSet_fwd.h"
@@ -24,7 +26,7 @@ public:
     Frame(std::size_t frameNumber, Universe& universe);
     
     //These "correct" functions are for rearranging pointers when universes get copied.
-    //Changes universe_
+    //Changes universe_ to &newUniverse
     void correctUniverse(Universe& newUniverse);
 
     //returns the frames whose arrivals are changed
@@ -84,6 +86,14 @@ private:
 
     FrameView view_;
 };
+
+inline void swap(Frame& l, Frame& r)
+{
+    Frame temp(hg::move(l));
+    l = hg::move(r);
+    r = hg::move(temp);
+}
+
 //<Undefined to call with NullFrame>
 //Frame* nextFrame(Frame const* frame, TimeDirection direction);
 //bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);

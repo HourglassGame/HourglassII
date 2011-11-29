@@ -11,6 +11,7 @@
 #include <tbb/task.h>
 
 #include <vector>
+#include "move.h"
 
 #include "Frame_fwd.h"
 #include "FrameID_fwd.h"
@@ -36,8 +37,27 @@ public:
 
     void swap(WorldState& other);
 
-    WorldState(WorldState&& other) = default;
-    WorldState& operator=(WorldState&& other) = default;
+    WorldState(WorldState&& other) :
+        timeline_(hg::move(other.timeline_)),
+        playerInput_(hg::move(other.playerInput_)),
+        frameUpdateSet_(hg::move(other.frameUpdateSet_)),
+        physics_(hg::move(other.physics_)),
+        nextPlayerFrames_(hg::move(other.nextPlayerFrames_)),
+        currentPlayerFrames_(hg::move(other.currentPlayerFrames_)),
+        currentWinFrames_(hg::move(other.currentWinFrames_))
+    {}
+     
+    WorldState& operator=(WorldState&& other)
+    {
+        timeline_ = hg::move(other.timeline_);
+        playerInput_ = hg::move(other.playerInput_);
+        frameUpdateSet_ = hg::move(other.frameUpdateSet_);
+        physics_ = hg::move(other.physics_);
+        nextPlayerFrames_ = hg::move(other.nextPlayerFrames_);
+        currentPlayerFrames_ = hg::move(other.currentPlayerFrames_);
+        currentWinFrames_ = hg::move(other.currentWinFrames_);
+        return *this;
+    }
 
     /**
      * Updates the state of the world once.

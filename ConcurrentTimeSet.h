@@ -4,6 +4,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range.hpp>
 #include "BoostHashCompare.h"
+#include "move.h"
 #include "Frame_fwd.h"
 namespace hg {
 /**
@@ -25,12 +26,12 @@ class ConcurrentTimeSet {
     typedef tbb::concurrent_hash_map<Frame*, Empty, BoostHashCompare<Frame*> > SetType;
 public:
     ConcurrentTimeSet();
-    ConcurrentTimeSet(ConcurrentTimeSet&& other) noexcept :
+    ConcurrentTimeSet(ConcurrentTimeSet&& other) :
     	set_()
     {
         set_.swap(other.set_);
    	}
-    ConcurrentTimeSet& operator=(ConcurrentTimeSet&& other) noexcept
+    ConcurrentTimeSet& operator=(ConcurrentTimeSet&& other)
     {
         set_.swap(other.set_);
         return *this;
@@ -84,5 +85,11 @@ public:
 private:
     SetType set_;
 };
+inline void swap(ConcurrentTimeSet& l, ConcurrentTimeSet& r)
+{
+    ConcurrentTimeSet temp(hg::move(l));
+    l = hg::move(r);
+    r = hg::move(temp);
+}
 }
 #endif //HG_CONCURRENT_TIME_SET_H

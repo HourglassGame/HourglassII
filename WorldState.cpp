@@ -6,9 +6,26 @@
 #include "Frame.h"
 #include "Universe.h"
 
+#include "Foreach.h"
+
+#include "move.h"
+#include "swap.h"
 #include <utility>
 
 namespace hg {
+struct ExecuteFrame
+{
+    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures) :
+        worldState_(&worldState), newDepartures_(&newDepartures)
+    {}
+    void operator()(Frame* frame) const {
+        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame));
+    }
+private:
+    WorldState* worldState_;
+    DepartureMap* newDepartures_;
+};
+   
 WorldState::WorldState(
     std::size_t timelineLength,
     Guy&& initialGuy,
@@ -19,7 +36,7 @@ WorldState::WorldState(
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
-        physics_(std::move(physics)),
+        physics_(hg::move(physics)),
         nextPlayerFrames_(),
         currentPlayerFrames_(),
         currentWinFrames_()/*,
@@ -37,7 +54,7 @@ WorldState::WorldState(
         std::map<Frame*, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        for (Box const& box: initialObjects.getList<Box>())
+        foreach (Box const& box, initialObjects.getList<Box>())
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), box.getTimeDirection())].add(box);
         }
@@ -115,10 +132,7 @@ FrameUpdateSet WorldState::executeWorld()
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet,
-    	[this, &newDepartures](Frame* frame) {
-    		newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame)); }/*,
-    		task_group_context_*/);
+    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
     frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures/*, task_group_context_*/);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
@@ -150,8 +164,8 @@ FrameUpdateSet WorldState::executeWorld()
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
-    for (ConcurrentTimeSet::iterator it(nextPlayerFrames_.begin()), end(nextPlayerFrames_.end()); it != end; ++it) {
-        frameUpdateSet_.add(*it);
+    foreach (auto frame, nextPlayerFrames_) {
+        frameUpdateSet_.add(frame);
     }
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one

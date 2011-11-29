@@ -1,6 +1,6 @@
 #ifndef HG_THREAD_LOCAL_H
 #define HG_THREAD_LOCAL_H
-#include "mt/std/map"
+#include "mt/boost/container/map.hpp"
 #include <tbb/task_scheduler_observer.h>
 #include <boost/thread.hpp>
 #include <tbb/spin_rw_mutex.h>
@@ -12,9 +12,12 @@ class ThreadLocal : private tbb::task_scheduler_observer
     //so a (lightweight) spin_mutex is preferable.
     //This has not actually been tested though.
     typedef tbb::spin_rw_mutex Mutex;
-    typedef typename mt::std::map<boost::thread::id, T>::type Map;
+    typedef typename mt::boost::container::map<boost::thread::id, T>::type Map;
 public:
-    ThreadLocal() = default;
+    ThreadLocal() :
+        threadLocalData(),
+        mut()
+    {}
     T& get() {
         {
             Mutex::scoped_lock l(mut, false);

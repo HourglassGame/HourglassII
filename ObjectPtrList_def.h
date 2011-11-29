@@ -4,6 +4,8 @@
 #include "ObjectList.h"
 #include "ObjectListHelpers.h"
 
+#include "Foreach.h"
+
 #include <boost/fusion/algorithm.hpp>
 #include <boost/fusion/include/vector_tie.hpp>
 
@@ -26,7 +28,7 @@ struct InsertAddresses
     void operator()(Container& toInsertInto, ForwardRange const& toInsert) const
     {
         toInsertInto.reserve(boost::distance(toInsertInto) + boost::distance(toInsert));
-        for (auto const& obj: toInsert) {
+        foreach (auto const& obj, toInsert) {
             toInsertInto.push_back(
             		typename ConstPtr_of<typename boost::range_value<ForwardRange>::type>::type(obj));
         }

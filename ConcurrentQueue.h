@@ -3,8 +3,10 @@
 #include "scalable_allocator.h"
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
-#include <deque>
+#include <boost/container/deque.hpp>
 #include <utility>
+#include "move.h"
+#include "forward.h"
 namespace hg {
 //Single-reader single-writer concurrent queue.
 //(Quite possible can handle multi-reader multi-writer too, check before using)
@@ -13,7 +15,11 @@ class ConcurrentQueue
 {
 public:
     //Not safe for concurrent execution
-    ConcurrentQueue() = default;
+    ConcurrentQueue() :
+        mutex_(),
+        cond_(),
+        queue_()
+    {}
     ConcurrentQueue(ConcurrentQueue const& other) :
         mutex_(),
         cond_(),
@@ -28,12 +34,12 @@ public:
     ConcurrentQueue(ConcurrentQueue&& other) :
         mutex_(),
         cond_(),
-        queue_(std::move(other.queue_))
+        queue_(hg::move(other.queue_))
     {
     }
     ConcurrentQueue& operator=(ConcurrentQueue&& other)
     {
-        queue_ = std::move(other.queue_);
+        queue_ = hg::move(other.queue_);
         return *this;
     }
     
@@ -44,7 +50,7 @@ public:
         {
             boost::lock_guard<boost::mutex> lock(mutex_);
             shouldNotify = queue_.empty();
-            queue_.push_back(std::move(toPush));
+            queue_.push_back(hg::move(toPush));
         }
         if (shouldNotify) {
             cond_.notify_one();
@@ -57,7 +63,7 @@ public:
         {
             boost::unique_lock<boost::mutex> lock(mutex_);
             shouldNotify = queue_.empty();
-            queue_.emplace_back(std::forward<Args>(args)...);
+            queue_.emplace_back(hg::forward<Args>(args)...);
         }
         if (shouldNotify) {
             cond_.notify_one();
@@ -71,14 +77,14 @@ public:
         while (queue_.empty()) {
             cond_.wait(lock);
         }
-        T retv(std::move(queue_.front()));
+        T retv(hg::move(queue_.front()));
         queue_.pop_front();
-        return std::move(retv);
+        return hg::move(retv);
     }
 private:
     boost::mutex mutex_;
     boost::condition_variable cond_;
-    std::deque<T, Alloc> queue_;
+    boost::container::deque<T, Alloc> queue_;
 };
 }
 #endif //HG_CONCURRENT_QUEUE_H

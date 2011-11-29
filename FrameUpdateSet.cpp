@@ -4,7 +4,9 @@
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/swap.hpp>
 #include <tbb/parallel_sort.h>
+#include <utility>
 #include <cassert>
+#include "move.h"
 namespace hg {
 
 FrameUpdateSet::FrameUpdateSet() :
@@ -21,6 +23,17 @@ FrameUpdateSet& FrameUpdateSet::operator=(FrameUpdateSet const& other)
 {
     isSet_ = other.isSet_;
     updateSet_ = other.updateSet_;
+    return *this;
+}
+FrameUpdateSet::FrameUpdateSet(FrameUpdateSet&& other) :
+    isSet_(hg::move(other.isSet_)),
+    updateSet_(hg::move(other.updateSet_))   
+{
+}
+FrameUpdateSet& FrameUpdateSet::operator=(FrameUpdateSet&& other)
+{
+    isSet_ = hg::move(other.isSet_);
+    updateSet_ = hg::move(other.updateSet_);
     return *this;
 }
 void FrameUpdateSet::add(Frame* frame)

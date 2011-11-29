@@ -12,6 +12,7 @@
 #ifdef HG_COMPILE_TESTS
 #include "TestDriver.h"
 #endif //HG_COMPILE_TESTS
+#include "Foreach.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -55,6 +56,8 @@
 #include "LevelLoader.h"
 #include "ConcurrentQueue.h"
 #include "move_function.h"
+#include "move.h"
+#include "unique_ptr.h"
 
 typedef sf::Color Colour;
 
@@ -84,8 +87,42 @@ namespace {
     {
         boost::packaged_task<decltype(f())> task(f);
         boost::unique_future<decltype(f())> future(task.get_future());
-        queue.push(move_function<void()>(std::move(task)));
-        return std::move(future);
+        queue.push(move_function<void()>(hg::move(task)));
+        return hg::move(future);
+    }
+    
+    
+    struct FunctionQueueRunner
+    {
+        FunctionQueueRunner(ConcurrentQueue<move_function<void()>>& taskQueue) :
+            taskQueue_(taskQueue)
+        {}
+        void operator()() {
+            while (!boost::this_thread::interruption_requested()) {
+    			taskQueue_.pop()();
+    		}
+        }
+    private:
+        ConcurrentQueue<move_function<void()>>& taskQueue_;
+    };
+    
+    struct RunToNextPlayerFrame
+    {
+        RunToNextPlayerFrame(TimeEngine& timeEngine, InputList&& inputList) :
+            timeEngine_(timeEngine),
+            inputList_(inputList)
+        {}
+        TimeEngine::RunResult operator()()
+        {
+            return timeEngine_.runToNextPlayerFrame(inputList_);
+        }
+    private:
+        TimeEngine& timeEngine_;
+        InputList inputList_;
+    };
+    
+    TimeEngine createTimeEngine() {
+        return TimeEngine(loadLevelFromFile("level.lua"));
     }
 }
 
@@ -110,20 +147,15 @@ int main(int argc, char const* const argv[])
     ProgressMonitor monitor;
 
     ConcurrentQueue<move_function<void()>> timeEngineTaskQueue;
-    boost::thread timeEngineThread(
-    	[&timeEngineTaskQueue]{
-    		while (!boost::this_thread::interruption_requested()) {
-    			timeEngineTaskQueue.pop()();
-    		}
-    	});
+    boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
 
     boost::unique_future<TimeEngine> futureTimeEngine(
     	enqueue_task(
     		timeEngineTaskQueue,
-    		[]{return TimeEngine(loadLevelFromFile("level.lua"));}));
+    		createTimeEngine));
 
     //timeEngine would be a boost::optional if boost::optional supported r-value refs
-    std::unique_ptr<TimeEngine> timeEngine;
+    hg::unique_ptr<TimeEngine> timeEngine;
 
     enum {LOADING_LEVEL, RUNNING_LEVEL, AWAITING_INPUT} state(LOADING_LEVEL);
 
@@ -137,7 +169,7 @@ int main(int argc, char const* const argv[])
     //Gets rewritten whenever the level is reset.
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
-    boost:unique_future<TimeEngine::RunResult> futureRunResult;
+    boost::unique_future<TimeEngine::RunResult> futureRunResult;
     bool runningFromReplay(false);
     while (app.IsOpened()) {
     	switch (state) {
@@ -151,7 +183,7 @@ int main(int argc, char const* const argv[])
 					}
 				}
 				if (futureTimeEngine.is_ready()) {
-					timeEngine = std::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
+					timeEngine = hg::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
 					input.setTimelineLength(timeEngine->getTimelineLength());
 					state = AWAITING_INPUT;
 				}
@@ -179,9 +211,9 @@ int main(int argc, char const* const argv[])
 				}
 				saveReplayLog(replayLogOut, inputList);
 				boost::packaged_task<TimeEngine::RunResult> timeEngineRunningTask(
-					[&timeEngine, inputList]{return timeEngine->runToNextPlayerFrame(inputList);});
+					RunToNextPlayerFrame(*timeEngine, hg::move(inputList)));
 				futureRunResult = timeEngineRunningTask.get_future();
-				timeEngineTaskQueue.push(move_function<void()>(std::move(timeEngineRunningTask)));
+				timeEngineTaskQueue.push(move_function<void()>(hg::move(timeEngineRunningTask)));
 				state = RUNNING_LEVEL;
 				break;
 			}
@@ -216,7 +248,7 @@ int main(int argc, char const* const argv[])
 						    futureTimeEngine =
 						    	enqueue_task(
 						    		timeEngineTaskQueue,
-						    		[]{return TimeEngine(loadLevelFromFile("level.lua"));});
+						    		createTimeEngine);
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Load replay
@@ -231,7 +263,7 @@ int main(int argc, char const* const argv[])
 						    futureTimeEngine =
 						    	enqueue_task(
 						    		timeEngineTaskQueue,
-						    		[]{return TimeEngine(loadLevelFromFile("level.lua"));});
+						    		createTimeEngine);
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Interrupt replay and begin Playing
@@ -319,8 +351,8 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEn
     FrameID drawnFrame;
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
-    for (
-        auto updateSet:
+    foreach (
+        auto const& updateSet,
         waveInfo.updatedFrames())
     {
         framesExecutedList.push_back(boost::distance(updateSet));
@@ -381,8 +413,8 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEn
         stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
-            for (
-                std::size_t num:
+            foreach (
+                std::size_t num,
                 framesExecutedList 
                 | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
             {
@@ -452,7 +484,7 @@ void DrawParticularGlitz(RenderTarget& target, Glitz const& glitz)
 }
 void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList)
 {
-	for (auto const& glitz: glitzList) DrawParticularGlitz(target, glitz);
+	foreach (auto const& glitz, glitzList) DrawParticularGlitz(target, glitz);
 }
 
 void DrawTimeline(
@@ -462,8 +494,8 @@ void DrawTimeline(
     std::size_t timelineLength)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
-    for (FrameUpdateSet const& wave: waves) {
-    	for (auto frame: wave) {
+    foreach (FrameUpdateSet const& wave, waves) {
+    	foreach (auto frame, wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
                     static_cast<std::size_t>(

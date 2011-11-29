@@ -15,6 +15,8 @@
 #include "mt/std/map"
 #include "mt/std/vector"
 
+#include "Foreach.h"
+
 #include <cassert>
 
 
@@ -239,7 +241,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
             newDepartures,
             time));
     typedef triggerDepartures_t::value_type triggerDeparture_t;
-    for (triggerDeparture_t const& triggerDeparture: triggerSystemDepartureInformation.get<0>()) {
+    foreach (triggerDeparture_t const& triggerDeparture, triggerSystemDepartureInformation.get<0>()) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
@@ -264,7 +266,7 @@ void buildDeparturesForComplexEntities(
     typename mt::std::vector<ObjectAndTime<Type> >::type const& next,
     PhysicsEngine::FrameDepartureT& newDepartures)
 {
-	for (auto const& thingAndTime: next)
+	foreach (auto const& thingAndTime, next)
     {
         newDepartures[thingAndTime.time].add(thingAndTime.object);
     }
@@ -404,22 +406,22 @@ FrameView makeFrameView(
 {
     mt::std::vector<Glitz>::type forwardsGlitz;
     mt::std::vector<Glitz>::type reverseGlitz;
-    for (auto const& glitz: glitzlist) {
+    foreach (auto const& glitz, glitzlist) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), forwardsGlitz, reverseGlitz);
     }
     ObjectPtrList<Normal>  flattenedDepartures;
-    for (auto const& objectList: departures | boost::adaptors::map_values)
+    foreach (auto const& objectList, departures | boost::adaptors::map_values)
     {
         flattenedDepartures.add(objectList);
     }
     flattenedDepartures.sort();
-    for (auto const& box: flattenedDepartures.getList<Box>()) {
+    foreach (auto const& box, flattenedDepartures.getList<Box>()) {
         if (box.getArrivalBasis() == -1) {
             pushBidirectional(box, 0xFF00FF00u, 0x00FF00FFu, forwardsGlitz, reverseGlitz);
         }
     }
     mt::std::vector<GuyOutputInfo>::type guyInfo;
-    for (auto const& guy: flattenedDepartures.getList<Guy>()) {
+    foreach (auto const& guy, flattenedDepartures.getList<Guy>()) {
         pushGuyGlitz(guy, forwardsGlitz, reverseGlitz);
         guyInfo.push_back(GuyOutputInfo(guy.getTimeDirection()));
     }
@@ -504,7 +506,7 @@ void guyStep(
             int const height(guyArrivalList[i].getHeight());
 
             // chonofrag with platforms
-			for (Collision const& platform: nextPlatform)
+			foreach (Collision const& platform, nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -590,7 +592,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            for (Collision const& platform: nextPlatform)
+            foreach (Collision const& platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -665,7 +667,7 @@ void guyStep(
             }
 
             // platform collision
-            for (Collision const& platform: nextPlatform)
+            foreach (Collision const& platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -1471,7 +1473,7 @@ void boxCollisionAlogorithm(
 				continue;
 			}
 
-			for (Collision const& platform: nextPlatform)
+			foreach (Collision const& platform, nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -1774,7 +1776,7 @@ void boxCollisionAlogorithm(
 				}
 
 				// Check inside a platform
-				for (Collision const& platform: nextPlatform)
+				foreach (Collision const& platform, nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
