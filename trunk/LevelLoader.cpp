@@ -4,6 +4,7 @@
 #include "SimpleLuaCpp.h"
 #include "lua/lualib.h"
 #include "LuaUtilities.h"
+#include "move.h"
 namespace hg {
 
 Level loadLevelFromFile(std::string const& filename)
@@ -35,12 +36,12 @@ Level loadLevelFromFile(std::string const& filename)
     //] read trigger system
     //] read globals
     return Level(
-    	std::move(speedOfTime),
-    	std::move(timelineLength),
-    	std::move(environment),
-    	std::move(initialArrivals),
-    	std::move(guyArrival),
-    	std::move(guyStartTime),
-    	std::move(triggerSystem));
+    	hg::move(speedOfTime),
+    	hg::move(timelineLength),
+    	hg::move(environment),
+    	hg::move(initialArrivals),
+    	hg::move(guyArrival),
+    	hg::move(guyStartTime),
+    	hg::move(triggerSystem));
 }
 } //namespace hg

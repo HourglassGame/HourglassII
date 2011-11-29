@@ -6,12 +6,16 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/swap.hpp>
 
+#include "Foreach.h"
+#include "move.h"
+#include "swap.h"
+
 #include <functional>
 #include <cassert>
 
 namespace hg {
 Universe::Universe(Universe&& other) :
-	frames_(std::move(other.frames_))
+	frames_(hg::move(other.frames_))
 {
 	assert(!frames_.empty());
 	fixFramesUniverses();
@@ -19,7 +23,7 @@ Universe::Universe(Universe&& other) :
 Universe& Universe::operator=(Universe&& other)
 {
 	assert(!other.frames_.empty());
-	frames_ = std::move(other.frames_);
+	frames_ = hg::move(other.frames_);
 	assert(!frames_.empty());
 	fixFramesUniverses();
 	return *this;
@@ -28,16 +32,9 @@ Universe& Universe::operator=(Universe&& other)
 //Updates the universe_ pointers in frames_
 void Universe::fixFramesUniverses()
 {
-    for (auto& frame: frames_) {
+    foreach (auto& frame, frames_) {
         frame.correctUniverse(*this);
     }
-}
-
-void Universe::swap(Universe& other)
-{
-    boost::swap(frames_, other.frames_);
-    fixFramesUniverses();
-    other.fixFramesUniverses();
 }
 
 //creates a top level universe
@@ -46,7 +43,7 @@ Universe::Universe(std::size_t timelineLength) :
 {
     assert(timelineLength > 0);
     frames_.reserve(timelineLength);
-    for (auto i: boost::irange<std::size_t>(0, timelineLength)) {
+    foreach (auto i, boost::irange<std::size_t>(0, timelineLength)) {
         frames_.push_back(Frame(i, *this));
     }
 	assert(!frames_.empty());

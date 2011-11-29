@@ -11,6 +11,7 @@
 #include "InputList_fwd.h"
 #include "Level.h"
 #include "Frame.h"
+#include "move.h"
 
 #include <boost/swap.hpp>
 #include <utility>
@@ -29,6 +30,14 @@ public:
     typedef std::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
+        RunResult(
+            Frame const* currentPlayerFrame,
+            Frame const* nextPlayerFrame,
+            FrameListList&& updatedFrames) :
+                currentPlayerFrame_(currentPlayerFrame),
+                nextPlayerFrame_(nextPlayerFrame),
+                updatedFrames_(hg::move(updatedFrames))
+        {}
         Frame const* currentPlayerFrame() const {
             return currentPlayerFrame_;
         }
@@ -42,8 +51,18 @@ public:
         Frame const* nextPlayerFrame_;
         FrameListList updatedFrames_;
     };
-    TimeEngine(TimeEngine&& other) = default;
-    TimeEngine& operator=(TimeEngine&& other) = default;
+    TimeEngine(TimeEngine&& other) :
+        speedOfTime_(hg::move(other.speedOfTime_)),
+        worldState_(hg::move(other.worldState_)),
+        wall_(hg::move(other.wall_))
+    {}
+    TimeEngine& operator=(TimeEngine&& other)
+    {
+        speedOfTime_ = hg::move(other.speedOfTime_);
+        worldState_ = hg::move(other.worldState_);
+        wall_ = hg::move(other.wall_);
+        return *this;
+    }
     /**
      * Constructs a new TimeEngine with the given Level
      *

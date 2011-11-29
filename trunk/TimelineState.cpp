@@ -6,6 +6,7 @@
 #include "Frame.h"
 #include "FrameID.h"
 #include "ConcurrentFrameUpdateSet.h"
+#include "Foreach.h"
 #include <boost/swap.hpp>
 #include <cassert>
 #include <algorithm>
@@ -22,6 +23,17 @@ void TimelineState::swap(TimelineState& other)
     boost::swap(permanentDepartures_, other.permanentDepartures_);
 }
 
+struct UpdateDeparturesFromFrame
+{
+    UpdateDeparturesFromFrame(ConcurrentFrameUpdateSet& framesWithChangedArrivals) :
+            framesWithChangedArrivals_(framesWithChangedArrivals)
+    {}
+    void operator()(DepartureMap::value_type& newDeparture) const {
+        framesWithChangedArrivals_.add(newDeparture.first->updateDeparturesFromHere(newDeparture.second));
+    }
+    ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
+};
+
 FrameUpdateSet
 TimelineState::updateWithNewDepartures(
 	DepartureMap& newDepartures/*, tbb::task_group_context& context*/)
@@ -29,17 +41,13 @@ TimelineState::updateWithNewDepartures(
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(
     	newDepartures,
-    	[&framesWithChangedArrivals]
-    	(DepartureMap::value_type& newDeparture) {
-			framesWithChangedArrivals.add(
-				newDeparture.first->updateDeparturesFromHere(newDeparture.second)); }/*,
-		context*/);
+    	UpdateDeparturesFromFrame(framesWithChangedArrivals));
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
 		std::map<Frame*, ObjectList<Normal> > const& initialArrivals)
 {
-    for (auto const& arrival: initialArrivals) {
+    foreach (auto const& arrival, initialArrivals) {
         permanentDepartures_[arrival.first].add(arrival.second);
         permanentDepartures_[arrival.first].sort();
         arrival.first->addArrival(0, &(permanentDepartures_[arrival.first]));

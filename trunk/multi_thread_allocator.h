@@ -4,6 +4,7 @@
 //to modify the memory allocation used in the regions of the code that execute concurrently.
 
 #include "scalable_allocator.h"
+#include "forward.h"
 namespace hg {
     //Metafunction to calculate the allocator type to use
     //when multiple threads may be performing allocations/deallocations
@@ -46,7 +47,7 @@ namespace hg {
     T* multi_thread_new(Args&&...args){
     	void* p(multi_thread_operator_new(sizeof(T)));
     	try {
-    		return new (p) T(std::forward<Args>(args)...);
+    		return new (p) T(hg::forward<Args>(args)...);
     	}
     	catch (...) {
     		multi_thread_operator_delete(p);

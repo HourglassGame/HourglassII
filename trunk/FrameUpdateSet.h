@@ -34,8 +34,8 @@ public:
 
     FrameUpdateSet(FrameUpdateSet const& other);
     FrameUpdateSet& operator=(FrameUpdateSet const& other);
-    FrameUpdateSet(FrameUpdateSet&& other) = default;
-    FrameUpdateSet& operator=(FrameUpdateSet&& other) = default;
+    FrameUpdateSet(FrameUpdateSet&& other);
+    FrameUpdateSet& operator=(FrameUpdateSet&& other);
     void add(Frame* frame);
     void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);

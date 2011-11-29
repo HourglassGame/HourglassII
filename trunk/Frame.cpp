@@ -2,6 +2,7 @@
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
 #include "Universe.h"
+#include "Foreach.h"
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -157,7 +158,7 @@ end:
 ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal>  retv;
-    for (ObjectList<Normal> const& value:
+    foreach (ObjectList<Normal> const& value,
     		arrivals_
             | boost::adaptors::map_values
             | boost::adaptors::indirected)
@@ -171,7 +172,7 @@ ObjectPtrList<Normal> Frame::getPrePhysics() const
 ObjectPtrList<Normal> Frame::getPostPhysics() const
 {
     ObjectPtrList<Normal>  retv;
-    for (ObjectList<Normal> const& value:
+    foreach (ObjectList<Normal> const& value,
     		departures_ | boost::adaptors::map_values)
     {
         retv.add(value);

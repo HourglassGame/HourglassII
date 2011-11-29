@@ -6,6 +6,9 @@
 #include "Frame.h"
 #include "Universe.h"
 #include "multi_thread_allocator.h"
+
+#include "Foreach.h"
+
 #include <utility>
 
 namespace hg {
@@ -24,14 +27,14 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
     apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
-    for (auto const& offsetAndDefault: triggerOffsetsAndDefaults) {
+    foreach (auto const& offsetAndDefault, triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
             mt::std::vector<int>::type(
                     offsetAndDefault.second.begin(),
                     offsetAndDefault.second.end()));
     }
     
-    for (auto const& arrival: triggerArrivals) {
+    foreach (auto const& arrival, triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }
     return apparentTriggers;

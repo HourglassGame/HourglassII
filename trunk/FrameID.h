@@ -5,6 +5,7 @@
 #include "UniverseID.h"
 #include <boost/operators.hpp>
 #include "Frame_fwd.h"
+#include "move.h"
 
 #include <cstddef>
 #include <istream>
@@ -73,6 +74,12 @@ private:
     UniverseID universeID_;
 };
 //Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;
-std::size_t hash_value(const FrameID& toHash);
+std::size_t hash_value(FrameID const& toHash);
+inline void swap(FrameID& l, FrameID& r)
+{
+    FrameID temp(hg::move(l));
+    l = hg::move(r);
+    r = hg::move(temp);
+}
 }//namespace hg
 #endif //HG_FRAME_ID_H

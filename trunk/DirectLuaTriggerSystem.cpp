@@ -5,6 +5,7 @@
 #include "CommonTriggerCode.h"
 #include "ObjectAndTime.h"
 #include "LuaUtilities.h"
+#include "Foreach.h"
 #include <iostream>
 namespace hg {
 
@@ -362,12 +363,12 @@ PhysicsAffectingStuff
     lua_createtable(L_.ptr, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
     int i(0);
-    for (auto const& apparentTrigger: apparentTriggers) {
+    foreach (auto const& apparentTrigger, apparentTriggers) {
         ++i;
         lua_createtable(L_.ptr, static_cast<int>(apparentTrigger.size()), 0);
         //insert each triggerElement into the table for the particular trigger
         int j(0);
-        for (int triggerElement: apparentTrigger) {
+        foreach (int triggerElement, apparentTrigger) {
             ++j;
             lua_pushinteger(L_.ptr, triggerElement);
             lua_rawseti(L_.ptr, -2, j);
@@ -491,7 +492,7 @@ void pushGuy(lua_State* L, Guy const& guy)
     
     lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
     typedef std::pair<Ability const, int> PickupPair;
-    for (auto const& pickup: guy.getPickups()) {
+    foreach (auto const& pickup, guy.getPickups()) {
         lua_checkstack(L, 2);
         lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
@@ -699,7 +700,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
-    for (int mutatorIndex: responsibleMutatorIndices) {
+    foreach (int mutatorIndex, responsibleMutatorIndices) {
         ++i;
         lua_pushinteger(L_.ptr, mutatorIndex);
         lua_rawseti(L_.ptr, -2, i);
@@ -731,7 +732,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     lua_createtable(L_.ptr, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
-    for (int mutatorIndex: responsibleMutatorIndices) {
+    foreach (int mutatorIndex, responsibleMutatorIndices) {
         ++i;
         lua_pushinteger(L_.ptr, mutatorIndex);
         lua_rawseti(L_.ptr, -2, i);
@@ -771,7 +772,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     lua_checkstack(L_.ptr, 1);
     lua_createtable(L_.ptr, static_cast<int>(departures.size()), 0);
     int i(0);
-    for (auto const& departureSection: departures)
+    foreach (auto const& departureSection, departures)
     {
         ++i;
         lua_checkstack(L_.ptr, 1);
@@ -780,7 +781,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
             lua_checkstack(L_.ptr, 1);
             lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Guy>().size()), 0);
             int j(0);
-            for (auto const& guy: departureSection.second.getList<Guy>()) {
+            foreach (auto const& guy, departureSection.second.getList<Guy>()) {
                 ++j;
                 pushGuy(L_.ptr, guy);
                 lua_rawseti(L_.ptr, -2, j);
@@ -790,7 +791,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
         {
             lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Box>().size()), 0);
             int j(0);
-            for (auto const& box: departureSection.second.getList<Box>()) {
+            foreach (auto const& box, departureSection.second.getList<Box>()) {
                 ++j;
                 pushBox(L_.ptr, box);
                 lua_rawseti(L_.ptr, -2, j);

@@ -15,6 +15,8 @@
 #include <cassert>
 
 #include <boost/range/algorithm/for_each.hpp>
+
+#include "swap.h"
 namespace {
 template<class SequenceOfSequences, class Func>
 void n_ary_for_each(SequenceOfSequences const & s, Func const & f)

@@ -4,7 +4,8 @@
 #include "Frame.h"
 #include "FrameID_fwd.h"
 #include "TimeDirection.h"
-#include <vector>
+#include <boost/container/vector.hpp>
+#include "move.h"
 #include "Universe_fwd.h"
 namespace hg {
 class Universe {
@@ -14,7 +15,6 @@ public:
     
     Universe(Universe&& other);
     Universe& operator=(Universe&& other);
-    void swap(Universe& other);
     
     //Conversion from FrameID to equivalent Frame* within this universe
     //whichFrame must correspond to a frame that could actually 
@@ -26,7 +26,7 @@ private:
     friend class UniverseID;
     void fixFramesUniverses();
     
-        //<UniverseT interface>
+    //<UniverseT interface>
     //Returns the first frame in the universe for objects traveling
     //in TimeDirection direction.
     Frame* getEntryFrame(TimeDirection direction);
@@ -50,7 +50,7 @@ private:
     friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(Universe const& universe);
 
-    std::vector<Frame> frames_;
+    boost::container::vector<Frame> frames_;
     
     Universe(Universe const& other) = delete;
     Universe& operator=(Universe const& other) = delete;
@@ -58,6 +58,11 @@ private:
 Frame* getEntryFrame(Universe& universe, TimeDirection direction);
 Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
 std::size_t getTimelineLength(Universe const& universe);
-inline void swap(Universe& l, Universe& r) { l.swap(r); }
+inline void swap(Universe& l, Universe& r)
+{
+    Universe temp(hg::move(l));
+    l = hg::move(r);
+    r = hg::move(temp);
+}
 }
 #endif //HG_UNIVERSE_H
