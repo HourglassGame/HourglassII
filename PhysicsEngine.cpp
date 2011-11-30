@@ -266,7 +266,7 @@ void buildDeparturesForComplexEntities(
     typename mt::std::vector<ObjectAndTime<Type> >::type const& next,
     PhysicsEngine::FrameDepartureT& newDepartures)
 {
-	foreach (auto const& thingAndTime, next)
+	foreach (ObjectAndTime<Type> const& thingAndTime, next)
     {
         newDepartures[thingAndTime.time].add(thingAndTime.object);
     }
@@ -406,22 +406,22 @@ FrameView makeFrameView(
 {
     mt::std::vector<Glitz>::type forwardsGlitz;
     mt::std::vector<Glitz>::type reverseGlitz;
-    foreach (auto const& glitz, glitzlist) {
+    foreach (RectangleGlitz const& glitz, glitzlist) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), forwardsGlitz, reverseGlitz);
     }
     ObjectPtrList<Normal>  flattenedDepartures;
-    foreach (auto const& objectList, departures | boost::adaptors::map_values)
+    foreach (ObjectList<Normal> const& objectList, departures | boost::adaptors::map_values)
     {
         flattenedDepartures.add(objectList);
     }
     flattenedDepartures.sort();
-    foreach (auto const& box, flattenedDepartures.getList<Box>()) {
+    foreach (Box const& box, flattenedDepartures.getList<Box>()) {
         if (box.getArrivalBasis() == -1) {
             pushBidirectional(box, 0xFF00FF00u, 0x00FF00FFu, forwardsGlitz, reverseGlitz);
         }
     }
     mt::std::vector<GuyOutputInfo>::type guyInfo;
-    foreach (auto const& guy, flattenedDepartures.getList<Guy>()) {
+    foreach (Guy const& guy, flattenedDepartures.getList<Guy>()) {
         pushGuyGlitz(guy, forwardsGlitz, reverseGlitz);
         guyInfo.push_back(GuyOutputInfo(guy.getTimeDirection()));
     }

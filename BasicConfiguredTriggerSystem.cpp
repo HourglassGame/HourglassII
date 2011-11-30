@@ -26,7 +26,7 @@ mt::std::vector<Collision>::type calculatePlatforms(
 {
     mt::std::vector<Collision>::type retv;
     retv.reserve(boost::distance(protoPlatforms));
-    foreach (auto const& proto, protoPlatforms) {
+    foreach (ProtoPlatform const& proto, protoPlatforms) {
         retv.push_back(proto.calculateCollision(triggers));
     }
     return retv;
@@ -37,7 +37,7 @@ mt::std::vector<PortalArea>::type calculatePortals(
 {
     mt::std::vector<PortalArea>::type retv;
     retv.reserve(boost::distance(collisionAreas));
-    foreach (auto const& protoPortal, protoPortals) {
+    foreach (ProtoPortal const& protoPortal, protoPortals) {
         retv.push_back(protoPortal.calculatePortalArea(collisionAreas));
     }
     return retv;
@@ -55,7 +55,7 @@ mt::std::vector<ArrivalLocation>::type calculateArrivalLocations(
 {
     mt::std::vector<ArrivalLocation>::type retv;
     retv.reserve(boost::distance(portals));
-    foreach (auto const& portal, portals) {
+    foreach (PortalArea const& portal, portals) {
         retv.push_back(calculateArrivalLocation(portal));
     }
     return retv;
@@ -67,7 +67,7 @@ mt::std::vector<PositionAndVelocity2D>::type calculateButtons(
 {
     mt::std::vector<PositionAndVelocity2D>::type retv;
     retv.reserve(boost::distance(collisions));
-    foreach (auto const& protoButton, protoButtons) {
+    foreach (ProtoButton const& protoButton, protoButtons) {
         retv.push_back(protoButton.calculatePositionAndVelocity2D(collisions));
     }
     return retv;
@@ -96,7 +96,7 @@ mt::std::vector<RectangleGlitz>::type
 {
     mt::std::vector<RectangleGlitz>::type retv;
     retv.reserve(boost::distance(collisions));
-    foreach (auto const& collision, collisions) {
+    foreach (Collision const& collision, collisions) {
         retv.push_back(
             RectangleGlitz(
                 collision.getX(), collision.getY(),
@@ -112,7 +112,7 @@ mt::std::vector<RectangleGlitz>::type calculatePortalGlitz(mt::std::vector<Porta
 {
     mt::std::vector<RectangleGlitz>::type retv;
     retv.reserve(static_cast<unsigned long>(boost::distance(portals)));
-    foreach (auto const& portal, portals) {
+    foreach (PortalArea const& portal, portals) {
         retv.push_back(
             RectangleGlitz(
                 portal.getX(), portal.getY(),
@@ -208,13 +208,13 @@ mt::std::vector<char>::type calculateButtonStates(
     //assert(boost::distance(protoButtons) == boost::distance(buttonPositions));
     mt::std::vector<char>::type buttonStates(boost::distance(protoButtons), false);
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i) {
-        foreach (auto objectList, departures | boost::adaptors::map_values) {
-        	foreach (auto const& box, objectList.getList<Box>()) {
+        foreach (ObjectList<Normal> objectList, departures | boost::adaptors::map_values) {
+        	foreach (Box const& box, objectList.getList<Box>()) {
                 if (temporalIntersectingExclusive(protoButtons[i], buttonPositions[i], box)) {
                     goto intersecting;
                 }
             }
-        	foreach (auto const& guy, objectList.getList<Guy>()) {
+        	foreach (Guy const& guy, objectList.getList<Guy>()) {
                 if (temporalIntersectingExclusive(protoButtons[i], buttonPositions[i], guy)) {
                     goto intersecting;
                 }

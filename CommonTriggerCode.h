@@ -27,14 +27,14 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
     apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
-    foreach (auto const& offsetAndDefault, triggerOffsetsAndDefaults) {
+    foreach (TriggerOffsetAndDefault const& offsetAndDefault, triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
             mt::std::vector<int>::type(
                     offsetAndDefault.second.begin(),
                     offsetAndDefault.second.end()));
     }
     
-    foreach (auto const& arrival, triggerArrivals) {
+    foreach (TriggerData const& arrival, triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }
     return apparentTriggers;

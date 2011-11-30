@@ -10,7 +10,7 @@
 namespace hg {
 //Single-reader single-writer concurrent queue.
 //(Quite possible can handle multi-reader multi-writer too, check before using)
-template<typename T, typename Alloc = hg::tbb_scalable_allocator<T>>
+template<typename T, typename Alloc = hg::tbb_scalable_allocator<T> >
 class ConcurrentQueue
 {
 public:
@@ -56,6 +56,7 @@ public:
             cond_.notify_one();
         }
     }
+    /*
     template<typename... Args>
     void emplace(Args&&... args)
     {
@@ -68,7 +69,7 @@ public:
         if (shouldNotify) {
             cond_.notify_one();
         }
-    }
+    }*/
     //If the queue is empty available, pop() blocks (in an interruption point)
     //until an element is available
     T pop()

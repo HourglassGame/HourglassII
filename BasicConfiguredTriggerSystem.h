@@ -9,6 +9,7 @@
 #include "Frame.h"
 #include "multi_thread_allocator.h"
 #include "ObjectAndTime.h"
+#include <boost/ref.hpp>
 namespace hg {
 class BasicConfiguredTriggerSystem;
 class BasicConfiguredTriggerFrameState :
@@ -67,7 +68,7 @@ class BasicConfiguredTriggerSystem :
     virtual TriggerFrameState getFrameState() const {
     	return
     	    TriggerFrameState(
-    	        multi_thread_new<BasicConfiguredTriggerFrameState>(*this));
+    	        multi_thread_new<BasicConfiguredTriggerFrameState>(boost::cref(*this)));
     }
     
     virtual BasicConfiguredTriggerSystem* clone() const {

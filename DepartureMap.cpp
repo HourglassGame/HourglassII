@@ -8,7 +8,7 @@ void DepartureMap::makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor)
 {
     map_.rehash(toMakeSpaceFor.size());
     //removes the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
-    foreach (auto frame, toMakeSpaceFor)
+    foreach (Frame* frame, toMakeSpaceFor)
     {
         map_.insert(value_type(frame, MapType::mapped_type()));
     }

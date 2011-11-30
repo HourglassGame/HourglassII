@@ -32,7 +32,7 @@ Universe& Universe::operator=(Universe&& other)
 //Updates the universe_ pointers in frames_
 void Universe::fixFramesUniverses()
 {
-    foreach (auto& frame, frames_) {
+    foreach (Frame& frame, frames_) {
         frame.correctUniverse(*this);
     }
 }
@@ -43,7 +43,7 @@ Universe::Universe(std::size_t timelineLength) :
 {
     assert(timelineLength > 0);
     frames_.reserve(timelineLength);
-    foreach (auto i, boost::irange<std::size_t>(0, timelineLength)) {
+    foreach (std::size_t i, boost::irange<std::size_t>(0, timelineLength)) {
         frames_.push_back(Frame(i, *this));
     }
 	assert(!frames_.empty());
