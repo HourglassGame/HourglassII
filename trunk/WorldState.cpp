@@ -164,7 +164,7 @@ FrameUpdateSet WorldState::executeWorld()
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
-    foreach (auto frame, nextPlayerFrames_) {
+    foreach (Frame* frame, nextPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)

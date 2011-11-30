@@ -47,7 +47,8 @@ TimelineState::updateWithNewDepartures(
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
 		std::map<Frame*, ObjectList<Normal> > const& initialArrivals)
 {
-    foreach (auto const& arrival, initialArrivals) {
+    typedef std::pair<Frame*, ObjectList<Normal> > ArrivalT;
+    foreach (ArrivalT const& arrival, initialArrivals) {
         permanentDepartures_[arrival.first].add(arrival.second);
         permanentDepartures_[arrival.first].sort();
         arrival.first->addArrival(0, &(permanentDepartures_[arrival.first]));

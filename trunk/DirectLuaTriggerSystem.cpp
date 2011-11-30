@@ -6,6 +6,7 @@
 #include "ObjectAndTime.h"
 #include "LuaUtilities.h"
 #include "Foreach.h"
+#include <boost/ref.hpp>
 #include <iostream>
 namespace hg {
 
@@ -18,8 +19,8 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
 
 	return TriggerFrameState(
 		multi_thread_new<DirectLuaTriggerFrameState>(
-			sharedState,
-			triggerOffsetsAndDefaults_,
+			boost::ref(sharedState),
+			boost::cref(triggerOffsetsAndDefaults_),
 			arrivalLocationsSize_));
 }
 
@@ -363,7 +364,7 @@ PhysicsAffectingStuff
     lua_createtable(L_.ptr, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
     int i(0);
-    foreach (auto const& apparentTrigger, apparentTriggers) {
+    foreach (mt::std::vector<int>::type const& apparentTrigger, apparentTriggers) {
         ++i;
         lua_createtable(L_.ptr, static_cast<int>(apparentTrigger.size()), 0);
         //insert each triggerElement into the table for the particular trigger
@@ -492,7 +493,7 @@ void pushGuy(lua_State* L, Guy const& guy)
     
     lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
     typedef std::pair<Ability const, int> PickupPair;
-    foreach (auto const& pickup, guy.getPickups()) {
+    foreach (PickupPair const& pickup, guy.getPickups()) {
         lua_checkstack(L, 2);
         lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
@@ -772,16 +773,18 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     lua_checkstack(L_.ptr, 1);
     lua_createtable(L_.ptr, static_cast<int>(departures.size()), 0);
     int i(0);
-    foreach (auto const& departureSection, departures)
+    foreach (
+        ObjectList<Normal> const& departureSection,
+        departures | boost::adaptors::map_values)
     {
         ++i;
         lua_checkstack(L_.ptr, 1);
         lua_createtable(L_.ptr, 0, 2);
         {
             lua_checkstack(L_.ptr, 1);
-            lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Guy>().size()), 0);
+            lua_createtable(L_.ptr, static_cast<int>(departureSection.getList<Guy>().size()), 0);
             int j(0);
-            foreach (auto const& guy, departureSection.second.getList<Guy>()) {
+            foreach (Guy const& guy, departureSection.getList<Guy>()) {
                 ++j;
                 pushGuy(L_.ptr, guy);
                 lua_rawseti(L_.ptr, -2, j);
@@ -789,9 +792,9 @@ DirectLuaTriggerFrameState::getDepartureInformation(
             lua_setfield(L_.ptr, -2, "guys");
         }
         {
-            lua_createtable(L_.ptr, static_cast<int>(departureSection.second.getList<Box>().size()), 0);
+            lua_createtable(L_.ptr, static_cast<int>(departureSection.getList<Box>().size()), 0);
             int j(0);
-            foreach (auto const& box, departureSection.second.getList<Box>()) {
+            foreach (Box const& box, departureSection.getList<Box>()) {
                 ++j;
                 pushBox(L_.ptr, box);
                 lua_rawseti(L_.ptr, -2, j);

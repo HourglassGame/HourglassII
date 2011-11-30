@@ -89,7 +89,7 @@ public:
     template<typename F>
     move_function<R(ArgTypes...)>& operator=(F&& f)
     {
-        f_ = hg::unique_ptr<function::detail::function_base<R(ArgTypes...)>>(
+        f_ = hg::unique_ptr<function::detail::function_base<R(ArgTypes...)> >(
             new function::detail::function_obj<F, R, ArgTypes...>(hg::move(f)));
         return *this;
     }
@@ -97,7 +97,7 @@ public:
         return (*f_)(hg::forward<ArgTypes>(args)...);
     }
 private:
-    hg::unique_ptr<function::detail::function_base<R(ArgTypes...)>> f_;
+    hg::unique_ptr<function::detail::function_base<R(ArgTypes...)> > f_;
 };
 } //namespace hg
 #endif //HG_MOVE_FUNCTION_H

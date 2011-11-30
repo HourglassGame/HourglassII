@@ -28,9 +28,10 @@ struct InsertAddresses
     void operator()(Container& toInsertInto, ForwardRange const& toInsert) const
     {
         toInsertInto.reserve(boost::distance(toInsertInto) + boost::distance(toInsert));
-        foreach (auto const& obj, toInsert) {
+        typedef typename boost::range_value<ForwardRange>::type ObjType;
+        foreach (ObjType const& obj, toInsert) {
             toInsertInto.push_back(
-            		typename ConstPtr_of<typename boost::range_value<ForwardRange>::type>::type(obj));
+            		typename ConstPtr_of<ObjType>::type(obj));
         }
     }
 };

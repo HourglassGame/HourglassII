@@ -161,7 +161,7 @@ private:
     //instance of the ThreadLocal<LuaState> at every step.
     //luaStates_ a cache, so ignoring its contents does not cause
     //any problems.
-    lazy_ptr<ThreadLocal<LuaState>> luaStates_;
+    lazy_ptr<ThreadLocal<LuaState> > luaStates_;
     std::vector<char> compiledLuaChunk_;
     std::vector<
         std::pair<

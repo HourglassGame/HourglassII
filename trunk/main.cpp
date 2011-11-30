@@ -83,7 +83,7 @@ namespace {
     void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend);
     void generateReplay();
     template<typename F>
-    auto enqueue_task(ConcurrentQueue<move_function<void()>>& queue, F f) -> boost::unique_future<decltype(f())>
+    auto enqueue_task(ConcurrentQueue<move_function<void()> >& queue, F f) -> boost::unique_future<decltype(f())>
     {
         boost::packaged_task<decltype(f())> task(f);
         boost::unique_future<decltype(f())> future(task.get_future());
@@ -94,7 +94,7 @@ namespace {
     
     struct FunctionQueueRunner
     {
-        FunctionQueueRunner(ConcurrentQueue<move_function<void()>>& taskQueue) :
+        FunctionQueueRunner(ConcurrentQueue<move_function<void()> >& taskQueue) :
             taskQueue_(taskQueue)
         {}
         void operator()() {
@@ -103,7 +103,7 @@ namespace {
     		}
         }
     private:
-        ConcurrentQueue<move_function<void()>>& taskQueue_;
+        ConcurrentQueue<move_function<void()> >& taskQueue_;
     };
     
     struct RunToNextPlayerFrame
@@ -146,7 +146,7 @@ int main(int argc, char const* const argv[])
     app.SetFramerateLimit(60);
     ProgressMonitor monitor;
 
-    ConcurrentQueue<move_function<void()>> timeEngineTaskQueue;
+    ConcurrentQueue<move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
 
     boost::unique_future<TimeEngine> futureTimeEngine(
@@ -352,7 +352,7 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEn
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
     foreach (
-        auto const& updateSet,
+        FrameUpdateSet const& updateSet,
         waveInfo.updatedFrames())
     {
         framesExecutedList.push_back(boost::distance(updateSet));
@@ -484,7 +484,7 @@ void DrawParticularGlitz(RenderTarget& target, Glitz const& glitz)
 }
 void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList)
 {
-	foreach (auto const& glitz, glitzList) DrawParticularGlitz(target, glitz);
+	foreach (Glitz const& glitz, glitzList) DrawParticularGlitz(target, glitz);
 }
 
 void DrawTimeline(
@@ -495,7 +495,7 @@ void DrawTimeline(
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
     foreach (FrameUpdateSet const& wave, waves) {
-    	foreach (auto frame, wave) {
+    	foreach (Frame* frame, wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
                     static_cast<std::size_t>(
