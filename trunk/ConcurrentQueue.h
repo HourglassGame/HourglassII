@@ -4,13 +4,11 @@
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/container/deque.hpp>
-#include <utility>
-#include "move.h"
-#include "forward.h"
+#include <boost/move/move.hpp>
 namespace hg {
 //Single-reader single-writer concurrent queue.
 //(Quite possible can handle multi-reader multi-writer too, check before using)
-template<typename T, typename Alloc = hg::tbb_scalable_allocator<T> >
+template<typename T, typename Alloc = typename multi_thread_allocator<T>::type >
 class ConcurrentQueue
 {
 public:
@@ -26,25 +24,25 @@ public:
         queue_(other.queue_)
     {
     }
-    ConcurrentQueue& operator=(ConcurrentQueue const& other)
+    ConcurrentQueue& operator=(BOOST_COPY_ASSIGN_REF(ConcurrentQueue) other)
     {
         queue_ = other.queue_;
         return *this;
     }
-    ConcurrentQueue(ConcurrentQueue&& other) :
+    ConcurrentQueue(BOOST_RV_REF(ConcurrentQueue) other) :
         mutex_(),
         cond_(),
-        queue_(hg::move(other.queue_))
+        queue_(boost::move(other.queue_))
     {
     }
-    ConcurrentQueue& operator=(ConcurrentQueue&& other)
+    ConcurrentQueue& operator=(BOOST_RV_REF(ConcurrentQueue) other)
     {
-        queue_ = hg::move(other.queue_);
+        queue_ = boost::move(other.queue_);
         return *this;
     }
     
     //{push and pop} and {emplace and pop} can be safely executed concurrently with each other.
-    void push(T&& toPush)
+    void push(BOOST_RV_REF(T) toPush)
     {
         bool shouldNotify;
         {
@@ -56,20 +54,6 @@ public:
             cond_.notify_one();
         }
     }
-    /*
-    template<typename... Args>
-    void emplace(Args&&... args)
-    {
-        bool shouldNotify;
-        {
-            boost::unique_lock<boost::mutex> lock(mutex_);
-            shouldNotify = queue_.empty();
-            queue_.emplace_back(hg::forward<Args>(args)...);
-        }
-        if (shouldNotify) {
-            cond_.notify_one();
-        }
-    }*/
     //If the queue is empty available, pop() blocks (in an interruption point)
     //until an element is available
     T pop()
@@ -86,6 +70,7 @@ private:
     boost::mutex mutex_;
     boost::condition_variable cond_;
     boost::container::deque<T, Alloc> queue_;
+    BOOST_COPYABLE_AND_MOVABLE(ConcurrentQueue)
 };
 }
 #endif //HG_CONCURRENT_QUEUE_H

@@ -9,9 +9,7 @@
 #include "Level.h"
 #include "Inertia.h"
 #include "Frame.h"
-#ifdef HG_COMPILE_TESTS
 #include "TestDriver.h"
-#endif //HG_COMPILE_TESTS
 #include "Foreach.h"
 #include <SFML/Graphics.hpp>
 
@@ -66,7 +64,7 @@ using namespace std;
 using namespace sf;
 using namespace boost;
 namespace {
-    void initialseCurrentPath(int argc, char const* const argv[]);
+    void initialseCurrentPath(int argc, char const* const* argv);
     void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEngine::RunResult const& waveInfo);
     void Draw(
         RenderWindow& target,
@@ -87,11 +85,10 @@ namespace {
     {
         boost::packaged_task<decltype(f())> task(f);
         boost::unique_future<decltype(f())> future(task.get_future());
-        queue.push(move_function<void()>(hg::move(task)));
+        queue.push(move_function<void()>(boost::move(task)));
         return hg::move(future);
     }
-    
-    
+
     struct FunctionQueueRunner
     {
         FunctionQueueRunner(ConcurrentQueue<move_function<void()> >& taskQueue) :
@@ -105,7 +102,7 @@ namespace {
     private:
         ConcurrentQueue<move_function<void()> >& taskQueue_;
     };
-    
+
     struct RunToNextPlayerFrame
     {
         RunToNextPlayerFrame(TimeEngine& timeEngine, InputList&& inputList) :
@@ -120,7 +117,7 @@ namespace {
         TimeEngine& timeEngine_;
         InputList inputList_;
     };
-    
+
     TimeEngine createTimeEngine() {
         return TimeEngine(loadLevelFromFile("level.lua"));
     }
@@ -131,14 +128,13 @@ namespace {
 //The entire front end/UI is a massive pile of hacks mounted on hacks.
 //On the other hand, code from TimeEngine downwards is generally well-designed
 //and logical.
-int main(int argc, char const* const argv[])
+int main(int argc, char* argv[])
 {
-
-#ifdef HG_COMPILE_TESTS
     if(!hg::getTestDriver().passesAllTests()) {
+        std::cout << "Failed self-check! Aborting." << std::endl;
         return EXIT_FAILURE;
     }
-#endif //HG_COMPILE_TESTS
+
     initialseCurrentPath(argc, argv);
 
     RenderWindow app(VideoMode(640, 480), "Hourglass II");
@@ -180,6 +176,7 @@ int main(int argc, char const* const argv[])
 				{
 					switch(event.Type) {
 						//TODO - if (closed or canceled) {cancel_loading(); exit();}
+                        default: break;
 					}
 				}
 				if (futureTimeEngine.is_ready()) {
@@ -213,7 +210,7 @@ int main(int argc, char const* const argv[])
 				boost::packaged_task<TimeEngine::RunResult> timeEngineRunningTask(
 					RunToNextPlayerFrame(*timeEngine, hg::move(inputList)));
 				futureRunResult = timeEngineRunningTask.get_future();
-				timeEngineTaskQueue.push(move_function<void()>(hg::move(timeEngineRunningTask)));
+				timeEngineTaskQueue.push(move_function<void()>(boost::move(timeEngineRunningTask)));
 				state = RUNNING_LEVEL;
 				break;
 			}
@@ -332,7 +329,7 @@ int main(int argc, char const* const argv[])
 }
 
 namespace  {
-void initialseCurrentPath(int argc, char const* const argv[])
+void initialseCurrentPath(int argc, char const* const* argv)
 {
 #if defined(__APPLE__) && defined(__MACH__)
     assert(argc >= 1);

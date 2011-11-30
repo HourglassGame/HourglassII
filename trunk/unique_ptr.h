@@ -1,6 +1,6 @@
 #ifndef HG_UNIQUE_PTR_H
 #define HG_UNIQUE_PTR_H
-#include "move.h"
+#include <boost/move/move.hpp>
 #include <boost/checked_delete.hpp>
 
 //This is not a standard conforming unique_ptr implementation!!
@@ -12,33 +12,33 @@ template<class T> class unique_ptr
 {
 public:
     constexpr unique_ptr() :
-        ptr_(nullptr)
+        ptr_(0)
     {}
     explicit unique_ptr(T* p) :
         ptr_(p)
     {
     }
-    unique_ptr(unique_ptr&& u) :
+    unique_ptr(BOOST_RV_REF(unique_ptr) u) :
         ptr_(u.ptr_)
     {
-        u.ptr_ = nullptr;
+        u.ptr_ = 0;
     }
     template <class U>
-    unique_ptr(unique_ptr<U>&& u) :
+    unique_ptr(BOOST_RV_REF(unique_ptr<U>) u) :
         ptr_(u.ptr_)
     {
-        u.ptr_ = nullptr;
+        u.ptr_ = 0;
     }
     ~unique_ptr()
     {
         boost::checked_delete(ptr_);
     }
-    unique_ptr& operator=(unique_ptr&& u)
+    unique_ptr& operator=(BOOST_RV_REF(unique_ptr) u)
     {
         boost::swap(ptr_, u.ptr_);
         return *this;
     }
-    template <class U> unique_ptr& operator=(unique_ptr<U>&& u)
+    template <class U> unique_ptr& operator=(BOOST_RV_REF(unique_ptr<U>) u)
     {
         boost::swap(ptr_, u.ptr_);
         return *this;
@@ -62,10 +62,10 @@ public:
     T* release()
     {
         T* retv(ptr_);
-        ptr_ = nullptr;
+        ptr_ = 0;
         return retv;
     }
-    void reset(T* p = nullptr)
+    void reset(T* p = 0)
     {
         checked_delete(ptr_);
         ptr_ = p;
@@ -74,10 +74,11 @@ public:
     {
         boost::swap(ptr_, u.ptr_);
     }
-    unique_ptr(const unique_ptr&) = delete;
-    unique_ptr& operator=(const unique_ptr&) = delete;
+
 private:
     T* ptr_;
+    
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(unique_ptr)
 };
 template<typename T> class unique_ptr<T[]>;
 template<typename T> void swap(unique_ptr<T>& l, unique_ptr<T>& r)

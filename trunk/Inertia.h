@@ -2,10 +2,11 @@
 #define HG_INERTIA_H
 #include "FrameID.h"
 #include "TimeDirection.h"
+#include <cassert>
 namespace hg {
 class Inertia {
     public:
-    void save(const FrameID& frame, TimeDirection direction)
+    void save(FrameID const& frame, TimeDirection direction)
     {
         frame_ = frame;
         direction_ = direction;

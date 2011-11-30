@@ -3,6 +3,7 @@
 #include "lua/lua.h"
 #include <cstdio>
 #include <boost/swap.hpp>
+#include <boost/move/move.hpp>
 #include <cassert>
 namespace hg {
 inline int panic (lua_State* L) {
@@ -19,12 +20,12 @@ struct LuaState {
     struct new_state_t {};
     LuaState();
     explicit LuaState(new_state_t);
-    LuaState(LuaState&& other) :
+    LuaState(BOOST_RV_REF(LuaState) other) :
         ptr(0)
     {
         swap(other);
     }
-    LuaState& operator=(LuaState&& other)
+    LuaState& operator=(BOOST_RV_REF(LuaState) other)
     {
         swap(other);
         return *this;
@@ -34,11 +35,13 @@ struct LuaState {
     }
     ~LuaState();
     lua_State* ptr;
+private:
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)
 };
 
 inline void swap(LuaState& l, LuaState& r) {
     return l.swap(r);
 }
-}
+}//namespace hg
 
 #endif //HG_SIMPLE_LUA_CPP_H

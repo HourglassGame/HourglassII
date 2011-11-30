@@ -4,21 +4,19 @@
 #include "Frame.h"
 
 #include <boost/swap.hpp>
-#include "move.h"
 
 namespace hg {
 TimeEngine::TimeEngine(Level&& level/*, ProgressMonitor& monitor*/) :
         speedOfTime_(level.speedOfTime),
         worldState_(
             level.timelineLength,
-            hg::move(level.initialGuy),
-            hg::move(level.guyStartTime),
-            PhysicsEngine(level.environment, hg::move(level.triggerSystem)),
-            hg::move(level.initialObjects)/*,
+            boost::move(level.initialGuy),
+            boost::move(level.guyStartTime),
+            PhysicsEngine(level.environment, boost::move(level.triggerSystem)),
+            boost::move(level.initialObjects)/*,
             monitor*/),
         wall_(level.environment.wall)
 {
-    
 }
 
 void TimeEngine::swap(TimeEngine& other) {
@@ -39,7 +37,7 @@ TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
     return RunResult(
         worldState_.getCurrentPlayerFrame(),
         worldState_.getNextPlayerFrame(),
-        hg::move(updatedList));
+        boost::move(updatedList));
 }
 
 std::vector<InputList> const& TimeEngine::getReplayData() const

@@ -326,7 +326,7 @@ TriggerSystem to<TriggerSystem>(lua_State* L, int index)
 {
     std::string type(readField<std::string>(L, "type", index));
     if (type == "DirectLua") {
-        return TriggerSystem(to<std::auto_ptr<DirectLuaTriggerSystem> >(L).release());
+        return TriggerSystem(to<unique_ptr<DirectLuaTriggerSystem> >(L).release());
     }
     else {
         std::cout << type << std::endl;
@@ -335,11 +335,11 @@ TriggerSystem to<TriggerSystem>(lua_State* L, int index)
 }
 
 template<>
-std::auto_ptr<DirectLuaTriggerSystem> to<std::auto_ptr<DirectLuaTriggerSystem> >(lua_State* L, int index)
+unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem> >(lua_State* L, int index)
 {
     std::string system(readField<std::string>(L, "system", index));
     return
-      std::auto_ptr<DirectLuaTriggerSystem>(
+      unique_ptr<DirectLuaTriggerSystem>(
         new DirectLuaTriggerSystem(
           std::vector<char>(system.begin(), system.end()),
           readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults", index).toad,

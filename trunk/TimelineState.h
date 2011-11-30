@@ -7,11 +7,10 @@
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 
-#include "move.h"
-
 #include <tbb/task.h>
 
-#include <map>
+#include <boost/container/map.hpp>
+#include <boost/move/move.hpp>
 
 #include "FrameID_fwd.h"
 #include "Frame_fwd.h"
@@ -27,16 +26,15 @@ public:
      */
     explicit TimelineState(std::size_t timelineLength);
     
-    TimelineState(TimelineState&& other) :
-        universe_(hg::move(other.universe_)),
-        permanentDepartures_()
+    TimelineState(BOOST_RV_REF(TimelineState) other) :
+        universe_(boost::move(other.universe_)),
+        permanentDepartures_(boost::move(other.permanentDepartures_))
     {
-        permanentDepartures_.swap(other.permanentDepartures_);
     }
-    TimelineState& operator=(TimelineState&& other)
+    TimelineState& operator=(BOOST_RV_REF(TimelineState) other)
     {
-        universe_ = hg::move(other.universe_);
-        permanentDepartures_.swap(other.permanentDepartures_);
+        universe_ = boost::move(other.universe_);
+        permanentDepartures_ = boost::move(other.permanentDepartures_);
         return *this;
     }
 
@@ -72,10 +70,8 @@ public:
     
 private:
     Universe universe_;
-    std::map<Frame*, ObjectList<Normal> > permanentDepartures_;
-    //intentionally undefined
-    TimelineState(TimelineState const& other);
-    TimelineState& operator=(TimelineState const& other);
+    boost::container::map<Frame*, ObjectList<Normal> > permanentDepartures_;
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimelineState)
 };
 inline void swap(TimelineState& l, TimelineState& r) { l.swap(r); }
 }

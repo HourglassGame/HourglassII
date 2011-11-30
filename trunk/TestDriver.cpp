@@ -1,4 +1,3 @@
-#ifdef HG_COMPILE_TESTS
 #include "TestDriver.h"
 #include <boost/range/algorithm/for_each.hpp>
 namespace hg {
@@ -34,5 +33,3 @@ TestDriver& getTestDriver()
     return instance;
 }
 }
-
-#endif //HG_COMPILE_TESTS

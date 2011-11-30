@@ -33,8 +33,8 @@ public:
         }
     }
 private:
-    ThreadLocal(ThreadLocal const&) = delete;
-    ThreadLocal& operator=(ThreadLocal const&) = delete;
+    ThreadLocal(ThreadLocal const&)/*= delete*/;
+    ThreadLocal& operator=(ThreadLocal const&)/*= delete*/;
     
     virtual void on_scheduler_exit(bool /*is_worker*/) {
         //Note that this clears the element even for non-worker threads.

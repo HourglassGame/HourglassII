@@ -8,7 +8,6 @@
 
 #include "Foreach.h"
 #include "move.h"
-#include "swap.h"
 
 #include <functional>
 #include <cassert>

@@ -9,7 +9,6 @@
 #include "Foreach.h"
 
 #include "move.h"
-#include "swap.h"
 #include <utility>
 
 namespace hg {
