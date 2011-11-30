@@ -52,8 +52,8 @@ private:
 
     boost::container::vector<Frame> frames_;
     
-    Universe(Universe const& other) = delete;
-    Universe& operator=(Universe const& other) = delete;
+    Universe(Universe const& other)/*= delete*/;
+    Universe& operator=(Universe const& other)/*= delete*/;
 };
 Frame* getEntryFrame(Universe& universe, TimeDirection direction);
 Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);

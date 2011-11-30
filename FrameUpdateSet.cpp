@@ -19,21 +19,21 @@ FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const& other) :
         updateSet_(other.updateSet_)
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(FrameUpdateSet const& other)
+FrameUpdateSet& FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other)
 {
     isSet_ = other.isSet_;
     updateSet_ = other.updateSet_;
     return *this;
 }
-FrameUpdateSet::FrameUpdateSet(FrameUpdateSet&& other) :
-    isSet_(hg::move(other.isSet_)),
-    updateSet_(hg::move(other.updateSet_))   
+FrameUpdateSet::FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other) :
+    isSet_(boost::move(other.isSet_)),
+    updateSet_(boost::move(other.updateSet_))   
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(FrameUpdateSet&& other)
+FrameUpdateSet& FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) other)
 {
-    isSet_ = hg::move(other.isSet_);
-    updateSet_ = hg::move(other.updateSet_);
+    isSet_ = boost::move(other.isSet_);
+    updateSet_ = boost::move(other.updateSet_);
     return *this;
 }
 void FrameUpdateSet::add(Frame* frame)

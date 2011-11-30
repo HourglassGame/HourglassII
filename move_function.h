@@ -2,7 +2,7 @@
 #define HG_MOVE_FUNCTION_H
 #include <utility>
 #include <memory>
-#include "move.h"
+#include <boost/move/move.hpp>
 #include "forward.h"
 #include "unique_ptr.h"
 namespace hg {
@@ -19,13 +19,13 @@ struct function_base<R(ArgTypes...)>
 template<typename F, typename R, typename... ArgTypes>
 struct function_obj : function_base<R(ArgTypes...)>
 {
-    function_obj(F&& f) :
+    function_obj(BOOST_RV_REF(F) f) :
     	f_(hg::move(f))
     {
     }
-    function_obj<F, R, ArgTypes...>& operator=(F&& f)
+    function_obj<F, R, ArgTypes...>& operator=(BOOST_RV_REF(F) f)
     {
-        f_(hg::move(f));
+        f_(boost::move(f));
         return *this;
     }
     virtual R operator()(ArgTypes&&... args)
@@ -38,13 +38,13 @@ private:
 template<typename F, typename... ArgTypes>
 struct function_obj<F, void, ArgTypes...> : function_base<void(ArgTypes...)>
 {
-    function_obj(F&& f) :
-    	f_(hg::move(f))
+    function_obj(BOOST_RV_REF(F) f) :
+    	f_(boost::move(f))
     {
     }
-    function_obj<F, void, ArgTypes...>& operator=(F&& f)
+    function_obj<F, void, ArgTypes...>& operator=(BOOST_RV_REF(F) f)
     {
-        f_(hg::move(f));
+        f_(boost::move(f));
         return *this;
     }
     virtual void operator()(ArgTypes&&... args)
@@ -70,27 +70,25 @@ class move_function<R(ArgTypes...)>
 {
 public:
 	move_function() : f_() {}
-	move_function(move_function const&) = delete;
-	move_function<R(ArgTypes...)>& operator=(move_function const&) = delete;
-	move_function(move_function&& other) :
-        f_(hg::move(other.f_))
+	move_function(BOOST_RV_REF(move_function) other) :
+        f_(boost::move(other.f_))
     {
     }
-    move_function<R(ArgTypes...)>& operator=(move_function&& other)
+    move_function<R(ArgTypes...)>& operator=(BOOST_RV_REF(move_function) other)
     {
-        f_ = hg::move(other.f_);
+        f_ = boost::move(other.f_);
         return *this;
     }
     template<typename F>
-    move_function(F&& f) :
-        f_(new function::detail::function_obj<F, R, ArgTypes...>(hg::move(f)))
+    move_function(BOOST_RV_REF(F) f) :
+        f_(new function::detail::function_obj<F, R, ArgTypes...>(boost::move(f)))
     {
     }
     template<typename F>
-    move_function<R(ArgTypes...)>& operator=(F&& f)
+    move_function<R(ArgTypes...)>& operator=(BOOST_RV_REF(F) f)
     {
         f_ = hg::unique_ptr<function::detail::function_base<R(ArgTypes...)> >(
-            new function::detail::function_obj<F, R, ArgTypes...>(hg::move(f)));
+            new function::detail::function_obj<F, R, ArgTypes...>(boost::move(f)));
         return *this;
     }
     R operator()(ArgTypes&&... args) {
@@ -98,6 +96,7 @@ public:
     }
 private:
     hg::unique_ptr<function::detail::function_base<R(ArgTypes...)> > f_;
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(move_function)
 };
 } //namespace hg
 #endif //HG_MOVE_FUNCTION_H

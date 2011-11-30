@@ -19,7 +19,6 @@
 #include <boost/tuple/tuple.hpp>
 
 #include <utility>
-#include "swap.h"
 #include "Frame_fwd.h"
 namespace hg {
 //Moveable but non-copyable.

@@ -5,14 +5,14 @@
 #include "FrameUpdateSet.h"
 #include "ProgressMonitor.h"
 
-#include <vector>
+#include <boost/container/vector.hpp>
 #include <boost/swap.hpp>
 
 #include "InputList_fwd.h"
 #include "Level.h"
 #include "Frame.h"
-#include "move.h"
 
+#include <boost/move/move.hpp>
 #include <boost/swap.hpp>
 #include <utility>
 namespace hg {
@@ -27,13 +27,13 @@ namespace hg {
 class TimeEngine
 {
 public:
-    typedef std::vector<FrameUpdateSet> FrameListList;
+    typedef boost::container::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
         RunResult(
             Frame const* currentPlayerFrame,
             Frame const* nextPlayerFrame,
-            FrameListList&& updatedFrames) :
+            BOOST_RV_REF(FrameListList) updatedFrames) :
                 currentPlayerFrame_(currentPlayerFrame),
                 nextPlayerFrame_(nextPlayerFrame),
                 updatedFrames_(hg::move(updatedFrames))
@@ -51,16 +51,16 @@ public:
         Frame const* nextPlayerFrame_;
         FrameListList updatedFrames_;
     };
-    TimeEngine(TimeEngine&& other) :
-        speedOfTime_(hg::move(other.speedOfTime_)),
-        worldState_(hg::move(other.worldState_)),
-        wall_(hg::move(other.wall_))
+    TimeEngine(BOOST_RV_REF(TimeEngine) other) :
+        speedOfTime_(boost::move(other.speedOfTime_)),
+        worldState_(boost::move(other.worldState_)),
+        wall_(boost::move(other.wall_))
     {}
-    TimeEngine& operator=(TimeEngine&& other)
+    TimeEngine& operator=(BOOST_RV_REF(TimeEngine) other)
     {
-        speedOfTime_ = hg::move(other.speedOfTime_);
-        worldState_ = hg::move(other.worldState_);
-        wall_ = hg::move(other.wall_);
+        speedOfTime_ = boost::move(other.speedOfTime_);
+        worldState_ = boost::move(other.worldState_);
+        wall_ = boost::move(other.wall_);
         return *this;
     }
     /**
@@ -106,10 +106,8 @@ private:
     //This may not be ideal, but it simplifies a few things.
     //No, this is probably plain silly. Please fix/justify.
     Wall wall_;
-    //intentionally undefined
-    TimeEngine(TimeEngine const& other) = delete;
-    TimeEngine& operator=(TimeEngine const& other) = delete;
-
+    
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimeEngine)
 };
 }
 #endif //HG_TIME_ENGINE_H

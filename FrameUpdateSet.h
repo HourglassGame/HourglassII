@@ -1,8 +1,10 @@
 #ifndef HG_FRAME_UPDATE_SET_H
 #define HG_FRAME_UPDATE_SET_H
 
-#include <vector>
 #include <boost/operators.hpp>
+#include <boost/move/move.hpp>
+#include <boost/container/vector.hpp>
+
 namespace hg {
 class Frame;
 //FrameUpdateSet is imlemented as a lazily sorted vector.
@@ -33,14 +35,14 @@ public:
     FrameUpdateSet();
 
     FrameUpdateSet(FrameUpdateSet const& other);
-    FrameUpdateSet& operator=(FrameUpdateSet const& other);
-    FrameUpdateSet(FrameUpdateSet&& other);
-    FrameUpdateSet& operator=(FrameUpdateSet&& other);
+    FrameUpdateSet& operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other);
+    FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other);
+    FrameUpdateSet& operator=(BOOST_RV_REF(FrameUpdateSet) other);
     void add(Frame* frame);
     void add(FrameUpdateSet const& other);
     void swap(FrameUpdateSet& other);
 
-    typedef std::vector<Frame*> SetType;
+    typedef boost::container::vector<Frame*> SetType;
 
     //Privacy leak here, it is an error to use the iterators as anything more than a BidirectionalIterator
     //I should define my own iterator class, but I can't be bothered right now
@@ -72,6 +74,7 @@ public:
 private:
     mutable bool isSet_;
     mutable SetType updateSet_;
+    BOOST_COPYABLE_AND_MOVABLE(FrameUpdateSet)
 };
 inline void swap(FrameUpdateSet& l, FrameUpdateSet& r) { l.swap(r); }
 

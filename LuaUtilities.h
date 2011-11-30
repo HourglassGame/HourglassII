@@ -11,6 +11,7 @@
 #include "TriggerOffsetsAndDefaults.h"
 #include "TriggerSystem.h"
 #include "DirectLuaTriggerSystem.h"
+#include "unique_ptr.h"
 //Miscelaneous things related to lua that are useful in multiple places
 //Should be replaced by a more extensible and cohesive model eventually
 namespace hg {
@@ -87,7 +88,7 @@ template<>
 TriggerSystem to<TriggerSystem>(lua_State* L, int index);
 
 template<>
-std::auto_ptr<DirectLuaTriggerSystem> to<std::auto_ptr<DirectLuaTriggerSystem> >(lua_State* L, int index);
+unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem> >(lua_State* L, int index);
 
 template<>
 TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index);
