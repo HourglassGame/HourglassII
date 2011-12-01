@@ -28,6 +28,7 @@ public:
         FrameID abilityParams,
         int frameIdParamCount);
 
+
     bool getLeft()       const { return left; }
     bool getRight()      const { return right; }
     bool getUp()         const { return up; }

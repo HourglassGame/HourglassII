@@ -25,7 +25,7 @@
 #include <boost/range/istream_range.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
-#include <boost/utility/typed_in_place_factory.hpp>
+#include <boost/utility/result_of.hpp>
 
 #include <boost/function.hpp>
 
@@ -54,7 +54,6 @@
 #include "LevelLoader.h"
 #include "ConcurrentQueue.h"
 #include "move_function.h"
-#include "move.h"
 #include "unique_ptr.h"
 
 typedef sf::Color Colour;
@@ -81,12 +80,12 @@ namespace {
     void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend);
     void generateReplay();
     template<typename F>
-    auto enqueue_task(ConcurrentQueue<move_function<void()> >& queue, F f) -> boost::unique_future<decltype(f())>
+    boost::unique_future<typename boost::result_of<F()>::type> enqueue_task(ConcurrentQueue<move_function<void()> >& queue, F f)
     {
-        boost::packaged_task<decltype(f())> task(f);
-        boost::unique_future<decltype(f())> future(task.get_future());
+        boost::packaged_task<typename boost::result_of<F()>::type> task(f);
+        boost::unique_future<typename boost::result_of<F()>::type> future(task.get_future());
         queue.push(move_function<void()>(boost::move(task)));
-        return hg::move(future);
+        return boost::move(future);
     }
 
     struct FunctionQueueRunner
@@ -105,13 +104,14 @@ namespace {
 
     struct RunToNextPlayerFrame
     {
-        RunToNextPlayerFrame(TimeEngine& timeEngine, InputList&& inputList) :
+        RunToNextPlayerFrame(TimeEngine& timeEngine, InputList const& inputList) :
             timeEngine_(timeEngine),
             inputList_(inputList)
         {}
+        typedef TimeEngine::RunResult result_type;
         TimeEngine::RunResult operator()()
         {
-            return timeEngine_.runToNextPlayerFrame(inputList_);
+            return timeEngine_.runToNextPlayerFrame(boost::move(inputList_));
         }
     private:
         TimeEngine& timeEngine_;
@@ -207,10 +207,10 @@ int main(int argc, char* argv[])
 					runningFromReplay = false;
 				}
 				saveReplayLog(replayLogOut, inputList);
-				boost::packaged_task<TimeEngine::RunResult> timeEngineRunningTask(
-					RunToNextPlayerFrame(*timeEngine, hg::move(inputList)));
-				futureRunResult = timeEngineRunningTask.get_future();
-				timeEngineTaskQueue.push(move_function<void()>(boost::move(timeEngineRunningTask)));
+                futureRunResult =
+                    enqueue_task(
+                        timeEngineTaskQueue,
+                        RunToNextPlayerFrame(*timeEngine, inputList));
 				state = RUNNING_LEVEL;
 				break;
 			}
@@ -310,13 +310,23 @@ int main(int argc, char* argv[])
 						replayGlyph.SetSize(32.f);
 						app.Draw(replayGlyph);
 					}
+                    if (app.GetInput().IsKeyDown(sf::Key::F)) {
+                        app.SetFramerateLimit(0);
+                        app.UseVerticalSync(false);
+                    }
+                    else {
+                        app.SetFramerateLimit(60);
+                        app.UseVerticalSync(true);
+                    }
 					app.Display();
 					state = AWAITING_INPUT;
 				}
+                else {
+                    Sleep(.001f);
+                }
 				break;
 			}
     	}
-    	Sleep(.001f);
     	continuemainloop:
     	;
     }

@@ -4,7 +4,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range.hpp>
 #include "BoostHashCompare.h"
-#include "move.h"
+#include <boost/move/move.hpp>
 #include "Frame_fwd.h"
 namespace hg {
 /**
@@ -26,12 +26,19 @@ class ConcurrentTimeSet {
     typedef tbb::concurrent_hash_map<Frame*, Empty, BoostHashCompare<Frame*> > SetType;
 public:
     ConcurrentTimeSet();
-    ConcurrentTimeSet(ConcurrentTimeSet&& other) :
+    ConcurrentTimeSet(ConcurrentTimeSet const& other) :
+        set_(other.set_)
+    {}
+    ConcurrentTimeSet& operator=(BOOST_COPY_ASSIGN_REF(ConcurrentTimeSet) other)
+    {
+        return *this = ConcurrentTimeSet(other);
+    }
+    ConcurrentTimeSet(BOOST_RV_REF(ConcurrentTimeSet) other) :
     	set_()
     {
         set_.swap(other.set_);
    	}
-    ConcurrentTimeSet& operator=(ConcurrentTimeSet&& other)
+    ConcurrentTimeSet& operator=(BOOST_RV_REF(ConcurrentTimeSet) other)
     {
         set_.swap(other.set_);
         return *this;
@@ -53,11 +60,11 @@ public:
         return set_.size();
     }
     typedef boost::range_iterator<boost::select_first_range<SetType> >::type iterator;
-    typedef boost::range_iterator<const boost::select_first_range<SetType> >::type const_iterator;
+    typedef boost::range_iterator<boost::select_first_range<SetType> const>::type const_iterator;
     typedef boost::range_reference<boost::select_first_range<SetType> >::type reference;
-    typedef boost::range_reference<const boost::select_first_range<SetType> >::type const_reference;
+    typedef boost::range_reference<boost::select_first_range<SetType> const>::type const_reference;
     typedef boost::range_pointer<boost::select_first_range<SetType> >::type pointer;
-    typedef boost::range_pointer<const boost::select_first_range<SetType> >::type const_pointer;
+    typedef boost::range_pointer<boost::select_first_range<SetType> const>::type const_pointer;
     iterator begin() {
         return boost::begin(boost::adaptors::keys(set_));
     }
@@ -84,12 +91,13 @@ public:
     }
 private:
     SetType set_;
+    BOOST_COPYABLE_AND_MOVABLE(ConcurrentTimeSet)
 };
 inline void swap(ConcurrentTimeSet& l, ConcurrentTimeSet& r)
 {
-    ConcurrentTimeSet temp(hg::move(l));
-    l = hg::move(r);
-    r = hg::move(temp);
+    ConcurrentTimeSet temp(boost::move(l));
+    l = boost::move(r);
+    r = boost::move(temp);
 }
 }
 #endif //HG_CONCURRENT_TIME_SET_H

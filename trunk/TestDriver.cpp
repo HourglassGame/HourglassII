@@ -9,14 +9,13 @@ void TestDriver::registerUnitTest(boost::function<bool()> test)
 
 struct Run {
     Run(bool& allTestsPassed) :
-    allTestsPassed_(allTestsPassed)
+        allTestsPassed_(allTestsPassed)
     {
     }
     template<typename Callable>
-    void operator()(Callable const& func) {
-        if(!func()) {
-            allTestsPassed_ = false;
-        }
+    void operator()(Callable const& func)
+    {
+        if(!func()) allTestsPassed_ = false;
     }
     bool& allTestsPassed_;
 };
@@ -27,8 +26,7 @@ bool TestDriver::passesAllTests() {
     return allTestsPassed;
 }
 
-TestDriver& getTestDriver()
-{
+TestDriver& getTestDriver() {
     static TestDriver instance;
     return instance;
 }

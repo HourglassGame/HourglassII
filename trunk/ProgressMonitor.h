@@ -8,7 +8,7 @@ namespace hg {
 class ProgressMonitor {
 public:
 	void interrupt();
-	void setInterruptionFunction(boost::function<void()>&& interruptionFunction);
+	void setInterruptionFunction(boost::function<void()> const& interruptionFunction);
 private:
 	bool interrupted_;
 	boost::function<void()> interruptionFunction_;

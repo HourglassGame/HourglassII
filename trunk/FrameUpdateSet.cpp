@@ -6,7 +6,7 @@
 #include <tbb/parallel_sort.h>
 #include <utility>
 #include <cassert>
-#include "move.h"
+
 namespace hg {
 
 FrameUpdateSet::FrameUpdateSet() :

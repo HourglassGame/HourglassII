@@ -7,8 +7,6 @@
 #include <ostream>
 #include <vector>
 
-#include "move.h"
-
 #include "FrameID_fwd.h"
 
 namespace boost {
@@ -53,11 +51,5 @@ private:
     //timelineLength_ -- length of the universe.
     std::size_t timelineLength_;
 };
-inline void swap(UniverseID& l, UniverseID& r)
-{
-    UniverseID temp(hg::move(l));
-    l = hg::move(r);
-    r = hg::move(temp);
-}
 }
 #endif //HG_UNIVERSE_ID_H

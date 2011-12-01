@@ -9,10 +9,10 @@ void ProgressMonitor::interrupt() {
 	}
 }
 
-void ProgressMonitor::setInterruptionFunction(boost::function<void()>&& interruptionFunction)
+void ProgressMonitor::setInterruptionFunction(boost::function<void()> const& interruptionFunction)
 {
 	boost::lock_guard<boost::mutex> lock(interruptionFunctionMutex_);
-	interruptionFunction_.swap(interruptionFunction);
+	interruptionFunction_ = interruptionFunction;
 	if (interrupted_ && interruptionFunction_) {
 		interruptionFunction_();
 	}

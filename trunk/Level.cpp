@@ -1,22 +1,21 @@
 #include "Level.h"
 #include <utility>
-#include "move.h"
 namespace hg {
 Level::Level(
     unsigned nspeedOfTime,
     std::size_t ntimelineLength,
-    Environment&& nenvironment,
-    ObjectList<NonGuyDynamic>&& ninitialObjects,
-    Guy&& ninitialGuy,
-    FrameID&& nguyStartTime,
-    TriggerSystem&& ntriggerSystem) :
+    BOOST_RV_REF(Environment) nenvironment,
+    BOOST_RV_REF(ObjectList<NonGuyDynamic>) ninitialObjects,
+    Guy const& ninitialGuy,
+    FrameID const& nguyStartTime,
+    BOOST_RV_REF(TriggerSystem) ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timelineLength(ntimelineLength),
-        environment(hg::move(nenvironment)),
-        initialObjects(hg::move(ninitialObjects)),
-        initialGuy(hg::move(ninitialGuy)),
-        guyStartTime(hg::move(nguyStartTime)),
-        triggerSystem(hg::move(ntriggerSystem))
+        environment(boost::move(nenvironment)),
+        initialObjects(boost::move(ninitialObjects)),
+        initialGuy(ninitialGuy),
+        guyStartTime(nguyStartTime),
+        triggerSystem(boost::move(ntriggerSystem))
 {
 }
 }

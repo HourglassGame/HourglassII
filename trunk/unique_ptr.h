@@ -11,7 +11,7 @@ namespace hg {
 template<class T> class unique_ptr
 {
 public:
-    constexpr unique_ptr() :
+    unique_ptr() :
         ptr_(0)
     {}
     explicit unique_ptr(T* p) :
@@ -54,10 +54,6 @@ public:
     T* get() const
     {
         return ptr_;
-    }
-    explicit operator bool() const
-    {
-        return static_cast<bool>(ptr_);
     }
     T* release()
     {

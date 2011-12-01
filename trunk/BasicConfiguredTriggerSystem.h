@@ -21,7 +21,7 @@ class BasicConfiguredTriggerFrameState :
             Frame const* /*currentFrame*/,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
                 
                 
     virtual bool shouldArrive(Guy const& /*potentialArriver*/) { return true; }
@@ -48,7 +48,7 @@ class BasicConfiguredTriggerFrameState :
 		mt::std::vector<ObjectAndTime<Box> >::type
 	>
     getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame);
     
     friend class BasicConfiguredTriggerSystem;

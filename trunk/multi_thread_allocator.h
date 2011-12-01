@@ -7,8 +7,10 @@
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/repetition.hpp>
 
-#include "scalable_allocator.h"
-#include "forward.h"
+#include <tbb/scalable_allocator.h>
+
+//#include "scalable_allocator.h"
+//#include "forward.h"
 namespace hg {
     //Metafunction to calculate the allocator type to use
     //when multiple threads may be performing allocations/deallocations

@@ -15,7 +15,7 @@ namespace hg {
 
 typedef boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::std::vector<TriggerDataConstPtr>::type const > TriggerDataRange;
+            mt::boost::container::vector<TriggerDataConstPtr>::type const> TriggerDataRange;
             
 inline mt::std::vector<mt::std::vector<int>::type>::type
     calculateApparentTriggers(

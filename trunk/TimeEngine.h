@@ -36,7 +36,7 @@ public:
             BOOST_RV_REF(FrameListList) updatedFrames) :
                 currentPlayerFrame_(currentPlayerFrame),
                 nextPlayerFrame_(nextPlayerFrame),
-                updatedFrames_(hg::move(updatedFrames))
+                updatedFrames_(boost::move(updatedFrames))
         {}
         Frame const* currentPlayerFrame() const {
             return currentPlayerFrame_;
@@ -73,7 +73,7 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(Level&& level/*, ProgressMonitor& monitor*/);
+    explicit TimeEngine(BOOST_RV_REF(Level) level/*, ProgressMonitor& monitor*/);
 
     void swap(TimeEngine& other);
 
