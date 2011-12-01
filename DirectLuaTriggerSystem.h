@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
+#include <boost/move/move.hpp>
 namespace hg {
 class DirectLuaTriggerFrameState :
     public TriggerFrameStateImplementation
@@ -27,7 +28,7 @@ class DirectLuaTriggerFrameState :
             Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
     
     virtual bool shouldArrive(Guy const& potentialArriver);
     virtual bool shouldArrive(Box const& potentialArriver);
@@ -54,7 +55,7 @@ class DirectLuaTriggerFrameState :
         mt::std::vector<ObjectAndTime<Box> >::type
     > 
     getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame);
     virtual ~DirectLuaTriggerFrameState();
 private:
@@ -82,32 +83,32 @@ private:
 //in general, so the use of this class should be limited to cases where there
 //are no better options.
 //!!WARNING - The const members of this class cannot be regarded as
-//free of race conditions!! Mutable is in use.
+//safe when concurrently called on the same object!! Mutable is in use.
 template<typename T>
 class lazy_ptr
 {
 public:
     lazy_ptr() :
-        ptr_(nullptr)
+        ptr_(0)
     {
     }
     //Notice that these do not actually copy their arguments.
     //The arguments are not even moved. This is deliberate.
     lazy_ptr(lazy_ptr const&) :
-        ptr_(nullptr)
+        ptr_(0)
     {
     }
-    lazy_ptr& operator=(lazy_ptr const&)
+    lazy_ptr& operator=(BOOST_COPY_ASSIGN_REF(lazy_ptr))
     {
         //nothing to do.
     	return *this;
     }
-    lazy_ptr(lazy_ptr&& other) :
-    	ptr_(nullptr)
+    lazy_ptr(BOOST_RV_REF(lazy_ptr) other) :
+    	ptr_(0)
     {
     	boost::swap(ptr_, other.ptr_);
     }
-    lazy_ptr& operator=(lazy_ptr&& other)
+    lazy_ptr& operator=(BOOST_RV_REF(lazy_ptr) other)
     {
     	boost::swap(ptr_, other.ptr_);
     	return *this;
@@ -133,6 +134,7 @@ public:
     }
 private:
     mutable T* ptr_;
+    BOOST_COPYABLE_AND_MOVABLE(lazy_ptr)
 };
 
 class DirectLuaTriggerSystem :

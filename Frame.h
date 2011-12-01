@@ -10,10 +10,8 @@
 #include <boost/range/adaptor/map.hpp>
 
 #include <tbb/concurrent_hash_map.h>
-#include "mt/std/map"
+#include "mt/boost/container/map.hpp"
 #include "mt/std/vector"
-#include "move.h"
-
 
 #include "Universe_fwd.h"
 #include "FrameUpdateSet_fwd.h"
@@ -21,9 +19,27 @@
 namespace hg {
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
-    typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
 public:
+    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
+
     Frame(std::size_t frameNumber, Universe& universe);
+    
+    Frame(Frame const& o) :
+        frameNumber_(o.frameNumber_),
+        universe_(o.universe_),
+        departures_(o.departures_),
+        arrivals_(o.arrivals_),
+        view_(o.view_)
+    {}
+    Frame& operator=(Frame const& o)
+    {
+        frameNumber_ = o.frameNumber_;
+        universe_ = o.universe_;
+        departures_ = o.departures_;
+        arrivals_ = o.arrivals_;
+        view_ = o.view_;
+        return *this;
+    }
     
     //These "correct" functions are for rearranging pointers when universes get copied.
     //Changes universe_ to &newUniverse
@@ -89,9 +105,9 @@ private:
 
 inline void swap(Frame& l, Frame& r)
 {
-    Frame temp(hg::move(l));
-    l = hg::move(r);
-    r = hg::move(temp);
+    Frame temp(boost::move(l));
+    l = boost::move(r);
+    r = boost::move(temp);
 }
 
 //<Undefined to call with NullFrame>

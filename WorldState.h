@@ -29,10 +29,10 @@ public:
     //Exception Safety: Strong
     WorldState(
         std::size_t timelineLength,
-        Guy&& initialGuy,
-        FrameID&& guyStartTime,
-        PhysicsEngine&& physics,
-        ObjectList<NonGuyDynamic>&& initialObjects/*,
+        Guy const& initialGuy,
+        FrameID const& guyStartTime,
+        BOOST_RV_REF(PhysicsEngine) physics,
+        BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
         ProgressMonitor& monitor*/);
 
     void swap(WorldState& other);

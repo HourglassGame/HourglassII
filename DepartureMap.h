@@ -1,20 +1,20 @@
 #ifndef HG_DEPARTURE_MAP_H
 #define HG_DEPARTURE_MAP_H
 
-
 #include "Frame_fwd.h"
 #include "FrameUpdateSet_fwd.h"
 
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
-#include "mt/std/map"
+#include "mt/boost/container/map.hpp"
 #include <boost/unordered_map.hpp>
+
 namespace hg {
 class DepartureMap {
     typedef
     boost::unordered_map<
         Frame*,
-        mt::std::map<Frame*, ObjectList<Normal> >::type
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type
     > MapType;
 public:
     typedef MapType::value_type value_type;
@@ -22,7 +22,7 @@ public:
     typedef MapType::const_iterator const_iterator;
     //MUST be called with all the times which will be passed to addDeparture before calling addDeparture
     void makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor);
-    void setDeparture(Frame* time, MapType::mapped_type&& departingObjects);
+    void setDeparture(Frame* time, BOOST_RV_REF(MapType::mapped_type) departingObjects);
     iterator begin();
     iterator end();
     const_iterator begin() const;

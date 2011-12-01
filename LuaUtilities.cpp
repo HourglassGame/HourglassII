@@ -67,7 +67,7 @@ LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string co
         assert(false);
     }
     luaL_openlibs(L.ptr);
-    return L;
+    return boost::move(L);
 }
 
 

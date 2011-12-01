@@ -244,7 +244,7 @@ PhysicsAffectingStuff
         Frame const* currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
 {
     //All indicies viewed or written by lua count starting from 1, and are adjusted
     //before geing used in c++.
@@ -761,7 +761,7 @@ boost::tuple<
     mt::std::vector<ObjectAndTime<Box> >::type
 > 
 DirectLuaTriggerFrameState::getDepartureInformation(
-    mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
+    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
     //push function to call

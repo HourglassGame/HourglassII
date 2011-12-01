@@ -10,10 +10,10 @@
 #include "multi_thread_allocator.h"
 
 #include <vector>
-#include "mt/std/map"
+#include "mt/boost/container/map.hpp"
 #include "mt/std/vector"
 #include <utility>
-#include "move.h"
+#include <boost/move/move.hpp>
 
 #include "Frame_fwd.h"
 namespace hg {
@@ -23,17 +23,30 @@ public:
     PhysicsEngine(
         Environment const& env,
         TriggerSystem const& newTriggerSystem);
-    PhysicsEngine(PhysicsEngine&& other) :
-        env_(hg::move(other.env_)),
-        triggerSystem_(hg::move(other.triggerSystem_))
-    {}
-    PhysicsEngine& operator=(PhysicsEngine&& other)
+    
+    PhysicsEngine(PhysicsEngine const& other) :
+        env_(other.env_),
+        triggerSystem_(other.triggerSystem_)
     {
-        env_ = hg::move(other.env_);
-        triggerSystem_ = hg::move(other.triggerSystem_);
+    }
+    PhysicsEngine& operator=(BOOST_COPY_ASSIGN_REF(PhysicsEngine) other)
+    {
+        env_ = other.env_;
+        triggerSystem_ = other.triggerSystem_;
         return *this;
     }
-    typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
+    
+    PhysicsEngine(BOOST_RV_REF(PhysicsEngine) other) :
+        env_(boost::move(other.env_)),
+        triggerSystem_(boost::move(other.triggerSystem_))
+    {}
+    PhysicsEngine& operator=(BOOST_RV_REF(PhysicsEngine) other)
+    {
+        env_ = boost::move(other.env_);
+        triggerSystem_ = boost::move(other.triggerSystem_);
+        return *this;
+    }
+    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
     typedef mt::std::vector<RectangleGlitz>::type NewGlitzType;
     struct PhysicsReturnT
     {
@@ -64,12 +77,13 @@ public:
 private:
     Environment env_;
     TriggerSystem triggerSystem_;
+    BOOST_COPYABLE_AND_MOVABLE(PhysicsEngine)
 };
 inline void swap(PhysicsEngine& l, PhysicsEngine& r)
 {
-    PhysicsEngine temp(hg::move(l));
-    l = hg::move(r);
-    r = hg::move(temp);
+    PhysicsEngine temp(boost::move(l));
+    l = boost::move(r);
+    r = boost::move(temp);
 }
 }//namespace hg
 #endif //HG_PHYSICS_ENGINE_H

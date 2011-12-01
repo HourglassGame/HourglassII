@@ -2,7 +2,6 @@
 #include "FrameUpdateSet.h"
 #include "Foreach.h"
 #include <utility>
-#include "move.h"
 namespace hg {
 void DepartureMap::makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor)
 {
@@ -13,9 +12,9 @@ void DepartureMap::makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor)
         map_.insert(value_type(frame, MapType::mapped_type()));
     }
 }
-void DepartureMap::setDeparture(Frame* time, MapType::mapped_type&& departingObjects)
+void DepartureMap::setDeparture(Frame* time, BOOST_RV_REF(MapType::mapped_type) departingObjects)
 {
-    map_[time] = hg::move(departingObjects);
+    map_[time] = boost::move(departingObjects);
 }
 
 DepartureMap::iterator DepartureMap::begin()

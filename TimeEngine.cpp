@@ -6,13 +6,13 @@
 #include <boost/swap.hpp>
 
 namespace hg {
-TimeEngine::TimeEngine(Level&& level/*, ProgressMonitor& monitor*/) :
+TimeEngine::TimeEngine(BOOST_RV_REF(Level) level/*, ProgressMonitor& monitor*/) :
         speedOfTime_(level.speedOfTime),
         worldState_(
             level.timelineLength,
             boost::move(level.initialGuy),
             boost::move(level.guyStartTime),
-            PhysicsEngine(level.environment, boost::move(level.triggerSystem)),
+            PhysicsEngine(Environment(level.environment), boost::move(level.triggerSystem)),
             boost::move(level.initialObjects)/*,
             monitor*/),
         wall_(level.environment.wall)

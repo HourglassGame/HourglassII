@@ -1,6 +1,6 @@
 #ifndef HG_CONCURRENT_QUEUE_H
 #define HG_CONCURRENT_QUEUE_H
-#include "scalable_allocator.h"
+#include "multi_thread_allocator.h"
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/container/deque.hpp>
@@ -41,30 +41,31 @@ public:
         return *this;
     }
     
-    //{push and pop} and {emplace and pop} can be safely executed concurrently with each other.
+    //push can be safely executed while pop is executing in a different thread.
     void push(BOOST_RV_REF(T) toPush)
     {
         bool shouldNotify;
         {
             boost::lock_guard<boost::mutex> lock(mutex_);
             shouldNotify = queue_.empty();
-            queue_.push_back(hg::move(toPush));
+            queue_.push_back(boost::move(toPush));
         }
         if (shouldNotify) {
             cond_.notify_one();
         }
     }
-    //If the queue is empty available, pop() blocks (in an interruption point)
-    //until an element is available
+    //pop can be safely executed while push is executing in a different thread.
+    //If the queue is empty available, pop() blocks (in a Boost "Interruption Point")
+    //until an element is available.
     T pop()
     {
         boost::unique_lock<boost::mutex> lock(mutex_);
         while (queue_.empty()) {
             cond_.wait(lock);
         }
-        T retv(hg::move(queue_.front()));
+        T retv(boost::move(queue_.front()));
         queue_.pop_front();
-        return hg::move(retv);
+        return boost::move(retv);
     }
 private:
     boost::mutex mutex_;

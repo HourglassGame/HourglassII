@@ -10,7 +10,7 @@
 #include "ObjectListTypes.h"
 #include "PhysicsAffectingStuff.h"
 #include "ObjectAndTime.h"
-#include "mt/std/vector"
+#include "mt/boost/container/vector.hpp"
 #include "mt/std/map"
 
 #include <boost/optional.hpp>
@@ -30,7 +30,7 @@ class TriggerFrameStateImplementation
             Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
     
     virtual bool shouldArrive(Guy const& potentialArriver) = 0;
     virtual bool shouldArrive(Box const& potentialArriver) = 0;
@@ -57,7 +57,7 @@ class TriggerFrameStateImplementation
 		mt::std::vector<ObjectAndTime<Box> >::type
 	>
     getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
@@ -74,7 +74,7 @@ class TriggerFrameState
         Frame const* currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::std::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
     {
         return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
     }
@@ -107,7 +107,7 @@ class TriggerFrameState
 		mt::std::vector<ObjectAndTime<Box> >::type
 	>
         getDepartureInformation(
-            mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
+            mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
             Frame* currentFrame)
     {
         return impl_->getDepartureInformation(departures, currentFrame);
@@ -118,23 +118,23 @@ class TriggerFrameState
     TriggerFrameState() : impl_(0)
     {}
 
-    //Takes ownership of impl
-    //pre:
-    //if (impl) {
+    //Takes ownership of impl.
+    //precondition:
+    //  The following must release impl:
+    //  if (impl) {
     //      impl->~TriggerFrameStateImplementation();
     //      multi_thread_free(impl);
-    //}
-    //must release impl.
+    //  }
     //THIS MEANS THAT impl MUST HAVE BEEN ALLOCATED IN A SPECIAL WAY!!
     explicit TriggerFrameState(TriggerFrameStateImplementation* impl) :
         impl_(impl)
     {}
-    TriggerFrameState(TriggerFrameState&& other) :
+    TriggerFrameState(BOOST_RV_REF(TriggerFrameState) other) :
         impl_(0)
     {
         swap(other);
     }
-    TriggerFrameState& operator=(TriggerFrameState&& other)
+    TriggerFrameState& operator=(BOOST_RV_REF(TriggerFrameState) other)
     {
         swap(other);
         return *this;
@@ -151,6 +151,7 @@ class TriggerFrameState
     }
     private:
     TriggerFrameStateImplementation* impl_;
+    BOOST_MOVABLE_BUT_NOT_COPYABLE(TriggerFrameState)
 };
 inline void swap(TriggerFrameState& l, TriggerFrameState& r) { l.swap(r); }
 

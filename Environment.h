@@ -1,6 +1,6 @@
 #ifndef HG_ENVIRONMENT_H
 #define HG_ENVIRONMENT_H
-#include "move.h"
+#include <boost/move/move.hpp>
 #include <boost/multi_array.hpp>
 namespace hg {
     //stores the wall (the static environment over which the game is played)
@@ -10,21 +10,23 @@ namespace hg {
             segmentSize_(other.segmentSize_),
             wallmap_(other.wallmap_)
         {}
-    	Wall& operator=(Wall const& other)
+    	Wall& operator=(BOOST_COPY_ASSIGN_REF(Wall) other)
         {
             segmentSize_ = other.segmentSize_;
             wallmap_ = other.wallmap_;
             return *this;
         }
-    	Wall(Wall&& other) :
-    		segmentSize_(other.segmentSize_),
-    		wallmap_(other.wallmap_)
+    	Wall(BOOST_RV_REF(Wall) other) :
+    		segmentSize_(boost::move(other.segmentSize_)),
+    		wallmap_(boost::move(other.wallmap_))
     	{
     	}
-    	Wall& operator=(Wall&& other)
+    	Wall& operator=(BOOST_RV_REF(Wall) other)
     	{
-    		segmentSize_ = other.segmentSize_;
-    		wallmap_ = other.wallmap_;
+    		segmentSize_ = boost::move(other.segmentSize_);
+            //Note that boost::multi_array does not have a no-throw swap or
+            //move constructor.
+    		wallmap_ = boost::move(other.wallmap_);
     		return *this;
     	}
         Wall(
@@ -71,35 +73,36 @@ namespace hg {
     private:
         int segmentSize_;
         boost::multi_array<bool, 2> wallmap_;
+        BOOST_COPYABLE_AND_MOVABLE(Wall)
     };
     inline void swap(Wall& l, Wall& r)
     {
-        Wall temp(hg::move(l));
-        l = hg::move(r);
-        r = hg::move(temp);
+        Wall temp(boost::move(l));
+        l = boost::move(r);
+        r = boost::move(temp);
     }
     //Stores the physical attributes of the world
     //in which the game is played.
     //That is - the wall and gravity
     struct Environment {
-    	Environment(Environment&& other) :
-            wall(hg::move(other.wall)),
-            gravity(hg::move(other.gravity))
-        {}
-    	Environment& operator=(Environment&& other) {
-            wall = hg::move(other.wall);
-            gravity = hg::move(other.gravity);
-            return *this;
-        }
     	Environment(Environment const& other) :
             wall(other.wall),
             gravity(other.gravity)
         {
         }
-    	Environment& operator=(Environment const& other)
+    	Environment& operator=(BOOST_COPY_ASSIGN_REF(Environment) other)
         {
             wall = other.wall;
             gravity = other.gravity;
+            return *this;
+        }
+    	Environment(BOOST_RV_REF(Environment) other) :
+            wall(boost::move(other.wall)),
+            gravity(boost::move(other.gravity))
+        {}
+    	Environment& operator=(BOOST_RV_REF(Environment) other) {
+            wall = boost::move(other.wall);
+            gravity = boost::move(other.gravity);
             return *this;
         }
         Environment(Wall const& nWall, int nGravity):
@@ -109,12 +112,14 @@ namespace hg {
         }
         Wall wall;
         int gravity;
+    private:
+        BOOST_COPYABLE_AND_MOVABLE(Environment)
     };
     inline void swap(Environment& l, Environment& r)
     {
-        Environment temp(hg::move(l));
-        l = hg::move(r);
-        r = hg::move(temp);
+        Environment temp(boost::move(l));
+        l = boost::move(r);
+        r = boost::move(temp);
     }
 }
 

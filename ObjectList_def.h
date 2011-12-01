@@ -31,12 +31,30 @@ ObjectList<ListTypes>::ObjectList(ObjectList const& other) :
 {
 }
 template<typename ListTypes>
-ObjectList<ListTypes>& ObjectList<ListTypes>::operator=(ObjectList const& other)
+ObjectList<ListTypes>& ObjectList<ListTypes>::operator=(BOOST_COPY_ASSIGN_REF(ObjectList) other)
 {
 #ifndef NDEBUG
     sorted = other.sorted;
 #endif //NDEBUG
     list_ = other.list_;
+    return *this;
+}
+
+template<typename ListTypes>
+ObjectList<ListTypes>::ObjectList(BOOST_RV_REF(ObjectList) other) :
+#ifndef NDEBUG
+    sorted(boost::move(other.sorted)),
+#endif //NDEBUG
+    list_(boost::move(other.list_))
+{
+}
+template<typename ListTypes>
+ObjectList<ListTypes>& ObjectList<ListTypes>::operator=(BOOST_RV_REF(ObjectList) other)
+{
+#ifndef NDEBUG
+    sorted = boost::move(other.sorted);
+#endif //NDEBUG
+    list_ = boost::move(other.list_);
     return *this;
 }
 

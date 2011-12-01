@@ -131,7 +131,7 @@ PhysicsAffectingStuff
         Frame const* /*currentFrame*/,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::std::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
 {
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers(
         calculateApparentTriggers(triggerSystem.triggerOffsetsAndDefaults, triggerArrivals));
@@ -203,7 +203,7 @@ bool temporalIntersectingExclusive(ProtoButton const& protoA, PositionAndVelocit
 mt::std::vector<char>::type calculateButtonStates(
     std::vector<ProtoButton> const& protoButtons,
     mt::std::vector<PositionAndVelocity2D>::type const& buttonPositions,
-    mt::std::map<Frame*, ObjectList<Normal> >::type const& departures)
+    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures)
 {
     //assert(boost::distance(protoButtons) == boost::distance(buttonPositions));
     mt::std::vector<char>::type buttonStates(boost::distance(protoButtons), false);
@@ -281,7 +281,7 @@ boost::tuple<
     mt::std::vector<ObjectAndTime<Box> >::type
 > 
 BasicConfiguredTriggerFrameState::getDepartureInformation(
-    mt::std::map<Frame*, ObjectList<Normal> >::type const& departures,
+    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
     //These are the states that are apparent in the buttonGlitz

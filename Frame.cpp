@@ -84,7 +84,7 @@ bool isNullFrame(Frame const* frame) {
 namespace {
     template<typename ListTypes>
     struct FrameNotNull : std::unary_function<std::pair<Frame* const, ObjectList<ListTypes> > const&, bool> {
-        bool operator()(typename std::pair<Frame* const, ObjectList<ListTypes> > const& pair) const {
+        bool operator()(Frame::FrameDeparturesT::value_type const& pair) const {
             return !isNullFrame(pair.first);
         }
     };

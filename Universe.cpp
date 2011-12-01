@@ -7,23 +7,21 @@
 #include <boost/swap.hpp>
 
 #include "Foreach.h"
-#include "move.h"
 
 #include <functional>
 #include <cassert>
 
 namespace hg {
-Universe::Universe(Universe&& other) :
-	frames_(hg::move(other.frames_))
+Universe::Universe(BOOST_RV_REF(Universe) other) :
+	frames_(boost::move(other.frames_))
 {
 	assert(!frames_.empty());
 	fixFramesUniverses();
 }
-Universe& Universe::operator=(Universe&& other)
+Universe& Universe::operator=(BOOST_RV_REF(Universe) other)
 {
 	assert(!other.frames_.empty());
-	frames_ = hg::move(other.frames_);
-	assert(!frames_.empty());
+	frames_ = boost::move(other.frames_);
 	fixFramesUniverses();
 	return *this;
 }
@@ -89,7 +87,7 @@ Frame* getArbitraryFrame(Universe& universe,std::size_t frameNumber)
 std::size_t getTimelineLength(Universe const& universe) {
     return universe.getTimelineLength();
 }
-Frame* Universe::getFrame(const FrameID& whichFrame)
+Frame* Universe::getFrame(FrameID const& whichFrame)
 {
     assert(getTimelineLength() == whichFrame.getUniverse().timelineLength());
     return getArbitraryFrame(whichFrame.getFrameNumber());

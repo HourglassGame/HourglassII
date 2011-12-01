@@ -8,7 +8,6 @@
 
 #include "Foreach.h"
 
-#include "move.h"
 #include <utility>
 
 namespace hg {
@@ -27,15 +26,15 @@ private:
    
 WorldState::WorldState(
     std::size_t timelineLength,
-    Guy&& initialGuy,
-    FrameID&& guyStartTime,
-    PhysicsEngine&& physics,
-    ObjectList<NonGuyDynamic>&& initialObjects/*,
+    Guy const& initialGuy,
+    FrameID const& guyStartTime,
+    BOOST_RV_REF(PhysicsEngine) physics,
+    BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
     ProgressMonitor& monitor*/) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
-        physics_(hg::move(physics)),
+        physics_(boost::move(physics)),
         nextPlayerFrames_(),
         currentPlayerFrames_(),
         currentWinFrames_()/*,

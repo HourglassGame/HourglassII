@@ -1,7 +1,6 @@
 #ifndef HG_TBB_ALLOCATOR_H
 #define HG_TBB_ALLOCATOR_H
 #include <tbb/scalable_allocator.h>
-#include "forward.h"
 #include <utility>
 namespace hg {
 //Adapts tbb::scalable_allocator to meet C++11 allocator requirements

@@ -2,7 +2,6 @@
 #define HG_TRIGGER_SYSTEM_H
 #include "TriggerSystemImplementation.h"
 #include "clone_ptr.h"
-#include "move.h"
 namespace hg
 {
 class TriggerSystem {
@@ -17,18 +16,18 @@ public:
         impl_(impl)
     {}
     TriggerSystem(TriggerSystem const& other) : impl_(other.impl_) {}
-    TriggerSystem& operator=(TriggerSystem const& other)
+    TriggerSystem& operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) other)
     {
         impl_ = other.impl_;
         return *this;
     }
-    TriggerSystem(TriggerSystem&& other) :
-        impl_(hg::move(other.impl_))
+    TriggerSystem(BOOST_RV_REF(TriggerSystem) other) :
+        impl_(boost::move(other.impl_))
     {
     }
-    TriggerSystem& operator=(TriggerSystem&& other)
+    TriggerSystem& operator=(BOOST_RV_REF(TriggerSystem) other)
     {
-        impl_ = hg::move(other.impl_);
+        impl_ = boost::move(other.impl_);
         return *this;
     }
 
@@ -42,6 +41,7 @@ public:
     }
 private:
     clone_ptr<TriggerSystemImplementation> impl_;
+    BOOST_COPYABLE_AND_MOVABLE(TriggerSystem)
 };
 inline void swap(TriggerSystem& l, TriggerSystem& r)
 {
