@@ -55,7 +55,7 @@
 #include "ConcurrentQueue.h"
 #include "move_function.h"
 #include "unique_ptr.h"
-
+#if 0
 /*virtual*/ const char* ::std::bad_typeid::what() const throw()
 {
     return exception::what();
@@ -72,6 +72,7 @@
 {
     return exception::what();
 }
+#endif
 typedef sf::Color Colour;
 
 using namespace hg;
