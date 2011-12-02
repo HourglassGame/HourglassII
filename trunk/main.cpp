@@ -56,6 +56,22 @@
 #include "move_function.h"
 #include "unique_ptr.h"
 
+/*virtual*/ const char* ::std::bad_typeid::what() const throw()
+{
+    return exception::what();
+}
+/*virtual*/ const char* ::std::bad_exception::what() const throw()
+{
+    return exception::what();
+}
+/*virtual*/ const char* ::std::bad_cast::what() const throw()
+{
+    return exception::what();
+}
+/*virtual*/ const char* ::std::bad_alloc::what() const throw()
+{
+    return exception::what();
+}
 typedef sf::Color Colour;
 
 using namespace hg;
