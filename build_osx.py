@@ -10,38 +10,112 @@ class basic_gxx_compiler:
     def do_compile(self, source, output, defines, include_directories):
         try:
             subprocess.check_output(
-                [self.cxx]
-                + list(map(lambda d: "-D" + d, defines))
-                + list(map(lambda i: "-I" + i, include_directories))
-                + self.additional_flags
-                + ["-O3"]
-                + ["-mmacosx-version-min=10.4"]
-                + ["-c"] + [source]
-                + ["-o"] + [output], stderr=subprocess.STDOUT)
+                ["/Developer-old/usr/bin/gcc-4.2"]
+                +["-x", "c++"]
+                +["-arch", self.arch]
+                +["-fmessage-length=0"]
+                +["-pipe"]
+                +["-Wno-trigraphs"]
+                +["-fpascal-strings"]
+                +["-O3"]
+                +["-mdynamic-no-pic"]
+                +["-Wmissing-field-initializers"]
+                +["-Wmissing-prototypes"]
+                +["-Wreturn-type"]
+                +["-Woverloaded-virtual"]
+                +["-Wmissing-braces"]
+                +["-Wparentheses"]
+                +["-Wswitch"]
+                +["-Wunused-function"]
+                +["-Wunused-label"]
+                +["-Wunused-parameter"]
+                +["-Wunused-variable"]
+                +["-Wunused-value"]
+                +["-Wuninitialized"]
+                +["-Wunknown-pragmas"]
+                +["-Wfour-char-constants"]
+                +["-Wsign-compare"]
+                +["-Wnewline-eof"]
+                +["-Wshorten-64-to-32"]
+                +["-DBOOST_MULTI_ARRAY_NO_GENERATORS"]
+                +["-isysroot", "/Developer-old/SDKs/MacOSX10.6.sdk"]
+                +["-mmacosx-version-min=10.4"]
+                +["-gdwarf-2"]
+                #-iquote /Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/HourglassII-generated-files.hmap
+                #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/HourglassII-own-target-headers.hmap
+                #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/HourglassII-all-target-headers.hmap
+                #-iquote /Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/HourglassII-project-headers.hmap
+                +["-Wstrict-overflow"]
+                #-F/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile
+                #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile/include
+                +["-I/Users/evan/Programming/tbb/library/include"]
+                +["-I/Users/evan/Programming/SFML/library/include"]
+                +["-I/Users/evan/Programming/boost/library/include"]
+                #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/DerivedSources/i386
+                #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/DerivedSources
+                #-c /Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/../../HourglassIISF/trunk/WorldState.cpp
+                #-o /Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/Objects-normal/i386/WorldState.o
+                + ["-c", source]
+                + ["-o", output],
+                stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             print(e.output)
             raise
     def do_link(self, sources, output, library_directories, libraries, additional_linker_flags):
         try:
             subprocess.check_output(
-                [self.cc]
-                + list(map(lambda L: "-L" + L, library_directories))
-                + list(map(lambda l: "-l" + l, libraries))
-                + self.additional_flags
-                + additional_linker_flags
-                + ["-shared-libgcc"]
-                + ["-lstdc++-static"]
-                + ["-mmacosx-version-min=10.4"]
-                + ["-o"] + [output]
-                + sources, stderr=subprocess.STDOUT)
+                ["/Developer-old/usr/bin/gcc-4.2"]
+                +["-arch", self.arch]
+                +["-isysroot", "/Developer-old/SDKs/MacOSX10.6.sdk"] 
+                #+["-L/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile"]
+                +["-L/Users/evan/Programming/boost/library/lib"]
+                +["-L/Users/evan/Programming/SFML/library/lib"]
+                +["-L/Users/evan/Programming/tbb/library/lib"]
+                +["-L/Users/evan/Programming/freetype/library/lib"]
+                + sources
+                #+["-F/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile"]
+                #+["-filelist", "/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/Objects-normal/x86_64/HourglassII.LinkFileList"]
+                +["-mmacosx-version-min=10.4"]
+                +["-lfreetype"]
+                +["-lsfml-graphics-s"]
+                +["-lsfml-window-s"]
+                +["-lsfml-system-s"]
+                +["-framework", "CoreFoundation"]
+                +["-framework", "Cocoa"]
+                +["-framework", "OpenGL"]
+                +["-lboost_filesystem"]
+                +["-lboost_serialization"]
+                +["-lboost_system"]
+                +["-lfreetype"]
+                +["-ltbb"]
+                +["-ltbbmalloc"]
+                +["-lboost_thread"]
+                +["-shared-libgcc"]
+                +["-lstdc++-static"]
+                +["-prebind"]
+                #+["-o", "/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/Objects-normal/x86_64/HourglassII"]
+                + ["-o"] + [output],
+            #    [self.cc]
+             #   + self.additional_flags
+              #  + ["-isysroot /Developer-old/SDKs/MacOSX10.6.sdk"]
+              #  + list(map(lambda L: "-L" + L, library_directories))
+              #  + ["-mmacosx-version-min=10.4"]
+              #  + list(map(lambda l: "-l" + l, libraries))
+              #  + additional_linker_flags
+              #  + ["-shared-libgcc"]
+              #  + ["-lstdc++-static"]
+              #  + ["-prebind"]
+              #  + ["-o"] + [output]
+              #  + sources,
+                stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             print(e.output)
             raise
 
 class osx_gxx_compiler:
-    def __init__(self, cxxbinary, ldbinary, target_arch):
-        self.basic_compiler = basic_gxx_compiler(cxxbinary, ldbinary)
-        self.basic_compiler.additional_flags = ["-arch", target_arch]
+    def __init__(self, cxxbinary, ccbinary, target_arch):
+        self.basic_compiler = basic_gxx_compiler(cxxbinary, ccbinary)
+        self.basic_compiler.arch = target_arch
     def do_compile(self, source, output, defines, include_directories):
         self.basic_compiler.do_compile(source, output, defines, include_directories)
     def do_link(self, sources, output, library_directories, libraries, additional_linker_flags):
@@ -160,6 +234,7 @@ boost_library_directory = "/Users/evan/Programming/boost/library/lib/"
 boost_serialization_lib = "boost_serialization"
 boost_filesystem_lib = "boost_filesystem"
 boost_system_lib = "boost_system"
+boost_thread_lib = "boost_thread"
 
 sfml_inlcude = "/Users/evan/Programming/SFML/library/include/"
 sfml_library_directory = "/Users/evan/Programming/SFML/library/lib/"
@@ -178,7 +253,7 @@ tbb_malloc_dll = "/Users/evan/Programming/tbb/library/lib/libtbbmalloc.dylib"
 freetype_library_directory = "/Users/evan/Programming/freetype/library/lib/"
 freetype_lib = "freetype"
 
-compilers = osx_compiler_set("/Developer-old/usr/bin/g++", "/Developer-old/usr/bin/gcc")
+compilers = osx_compiler_set("/Developer-old/usr/bin/g++-4.2", "/Developer-old/usr/bin/gcc-4.2")
 
 
 
@@ -194,7 +269,7 @@ library_directories = [
      tbb_library_directory, freetype_library_directory]
 
 libraries = [
-     boost_serialization_lib, boost_filesystem_lib, boost_system_lib,
+     boost_serialization_lib, boost_filesystem_lib, boost_system_lib, boost_thread_lib,
      sfml_system_lib, sfml_window_lib, sfml_graphics_lib,
      tbb_lib, tbb_malloc_lib,
      freetype_lib]
