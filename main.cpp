@@ -188,6 +188,7 @@ int main(int argc, char* argv[])
     	switch (state) {
 			case LOADING_LEVEL:
 			{
+            /*
 				Event event;
 				while (app.GetEvent(event))
 				{
@@ -195,7 +196,7 @@ int main(int argc, char* argv[])
 						//TODO - if (closed or canceled) {cancel_loading(); exit();}
                         default: break;
 					}
-				}
+				}*/
 				if (futureTimeEngine.is_ready()) {
 					timeEngine = hg::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
 					input.setTimelineLength(timeEngine->getTimelineLength());
