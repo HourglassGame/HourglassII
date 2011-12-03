@@ -11,6 +11,7 @@
 #include "Frame.h"
 #include "TestDriver.h"
 #include "Foreach.h"
+#include "ReplayIO.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -30,11 +31,6 @@
 #include <boost/function.hpp>
 
 #include <functional>
-
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
-
-#include <boost/serialization/vector.hpp>
 
 #include <tbb/concurrent_queue.h>
 
@@ -92,8 +88,6 @@ namespace {
     template<typename BidirectionalGuyRange>
     TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange);
     
-    std::vector<InputList> loadReplay();
-    void saveReplay(std::vector<InputList> const& replay);
     void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend);
     void generateReplay();
     template<typename F>
@@ -268,7 +262,7 @@ int main(int argc, char* argv[])
 							goto continuemainloop;
 						//Load replay
 						case sf::Key::L:
-							replay = loadReplay();
+							replay = loadReplay("replay");
 							currentReplayIt = replay.begin();
 							currentReplayEnd = replay.end();
 							replayLogOut.close();
@@ -295,7 +289,7 @@ int main(int argc, char* argv[])
 							//waiting until the execution is totally finished as
 							//we do now).
 							futureRunResult.wait();
-							saveReplay(timeEngine->getReplayData());
+							saveReplay("replay", timeEngine->getReplayData());
 							break;
 						//Generate a replay from replayLogIn
 						case sf::Key::G:
@@ -590,26 +584,7 @@ TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
     return boost::begin(guyRange | boost::adaptors::reversed)->getTimeDirection();
 }
 
-//These are required to match each other, and to produce a 
-//replay that can be saved on one machine and loaded on any other
-//that is running HourglassII. That is, the replays myst be portable.
-//The current implementations approximate this, but they should be improved!
-std::vector<InputList> loadReplay()
-{
-    std::ifstream ifs("replay");
-    std::vector<InputList> replay;
-    if (ifs.is_open()) {
-        boost::archive::text_iarchive ia(ifs);
-        ia >> replay;
-    }
-    return replay;
-}
-void saveReplay(std::vector<InputList> const& replay)
-{
-    std::ofstream ofs("replay");
-    boost::archive::text_oarchive oa(ofs);
-    oa << replay;
-}
+
 void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend)
 {
     toAppendTo << toAppend << " " << std::flush;
@@ -620,7 +595,7 @@ void generateReplay()
     if (replayLogIn.is_open()) {
         std::vector<InputList> replay;
         replay.assign(std::istream_iterator<InputList>(replayLogIn), std::istream_iterator<InputList>());
-        saveReplay(replay);
+        saveReplay("replay", replay);
     }
 }
 }

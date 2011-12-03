@@ -3,6 +3,7 @@
 #include "FrameID.h"
 #include "Ability.h"
 
+#include <boost/operators.hpp>
 #include <istream>
 #include <ostream>
 
@@ -15,7 +16,7 @@ namespace boost {
 }
 
 namespace hg {
-class InputList
+class InputList : boost::equality_comparable<InputList>
 {
 public:
     InputList(
@@ -28,6 +29,17 @@ public:
         FrameID abilityParams,
         int frameIdParamCount);
 
+    bool operator==(InputList const& o) const
+    {
+        return left == o.left
+            && right == o.right
+            && up == o.up
+            && down == o.down
+            && use == o.use
+            && ability == o.ability
+            && frameIdParams == o.frameIdParams
+            && frameIdParamCount == o.frameIdParamCount;
+    }
 
     bool getLeft()       const { return left; }
     bool getRight()      const { return right; }
