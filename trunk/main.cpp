@@ -192,9 +192,14 @@ int main(int argc, char* argv[])
 					}
 				}*/
 				if (futureTimeEngine.is_ready()) {
-					timeEngine = hg::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
-					input.setTimelineLength(timeEngine->getTimelineLength());
-					state = AWAITING_INPUT;
+                    try {
+                        timeEngine = hg::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
+                        input.setTimelineLength(timeEngine->getTimelineLength());
+                        state = AWAITING_INPUT;
+                    } catch(std::bad_alloc const& e) {
+						std::cout << "oops... ran out of memory ):" << std::endl;
+						goto breakmainloop;
+                    }
 				}
 				sf::String loadingGlyph("Loading Level...");
 				loadingGlyph.SetColor(Colour(255,255,255));
@@ -307,11 +312,11 @@ int main(int argc, char* argv[])
 					try {
 						runStep(*timeEngine, app, inertia, futureRunResult.get());
 					}
-					catch (PlayerVictoryException&) {
+					catch (PlayerVictoryException const&) {
 						std::cout << "Congratulations, a winner is you" << std::endl;
 						goto breakmainloop;
 					}
-					catch (std::bad_alloc&) {
+					catch (std::bad_alloc const&) {
 						std::cout << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
 					}
