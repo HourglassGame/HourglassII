@@ -61,12 +61,6 @@ namespace hg {
                 // if any of these bugs are occuring then fix them!)
                 throw std::bad_alloc();
             }
-
-            catch (...) {
-                assert(false &&
-                    "An unknown exception was thrown through TBBExceptionWrapper."
-                    " Please add support for this exception type.");
-            }
         }
     private:
         F f_;

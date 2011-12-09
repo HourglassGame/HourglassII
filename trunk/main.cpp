@@ -51,24 +51,7 @@
 #include "ConcurrentQueue.h"
 #include "move_function.h"
 #include "unique_ptr.h"
-#if 0
-/*virtual*/ const char* ::std::bad_typeid::what() const throw()
-{
-    return exception::what();
-}
-/*virtual*/ const char* ::std::bad_exception::what() const throw()
-{
-    return exception::what();
-}
-/*virtual*/ const char* ::std::bad_cast::what() const throw()
-{
-    return exception::what();
-}
-/*virtual*/ const char* ::std::bad_alloc::what() const throw()
-{
-    return exception::what();
-}
-#endif
+
 typedef sf::Color Colour;
 
 using namespace hg;
@@ -196,7 +179,7 @@ int main(int argc, char* argv[])
                         timeEngine = hg::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
                         input.setTimelineLength(timeEngine->getTimelineLength());
                         state = AWAITING_INPUT;
-                    } catch(std::bad_alloc const& e) {
+                    } catch(std::bad_alloc const&) {
 						std::cout << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
                     }
