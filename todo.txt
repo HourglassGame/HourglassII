@@ -1,5 +1,9 @@
 *** Unimplemented features/things to think about doing ***
 
+----===== DETAILED CODING ISSUES =====-----
+
+Restructure source layout. See the answer to http://stackoverflow.com/questions/8589479/how-to-organice-a-repository-for-a-code-in-c-tortoisesvn
+
 Remove Portals, replace with Mutators. Requirements:
  * Pass player input when a guy collides with portal.
  * Make mutator return ObjectAndTime.
@@ -13,6 +17,7 @@ Add lua-only data to Guys and Boxes.
 Think about removing illegal portal? With the above 2 things implemented it is possible.
 
 Replace most frontend drawing with Glitz:
+ * The physics-to-frontend data-path for this has been implemented.
  * Glitz created in C++ physics
  * Passed to guy and box steps. Glitz added in there.
  * Merged with trigger system Glitz?
@@ -53,4 +58,66 @@ Improve Input
    * ON (is held down)
    * RELEASE (was on last frame, now off)
  * Remove hardcoded portal/mutator actioned.
-   
+
+Finish and Submit Boost patch(es).
+
+Allow boxes to be dropped somewhere other than at the feet of the guy.
+
+Fix Div-by-zero in BoxCollisionAlgorithm
+
+Fix Crashes and Infinite loops that can be caused by loading ill-formed levels or running out of memory while loading levels.
+
+----===== STORYLINE ISSUES =====-----
+
+Decide on setting
+*What would happen to Victorian England with the advent of time travel?
+  -Who else has the technology?
+*How widespread is the time travel technology?
+*Time travel is confined to short "bubbles" which can only be merged with the rest of the universe when they are free of paradoxes (no waves)
+  *What are reverse time objects?
+  *Why are bubbles so short (do they require lots of energy?)
+  *What if several bubbles are merged at once and there is a conflict?
+  *What about "bubble-chaining" to get long (temporal) distance time travel.
+*Time-travel implies the ability to teleport.
+  *What are some good uses for teleportation?
+  *Is the teleportation distance limited? (To avoid travel to the moon/wherever)
+  *How controllable is the teleportation? (You could imagine that the rotation of the earth and so on would make aiming it be quite challenging.)
+
+-(suggestion)Time travel is known about by the majority of the population but is too impractical for the common people. ("Theoretically possible") Main character works on this.
+
+Decide on main characters
+*Main Character - the genius inventor Timothy Algenon-Porter
+*His benefactor (??)
+*Fellow inventors (colleagues)
+*Possible Ada Lovelace cameo
+
+Decide on main plot points
+*Timothy finds himself in a pickle, tries to warn himself using time travel to prevent his death. (Possible) Results in a hideous head-grafting.
+
+*Have non-linear storyline.
+  -Write many more story lines than the length of the game, and then present the  player with many tough (or not-so-tough) decisions to make (branch at the decision points).
+*Stray paradoxes === nuclear fallout
+  -How do paradoxes occur? (Given that the bubbles don't allow paradoxes). (Maybe paradoxes are caused bubble conflicts (failure to merge bubbles))
+  -Characters do not notice paradoxes. (Or rather, they do not notice them as state-flipping of the universe. The only thing that they will notice is the existence of things in the past that are created without a cause (??).)
+
+
+*A character gets displaced by a paradox and replaced by an alternate timeline version of themselves
+
+
+Write script
+
+Design levels
+
+----===== FRONT END =====----
+
+*Save games? (quick save, automatic saving)
+*What were those other menu options, whoops totally slipped my mind
+*Something about it being a horrible hack currently
+
+----===== GRAPHICAL =====----
+
+**Apart from basics such as character animations, this is heavily dependent on the storyline, particularly the setting. So this is really a placeholder section.
+
+----===== SOUNDTRACK =====----
+
+**Apart from basics such as character animations, this is heavily dependent on the storyline, particularly the setting. So this is really a placeholder section.
