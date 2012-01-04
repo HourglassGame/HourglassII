@@ -59,7 +59,7 @@ class basic_gxx_compiler:
                 + ["-o", output],
                 stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
     def do_link(self, sources, output, library_directories, libraries, additional_linker_flags):
         try:
@@ -109,7 +109,7 @@ class basic_gxx_compiler:
               #  + sources,
                 stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
 
 class osx_gxx_compiler:
