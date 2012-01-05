@@ -27,7 +27,6 @@
 		200E811714B4792500D054F4 /* InputList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E807414B4792500D054F4 /* InputList.cpp */; };
 		200E811814B4792500D054F4 /* Level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E807814B4792500D054F4 /* Level.cpp */; };
 		200E811914B4792500D054F4 /* LevelLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E807A14B4792500D054F4 /* LevelLoader.cpp */; };
-		200E811A14B4792500D054F4 /* COPYRIGHT in Resources */ = {isa = PBXBuildFile; fileRef = 200E807D14B4792500D054F4 /* COPYRIGHT */; };
 		200E811B14B4792500D054F4 /* lapi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E807E14B4792500D054F4 /* lapi.cpp */; };
 		200E811C14B4792500D054F4 /* lauxlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E808014B4792500D054F4 /* lauxlib.cpp */; };
 		200E811D14B4792500D054F4 /* lbaselib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E808214B4792500D054F4 /* lbaselib.cpp */; };
@@ -60,9 +59,6 @@
 		200E813814B4792500D054F4 /* print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B214B4792500D054F4 /* print.cpp */; };
 		200E813914B4792500D054F4 /* LuaUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B314B4792500D054F4 /* LuaUtilities.cpp */; };
 		200E813A14B4792500D054F4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B514B4792500D054F4 /* main.cpp */; };
-		200E813B14B4792500D054F4 /* map in Resources */ = {isa = PBXBuildFile; fileRef = 200E80BF14B4792500D054F4 /* map */; };
-		200E813C14B4792500D054F4 /* set in Resources */ = {isa = PBXBuildFile; fileRef = 200E80C014B4792500D054F4 /* set */; };
-		200E813D14B4792500D054F4 /* vector in Resources */ = {isa = PBXBuildFile; fileRef = 200E80C114B4792500D054F4 /* vector */; };
 		200E813E14B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80C714B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp */; };
 		200E813F14B4792500D054F4 /* ObjectList_inst_Normal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80C814B4792500D054F4 /* ObjectList_inst_Normal.cpp */; };
 		200E814014B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80CE14B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp */; };
@@ -334,30 +330,24 @@
 		200E810314B4792500D054F4 /* VectorOf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VectorOf.h; path = ../../../src/VectorOf.h; sourceTree = SOURCE_ROOT; };
 		200E810414B4792500D054F4 /* WorldState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WorldState.cpp; path = ../../../src/WorldState.cpp; sourceTree = SOURCE_ROOT; };
 		200E810514B4792500D054F4 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldState.h; path = ../../../src/WorldState.h; sourceTree = SOURCE_ROOT; };
-		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = /Users/evan/Documents/workspace/FreeType/build/Release/libfreetype.a; sourceTree = "<absolute>"; };
+		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		20469DF914B47D9E00FF6A02 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = ../../../ext/boost/lib/libboost_chrono.a; sourceTree = SOURCE_ROOT; };
 		20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../../../ext/boost/lib/libboost_filesystem.a; sourceTree = SOURCE_ROOT; };
 		20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_serialization.a; path = ../../../ext/boost/lib/libboost_serialization.a; sourceTree = SOURCE_ROOT; };
 		20469DFC14B47D9E00FF6A02 /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = ../../../ext/boost/lib/libboost_system.a; sourceTree = SOURCE_ROOT; };
 		20469DFD14B47D9E00FF6A02 /* libboost_thread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_thread.a; path = ../../../ext/boost/lib/libboost_thread.a; sourceTree = SOURCE_ROOT; };
-		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = "<group>"; };
-		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = "<group>"; };
-		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = "<group>"; };
-		20B89FEC125AC56600FDE4CC /* SFML.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SFML.framework; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/SFML.framework"; sourceTree = "<absolute>"; };
-		20B89FEE125AC56600FDE4CC /* sfml-window.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "sfml-window.framework"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/sfml-window.framework"; sourceTree = "<absolute>"; };
-		20B89FF0125AC56600FDE4CC /* sfml-system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "sfml-system.framework"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/sfml-system.framework"; sourceTree = "<absolute>"; };
-		20B89FF2125AC56600FDE4CC /* sfml-network.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "sfml-network.framework"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/sfml-network.framework"; sourceTree = "<absolute>"; };
-		20B89FF4125AC56600FDE4CC /* sfml-graphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "sfml-graphics.framework"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/sfml-graphics.framework"; sourceTree = "<absolute>"; };
-		20B89FF6125AC56600FDE4CC /* sfml-audio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "sfml-audio.framework"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/sfml-audio.framework"; sourceTree = "<absolute>"; };
-		20C296B512F13CB8006F90AB /* libsfml-graphics-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-graphics-s.a"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/libsfml-graphics-s.a"; sourceTree = "<absolute>"; };
-		20C296B712F13CB8006F90AB /* libsfml-system-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-system-s.a"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/libsfml-system-s.a"; sourceTree = "<absolute>"; };
-		20C296B912F13CB8006F90AB /* libsfml-window-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-window-s.a"; path = "/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64/libsfml-window-s.a"; sourceTree = "<absolute>"; };
+		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = SOURCE_ROOT; };
+		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
+		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
+		20C296B512F13CB8006F90AB /* libsfml-graphics-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-graphics-s.a"; path = "../../../ext/SFML/lib/libsfml-graphics-s.a"; sourceTree = SOURCE_ROOT; };
+		20C296B712F13CB8006F90AB /* libsfml-system-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-system-s.a"; path = "../../../ext/SFML/lib/libsfml-system-s.a"; sourceTree = SOURCE_ROOT; };
+		20C296B912F13CB8006F90AB /* libsfml-window-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-window-s.a"; path = "../../../ext/SFML/lib/libsfml-window-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296D112F13D3A006F90AB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		20C296D312F13D40006F90AB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		20C296D512F13D4A006F90AB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		20EF61F213C5BA55003DDBA7 /* HourglassII.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassII.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		20F06FC01474B3E00019ADB4 /* libtbb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbb.dylib; path = /Users/evan/Programming/tbb/library/lib/libtbb.dylib; sourceTree = "<absolute>"; };
-		20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbbmalloc.dylib; path = /Users/evan/Programming/tbb/library/lib/libtbbmalloc.dylib; sourceTree = "<absolute>"; };
+		20F06FC01474B3E00019ADB4 /* libtbb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbb.dylib; path = ../../../ext/tbb/lib/libtbb.dylib; sourceTree = SOURCE_ROOT; };
+		20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbbmalloc.dylib; path = ../../../ext/tbb/lib/libtbbmalloc.dylib; sourceTree = SOURCE_ROOT; };
 		8D1107320486CEB800E47090 /* HourglassII.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassII.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -718,6 +708,17 @@
 		29B97314FDCFA39411CA2CEA /* HourglassSetupTest */ = {
 			isa = PBXGroup;
 			children = (
+				2068CD3C125F158300028D2A /* Resources */,
+				2068CCDE125F156F00028D2A /* Sources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = HourglassSetupTest;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
 				20469DF914B47D9E00FF6A02 /* libboost_chrono.a */,
 				20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */,
 				20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */,
@@ -732,23 +733,6 @@
 				20C296D512F13D4A006F90AB /* OpenGL.framework */,
 				20F06FC01474B3E00019ADB4 /* libtbb.dylib */,
 				20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */,
-				2068CD3C125F158300028D2A /* Resources */,
-				2068CCDE125F156F00028D2A /* Sources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
-			);
-			name = HourglassSetupTest;
-			sourceTree = "<group>";
-		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				20B89FEC125AC56600FDE4CC /* SFML.framework */,
-				20B89FEE125AC56600FDE4CC /* sfml-window.framework */,
-				20B89FF0125AC56600FDE4CC /* sfml-system.framework */,
-				20B89FF2125AC56600FDE4CC /* sfml-network.framework */,
-				20B89FF4125AC56600FDE4CC /* sfml-graphics.framework */,
-				20B89FF6125AC56600FDE4CC /* sfml-audio.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -835,10 +819,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				200E811A14B4792500D054F4 /* COPYRIGHT in Resources */,
-				200E813B14B4792500D054F4 /* map in Resources */,
-				200E813C14B4792500D054F4 /* set in Resources */,
-				200E813D14B4792500D054F4 /* vector in Resources */,
 				20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */,
 				20469E0914B47E4300FF6A02 /* Info.plist in Resources */,
 				20469E0A14B47E4300FF6A02 /* PkgInfo in Resources */,
