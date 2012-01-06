@@ -1,8 +1,11 @@
 ==== HourglassII External Dependencies Configuration ====
 HourglassII depends on the following libraries:
 
-Boost version 1.48.0 (patched)
-SFML version 1.6
-Threading Building Blocks version 4.0
+Boost version 1.48.0 (patched) http://www.boost.org/users/history/version_1_48_0.html
+SFML version 1.6 http://www.sfml-dev.org/download.php
+Threading Building Blocks version 4.0 http://threadingbuildingblocks.org/ver.php?fid=174
 
 Boost 1.48.0 must have the patch in `/ext/patches/boost/` applied to it.
+
+Platform specific notes (including descriptions of the additional dependencies required by some platforms) are available in the `<PlatformName>ExternalDependencies.txt` files in this directory.
+
