@@ -61,12 +61,6 @@
 		vrLen = 976;
 		vrLoc = 2481;
 	};
-	2014199D13775F670034C039 /* PhysicsEngine_test */ = {
-		activeExec = 0;
-		executables = (
-			2014199F13775F670034C039 /* PhysicsEngine_test */,
-		);
-	};
 	2014199F13775F670034C039 /* PhysicsEngine_test */ = {
 		isa = PBXExecutable;
 		activeArgIndices = (
@@ -2145,12 +2139,6 @@
 		name = level.lua;
 		path = /Users/evan/Documents/workspace/HourglassIISF/trunk/ide/HourglassIISF/trunk/level.lua;
 		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1342, 8606}}";
-			sepNavSelRange = "{21551, 0}";
-			sepNavVisRange = "{3298, 763}";
-			sepNavWindowFrame = "{{640, 4}, {640, 774}}";
-		};
 	};
 	20D68C8C143353D000FA4F00 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -2260,13 +2248,6 @@
 		rType = 0;
 		vrLen = 848;
 		vrLoc = 3917;
-	};
-	20DA491713488B5A00E85242 /* PkgInfo */ = {
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {944, 268}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{0, 8}";
-		};
 	};
 	20DD97FA13D5A99100521D22 /* transformed.hpp */ = {
 		isa = PBXFileReference;
@@ -2720,12 +2701,6 @@
 		vrLen = 1415;
 		vrLoc = 0;
 	};
-	20F5C4E31345B9BA00D8808A /* HourglassII */ = {
-		activeExec = 0;
-		executables = (
-			20F5C4E51345B9BA00D8808A /* HourglassII */,
-		);
-	};
 	20F5C4E51345B9BA00D8808A /* HourglassII */ = {
 		isa = PBXExecutable;
 		activeArgIndices = (
@@ -2780,9 +2755,9 @@
 		activeArchitecturePreference = x86_64;
 		activeBuildConfigurationName = Profile;
 		activeExecutable = 20B54B87125ABF5F001B3F03 /* HourglassIIXcode */;
-		activeTarget = 8D1107260486CEB800E47090 /* HourglassIIXcode */;
+		activeTarget = 8D1107260486CEB800E47090 /* HourglassII */;
 		addToTargets = (
-			8D1107260486CEB800E47090 /* HourglassIIXcode */,
+			8D1107260486CEB800E47090 /* HourglassII */,
 		);
 		breakpoints = (
 		);
@@ -2931,8 +2906,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 347371740;
-			PBXWorkspaceStateSaveDate = 347371740;
+			PBXPerProjectTemplateStateSaveDate = 347519262;
+			PBXWorkspaceStateSaveDate = 347519262;
 		};
 		perUserProjectItems = {
 			2001CD6114337C5E00D289CB /* PBXTextBookmark */ = 2001CD6114337C5E00D289CB /* PBXTextBookmark */;
@@ -3164,7 +3139,7 @@
 		userBuildSettings = {
 		};
 	};
-	8D1107260486CEB800E47090 /* HourglassIIXcode */ = {
+	8D1107260486CEB800E47090 /* HourglassII */ = {
 		activeExec = 0;
 		executables = (
 			20B54B87125ABF5F001B3F03 /* HourglassIIXcode */,
