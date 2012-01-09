@@ -243,11 +243,9 @@ bool explodeBoxes(
     int boundSoFar,
     int sign)
 {
-    std::cout << "explodeBoxes" << std::endl;
 	// sign = 1, small to large (left to right / top to bottom)
 	// sign = -1, large to small (right to left / bottom to top)
 	pos[index] = boundSoFar;
-    HG_PRINT_INDEXED(pos, index);
     
 	bool subSquished = false;
 
@@ -286,9 +284,7 @@ bool explodeBoxesUpwards(
     std::size_t index,
     int boundSoFar)
 {
-    std::cout << "explodeBoxesUpwards" << std::endl;
 	y[index] = boundSoFar;
-    HG_PRINT_INDEXED(y, index);
 	boundSoFar = boundSoFar - size[index];
 
 	bool subSquished = false;
@@ -299,9 +295,6 @@ bool explodeBoxesUpwards(
 		{
             // boxes sitting on this one
 			x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index];
-            HG_PRINT_INDEXED(links, index);
-            HG_PRINT_INDEXED(links[index], i);
-            HG_PRINT_INDEXED(x, links[index][i]);
 		}
 		subSquished = 
             explodeBoxesUpwards(
@@ -334,7 +327,6 @@ void recursiveBoxCollision(
     std::size_t index,
     int subtractionNumber) // horizontal wins a tie
 {
-    std::cout << "recursiveBoxCollision, subtractionNumber=" << subtractionNumber << std::endl;
     mt::std::vector<int>::type const& x(subtractionNumber ? majorAxis : minorAxis);
     mt::std::vector<int>::type const& y(subtractionNumber ? minorAxis : majorAxis);
 	boxesSoFar.push_back(index);
@@ -358,12 +350,8 @@ void recursiveBoxCollision(
 			for (std::size_t j(0), jsize(boxesSoFar.size()); j < jsize; ++j)
 			{
 				majorAxis[boxesSoFar[j]] = majorAxis[boxesSoFar[j]] + indexMovement;
-                HG_PRINT_INDEXED(x, boxesSoFar[j]);
-                HG_PRINT_INDEXED(y, boxesSoFar[j]);
 			}
 			majorAxis[i] = majorAxis[i] + iMovement;
-            HG_PRINT_INDEXED(x, i);
-            HG_PRINT_INDEXED(y, i);
 			recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i, subtractionNumber);
 		}
 	}

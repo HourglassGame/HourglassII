@@ -87,8 +87,7 @@
 		20469E0114B47D9E00FF6A02 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFC14B47D9E00FF6A02 /* libboost_system.a */; };
 		20469E0214B47D9E00FF6A02 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFD14B47D9E00FF6A02 /* libboost_thread.a */; };
 		20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
-		20469E0914B47E4300FF6A02 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0614B47E4300FF6A02 /* Info.plist */; };
-		20469E0A14B47E4300FF6A02 /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0714B47E4300FF6A02 /* PkgInfo */; };
+		20634FD514B9CAF100FFB0EE /* level.lua in Resources */ = {isa = PBXBuildFile; fileRef = 20634FD414B9CAF100FFB0EE /* level.lua */; };
 		20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
 		20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
@@ -339,6 +338,7 @@
 		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = SOURCE_ROOT; };
 		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
+		20634FD414B9CAF100FFB0EE /* level.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = level.lua; path = ../../../level.lua; sourceTree = "<group>"; };
 		20C296B512F13CB8006F90AB /* libsfml-graphics-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-graphics-s.a"; path = "../../../ext/SFML/lib/libsfml-graphics-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296B712F13CB8006F90AB /* libsfml-system-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-system-s.a"; path = "../../../ext/SFML/lib/libsfml-system-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296B912F13CB8006F90AB /* libsfml-window-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-window-s.a"; path = "../../../ext/SFML/lib/libsfml-window-s.a"; sourceTree = SOURCE_ROOT; };
@@ -677,6 +677,7 @@
 		2068CD3C125F158300028D2A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				20634FD414B9CAF100FFB0EE /* level.lua */,
 				20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */,
 				20469E0614B47E4300FF6A02 /* Info.plist */,
 				20469E0714B47E4300FF6A02 /* PkgInfo */,
@@ -820,8 +821,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */,
-				20469E0914B47E4300FF6A02 /* Info.plist in Resources */,
-				20469E0A14B47E4300FF6A02 /* PkgInfo in Resources */,
+				20634FD514B9CAF100FFB0EE /* level.lua in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
