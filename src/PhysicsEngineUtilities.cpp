@@ -161,7 +161,7 @@ FrameView makeFrameView(
     flattenedDepartures.sort();
     foreach (Box const& box, flattenedDepartures.getList<Box>()) {
         if (box.getArrivalBasis() == -1) {
-            pushBidirectional(box, 0xFF00FF00u, 0x00FF00FFu, forwardsGlitz, reverseGlitz);
+            pushBidirectional(box, 0xFF00FF00u, 0x00FF0000u, forwardsGlitz, reverseGlitz);
         }
     }
     mt::std::vector<GuyOutputInfo>::type guyInfo;
@@ -327,8 +327,6 @@ void recursiveBoxCollision(
     std::size_t index,
     int subtractionNumber) // horizontal wins a tie
 {
-    mt::std::vector<int>::type const& x(subtractionNumber ? majorAxis : minorAxis);
-    mt::std::vector<int>::type const& y(subtractionNumber ? minorAxis : majorAxis);
 	boxesSoFar.push_back(index);
 
 	for (std::size_t i(0), isize(majorAxis.size()); i < isize; ++i)

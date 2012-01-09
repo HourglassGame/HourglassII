@@ -44,7 +44,11 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox;
     mt::std::vector<char>::type nextBoxNormalDeparture;
-
+    
+    mt::std::vector<Glitz>::type forwardsGlitz;
+    mt::std::vector<Glitz>::type reverseGlitz;
+    
+    
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
         env_,
@@ -52,6 +56,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.additionalBoxes,
         nextBox,
         nextBoxNormalDeparture,
+        BoxGlitzAdder(forwardsGlitz,reverseGlitz),
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
@@ -81,6 +86,8 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.arrivalLocations,
         physicsTriggerStuff.mutators,
         triggerFrameState,
+        GuyGlitzAdder(forwardsGlitz, reverseGlitz),
+        BoxGlitzAdder(forwardsGlitz, reverseGlitz),
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);

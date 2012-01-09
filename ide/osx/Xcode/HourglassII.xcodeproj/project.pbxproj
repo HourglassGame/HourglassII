@@ -339,6 +339,9 @@
 		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
 		20634FD414B9CAF100FFB0EE /* level.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = level.lua; path = ../../../level.lua; sourceTree = "<group>"; };
+		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
+		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
+		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
 		20C296B512F13CB8006F90AB /* libsfml-graphics-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-graphics-s.a"; path = "../../../ext/SFML/lib/libsfml-graphics-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296B712F13CB8006F90AB /* libsfml-system-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-system-s.a"; path = "../../../ext/SFML/lib/libsfml-system-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296B912F13CB8006F90AB /* libsfml-window-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-window-s.a"; path = "../../../ext/SFML/lib/libsfml-window-s.a"; sourceTree = SOURCE_ROOT; };
@@ -538,6 +541,8 @@
 				200E804114B4792500D054F4 /* BoostHashCompare.h */,
 				200E804214B4792500D054F4 /* Box.cpp */,
 				200E804314B4792500D054F4 /* Box.h */,
+				209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */,
+				209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */,
 				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
 				200E804514B4792500D054F4 /* clone_ptr.h */,
 				200E804614B4792500D054F4 /* Collision.h */,
@@ -667,6 +672,7 @@
 				200E810114B4792500D054F4 /* UniverseID.cpp */,
 				200E810214B4792500D054F4 /* UniverseID.h */,
 				200E810314B4792500D054F4 /* VectorOf.h */,
+				209D16C414BB3EEA00F225DA /* vector2.h */,
 				200E810414B4792500D054F4 /* WorldState.cpp */,
 				200E810514B4792500D054F4 /* WorldState.h */,
 				20029FF012F0FD95000E2DBC /* TimeEngine */,
