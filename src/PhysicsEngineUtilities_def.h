@@ -772,7 +772,6 @@ void guyStep(
             if (playerInput.size() - 1 == relativeIndex)
             {
                 currentPlayerFrame = true;
-                //cout << "nextPlayerFrame set to: " << nextPlayerFrame.frame() << "  " << x[i] << "\n";
             }
 
             if (not normalDeparture)
@@ -869,22 +868,6 @@ void boxCollisionAlogorithm(
     TriggerFrameState& triggerFrameState,
     FrameT const& frame)
 {
-    #define HG_BCA_DEBUG_PRINT(name) std::cout << #name << ": " << name << std::endl
-    if (getFrameNumber(frame) == 9654) {
-        
-        //HG_BCA_DEBUG_PRINT(env);
-        HG_BCA_DEBUG_PRINT(boxArrivalList);
-        HG_BCA_DEBUG_PRINT(additionalBox);
-        HG_BCA_DEBUG_PRINT(nextBox.size());
-        HG_BCA_DEBUG_PRINT(nextBoxNormalDeparture.size());
-        HG_BCA_DEBUG_PRINT(nextPlatform);
-        HG_BCA_DEBUG_PRINT(nextPortal);
-        HG_BCA_DEBUG_PRINT(arrivalLocations);
-        HG_BCA_DEBUG_PRINT(mutators);
-        //HG_BCA_DEBUG_PRINT(triggerFrameState);
-        HG_BCA_DEBUG_PRINT(frame);
-    }
-    
 	mt::std::vector<Box>::type oldBoxList;
 
 	boost::push_back(oldBoxList, boxArrivalList);
@@ -907,36 +890,25 @@ void boxCollisionAlogorithm(
 	}
 
 	// Inititalise box location with arrival basis
-    std::cout << "Inititalise box location with arrival basis" << std::endl;
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
         if (oldBoxList[i].getArrivalBasis() == -1) {
             xTemp[i] = oldBoxList[i].getX();
-            HG_PRINT_INDEXED(xTemp, i);
             yTemp[i] = oldBoxList[i].getY();
-            HG_PRINT_INDEXED(yTemp, i);
             x[i] = xTemp[i] + oldBoxList[i].getXspeed();
-            HG_PRINT_INDEXED(x, i);
 			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
-            HG_PRINT_INDEXED(y, i);
         }
         else
         {
             ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
             xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
-            HG_PRINT_INDEXED(xTemp, i);
             yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
-            HG_PRINT_INDEXED(yTemp, i);
             x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
-            HG_PRINT_INDEXED(x, i);
 			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + relativePortal.getYspeed() + env.gravity;
-            HG_PRINT_INDEXED(y, i);
         }
         size[i] = oldBoxList[i].getSize();
-        HG_PRINT_INDEXED(size, i);
 	}
 
 	// Destroy boxes that are overlapping with platforms and walls
-    std::cout << "Destroy boxes that are overlapping with platforms and walls" << std::endl;
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
 		if (not squished[i]) {
 			if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i]+size[i]-1, yTemp[i])
@@ -966,7 +938,6 @@ void boxCollisionAlogorithm(
 	}
 
 	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-    std::cout << "Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)" << std::endl;
 	mt::std::vector<char>::type toBeSquished(oldBoxList.size());
 
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
@@ -990,7 +961,6 @@ void boxCollisionAlogorithm(
 	}
 
 	// do all the other things until there are no more things to do
-    std::cout << "do all the other things until there are no more things to do" << std::endl;
 	bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
 	bool firstTimeThrough(true);
 	while (thereAreStillThingsToDo) {
@@ -1008,40 +978,29 @@ void boxCollisionAlogorithm(
 		thereAreStillThingsToDo = false;
 
 		//*** collide boxes with platforms and walls to discover the hard bounds on the system ***//
-        std::cout << "collide boxes with platforms and walls to discover the hard bounds on the system" << std::endl;
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
 			if (!squished[i]) {
 				//** Check inside a wall, velocity independent which is why it is so complex **//
-                std::cout << "Check inside a wall, velocity independent which is why it is so complex" << std::endl;
 				// intial keep-it-inside-the-level step
-                std::cout << "intial keep-it-inside-the-level step" << std::endl;
 				if (x[i] <= 0 || y[i] <= 0 || x[i] + size[i] > env.wall.roomWidth() || y[i] + size[i] > env.wall.roomHeight())
 				{
 					int xOut = x[i] + size[i] - env.wall.roomWidth();
 					int yOut = y[i] + size[i] - env.wall.roomHeight();
 					if (x[i] < 0 && (y[i] > 0 || x[i] < y[i]) && (yOut <= 0 || -x[i] > yOut)) {
 						y[i] = y[i] - (x[i]-env.wall.segmentSize()/2)*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
-                        HG_PRINT_INDEXED(y, i);
 						x[i] = env.wall.segmentSize()/2;
-                        HG_PRINT_INDEXED(x, i);
 					}
 					else if (y[i] < 0 && (x[i] > 0 || y[i] < x[i]) && (xOut <= 0 || -y[i] > xOut)) {
 						x[i] = x[i] - (y[i]-env.wall.segmentSize()/2)*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
-                        HG_PRINT_INDEXED(x, i);
 						y[i] = env.wall.segmentSize()/2;
-                        HG_PRINT_INDEXED(y, i);
 					}
 					else if (xOut > 0 && (y[i] > 0 || xOut > -y[i]) && (yOut <= 0 || xOut > yOut)) {
 						y[i] = y[i] - (xOut+env.wall.segmentSize()/2+size[i])*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
-                        HG_PRINT_INDEXED(y, i);
 						x[i] = env.wall.roomWidth() - env.wall.segmentSize()/2 - size[i];
-                        HG_PRINT_INDEXED(x, i);
 					}
 					else if (yOut > 0 && (x[i] > 0 || yOut > -x[i]) && (xOut <= 0 || yOut > xOut)) {
 						x[i] = x[i] - (yOut+env.wall.segmentSize()/2+size[i])*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
-                        HG_PRINT_INDEXED(x, i);
 						y[i] = env.wall.roomHeight() - env.wall.segmentSize()/2 - size[i];
-                        HG_PRINT_INDEXED(y, i);
 					}
 				}
 
@@ -1049,33 +1008,14 @@ void boxCollisionAlogorithm(
 				// the box by size[i] will ensure that the box still collides with the wall
 				// it is attempted to be moved out of.
                 if (false) {
-                    TryAgainWithMoreInterpolation:;
-                    std::cout << "TryAgainWithMoreInterpolation" << std::endl;
-                    HG_PRINT_INDEXED(x, i);
-                    HG_PRINT_INDEXED(xTemp, i);
-                    HG_PRINT_INDEXED(y, i);
-                    HG_PRINT_INDEXED(yTemp, i);
+                    TryAgainWithMoreInterpolation:
                     if (std::abs(x[i]-xTemp[i]) < std::abs(y[i]-yTemp[i])) {
                         x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
-                        HG_PRINT_INDEXED(x, i);
                         y[i] = y[i] - env.wall.segmentSize()*(y[i]-yTemp[i])/std::abs(y[i]-yTemp[i]);
-                        HG_PRINT_INDEXED(y, i);
                     }
                     else {
-                        //Pre
-                        HG_BCA_DEBUG_PRINT(env.wall.at(44800, 38400));
-                        HG_BCA_DEBUG_PRINT(env.wall.at(47999, 38400));
-                        HG_BCA_DEBUG_PRINT(env.wall.at(44800, 41599));
-                        HG_BCA_DEBUG_PRINT(env.wall.at(47999, 41599));
-                        //Post:
-                        HG_BCA_DEBUG_PRINT(env.wall.at(44800, 38430));
-                        HG_BCA_DEBUG_PRINT(env.wall.at(47999, 38430));
-                        HG_BCA_DEBUG_PRINT(env.wall.at(44800, 41629));
-                        HG_BCA_DEBUG_PRINT(env.wall.at(47999, 41629));
                         y[i] = y[i] - env.wall.segmentSize()*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
-                        HG_PRINT_INDEXED(y, i);
                         x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(x[i]-xTemp[i]);
-                        HG_PRINT_INDEXED(x, i);
                     }
                 }
 
@@ -1089,15 +1029,10 @@ void boxCollisionAlogorithm(
 
 				if (size[i] <= env.wall.segmentSize()) {
 					// purely a speedup for this case
-                    //std::cout << "purely a speedup for this case" << std::endl;
 					w00 = env.wall.at(x[i], y[i]);
-                    //HG_BCA_DEBUG_PRINT(w00);
 					w10 = env.wall.at(x[i]+size[i]-1, y[i]);
-                    //HG_BCA_DEBUG_PRINT(w10);
 					w01 = env.wall.at(x[i], y[i]+size[i]-1);
-                    //HG_BCA_DEBUG_PRINT(w01);
 					w11 = env.wall.at(x[i]+size[i]-1, y[i]+size[i]-1);
-                    //HG_BCA_DEBUG_PRINT(w11);
 				}
 				else {
 					// Extra collision for box size greater than wall size (would handle other case too)
@@ -1144,56 +1079,45 @@ void boxCollisionAlogorithm(
 							}
 							else {
 								x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                                HG_PRINT_INDEXED(x, i);
 								right[i] = std::make_pair(true, x[i]);
 								y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                                HG_PRINT_INDEXED(y, i);
 								top[i] = std::make_pair(true, y[i]);
 							}
 						}
                         //This triangle check needs improvement for rectangles
 						else if (w01 || !env.wall.inTopRightTriangle(x[i],y[i])) {
 							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(x, i);
 							left[i] = std::make_pair(true, x[i]);
 							y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                            HG_PRINT_INDEXED(y, i);
 							bottom[i] = std::make_pair(true, y[i]);
 						}
 						else {
 							x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                            HG_PRINT_INDEXED(x, i);
 							right[i] = std::make_pair(true, x[i]);
 							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(y, i);
 							top[i] = std::make_pair(true, y[i]);
 						}
 					}
 					else if (w10) {
 						if (w01) {
 							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(x, i);
 							left[i] = std::make_pair(true, x[i]);
 							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(y, i);
 							top[i] = std::make_pair(true, y[i]);
 						}
 						else {
 							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(y, i);
 							top[i] = std::make_pair(true, y[i]);
 						}
 					}
 					else if (w01 || env.wall.inTopRightTriangle(x[i],y[i]))
 					{
 						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                        HG_PRINT_INDEXED(x, i);
 						left[i] = std::make_pair(true, x[i]);
 					}
 					else
 					{
 						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                        HG_PRINT_INDEXED(y, i);
 						top[i] = std::make_pair(true, y[i]);
 					}
 				}
@@ -1204,32 +1128,26 @@ void boxCollisionAlogorithm(
 						if (w11 || env.wall.inTopLeftTriangle(x[i]+size[i]-1,y[i])) // this triangle check needs improvement for rectangles
 						{
 							x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                            HG_PRINT_INDEXED(x, i);
 							right[i] = std::make_pair(true, x[i]);
 							y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                            HG_PRINT_INDEXED(y, i);
 							bottom[i] = std::make_pair(true, y[i]);
 						}
 						else
 						{
 							x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(x, i);
 							left[i] = std::make_pair(true, x[i]);
 							y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                            HG_PRINT_INDEXED(y, i);
 							top[i] = std::make_pair(true, y[i]);
 						}
 					}
 					else if (w11 || env.wall.inTopLeftTriangle(x[i]+size[i]-1,y[i]))
 					{
 						x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                        HG_PRINT_INDEXED(x, i);
 						right[i] = std::make_pair(true, x[i]);
 					}
 					else
 					{
 						y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                        HG_PRINT_INDEXED(y, i);
 						top[i] = std::make_pair(true, y[i]);
 					}
 				}
@@ -1238,15 +1156,12 @@ void boxCollisionAlogorithm(
 					if (w11 || env.wall.inTopLeftTriangle(x[i],y[i]+size[i]-1))
 					{
 						y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                        HG_PRINT_INDEXED(y, i);
 						bottom[i] = std::make_pair(true, y[i]);
 						x[i] = xTemp[i];
-                        HG_PRINT_INDEXED(x, i);
 					}
 					else
 					{
 						x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
-                        HG_PRINT_INDEXED(x, i);
 						left[i] = std::make_pair(true, x[i]);
 					}
 				}
@@ -1255,15 +1170,12 @@ void boxCollisionAlogorithm(
 					if (env.wall.inTopRightTriangle(x[i]+size[i]-1,y[i]+size[i]-1))
 					{
 						y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                        HG_PRINT_INDEXED(y, i);
 						bottom[i] = std::make_pair(true, y[i]);
 						x[i] = xTemp[i];
-                        HG_PRINT_INDEXED(x, i);
 					}
 					else
 					{
 						x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
-                        HG_PRINT_INDEXED(x, i);
 						right[i] = std::make_pair(true, x[i]);
 					}
 				}
@@ -1289,23 +1201,19 @@ void boxCollisionAlogorithm(
 							if (y[i] + size[i]/2 < pY + pHeight/2) // box above platform
 							{
 								y[i] = pY - size[i];
-                                HG_PRINT_INDEXED(y, i);
 								bottom[i] = std::make_pair(true, y[i]);
 								if (firstTimeThrough)
 								{
 									x[i] = xTemp[i] + pDirection * oldBoxList[i].getTimeDirection() * platform.getXspeed();
-                                    HG_PRINT_INDEXED(x, i);
 								}
 								else
 								{
 									x[i] = xTemp[i];
-                                    HG_PRINT_INDEXED(x, i);
 								}
 							}
 							else
 							{
 								y[i] = pY + pHeight;
-                                HG_PRINT_INDEXED(y, i);
 								top[i] = std::make_pair(true, y[i]);
 							}
 						}
@@ -1314,13 +1222,11 @@ void boxCollisionAlogorithm(
 							if (x[i] + size[i]/2 < pX + pWidth/2) // box left of platform
 							{
 								x[i] = pX - size[i];
-                                HG_PRINT_INDEXED(x, i);
 								right[i] = std::make_pair(true, x[i]);
 							}
 							else
 							{
 								x[i] = pX + pWidth;
-                                HG_PRINT_INDEXED(x, i);
 								left[i] = std::make_pair(true, x[i]);
 							}
 						}
@@ -1372,7 +1278,6 @@ void boxCollisionAlogorithm(
 				}
 				if (top[i].first)
 				{
-                    std::cout << "explodeBoxesY" << std::endl;
 					explodeBoxes(y, size, bottomLinks, toBeSquished, bottom, i, top[i].second, 1);
 				}
 			}
@@ -1382,7 +1287,6 @@ void boxCollisionAlogorithm(
 		{
 			if (toBeSquished[i])
 			{
-				//cout << "vertical" << endl;
 				squished[i] = true;
 			}
 		}
@@ -1428,12 +1332,10 @@ void boxCollisionAlogorithm(
 			{
 				if (right[i].first)
 				{
-                    std::cout << "explodeBoxesX" << std::endl;
 					explodeBoxes(x, size, leftLinks, toBeSquished, left, i, right[i].second, -1);
 				}
 				if (left[i].first)
 				{
-                    std::cout << "explodeBoxesX" << std::endl;
 					explodeBoxes(x, size, rightLinks, toBeSquished, right, i, left[i].second, 1);
 				}
 			}
@@ -1443,7 +1345,6 @@ void boxCollisionAlogorithm(
 		{
 			if (toBeSquished[i])
 			{
-				//cout << "horizontal" << endl;
 				squished[i] = true;
 			}
 		}
@@ -1469,7 +1370,6 @@ void boxCollisionAlogorithm(
 		}
         
 		// Check if I Must do What has Tobe Done (again)
-        std::cout << "Check if I Must do What has Tobe Done (again)" << std::endl;
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
@@ -1478,9 +1378,7 @@ void boxCollisionAlogorithm(
 				{
 					thereAreStillThingsToDo = true;
 					xTemp[i] = x[i];
-                    HG_PRINT_INDEXED(xTemp, i);
 					yTemp[i] = y[i];
-                    HG_PRINT_INDEXED(yTemp, i);
 				}
 			}
 		}
@@ -1528,7 +1426,6 @@ void boxCollisionAlogorithm(
                     frame);
 			}
 		}
-        #undef HG_BCA_DEBUG_PRINT
 	}
 }
 
