@@ -8,6 +8,8 @@
 #include "TriggerSystem.h"
 #include "Environment.h"
 #include "multi_thread_allocator.h"
+#include "BoxGlitzAdder.h"
+#include "GuyGlitzAdder.h"
 
 #include <vector>
 #include "mt/boost/container/map.hpp"
@@ -61,6 +63,8 @@ void guyStep(
     mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
     mt::std::vector<MutatorArea>::type const& mutators,
     TriggerFrameState& triggerFrameState,
+    GuyGlitzAdder const& guyGlitzAdder,
+    BoxGlitzAdder const& boxGlitzAdder,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame);
@@ -78,6 +82,7 @@ void boxCollisionAlogorithm(
     mt::std::vector<Box>::type const& additionalBox,
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    BoxGlitzAdder const& boxGlitzAdder,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -102,6 +107,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int oldIllegalPortal,
     TimeDirection oldTimeDirection,
     TriggerFrameState& triggerFrameState,
+    BoxGlitzAdder const& boxGlitzAdder,
     FrameT frame);
 
 bool explodeBoxesUpwards(
@@ -170,7 +176,7 @@ bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int
 bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, int buffer);
 bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 FrameView makeFrameView(PhysicsEngine::FrameDepartureT const&, mt::std::vector<RectangleGlitz>::type const&);
-#define HG_PRINT_INDEXED(array, index) std::cout << #array << "[" << index << "]" << "=" << array[index] << std::endl
+
 enum {
 	JUMP_SPEED 	= -550,
 	COLLISION_BUFFER_RANGE = 100,

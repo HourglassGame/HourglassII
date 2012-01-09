@@ -1,0 +1,43 @@
+#ifndef HG_BOX_GLITZ_ADDER_H
+#define HG_BOX_GLITZ_ADDER_H
+#include "Glitz.h"
+#include "mt/std/vector"
+#include "vector2.h"
+namespace hg {
+class BoxGlitzAdder {
+public:
+    BoxGlitzAdder(
+        mt::std::vector<Glitz>::type& forwardsGlitz,
+        mt::std::vector<Glitz>::type& reverseGlitz) :
+    forwardsGlitz_(&forwardsGlitz), reverseGlitz_(&reverseGlitz)
+    {}
+    //Adds the glitz that would be appropriate for a box
+    //with the given characteristics
+    void addGlitzForBox(
+        vector2<int> const& position,
+        vector2<int> const& velocity,
+        int size,
+        TimeDirection timeDirection) const
+    {
+        Glitz sameDirectionGlitz(
+            position.x, position.y,
+            size, size,
+            0xFF00FF00u);
+    
+        Glitz oppositeDirectionGlitz(
+            position.x - velocity.x, position.y - velocity.y,
+            size, size,
+            0x00FF0000u);
+        
+        forwardsGlitz_->push_back(
+            timeDirection == FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);
+        
+        reverseGlitz_->push_back(
+            timeDirection == REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
+    }
+private:
+    mt::std::vector<Glitz>::type* forwardsGlitz_;
+    mt::std::vector<Glitz>::type* reverseGlitz_;
+};
+}
+#endif //HG_BOX_GLITZ_ADDER_H

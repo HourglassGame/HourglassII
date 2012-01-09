@@ -17,6 +17,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int oldIllegalPortal,
     TimeDirection oldTimeDirection,
     TriggerFrameState& triggerFrameState,
+    BoxGlitzAdder const& boxGlitzAdder,
     FrameT frame)
 {
 	int arrivalBasis = -1;
@@ -65,6 +66,8 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		// arrivalBasis is not settable
 		oldTimeDirection = newBox->getTimeDirection();
 	}
+
+    boxGlitzAdder.addGlitzForBox(vector2<int>(x, y), vector2<int>(xspeed, yspeed), size, oldTimeDirection);
 
 	bool normalDeparture = true;
 
@@ -136,6 +139,8 @@ void guyStep(
     mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
     mt::std::vector<MutatorArea>::type const& mutators,
     TriggerFrameState& triggerFrameState,
+    GuyGlitzAdder const& guyGlitzAdder,
+    BoxGlitzAdder const& boxGlitzAdder,
     bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame)
@@ -497,6 +502,7 @@ void guyStep(
                                 -1,
                                 guyArrivalList[i].getBoxCarryDirection(),
                                 triggerFrameState,
+                                boxGlitzAdder,
                                 frame);
 
                             carry[i] = false;
@@ -840,7 +846,7 @@ void guyStep(
 					carrySize[i],
 					carryDirection[i],
 
-					 guyArrivalList[i].getTimeDirection()
+                    guyArrivalList[i].getTimeDirection()
 				),
 				nextFrame(frame, guyArrivalList[i].getTimeDirection())
 			)
@@ -861,6 +867,7 @@ void boxCollisionAlogorithm(
     mt::std::vector<Box>::type const& additionalBox,
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    BoxGlitzAdder const& boxGlitzAdder,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -1405,6 +1412,7 @@ void boxCollisionAlogorithm(
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
                     triggerFrameState,
+                    boxGlitzAdder,
                     frame);
 			}
 			else
@@ -1423,6 +1431,7 @@ void boxCollisionAlogorithm(
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
                     triggerFrameState,
+                    boxGlitzAdder,
                     frame);
 			}
 		}
