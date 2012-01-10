@@ -126,7 +126,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add data to departures
     return PhysicsReturnT(
         newDepartures,
-        makeFrameView(newDepartures, triggerSystemDepartureInformation.get<1>()),
+        makeFrameView(newDepartures, triggerSystemDepartureInformation.get<1>(), forwardsGlitz, reverseGlitz),
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);

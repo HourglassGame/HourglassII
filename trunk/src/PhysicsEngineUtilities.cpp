@@ -1,5 +1,5 @@
 #include "PhysicsEngineUtilities.h"
-
+#include <boost/range/algorithm_ext/push_back.hpp>
 namespace hg {
 
 template<typename Type>
@@ -51,125 +51,35 @@ template<typename T>
         obj.getTimeDirection() == REVERSE ?
         sameDirectionGlitz:oppositeDirectionGlitz);
 }
-void pushGuyGlitz(
-    Guy const& guy,
-    mt::std::vector<Glitz>::type& forwardsGlitz,
-    mt::std::vector<Glitz>::type& reverseGlitz);
-void pushGuyGlitz(
-    Guy const& guy,
-    mt::std::vector<Glitz>::type& forwardsGlitz,
-    mt::std::vector<Glitz>::type& reverseGlitz)
-{
-    //Guys with arrivalBasis == -1 have positions that are relative
-    //to an arrival basis. This means that interpreting their positions
-    //as departure positions is flat out wrong.
-    //Not drawing them at all is also wrong (because it causes guys to disappear).
-    //The correct thing to do is to draw where they departed from.
-    //This is now possible, but requires a little bit of restructuring of physics.
-    //Doing this drawing right here in this way is quite silly, and is only temporary.
-    if (guy.getArrivalBasis() == -1)
-    {
-        //Forwards View
-        {
-            struct PNC {
-                PNC(int nx, int ny, unsigned ncolour):
-                    x(nx), y(ny), colour(ncolour) {}
-                int x; int y; unsigned colour;
-            } const pnc = 
-                guy.getTimeDirection() == FORWARDS ?
-                    PNC(guy.getX(), guy.getY(), 0x96960000u) :
-                    PNC(guy.getX() - guy.getXspeed(), guy.getY() - guy.getYspeed(), 0x00009600u);
-            
-            int const left(pnc.x);
-            int const top(pnc.y);
-            int const halfwidth(guy.getWidth()/2);
-            int const halfheight(guy.getHeight()/2);
-            int const hmid(pnc.x+halfwidth);
-            
-            forwardsGlitz.push_back(Glitz(left, top, guy.getWidth(), guy.getHeight(), pnc.colour));
-            forwardsGlitz.push_back(
-                guy.getFacing() ?
-                    Glitz(hmid, top, halfwidth, halfheight, 0x32323200u) :
-                    Glitz(left, top, halfwidth, halfheight, 0x32323200u));
-            
-            if (guy.getBoxCarrying())
-            {
-                forwardsGlitz.push_back(
-                    Glitz(
-                        hmid - guy.getBoxCarrySize()/2,
-                        top - guy.getBoxCarrySize(),
-                        guy.getBoxCarrySize(),
-                        guy.getBoxCarrySize(),
-                        guy.getBoxCarryDirection() == FORWARDS ? 
-                          0x96009600u : 0x00960000u));
-            }
-        }
-        //Reverse View
-        {
-            struct PNC {
-                PNC(int nx, int ny, unsigned ncolour):
-                    x(nx), y(ny), colour(ncolour) {}
-                int x; int y; unsigned colour;
-            } const pnc = 
-                guy.getTimeDirection() == REVERSE ?
-                    PNC(guy.getX(), guy.getY(), 0x96960000u) :
-                    PNC(guy.getX() - guy.getXspeed(), guy.getY() - guy.getYspeed(), 0x00009600u);
 
-            int const left(pnc.x);
-            int const top(pnc.y);
-            int const halfwidth(guy.getWidth()/2);
-            int const halfheight(guy.getHeight()/2);
-            int const hmid(pnc.x+halfwidth);
-
-            reverseGlitz.push_back(Glitz(left, top, guy.getWidth(), guy.getHeight(), pnc.colour));
-            reverseGlitz.push_back(
-                guy.getFacing() ?
-                    Glitz(hmid, top, halfwidth, halfheight, 0x32323200u) :
-                    Glitz(left, top, halfwidth, halfheight, 0x32323200u));
-
-            if (guy.getBoxCarrying())
-            {
-                reverseGlitz.push_back(
-                    Glitz(
-                        hmid - guy.getBoxCarrySize()/2,
-                        top - guy.getBoxCarrySize(),
-                        guy.getBoxCarrySize(),
-                        guy.getBoxCarrySize(),
-                        guy.getBoxCarryDirection() == REVERSE ? 
-                          0x96009600u : 0x00960000u));
-            }
-        }
-    }
-}
-
-//This is temporary, it is an adaptor to allow the old values to be used by he new interface.
-//The new version should be properly integrated into guy/box step and so on.
 FrameView makeFrameView(
     PhysicsEngine::FrameDepartureT const& departures,
-    mt::std::vector<RectangleGlitz>::type const& glitzlist)
+    mt::std::vector<RectangleGlitz>::type const& backgroundGlitzList,
+    mt::std::vector<Glitz>::type const& forwardsGlitz,
+    mt::std::vector<Glitz>::type const& reverseGlitz)
 {
-    mt::std::vector<Glitz>::type forwardsGlitz;
-    mt::std::vector<Glitz>::type reverseGlitz;
-    foreach (RectangleGlitz const& glitz, glitzlist) {
-        pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), forwardsGlitz, reverseGlitz);
+    mt::std::vector<Glitz>::type finalForwardsGlitz;
+    mt::std::vector<Glitz>::type finalReverseGlitz;
+    
+    foreach (RectangleGlitz const& glitz, backgroundGlitzList) {
+        pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
     }
+    
     ObjectPtrList<Normal>  flattenedDepartures;
     foreach (ObjectList<Normal> const& objectList, departures | boost::adaptors::map_values)
     {
         flattenedDepartures.add(objectList);
     }
     flattenedDepartures.sort();
-    foreach (Box const& box, flattenedDepartures.getList<Box>()) {
-        if (box.getArrivalBasis() == -1) {
-            pushBidirectional(box, 0xFF00FF00u, 0x00FF0000u, forwardsGlitz, reverseGlitz);
-        }
-    }
     mt::std::vector<GuyOutputInfo>::type guyInfo;
     foreach (Guy const& guy, flattenedDepartures.getList<Guy>()) {
-        pushGuyGlitz(guy, forwardsGlitz, reverseGlitz);
         guyInfo.push_back(GuyOutputInfo(guy.getTimeDirection()));
     }
-    return FrameView(forwardsGlitz, reverseGlitz, guyInfo);
+
+    boost::push_back(finalForwardsGlitz, forwardsGlitz);
+    boost::push_back(finalReverseGlitz, reverseGlitz);
+    
+    return FrameView(finalForwardsGlitz, finalReverseGlitz, guyInfo);
 }
 
 template<typename GuyT>

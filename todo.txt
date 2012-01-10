@@ -9,22 +9,15 @@ Remove Portals, replace with Mutators. Requirements:
  * Make mutator return ObjectAndTime.
  * Note: No need to pass object and time as mutators happen before any other time travel.
  * Remember to maintain the distinction between interactable boxes/guys and ones that 'left'.
-   * Left if any of timeDirection, nextTime or arrival basis is not equal to the premutaed value
- 
+   * Left if any of timeDirection, nextTime or arrival basis is not equal to the premutated value
+
 Add lua-only data to Guys and Boxes.
  * Think about type; Vector? Map? Map of vectors?
  
 Think about removing illegal portal? With the above 2 things implemented it is possible.
 
-Replace most frontend drawing with Glitz:
- * The physics-to-frontend data-path for this has been implemented.
- * Glitz created in C++ physics
- * Passed to guy and box steps. Glitz added in there.
- * Merged with trigger system Glitz?
- * Current Guy is still used for drawing (time direction, inventory...)
- 
 Give lua ability to return foreground and background Glitz (before or after physics)
- 
+
 Add persistent Glitz?
  * A new data type that creates appropriate Glitz
  * Propagates through physics for an appropriate amount of time
