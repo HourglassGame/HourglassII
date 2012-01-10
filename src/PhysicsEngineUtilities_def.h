@@ -652,6 +652,16 @@ void guyStep(
 				nextTimeDirection = newGuy->getTimeDirection();
 				// relativeIndex is missing for obvious reasons
 			}
+            
+            guyGlitzAdder.addGlitzForGuy(
+                vector2<int>(x[i], y[i]),
+                vector2<int>(xspeed[i], yspeed[i]),
+                vector2<int>(newWidth[i], newHeight[i]),
+                nextTimeDirection,
+                facing[i],
+                carry[i],
+                carrySize[i],
+                carryDirection[i]);
 
 			// Things that do time travel
 			// The occurance of one thing precludes subsequent ones
