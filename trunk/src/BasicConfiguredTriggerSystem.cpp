@@ -275,14 +275,10 @@ mt::std::vector<TriggerData>::type
 }//namespace
 
 
-boost::tuple<
-    mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-    mt::std::vector<RectangleGlitz>::type,
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type
-> 
-BasicConfiguredTriggerFrameState::getDepartureInformation(
-    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-    Frame* currentFrame)
+TriggerFrameStateImplementation::DepartureInformation
+    BasicConfiguredTriggerFrameState::getDepartureInformation(
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
+        Frame* currentFrame)
 {
     //These are the states that are apparent in the buttonGlitz
     //These are also the states that travel through time to affect
@@ -296,10 +292,11 @@ BasicConfiguredTriggerFrameState::getDepartureInformation(
     
     
     return
-        boost::make_tuple(
+        DepartureInformation(
             calculateActualTriggerDepartures(
                 createTriggerListFromTriggerValueList(triggers), triggerSystem.triggerOffsetsAndDefaults, currentFrame),
                 glitzStore,
+                mt::std::vector<RectangleGlitz>::type(),//foregroundGlitz
                 mt::std::vector<ObjectAndTime<Box, Frame*> >::type());
 }
 

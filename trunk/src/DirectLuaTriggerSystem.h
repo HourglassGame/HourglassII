@@ -49,12 +49,7 @@ class DirectLuaTriggerFrameState :
         mt::std::vector<int>::type const& responsibleMutatorIndices,
         Box const& objectToManipulate);
     
-    virtual boost::tuple<
-        mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-        mt::std::vector<RectangleGlitz>::type,
-        mt::std::vector<ObjectAndTime<Box, Frame*> >::type
-    > 
-    getDepartureInformation(
+    virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame);
     virtual ~DirectLuaTriggerFrameState();
