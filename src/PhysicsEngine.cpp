@@ -30,6 +30,13 @@ PhysicsEngine::PhysicsEngine(
 {
 }
 
+TimeDirection getTimeDirection(Guy const& guy) {
+    return guy.getTimeDirection();
+}
+
+GuyOutputInfo constructGuyOutputInfo(TimeDirection timeDirection) {
+    return GuyOutputInfo(timeDirection);
+}
 
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const& arrivals,
@@ -64,9 +71,12 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         triggerFrameState,
         frame);
 
-    bool currentPlayerFrame(false);
+    bool currentPlayerFrame(currentPlayerInArrivals(arrivals.getList<Guy>(), playerInput.size()));
     bool nextPlayerFrame(false);
     bool winFrame(false);
+
+    mt::std::vector<GuyOutputInfo>::type guyInfo;
+    boost::push_back(guyInfo, arrivals.getList<Guy>() | boost::adaptors::transformed(getTimeDirection) | boost::adaptors::transformed(constructGuyOutputInfo));
 
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type nextGuy;
     
@@ -88,7 +98,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         triggerFrameState,
         GuyGlitzAdder(forwardsGlitz, reverseGlitz),
         BoxGlitzAdder(forwardsGlitz, reverseGlitz),
-        currentPlayerFrame,
         nextPlayerFrame,
         winFrame);
 
@@ -123,7 +132,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     return PhysicsReturnT(
         newDepartures,
         makeFrameView(
-            newDepartures,
+            guyInfo,
             triggerSystemDepartureInformation.backgroundGlitz,
             triggerSystemDepartureInformation.foregroundGlitz,
             forwardsGlitz,

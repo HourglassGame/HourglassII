@@ -53,7 +53,7 @@ template<typename T>
 }
 
 FrameView makeFrameView(
-    PhysicsEngine::FrameDepartureT const& departures,
+    mt::std::vector<GuyOutputInfo>::type const& guyInfo,
     mt::std::vector<RectangleGlitz>::type const& backgroundTriggerGlitz,
     mt::std::vector<RectangleGlitz>::type const& foregroundTriggerGlitz,
     mt::std::vector<Glitz>::type const& forwardsGlitz,
@@ -64,17 +64,6 @@ FrameView makeFrameView(
     
     foreach (RectangleGlitz const& glitz, backgroundTriggerGlitz) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
-    }
-    
-    ObjectPtrList<Normal>  flattenedDepartures;
-    foreach (ObjectList<Normal> const& objectList, departures | boost::adaptors::map_values)
-    {
-        flattenedDepartures.add(objectList);
-    }
-    flattenedDepartures.sort();
-    mt::std::vector<GuyOutputInfo>::type guyInfo;
-    foreach (Guy const& guy, flattenedDepartures.getList<Guy>()) {
-        guyInfo.push_back(GuyOutputInfo(guy.getTimeDirection()));
     }
 
     boost::push_back(finalForwardsGlitz, forwardsGlitz);
