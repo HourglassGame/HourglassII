@@ -2,8 +2,6 @@
 
 ----===== DETAILED CODING ISSUES =====-----
 
-Restructure source layout. See the answer to http://stackoverflow.com/questions/8589479/how-to-organice-a-repository-for-a-code-in-c-tortoisesvn
-
 Remove Portals, replace with Mutators. Requirements:
  * Pass player input when a guy collides with portal.
  * Make mutator return ObjectAndTime.
