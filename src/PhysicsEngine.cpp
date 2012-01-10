@@ -104,29 +104,30 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
                 Frame*,
                 mt::std::vector<TriggerData>::type>::type triggerDepartures_t;
 
-    boost::tuple<
-        triggerDepartures_t,
-        mt::std::vector<RectangleGlitz>::type,
-        mt::std::vector<ObjectAndTime<Box, Frame*> >::type
-    > triggerSystemDepartureInformation(
+    TriggerFrameState::DepartureInformation triggerSystemDepartureInformation(
         triggerFrameState.getDepartureInformation(
             newDepartures,
             frame));
     typedef triggerDepartures_t::value_type triggerDeparture_t;
-    foreach (triggerDeparture_t const& triggerDeparture, triggerSystemDepartureInformation.get<0>()) {
+    foreach (triggerDeparture_t const& triggerDeparture, triggerSystemDepartureInformation.triggerDepartures) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
 
     // add extra boxes to newDepartures
-    buildDeparturesForComplexEntities<Box>(triggerSystemDepartureInformation.get<2>(), newDepartures);
+    buildDeparturesForComplexEntities<Box>(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
 
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
     // add data to departures
     return PhysicsReturnT(
         newDepartures,
-        makeFrameView(newDepartures, triggerSystemDepartureInformation.get<1>(), forwardsGlitz, reverseGlitz),
+        makeFrameView(
+            newDepartures,
+            triggerSystemDepartureInformation.backgroundGlitz,
+            triggerSystemDepartureInformation.foregroundGlitz,
+            forwardsGlitz,
+            reverseGlitz),
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);

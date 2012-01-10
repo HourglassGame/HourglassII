@@ -636,7 +636,7 @@ function getDepartureInformation(departures)
         }
     end
     
-    return tempStore.outputTriggers, tempStore.outputGlitz, tempStore.additionalEndBoxes
+    return tempStore.outputTriggers, tempStore.outputGlitz, {}, tempStore.additionalEndBoxes
 end
     ]===],
 

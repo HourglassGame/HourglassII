@@ -755,12 +755,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     return retv;
 }
 
-boost::tuple<
-    mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-    mt::std::vector<RectangleGlitz>::type,
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type
-> 
-DirectLuaTriggerFrameState::getDepartureInformation(
+TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState::getDepartureInformation(
     mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
     Frame* currentFrame)
 {
@@ -805,7 +800,7 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     }
     //]
     //call function
-    lua_call(L_.ptr, 1, 3);
+    lua_call(L_.ptr, 1, 4);
     
     //read triggers return value
     //Trigger return value looks like:
@@ -820,9 +815,9 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     }
     */
     mt::std::vector<TriggerData>::type triggers;
-    assert(lua_istable(L_.ptr, -3));
+    assert(lua_istable(L_.ptr, -4));
     lua_pushnil(L_.ptr);
-    while (lua_next(L_.ptr, -4) != 0) {
+    while (lua_next(L_.ptr, -5) != 0) {
         assert(lua_isnumber(L_.ptr, -2));
         int index(static_cast<int>(lua_tonumber(L_.ptr, -2)) - 1);
         mt::std::vector<int>::type value;
@@ -863,14 +858,27 @@ DirectLuaTriggerFrameState::getDepartureInformation(
         ...
     }*/
 
-    // get glitz departure
-    mt::std::vector<RectangleGlitz>::type glitz;
+    // get background glitz departure
+    mt::std::vector<RectangleGlitz>::type backgroundGlitz;
+    if (!lua_isnil(L_.ptr, -3)) {
+        assert(lua_istable(L_.ptr, -3) && "background glitz list must be a table");
+        for (std::size_t i(1), end(lua_objlen(L_.ptr, -3)); i <= end; ++i) {
+            lua_pushinteger(L_.ptr, i);
+            lua_gettable(L_.ptr, -4);
+            backgroundGlitz.push_back(toGlitz(L_.ptr));
+            lua_pop(L_.ptr, 1);
+        }
+    }
+    assert(backgroundGlitz.size());
+    
+    // get forground glitz departure
+    mt::std::vector<RectangleGlitz>::type foregroundGlitz;
     if (!lua_isnil(L_.ptr, -2)) {
-        assert(lua_istable(L_.ptr, -2) && "glitz list must be a table");
+        assert(lua_istable(L_.ptr, -2) && "foreground glitz list must be a table");
         for (std::size_t i(1), end(lua_objlen(L_.ptr, -2)); i <= end; ++i) {
             lua_pushinteger(L_.ptr, i);
             lua_gettable(L_.ptr, -3);
-            glitz.push_back(toGlitz(L_.ptr));
+            foregroundGlitz.push_back(toGlitz(L_.ptr));
             lua_pop(L_.ptr, 1);
         }
     }
@@ -913,8 +921,12 @@ DirectLuaTriggerFrameState::getDepartureInformation(
     }
     
     //pop return values
-    lua_pop(L_.ptr, 3);
-    return boost::make_tuple(calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame), glitz, newBox);
+    lua_pop(L_.ptr, 4);
+    return DepartureInformation(
+        calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame),
+        backgroundGlitz,
+        foregroundGlitz,
+        newBox);
 }
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()

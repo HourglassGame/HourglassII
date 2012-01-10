@@ -51,12 +51,23 @@ class TriggerFrameStateImplementation
         mt::std::vector<int>::type const& responsibleMutatorIndices,
         Box const& objectToManipulate) = 0;
 
-    virtual boost::tuple<
-		mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-		mt::std::vector<RectangleGlitz>::type,
-		mt::std::vector<ObjectAndTime<Box, Frame*> >::type
-	>
-    getDepartureInformation(
+    struct DepartureInformation {
+        DepartureInformation(
+            mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type const& ntriggerDepartures,
+            mt::std::vector<RectangleGlitz>::type const& nbackgroundGlitz,
+            mt::std::vector<RectangleGlitz>::type const& nforegroundGlitz,
+            mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nadditionalBoxDepartures):
+                triggerDepartures(ntriggerDepartures),
+                backgroundGlitz(nbackgroundGlitz),
+                foregroundGlitz(nforegroundGlitz),
+                additionalBoxDepartures(nadditionalBoxDepartures) {}
+        mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type triggerDepartures;
+		mt::std::vector<RectangleGlitz>::type backgroundGlitz;
+        mt::std::vector<RectangleGlitz>::type foregroundGlitz;
+		mt::std::vector<ObjectAndTime<Box, Frame*> >::type additionalBoxDepartures;
+    };
+
+    virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
         Frame* currentFrame) = 0;
 
@@ -69,6 +80,7 @@ class TriggerFrameState;
 class TriggerFrameState
 {
     public:
+    typedef TriggerFrameStateImplementation::DepartureInformation DepartureInformation;
     PhysicsAffectingStuff
     calculatePhysicsAffectingStuff(
         Frame const* currentFrame,
@@ -101,12 +113,7 @@ class TriggerFrameState
         return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate);
     }
     
-    boost::tuple<
-		mt::std::map<Frame*, mt::std::vector<TriggerData>::type >::type,
-		mt::std::vector<RectangleGlitz>::type,
-		mt::std::vector<ObjectAndTime<Box, Frame*> >::type
-	>
-        getDepartureInformation(
+    DepartureInformation getDepartureInformation(
             mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
             Frame* currentFrame)
     {
