@@ -103,7 +103,7 @@ private:
     //The important thing about nextPlayerFrames_ is that it must hold at least the set of frames that will have their 
     //departures changed by the addition of new player input without the changing of arrivals.
     ConcurrentTimeSet nextPlayerFrames_;
-    //The frame containing the guy with the largest relative index who has both arrived and departed.
+    //The frame containing the guy with the largest relative index who has arrived and has input.
     ConcurrentTimeSet currentPlayerFrames_;
     //Holds the frame(s) in which the win condition is met in the current universe state.
     //That is - just the frame(s) when a guy actually went through the end portal 

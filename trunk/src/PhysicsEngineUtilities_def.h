@@ -1,5 +1,22 @@
 #include "prettyprint98.hpp"
 namespace hg {
+template<typename RandomAccessGuyRange>
+bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_t playerInputSize)
+{
+    //The arrivals are sorted
+    //The current player arrival can be either the last arrival, or the second last arrival.
+    //If it is the second last arrival, then the last arrival must be the next player arrival.
+    if (boost::distance(guyArrivals) == 0) {
+        return false;
+    }
+    else {
+        std::size_t lastGuyIndex((boost::end(guyArrivals) - 1)->getIndex());
+        if (lastGuyIndex < playerInputSize - 1) return false;
+        if (lastGuyIndex == playerInputSize - 1) return true;
+        if (boost::distance(guyArrivals) == 1) return false;
+        return (boost::end(guyArrivals) - 2)->getIndex() == playerInputSize;
+    }
+}
 template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
@@ -141,7 +158,6 @@ void guyStep(
     TriggerFrameState& triggerFrameState,
     GuyGlitzAdder const& guyGlitzAdder,
     BoxGlitzAdder const& boxGlitzAdder,
-    bool& currentPlayerFrame,
     bool& nextPlayerFrame,
     bool& winFrame)
 {
@@ -784,11 +800,6 @@ void guyStep(
 					}
 				}
 			}
-
-            if (playerInput.size() - 1 == relativeIndex)
-            {
-                currentPlayerFrame = true;
-            }
 
             if (not normalDeparture)
             {
