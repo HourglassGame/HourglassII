@@ -11,6 +11,7 @@
 #include "PhysicsAffectingStuff.h"
 #include "ObjectAndTime.h"
 #include "mt/boost/container/vector.hpp"
+#include "mt/boost/container/map.hpp"
 #include "mt/std/map"
 
 #include <boost/optional.hpp>

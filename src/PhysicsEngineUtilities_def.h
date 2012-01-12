@@ -1,4 +1,3 @@
-#include "prettyprint98.hpp"
 namespace hg {
 template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_t playerInputSize)
