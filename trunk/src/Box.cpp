@@ -29,14 +29,14 @@ Box::Box(Box const& other, hg::TimeDirection timeDirection) :
 
 bool Box::operator==(Box const& other) const
 {
-    return (x_ == other.x_)
-        && (y_ == other.y_)
-        && (xspeed_ == other.xspeed_)
-        && (yspeed_ == other.yspeed_)
-        && (size_ == other.size_)
-        && (illegalPortal_ == other.illegalPortal_)
-        && (arrivalBasis_ == other.arrivalBasis_)
-        && (timeDirection_ == other.timeDirection_);
+    return x_ == other.x_
+        && y_ == other.y_
+        && xspeed_ == other.xspeed_
+        && yspeed_ == other.yspeed_
+        && size_ == other.size_
+        && illegalPortal_ == other.illegalPortal_
+        && arrivalBasis_ == other.arrivalBasis_
+        && timeDirection_ == other.timeDirection_;
 }
 
 bool Box::operator<(const Box& other) const
@@ -48,9 +48,6 @@ bool Box::operator<(const Box& other) const
                     if (size_ == other.size_) {
                         if (illegalPortal_ == other.illegalPortal_) {
                             if (arrivalBasis_ == other.arrivalBasis_) {
-                                if (timeDirection_ == other.timeDirection_){
-										return false;
-                                }
                                 return timeDirection_ < other.timeDirection_;
                             }
                             return arrivalBasis_ < other.arrivalBasis_;

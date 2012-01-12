@@ -8,6 +8,7 @@
 #include "TriggerSystem.h"
 #include "Environment.h"
 #include "multi_thread_allocator.h"
+#include "FrameView.h"
 
 #include <vector>
 #include "mt/boost/container/map.hpp"

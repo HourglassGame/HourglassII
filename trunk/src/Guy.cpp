@@ -66,25 +66,24 @@ Guy::Guy(const Guy& other, TimeDirection timeDirection) :
 
 bool Guy::operator==(const Guy& other) const
 {
-    return (index_ == other.index_)
-        && (x_ == other.x_)
-        && (y_ == other.y_)
-        && (xspeed_ == other.xspeed_)
-        && (yspeed_ == other.yspeed_)
-        && (width_ == other.width_)
-        && (height_ == other.height_)
-        && (illegalPortal_ == other.illegalPortal_)
-        && (arrivalBasis_ == other.arrivalBasis_)
-        && (supported_ == other.supported_)
-        && (supportedSpeed_ == other.supportedSpeed_)
-        && (pickups_ == other.pickups_)
-        && (facing_ == other.facing_)
-        && (boxCarrying_ == other.boxCarrying_)
-        && (boxCarrySize_ == other.boxCarrySize_)
-        && (boxCarryDirection_ == other.boxCarryDirection_)
-        && (timeDirection_ == other.timeDirection_);
+    return index_ == other.index_
+        && x_ == other.x_
+        && y_ == other.y_
+        && xspeed_ == other.xspeed_
+        && yspeed_ == other.yspeed_
+        && width_ == other.width_
+        && height_ == other.height_
+        && illegalPortal_ == other.illegalPortal_
+        && arrivalBasis_ == other.arrivalBasis_
+        && supported_ == other.supported_
+        && supportedSpeed_ == other.supportedSpeed_
+        && pickups_ == other.pickups_
+        && facing_ == other.facing_
+        && boxCarrying_ == other.boxCarrying_
+        && boxCarrySize_ == other.boxCarrySize_
+        && boxCarryDirection_ == other.boxCarryDirection_
+        && timeDirection_ == other.timeDirection_;
 }
-
 bool Guy::operator<(const Guy& other) const
 {
     return index_ < other.index_;

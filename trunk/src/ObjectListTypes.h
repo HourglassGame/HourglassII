@@ -4,6 +4,7 @@
 #include "Guy.h"
 #include "Box.h"
 #include "TriggerData.h"
+#include "GlitzPersister.h"
 
 #include <boost/fusion/container/vector.hpp>
 namespace hg {
@@ -11,7 +12,8 @@ namespace hg {
         boost::fusion::vector<
             Guy,
             Box,
-            TriggerData
+            TriggerData,
+            GlitzPersister
         > Normal;
     typedef
         boost::fusion::vector<

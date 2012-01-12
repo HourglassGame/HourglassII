@@ -1,7 +1,8 @@
 #ifndef HG_GLITZ_H
 #define HG_GLITZ_H
+#include <boost/operators.hpp>
 namespace hg {
-class Glitz {
+class Glitz : boost::totally_ordered<Glitz> {
 public:
     Glitz(
         int x, int y,
@@ -17,7 +18,33 @@ public:
     int getHeight() const { return height_; }
 
     unsigned getColour() const { return colour_; }
-        
+    
+    //Glitz has to be ordered (for sorting arrivals),
+    //but since it can be pretty much
+    //arbitrary drawing or other SFX/GFX (this is not yet implemented),
+    //this ordering will too have to be pretty arbitrary unfortunately.
+    bool operator<(Glitz const& right) const {
+        if (x_ == right.x_) {
+            if (y_ == right.y_) {
+                if (width_ == right.width_) {
+                    if (height_ == right.height_) {
+                        return colour_ < right.colour_;
+                    }
+                    return height_ < right.height_;
+                }
+                return width_ < right.width_;
+            }
+            return y_ < right.y_;
+        }
+        return x_ < right.x_;
+    }
+    bool operator==(Glitz const& other) const {
+        return x_ == other.x_
+            && y_ == other.y_
+            && width_ == other.width_
+            && height_ == other.height_
+            && colour_ == other.colour_;
+    }
 private:
     int x_;
     int y_;

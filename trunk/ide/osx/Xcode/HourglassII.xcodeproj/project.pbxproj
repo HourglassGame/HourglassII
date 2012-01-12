@@ -81,6 +81,7 @@
 		200E815114B4792500D054F4 /* UniverseID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810114B4792500D054F4 /* UniverseID.cpp */; };
 		200E815214B4792500D054F4 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810414B4792500D054F4 /* WorldState.cpp */; };
 		2027C25913FCB75900FBDF7B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2027C25813FCB75900FBDF7B /* libfreetype.a */; };
+		202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 202E857314BE84AE008F05EB /* GlitzPersister.cpp */; };
 		20469DFE14B47D9E00FF6A02 /* libboost_chrono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DF914B47D9E00FF6A02 /* libboost_chrono.a */; };
 		20469DFF14B47D9E00FF6A02 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */; };
 		20469E0014B47D9E00FF6A02 /* libboost_serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */; };
@@ -330,6 +331,8 @@
 		200E810414B4792500D054F4 /* WorldState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WorldState.cpp; path = ../../../src/WorldState.cpp; sourceTree = SOURCE_ROOT; };
 		200E810514B4792500D054F4 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldState.h; path = ../../../src/WorldState.h; sourceTree = SOURCE_ROOT; };
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
+		202E857314BE84AE008F05EB /* GlitzPersister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlitzPersister.cpp; path = ../../../src/GlitzPersister.cpp; sourceTree = "<group>"; };
+		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
 		20469DF914B47D9E00FF6A02 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = ../../../ext/boost/lib/libboost_chrono.a; sourceTree = SOURCE_ROOT; };
 		20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../../../ext/boost/lib/libboost_filesystem.a; sourceTree = SOURCE_ROOT; };
 		20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_serialization.a; path = ../../../ext/boost/lib/libboost_serialization.a; sourceTree = SOURCE_ROOT; };
@@ -338,6 +341,7 @@
 		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = SOURCE_ROOT; };
 		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
+		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; };
 		20634FD414B9CAF100FFB0EE /* level.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = level.lua; path = ../../../level.lua; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
@@ -581,6 +585,8 @@
 				200E806714B4792500D054F4 /* Glitz.h */,
 				200E806814B4792500D054F4 /* Guy.cpp */,
 				200E806914B4792500D054F4 /* Guy.h */,
+				2062890B14BD572600444210 /* GlitzPersister.h */,
+				202E857314BE84AE008F05EB /* GlitzPersister.cpp */,
 				200E806A14B4792500D054F4 /* GuyOutputInfo.cpp */,
 				200E806B14B4792500D054F4 /* GuyOutputInfo.h */,
 				200E806C14B4792500D054F4 /* Hg_Input.cpp */,
@@ -715,6 +721,7 @@
 		29B97314FDCFA39411CA2CEA /* HourglassSetupTest */ = {
 			isa = PBXGroup;
 			children = (
+				202E857514BE84DB008F05EB /* todo.txt */,
 				2068CD3C125F158300028D2A /* Resources */,
 				2068CCDE125F156F00028D2A /* Sources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -918,6 +925,7 @@
 				200E815014B4792500D054F4 /* Universe.cpp in Sources */,
 				200E815114B4792500D054F4 /* UniverseID.cpp in Sources */,
 				200E815214B4792500D054F4 /* WorldState.cpp in Sources */,
+				202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
