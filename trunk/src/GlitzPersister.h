@@ -14,6 +14,7 @@ public:
     GlitzPersister(Glitz const& glitz, unsigned lifetime, TimeDirection timeDirection);
     ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const;
     Glitz const& getGlitz() const;
+    TimeDirection getTimeDirection() const { return timeDirection_; }
     
     bool operator==(GlitzPersister const& other) const;
     bool operator<(GlitzPersister const& second) const;
@@ -32,6 +33,7 @@ public:
     
     ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const { return glitzPersister_->runStep(frame); }
     Glitz const& getGlitz() const { return glitzPersister_->getGlitz(); }
+    TimeDirection getTimeDirection() const { return glitzPersister_->getTimeDirection(); }
 
     bool operator==(GlitzPersisterConstPtr const& other) const { return *glitzPersister_ == *other.glitzPersister_; }
     bool operator<(GlitzPersisterConstPtr const& other) const { return *glitzPersister_ < *other.glitzPersister_; }

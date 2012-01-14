@@ -14,12 +14,10 @@ Add lua-only data to Guys and Boxes.
  
 Think about removing illegal portal? With the above 2 things implemented it is possible.
 
-Add persistent Glitz?
- * A new data type that creates appropriate Glitz
- * Propagates through physics for an appropriate amount of time
- * For persistent effects such as lasers or explosions
- * Allow trigger system to create it? (this is for lazy "now I want explosion gfx")
- 
+Allow trigger system to create persistent Glitz? (this is for lazy "now I want explosion gfx")
+
+Solve glitz ordering (maybe this is already done, idk. The current way seems a bit bad.)
+
 Time Guns
  * Physics: Finish raytrace algo
  * Requires persistent Glitz and line Glitz to visualise.
@@ -46,6 +44,8 @@ Improve Input
 Update to Lua 5.2
 
 Finish and Submit Boost patch(es).
+    * Thread
+    * Container
 
 Allow boxes to be dropped somewhere other than at the feet of the guy.
 

@@ -2,18 +2,6 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 namespace hg {
 
-template<typename Type>
-void buildDeparturesForComplexEntities(
-    typename mt::std::vector<ObjectAndTime<Type, Frame*> >::type const& next,
-    PhysicsEngine::FrameDepartureT& newDepartures)
-{
-    typedef ObjectAndTime<Type, Frame*> ObjAndTimeT;
-	foreach (ObjAndTimeT const& thingAndTime, next)
-    {
-        newDepartures[thingAndTime.frame].add(thingAndTime.object);
-    }
-}
-
 void buildDepartures(
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type const& nextGuy,
@@ -21,8 +9,8 @@ void buildDepartures(
     Frame* frame)
 {
     (void)frame;
-    buildDeparturesForComplexEntities<Box>(nextBox, newDepartures);
-    buildDeparturesForComplexEntities<Guy>(nextGuy, newDepartures);
+    buildDeparturesForComplexEntities(nextBox, newDepartures);
+    buildDeparturesForComplexEntities(nextGuy, newDepartures);
 }
 
 
