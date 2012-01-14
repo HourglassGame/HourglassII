@@ -56,7 +56,6 @@
 		200E813514B4792500D054F4 /* lundump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80AC14B4792500D054F4 /* lundump.cpp */; };
 		200E813614B4792500D054F4 /* lvm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80AE14B4792500D054F4 /* lvm.cpp */; };
 		200E813714B4792500D054F4 /* lzio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B014B4792500D054F4 /* lzio.cpp */; };
-		200E813814B4792500D054F4 /* print.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B214B4792500D054F4 /* print.cpp */; };
 		200E813914B4792500D054F4 /* LuaUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B314B4792500D054F4 /* LuaUtilities.cpp */; };
 		200E813A14B4792500D054F4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80B514B4792500D054F4 /* main.cpp */; };
 		200E813E14B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80C714B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp */; };
@@ -82,6 +81,9 @@
 		200E815214B4792500D054F4 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810414B4792500D054F4 /* WorldState.cpp */; };
 		2027C25913FCB75900FBDF7B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2027C25813FCB75900FBDF7B /* libfreetype.a */; };
 		202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 202E857314BE84AE008F05EB /* GlitzPersister.cpp */; };
+		203151F314C143060045161F /* lbitlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151EF14C143060045161F /* lbitlib.cpp */; };
+		203151F414C143060045161F /* lcorolib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151F014C143060045161F /* lcorolib.cpp */; };
+		203151F514C143060045161F /* lctype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151F114C143060045161F /* lctype.cpp */; };
 		20469DFE14B47D9E00FF6A02 /* libboost_chrono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DF914B47D9E00FF6A02 /* libboost_chrono.a */; };
 		20469DFF14B47D9E00FF6A02 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */; };
 		20469E0014B47D9E00FF6A02 /* libboost_serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */; };
@@ -197,7 +199,6 @@
 		200E807914B4792500D054F4 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Level.h; path = ../../../src/Level.h; sourceTree = SOURCE_ROOT; };
 		200E807A14B4792500D054F4 /* LevelLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelLoader.cpp; path = ../../../src/LevelLoader.cpp; sourceTree = SOURCE_ROOT; };
 		200E807B14B4792500D054F4 /* LevelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelLoader.h; path = ../../../src/LevelLoader.h; sourceTree = SOURCE_ROOT; };
-		200E807D14B4792500D054F4 /* COPYRIGHT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = COPYRIGHT; path = ../../../src/lua/COPYRIGHT; sourceTree = SOURCE_ROOT; };
 		200E807E14B4792500D054F4 /* lapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lapi.cpp; path = ../../../src/lua/lapi.cpp; sourceTree = SOURCE_ROOT; };
 		200E807F14B4792500D054F4 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = ../../../src/lua/lapi.h; sourceTree = SOURCE_ROOT; };
 		200E808014B4792500D054F4 /* lauxlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lauxlib.cpp; path = ../../../src/lua/lauxlib.cpp; sourceTree = SOURCE_ROOT; };
@@ -250,7 +251,6 @@
 		200E80AF14B4792500D054F4 /* lvm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lvm.h; path = ../../../src/lua/lvm.h; sourceTree = SOURCE_ROOT; };
 		200E80B014B4792500D054F4 /* lzio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lzio.cpp; path = ../../../src/lua/lzio.cpp; sourceTree = SOURCE_ROOT; };
 		200E80B114B4792500D054F4 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = ../../../src/lua/lzio.h; sourceTree = SOURCE_ROOT; };
-		200E80B214B4792500D054F4 /* print.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = print.cpp; path = ../../../src/lua/print.cpp; sourceTree = SOURCE_ROOT; };
 		200E80B314B4792500D054F4 /* LuaUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaUtilities.cpp; path = ../../../src/LuaUtilities.cpp; sourceTree = SOURCE_ROOT; };
 		200E80B414B4792500D054F4 /* LuaUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaUtilities.h; path = ../../../src/LuaUtilities.h; sourceTree = SOURCE_ROOT; };
 		200E80B514B4792500D054F4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
@@ -333,6 +333,10 @@
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		202E857314BE84AE008F05EB /* GlitzPersister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlitzPersister.cpp; path = ../../../src/GlitzPersister.cpp; sourceTree = "<group>"; };
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
+		203151EF14C143060045161F /* lbitlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lbitlib.cpp; sourceTree = "<group>"; };
+		203151F014C143060045161F /* lcorolib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lcorolib.cpp; sourceTree = "<group>"; };
+		203151F114C143060045161F /* lctype.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lctype.cpp; sourceTree = "<group>"; };
+		203151F214C143060045161F /* lctype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lctype.h; sourceTree = "<group>"; };
 		20469DF914B47D9E00FF6A02 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = ../../../ext/boost/lib/libboost_chrono.a; sourceTree = SOURCE_ROOT; };
 		20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = ../../../ext/boost/lib/libboost_filesystem.a; sourceTree = SOURCE_ROOT; };
 		20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_serialization.a; path = ../../../ext/boost/lib/libboost_serialization.a; sourceTree = SOURCE_ROOT; };
@@ -434,7 +438,10 @@
 		200E807C14B4792500D054F4 /* lua */ = {
 			isa = PBXGroup;
 			children = (
-				200E807D14B4792500D054F4 /* COPYRIGHT */,
+				203151EF14C143060045161F /* lbitlib.cpp */,
+				203151F014C143060045161F /* lcorolib.cpp */,
+				203151F114C143060045161F /* lctype.cpp */,
+				203151F214C143060045161F /* lctype.h */,
 				200E807E14B4792500D054F4 /* lapi.cpp */,
 				200E807F14B4792500D054F4 /* lapi.h */,
 				200E808014B4792500D054F4 /* lauxlib.cpp */,
@@ -487,7 +494,6 @@
 				200E80AF14B4792500D054F4 /* lvm.h */,
 				200E80B014B4792500D054F4 /* lzio.cpp */,
 				200E80B114B4792500D054F4 /* lzio.h */,
-				200E80B214B4792500D054F4 /* print.cpp */,
 			);
 			name = lua;
 			path = ../../../src/lua;
@@ -909,7 +915,6 @@
 				200E813514B4792500D054F4 /* lundump.cpp in Sources */,
 				200E813614B4792500D054F4 /* lvm.cpp in Sources */,
 				200E813714B4792500D054F4 /* lzio.cpp in Sources */,
-				200E813814B4792500D054F4 /* print.cpp in Sources */,
 				200E813914B4792500D054F4 /* LuaUtilities.cpp in Sources */,
 				200E813A14B4792500D054F4 /* main.cpp in Sources */,
 				200E813E14B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp in Sources */,
@@ -934,6 +939,9 @@
 				200E815114B4792500D054F4 /* UniverseID.cpp in Sources */,
 				200E815214B4792500D054F4 /* WorldState.cpp in Sources */,
 				202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */,
+				203151F314C143060045161F /* lbitlib.cpp in Sources */,
+				203151F414C143060045161F /* lcorolib.cpp in Sources */,
+				203151F514C143060045161F /* lctype.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

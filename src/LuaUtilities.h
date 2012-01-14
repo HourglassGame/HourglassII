@@ -32,6 +32,7 @@ std::vector<char> loadFileIntoVector(
 LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string const& chunkName);
 template<typename T>
 T to(lua_State* L, int index = -1);
+
 template<typename T>
 T readField(lua_State* L, char const* fieldName, int index = -1)
 {
@@ -43,7 +44,10 @@ T readField(lua_State* L, char const* fieldName, int index = -1)
 template<typename T>
 T readGlobal(lua_State* L, char const* globalName)
 {
-    return readField<T>(L, globalName, LUA_GLOBALSINDEX);
+    lua_getglobal(L, globalName);
+    T retv(to<T>(L));
+    lua_pop(L, 1);
+    return retv;
 }
 
 template<>

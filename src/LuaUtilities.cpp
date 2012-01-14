@@ -64,11 +64,12 @@ LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string co
         source_iterators.second = &luaData.front() + luaData.size();
     }
     LuaState L((LuaState::new_state_t()));
-    if (lua_load(L.ptr, lua_VectorReader, &source_iterators, chunkName.c_str())) {
+    if (lua_load(L.ptr, lua_VectorReader, &source_iterators, chunkName.c_str(), 0) != LUA_OK) {
         std::cout << lua_tostring(L.ptr, -1) << std::endl;
         assert(false);
     }
     luaL_openlibs(L.ptr);
+    assert(lua_type(L.ptr, -1) == LUA_TFUNCTION);
     return boost::move(L);
 }
 
@@ -126,11 +127,11 @@ Wall to<Wall>(lua_State* L, int index)
     boost::array<boost::multi_array<bool, 2>::index, 2> const wallShape = {{ width, height }};
     boost::multi_array<bool, 2> wall(wallShape);
     
-    assert(lua_objlen(L, index) == static_cast<unsigned>(height));
+    assert(lua_rawlen(L, index) == static_cast<unsigned>(height));
     for (std::size_t i(1), iend(height); i <= iend; ++i) {
         lua_pushinteger(L, i);
         lua_gettable(L, index - 1);
-        assert(lua_objlen(L, -1) == static_cast<unsigned>(width));
+        assert(lua_rawlen(L, -1) == static_cast<unsigned>(width));
         for (std::size_t j(1), jend(width); j <= jend;  ++j) {
             lua_pushinteger(L, j);
             lua_gettable(L, -2);
@@ -168,7 +169,7 @@ template<>
 InitialObjects to<InitialObjects>(lua_State* L, int index)
 {
     ObjectList<NonGuyDynamic> retv;
-    for (std::size_t i(1), iend(lua_objlen(L, index)); i <= iend; ++i) {
+    for (std::size_t i(1), iend(lua_rawlen(L, index)); i <= iend; ++i) {
         lua_pushinteger(L, i);
         lua_gettable(L, index - 1);
         std::string type(readField<std::string>(L, "type"));
@@ -352,7 +353,7 @@ template<>
 TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index)
 {
     std::vector<std::pair<int, std::vector<int> > > toad;
-    std::size_t iend(lua_objlen(L, index));
+    std::size_t iend(lua_rawlen(L, index));
     toad.reserve(iend);
     for (std::size_t i(1); i <= iend; ++i) {
         lua_pushinteger(L, i);
@@ -361,7 +362,7 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index)
         
         lua_getfield(L, index, "default");
         std::vector<int> default_;
-        std::size_t jend(lua_objlen(L, -1));
+        std::size_t jend(lua_rawlen(L, -1));
         default_.reserve(jend);
         for (std::size_t j(1); j <= jend;  ++j) {
             lua_pushinteger(L, j);
