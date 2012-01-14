@@ -1,4 +1,15 @@
 namespace hg {
+template<typename RandomAccessObjectAndTypeRange>
+void buildDeparturesForComplexEntities(
+    RandomAccessObjectAndTypeRange const& next,
+    PhysicsEngine::FrameDepartureT& newDepartures)
+{
+	foreach (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime, next)
+    {
+        newDepartures[thingAndTime.frame].add(thingAndTime.object);
+    }
+}
+
 template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_t playerInputSize)
 {

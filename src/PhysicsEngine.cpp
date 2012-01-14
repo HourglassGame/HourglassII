@@ -30,13 +30,23 @@ PhysicsEngine::PhysicsEngine(
 {
 }
 
-TimeDirection getTimeDirection(Guy const& guy) {
+static TimeDirection getTimeDirection(Guy const& guy) {
     return guy.getTimeDirection();
 }
 
-GuyOutputInfo constructGuyOutputInfo(TimeDirection timeDirection) {
+static GuyOutputInfo constructGuyOutputInfo(TimeDirection timeDirection) {
     return GuyOutputInfo(timeDirection);
 }
+
+struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame*> >
+{
+    NextPersister(Frame* frame): frame_(frame) {}
+    ObjectAndTime<GlitzPersister, Frame*> operator()(GlitzPersister const& persister) const {
+        return persister.runStep(frame_);
+    }
+    private:
+    Frame* frame_;
+};
 
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const& arrivals,
@@ -76,9 +86,15 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     bool winFrame(false);
 
     mt::std::vector<GuyOutputInfo>::type guyInfo;
-    boost::push_back(guyInfo, arrivals.getList<Guy>() | boost::adaptors::transformed(getTimeDirection) | boost::adaptors::transformed(constructGuyOutputInfo));
+    boost::push_back(
+        guyInfo,
+        arrivals.getList<Guy>()
+            | boost::adaptors::transformed(getTimeDirection)
+            | boost::adaptors::transformed(constructGuyOutputInfo));
 
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type nextGuy;
+    mt::std::vector<GlitzPersister>::type persistentGlitz;
+    boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
     
     FrameDepartureT newDepartures;
 
@@ -124,10 +140,21 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     }
 
     // add extra boxes to newDepartures
-    buildDeparturesForComplexEntities<Box>(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
+    buildDeparturesForComplexEntities(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
+    
+    mt::std::vector<Glitz>::type forwardsGlitzFromPersister;
+    mt::std::vector<Glitz>::type reverseGlitzFromPersister;
+    
+    foreach (GlitzPersister const& persister, persistentGlitz) {
+        (persister.getTimeDirection() == FORWARDS ? forwardsGlitzFromPersister : reverseGlitzFromPersister).push_back(persister.getGlitz());
+    }
+
+    buildDeparturesForComplexEntities(
+        persistentGlitz | boost::adaptors::transformed(NextPersister(frame)), newDepartures);
 
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
+    
     // add data to departures
     return PhysicsReturnT(
         newDepartures,

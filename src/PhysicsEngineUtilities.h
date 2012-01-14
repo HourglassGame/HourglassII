@@ -141,9 +141,9 @@ void recursiveBoxCollision(
     std::size_t index,
     int subtractionNumber);
     
-template <typename Type>
+template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(
-    typename mt::std::vector<ObjectAndTime<Type, Frame*> >::type const& next,
+    RandomAccessObjectAndTypeRange const& next,
     PhysicsEngine::FrameDepartureT& newDepartures);
     
 void buildDepartures(

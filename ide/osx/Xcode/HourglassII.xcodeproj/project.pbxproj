@@ -534,9 +534,28 @@
 			path = ../../../src/mt/std;
 			sourceTree = SOURCE_ROOT;
 		};
+		202E857714BF31E5008F05EB /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
+				200E804514B4792500D054F4 /* clone_ptr.h */,
+				200E80B614B4792500D054F4 /* move_function.h */,
+				200E80B714B4792500D054F4 /* move.h */,
+				200E80FC14B4792500D054F4 /* unique_ptr.h */,
+				209D16C414BB3EEA00F225DA /* vector2.h */,
+				200E805914B4792500D054F4 /* forward.h */,
+				200E805814B4792500D054F4 /* Foreach.h */,
+				200E80DE14B4792500D054F4 /* prettyprint.hpp */,
+				200E80DF14B4792500D054F4 /* prettyprint98.hpp */,
+			);
+			name = Utility;
+			sourceTree = "<group>";
+		};
 		2068CCDE125F156F00028D2A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				200E80B514B4792500D054F4 /* main.cpp */,
+				202E857714BF31E5008F05EB /* Utility */,
 				200E803C14B4792500D054F4 /* Ability.h */,
 				200E803D14B4792500D054F4 /* ArrivalLocation.h */,
 				200E803E14B4792500D054F4 /* AttachmentMap.h */,
@@ -547,8 +566,6 @@
 				200E804314B4792500D054F4 /* Box.h */,
 				209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */,
 				209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */,
-				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
-				200E804514B4792500D054F4 /* clone_ptr.h */,
 				200E804614B4792500D054F4 /* Collision.h */,
 				200E804714B4792500D054F4 /* CommonTriggerCode.h */,
 				200E804814B4792500D054F4 /* ConcurrentFrameUpdateSet.cpp */,
@@ -567,8 +584,6 @@
 				200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */,
 				200E805614B4792500D054F4 /* Environment.cpp */,
 				200E805714B4792500D054F4 /* Environment.h */,
-				200E805814B4792500D054F4 /* Foreach.h */,
-				200E805914B4792500D054F4 /* forward.h */,
 				200E805A14B4792500D054F4 /* Frame_fwd.h */,
 				200E805B14B4792500D054F4 /* Frame.cpp */,
 				200E805C14B4792500D054F4 /* Frame.h */,
@@ -608,9 +623,6 @@
 				200E807C14B4792500D054F4 /* lua */,
 				200E80B314B4792500D054F4 /* LuaUtilities.cpp */,
 				200E80B414B4792500D054F4 /* LuaUtilities.h */,
-				200E80B514B4792500D054F4 /* main.cpp */,
-				200E80B614B4792500D054F4 /* move_function.h */,
-				200E80B714B4792500D054F4 /* move.h */,
 				200E80B814B4792500D054F4 /* mt */,
 				200E80C214B4792500D054F4 /* multi_thread_allocator.h */,
 				200E80C314B4792500D054F4 /* MutatorArea.h */,
@@ -640,8 +652,6 @@
 				200E80DB14B4792500D054F4 /* PlatformDestination.h */,
 				200E80DC14B4792500D054F4 /* PlayerVictoryException.h */,
 				200E80DD14B4792500D054F4 /* PortalArea.h */,
-				200E80DE14B4792500D054F4 /* prettyprint.hpp */,
-				200E80DF14B4792500D054F4 /* prettyprint98.hpp */,
 				200E80E014B4792500D054F4 /* ProgressMonitor.cpp */,
 				200E80E114B4792500D054F4 /* ProgressMonitor.h */,
 				200E80E214B4792500D054F4 /* ProtoStuff.cpp */,
@@ -670,7 +680,6 @@
 				200E80F914B4792500D054F4 /* TriggerOffsetsAndDefaults.h */,
 				200E80FA14B4792500D054F4 /* TriggerSystem.h */,
 				200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */,
-				200E80FC14B4792500D054F4 /* unique_ptr.h */,
 				200E80FD14B4792500D054F4 /* Universe_fwd.h */,
 				200E80FE14B4792500D054F4 /* Universe.cpp */,
 				200E80FF14B4792500D054F4 /* Universe.h */,
@@ -678,7 +687,6 @@
 				200E810114B4792500D054F4 /* UniverseID.cpp */,
 				200E810214B4792500D054F4 /* UniverseID.h */,
 				200E810314B4792500D054F4 /* VectorOf.h */,
-				209D16C414BB3EEA00F225DA /* vector2.h */,
 				200E810414B4792500D054F4 /* WorldState.cpp */,
 				200E810514B4792500D054F4 /* WorldState.h */,
 				20029FF012F0FD95000E2DBC /* TimeEngine */,
