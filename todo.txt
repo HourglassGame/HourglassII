@@ -41,8 +41,6 @@ Improve Input
    * RELEASE (was on last frame, now off)
  * Remove hardcoded portal/mutator actioned.
 
-Update to Lua 5.2
-
 Finish and Submit Boost patch(es).
     * Thread
     * Container
