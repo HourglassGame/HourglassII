@@ -146,7 +146,8 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     mt::std::vector<Glitz>::type reverseGlitzFromPersister;
     
     foreach (GlitzPersister const& persister, persistentGlitz) {
-        (persister.getTimeDirection() == FORWARDS ? forwardsGlitzFromPersister : reverseGlitzFromPersister).push_back(persister.getGlitz());
+        forwardsGlitzFromPersister.push_back(persister.getForwardsGlitz());
+        reverseGlitzFromPersister.push_back(persister.getReverseGlitz());
     }
 
     buildDeparturesForComplexEntities(

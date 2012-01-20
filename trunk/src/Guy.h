@@ -2,6 +2,7 @@
 #define HG_GUY_H
 #include "TimeDirection.h"
 #include "Ability.h"
+#include "FacingDirection.h"
 #include <boost/operators.hpp>
 #include "mt/std/map"
 #include <cstdlib>
@@ -22,7 +23,7 @@ public:
         int supportedSpeed,
     	
         mt::std::map<Ability, int>::type const& pickups,
-        bool facing,
+        FacingDirection::FacingDirection facing,
     	
         bool boxCarrying,
     	int boxCarrySize,
@@ -47,7 +48,7 @@ public:
     
     mt::std::map<Ability, int>::type const& getPickups() const { return pickups_; }
 
-    int getFacing()        const { return facing_; }
+    FacingDirection::FacingDirection getFacing()        const { return facing_; }
 
     bool getBoxCarrying()  const { return boxCarrying_; }
     int getBoxCarrySize()  const { return boxCarrySize_; }
@@ -76,7 +77,7 @@ private:
     int supportedSpeed_;
 
     mt::std::map<Ability, int>::type pickups_;
-    bool facing_; // <- false, -> true
+    FacingDirection::FacingDirection facing_; // <- false, -> true
 
     bool boxCarrying_;
     int boxCarrySize_;
@@ -107,7 +108,7 @@ public:
     
     mt::std::map<Ability, int>::type const& getPickups() const { return guy_->getPickups();}
 
-    int getFacing()        const { return guy_->getFacing();}
+    FacingDirection::FacingDirection getFacing()        const { return guy_->getFacing();}
 
     bool getBoxCarrying()  const { return guy_->getBoxCarrying(); }
     int getBoxCarrySize()  const { return guy_->getBoxCarrySize(); }

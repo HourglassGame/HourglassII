@@ -27,6 +27,8 @@ bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_
         return (boost::end(guyArrivals) - 2)->getIndex() == playerInputSize;
     }
 }
+
+
 template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
@@ -42,14 +44,15 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int yspeed,
     int size,
     int oldIllegalPortal,
-    TimeDirection oldTimeDirection,
+    TimeDirection const oldTimeDirection,
     TriggerFrameState& triggerFrameState,
     BoxGlitzAdder const& boxGlitzAdder,
     FrameT frame)
 {
+    TimeDirection timeDirection(oldTimeDirection);
 	int arrivalBasis = -1;
 	int illegalPortal = -1;
-	FrameT nextTime(nextFrame(frame, oldTimeDirection));
+	FrameT nextTime(nextFrame(frame, timeDirection));
 
 
 	// Mutator check
@@ -79,7 +82,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
 				size,
 				oldIllegalPortal,
 				-1,
-				oldTimeDirection));
+				timeDirection));
 		if (!newBox)
 		{
 			return; // box was destroyed, do not add
@@ -90,13 +93,17 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		yspeed = newBox->getYspeed();
 		size = newBox->getSize();
 		illegalPortal = newBox->getIllegalPortal();
-		// arrivalBasis is not settable
-		oldTimeDirection = newBox->getTimeDirection();
+		//arrivalLocation = newBox->getArrivalLocation();
+		timeDirection = newBox->getTimeDirection();
 	}
-
-    boxGlitzAdder.addGlitzForBox(vector2<int>(x, y), vector2<int>(xspeed, yspeed), size, oldTimeDirection);
-
-	bool normalDeparture = true;
+    bool normalDeparture = true;
+    if (timeDirection == oldTimeDirection && arrivalBasis == -1 /*&& nextTime == oldNextTime*/) {
+        boxGlitzAdder.addGlitzForBox(vector2<int>(x, y), vector2<int>(xspeed, yspeed), size, timeDirection);
+    }
+    else {
+        normalDeparture = false;
+    }
+	
 
 	// fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
@@ -111,13 +118,13 @@ void makeBoxAndTimeWithPortalsAndMutators(
             {
                 illegalPortal = i;
             }
-            else if (triggerFrameState.shouldPort(i, Box(x,y,xspeed,yspeed,size,oldIllegalPortal,-1,oldTimeDirection), false))
+            else if (triggerFrameState.shouldPort(i, Box(x,y,xspeed,yspeed,size,oldIllegalPortal,-1,timeDirection), false))
             {
                 FrameT portalTime(
                 		portals[i].getRelativeTime() ?
                     getArbitraryFrame(getUniverse(frame), getFrameNumber(frame) + portals[i].getTimeDestination()):
                     getArbitraryFrame(getUniverse(frame), portals[i].getTimeDestination()));
-                nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, oldTimeDirection) : FrameT();
+                nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : FrameT();
                 illegalPortal = portals[i].getIllegalDestination();
                 arrivalBasis = portals[i].getDestinationIndex();
                 x = x - portals[i].getX() + portals[i].getXdestination();
@@ -133,8 +140,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
     nextBoxNormalDeparture.push_back(normalDeparture);
 
     // add box
-	nextBox.push_back
-	(
+	nextBox.push_back(
 		ObjectAndTime<Box, FrameT>(
 			Box(
 				x,
@@ -144,10 +150,8 @@ void makeBoxAndTimeWithPortalsAndMutators(
 				size,
 				illegalPortal,
 				arrivalBasis,
-				oldTimeDirection),
-			nextTime
-		)
-	);
+				timeDirection),
+			nextTime));
 }
 
 
@@ -178,7 +182,7 @@ void guyStep(
     mt::std::vector<char>::type supported;
     mt::std::vector<int>::type supportedSpeed;
     mt::std::vector<char>::type finishedWith;
-    mt::std::vector<char>::type facing;
+    mt::std::vector<FacingDirection::FacingDirection>::type facing;
 
     x.reserve(boost::distance(guyArrivalList));
     y.reserve(boost::distance(guyArrivalList));
@@ -382,12 +386,12 @@ void guyStep(
             //check wall collision in X direction
             if (input.getLeft())
             {
-            	facing[i] = false;
+            	facing[i] = FacingDirection::LEFT;
                 newX += -250;
             }
             else if (input.getRight())
             {
-            	facing[i] = true;
+            	facing[i] = FacingDirection::RIGHT;
                 newX += 250;
             }
 

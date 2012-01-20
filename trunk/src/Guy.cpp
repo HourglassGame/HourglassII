@@ -13,7 +13,7 @@ Guy::Guy(
     int supportedSpeed,
 
     mt::std::map<Ability, int>::type const& pickups,
-    bool facing,
+    FacingDirection::FacingDirection facing,
 
     bool boxCarrying,
     int boxCarrySize,

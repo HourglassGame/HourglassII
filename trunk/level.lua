@@ -65,7 +65,7 @@ initialGuy =
         width = 1600,
         height = 3200,
         pickups = {timeJump = -1, timeReverse = -1},
-        facing = false,
+        facing = "left",
         boxCarrying = false,
         --these two fields are only needed
         --if boxCarrying is true.

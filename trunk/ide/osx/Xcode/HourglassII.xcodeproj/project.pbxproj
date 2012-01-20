@@ -333,6 +333,7 @@
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		202E857314BE84AE008F05EB /* GlitzPersister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlitzPersister.cpp; path = ../../../src/GlitzPersister.cpp; sourceTree = "<group>"; };
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
+		203066C814C598B1005881F4 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../../../src/Canvas.h; sourceTree = "<group>"; };
 		203151EF14C143060045161F /* lbitlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lbitlib.cpp; sourceTree = "<group>"; };
 		203151F014C143060045161F /* lcorolib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lcorolib.cpp; sourceTree = "<group>"; };
 		203151F114C143060045161F /* lctype.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lctype.cpp; sourceTree = "<group>"; };
@@ -345,11 +346,16 @@
 		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = SOURCE_ROOT; };
 		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
+		20556DB214C8EDC000F71CFC /* PlayerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlayerInput.h; path = ../../../src/PlayerInput.h; sourceTree = "<group>"; };
+		20556DB314C90D2700F71CFC /* HourglassITriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HourglassITriggerSystem.h; path = ../../../src/HourglassITriggerSystem.h; sourceTree = "<group>"; };
+		20556DB414C90DF700F71CFC /* FacingDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacingDirection.h; path = ../../../src/FacingDirection.h; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; };
 		20634FD414B9CAF100FFB0EE /* level.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = level.lua; path = ../../../level.lua; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
+		20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sfRenderTargetCanvas.h; path = ../../../src/sfRenderTargetCanvas.h; sourceTree = "<group>"; };
+		20B9B32514C6DF1D00E65866 /* sfColour.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sfColour.h; path = ../../../src/sfColour.h; sourceTree = "<group>"; };
 		20C296B512F13CB8006F90AB /* libsfml-graphics-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-graphics-s.a"; path = "../../../ext/SFML/lib/libsfml-graphics-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296B712F13CB8006F90AB /* libsfml-system-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-system-s.a"; path = "../../../ext/SFML/lib/libsfml-system-s.a"; sourceTree = SOURCE_ROOT; };
 		20C296B912F13CB8006F90AB /* libsfml-window-s.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libsfml-window-s.a"; path = "../../../ext/SFML/lib/libsfml-window-s.a"; sourceTree = SOURCE_ROOT; };
@@ -412,6 +418,30 @@
 		20029FF012F0FD95000E2DBC /* TimeEngine */ = {
 			isa = PBXGroup;
 			children = (
+				200E803C14B4792500D054F4 /* Ability.h */,
+				200E803E14B4792500D054F4 /* AttachmentMap.h */,
+				209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */,
+				209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */,
+				200E804614B4792500D054F4 /* Collision.h */,
+				200E804714B4792500D054F4 /* CommonTriggerCode.h */,
+				200E804914B4792500D054F4 /* ConcurrentFrameUpdateSet.h */,
+				200E804814B4792500D054F4 /* ConcurrentFrameUpdateSet.cpp */,
+				200E804B14B4792500D054F4 /* ConcurrentTimeMap.cpp */,
+				200E804C14B4792500D054F4 /* ConcurrentTimeMap.h */,
+				200E804D14B4792500D054F4 /* ConcurrentTimeSet.cpp */,
+				200E805114B4792500D054F4 /* DepartureMap_fwd.h */,
+				200E805314B4792500D054F4 /* DepartureMap.h */,
+				200E805214B4792500D054F4 /* DepartureMap.cpp */,
+				20556DB414C90DF700F71CFC /* FacingDirection.h */,
+				200E80F214B4792500D054F4 /* TimeDirection.h */,
+				200E80F114B4792500D054F4 /* TimeDirection.cpp */,
+				200E80F414B4792500D054F4 /* TimeEngine.h */,
+				200E80F314B4792500D054F4 /* TimeEngine.cpp */,
+				200E80F614B4792500D054F4 /* TimelineState.h */,
+				200E80F514B4792500D054F4 /* TimelineState.cpp */,
+				200E810514B4792500D054F4 /* WorldState.h */,
+				200E810414B4792500D054F4 /* WorldState.cpp */,
+				20B9B32614C70DA900E65866 /* ObjectList */,
 				20029FF212F0FDA9000E2DBC /* PhysicsEngine */,
 				20029FF112F0FDA3000E2DBC /* Frame */,
 			);
@@ -421,6 +451,18 @@
 		20029FF112F0FDA3000E2DBC /* Frame */ = {
 			isa = PBXGroup;
 			children = (
+				200E80FD14B4792500D054F4 /* Universe_fwd.h */,
+				200E80FF14B4792500D054F4 /* Universe.h */,
+				200E80FE14B4792500D054F4 /* Universe.cpp */,
+				200E810014B4792500D054F4 /* UniverseID_fwd.h */,
+				200E810214B4792500D054F4 /* UniverseID.h */,
+				200E810114B4792500D054F4 /* UniverseID.cpp */,
+				200E805A14B4792500D054F4 /* Frame_fwd.h */,
+				200E805C14B4792500D054F4 /* Frame.h */,
+				200E805B14B4792500D054F4 /* Frame.cpp */,
+				200E805D14B4792500D054F4 /* FrameID_fwd.h */,
+				200E805F14B4792500D054F4 /* FrameID.h */,
+				200E805E14B4792500D054F4 /* FrameID.cpp */,
 			);
 			name = Frame;
 			sourceTree = "<group>";
@@ -428,9 +470,13 @@
 		20029FF212F0FDA9000E2DBC /* PhysicsEngine */ = {
 			isa = PBXGroup;
 			children = (
-				20A1920F1477D6D60099ABE1 /* Glitz */,
-				208EEAC613E3C93A008EC4D7 /* TriggerSystem */,
-				20F7B311137E32E4004BA26E /* ObjectList */,
+				20B9B32714C70EE000E65866 /* TriggerSystem */,
+				200E80D614B4792500D054F4 /* PhysicsEngine.h */,
+				200E80D514B4792500D054F4 /* PhysicsEngine.cpp */,
+				200E80D914B4792500D054F4 /* PhysicsEngineUtilities.h */,
+				200E80D714B4792500D054F4 /* PhysicsEngineUtilities_def.h */,
+				200E80D814B4792500D054F4 /* PhysicsEngineUtilities.cpp */,
+				200E80D414B4792500D054F4 /* PhysicsEngine_test.cpp */,
 			);
 			name = PhysicsEngine;
 			sourceTree = "<group>";
@@ -543,16 +589,8 @@
 		202E857714BF31E5008F05EB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
-				200E804514B4792500D054F4 /* clone_ptr.h */,
-				200E80B614B4792500D054F4 /* move_function.h */,
-				200E80B714B4792500D054F4 /* move.h */,
-				200E80FC14B4792500D054F4 /* unique_ptr.h */,
-				209D16C414BB3EEA00F225DA /* vector2.h */,
-				200E805914B4792500D054F4 /* forward.h */,
-				200E805814B4792500D054F4 /* Foreach.h */,
-				200E80DE14B4792500D054F4 /* prettyprint.hpp */,
-				200E80DF14B4792500D054F4 /* prettyprint98.hpp */,
+				20B9B32814C7127800E65866 /* C++ */,
+				20B9B32914C712A600E65866 /* Containers */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -561,57 +599,28 @@
 			isa = PBXGroup;
 			children = (
 				200E80B514B4792500D054F4 /* main.cpp */,
+				200E80EF14B4792500D054F4 /* TestDriver.h */,
+				200E80EE14B4792500D054F4 /* TestDriver.cpp */,
+				20B9B32514C6DF1D00E65866 /* sfColour.h */,
+				20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */,
 				202E857714BF31E5008F05EB /* Utility */,
-				200E803C14B4792500D054F4 /* Ability.h */,
-				200E803D14B4792500D054F4 /* ArrivalLocation.h */,
-				200E803E14B4792500D054F4 /* AttachmentMap.h */,
-				200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */,
-				200E804014B4792500D054F4 /* BasicConfiguredTriggerSystem.h */,
 				200E804114B4792500D054F4 /* BoostHashCompare.h */,
-				200E804214B4792500D054F4 /* Box.cpp */,
-				200E804314B4792500D054F4 /* Box.h */,
-				209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */,
-				209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */,
-				200E804614B4792500D054F4 /* Collision.h */,
-				200E804714B4792500D054F4 /* CommonTriggerCode.h */,
-				200E804814B4792500D054F4 /* ConcurrentFrameUpdateSet.cpp */,
-				200E804914B4792500D054F4 /* ConcurrentFrameUpdateSet.h */,
-				200E804A14B4792500D054F4 /* ConcurrentQueue.h */,
-				200E804B14B4792500D054F4 /* ConcurrentTimeMap.cpp */,
-				200E804C14B4792500D054F4 /* ConcurrentTimeMap.h */,
-				200E804D14B4792500D054F4 /* ConcurrentTimeSet.cpp */,
+				203066C814C598B1005881F4 /* Canvas.h */,
 				200E804E14B4792500D054F4 /* ConcurrentTimeSet.h */,
-				200E804F14B4792500D054F4 /* ConstPtr_of_fwd.h */,
-				200E805014B4792500D054F4 /* ConstPtr_of.h */,
-				200E805114B4792500D054F4 /* DepartureMap_fwd.h */,
-				200E805214B4792500D054F4 /* DepartureMap.cpp */,
-				200E805314B4792500D054F4 /* DepartureMap.h */,
-				200E805414B4792500D054F4 /* DirectLuaTriggerSystem.cpp */,
-				200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */,
-				200E805614B4792500D054F4 /* Environment.cpp */,
 				200E805714B4792500D054F4 /* Environment.h */,
-				200E805A14B4792500D054F4 /* Frame_fwd.h */,
-				200E805B14B4792500D054F4 /* Frame.cpp */,
-				200E805C14B4792500D054F4 /* Frame.h */,
-				200E805D14B4792500D054F4 /* FrameID_fwd.h */,
-				200E805E14B4792500D054F4 /* FrameID.cpp */,
-				200E805F14B4792500D054F4 /* FrameID.h */,
+				200E805614B4792500D054F4 /* Environment.cpp */,
 				200E806014B4792500D054F4 /* FrameUpdateSet_fwd.h */,
 				200E806114B4792500D054F4 /* FrameUpdateSet.cpp */,
 				200E806214B4792500D054F4 /* FrameUpdateSet.h */,
 				200E806314B4792500D054F4 /* FrameView.cpp */,
 				200E806414B4792500D054F4 /* FrameView.h */,
 				200E806514B4792500D054F4 /* Geometry.h */,
-				200E806614B4792500D054F4 /* Glitz.cpp */,
 				200E806714B4792500D054F4 /* Glitz.h */,
-				200E806814B4792500D054F4 /* Guy.cpp */,
-				200E806914B4792500D054F4 /* Guy.h */,
-				2062890B14BD572600444210 /* GlitzPersister.h */,
-				202E857314BE84AE008F05EB /* GlitzPersister.cpp */,
+				200E806614B4792500D054F4 /* Glitz.cpp */,
 				200E806A14B4792500D054F4 /* GuyOutputInfo.cpp */,
 				200E806B14B4792500D054F4 /* GuyOutputInfo.h */,
-				200E806C14B4792500D054F4 /* Hg_Input.cpp */,
 				200E806D14B4792500D054F4 /* Hg_Input.h */,
+				200E806C14B4792500D054F4 /* Hg_Input.cpp */,
 				200E806E14B4792500D054F4 /* Inertia.h */,
 				200E806F14B4792500D054F4 /* InitialBox.h */,
 				200E807014B4792500D054F4 /* InitialGuy.h */,
@@ -620,81 +629,39 @@
 				200E807314B4792500D054F4 /* InputList_fwd.h */,
 				200E807414B4792500D054F4 /* InputList.cpp */,
 				200E807514B4792500D054F4 /* InputList.h */,
+				20556DB214C8EDC000F71CFC /* PlayerInput.h */,
 				200E807614B4792500D054F4 /* InvalidLevelException.h */,
 				200E807714B4792500D054F4 /* Level_fwd.h */,
-				200E807814B4792500D054F4 /* Level.cpp */,
 				200E807914B4792500D054F4 /* Level.h */,
-				200E807A14B4792500D054F4 /* LevelLoader.cpp */,
+				200E807814B4792500D054F4 /* Level.cpp */,
 				200E807B14B4792500D054F4 /* LevelLoader.h */,
+				200E807A14B4792500D054F4 /* LevelLoader.cpp */,
 				200E807C14B4792500D054F4 /* lua */,
-				200E80B314B4792500D054F4 /* LuaUtilities.cpp */,
 				200E80B414B4792500D054F4 /* LuaUtilities.h */,
+				200E80B314B4792500D054F4 /* LuaUtilities.cpp */,
 				200E80B814B4792500D054F4 /* mt */,
 				200E80C214B4792500D054F4 /* multi_thread_allocator.h */,
 				200E80C314B4792500D054F4 /* MutatorArea.h */,
 				200E80C414B4792500D054F4 /* ObjectAndTime.h */,
-				200E80C514B4792500D054F4 /* ObjectList_def.h */,
-				200E80C614B4792500D054F4 /* ObjectList_fwd.h */,
-				200E80C714B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp */,
-				200E80C814B4792500D054F4 /* ObjectList_inst_Normal.cpp */,
-				200E80C914B4792500D054F4 /* ObjectList.h */,
-				200E80CA14B4792500D054F4 /* ObjectListHelpers.h */,
-				200E80CB14B4792500D054F4 /* ObjectListTypes.h */,
-				200E80CC14B4792500D054F4 /* ObjectPtrList_def.h */,
-				200E80CD14B4792500D054F4 /* ObjectPtrList_fwd.h */,
-				200E80CE14B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp */,
-				200E80CF14B4792500D054F4 /* ObjectPtrList.h */,
-				200E80D014B4792500D054F4 /* OperationInterruptor.cpp */,
 				200E80D114B4792500D054F4 /* OperationInterruptor.h */,
+				200E80D014B4792500D054F4 /* OperationInterruptor.cpp */,
 				200E80D214B4792500D054F4 /* ParallelForEach.h */,
-				200E80D314B4792500D054F4 /* PhysicsAffectingStuff.h */,
-				200E80D414B4792500D054F4 /* PhysicsEngine_test.cpp */,
-				200E80D514B4792500D054F4 /* PhysicsEngine.cpp */,
-				200E80D614B4792500D054F4 /* PhysicsEngine.h */,
-				200E80D714B4792500D054F4 /* PhysicsEngineUtilities_def.h */,
-				200E80D814B4792500D054F4 /* PhysicsEngineUtilities.cpp */,
-				200E80D914B4792500D054F4 /* PhysicsEngineUtilities.h */,
-				200E80DA14B4792500D054F4 /* PlatformDestination.cpp */,
 				200E80DB14B4792500D054F4 /* PlatformDestination.h */,
+				200E80DA14B4792500D054F4 /* PlatformDestination.cpp */,
 				200E80DC14B4792500D054F4 /* PlayerVictoryException.h */,
 				200E80DD14B4792500D054F4 /* PortalArea.h */,
-				200E80E014B4792500D054F4 /* ProgressMonitor.cpp */,
 				200E80E114B4792500D054F4 /* ProgressMonitor.h */,
-				200E80E214B4792500D054F4 /* ProtoStuff.cpp */,
+				200E80E014B4792500D054F4 /* ProgressMonitor.cpp */,
 				200E80E314B4792500D054F4 /* ProtoStuff.h */,
+				200E80E214B4792500D054F4 /* ProtoStuff.cpp */,
 				200E80E414B4792500D054F4 /* RectangleGlitz.h */,
-				200E80E514B4792500D054F4 /* ReplayIO_test.cpp */,
-				200E80E614B4792500D054F4 /* ReplayIO.cpp */,
 				200E80E714B4792500D054F4 /* ReplayIO.h */,
+				200E80E614B4792500D054F4 /* ReplayIO.cpp */,
+				200E80E514B4792500D054F4 /* ReplayIO_test.cpp */,
 				200E80E814B4792500D054F4 /* scalable_allocator.h */,
-				200E80E914B4792500D054F4 /* SimpleLuaCpp.cpp */,
 				200E80EA14B4792500D054F4 /* SimpleLuaCpp.h */,
-				200E80EB14B4792500D054F4 /* SortWeakerThanEquality_fwd.h */,
-				200E80EC14B4792500D054F4 /* SortWeakerThanEquality.h */,
+				200E80E914B4792500D054F4 /* SimpleLuaCpp.cpp */,
 				200E80ED14B4792500D054F4 /* TBBExceptionWrapper.h */,
-				200E80EE14B4792500D054F4 /* TestDriver.cpp */,
-				200E80EF14B4792500D054F4 /* TestDriver.h */,
-				200E80F014B4792500D054F4 /* ThreadLocal.h */,
-				200E80F114B4792500D054F4 /* TimeDirection.cpp */,
-				200E80F214B4792500D054F4 /* TimeDirection.h */,
-				200E80F314B4792500D054F4 /* TimeEngine.cpp */,
-				200E80F414B4792500D054F4 /* TimeEngine.h */,
-				200E80F514B4792500D054F4 /* TimelineState.cpp */,
-				200E80F614B4792500D054F4 /* TimelineState.h */,
-				200E80F714B4792500D054F4 /* TriggerData.cpp */,
-				200E80F814B4792500D054F4 /* TriggerData.h */,
-				200E80F914B4792500D054F4 /* TriggerOffsetsAndDefaults.h */,
-				200E80FA14B4792500D054F4 /* TriggerSystem.h */,
-				200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */,
-				200E80FD14B4792500D054F4 /* Universe_fwd.h */,
-				200E80FE14B4792500D054F4 /* Universe.cpp */,
-				200E80FF14B4792500D054F4 /* Universe.h */,
-				200E810014B4792500D054F4 /* UniverseID_fwd.h */,
-				200E810114B4792500D054F4 /* UniverseID.cpp */,
-				200E810214B4792500D054F4 /* UniverseID.h */,
-				200E810314B4792500D054F4 /* VectorOf.h */,
-				200E810414B4792500D054F4 /* WorldState.cpp */,
-				200E810514B4792500D054F4 /* WorldState.h */,
 				20029FF012F0FD95000E2DBC /* TimeEngine */,
 			);
 			name = Sources;
@@ -711,25 +678,78 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		208EEAC613E3C93A008EC4D7 /* TriggerSystem */ = {
+		20B9B32614C70DA900E65866 /* ObjectList */ = {
 			isa = PBXGroup;
 			children = (
+				200E806914B4792500D054F4 /* Guy.h */,
+				200E806814B4792500D054F4 /* Guy.cpp */,
+				200E804314B4792500D054F4 /* Box.h */,
+				200E804214B4792500D054F4 /* Box.cpp */,
+				200E80C514B4792500D054F4 /* ObjectList_def.h */,
+				200E80C614B4792500D054F4 /* ObjectList_fwd.h */,
+				200E80C714B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp */,
+				200E80C814B4792500D054F4 /* ObjectList_inst_Normal.cpp */,
+				200E80C914B4792500D054F4 /* ObjectList.h */,
+				200E80CA14B4792500D054F4 /* ObjectListHelpers.h */,
+				200E80CB14B4792500D054F4 /* ObjectListTypes.h */,
+				200E80CC14B4792500D054F4 /* ObjectPtrList_def.h */,
+				200E80CD14B4792500D054F4 /* ObjectPtrList_fwd.h */,
+				200E80CE14B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp */,
+				200E80CF14B4792500D054F4 /* ObjectPtrList.h */,
+				2062890B14BD572600444210 /* GlitzPersister.h */,
+				202E857314BE84AE008F05EB /* GlitzPersister.cpp */,
+				200E804F14B4792500D054F4 /* ConstPtr_of_fwd.h */,
+				200E805014B4792500D054F4 /* ConstPtr_of.h */,
+				200E810314B4792500D054F4 /* VectorOf.h */,
+				200E80EB14B4792500D054F4 /* SortWeakerThanEquality_fwd.h */,
+				200E80EC14B4792500D054F4 /* SortWeakerThanEquality.h */,
+			);
+			name = ObjectList;
+			sourceTree = "<group>";
+		};
+		20B9B32714C70EE000E65866 /* TriggerSystem */ = {
+			isa = PBXGroup;
+			children = (
+				200E80FA14B4792500D054F4 /* TriggerSystem.h */,
+				200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */,
+				200E803D14B4792500D054F4 /* ArrivalLocation.h */,
+				20556DB314C90D2700F71CFC /* HourglassITriggerSystem.h */,
+				200E804014B4792500D054F4 /* BasicConfiguredTriggerSystem.h */,
+				200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */,
+				200E805414B4792500D054F4 /* DirectLuaTriggerSystem.cpp */,
+				200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */,
+				200E80F814B4792500D054F4 /* TriggerData.h */,
+				200E80F714B4792500D054F4 /* TriggerData.cpp */,
+				200E80F914B4792500D054F4 /* TriggerOffsetsAndDefaults.h */,
+				200E80D314B4792500D054F4 /* PhysicsAffectingStuff.h */,
 			);
 			name = TriggerSystem;
 			sourceTree = "<group>";
 		};
-		20A1920F1477D6D60099ABE1 /* Glitz */ = {
+		20B9B32814C7127800E65866 /* C++ */ = {
 			isa = PBXGroup;
 			children = (
+				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
+				200E804514B4792500D054F4 /* clone_ptr.h */,
+				200E80B614B4792500D054F4 /* move_function.h */,
+				200E80B714B4792500D054F4 /* move.h */,
+				200E80FC14B4792500D054F4 /* unique_ptr.h */,
+				209D16C414BB3EEA00F225DA /* vector2.h */,
+				200E805914B4792500D054F4 /* forward.h */,
+				200E805814B4792500D054F4 /* Foreach.h */,
+				200E80DE14B4792500D054F4 /* prettyprint.hpp */,
+				200E80DF14B4792500D054F4 /* prettyprint98.hpp */,
 			);
-			name = Glitz;
+			name = "C++";
 			sourceTree = "<group>";
 		};
-		20F7B311137E32E4004BA26E /* ObjectList */ = {
+		20B9B32914C712A600E65866 /* Containers */ = {
 			isa = PBXGroup;
 			children = (
+				200E80F014B4792500D054F4 /* ThreadLocal.h */,
+				200E804A14B4792500D054F4 /* ConcurrentQueue.h */,
 			);
-			name = ObjectList;
+			name = Containers;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* HourglassSetupTest */ = {

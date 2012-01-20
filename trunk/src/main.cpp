@@ -1,6 +1,3 @@
-////////////////////////////////////////////////////////////
-// Headers
-////////////////////////////////////////////////////////////
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 #include "TimeEngine.h"
@@ -51,6 +48,8 @@
 #include "ConcurrentQueue.h"
 #include "move_function.h"
 #include "unique_ptr.h"
+#include "sfRenderTargetCanvas.h"
+#include "sfColour.h"
 
 typedef sf::Color Colour;
 
@@ -448,8 +447,16 @@ void Draw(
     mt::std::vector<Glitz>::type const& glitz,
     Wall const& wall)
 {
+    //Number by which all positions are be multiplied
+    //to shrink or enlarge the level to the size of the
+    //window.
+    double scalingFactor(std::min(target.GetWidth()*100./wall.roomWidth(), target.GetHeight()*100./wall.roomHeight()));
+    sf::View const& oldView(target.GetView());
+    sf::View scaledView(sf::FloatRect(0.f, 0.f, target.GetWidth()/scalingFactor, target.GetHeight()/scalingFactor));
+    target.SetView(scaledView);
     DrawWall(target, wall);
     DrawGlitz(target, glitz);
+    target.SetView(oldView);
 }
 
 void DrawWall(
@@ -473,21 +480,10 @@ void DrawWall(
     }
 }
 
-
-//Interprets colour as |...|RRRRRRRR|GGGGGGGG|BBBBBBBB|--------|
-Colour interpretAsColour(unsigned colour)
-{
-    return Colour((colour & 0xFF000000) >> 24, (colour & 0xFF0000) >> 16, (colour & 0xFF00) >> 8);
-}
 void DrawParticularGlitz(RenderTarget& target, Glitz const& glitz)
 {
-    target.Draw(
-        Shape::Rectangle(
-            static_cast<float>(glitz.getX()/100),
-            static_cast<float>(glitz.getY()/100),
-            static_cast<float>((glitz.getX() + glitz.getWidth())/100),
-            static_cast<float>((glitz.getY() + glitz.getHeight())/100),
-            interpretAsColour(glitz.getColour())));
+    sfRenderTargetCanvas canvas(target);
+    glitz.display(canvas);
 }
 void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList)
 {
