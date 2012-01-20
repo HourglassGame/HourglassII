@@ -55,6 +55,17 @@ const char * lua_VectorReader (
         return 0;
     }
 }
+//Doesn't quite work...
+template<typename InputIterator>
+const char * lua_InputIteratorReader (
+    lua_State *L,
+    void *ud,
+    size_t *size)
+{
+    (void)L;
+    InputIterator& it(*static_cast<InputIterator*>(ud));
+    
+}
 
 LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string const& chunkName)
 {
@@ -214,6 +225,22 @@ Ability to<Ability>(lua_State* L, int index)
 }
 
 template<>
+FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State* L, int index)
+{
+    std::string facingString(lua_tostring(L, index));
+    if (facingString == "left") {
+        return FacingDirection::LEFT;
+    }
+    else if (facingString == "right") {
+        return FacingDirection::RIGHT;
+    }
+    else {
+        std::cout << facingString << std::endl;
+        assert(false && "invalid facing direction string");
+    }
+}
+
+template<>
 mt::std::map<Ability, int>::type
     to<mt::std::map<Ability, int>::type>(lua_State* L, int index)
 {
@@ -259,7 +286,7 @@ Guy to<Guy>(lua_State* L, int index)
         supportedSpeed = readField<int>(L, "supportedSpeed", index);
     }
     mt::std::map<Ability, int>::type pickups(readField<mt::std::map<Ability, int>::type>(L, "pickups", index));
-    bool facing(readField<bool>(L, "facing", index));
+    FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
     bool boxCarrying(readField<bool>(L, "boxCarrying", index));
     int boxCarrySize(0);
     TimeDirection boxCarryDirection(INVALID);
@@ -296,7 +323,7 @@ InitialGuy to<InitialGuy>(lua_State* L, int index)
     int width(readField<int>(L, "width",index));
     int height(readField<int>(L, "height",index));
     mt::std::map<Ability, int>::type pickups(readField<mt::std::map<Ability, int>::type>(L, "pickups", index));
-    bool facing(readField<bool>(L, "facing", index));
+    FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
     bool boxCarrying(readField<bool>(L, "boxCarrying", index));
     int boxCarrySize(0);
     TimeDirection boxCarryDirection(INVALID);

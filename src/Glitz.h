@@ -1,5 +1,6 @@
 #ifndef HG_GLITZ_H
 #define HG_GLITZ_H
+#include "Canvas.h"
 #include <boost/operators.hpp>
 namespace hg {
 class Glitz : boost::totally_ordered<Glitz> {
@@ -11,14 +12,9 @@ public:
             x_(x), y_(y),
             width_(width), height_(height),
             colour_(colour) {}
-
-    int getX()      const { return x_; }
-    int getY()      const { return y_; }
-    int getWidth()  const { return width_; }
-    int getHeight() const { return height_; }
-
-    unsigned getColour() const { return colour_; }
     
+    void display(Canvas& canvas) const;
+
     //Glitz has to be ordered (for sorting arrivals),
     //but since it can be pretty much
     //arbitrary drawing or other SFX/GFX (this is not yet implemented),

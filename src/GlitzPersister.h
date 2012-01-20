@@ -11,15 +11,16 @@ namespace hg {
 class GlitzPersister : boost::totally_ordered<GlitzPersister>
 {
 public:
-    GlitzPersister(Glitz const& glitz, unsigned lifetime, TimeDirection timeDirection);
+    GlitzPersister(Glitz const& forwardsGlitz, Glitz const& reverseGlitz, unsigned lifetime, TimeDirection timeDirection);
     ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const;
-    Glitz const& getGlitz() const;
-    TimeDirection getTimeDirection() const { return timeDirection_; }
+    Glitz const& getForwardsGlitz() const;
+    Glitz const& getReverseGlitz() const;
     
     bool operator==(GlitzPersister const& other) const;
     bool operator<(GlitzPersister const& second) const;
 private:
-    Glitz glitz_;
+    Glitz forwardsGlitz_;
+    Glitz reverseGlitz_;
     unsigned framesLeft_;
     TimeDirection timeDirection_;
 };
@@ -32,9 +33,9 @@ public:
     GlitzPersister const& get() const   { return *glitzPersister_; }
     
     ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const { return glitzPersister_->runStep(frame); }
-    Glitz const& getGlitz() const { return glitzPersister_->getGlitz(); }
-    TimeDirection getTimeDirection() const { return glitzPersister_->getTimeDirection(); }
-
+    Glitz const& getForwardsGlitz() const { return glitzPersister_->getForwardsGlitz(); }
+    Glitz const& getReverseGlitz() const { return glitzPersister_->getReverseGlitz(); }
+    
     bool operator==(GlitzPersisterConstPtr const& other) const { return *glitzPersister_ == *other.glitzPersister_; }
     bool operator<(GlitzPersisterConstPtr const& other) const { return *glitzPersister_ < *other.glitzPersister_; }
 private:

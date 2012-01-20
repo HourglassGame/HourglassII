@@ -73,25 +73,27 @@ public:
     
     friend std::ostream& operator<<(std::ostream& os, PortalArea const& toPrint)
     {
-        #define HG_PORTAL_AREA_PRINT(obj) os << #obj << ": " << toPrint.obj << std::endl
-        HG_PORTAL_AREA_PRINT(index_);
-        HG_PORTAL_AREA_PRINT(x_);
-        HG_PORTAL_AREA_PRINT(y_);
-        HG_PORTAL_AREA_PRINT(width_);
-        HG_PORTAL_AREA_PRINT(height_);
-        HG_PORTAL_AREA_PRINT(xspeed_);
-        HG_PORTAL_AREA_PRINT(yspeed_);
-        HG_PORTAL_AREA_PRINT(collisionOverlap_);
-        HG_PORTAL_AREA_PRINT(timeDirection_);
-        HG_PORTAL_AREA_PRINT(destinationIndex_);
-        HG_PORTAL_AREA_PRINT(xDestination_);
-        HG_PORTAL_AREA_PRINT(yDestination_);
-        HG_PORTAL_AREA_PRINT(relativeTime_);
-        HG_PORTAL_AREA_PRINT(timeDestination_);
-        HG_PORTAL_AREA_PRINT(illegalDestination_);
-        HG_PORTAL_AREA_PRINT(fallable_);
+        os << '{';
+#define HG_PORTAL_AREA_PRINT(field) os << #field << "=" << toPrint.field
+        HG_PORTAL_AREA_PRINT(index_) << ',';
+        HG_PORTAL_AREA_PRINT(x_) << ',';
+        HG_PORTAL_AREA_PRINT(y_) << ',';
+        HG_PORTAL_AREA_PRINT(width_) << ',';
+        HG_PORTAL_AREA_PRINT(height_) << ',';
+        HG_PORTAL_AREA_PRINT(xspeed_) << ',';
+        HG_PORTAL_AREA_PRINT(yspeed_) << ',';
+        HG_PORTAL_AREA_PRINT(collisionOverlap_) << ',';
+        HG_PORTAL_AREA_PRINT(timeDirection_) << ',';
+        HG_PORTAL_AREA_PRINT(destinationIndex_) << ',';
+        HG_PORTAL_AREA_PRINT(xDestination_) << ',';
+        HG_PORTAL_AREA_PRINT(yDestination_) << ',';
+        HG_PORTAL_AREA_PRINT(relativeTime_) << ',';
+        HG_PORTAL_AREA_PRINT(timeDestination_) << ',';
+        HG_PORTAL_AREA_PRINT(illegalDestination_) << ',';
+        HG_PORTAL_AREA_PRINT(fallable_) << ',';
         HG_PORTAL_AREA_PRINT(winner_);
-        #undef HG_PORTAL_AREA_PRINT
+#undef HG_PORTAL_AREA_PRINT
+        os << '}';
         return os;
     }
     
