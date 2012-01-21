@@ -149,16 +149,16 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
     local function calculateCollision(self, triggerArrivals)
         local function solvePDEquation(destination, position, velocity)
             local function square(a) return a * a end
-            local function sign(a) return math.abs(a) / a end
+            local function sign(a) return get("math.abs")(a) / a end
             
             local desiredPosition = destination.desiredPosition
             local deceleration = destination.deceleration
             local acceleration = destination.acceleration
             if desiredPosition ~= position then
                 if 
-                    (math.abs(desiredPosition - position) <= math.abs(velocity)) 
+                    (get("math.abs")(desiredPosition - position) <= get("math.abs")(velocity)) 
                         and
-                    (math.abs(velocity) <= deceleration)
+                    (get("math.abs")(velocity) <= deceleration)
                 then
                     velocity = desiredPosition - position
                 else
@@ -169,30 +169,30 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
                             velocity = 0
                         end
                     elseif
-                        math.abs(position - desiredPosition)
+                        get("math.abs")(position - desiredPosition)
 							>
                         (square(velocity - direction * acceleration) * 3 / (2 * deceleration))
                     then
                         velocity = velocity - direction * acceleration
-                    elseif math.abs(position - desiredPosition) > (square(velocity)*3/(2*deceleration))
+                    elseif get("math.abs")(position - desiredPosition) > (square(velocity)*3/(2*deceleration))
                     then
                         velocity =
-                            -direction * math.sqrt(
-                                math.abs(position - desiredPosition)
+                            -direction * get("math.sqrt")(
+                                get("math.abs")(position - desiredPosition)
                                 * deceleration * 2 / 3)
                     else
                         velocity = velocity + direction * deceleration
                     end
                 end
             else
-            	if math.abs(velocity) <= deceleration then
+            	if get("math.abs")(velocity) <= deceleration then
 				    velocity = 0
 			    else
-				    velocity = velocity + (math.abs(velocity)/velocity)*deceleration
+				    velocity = velocity + (get("math.abs")(velocity)/velocity)*deceleration
 			    end
             end
             local maxSpeed = destination.maxSpeed
-            if math.abs(velocity) > maxSpeed then
+            if get("math.abs")(velocity) > maxSpeed then
 			    velocity = sign(velocity) * maxSpeed
 		    end
 		    position = position + velocity
@@ -220,7 +220,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
         }
     end
     local collisions = {}
-    for i, protoCollision in ipairs(protoCollisions) do
+    for i, protoCollision in get("ipairs")(protoCollisions) do
         collisions[i] = calculateCollision(protoCollision, triggerArrivals)
     end
     return collisions
@@ -254,7 +254,7 @@ local function calculatePortals(protoPortals, collisions)
     end
 
     local portals = {}
-    for i, protoPortal in ipairs(protoPortals) do
+    for i, protoPortal in get("ipairs")(protoPortals) do
         portals[i] = calculatePortal(protoPortal, collisions)
     end
     return portals
@@ -272,7 +272,7 @@ local function calculateArrivalLocations(portals)
         }
     end
     arrivalLocations = {}
-    for i, portal in ipairs(portals) do
+    for i, portal in get("ipairs")(portals) do
         arrivalLocations[i] = calculateArrivalLocation(portal)
     end
     return arrivalLocations
@@ -290,7 +290,7 @@ local function calculateButtonPositionsAndVelocities(protoButtons, collisions)
         }
     end
     buttonPositionsAndVelocities = {}
-    for i, protoButton in ipairs(protoButtons) do
+    for i, protoButton in get("ipairs")(protoButtons) do
         buttonPositionsAndVelocities[i] = calculateButtonPositionAndVelocity(protoButton, collisions)
     end
     return buttonPositionsAndVelocities
@@ -336,7 +336,7 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
     local buttonStates = {}
     for i = 1, #protoButtons do
         local intersecting = false
-        for frame, objectList in pairs(departures) do
+        for frame, objectList in get("pairs")(departures) do
             if intersecting then break end
             for box in list_iter(objectList.boxes) do
                 if intersecting 
@@ -551,7 +551,6 @@ local tempStore =
         }
     }
 }
-
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++
 --for trigger indices that did not arrive by the time this is called
@@ -586,11 +585,11 @@ function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
     fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions)
     
     for collision in list_iter(retv.collisions) do
-        table.insert(tempStore.outputGlitz, calculateCollisionGlitz(collision))
+        get("table.insert")(tempStore.outputGlitz, calculateCollisionGlitz(collision))
     end
     
     for portal in list_iter(retv.portals) do
-        table.insert(tempStore.outputGlitz, calculatePortalGlitz(portal))
+        get("table.insert")(tempStore.outputGlitz, calculatePortalGlitz(portal))
     end
     
     return retv
@@ -617,7 +616,7 @@ function getDepartureInformation(departures)
         calculateButtonStates(tempStore.protoButtons, tempStore.buttonPositionsAndVelocities, departures)
 
     for i = 1, #tempStore.protoButtons do
-        table.insert(
+        get("table.insert")(
             tempStore.outputGlitz,
             calculateButtonGlitz(
                 tempStore.protoButtons[i],
@@ -625,7 +624,7 @@ function getDepartureInformation(departures)
                 buttonStates[i]))
     end
     
-    table.insert(tempStore.outputGlitz, calculateMutatorGlitz(tempStore.protoMutators[1].data))
+    get("table.insert")(tempStore.outputGlitz, calculateMutatorGlitz(tempStore.protoMutators[1].data))
     
     fillButtonTriggers(tempStore.outputTriggers, tempStore.protoButtons, buttonStates)
     

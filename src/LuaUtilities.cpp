@@ -2,6 +2,9 @@
 #include <fstream>
 #include <iostream>
 #include "lua/lualib.h"
+#include <boost/algorithm/string/find_iterator.hpp>
+#include <boost/algorithm/string/finder.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 
 //TODO everywhere:
 //* fix usage of lua_checkstack
@@ -67,6 +70,177 @@ const char * lua_InputIteratorReader (
     
 }
 
+static char const* safe_functions[] = {
+"assert",
+"error",
+"ipairs",
+"next",
+"pairs",
+"pcall",
+"select",
+"tonumber",
+"tostring",
+"type",
+"unpack",
+"_VERSION",
+"xpcall",
+"coroutine.create",
+"coroutine.resume",
+"coroutine.running",
+"coroutine.status",
+"coroutine.wrap",
+"coroutine.yield",//TODO - properly investigate the security implications of allowing this
+"string.byte",
+"string.char",
+"string.find",
+"string.format",
+"string.gmatch",
+"string.gsub",
+"string.len",
+"string.lower"
+"string.match",
+"string.rep",
+"string.reverse",
+"string.sub",
+"string.upper",
+"table.insert",
+"table.maxn",
+"table.remove",
+"table.sort",
+"math.abs",
+"math.acos",
+"math.asin",
+"math.atan",
+"math.atan2",
+"math.ceil",
+"math.cos",
+"math.cosh",
+"math.deg",
+"math.exp",
+"math.floor",
+"math.fmod",
+"math.frexp",
+"math.huge",
+"math.ldexp",
+"math.log",
+"math.log10",
+"math.max",
+"math.min",
+"math.modf",
+"math.pi",
+"math.pow",
+"math.rad",
+"math.sin",
+"math.sinh",
+"math.sqrt",
+"math.tan",
+"math.tanh"
+};
+
+struct CStringEqual {
+    CStringEqual(char const* string) : string_(string) {}
+    bool operator()(char const* otherString) const {
+        return std::strcmp(otherString, string_) == 0;
+    }
+    private:
+    char const* string_;
+};
+
+static bool namesSafeFunction(char const* string) {
+    return boost::find_if(safe_functions, CStringEqual(string));
+}
+
+//lua_CFunction which takes one argument and returns one value.
+//Its first upvalue is taken to be a global environment which has had libraries loaded into it.
+//Elements of that environment are assumed to be the standard lua library functions
+//if they have the same names as standard lua functions.
+//The indexed value is returned if it is a safe function for use in a sandbox
+//(ie, a safe standard function, or a safe custom function).
+//Tables (ie - packages) are not returned directly
+//(because that would allow the package to be modified - an operation which would leak information),
+//but if the argument uses the "table.function" form, the function may be returned.
+//Currently there is no support for the [=[table["function"]]=] form, sorry.
+
+//This function is meant to be made the single element of the global
+//environment, to allow the environment to be easily be sandboxed and cleansed.
+
+//Hardcoded support for only two forms:
+//"function"
+//"package.function"
+//It may be worth putting in more support later.
+static int get_sandboxed_function(lua_State* L)
+{
+    assert(lua_gettop(L) == 1);
+    assert(lua_type(L, 1) == LUA_TSTRING);
+    size_t length;
+    char const* string(lua_tolstring(L, 1, &length));
+    if (namesSafeFunction(string)) {
+        using boost::algorithm::split_iterator;
+        using boost::algorithm::first_finder;
+        int firstTime(true);
+        for (split_iterator<char const*> it(string, string + length, first_finder(".")); !it.eof(); ++it)
+        {
+            lua_pushlstring(L, boost::begin(*it), boost::distance(*it));
+            lua_gettable(L, firstTime ? lua_upvalueindex(1) : -2);
+            firstTime = false;
+        }
+        assert(lua_type(L, -1) == LUA_TFUNCTION);
+        lua_replace(L, 1);
+        lua_pop(L, lua_gettop(L) - 1);
+        assert(lua_type(L, 1) == LUA_TFUNCTION);
+    }
+    else {
+        assert(false);
+        lua_pushnil(L);
+    }
+    return 1;
+}
+
+void loadSandboxedLibraries(lua_State* L)
+{
+    //Load all libs
+    //the io, debug and os libs are not used, so they should probably not be loaded.
+    luaL_openlibs(L);
+    //Create the "get" function and load it into the registry
+    //[
+    //Create the "HourglassII" table
+    lua_createtable(L, 0, 1);
+    //Create the "get" function and load it into the "HourglassII" table
+    lua_pushnumber(L, LUA_RIDX_GLOBALS);
+    lua_gettable(L, LUA_REGISTRYINDEX);
+    lua_pushcclosure(L, get_sandboxed_function, 1);
+    lua_setfield(L, -2, "get");
+    //Put the "HourglassII" table into the registry
+    lua_setfield(L, LUA_REGISTRYINDEX, "HourglassII");
+    //]
+}
+//Creates a new table containing (as its single member) a function at index "get"
+//which can be called with the names of functions, and which returns the named function if
+//the name is the name of a function which is safe to call from a sandboxed environment.
+
+//Assigns this new table to both _ENV upvalue of the function at the given index, and the global environment.
+void sandboxFunction(lua_State* L, int index)
+{
+#ifndef NDEBUG
+    int initialStackSize(lua_gettop(L));
+#endif
+    lua_pushvalue(L, index);//1{farg}
+    lua_pushinteger(L, LUA_RIDX_GLOBALS);//2{farg,iglob}
+    lua_createtable(L, 0, 1);//3{farg,iglob,tnew}
+    lua_getfield(L, LUA_REGISTRYINDEX, "HourglassII");//4{farg,iglob,tnew,tHGII{get}}
+    lua_getfield(L, -1, "get");//5{farg,iglob,tnew,tHGII{get},fget}
+    lua_remove(L, -2);//4{farg,iglob,tnew,fget}
+    lua_setfield(L, -2, "get");//3{farg,iglob,tnew{get}}
+    lua_pushvalue(L, -1);//4{farg,iglob,tnew{get},tnew{get}}
+    lua_setupvalue(L, -4, 1);//3{farg,iglob,tnew{get}}
+    lua_settable(L, LUA_REGISTRYINDEX);//1{farg}
+    lua_pop(L, 1);//0{}
+#ifndef NDEBUG
+    int finalStackSize(lua_gettop(L));
+#endif
+    assert(initialStackSize == finalStackSize);
+}
+
 LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string const& chunkName)
 {
     std::pair<char const*, char const*> source_iterators;
@@ -76,10 +250,9 @@ LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string co
     }
     LuaState L((LuaState::new_state_t()));
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, chunkName.c_str(), 0) != LUA_OK) {
-        std::cout << lua_tostring(L.ptr, -1) << std::endl;
+        std::cerr << lua_tostring(L.ptr, -1) << std::endl;
         assert(false);
     }
-    luaL_openlibs(L.ptr);
     assert(lua_type(L.ptr, -1) == LUA_TFUNCTION);
     return boost::move(L);
 }
@@ -120,7 +293,7 @@ TimeDirection to<TimeDirection>(lua_State* L, int index)
         retv = REVERSE;
     }
     else {
-    	std::cout << timeDirectionString << std::endl;
+    	std::cerr << timeDirectionString << std::endl;
     	assert(false && "invalid string given as timeDirection");
     }
     return retv;
@@ -188,7 +361,7 @@ InitialObjects to<InitialObjects>(lua_State* L, int index)
             retv.add(to<InitialBox>(L).box);            
         }
         else {
-            std::cout << type << std::endl;
+            std::cerr << type << std::endl;
             assert(false && "invalid type given for InitialObject");
         }
         lua_pop(L, 1);
@@ -218,7 +391,7 @@ Ability to<Ability>(lua_State* L, int index)
         return TIME_GUN;
     }
     else {
-        std::cout << abilityString << std::endl;
+        std::cerr << abilityString << std::endl;
         assert(false && "invalid ability string");
         return NO_ABILITY;
     }
@@ -235,7 +408,7 @@ FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State*
         return FacingDirection::RIGHT;
     }
     else {
-        std::cout << facingString << std::endl;
+        std::cerr << facingString << std::endl;
         assert(false && "invalid facing direction string");
     }
 }
@@ -359,7 +532,7 @@ TriggerSystem to<TriggerSystem>(lua_State* L, int index)
         return TriggerSystem(to<unique_ptr<DirectLuaTriggerSystem> >(L).release());
     }
     else {
-        std::cout << type << std::endl;
+        std::cerr << type << std::endl;
         assert(false && "unrecognised triggerSystem type");
     }
 }

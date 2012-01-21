@@ -1,14 +1,10 @@
-//
-//  HourglassITriggerSystem.h
-//  HourglassII
-//
-//  Created by Evan Wallace on 20/01/12.
-//  Copyright (c) 2012 Team Causality. All rights reserved.
-//
+#ifndef HG_HOURGLASS_I_TRIGGER_SYSTEM
+#define HG_HOURGLASS_I_TRIGGER_SYSTEM
+#include "TriggerSystemImplementation.h"
+namespace hg {
+class HourglassITriggerSystem : public TriggerSystemImplementation{
 
-#ifndef HourglassII_HourglassITriggerSystem_h
-#define HourglassII_HourglassITriggerSystem_h
-
-
+};
+}
 
 #endif

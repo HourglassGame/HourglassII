@@ -72,6 +72,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
 	// send vector of collisions that occured (if any)
 	if (mutatorCollisions.size() != 0)
 	{
+    
 		boost::optional<Box> newBox = triggerFrameState.mutateObject(
 			mutatorCollisions,
 			Box(

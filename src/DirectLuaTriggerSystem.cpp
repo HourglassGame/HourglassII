@@ -15,6 +15,7 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
     LuaState& sharedState(luaStates_->get());
     if (!sharedState.ptr) {
         sharedState = loadLuaStateFromVector(compiledLuaChunk_, "triggerSystem");
+        loadSandboxedLibraries(sharedState.ptr);
     }
 
 	return TriggerFrameState(
@@ -38,6 +39,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
         arrivalLocationsSize_(arrivalLocationsSize)
 {
     lua_pushvalue(L_.ptr, -1);
+    sandboxFunction(L_.ptr, -1);
     lua_call(L_.ptr, 0, 0);
 }
 namespace {
@@ -358,6 +360,7 @@ PhysicsAffectingStuff
     
     //push function to call
     lua_getglobal(L_.ptr, "calculatePhysicsAffectingStuff");
+    assert(lua_type(L_.ptr, -1) == LUA_TFUNCTION);
     //push `frameNumber` argument
     lua_pushinteger(L_.ptr, getFrameNumber(currentFrame));
     //push `triggerArrivals` argument [
@@ -501,7 +504,7 @@ void pushGuy(lua_State* L, Guy const& guy)
     }
     lua_setfield(L, -2, "pickups");
     
-    lua_pushboolean(L, guy.getFacing());
+    lua_pushstring(L, guy.getFacing() == FacingDirection::LEFT ? "left" : "right");
     lua_setfield(L, -2, "facing");
     
     lua_pushboolean(L, guy.getBoxCarrying());
@@ -942,10 +945,8 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
     }
     std::vector<char> compiledChunk;
     LuaState L((LuaState::new_state_t()));
-    //TODO - fix security hole here!
-    luaL_openlibs(L.ptr);
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, "source chunk", 0)) {
-        std::cout << lua_tostring(L.ptr, -1) << std::endl;
+        std::cerr << lua_tostring(L.ptr, -1) << std::endl;
     	assert(false);
     }
     if(lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
