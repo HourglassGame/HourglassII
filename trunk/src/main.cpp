@@ -124,7 +124,7 @@ namespace {
 int main(int argc, char* argv[])
 {
     if(!hg::getTestDriver().passesAllTests()) {
-        std::cout << "Failed self-check! Aborting." << std::endl;
+        std::cerr << "Failed self-check! Aborting." << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
                         input.setTimelineLength(timeEngine->getTimelineLength());
                         state = AWAITING_INPUT;
                     } catch(std::bad_alloc const&) {
-						std::cout << "oops... ran out of memory ):" << std::endl;
+						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
                     }
 				}
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
 						goto breakmainloop;
 					}
 					catch (std::bad_alloc const&) {
-						std::cout << "oops... ran out of memory ):" << std::endl;
+						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
 					}
 					if (runningFromReplay) {

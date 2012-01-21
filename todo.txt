@@ -7,6 +7,9 @@ BUG - Fix Div-by-zero in BoxCollisionAlgorithm
 BUG - Fix Crashes and Infinite loops that can be caused by loading ill-formed levels or
     running out of memory while loading/running levels.
 
+BUG - make DirectLuaTriggerSystem deterministic + consistent
+    (At the moment it isn't, due the the underspecified nature of floating point operations in C++)
+
 Implement variable box/guy/segment sizes
 
 Implement drawing of post-physics additional box departures. (Or should this be done by the triggersystem?)
