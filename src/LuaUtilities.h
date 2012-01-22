@@ -38,6 +38,24 @@ template<typename T>
 T to(lua_State* L, int index = -1);
 
 template<typename T>
+bool isValid(lua_State* L, int index = -1);
+
+template<typename T>
+T toWithDefault(lua_State* L, int index, T defaultValue)
+{
+    return isValid<T>(L, index) ? to<T>(L, index) : defaultValue;
+}
+
+template<typename T>
+T readFieldWithDefault(lua_State* L, char const* fieldName, int index, T defaultValue)
+{
+    lua_getfield(L, index, fieldName);
+    T retv(toWithDefault<T>(L, -1, defaultValue));
+    lua_pop(L, 1);
+    return retv;
+}
+
+template<typename T>
 T readField(lua_State* L, char const* fieldName, int index = -1)
 {
     lua_getfield(L, index, fieldName);
@@ -56,6 +74,9 @@ T readGlobal(lua_State* L, char const* globalName)
 
 template<>
 int to<int>(lua_State* L, int index);
+
+template<>
+bool isValid<int>(lua_State* L, int index);
 
 template<>
 bool to<bool>(lua_State* L, int index);
