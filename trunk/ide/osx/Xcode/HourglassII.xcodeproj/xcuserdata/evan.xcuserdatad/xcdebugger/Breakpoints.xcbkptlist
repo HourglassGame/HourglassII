@@ -2,48 +2,4 @@
 <Bucket
    type = "1"
    version = "1.0">
-   <FileBreakpoints>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         isPathRelative = "0"
-         filePath = "/Users/evan/Documents/workspace/HourglassIISF/trunk/PhysicsEngineUtilities_def.h"
-         timestampString = "346724076.909786"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "888"
-         endingLineNumber = "888"
-         landmarkName = "boxCollisionAlogorithm( Environment const&amp; env, RandomAccessBoxRange const&amp; boxArrivalList, mt::std::vector&lt;Box&gt;::type const&amp; additionalBox, typename mt::std::vector&lt;ObjectAndTime&lt;Box, FrameT&gt; &gt;::type&amp; nextBox, mt::std::vector&lt;char&gt;::type&amp; nextBoxNormalDeparture, RandomAccessPlatformRange const&amp; nextPlatform, RandomAccessPortalRange const&amp; nextPortal, RandomAccessArrivalLocationRange const&amp; arrivalLocations, RandomAccessMutatorRange const&amp; mutators, TriggerFrameState&amp; triggerFrameState, FrameT const&amp; frame)"
-         landmarkType = "7">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         isPathRelative = "0"
-         filePath = "/Users/evan/Documents/workspace/HourglassIISF/trunk/PhysicsEngineUtilities_def.h"
-         timestampString = "346724328.21418"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "909"
-         endingLineNumber = "909"
-         landmarkName = "boxCollisionAlogorithm( Environment const&amp; env, RandomAccessBoxRange const&amp; boxArrivalList, mt::std::vector&lt;Box&gt;::type const&amp; additionalBox, typename mt::std::vector&lt;ObjectAndTime&lt;Box, FrameT&gt; &gt;::type&amp; nextBox, mt::std::vector&lt;char&gt;::type&amp; nextBoxNormalDeparture, RandomAccessPlatformRange const&amp; nextPlatform, RandomAccessPortalRange const&amp; nextPortal, RandomAccessArrivalLocationRange const&amp; arrivalLocations, RandomAccessMutatorRange const&amp; mutators, TriggerFrameState&amp; triggerFrameState, FrameT const&amp; frame)"
-         landmarkType = "7">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         isPathRelative = "0"
-         filePath = "/Users/evan/Documents/workspace/HourglassIISF/trunk/PhysicsEngineUtilities_def.h"
-         timestampString = "346726164.678769"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1380"
-         endingLineNumber = "1380"
-         landmarkName = "boxCollisionAlogorithm( Environment const&amp; env, RandomAccessBoxRange const&amp; boxArrivalList, mt::std::vector&lt;Box&gt;::type const&amp; additionalBox, typename mt::std::vector&lt;ObjectAndTime&lt;Box, FrameT&gt; &gt;::type&amp; nextBox, mt::std::vector&lt;char&gt;::type&amp; nextBoxNormalDeparture, RandomAccessPlatformRange const&amp; nextPlatform, RandomAccessPortalRange const&amp; nextPortal, RandomAccessArrivalLocationRange const&amp; arrivalLocations, RandomAccessMutatorRange const&amp; mutators, TriggerFrameState&amp; triggerFrameState, FrameT const&amp; frame)"
-         landmarkType = "7">
-      </FileBreakpoint>
-   </FileBreakpoints>
 </Bucket>
