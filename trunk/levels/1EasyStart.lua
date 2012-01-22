@@ -50,9 +50,6 @@ triggerSystem =
     system =
 
         [===[
---the socialist alternative:
---get("HGUtil.include")(triggerSystem.lua)
---another win for capitalism:
 local function list_iter (t)
     local i = 0
     local n = #t
