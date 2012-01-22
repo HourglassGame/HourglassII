@@ -257,6 +257,11 @@ LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string co
     return boost::move(L);
 }
 
+template<>
+bool isValid<bool>(lua_State* L, int index)
+{
+    return lua_isboolean(L, index);
+}
 
 template<>
 bool to<bool>(lua_State* L, int index)
@@ -264,6 +269,11 @@ bool to<bool>(lua_State* L, int index)
     //TODO: better error checking
     assert(lua_isboolean(L, index));
     return lua_toboolean(L, index);
+}
+template<>
+bool isValid<int>(lua_State* L, int index)
+{
+    return lua_isnumber(L, index);
 }
 template<>
 int to<int>(lua_State* L, int index)
@@ -489,15 +499,15 @@ template<>
 InitialGuy to<InitialGuy>(lua_State* L, int index)
 {
     assert(lua_istable(L, index) && "an initial guy must be a table");
-    int x(readField<int>(L, "x",index));            
+    int x(readField<int>(L, "x",index));
     int y(readField<int>(L, "y",index));
-    int xspeed(readField<int>(L, "xspeed",index));
-    int yspeed(readField<int>(L, "yspeed",index));
-    int width(readField<int>(L, "width",index));
-    int height(readField<int>(L, "height",index));
+    int xspeed(readFieldWithDefault<int>(L, "xspeed",index,0));
+    int yspeed(readFieldWithDefault<int>(L, "yspeed",index,0));
+    int width(readFieldWithDefault<int>(L, "width",index,1600));
+    int height(readFieldWithDefault<int>(L, "height",index,3200));
     mt::std::map<Ability, int>::type pickups(readField<mt::std::map<Ability, int>::type>(L, "pickups", index));
     FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
-    bool boxCarrying(readField<bool>(L, "boxCarrying", index));
+    bool boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
     int boxCarrySize(0);
     TimeDirection boxCarryDirection(INVALID);
     if (boxCarrying) {
