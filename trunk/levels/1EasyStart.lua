@@ -41,11 +41,12 @@ initialGuy =
         height = 3200,
         facing = "right",
         timeDirection = "forwards",
+        pickups = {timeJump = 0, timeReverse = 0, timeGun = 0}
     }
 }
 triggerSystem =
 {
-    type = "DirectLuaTriggerSystem",
+    type = "DirectLua",
     system =
 
         [===[
@@ -400,8 +401,7 @@ local tempStore =
     protoPortals =
     {
         {
-            x = 7 * 3200,
-            y = 11 * 3200,
+            attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 10 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -417,8 +417,7 @@ local tempStore =
             winner = false
         },
         {
-            x = 45 * 1600,
-            y = 11 * 3200,
+            attachment = {platform = nil, xOffset = 45 * 1600, yOffset = 10 * 3200},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -451,10 +450,10 @@ local tempStore =
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
+                        desiredPosition = 4 * 3200,
                         maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
+                        acceleration = 20,
+                        deceleration = 20
                     }
                 },
                 offDestination = {
@@ -465,10 +464,10 @@ local tempStore =
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 8 * 3200,
                         maxSpeed = 300,
-                        acceleration = 20,
-                        deceleration = 20
+                        acceleration = 50,
+                        deceleration = 50
                     }
                 }
             }
@@ -478,7 +477,7 @@ local tempStore =
     },
     protoButtons = {
         {
-            attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 11 * 3200},
+            attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 12 * 3200 - 800},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
@@ -499,7 +498,7 @@ function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
 
     retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals)
     retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions)
-    retv.mutators = { [1] = tempStore.protoMutators[1].data}
+    retv.mutators = {}
     retv.arrivalLocations = calculateArrivalLocations(retv.portals)
     
     tempStore.buttonPositionsAndVelocities =
@@ -547,8 +546,6 @@ function getDepartureInformation(departures)
                 buttonStates[i]))
     end
     
-    get("table.insert")(tempStore.outputGlitz, calculateMutatorGlitz(tempStore.protoMutators[1].data))
-    
     fillButtonTriggers(tempStore.outputTriggers, tempStore.protoButtons, buttonStates)
     
     return tempStore.outputTriggers, tempStore.outputGlitz, {}, tempStore.additionalEndBoxes
@@ -564,96 +561,8 @@ end
         },
         {
             offset = 1,
-            default = {38400, 43800, 0, 0}
+            default = {41 * 1600, 8 * 3200, 0, 0}
         }
     },
-    arrivalLocationsSize = 1   
+    arrivalLocationsSize = 2   
 }
-
-
---[=[
-{
-    type = "HourglassI"
-    --Should this allow reverseTime movers/collisions/switches
-    --or would that introduce too much complexity?
-    
-    --Somehow put magical glitz on portals, switches and collisions?
-    portals = {
-        {
-            -- -8 portal
-            x = 7 * 3200,
-            y = 11 * 3200,
-            width = 2 * 3200,
-            height = 2 * 3200,
-            relative = true,
-            destination = -8 * 60
-        },
-        {
-            -- win portal
-            x = 45 * 1600,
-            y = 11 * 3200,
-            width = 2 * 3200,
-            height = 2 * 3200,
-            winner = true
-        }
-    },
-    collisions = {
-        {
-            -- Door attached to mover 1
-            mover = 1,
-            x = 0,
-            y = 0,
-            width = 3200,
-            height = 4 * 3200
-        }
-    },
-    movers = {
-        {
-            -- Mover activated by button 1
-            switcher = {"trigger", 1}
-            on = {
-                x = 41 * 1600,
-                y = 8 * 3200
-            }
-            off = {
-                x = 41 * 1600,
-                y = 4 * 3200
-            }
-        }
-    },
-    buttons = {
-        {
-            -- Momentary action button on the floor
-            action = "momentary",
-            x = 27 * 1600,
-            y = 11 * 3200,
-            width = 3200,
-            height = 800
-        }
-    },
-    triggers {
-        {
-            offset = 1,
-            default = {},
-            
-        }
-    }--[[,
-    glitz = {
-        --Somehow do background and foreground "magically"
-        {
-            --background
-        },
-        {
-            --foreground
-        },
-        --Allow control substitutions (eg "press <insert jump control here> to jump")
-        --and translations.
-        {
-            --tutorial text 1
-        },
-        {
-            --tutorial text 2
-        }
-    }]]--
-}]=]--
-
