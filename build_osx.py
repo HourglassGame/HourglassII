@@ -48,9 +48,9 @@ class basic_gxx_compiler:
                 +["-Wstrict-overflow"]
                 #-F/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile
                 #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile/include
-                +["-I/Users/evan/Programming/tbb/library/include"]
-                +["-I/Users/evan/Programming/SFML/library/include"]
-                +["-I/Users/evan/Programming/boost/library/include"]
+                +["-Iext/tbb/include"]
+                +["-Iext/SFML/include"]
+                +["-Iext/boost/include"]
                 #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/DerivedSources/i386
                 #-I/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/DerivedSources
                 #-c /Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/../../HourglassIISF/trunk/WorldState.cpp
@@ -68,10 +68,10 @@ class basic_gxx_compiler:
                 +["-arch", self.arch]
                 +["-isysroot", "/Developer-old/SDKs/MacOSX10.6.sdk"] 
                 #+["-L/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile"]
-                +["-L/Users/evan/Programming/boost/library/lib"]
-                +["-L/Users/evan/Programming/SFML/library/lib"]
-                +["-L/Users/evan/Programming/tbb/library/lib"]
-                +["-L/Users/evan/Programming/freetype/library/lib"]
+                +["-Lext/boost/lib"]
+                +["-Lext/SFML/lib"]
+                +["-Lext/tbb/lib"]
+                +["-Lext/freetype/lib"]
                 + sources
                 #+["-F/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile"]
                 #+["-filelist", "/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/Objects-normal/x86_64/HourglassII.LinkFileList"]
@@ -213,10 +213,10 @@ def create_bundle(
     shutil.copy(universal_exe, "build/HourglassII.app/Contents/MacOS/HourglassII")
     for dll in dlls:
         shutil.copy(dll, "build/HourglassII.app/Contents/Frameworks/")
-    shutil.copy("osx/Info.plist", "build/HourglassII.app/Contents/Info.plist")
-    shutil.copy("osx/PkgInfo", "build/HourglassII.app/Contents/PkgInfo")
+    shutil.copy("src/osx/Info.plist", "build/HourglassII.app/Contents/Info.plist")
+    shutil.copy("src/osx/PkgInfo", "build/HourglassII.app/Contents/PkgInfo")
     shutil.copy("level.lua", "build/HourglassII.app/Contents/Resources/level.lua")
-    shutil.copy("osx/HourglassSwirl.icns", "build/HourglassII.app/Contents/Resources/HourglassSwirl.icns")
+    shutil.copy("src/osx/HourglassSwirl.icns", "build/HourglassII.app/Contents/Resources/HourglassSwirl.icns")
 
     #delete lipo'd exe
     os.remove(universal_exe)
@@ -247,8 +247,8 @@ tbb_library_directory = "/Users/evan/Programming/tbb/library/lib/"
 tbb_lib = "tbb"
 tbb_malloc_lib = "tbbmalloc"
 
-tbb_dll = "/Users/evan/Programming/tbb/library/lib/libtbb.dylib"
-tbb_malloc_dll = "/Users/evan/Programming/tbb/library/lib/libtbbmalloc.dylib"
+tbb_dll = "ext/tbb/lib/libtbb.dylib"
+tbb_malloc_dll = "ext/tbb/lib/libtbbmalloc.dylib"
 
 freetype_library_directory = "/Users/evan/Programming/freetype/library/lib/"
 freetype_lib = "freetype"
@@ -277,7 +277,7 @@ libraries = [
 dlls = [tbb_dll, tbb_malloc_dll]
 
 def main():
-    files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
+    files_to_compile = glob.glob("src/*.cpp") + glob.glob("src/lua/*.cpp")
     def iota():
         num = 0
         while True:

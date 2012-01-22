@@ -97,7 +97,7 @@ triggerSystem =
     	
         [===[
 --the socialist alternative:
---HGUtil.include(triggerSystem.lua)
+--get("HGUtil.include")(triggerSystem.lua)
 --another win for capitalism:
 local function list_iter (t)
     local i = 0
