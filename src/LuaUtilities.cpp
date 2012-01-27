@@ -539,7 +539,7 @@ TriggerSystem to<TriggerSystem>(lua_State* L, int index)
 {
     std::string type(readField<std::string>(L, "type", index));
     if (type == "DirectLua") {
-        return TriggerSystem(to<unique_ptr<DirectLuaTriggerSystem> >(L).release());
+        return TriggerSystem(to<unique_ptr<DirectLuaTriggerSystem> >(L));
     }
     else {
         std::cerr << type << std::endl;

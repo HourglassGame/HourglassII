@@ -210,7 +210,7 @@ unsigned readColourField(lua_State* L, char const* fieldName)
     return r << 24 | g << 16 | b << 8;
 }
 
-RectangleGlitz toGlitz(lua_State* L)
+RetardedNotActuallyAGlitzGlitz toGlitz(lua_State* L)
 {
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
@@ -221,7 +221,7 @@ RectangleGlitz toGlitz(lua_State* L)
     unsigned forwardsColour(readColourField(L, "forwardsColour"));
     unsigned reverseColour(readColourField(L, "reverseColour"));
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
-    return RectangleGlitz(x, y, width, height, xspeed, yspeed, forwardsColour, reverseColour, timeDirection);
+    return RetardedNotActuallyAGlitzGlitz(x, y, width, height, xspeed, yspeed, forwardsColour, reverseColour, timeDirection);
 }
 
 Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocationsSize)
@@ -862,7 +862,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }*/
 
     // get background glitz departure
-    mt::std::vector<RectangleGlitz>::type backgroundGlitz;
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type backgroundGlitz;
     if (!lua_isnil(L_.ptr, -3)) {
         assert(lua_istable(L_.ptr, -3) && "background glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L_.ptr, -3)); i <= end; ++i) {
@@ -875,7 +875,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     assert(backgroundGlitz.size());
     
     // get forground glitz departure
-    mt::std::vector<RectangleGlitz>::type foregroundGlitz;
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type foregroundGlitz;
     if (!lua_isnil(L_.ptr, -2)) {
         assert(lua_istable(L_.ptr, -2) && "foreground glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L_.ptr, -2)); i <= end; ++i) {

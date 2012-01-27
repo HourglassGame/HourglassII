@@ -91,14 +91,14 @@ void fillPlatformTriggers(
     }
 }
 
-mt::std::vector<RectangleGlitz>::type
+mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type
     calculatePlatformGlitz(mt::std::vector<Collision>::type const& collisions)
 {
-    mt::std::vector<RectangleGlitz>::type retv;
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type retv;
     retv.reserve(boost::distance(collisions));
     foreach (Collision const& collision, collisions) {
         retv.push_back(
-            RectangleGlitz(
+            RetardedNotActuallyAGlitzGlitz(
                 collision.getX(), collision.getY(),
                 collision.getWidth(), collision.getHeight(),
                 collision.getXspeed(), collision.getYspeed(),
@@ -108,13 +108,13 @@ mt::std::vector<RectangleGlitz>::type
     return retv;
 }
 
-mt::std::vector<RectangleGlitz>::type calculatePortalGlitz(mt::std::vector<PortalArea>::type const& portals)
+mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type calculatePortalGlitz(mt::std::vector<PortalArea>::type const& portals)
 {
-    mt::std::vector<RectangleGlitz>::type retv;
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type retv;
     retv.reserve(static_cast<unsigned long>(boost::distance(portals)));
     foreach (PortalArea const& portal, portals) {
         retv.push_back(
-            RectangleGlitz(
+            RetardedNotActuallyAGlitzGlitz(
                 portal.getX(), portal.getY(),
                 portal.getWidth(), portal.getHeight(),
                 portal.getXspeed(), portal.getYspeed(),
@@ -227,19 +227,19 @@ mt::std::vector<char>::type calculateButtonStates(
     return buttonStates;
 }
 
-mt::std::vector<RectangleGlitz>::type calculateButtonGlitz(
+mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type calculateButtonGlitz(
     std::vector<ProtoButton> const& protoButtons,
     mt::std::vector<char>::type const& buttonStates,
     mt::std::vector<PositionAndVelocity2D>::type const& buttonStore)
 {
     assert(boost::distance(protoButtons) == boost::distance(buttonStates));
     assert(boost::distance(protoButtons) == boost::distance(buttonStore));
-    mt::std::vector<RectangleGlitz>::type retv;
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type retv;
     retv.reserve(static_cast<unsigned long>(boost::distance(protoButtons)));
     for (std::size_t i(0), end(boost::distance(protoButtons)); i != end; ++i) {
         unsigned colour(buttonStates[i]?0x96FF9600u:0xFF969600u);
         retv.push_back(
-            RectangleGlitz(
+            RetardedNotActuallyAGlitzGlitz(
                 buttonStore[i].getX(), buttonStore[i].getY(),
                 protoButtons[i].width_, protoButtons[i].height_,
                 buttonStore[i].getXspeed(), buttonStore[i].getYspeed(),
@@ -296,7 +296,7 @@ TriggerFrameStateImplementation::DepartureInformation
             calculateActualTriggerDepartures(
                 createTriggerListFromTriggerValueList(triggers), triggerSystem.triggerOffsetsAndDefaults, currentFrame),
                 glitzStore,
-                mt::std::vector<RectangleGlitz>::type(),//foregroundGlitz
+                mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type(),//foregroundGlitz
                 mt::std::vector<ObjectAndTime<Box, Frame*> >::type());
 }
 

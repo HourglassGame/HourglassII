@@ -2,6 +2,7 @@
 #define HG_UNIQUE_PTR_H
 #include <boost/move/move.hpp>
 #include <boost/checked_delete.hpp>
+#include <boost/type_traits/add_lvalue_reference.hpp>
 
 //This is not a standard conforming unique_ptr implementation!!
 //However, it can be modified to be one if that is required.

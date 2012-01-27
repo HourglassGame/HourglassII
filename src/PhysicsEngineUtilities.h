@@ -176,8 +176,8 @@ bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int
 bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 FrameView makeFrameView(
     mt::std::vector<GuyOutputInfo>::type const& guyInfo,
-    mt::std::vector<RectangleGlitz>::type const& backgroundTriggerGlitz,
-    mt::std::vector<RectangleGlitz>::type const& foregroundTriggerGlitz,
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& backgroundTriggerGlitz,
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& foregroundTriggerGlitz,
     mt::std::vector<Glitz>::type const& forwardsGlitz,
     mt::std::vector<Glitz>::type const& reverseGlitz);
 template<typename RandomAccessGuyRange>

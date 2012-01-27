@@ -447,6 +447,7 @@ void Draw(
     mt::std::vector<Glitz>::type const& glitz,
     Wall const& wall)
 {
+    target.Clear(Colour(255,255,255));
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
     //window.
@@ -454,8 +455,8 @@ void Draw(
     sf::View const& oldView(target.GetView());
     sf::View scaledView(sf::FloatRect(0.f, 0.f, target.GetWidth()/scalingFactor, target.GetHeight()/scalingFactor));
     target.SetView(scaledView);
-    DrawWall(target, wall);
     DrawGlitz(target, glitz);
+    DrawWall(target, wall);
     target.SetView(oldView);
 }
 
@@ -463,18 +464,16 @@ void DrawWall(
     sf::RenderTarget& target,
     Wall const& wall)
 {
-    target.Clear(Colour(0,0,0));
-    
     for (int i(0), iend(wall.roomWidth()); i != iend; i += wall.segmentSize()) {
         for (int j(0), jend(wall.roomHeight()); j != jend; j += wall.segmentSize()) {
-            if (!wall.at(i, j)) {
+            if (wall.at(i, j)) {
               target.Draw(
                 sf::Shape::Rectangle(
                   i/100.f,
                   j/100.f,
                   (i + wall.segmentSize())/100.f,
                   (j + wall.segmentSize())/100.f,
-                  Colour(255,255,255)));
+                  Colour(50,50,50)));
             }
         }
     }
