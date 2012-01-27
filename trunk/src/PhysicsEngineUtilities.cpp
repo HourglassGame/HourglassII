@@ -1,5 +1,7 @@
 #include "PhysicsEngineUtilities.h"
 #include <boost/range/algorithm_ext/push_back.hpp>
+#include "RectangleGlitz.h"
+#include "multi_thread_allocator.h"
 namespace hg {
 
 void buildDepartures(
@@ -22,14 +24,16 @@ template<typename T>
         mt::std::vector<Glitz>::type& reverseGlitz)
 {
     Glitz sameDirectionGlitz(
-        obj.getX(), obj.getY(),
-        obj.getWidth(), obj.getHeight(),
-        forwardsColour);
+        multi_thread_new<RectangleGlitz>(
+            obj.getX(), obj.getY(),
+            obj.getWidth(), obj.getHeight(),
+            forwardsColour));
     
     Glitz oppositeDirectionGlitz(
-        obj.getX() - obj.getXspeed(), obj.getY() - obj.getYspeed(),
-        obj.getWidth(), obj.getHeight(),
-        reverseColour);
+        multi_thread_new<RectangleGlitz>(
+            obj.getX() - obj.getXspeed(), obj.getY() - obj.getYspeed(),
+            obj.getWidth(), obj.getHeight(),
+            reverseColour));
     
     forwardsGlitz.push_back(
         obj.getTimeDirection() == FORWARDS ?
@@ -42,22 +46,22 @@ template<typename T>
 
 FrameView makeFrameView(
     mt::std::vector<GuyOutputInfo>::type const& guyInfo,
-    mt::std::vector<RectangleGlitz>::type const& backgroundTriggerGlitz,
-    mt::std::vector<RectangleGlitz>::type const& foregroundTriggerGlitz,
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& backgroundTriggerGlitz,
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& foregroundTriggerGlitz,
     mt::std::vector<Glitz>::type const& forwardsGlitz,
     mt::std::vector<Glitz>::type const& reverseGlitz)
 {
     mt::std::vector<Glitz>::type finalForwardsGlitz;
     mt::std::vector<Glitz>::type finalReverseGlitz;
     
-    foreach (RectangleGlitz const& glitz, backgroundTriggerGlitz) {
+    foreach (RetardedNotActuallyAGlitzGlitz const& glitz, backgroundTriggerGlitz) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
     }
 
     boost::push_back(finalForwardsGlitz, forwardsGlitz);
     boost::push_back(finalReverseGlitz, reverseGlitz);
     
-    foreach (RectangleGlitz const& glitz, foregroundTriggerGlitz) {
+    foreach (RetardedNotActuallyAGlitzGlitz const& glitz, foregroundTriggerGlitz) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
     }
     

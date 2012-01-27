@@ -5,7 +5,7 @@
 #include "Box.h"
 #include "TriggerData.h"
 #include "ObjectPtrList.h"
-#include "RectangleGlitz.h"
+#include "RetardedNotActuallyAGlitzGlitz.h"
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
 #include "PhysicsAffectingStuff.h"
@@ -55,16 +55,16 @@ class TriggerFrameStateImplementation
     struct DepartureInformation {
         DepartureInformation(
             mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type const& ntriggerDepartures,
-            mt::std::vector<RectangleGlitz>::type const& nbackgroundGlitz,
-            mt::std::vector<RectangleGlitz>::type const& nforegroundGlitz,
+            mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& nbackgroundGlitz,
+            mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& nforegroundGlitz,
             mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nadditionalBoxDepartures):
                 triggerDepartures(ntriggerDepartures),
                 backgroundGlitz(nbackgroundGlitz),
                 foregroundGlitz(nforegroundGlitz),
                 additionalBoxDepartures(nadditionalBoxDepartures) {}
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type triggerDepartures;
-		mt::std::vector<RectangleGlitz>::type backgroundGlitz;
-        mt::std::vector<RectangleGlitz>::type foregroundGlitz;
+		mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type backgroundGlitz;
+        mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type foregroundGlitz;
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type additionalBoxDepartures;
     };
 
@@ -170,14 +170,6 @@ class TriggerSystemImplementation
     virtual TriggerSystemImplementation* clone() const = 0;
     virtual ~TriggerSystemImplementation(){}
 };
-TriggerSystemImplementation* new_clone(TriggerSystemImplementation const& toClone);
-void delete_clone(TriggerSystemImplementation* clone);
-inline TriggerSystemImplementation* new_clone(TriggerSystemImplementation const& toClone) {
-    return toClone.clone();
-}
-inline void delete_clone(TriggerSystemImplementation* clone) {
-    delete clone;
-}
 }
 
 #endif //HG_TRIGGER_SYSTEM_IMPLEMENTATION_H

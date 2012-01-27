@@ -69,7 +69,7 @@ namespace hg {
     //Use boost::ref or boost::cref to get reference behaviour.
     
 #ifndef HG_MAX_MULTI_THREAD_NEW_PARAMS
-# define HG_MAX_MULTI_THREAD_NEW_PARAMS 3
+# define HG_MAX_MULTI_THREAD_NEW_PARAMS 5
 #endif
 
 #define HG_MULTI_THREAD_NEW(Z, N, _)                                                \

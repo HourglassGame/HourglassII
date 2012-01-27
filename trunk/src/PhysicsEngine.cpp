@@ -65,7 +65,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     mt::std::vector<Glitz>::type forwardsGlitz;
     mt::std::vector<Glitz>::type reverseGlitz;
     
-    
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
         env_,

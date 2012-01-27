@@ -3,6 +3,8 @@
 #include "Glitz.h"
 #include "mt/std/vector"
 #include "vector2.h"
+#include "multi_thread_allocator.h"
+#include "RectangleGlitz.h"
 namespace hg {
 class GuyGlitzAdder {
 public:
@@ -40,22 +42,23 @@ public:
             int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
             
-            forwardsGlitz_->push_back(Glitz(left, top, size.x, size.y, pnc.colour));
+            forwardsGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(left, top, size.x, size.y, pnc.colour)));
             forwardsGlitz_->push_back(
                 facing ?
-                    Glitz(hmid, top, halfwidth, halfheight, 0x32323200u) :
-                    Glitz(left, top, halfwidth, halfheight, 0x32323200u));
+                    Glitz(multi_thread_new<RectangleGlitz>(hmid, top, halfwidth, halfheight, 0x32323200u)) :
+                    Glitz(multi_thread_new<RectangleGlitz>(left, top, halfwidth, halfheight, 0x32323200u)));
             
             if (boxCarrying)
             {
                 forwardsGlitz_->push_back(
                     Glitz(
-                        hmid - boxCarrySize/2,
-                        top - boxCarrySize,
-                        boxCarrySize,
-                        boxCarrySize,
-                        boxCarryDirection == FORWARDS ? 
-                          0x96009600u : 0x00960000u));
+                        multi_thread_new<RectangleGlitz>(
+                            hmid - boxCarrySize/2,
+                            top - boxCarrySize,
+                            boxCarrySize,
+                            boxCarrySize,
+                            boxCarryDirection == FORWARDS ? 
+                              0x96009600u : 0x00960000u)));
             }
         }
         //Reverse View
@@ -75,22 +78,23 @@ public:
             int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
 
-            reverseGlitz_->push_back(Glitz(left, top, size.x, size.y, pnc.colour));
+            reverseGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(left, top, size.x, size.y, pnc.colour)));
             reverseGlitz_->push_back(
                 facing ?
-                    Glitz(hmid, top, halfwidth, halfheight, 0x32323200u) :
-                    Glitz(left, top, halfwidth, halfheight, 0x32323200u));
+                    Glitz(multi_thread_new<RectangleGlitz>(hmid, top, halfwidth, halfheight, 0x32323200u)) :
+                    Glitz(multi_thread_new<RectangleGlitz>(left, top, halfwidth, halfheight, 0x32323200u)));
 
             if (boxCarrying)
             {
                 reverseGlitz_->push_back(
                     Glitz(
-                        hmid - boxCarrySize/2,
-                        top - boxCarrySize,
-                        boxCarrySize,
-                        boxCarrySize,
-                        boxCarryDirection == REVERSE ? 
-                          0x96009600u : 0x00960000u));
+                        multi_thread_new<RectangleGlitz>(
+                            hmid - boxCarrySize/2,
+                            top - boxCarrySize,
+                            boxCarrySize,
+                            boxCarrySize,
+                            boxCarryDirection == REVERSE ? 
+                              0x96009600u : 0x00960000u)));
             }
         }
     }

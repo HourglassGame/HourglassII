@@ -2,6 +2,7 @@
 #define HG_GLITZ_PERSISTER_H
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
+#include <boost/move/move.hpp>
 #include "ObjectAndTime.h"
 #include "Glitz.h"
 #include "Frame_fwd.h"
@@ -11,6 +12,35 @@ namespace hg {
 class GlitzPersister : boost::totally_ordered<GlitzPersister>
 {
 public:
+    GlitzPersister(GlitzPersister const& other) :
+        forwardsGlitz_(other.forwardsGlitz_),
+        reverseGlitz_(other.reverseGlitz_),
+        framesLeft_(other.framesLeft_),
+        timeDirection_(other.timeDirection_)
+    {}
+    GlitzPersister(BOOST_RV_REF(GlitzPersister) other) :
+        forwardsGlitz_(boost::move(other.forwardsGlitz_)),
+        reverseGlitz_(boost::move(other.reverseGlitz_)),
+        framesLeft_(boost::move(other.framesLeft_)),
+        timeDirection_(boost::move(other.timeDirection_))
+    {}
+    GlitzPersister& operator=(GlitzPersister const& other)
+    {
+        forwardsGlitz_ = other.forwardsGlitz_;
+        reverseGlitz_ = other.reverseGlitz_;
+        framesLeft_ = other.framesLeft_;
+        timeDirection_ = other.timeDirection_;
+        return *this;
+    }
+    GlitzPersister& operator=(BOOST_RV_REF(GlitzPersister) other)
+    {
+        forwardsGlitz_ = boost::move(other.forwardsGlitz_);
+        reverseGlitz_ = boost::move(other.reverseGlitz_);
+        framesLeft_ = boost::move(other.framesLeft_);
+        timeDirection_ = boost::move(other.timeDirection_);
+        return *this;
+    }
+    
     GlitzPersister(Glitz const& forwardsGlitz, Glitz const& reverseGlitz, unsigned lifetime, TimeDirection timeDirection);
     ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const;
     Glitz const& getForwardsGlitz() const;
@@ -23,6 +53,7 @@ private:
     Glitz reverseGlitz_;
     unsigned framesLeft_;
     TimeDirection timeDirection_;
+    BOOST_COPYABLE_AND_MOVABLE(GlitzPersister)
 };
 
 class GlitzPersisterConstPtr : boost::totally_ordered<GlitzPersisterConstPtr>

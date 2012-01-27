@@ -2,6 +2,7 @@
 #define HG_TRIGGER_SYSTEM_H
 #include "TriggerSystemImplementation.h"
 #include "clone_ptr.h"
+#include "unique_ptr.h"
 namespace hg
 {
 class TriggerSystem {
@@ -12,8 +13,9 @@ public:
     //as an O(1) operation.
     TriggerSystem() : impl_() {}
     //Takes ownership of impl
-    TriggerSystem(TriggerSystemImplementation* impl) :
-        impl_(impl)
+    template<typename TriggerSystemImplementation>
+    TriggerSystem(unique_ptr<TriggerSystemImplementation> impl) :
+        impl_(impl.release())
     {}
     TriggerSystem(TriggerSystem const& other) : impl_(other.impl_) {}
     TriggerSystem& operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) other)

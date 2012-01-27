@@ -3,6 +3,8 @@
 #include "Glitz.h"
 #include "mt/std/vector"
 #include "vector2.h"
+#include "RectangleGlitz.h"
+#include "multi_thread_allocator.h"
 namespace hg {
 class BoxGlitzAdder {
 public:
@@ -20,14 +22,16 @@ public:
         TimeDirection timeDirection) const
     {
         Glitz sameDirectionGlitz(
-            position.x, position.y,
-            size, size,
-            0xFF00FF00u);
+            multi_thread_new<RectangleGlitz>(
+                position.x, position.y,
+                size, size,
+                0xFF00FF00u));
     
         Glitz oppositeDirectionGlitz(
-            position.x - velocity.x, position.y - velocity.y,
-            size, size,
-            0x00FF0000u);
+            multi_thread_new<RectangleGlitz>(
+                position.x - velocity.x, position.y - velocity.y,
+                size, size,
+                0x00FF0000u));
         
         forwardsGlitz_->push_back(
             timeDirection == FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);

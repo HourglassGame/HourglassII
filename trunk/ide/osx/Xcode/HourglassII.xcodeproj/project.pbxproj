@@ -296,7 +296,7 @@
 		200E80E114B4792500D054F4 /* ProgressMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressMonitor.h; path = ../../../src/ProgressMonitor.h; sourceTree = SOURCE_ROOT; };
 		200E80E214B4792500D054F4 /* ProtoStuff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProtoStuff.cpp; path = ../../../src/ProtoStuff.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E314B4792500D054F4 /* ProtoStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProtoStuff.h; path = ../../../src/ProtoStuff.h; sourceTree = SOURCE_ROOT; };
-		200E80E414B4792500D054F4 /* RectangleGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RectangleGlitz.h; path = ../../../src/RectangleGlitz.h; sourceTree = SOURCE_ROOT; };
+		200E80E414B4792500D054F4 /* RetardedNotActuallyAGlitzGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetardedNotActuallyAGlitzGlitz.h; path = ../../../src/RetardedNotActuallyAGlitzGlitz.h; sourceTree = SOURCE_ROOT; };
 		200E80E514B4792500D054F4 /* ReplayIO_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReplayIO_test.cpp; path = ../../../src/ReplayIO_test.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E614B4792500D054F4 /* ReplayIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReplayIO.cpp; path = ../../../src/ReplayIO.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E714B4792500D054F4 /* ReplayIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReplayIO.h; path = ../../../src/ReplayIO.h; sourceTree = SOURCE_ROOT; };
@@ -333,6 +333,8 @@
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		202E857314BE84AE008F05EB /* GlitzPersister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlitzPersister.cpp; path = ../../../src/GlitzPersister.cpp; sourceTree = "<group>"; };
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
+		202FA86514D29725000CD16A /* default_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_memory_source.h; path = ../../../src/default_memory_source.h; sourceTree = "<group>"; };
+		202FA86614D2984E000CD16A /* multi_thread_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread_memory_source.h; path = ../../../src/multi_thread_memory_source.h; sourceTree = "<group>"; };
 		203066C814C598B1005881F4 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../../../src/Canvas.h; sourceTree = "<group>"; };
 		203151EF14C143060045161F /* lbitlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lbitlib.cpp; sourceTree = "<group>"; };
 		203151F014C143060045161F /* lcorolib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lcorolib.cpp; sourceTree = "<group>"; };
@@ -351,6 +353,11 @@
 		20556DB414C90DF700F71CFC /* FacingDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacingDirection.h; path = ../../../src/FacingDirection.h; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; };
 		20634FD414B9CAF100FFB0EE /* level.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = level.lua; path = ../../../level.lua; sourceTree = "<group>"; };
+		208FD88E14D163140089BC25 /* GlitzImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlitzImplementation.h; path = ../../../src/GlitzImplementation.h; sourceTree = "<group>"; };
+		208FD88F14D16A180089BC25 /* RectangleGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RectangleGlitz.h; path = ../../../src/RectangleGlitz.h; sourceTree = "<group>"; };
+		208FD89014D16E600089BC25 /* default_delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_delete.h; path = ../../../src/default_delete.h; sourceTree = "<group>"; };
+		208FD89114D1810A0089BC25 /* default_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_clone.h; path = ../../../src/default_clone.h; sourceTree = "<group>"; };
+		208FD89214D181300089BC25 /* memory_source_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory_source_clone.h; path = ../../../src/memory_source_clone.h; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
@@ -617,6 +624,8 @@
 				200E806514B4792500D054F4 /* Geometry.h */,
 				200E806714B4792500D054F4 /* Glitz.h */,
 				200E806614B4792500D054F4 /* Glitz.cpp */,
+				208FD88E14D163140089BC25 /* GlitzImplementation.h */,
+				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
 				200E806A14B4792500D054F4 /* GuyOutputInfo.cpp */,
 				200E806B14B4792500D054F4 /* GuyOutputInfo.h */,
 				200E806D14B4792500D054F4 /* Hg_Input.h */,
@@ -654,7 +663,7 @@
 				200E80E014B4792500D054F4 /* ProgressMonitor.cpp */,
 				200E80E314B4792500D054F4 /* ProtoStuff.h */,
 				200E80E214B4792500D054F4 /* ProtoStuff.cpp */,
-				200E80E414B4792500D054F4 /* RectangleGlitz.h */,
+				200E80E414B4792500D054F4 /* RetardedNotActuallyAGlitzGlitz.h */,
 				200E80E714B4792500D054F4 /* ReplayIO.h */,
 				200E80E614B4792500D054F4 /* ReplayIO.cpp */,
 				200E80E514B4792500D054F4 /* ReplayIO_test.cpp */,
@@ -729,8 +738,13 @@
 		20B9B32814C7127800E65866 /* C++ */ = {
 			isa = PBXGroup;
 			children = (
-				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
+				208FD89014D16E600089BC25 /* default_delete.h */,
+				208FD89114D1810A0089BC25 /* default_clone.h */,
+				208FD89214D181300089BC25 /* memory_source_clone.h */,
+				202FA86514D29725000CD16A /* default_memory_source.h */,
+				202FA86614D2984E000CD16A /* multi_thread_memory_source.h */,
 				200E804514B4792500D054F4 /* clone_ptr.h */,
+				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
 				200E80B614B4792500D054F4 /* move_function.h */,
 				200E80B714B4792500D054F4 /* move.h */,
 				200E80FC14B4792500D054F4 /* unique_ptr.h */,

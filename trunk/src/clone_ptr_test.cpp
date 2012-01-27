@@ -7,10 +7,6 @@ namespace {
         Cloneable(int na) : a(na) {}
         int a;
     };
-    void delete_clone(Cloneable* p)
-    {
-        delete p;
-    }
     bool testAssignment()
     {
         clone_ptr<Cloneable> ptr(new Cloneable(5));

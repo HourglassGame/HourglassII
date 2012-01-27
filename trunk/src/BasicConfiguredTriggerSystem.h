@@ -3,7 +3,7 @@
 #include "TriggerSystemImplementation.h"
 #include "ProtoStuff.h"
 #include "ObjectPtrList.h"
-#include "RectangleGlitz.h"
+#include "RetardedNotActuallyAGlitzGlitz.h"
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
 #include "Frame.h"
@@ -51,7 +51,7 @@ class BasicConfiguredTriggerFrameState :
     
     mt::std::vector<PositionAndVelocity2D>::type buttonStore;
     mt::std::vector<mt::std::vector<int>::type >::type triggers;
-    mt::std::vector<RectangleGlitz>::type glitzStore;
+    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type glitzStore;
     BasicConfiguredTriggerSystem const& triggerSystem;
     
 };
