@@ -14,6 +14,7 @@ class basic_gxx_compiler:
                 + list(map(lambda i: "-I" + i, include_directories))
                 + ["-ftemplate-depth=128"]
                 + ["-O3"]
+                + ["-std=c++0x"]
                 + ["-c"] + [source]
                 + ["-o"] + [output], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -101,25 +102,26 @@ def create_bundle(
     shutil.copy("level.lua", "build/HourglassII/level.lua")
     os.remove(executable)
 
-boost_include = "C:/Boost/include/boost-1_48/"
-sfml_inlcude = "F:/Programming/libraries/SFML-1.6-sdk-windows-mingw/SFML-1.6/include/"
-tbb_include = "F:/Programming/libraries/tbb40_233oss/include/"
+boost_include = "ext/boost/include/"
+sfml_inlcude = "ext/SFML/include/"
+tbb_include = "ext/tbb/include/"
 
-boost_library_directory = "C:/Boost/lib/"
-sfml_library_directory = "F:/Programming/libraries/SFML-1.6-sdk-windows-mingw/SFML-1.6/lib/"
-tbb_library_directory = "F:/Programming/libraries/tbb40_233oss/build/windows_ia32_gcc_mingw_release/"
+boost_library_directory = "ext/boost/lib/"
+sfml_library_directory = "ext/SFML/lib/"
+tbb_library_directory = "ext/tbb/lib/"
 
 boost_serialization_lib = "boost_serialization-mgw45-mt-1_48"
 boost_filesystem_lib = "boost_filesystem-mgw45-mt-1_48"
 boost_system_lib = "boost_system-mgw45-mt-1_48"
+boost_thread_lib = "boost_thread-mgw45-mt-1_48"
 sfml_system_lib = "sfml-system-s"
 sfml_window_lib = "sfml-window-s"
 sfml_graphics_lib = "sfml-graphics-s"
 tbb_lib = "tbb"
 tbb_malloc_lib = "tbbmalloc"
 
-tbb_dll = "F:/Programming/libraries/tbb40_233oss/build/windows_ia32_gcc_mingw_release/tbb.dll"
-tbb_malloc_dll = "F:/Programming/libraries/tbb40_233oss/build/windows_ia32_gcc_mingw_release/tbbmalloc.dll"
+tbb_dll = "ext/tbb/lib/tbb.dll"
+tbb_malloc_dll = "ext/tbb/lib/tbbmalloc.dll"
 libgcc_dll = "C:/MinGW/bin/libgcc_s_dw2-1.dll"
 libstd_cxx_dll = "C:/MinGW/bin/libstdc++-6.dll"
 
@@ -127,7 +129,7 @@ compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI"]
+defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "NDEBUG", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION"]
 
 includes = [boost_include, sfml_inlcude, tbb_include]
 
@@ -138,13 +140,13 @@ library_directories = [
 libraries = [
     tbb_lib, tbb_malloc_lib,
     sfml_graphics_lib, sfml_window_lib, sfml_system_lib,
-    boost_filesystem_lib, boost_system_lib, boost_serialization_lib]
+    boost_filesystem_lib, boost_system_lib, boost_serialization_lib, boost_thread_lib]
 
 dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll, libstd_cxx_dll]
 
-rc_file = "windows/resource.rc"
+rc_file = "src/windows/resource.rc"
 def main():
-    files_to_compile = glob.glob("*.cpp") + glob.glob("lua/*.cpp")
+    files_to_compile = glob.glob("src/*.cpp") + glob.glob("src/lua/*.cpp")
     def iota():
         num = 0
         while True:
