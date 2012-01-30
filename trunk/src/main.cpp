@@ -53,37 +53,34 @@
 
 typedef sf::Color Colour;
 
-using namespace hg;
-using namespace std;
-using namespace sf;
-using namespace boost;
 namespace {
     void initialseCurrentPath(int argc, char const* const* argv);
-    void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEngine::RunResult const& waveInfo);
+    int run_main(int argc, char const* const* argv);
+    void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo);
     void Draw(
-        RenderWindow& target,
-        mt::std::vector<Glitz>::type const& glitz,
-        Wall const& wall);
-    void DrawTimeline(RenderTarget& target, const TimeEngine::FrameListList& waves, FrameID playerFrame, std::size_t timelineLength);
-    void DrawWall(RenderTarget& target, Wall const& wallData);
-    void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList);
+        sf::RenderWindow& target,
+        hg::mt::std::vector<hg::Glitz>::type const& glitz,
+        hg::Wall const& wall);
+    void DrawTimeline(sf::RenderTarget& target, hg::TimeEngine::FrameListList const& waves, hg::FrameID playerFrame, std::size_t timelineLength);
+    void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
+    void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
-    TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange);
+    hg::TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange);
     
-    void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend);
+    void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend);
     void generateReplay();
     template<typename F>
-    boost::unique_future<typename boost::result_of<F()>::type> enqueue_task(ConcurrentQueue<move_function<void()> >& queue, F f)
+    boost::unique_future<typename boost::result_of<F()>::type> enqueue_task(hg::ConcurrentQueue<hg::move_function<void()> >& queue, F f)
     {
         boost::packaged_task<typename boost::result_of<F()>::type> task(f);
         boost::unique_future<typename boost::result_of<F()>::type> future(task.get_future());
-        queue.push(move_function<void()>(boost::move(task)));
+        queue.push(hg::move_function<void()>(boost::move(task)));
         return boost::move(future);
     }
 
     struct FunctionQueueRunner
     {
-        FunctionQueueRunner(ConcurrentQueue<move_function<void()> >& taskQueue) :
+        FunctionQueueRunner(hg::ConcurrentQueue<hg::move_function<void()> >& taskQueue) :
             taskQueue_(taskQueue)
         {}
         void operator()() {
@@ -92,27 +89,27 @@ namespace {
     		}
         }
     private:
-        ConcurrentQueue<move_function<void()> >& taskQueue_;
+        hg::ConcurrentQueue<hg::move_function<void()> >& taskQueue_;
     };
 
     struct RunToNextPlayerFrame
     {
-        RunToNextPlayerFrame(TimeEngine& timeEngine, InputList const& inputList) :
-            timeEngine_(timeEngine),
+        RunToNextPlayerFrame(hg::TimeEngine& timeEngine, hg::InputList const& inputList) :
+            timeEngine_(&timeEngine),
             inputList_(inputList)
         {}
-        typedef TimeEngine::RunResult result_type;
-        TimeEngine::RunResult operator()()
+        typedef hg::TimeEngine::RunResult result_type;
+        hg::TimeEngine::RunResult operator()()
         {
-            return timeEngine_.runToNextPlayerFrame(boost::move(inputList_));
+            return timeEngine_->runToNextPlayerFrame(boost::move(inputList_));
         }
     private:
-        TimeEngine& timeEngine_;
-        InputList inputList_;
+        hg::TimeEngine* timeEngine_;
+        hg::InputList inputList_;
     };
 
-    TimeEngine createTimeEngine() {
-        return TimeEngine(loadLevelFromFile("level.lua"));
+    hg::TimeEngine createTimeEngine() {
+        return hg::TimeEngine(hg::loadLevelFromFile("level.lua"));
     }
 }
 
@@ -123,42 +120,56 @@ namespace {
 //and logical.
 int main(int argc, char* argv[])
 {
+    initialseCurrentPath(argc, argv);
+    
     if(!hg::getTestDriver().passesAllTests()) {
         std::cerr << "Failed self-check! Aborting." << std::endl;
         return EXIT_FAILURE;
     }
 
-    initialseCurrentPath(argc, argv);
+    return run_main(argc, argv);
+}
 
-    RenderWindow app(VideoMode(640, 480), "Hourglass II");
+namespace  {
+void initialseCurrentPath(int argc, char const* const* argv)
+{
+#if defined(__APPLE__) && defined(__MACH__)
+    assert(argc >= 1);
+    current_path(boost::filesystem::path(argv[0]).remove_filename()/"../Resources/");
+#endif
+}
+
+int run_main(int /*argc*/, char const* const* /*argv*/)
+{
+    sf::RenderWindow app(sf::VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
-    ProgressMonitor monitor;
+    hg::ProgressMonitor monitor;
 
-    ConcurrentQueue<move_function<void()> > timeEngineTaskQueue;
+    hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
 
-    boost::unique_future<TimeEngine> futureTimeEngine(
+    boost::unique_future<hg::TimeEngine> futureTimeEngine(
     	enqueue_task(
     		timeEngineTaskQueue,
     		createTimeEngine));
 
     //timeEngine would be a boost::optional if boost::optional supported r-value refs
-    hg::unique_ptr<TimeEngine> timeEngine;
+    hg::unique_ptr<hg::TimeEngine> timeEngine;
 
     enum {LOADING_LEVEL, RUNNING_LEVEL, AWAITING_INPUT} state(LOADING_LEVEL);
 
     hg::Input input;
 
     hg::Inertia inertia;
-    std::vector<InputList> replay;
-    std::vector<InputList>::const_iterator currentReplayIt(replay.begin());
-    std::vector<InputList>::const_iterator currentReplayEnd(replay.end());
+    std::vector<hg::InputList> replay;
+    std::vector<hg::InputList>::const_iterator currentReplayIt(replay.begin());
+    std::vector<hg::InputList>::const_iterator currentReplayEnd(replay.end());
     //Saves a replay continuously, but in a less nice format.
     //Gets rewritten whenever the level is reset.
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
-    boost::unique_future<TimeEngine::RunResult> futureRunResult;
+    boost::unique_future<hg::TimeEngine::RunResult> futureRunResult;
     bool runningFromReplay(false);
     while (app.IsOpened()) {
     	switch (state) {
@@ -175,7 +186,7 @@ int main(int argc, char* argv[])
 				}*/
 				if (futureTimeEngine.is_ready()) {
                     try {
-                        timeEngine = hg::unique_ptr<TimeEngine>(new TimeEngine(futureTimeEngine.get()));
+                        timeEngine = hg::unique_ptr<hg::TimeEngine>(new hg::TimeEngine(futureTimeEngine.get()));
                         input.setTimelineLength(timeEngine->getTimelineLength());
                         state = AWAITING_INPUT;
                     } catch(std::bad_alloc const&) {
@@ -194,7 +205,7 @@ int main(int argc, char* argv[])
 			}
 			case AWAITING_INPUT:
 			{
-				InputList inputList;
+				hg::InputList inputList;
 				if (currentReplayIt != currentReplayEnd) {
 					inputList = *currentReplayIt;
 					++currentReplayIt;
@@ -215,7 +226,7 @@ int main(int argc, char* argv[])
 			}
 			case RUNNING_LEVEL:
 			{
-				Event event;
+				sf::Event event;
 				while (app.GetEvent(event))
 				{
 					//States + transitions:
@@ -249,7 +260,7 @@ int main(int argc, char* argv[])
 							goto continuemainloop;
 						//Load replay
 						case sf::Key::L:
-							replay = loadReplay("replay");
+							replay = hg::loadReplay("replay");
 							currentReplayIt = replay.begin();
 							currentReplayEnd = replay.end();
 							replayLogOut.close();
@@ -294,7 +305,7 @@ int main(int argc, char* argv[])
 					try {
 						runStep(*timeEngine, app, inertia, futureRunResult.get());
 					}
-					catch (PlayerVictoryException const&) {
+					catch (hg::PlayerVictoryException const&) {
 						std::cout << "Congratulations, a winner is you" << std::endl;
 						goto breakmainloop;
 					}
@@ -321,7 +332,7 @@ int main(int argc, char* argv[])
 					state = AWAITING_INPUT;
 				}
                 else {
-                    Sleep(.001f);
+                    sf::Sleep(.001f);
                 }
 				break;
 			}
@@ -337,38 +348,29 @@ int main(int argc, char* argv[])
     return EXIT_SUCCESS;
 }
 
-namespace  {
-void initialseCurrentPath(int argc, char const* const* argv)
+hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(hg::FrameView const& view, hg::TimeDirection timeDirection)
 {
-#if defined(__APPLE__) && defined(__MACH__)
-    assert(argc >= 1);
-    current_path(boost::filesystem::path(argv[0]).remove_filename()/"../Resources/");
-#endif
+    return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
-mt::std::vector<Glitz>::type const& getGlitzForDirection(FrameView const& view, TimeDirection timeDirection)
-{
-    return timeDirection == FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
-}
-
-void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEngine::RunResult const& waveInfo)
+void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo)
 {
     std::vector<std::size_t> framesExecutedList;
-    FrameID drawnFrame;
+    hg::FrameID drawnFrame;
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
     foreach (
-        FrameUpdateSet const& updateSet,
+        hg::FrameUpdateSet const& updateSet,
         waveInfo.updatedFrames())
     {
         framesExecutedList.push_back(boost::distance(updateSet));
     }
     
     if (waveInfo.currentPlayerFrame()) {
-        FrameView const& view(waveInfo.currentPlayerFrame()->getView());
-        TimeDirection currentGuyDirection(findCurrentGuyDirection(view.getGuyInformation()));
-        inertia.save(FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
-        drawnFrame = FrameID(waveInfo.currentPlayerFrame());
+        hg::FrameView const& view(waveInfo.currentPlayerFrame()->getView());
+        hg::TimeDirection currentGuyDirection(findCurrentGuyDirection(view.getGuyInformation()));
+        inertia.save(hg::FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
+        drawnFrame = hg::FrameID(waveInfo.currentPlayerFrame());
         Draw(
             app,
             getGlitzForDirection(view, currentGuyDirection),
@@ -376,47 +378,49 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEn
     }
     else {
         inertia.run();
-        FrameID const inertialFrame(inertia.getFrame());
+        hg::FrameID const inertialFrame(inertia.getFrame());
         if (inertialFrame.isValidFrame()) {
             drawnFrame = inertialFrame;
-            Frame* frame(timeEngine.getFrame(inertialFrame));
+            hg::Frame* frame(timeEngine.getFrame(inertialFrame));
             Draw(app,
                  getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                  timeEngine.getWall());
         }
         else {
             drawnFrame =
-              FrameID(
+              hg::FrameID(
                 abs(
                   static_cast<int>(
                     (app.GetInput().GetMouseX() * static_cast<long>(timeEngine.getTimelineLength()) / app.GetWidth())
                      % static_cast<long>(timeEngine.getTimelineLength()))),
-                UniverseID(timeEngine.getTimelineLength()));
-            Frame* frame(timeEngine.getFrame(drawnFrame));
+                hg::UniverseID(timeEngine.getTimelineLength()));
+            hg::Frame* frame(timeEngine.getFrame(drawnFrame));
             Draw(app,
-                 getGlitzForDirection(frame->getView(), FORWARDS),
+                 getGlitzForDirection(frame->getView(), hg::FORWARDS),
                  timeEngine.getWall());
         }
     }
     DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame, timeEngine.getTimelineLength());
     {
-        stringstream currentPlayerIndex;
+        std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
         sf::String currentPlayerGlyph(currentPlayerIndex.str());
         currentPlayerGlyph.SetPosition(580, 433);
         currentPlayerGlyph.SetSize(10.f);
+        currentPlayerGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(currentPlayerGlyph);
     }
     {
-        stringstream frameNumberString;
+        std::stringstream frameNumberString;
         frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
         sf::String frameNumberGlyph(frameNumberString.str());
         frameNumberGlyph.SetPosition(580, 445);
         frameNumberGlyph.SetSize(8.f);
+        frameNumberGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(frameNumberGlyph);
     }
     {
-        stringstream numberOfFramesExecutedString;
+        std::stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
             foreach (
@@ -430,22 +434,24 @@ void runStep(TimeEngine& timeEngine, RenderWindow& app, Inertia& inertia, TimeEn
         sf::String numberOfFramesExecutedGlyph(numberOfFramesExecutedString.str());
         numberOfFramesExecutedGlyph.SetPosition(580, 455);
         numberOfFramesExecutedGlyph.SetSize(8.f);
+        numberOfFramesExecutedGlyph.SetColor(Colour(200,200,200));
         app.Draw(numberOfFramesExecutedGlyph);
     }
     {
-        stringstream fpsstring;
+        std::stringstream fpsstring;
         fpsstring << (1./app.GetFrameTime());
         sf::String fpsglyph(fpsstring.str());
         fpsglyph.SetPosition(600, 465);
         fpsglyph.SetSize(8.f);
+        fpsglyph.SetColor(Colour(200,200,200));
         app.Draw(fpsglyph);
     }
 }
 
 void Draw(
-    RenderWindow& target,
-    mt::std::vector<Glitz>::type const& glitz,
-    Wall const& wall)
+    sf::RenderWindow& target,
+    hg::mt::std::vector<hg::Glitz>::type const& glitz,
+    hg::Wall const& wall)
 {
     target.Clear(Colour(255,255,255));
     //Number by which all positions are be multiplied
@@ -462,7 +468,7 @@ void Draw(
 
 void DrawWall(
     sf::RenderTarget& target,
-    Wall const& wall)
+    hg::Wall const& wall)
 {
     for (int i(0), iend(wall.roomWidth()); i != iend; i += wall.segmentSize()) {
         for (int j(0), jend(wall.roomHeight()); j != jend; j += wall.segmentSize()) {
@@ -479,25 +485,25 @@ void DrawWall(
     }
 }
 
-void DrawParticularGlitz(RenderTarget& target, Glitz const& glitz)
+void DrawParticularGlitz(sf::RenderTarget& target, hg::Glitz const& glitz)
 {
-    sfRenderTargetCanvas canvas(target);
+    hg::sfRenderTargetCanvas canvas(target);
     glitz.display(canvas);
 }
-void DrawGlitz(RenderTarget& target, mt::std::vector<Glitz>::type const& glitzList)
+void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList)
 {
-	foreach (Glitz const& glitz, glitzList) DrawParticularGlitz(target, glitz);
+	foreach (hg::Glitz const& glitz, glitzList) DrawParticularGlitz(target, glitz);
 }
 
 void DrawTimeline(
-    RenderTarget& target,
-    TimeEngine::FrameListList const& waves,
-    FrameID const playerFrame,
+    sf::RenderTarget& target,
+    hg::TimeEngine::FrameListList const& waves,
+    hg::FrameID const playerFrame,
     std::size_t timelineLength)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
-    foreach (FrameUpdateSet const& wave, waves) {
-    	foreach (Frame* frame, wave) {
+    foreach (hg::FrameUpdateSet const& wave, waves) {
+    	foreach (hg::Frame* frame, wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
                     static_cast<std::size_t>(
@@ -522,7 +528,7 @@ void DrawTimeline(
             else {
                 if (inWaveRegion) {
                     target.Draw(
-                        Shape::Rectangle(
+                        sf::Shape::Rectangle(
                             static_cast<float>(leftOfWaveRegion),
                             10.f,
                             static_cast<float>(i),
@@ -535,7 +541,7 @@ void DrawTimeline(
         //Draw when waves extend to far right.
         if (inWaveRegion) {
             target.Draw(
-                Shape::Rectangle(
+                sf::Shape::Rectangle(
                     static_cast<float>(leftOfWaveRegion),
                     10.f,
                     static_cast<float>(target.GetView().GetRect().GetWidth()),
@@ -545,7 +551,7 @@ void DrawTimeline(
     }
     if (playerFrame.isValidFrame()) {
         target.Draw(
-            Shape::Rectangle(
+            sf::Shape::Rectangle(
                 static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()-1)),
                 10.f,
                 static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()+2)),
@@ -562,13 +568,13 @@ struct CompareIndicies {
 };
 
 template<typename BidirectionalGuyRange>
-TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
+hg::TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
 {
     return boost::begin(guyRange | boost::adaptors::reversed)->getTimeDirection();
 }
 
 
-void saveReplayLog(std::ostream& toAppendTo, InputList const& toAppend)
+void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend)
 {
     toAppendTo << toAppend << " " << std::flush;
 }
@@ -576,8 +582,8 @@ void generateReplay()
 {
     std::ifstream replayLogIn("replayLogIn");
     if (replayLogIn.is_open()) {
-        std::vector<InputList> replay;
-        replay.assign(std::istream_iterator<InputList>(replayLogIn), std::istream_iterator<InputList>());
+        std::vector<hg::InputList> replay;
+        replay.assign(std::istream_iterator<hg::InputList>(replayLogIn), std::istream_iterator<hg::InputList>());
         saveReplay("replay", replay);
     }
 }
