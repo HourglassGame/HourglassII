@@ -13,19 +13,20 @@ namespace {
         size_t osize,
         size_t nsize)
     {
-        (void)osize;  /* not used */
         bool& is_oom(*static_cast<bool*>(ud));
         if (nsize == 0) {
             multi_thread_free(ptr);
             return 0;
         }
         else {
-            if (!is_oom) {
+            if (osize >= nsize) {
                 void* p(multi_thread_realloc(ptr, nsize));
-                is_oom = !p;
-                return p;
+                return p ? p : ptr;
             }
-            return 0;
+            if (is_oom) return 0;
+            void* p(multi_thread_realloc(ptr, nsize));
+            is_oom = !p;
+            return p;
         }
     }
 }
