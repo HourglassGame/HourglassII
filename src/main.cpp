@@ -118,6 +118,14 @@ namespace {
 //The entire front end/UI is a massive pile of hacks mounted on hacks.
 //On the other hand, code from TimeEngine downwards is generally well-designed
 //and logical.
+
+//Exceptions and HourglassII:
+//Unless otherwise specified, all functions in HourglassII can throw std::bad_alloc.
+//Unless otherwise specified, all functions in HourglassII provide the weak exception safety guarantee.
+//The exact meaning of the above statement is somewhat ambiguous, so don't assume anything about objects
+//which may have been modified by a function which has thrown an exception, without checking the documentation
+//(please add documentation if it is missing).
+//All exceptions other than std::bad_alloc should be explicitly documented, but this is not uniformly done.
 int main(int argc, char* argv[])
 {
     initialseCurrentPath(argc, argv);
@@ -189,7 +197,12 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
                         timeEngine = hg::unique_ptr<hg::TimeEngine>(new hg::TimeEngine(futureTimeEngine.get()));
                         input.setTimelineLength(timeEngine->getTimelineLength());
                         state = AWAITING_INPUT;
-                    } catch(std::bad_alloc const&) {
+                    }
+                    catch(hg::LuaError const& e) {
+                        std::cerr << "There was an error in some lua, the error message was:\n" << e.message << std::endl;
+						goto breakmainloop;
+                    }
+                    catch(std::bad_alloc const&) {
 						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
                     }
@@ -309,6 +322,10 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 						std::cout << "Congratulations, a winner is you" << std::endl;
 						goto breakmainloop;
 					}
+                    catch (hg::LuaError const& e) {
+                        std::cerr << "There was an error in some lua, the error message was:\n" << e.message << std::endl;
+						goto breakmainloop;
+                    }
 					catch (std::bad_alloc const&) {
 						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
