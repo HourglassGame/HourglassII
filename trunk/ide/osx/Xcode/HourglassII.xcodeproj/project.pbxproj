@@ -358,6 +358,7 @@
 		208FD89014D16E600089BC25 /* default_delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_delete.h; path = ../../../src/default_delete.h; sourceTree = "<group>"; };
 		208FD89114D1810A0089BC25 /* default_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_clone.h; path = ../../../src/default_clone.h; sourceTree = "<group>"; };
 		208FD89214D181300089BC25 /* memory_source_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory_source_clone.h; path = ../../../src/memory_source_clone.h; sourceTree = "<group>"; };
+		2096CCA214D6EEB400C0A32C /* LuaError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaError.h; path = ../../../src/LuaError.h; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
@@ -668,6 +669,7 @@
 				200E80E614B4792500D054F4 /* ReplayIO.cpp */,
 				200E80E514B4792500D054F4 /* ReplayIO_test.cpp */,
 				200E80E814B4792500D054F4 /* scalable_allocator.h */,
+				2096CCA214D6EEB400C0A32C /* LuaError.h */,
 				200E80EA14B4792500D054F4 /* SimpleLuaCpp.h */,
 				200E80E914B4792500D054F4 /* SimpleLuaCpp.cpp */,
 				200E80ED14B4792500D054F4 /* TBBExceptionWrapper.h */,

@@ -4,6 +4,7 @@
 #include "lua/lauxlib.h"
 #include <new>
 #include <cassert>
+#include <limits>
 namespace hg {
 namespace {
     void* multi_thread_luaalloc (
@@ -12,25 +13,30 @@ namespace {
         size_t osize,
         size_t nsize)
     {
-        (void)ud;  (void)osize;  /* not used */
+        (void)osize;  /* not used */
+        bool& is_oom(*static_cast<bool*>(ud));
         if (nsize == 0) {
             multi_thread_free(ptr);
             return 0;
         }
         else {
-            return multi_thread_realloc(ptr, nsize);
+            if (!is_oom) {
+                void* p(multi_thread_realloc(ptr, nsize));
+                is_oom = !p;
+                return p;
+            }
+            return 0;
         }
     }
 }
 LuaState::LuaState()
-    : ptr(0)
+    : is_oom(), ptr(0)
 {
 }
 LuaState::LuaState(new_state_t) 
-    : ptr(lua_newstate(multi_thread_luaalloc, 0))
+    : is_oom(new bool(false)), ptr(lua_newstate(multi_thread_luaalloc, is_oom.get()))
 {
     if (ptr) {
-        //TODO, change to a proper panic function!
         lua_atpanic(ptr, &panic);
     }
     else {
