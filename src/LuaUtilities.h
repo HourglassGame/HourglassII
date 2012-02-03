@@ -34,6 +34,10 @@ void loadSandboxedLibraries(lua_State* L);
 //perform the necessary initialisation.
 void sandboxFunction(lua_State* L, int index);
 LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string const& chunkName);
+
+//Identical to lua_checkstack, but throws on failure.
+void checkstack(lua_State* L, int extra);
+
 template<typename T>
 T to(lua_State* L, int index = -1);
 
@@ -128,5 +132,8 @@ unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem> >(lua_S
 
 template<>
 TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index);
+
+template<>
+Collision to<Collision>(lua_State* L, int index);
 }
 #endif //HG_LUA_UTILITIES_H

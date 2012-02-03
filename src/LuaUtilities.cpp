@@ -58,17 +58,6 @@ const char * lua_VectorReader (
         return 0;
     }
 }
-//Doesn't quite work...
-template<typename InputIterator>
-const char * lua_InputIteratorReader (
-    lua_State *L,
-    void *ud,
-    size_t *size)
-{
-    (void)L;
-    InputIterator& it(*static_cast<InputIterator*>(ud));
-    
-}
 
 static char const* safe_functions[] = {
 "assert",
@@ -255,6 +244,16 @@ LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string co
     }
     assert(lua_type(L.ptr, -1) == LUA_TFUNCTION);
     return boost::move(L);
+}
+
+void checkstack(lua_State* L, int extra)
+{
+    if (!lua_checkstack(L, extra)) {
+        //Maybe change to a more specific error?
+        //I don't see hourglass ever overrunning the normal
+        //stack space limit though.
+        throw std::bad_alloc();
+    }
 }
 
 template<>
@@ -585,6 +584,22 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index)
         lua_pop(L, 1);
     }
     return TriggerOffsetsAndDefaults(toad);
+}
+
+template<>
+Collision to<Collision>(lua_State* L, int index)
+{
+    assert(lua_istable(L, -1) && "a collision must be a table");
+
+    int x(readField<int>(L, "x", index));            
+    int y(readField<int>(L, "y", index));
+    int xspeed(readField<int>(L, "xspeed", index));
+    int yspeed(readField<int>(L, "yspeed", index));
+    int width(readField<int>(L, "width", index));
+    int height(readField<int>(L, "height", index));
+    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
+    
+    return Collision(x, y, xspeed, yspeed, width, height, timeDirection);
 }
 
 } //namespace hg

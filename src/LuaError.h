@@ -1,6 +1,6 @@
 #ifndef HG_LUA_ERROR_H
 #define HG_LUA_ERROR_H
-#include "lua.h"
+#include "lua/lua.h"
 #include <string>
 namespace hg {
     struct LuaError {
