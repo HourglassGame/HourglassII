@@ -27,6 +27,7 @@ public:
         FunctionHandle& operator=(BOOST_RV_REF(FunctionHandle) o)
         {
             swap(o);
+            return *this;
         }
         
         void swap(FunctionHandle& o) {

@@ -8,12 +8,14 @@ namespace hg {
     //to allow exceptions to (slightly more) properly be passed through the 
     //Threading Building Blocks scheduler (in C++03 mode).
     
-    //TBBInnerExceptionWrapper wraps all known excepion types up in a tbb::captured_exception
-    //with a well defined `name()` field, and then throws them. (TBBInnerExceptionWrapper works from `inside`
-    //the code being run by the tbb scheduler -- thus the name).
-    //TBBOuterExceptionWrapper catches the `captured_exception` and converts the `name()` field back into an exception
-    //which it throws. (TBBOuterExceptionWrapper works from `outside` the code being run by the tbb scheduler).
-    //When possible, the `what()` field of the original exception is preserved and passed on to the new exception.
+    //TBBInnerExceptionWrapper wraps all known excepion types up in a boost::exception_ptr, and wraps that up
+    //in a tbb::movable_exception.
+    //TBBOuterExceptionWrapper catches the `movable_exception` and rethrows the exception inside the exception_ptr.
+    //(TBBOuterExceptionWrapper works from `outside` the code being run by the tbb scheduler).
+    
+    //This means that it works for all types supported by boost::exception.
+    //Use `boost::enable_current_exception` when throwing exceptions to enable this support.
+    //See the boost::exception documentation for more details.
     
     //The copy constructor of A must not throw.
     template<typename F, typename R, typename A>
