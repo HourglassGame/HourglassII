@@ -61,7 +61,7 @@ public:
 private:
 	bool interrupted_;
 	mt::boost::container::stable_vector<move_function<void()> >::type interruptionFunctions_;
-    //Using tbb::spin_mutex because it is able to be locked without the possibility of failing and throwing and exception.
+    //Using tbb::spin_mutex because it is able to be locked without the possibility of failing and throwing an exception.
     //This is needed, because FunctionHandle must be able to lock on the mutex within its destructor.
     //(In theory, the other mutexes could probably be reimplemented with that guarantee added, but working from
     //the specified interface, it is not safe to)
