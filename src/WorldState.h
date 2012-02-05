@@ -33,7 +33,7 @@ public:
         FrameID const& guyStartTime,
         BOOST_RV_REF(PhysicsEngine) physics,
         BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
-        ProgressMonitor& monitor*/);
+        OperationInterruptor& interruptor*/);
 
     void swap(WorldState& other);
 
@@ -64,9 +64,8 @@ public:
      * Throws PlayerVictoryException if the player has won
      * in exactly one frame and there are no waves.
      * Returns the set of frames that were executed (had different arrivals).
-     * Return valuse does not include those frames that just had their departures edited.
      */
-    FrameUpdateSet executeWorld();
+    FrameUpdateSet executeWorld(/*OperationInterruptor& interruptor*/);
 
     /**
      * Stores the given input data, allowing the player to exist for another step.

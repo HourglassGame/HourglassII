@@ -6,7 +6,7 @@
 #include <boost/swap.hpp>
 
 namespace hg {
-TimeEngine::TimeEngine(BOOST_RV_REF(Level) level/*, ProgressMonitor& monitor*/) :
+TimeEngine::TimeEngine(BOOST_RV_REF(Level) level/*, OperationInterruptor& interruptor*/) :
         speedOfTime_(level.speedOfTime),
         worldState_(
             level.timelineLength,
@@ -14,7 +14,7 @@ TimeEngine::TimeEngine(BOOST_RV_REF(Level) level/*, ProgressMonitor& monitor*/) 
             boost::move(level.guyStartTime),
             PhysicsEngine(Environment(level.environment), boost::move(level.triggerSystem)),
             boost::move(level.initialObjects)/*,
-            monitor*/),
+            interruptor*/),
         wall_(level.environment.wall)
 {
 }
@@ -26,13 +26,13 @@ void TimeEngine::swap(TimeEngine& other) {
 }
 
 TimeEngine::RunResult
-TimeEngine::runToNextPlayerFrame(const InputList& newInputData)
+TimeEngine::runToNextPlayerFrame(const InputList& newInputData/*, OperationInterruptor& interruptor*/)
 {
     worldState_.addNewInputData(newInputData);
     FrameListList updatedList;
     updatedList.reserve(speedOfTime_);
     for (unsigned int i(0); i < speedOfTime_; ++i) {
-        updatedList.push_back(worldState_.executeWorld());
+        updatedList.push_back(worldState_.executeWorld(/*interruptor*/));
     }
     return RunResult(
         worldState_.getCurrentPlayerFrame(),

@@ -156,8 +156,19 @@ public:
     void operator()() const {
         (*f_)();
     }
+    
+private:
+    struct dummy { void nonnull() {} };
+    typedef void (dummy::*safe_bool)();
+public:
+    bool empty() const { return !f_.get(); }
+    operator safe_bool () const { return (this->empty())? 0 : &dummy::nonnull; }
+
+    bool operator!() const { return this->empty(); }
+    
 private:
     hg::unique_ptr<function::detail::function_base<void()> > f_;
+
     BOOST_MOVABLE_BUT_NOT_COPYABLE(move_function)
 };
 } //namespace hg

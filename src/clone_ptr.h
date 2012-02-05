@@ -37,17 +37,18 @@ public:
         return *this = clone_ptr(other);
     }
     clone_ptr(BOOST_RV_REF(clone_ptr) other) :
-    	obj(0)
+    	obj(other.obj), CloneManager(boost::move(static_cast<CloneManager&>(other)))
     {
-    	boost::swap(obj, other.obj);
+    	other.obj = 0;
     }
     clone_ptr& operator=(BOOST_RV_REF(clone_ptr) other)
 	{
-		boost::swap(obj, other.obj);
+		swap(other);
 		return *this;
 	}
     void swap(clone_ptr& other) {
         boost::swap(obj, other.obj);
+        boost::swap(static_cast<CloneManager&>(*this), static_cast<CloneManager&>(other));
     }
     ~clone_ptr() {
         CloneManager::delete_clone(obj);

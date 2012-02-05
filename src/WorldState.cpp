@@ -13,39 +13,34 @@
 namespace hg {
 struct ExecuteFrame
 {
-    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures) :
-        worldState_(&worldState), newDepartures_(&newDepartures)
+    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures/*, OperationInterruptor& interruptor*/) :
+        worldState_(&worldState), newDepartures_(&newDepartures)/*, interruptor_(&interruptor)*/
     {}
     void operator()(Frame* frame) const {
-        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame));
+        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame/*, interruptor*/));
     }
 private:
     WorldState* worldState_;
     DepartureMap* newDepartures_;
+    /*OperationInterruptor* interruptor*/
 };
-   
+
 WorldState::WorldState(
     std::size_t timelineLength,
     Guy const& initialGuy,
     FrameID const& guyStartTime,
     BOOST_RV_REF(PhysicsEngine) physics,
     BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
-    ProgressMonitor& monitor*/) :
+    OperationInterruptor& interruptor*/) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
         physics_(boost::move(physics)),
         nextPlayerFrames_(),
         currentPlayerFrames_(),
-        currentWinFrames_()/*,
-        task_group_context_()*/
+        currentWinFrames_()
 {
     assert(guyStartTime.isValidFrame());
-    /*
-    monitor.setInterruptionFunction(
-    	boost::function<void()>(
-    		[&task_group_context_]{ task_group_context_.cancel_group_execution(); }));
-    */
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
@@ -69,7 +64,7 @@ WorldState::WorldState(
     }
     //Run level for a while
     for (std::size_t i(0); i != timelineLength; ++i) {
-        executeWorld();
+        executeWorld(/*interruptor*/);
     }
 }
 
@@ -96,12 +91,13 @@ std::size_t WorldState::getTimelineLength() const
 }
 
 PhysicsEngine::FrameDepartureT
-    WorldState::getDeparturesFromFrame(Frame* frame)
+    WorldState::getDeparturesFromFrame(Frame* frame/*, OperationInterruptor& interruptor*/)
 {
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(frame->getPrePhysics(),
                               frame,
-                              playerInput_));
+                              playerInput_/*,
+                              interruptor*/));
     if (retv.currentPlayerFrame) {
         currentPlayerFrames_.add(frame);
     }
@@ -124,14 +120,18 @@ PhysicsEngine::FrameDepartureT
     return retv.departures;
 }
 
-FrameUpdateSet WorldState::executeWorld()
+FrameUpdateSet WorldState::executeWorld(/*OperationInterruptor& interruptor*/)
 {
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures));
-    frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures/*, task_group_context_*/);
+    //tbb::task_group_context group;
+    //interruptor.addInterruptionFunction(InterruptGroup(group));
+    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures/*, interruptor*/));
+    //Can `updateWithNewDepartures` take a long period of time?
+    //If so, it needs to be given some way of being interrupted. (it needs to get passed the interruptor)
+    frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
             && "How can a consistent reality have a guy win in multiple frames?");

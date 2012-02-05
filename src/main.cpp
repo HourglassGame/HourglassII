@@ -152,7 +152,6 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
     sf::RenderWindow app(sf::VideoMode(640, 480), "Hourglass II");
     app.UseVerticalSync(true);
     app.SetFramerateLimit(60);
-    hg::ProgressMonitor monitor;
 
     hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
