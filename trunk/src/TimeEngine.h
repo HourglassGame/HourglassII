@@ -3,7 +3,6 @@
 
 #include "WorldState.h"
 #include "FrameUpdateSet.h"
-#include "ProgressMonitor.h"
 
 #include <boost/container/vector.hpp>
 #include <boost/swap.hpp>
@@ -73,7 +72,7 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(BOOST_RV_REF(Level) level/*, ProgressMonitor& monitor*/);
+    explicit TimeEngine(BOOST_RV_REF(Level) level);
 
     void swap(TimeEngine& other);
 

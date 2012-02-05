@@ -66,7 +66,6 @@
 		200E814314B4792500D054F4 /* PhysicsEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D514B4792500D054F4 /* PhysicsEngine.cpp */; };
 		200E814414B4792500D054F4 /* PhysicsEngineUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D814B4792500D054F4 /* PhysicsEngineUtilities.cpp */; };
 		200E814514B4792500D054F4 /* PlatformDestination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80DA14B4792500D054F4 /* PlatformDestination.cpp */; };
-		200E814614B4792500D054F4 /* ProgressMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80E014B4792500D054F4 /* ProgressMonitor.cpp */; };
 		200E814714B4792500D054F4 /* ProtoStuff.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80E214B4792500D054F4 /* ProtoStuff.cpp */; };
 		200E814814B4792500D054F4 /* ReplayIO_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80E514B4792500D054F4 /* ReplayIO_test.cpp */; };
 		200E814914B4792500D054F4 /* ReplayIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80E614B4792500D054F4 /* ReplayIO.cpp */; };
@@ -292,8 +291,6 @@
 		200E80DD14B4792500D054F4 /* PortalArea.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PortalArea.h; path = ../../../src/PortalArea.h; sourceTree = SOURCE_ROOT; };
 		200E80DE14B4792500D054F4 /* prettyprint.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prettyprint.hpp; path = ../../../src/prettyprint.hpp; sourceTree = SOURCE_ROOT; };
 		200E80DF14B4792500D054F4 /* prettyprint98.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prettyprint98.hpp; path = ../../../src/prettyprint98.hpp; sourceTree = SOURCE_ROOT; };
-		200E80E014B4792500D054F4 /* ProgressMonitor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProgressMonitor.cpp; path = ../../../src/ProgressMonitor.cpp; sourceTree = SOURCE_ROOT; };
-		200E80E114B4792500D054F4 /* ProgressMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressMonitor.h; path = ../../../src/ProgressMonitor.h; sourceTree = SOURCE_ROOT; };
 		200E80E214B4792500D054F4 /* ProtoStuff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProtoStuff.cpp; path = ../../../src/ProtoStuff.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E314B4792500D054F4 /* ProtoStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProtoStuff.h; path = ../../../src/ProtoStuff.h; sourceTree = SOURCE_ROOT; };
 		200E80E414B4792500D054F4 /* RetardedNotActuallyAGlitzGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RetardedNotActuallyAGlitzGlitz.h; path = ../../../src/RetardedNotActuallyAGlitzGlitz.h; sourceTree = SOURCE_ROOT; };
@@ -332,6 +329,7 @@
 		200E810514B4792500D054F4 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldState.h; path = ../../../src/WorldState.h; sourceTree = SOURCE_ROOT; };
 		201D503514D9305000FA5680 /* LuaStackManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaStackManager.h; path = ../../../src/LuaStackManager.h; sourceTree = "<group>"; };
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
+		202A488114DBD2AB0088D45E /* LuaUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaUserData.h; path = ../../../src/LuaUserData.h; sourceTree = "<group>"; };
 		202E857314BE84AE008F05EB /* GlitzPersister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlitzPersister.cpp; path = ../../../src/GlitzPersister.cpp; sourceTree = "<group>"; };
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
 		202FA86514D29725000CD16A /* default_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_memory_source.h; path = ../../../src/default_memory_source.h; sourceTree = "<group>"; };
@@ -371,6 +369,7 @@
 		20C296D112F13D3A006F90AB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		20C296D312F13D40006F90AB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		20C296D512F13D4A006F90AB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		20E672DA14DDF79E0037C7DF /* stable_vector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stable_vector.hpp; sourceTree = "<group>"; };
 		20EF61F213C5BA55003DDBA7 /* HourglassII.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassII.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20F06FC01474B3E00019ADB4 /* libtbb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbb.dylib; path = ../../../ext/tbb/lib/libtbb.dylib; sourceTree = SOURCE_ROOT; };
 		20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbbmalloc.dylib; path = ../../../ext/tbb/lib/libtbbmalloc.dylib; sourceTree = SOURCE_ROOT; };
@@ -579,6 +578,7 @@
 			children = (
 				200E80BB14B4792500D054F4 /* map.hpp */,
 				200E80BC14B4792500D054F4 /* vector.hpp */,
+				20E672DA14DDF79E0037C7DF /* stable_vector.hpp */,
 			);
 			name = container;
 			path = ../../../src/mt/boost/container;
@@ -599,6 +599,7 @@
 			isa = PBXGroup;
 			children = (
 				201D503514D9305000FA5680 /* LuaStackManager.h */,
+				202A488114DBD2AB0088D45E /* LuaUserData.h */,
 				200E80B414B4792500D054F4 /* LuaUtilities.h */,
 				200E80B314B4792500D054F4 /* LuaUtilities.cpp */,
 				2096CCA214D6EEB400C0A32C /* LuaError.h */,
@@ -673,8 +674,6 @@
 				200E80DA14B4792500D054F4 /* PlatformDestination.cpp */,
 				200E80DC14B4792500D054F4 /* PlayerVictoryException.h */,
 				200E80DD14B4792500D054F4 /* PortalArea.h */,
-				200E80E114B4792500D054F4 /* ProgressMonitor.h */,
-				200E80E014B4792500D054F4 /* ProgressMonitor.cpp */,
 				200E80E314B4792500D054F4 /* ProtoStuff.h */,
 				200E80E214B4792500D054F4 /* ProtoStuff.cpp */,
 				200E80E414B4792500D054F4 /* RetardedNotActuallyAGlitzGlitz.h */,
@@ -971,7 +970,6 @@
 				200E814314B4792500D054F4 /* PhysicsEngine.cpp in Sources */,
 				200E814414B4792500D054F4 /* PhysicsEngineUtilities.cpp in Sources */,
 				200E814514B4792500D054F4 /* PlatformDestination.cpp in Sources */,
-				200E814614B4792500D054F4 /* ProgressMonitor.cpp in Sources */,
 				200E814714B4792500D054F4 /* ProtoStuff.cpp in Sources */,
 				200E814814B4792500D054F4 /* ReplayIO_test.cpp in Sources */,
 				200E814914B4792500D054F4 /* ReplayIO.cpp in Sources */,

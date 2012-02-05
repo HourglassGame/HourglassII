@@ -26,9 +26,7 @@ int lua_VectorWriter(
     const void* p,
     size_t sz,
     void* ud);
-std::vector<char> loadFileIntoVector(
-    std::string const& filename,
-    OperationInterruptor const& interruptor = g_nullInterruptor);
+std::vector<char> loadFileIntoVector(std::string const& filename);
 void loadSandboxedLibraries(lua_State* L);
 //Before calling `sandboxFunction`, `loadSandboxedLibraries` must be called on the same lua_State, to
 //perform the necessary initialisation.

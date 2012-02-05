@@ -12,8 +12,7 @@
 //   (apply RAII, throw exceptions consistently on bad input, make the lua execution be interuptable)
 namespace hg {
 std::vector<char> loadFileIntoVector(
-    std::string const& filename,
-    OperationInterruptor const& interruptor)
+    std::string const& filename)
 {
     std::vector<char> vec;
     std::ifstream file;

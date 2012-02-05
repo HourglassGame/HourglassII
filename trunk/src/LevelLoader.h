@@ -5,7 +5,6 @@
 #include <string>
 namespace hg {
 Level loadLevelFromFile(
-    std::string const& filename,
-    OperationInterruptor const& interruptor = g_nullInterruptor);
+    std::string const& filename);
 } //namespace hg
 #endif //HG_LEVEL_LOADER_H

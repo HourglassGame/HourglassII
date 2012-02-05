@@ -7,8 +7,7 @@
 namespace hg {
 
 Level loadLevelFromFile(
-    std::string const& filename,
-    OperationInterruptor const& /*interruptor*/)
+    std::string const& filename)
 {
     std::vector<char> levelChunk(loadFileIntoVector(filename));
     LuaState levelGenerator(loadLuaStateFromVector(levelChunk, "Level"));
