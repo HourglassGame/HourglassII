@@ -51,7 +51,8 @@ struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const& arrivals,
     Frame* frame,
-    std::vector<InputList> const& playerInput) const
+    std::vector<InputList> const& playerInput/*,
+    OperationInterrupter& interrupter*/) const
 {
     TriggerFrameState triggerFrameState(triggerSystem_.getFrameState());
     

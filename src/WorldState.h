@@ -33,7 +33,7 @@ public:
         FrameID const& guyStartTime,
         BOOST_RV_REF(PhysicsEngine) physics,
         BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
-        OperationInterruptor& interruptor*/);
+        OperationInterrupter& interrupter*/);
 
     void swap(WorldState& other);
 
@@ -65,7 +65,7 @@ public:
      * in exactly one frame and there are no waves.
      * Returns the set of frames that were executed (had different arrivals).
      */
-    FrameUpdateSet executeWorld(/*OperationInterruptor& interruptor*/);
+    FrameUpdateSet executeWorld(/*OperationInterrupter& interrupter*/);
 
     /**
      * Stores the given input data, allowing the player to exist for another step.

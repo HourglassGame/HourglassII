@@ -13,16 +13,16 @@
 namespace hg {
 struct ExecuteFrame
 {
-    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures/*, OperationInterruptor& interruptor*/) :
-        worldState_(&worldState), newDepartures_(&newDepartures)/*, interruptor_(&interruptor)*/
+    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures/*, OperationInterrupter& interrupter*/) :
+        worldState_(&worldState), newDepartures_(&newDepartures)/*, interrupter_(&interrupter)*/
     {}
     void operator()(Frame* frame) const {
-        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame/*, interruptor*/));
+        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame/*, interrupter*/));
     }
 private:
     WorldState* worldState_;
     DepartureMap* newDepartures_;
-    /*OperationInterruptor* interruptor*/
+    /*OperationInterrupter* interrupter*/
 };
 
 WorldState::WorldState(
@@ -31,7 +31,7 @@ WorldState::WorldState(
     FrameID const& guyStartTime,
     BOOST_RV_REF(PhysicsEngine) physics,
     BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
-    OperationInterruptor& interruptor*/) :
+    OperationInterrupter& interrupter*/) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
@@ -64,7 +64,7 @@ WorldState::WorldState(
     }
     //Run level for a while
     for (std::size_t i(0); i != timelineLength; ++i) {
-        executeWorld(/*interruptor*/);
+        executeWorld(/*interrupter*/);
     }
 }
 
@@ -91,13 +91,13 @@ std::size_t WorldState::getTimelineLength() const
 }
 
 PhysicsEngine::FrameDepartureT
-    WorldState::getDeparturesFromFrame(Frame* frame/*, OperationInterruptor& interruptor*/)
+    WorldState::getDeparturesFromFrame(Frame* frame/*, OperationInterrupter& interrupter*/)
 {
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(frame->getPrePhysics(),
                               frame,
                               playerInput_/*,
-                              interruptor*/));
+                              interrupter*/));
     if (retv.currentPlayerFrame) {
         currentPlayerFrames_.add(frame);
     }
@@ -120,17 +120,17 @@ PhysicsEngine::FrameDepartureT
     return retv.departures;
 }
 
-FrameUpdateSet WorldState::executeWorld(/*OperationInterruptor& interruptor*/)
+FrameUpdateSet WorldState::executeWorld(/*OperationInterrupter& interrupter*/)
 {
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
     //tbb::task_group_context group;
-    //interruptor.addInterruptionFunction(InterruptGroup(group));
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures/*, interruptor*/));
+    //interrupter.addInterruptionFunction(InterruptGroup(group));
+    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures/*, interrupter*/));
     //Can `updateWithNewDepartures` take a long period of time?
-    //If so, it needs to be given some way of being interrupted. (it needs to get passed the interruptor)
+    //If so, it needs to be given some way of being interrupted. (it needs to get passed the interrupter)
     frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 

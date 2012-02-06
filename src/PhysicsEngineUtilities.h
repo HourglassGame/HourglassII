@@ -154,7 +154,7 @@ void buildDepartures(
     
 //bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
 bool wallAtExclusive(Wall const& wall, int x, int y, int w, int h);
-bool wallAtExclusive(const Environment& env, int x, int y, int w, int h);
+bool wallAtExclusive(Environment const& env, int x, int y, int w, int h);
     
 unsigned int Raytrace(
         Environment const& env,

@@ -61,7 +61,7 @@
 		200E813E14B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80C714B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp */; };
 		200E813F14B4792500D054F4 /* ObjectList_inst_Normal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80C814B4792500D054F4 /* ObjectList_inst_Normal.cpp */; };
 		200E814014B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80CE14B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp */; };
-		200E814114B4792500D054F4 /* OperationInterruptor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D014B4792500D054F4 /* OperationInterruptor.cpp */; };
+		200E814114B4792500D054F4 /* OperationInterrupter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D014B4792500D054F4 /* OperationInterrupter.cpp */; };
 		200E814214B4792500D054F4 /* PhysicsEngine_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D414B4792500D054F4 /* PhysicsEngine_test.cpp */; };
 		200E814314B4792500D054F4 /* PhysicsEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D514B4792500D054F4 /* PhysicsEngine.cpp */; };
 		200E814414B4792500D054F4 /* PhysicsEngineUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E80D814B4792500D054F4 /* PhysicsEngineUtilities.cpp */; };
@@ -197,7 +197,7 @@
 		200E807814B4792500D054F4 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Level.cpp; path = ../../../src/Level.cpp; sourceTree = SOURCE_ROOT; };
 		200E807914B4792500D054F4 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Level.h; path = ../../../src/Level.h; sourceTree = SOURCE_ROOT; };
 		200E807A14B4792500D054F4 /* LevelLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelLoader.cpp; path = ../../../src/LevelLoader.cpp; sourceTree = SOURCE_ROOT; };
-		200E807B14B4792500D054F4 /* LevelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelLoader.h; path = ../../../src/LevelLoader.h; sourceTree = SOURCE_ROOT; };
+		200E807B14B4792500D054F4 /* LevelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LevelLoader.h; path = ../../../src/LevelLoader.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E807E14B4792500D054F4 /* lapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lapi.cpp; path = ../../../src/lua/lapi.cpp; sourceTree = SOURCE_ROOT; };
 		200E807F14B4792500D054F4 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = ../../../src/lua/lapi.h; sourceTree = SOURCE_ROOT; };
 		200E808014B4792500D054F4 /* lauxlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lauxlib.cpp; path = ../../../src/lua/lauxlib.cpp; sourceTree = SOURCE_ROOT; };
@@ -251,8 +251,8 @@
 		200E80B014B4792500D054F4 /* lzio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lzio.cpp; path = ../../../src/lua/lzio.cpp; sourceTree = SOURCE_ROOT; };
 		200E80B114B4792500D054F4 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = ../../../src/lua/lzio.h; sourceTree = SOURCE_ROOT; };
 		200E80B314B4792500D054F4 /* LuaUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaUtilities.cpp; path = ../../../src/LuaUtilities.cpp; sourceTree = SOURCE_ROOT; };
-		200E80B414B4792500D054F4 /* LuaUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaUtilities.h; path = ../../../src/LuaUtilities.h; sourceTree = SOURCE_ROOT; };
-		200E80B514B4792500D054F4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
+		200E80B414B4792500D054F4 /* LuaUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LuaUtilities.h; path = ../../../src/LuaUtilities.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E80B514B4792500D054F4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E80B614B4792500D054F4 /* move_function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = move_function.h; path = ../../../src/move_function.h; sourceTree = SOURCE_ROOT; };
 		200E80B714B4792500D054F4 /* move.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = move.h; path = ../../../src/move.h; sourceTree = SOURCE_ROOT; };
 		200E80BB14B4792500D054F4 /* map.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = map.hpp; path = ../../../src/mt/boost/container/map.hpp; sourceTree = SOURCE_ROOT; };
@@ -275,8 +275,8 @@
 		200E80CD14B4792500D054F4 /* ObjectPtrList_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjectPtrList_fwd.h; path = ../../../src/ObjectPtrList_fwd.h; sourceTree = SOURCE_ROOT; };
 		200E80CE14B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ObjectPtrList_inst_Normal.cpp; path = ../../../src/ObjectPtrList_inst_Normal.cpp; sourceTree = SOURCE_ROOT; };
 		200E80CF14B4792500D054F4 /* ObjectPtrList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ObjectPtrList.h; path = ../../../src/ObjectPtrList.h; sourceTree = SOURCE_ROOT; };
-		200E80D014B4792500D054F4 /* OperationInterruptor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OperationInterruptor.cpp; path = ../../../src/OperationInterruptor.cpp; sourceTree = SOURCE_ROOT; };
-		200E80D114B4792500D054F4 /* OperationInterruptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OperationInterruptor.h; path = ../../../src/OperationInterruptor.h; sourceTree = SOURCE_ROOT; };
+		200E80D014B4792500D054F4 /* OperationInterrupter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = OperationInterrupter.cpp; path = ../../../src/OperationInterrupter.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		200E80D114B4792500D054F4 /* OperationInterrupter.h */ = {isa = PBXFileReference; fileEncoding = 4; name = OperationInterrupter.h; path = ../../../src/OperationInterrupter.h; sourceTree = SOURCE_ROOT; };
 		200E80D214B4792500D054F4 /* ParallelForEach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParallelForEach.h; path = ../../../src/ParallelForEach.h; sourceTree = SOURCE_ROOT; };
 		200E80D314B4792500D054F4 /* PhysicsAffectingStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhysicsAffectingStuff.h; path = ../../../src/PhysicsAffectingStuff.h; sourceTree = SOURCE_ROOT; };
 		200E80D414B4792500D054F4 /* PhysicsEngine_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsEngine_test.cpp; path = ../../../src/PhysicsEngine_test.cpp; sourceTree = SOURCE_ROOT; };
@@ -667,8 +667,8 @@
 				200E80C214B4792500D054F4 /* multi_thread_allocator.h */,
 				200E80C314B4792500D054F4 /* MutatorArea.h */,
 				200E80C414B4792500D054F4 /* ObjectAndTime.h */,
-				200E80D114B4792500D054F4 /* OperationInterruptor.h */,
-				200E80D014B4792500D054F4 /* OperationInterruptor.cpp */,
+				200E80D114B4792500D054F4 /* OperationInterrupter.h */,
+				200E80D014B4792500D054F4 /* OperationInterrupter.cpp */,
 				200E80D214B4792500D054F4 /* ParallelForEach.h */,
 				200E80DB14B4792500D054F4 /* PlatformDestination.h */,
 				200E80DA14B4792500D054F4 /* PlatformDestination.cpp */,
@@ -965,7 +965,7 @@
 				200E813E14B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp in Sources */,
 				200E813F14B4792500D054F4 /* ObjectList_inst_Normal.cpp in Sources */,
 				200E814014B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp in Sources */,
-				200E814114B4792500D054F4 /* OperationInterruptor.cpp in Sources */,
+				200E814114B4792500D054F4 /* OperationInterrupter.cpp in Sources */,
 				200E814214B4792500D054F4 /* PhysicsEngine_test.cpp in Sources */,
 				200E814314B4792500D054F4 /* PhysicsEngine.cpp in Sources */,
 				200E814414B4792500D054F4 /* PhysicsEngineUtilities.cpp in Sources */,
