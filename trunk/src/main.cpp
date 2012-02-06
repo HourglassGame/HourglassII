@@ -108,8 +108,8 @@ namespace {
         hg::InputList inputList_;
     };
 
-    hg::TimeEngine createTimeEngine() {
-        return hg::TimeEngine(hg::loadLevelFromFile("level.lua"));
+    hg::TimeEngine createTimeEngine(/*hg::OperationInterrupter& interrupter*/) {
+        return hg::TimeEngine(hg::loadLevelFromFile("level.lua"/*, interrupter*/)/*, interrupter*/);
     }
 }
 

@@ -9,6 +9,7 @@
 #include "Environment.h"
 #include "multi_thread_allocator.h"
 #include "FrameView.h"
+#include "OperationInterrupter.h"
 
 #include <vector>
 #include "mt/boost/container/map.hpp"
@@ -74,7 +75,8 @@ public:
     PhysicsEngine::PhysicsReturnT executeFrame(
         ObjectPtrList<Normal> const& arrivals,
         Frame* frame,
-        std::vector<InputList> const& playerInput) const;
+        std::vector<InputList> const& playerInput/*,
+        OperationInterrupter& interrupter*/) const;
 private:
     Environment env_;
     TriggerSystem triggerSystem_;

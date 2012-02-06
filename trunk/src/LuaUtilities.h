@@ -12,7 +12,7 @@
 #include "TriggerSystem.h"
 #include "DirectLuaTriggerSystem.h"
 #include "unique_ptr.h"
-#include "OperationInterruptor.h"
+#include "OperationInterrupter.h"
 
 //Miscelaneous things related to lua that are useful in multiple places
 //Should be replaced by a more extensible and cohesive model eventually

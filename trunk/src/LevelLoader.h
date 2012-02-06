@@ -1,7 +1,7 @@
 #ifndef HG_LEVEL_LOADER_H
 #define HG_LEVEL_LOADER_H
 #include "Level.h"
-#include "OperationInterruptor.h"
+#include "OperationInterrupter.h"
 #include <string>
 namespace hg {
 Level loadLevelFromFile(
