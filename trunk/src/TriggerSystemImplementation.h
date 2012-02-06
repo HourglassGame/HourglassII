@@ -31,26 +31,31 @@ class TriggerFrameStateImplementation
             Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals/*,
+            OperationInterrupter& interrupter*/) = 0;
     
-    virtual bool shouldArrive(Guy const& potentialArriver) = 0;
-    virtual bool shouldArrive(Box const& potentialArriver) = 0;
+    virtual bool shouldArrive(Guy const& potentialArriver/*,OperationInterrupter& interrupter*/) = 0;
+    virtual bool shouldArrive(Box const& potentialArriver/*,OperationInterrupter& interrupter*/) = 0;
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter,
-        bool porterActionedPortal) = 0;
+        bool porterActionedPortal/*,
+        OperationInterrupter& interrupter*/) = 0;
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Box const& potentialPorter,
-        bool porterActionedPortal) = 0;
+        bool porterActionedPortal/*,
+        OperationInterrupter& interrupter*/) = 0;
     
     virtual boost::optional<Guy> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Guy const& objectToManipulate) = 0;
+        Guy const& objectToManipulate/*,
+        OperationInterrupter& interrupter*/) = 0;
     virtual boost::optional<Box> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Box const& objectToManipulate) = 0;
+        Box const& objectToManipulate/*,
+        OperationInterrupter& interrupter*/) = 0;
 
     struct DepartureInformation {
         DepartureInformation(
@@ -70,7 +75,8 @@ class TriggerFrameStateImplementation
 
     virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame) = 0;
+        Frame* currentFrame/*,
+        OperationInterrupter& interrupter*/) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
 };
@@ -87,38 +93,42 @@ class TriggerFrameState
         Frame const* currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals/*,
+            OperationInterrupter& interrupter*/)
     {
-        return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
+        return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals/*, interrupter*/);
     }
     template<typename ObjectT>
-    bool shouldArrive(ObjectT const& potentialArriver)
+    bool shouldArrive(ObjectT const& potentialArriver/*,OperationInterrupter& interrupter*/)
     {
-        return impl_->shouldArrive(potentialArriver);
+        return impl_->shouldArrive(potentialArriver/*, interrupter*/);
     }
     
     template<typename ObjectT>
     bool shouldPort(
         int responsiblePortalIndex,
         ObjectT const& potentialPorter,
-        bool porterActionedPortal)
+        bool porterActionedPortal/*,
+        OperationInterrupter& interrupter*/)
     {
-        return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
+        return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal/*, interrupter*/);
     }
     
     template<typename ObjectT>
     boost::optional<ObjectT> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        ObjectT const& objectToManipulate)
+        ObjectT const& objectToManipulate/*,
+        OperationInterrupter& interrupter*/)
     {
-        return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate);
+        return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate/*, interrupter*/);
     }
     
     DepartureInformation getDepartureInformation(
             mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-            Frame* currentFrame)
+            Frame* currentFrame/*,
+            OperationInterrupter& interrupter*/)
     {
-        return impl_->getDepartureInformation(departures, currentFrame);
+        return impl_->getDepartureInformation(departures, currentFrame/*, interrupter*/);
     }
 
     //Default constructed TriggerFrameState may not have any functions called on it,
@@ -166,7 +176,7 @@ inline void swap(TriggerFrameState& l, TriggerFrameState& r) { l.swap(r); }
 class TriggerSystemImplementation
 {
     public:
-    virtual TriggerFrameState getFrameState() const = 0;
+    virtual TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const = 0;
     virtual TriggerSystemImplementation* clone() const = 0;
     virtual ~TriggerSystemImplementation(){}
 };

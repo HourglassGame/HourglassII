@@ -131,7 +131,8 @@ PhysicsAffectingStuff
         Frame const* /*currentFrame*/,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const > const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const > const& triggerArrivals/*,
+            OperationInterrupter& interrupter*/)
 {
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers(
         calculateApparentTriggers(triggerSystem.triggerOffsetsAndDefaults, triggerArrivals));
@@ -278,7 +279,8 @@ mt::std::vector<TriggerData>::type
 TriggerFrameStateImplementation::DepartureInformation
     BasicConfiguredTriggerFrameState::getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame)
+        Frame* currentFrame/*,
+        OperationInterrupter& interrupter*/)
 {
     //These are the states that are apparent in the buttonGlitz
     //These are also the states that travel through time to affect
@@ -288,8 +290,6 @@ TriggerFrameStateImplementation::DepartureInformation
     boost::push_back(glitzStore, calculateButtonGlitz(triggerSystem.protoButtons_, buttonStates, buttonStore));
     
     fillButtonTriggers(triggers, triggerSystem.protoButtons_, buttonStates);
-    
-    
     
     return
         DepartureInformation(
