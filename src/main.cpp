@@ -107,10 +107,19 @@ namespace {
         hg::TimeEngine* timeEngine_;
         hg::InputList inputList_;
     };
-
-    hg::TimeEngine createTimeEngine(/*hg::OperationInterrupter& interrupter*/) {
-        return hg::TimeEngine(hg::loadLevelFromFile("level.lua"/*, interrupter*/)/*, interrupter*/);
-    }
+    
+    struct CreateTimeEngine {
+        //boost::result_of support
+        typedef hg::TimeEngine result_type;
+    
+        CreateTimeEngine(/*hg::OperationInterrupter& interrupter*/) /*: interrupter_(&interrupter)*/ {}
+    
+        hg::TimeEngine operator()() const {
+            return hg::TimeEngine(hg::loadLevelFromFile("level.lua"/*, *interrupter_*/)/*, *interrupter_*/);
+        }
+    private:
+        //hg::OperationInterrupter* interrupter_;
+    };
 }
 
 
@@ -156,14 +165,16 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
     hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
 
+    hg::unique_ptr<hg::OperationInterrupter> interrupter(new hg::OperationInterrupter());
+
     boost::unique_future<hg::TimeEngine> futureTimeEngine(
     	enqueue_task(
     		timeEngineTaskQueue,
-    		createTimeEngine));
+    		CreateTimeEngine(/*interrupter*/)));
 
     //timeEngine would be a boost::optional if boost::optional supported r-value refs
     hg::unique_ptr<hg::TimeEngine> timeEngine;
-
+    
     enum {LOADING_LEVEL, RUNNING_LEVEL, AWAITING_INPUT} state(LOADING_LEVEL);
 
     hg::Input input;
@@ -195,6 +206,7 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
                     try {
                         timeEngine = hg::unique_ptr<hg::TimeEngine>(new hg::TimeEngine(futureTimeEngine.get()));
                         input.setTimelineLength(timeEngine->getTimelineLength());
+                        interrupter.reset();
                         state = AWAITING_INPUT;
                     }
                     catch(hg::LuaError const& e) {
@@ -229,10 +241,11 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 					runningFromReplay = false;
 				}
 				saveReplayLog(replayLogOut, inputList);
+                interrupter = hg::unique_ptr<hg::OperationInterrupter>(new hg::OperationInterrupter());
                 futureRunResult =
                     enqueue_task(
                         timeEngineTaskQueue,
-                        RunToNextPlayerFrame(*timeEngine, inputList));
+                        RunToNextPlayerFrame(*timeEngine, inputList/*, *interrupter*/));
 				state = RUNNING_LEVEL;
 				break;
 			}
@@ -252,6 +265,8 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 					switch (event.Type) {
 					case sf::Event::Closed:
 						//TODO - add something which cancels the execution of the time engine
+                        //interrupter->interrupt();
+                        //futureRunResult.wait();
 						app.Close();
 						goto breakmainloop;
 					case sf::Event::KeyPressed:
@@ -262,12 +277,13 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 							currentReplayEnd = replay.end();
 							replayLogOut.close();
 							replayLogOut.open("replayLogOut");
-							//TODO - cancel time engine execution
+                            //interrupter->interrupt();
 							futureRunResult.wait();
+                            interrupter = hg::unique_ptr<hg::OperationInterrupter>(new hg::OperationInterrupter());
 						    futureTimeEngine =
 						    	enqueue_task(
 						    		timeEngineTaskQueue,
-						    		createTimeEngine);
+						    		CreateTimeEngine(/**interrupter*/));
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Load replay
@@ -278,11 +294,13 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 							replayLogOut.close();
 							replayLogOut.open("replayLogOut");
 							//TODO - cancel time engine execution
+                            //interrupter->interrupt();
 							futureRunResult.wait();
+                            interrupter = hg::unique_ptr<hg::OperationInterrupter>(new hg::OperationInterrupter());
 						    futureTimeEngine =
 						    	enqueue_task(
 						    		timeEngineTaskQueue,
-						    		createTimeEngine);
+						    		CreateTimeEngine(/**interrupter*/));
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Interrupt replay and begin Playing
@@ -316,6 +334,7 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 				if (futureRunResult.is_ready()) {
 					try {
 						runStep(*timeEngine, app, inertia, futureRunResult.get());
+                        interrupter.reset();
 					}
 					catch (hg::PlayerVictoryException const&) {
 						std::cout << "Congratulations, a winner is you" << std::endl;

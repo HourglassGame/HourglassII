@@ -9,6 +9,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/move/move.hpp>
 namespace hg {
+class OperationInterrupter;
 class DirectLuaTriggerFrameState :
     public TriggerFrameStateImplementation
 {
@@ -21,37 +22,44 @@ class DirectLuaTriggerFrameState :
                 std::vector<int>
             >
         > const& triggerOffsetsAndDefaults,
-        std::size_t arrivalLocationsSize);
+        std::size_t arrivalLocationsSize/*,
+        OperationInterrupter& interrupter*/);
     
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
             Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals/*
+            ,OperationInterrupter& interrupter*/);
     
-    virtual bool shouldArrive(Guy const& potentialArriver);
-    virtual bool shouldArrive(Box const& potentialArriver);
+    virtual bool shouldArrive(Guy const& potentialArriver/*,OperationInterrupter& interrupter*/);
+    virtual bool shouldArrive(Box const& potentialArriver/*,OperationInterrupter& interrupter*/);
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter,
-        bool porterActionedPortal);
+        bool porterActionedPortal/*,
+        OperationInterrupter& interrupter*/);
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Box const& potentialPorter,
-        bool porterActionedPortal);
+        bool porterActionedPortal/*,
+        OperationInterrupter& interrupter*/);
     
     virtual boost::optional<Guy> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Guy const& objectToManipulate);
+        Guy const& objectToManipulate/*,
+        OperationInterrupter& interrupter*/);
     virtual boost::optional<Box> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Box const& objectToManipulate);
+        Box const& objectToManipulate/*,
+        OperationInterrupter& interrupter*/);
     
     virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame);
+        Frame* currentFrame/*,
+        OperationInterrupter& interrupter*/);
     virtual ~DirectLuaTriggerFrameState();
 private:
     LuaState& L_;
@@ -145,7 +153,7 @@ public:
                 >
         > const& triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
-    virtual TriggerFrameState getFrameState() const;
+    virtual TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const;
     virtual TriggerSystemImplementation* clone() const
     {
         return new DirectLuaTriggerSystem(*this);

@@ -37,7 +37,7 @@ public:
         impl_.swap(other.impl_);
     }
     
-    TriggerFrameState getFrameState() const
+    TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const
     {
         return impl_.get().getFrameState();
     }

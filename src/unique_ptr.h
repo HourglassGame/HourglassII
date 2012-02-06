@@ -65,7 +65,7 @@ public:
     }
     void reset(T* p = 0)
     {
-        checked_delete(ptr_);
+        boost::checked_delete(ptr_);
         ptr_ = p;
     }
     void swap(unique_ptr& u)
