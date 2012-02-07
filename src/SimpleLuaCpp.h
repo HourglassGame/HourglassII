@@ -11,9 +11,7 @@
 namespace hg {
 inline int panic (lua_State* L) {
     //Check whether this is a memory allocation error
-    void* allocator_ud;
-    lua_getallocf(L, &allocator_ud);
-    LuaUserData& ud(*static_cast<LuaUserData*>(allocator_ud));
+    LuaUserData& ud(getUserData(L));
     if (ud.is_out_of_memory) {
         throw std::bad_alloc();
     }

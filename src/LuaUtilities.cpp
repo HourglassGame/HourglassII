@@ -233,18 +233,18 @@ void sandboxFunction(lua_State* L, int index)
 struct InterruptLua {
     InterruptLua(lua_State* L) :L_(L) {}
     void operator()() const {
-        void* ud;
-        lua_getallocf(L_, &ud);
-        LuaUserData& actual_ud(*static_cast<LuaUserData*>(ud));
-        actual_ud.is_interrupted = true;
+        getUserData(L_).is_interrupted = true;
     }
 private:
     lua_State* L_;
 };
 
-static void interruption_hook(lua_State *L, lua_Debug *ar)
+static void interruption_hook(lua_State* L, lua_Debug*)
 {
-    
+    if (getUserData(L).is_interrupted) {
+        lua_pushnil(L);
+        lua_error(L);
+    }
 }
 
 //OperationInterrupter::FunctionHandle
