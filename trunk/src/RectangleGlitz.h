@@ -37,8 +37,8 @@ public:
         }
         return x_ < actual_right.x_;
     }
-    virtual bool operator==(GlitzImplementation const& other) const {
-        RectangleGlitz const& actual_other(*boost::polymorphic_downcast<RectangleGlitz const*>(&other));
+    virtual bool operator==(GlitzImplementation const& o) const {
+        RectangleGlitz const& actual_other(*boost::polymorphic_downcast<RectangleGlitz const*>(&o));
         return x_ == actual_other.x_
             && y_ == actual_other.y_
             && width_ == actual_other.width_

@@ -77,8 +77,8 @@ private:
     //larger than this, it is an error in the script and will be detected as such.
     std::size_t arrivalLocationsSize_;
 
-    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState& other);
-    DirectLuaTriggerFrameState& operator=(DirectLuaTriggerFrameState& other);
+    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState& o);
+    DirectLuaTriggerFrameState& operator=(DirectLuaTriggerFrameState& o);
 };
 
 
@@ -106,14 +106,14 @@ public:
         //nothing to do.
     	return *this;
     }
-    lazy_ptr(BOOST_RV_REF(lazy_ptr) other) :
+    lazy_ptr(BOOST_RV_REF(lazy_ptr) o) :
     	ptr_(0)
     {
-    	boost::swap(ptr_, other.ptr_);
+    	boost::swap(ptr_, o.ptr_);
     }
-    lazy_ptr& operator=(BOOST_RV_REF(lazy_ptr) other)
+    lazy_ptr& operator=(BOOST_RV_REF(lazy_ptr) o)
     {
-    	boost::swap(ptr_, other.ptr_);
+    	boost::swap(ptr_, o.ptr_);
     	return *this;
     }
     ~lazy_ptr()

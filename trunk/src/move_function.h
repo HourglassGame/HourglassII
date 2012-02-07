@@ -63,15 +63,35 @@ struct function_base<void()>
 };
 
 template<typename F>
-struct function_obj : function_base<void()>
+struct move_function_obj : function_base<void()>
 {
-    function_obj(BOOST_RV_REF(F) f) :
+    move_function_obj(BOOST_RV_REF(F) f) :
     	f_(boost::move(f))
     {
     }
-    function_obj& operator=(BOOST_RV_REF(F) f)
+    move_function_obj& operator=(BOOST_RV_REF(F) f)
     {
         f_(boost::move(f));
+        return *this;
+    }
+    virtual void operator()()
+    {
+        f_();
+    }
+private:
+    F f_;
+};
+
+template<typename F>
+struct function_obj : function_base<void()>
+{
+    function_obj(F const& f) :
+    	f_(f)
+    {
+    }
+    function_obj& operator=(F const& f)
+    {
+        f_(f);
         return *this;
     }
     virtual void operator()()
@@ -98,13 +118,13 @@ class move_function<R(ArgTypes...)>
 {
 public:
 	move_function() : f_() {}
-	move_function(BOOST_RV_REF(move_function) other) :
-        f_(boost::move(other.f_))
+	move_function(BOOST_RV_REF(move_function) o) :
+        f_(boost::move(o.f_))
     {
     }
-    move_function<R(ArgTypes...)>& operator=(BOOST_RV_REF(move_function) other)
+    move_function<R(ArgTypes...)>& operator=(BOOST_RV_REF(move_function) o)
     {
-        f_ = boost::move(other.f_);
+        f_ = boost::move(o.f_);
         return *this;
     }
     template<typename F>
@@ -132,27 +152,46 @@ class move_function<void()>
 {
 public:
 	move_function() : f_() {}
-	move_function(BOOST_RV_REF(move_function) other) :
-        f_(boost::move(other.f_))
+	move_function(BOOST_RV_REF(move_function) o) :
+        f_(boost::move(o.f_))
     {
     }
-    move_function<void()>& operator=(BOOST_RV_REF(move_function) other)
+    move_function<void()>& operator=(BOOST_RV_REF(move_function) o)
     {
-        f_ = boost::move(other.f_);
+        f_ = boost::move(o.f_);
         return *this;
     }
+    
     template<typename F>
-    move_function(BOOST_RV_REF(F) f) :
-        f_(new function::detail::function_obj<F>(boost::move(f)))
+    move_function(BOOST_RV_REF(F) f, typename boost::enable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
+        f_(new function::detail::move_function_obj<F>(boost::move(f)))
     {
     }
+    
     template<typename F>
-    move_function<void()>& operator=(BOOST_RV_REF(F) f)
+    typename boost::enable_if<boost::has_move_emulation_enabled<F>, move_function<void()>&>::type
+    operator=(BOOST_RV_REF(F) f)
     {
         f_ = hg::unique_ptr<function::detail::function_base<void()> >(
-            new function::detail::function_obj<F>(boost::move(f)));
+            new function::detail::move_function_obj<F>(boost::move(f)));
         return *this;
     }
+    
+    template<typename F>
+    move_function(F f, typename boost::disable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
+        f_(new function::detail::function_obj<F>(f))
+    {
+    }
+    
+    template<typename F>
+    typename boost::disable_if<boost::has_move_emulation_enabled<F>, move_function<void()>&>::type
+    operator=(F f)
+    {
+        f_ = hg::unique_ptr<function::detail::function_base<void()> >(
+            new function::detail::function_obj<F>(f));
+        return *this;
+    }
+    
     void operator()() const {
         (*f_)();
     }
@@ -168,7 +207,6 @@ public:
     
 private:
     hg::unique_ptr<function::detail::function_base<void()> > f_;
-
     BOOST_MOVABLE_BUT_NOT_COPYABLE(move_function)
 };
 } //namespace hg

@@ -19,10 +19,10 @@ TimeEngine::TimeEngine(BOOST_RV_REF(Level) level/*, OperationInterrupter& interr
 {
 }
 
-void TimeEngine::swap(TimeEngine& other) {
-    boost::swap(speedOfTime_, other.speedOfTime_);
-    boost::swap(worldState_, other.worldState_);
-    boost::swap(wall_, other.wall_);
+void TimeEngine::swap(TimeEngine& o) {
+    boost::swap(speedOfTime_, o.speedOfTime_);
+    boost::swap(worldState_, o.worldState_);
+    boost::swap(wall_, o.wall_);
 }
 
 TimeEngine::RunResult

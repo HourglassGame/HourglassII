@@ -26,29 +26,29 @@ public:
     {
         assert(obj);
     }
-    clone_ptr(clone_ptr const& other) :
+    clone_ptr(clone_ptr const& o) :
         CloneManager(),
-        obj(other.obj?CloneManager::new_clone(*other.obj):0)
+        obj(o.obj?CloneManager::new_clone(*o.obj):0)
     {
     }
-    clone_ptr& operator=(BOOST_COPY_ASSIGN_REF(clone_ptr) other)
+    clone_ptr& operator=(BOOST_COPY_ASSIGN_REF(clone_ptr) o)
     {
         //Forward to move assignment operator
-        return *this = clone_ptr(other);
+        return *this = clone_ptr(o);
     }
-    clone_ptr(BOOST_RV_REF(clone_ptr) other) :
-    	obj(other.obj), CloneManager(boost::move(static_cast<CloneManager&>(other)))
+    clone_ptr(BOOST_RV_REF(clone_ptr) o) :
+    	obj(o.obj), CloneManager(boost::move(static_cast<CloneManager&>(o)))
     {
-    	other.obj = 0;
+    	o.obj = 0;
     }
-    clone_ptr& operator=(BOOST_RV_REF(clone_ptr) other)
+    clone_ptr& operator=(BOOST_RV_REF(clone_ptr) o)
 	{
-		swap(other);
+		swap(o);
 		return *this;
 	}
-    void swap(clone_ptr& other) {
-        boost::swap(obj, other.obj);
-        boost::swap(static_cast<CloneManager&>(*this), static_cast<CloneManager&>(other));
+    void swap(clone_ptr& o) {
+        boost::swap(obj, o.obj);
+        boost::swap(static_cast<CloneManager&>(*this), static_cast<CloneManager&>(o));
     }
     ~clone_ptr() {
         CloneManager::delete_clone(obj);

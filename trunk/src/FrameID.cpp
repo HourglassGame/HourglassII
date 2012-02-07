@@ -48,15 +48,15 @@ FrameID FrameID::arbitraryFrameInUniverse(std::size_t frameNumber) const
         FrameID(frameNumber, universeID_) : FrameID();
 }
 
-bool FrameID::operator==(const FrameID& other) const {
-    return frame_ == other.frame_ && universeID_ == other.universeID_;
+bool FrameID::operator==(const FrameID& o) const {
+    return frame_ == o.frame_ && universeID_ == o.universeID_;
 }
 
-bool FrameID::operator<(const FrameID& other) const {
+bool FrameID::operator<(const FrameID& o) const {
     return
-    universeID_ == other.universeID_ ?
-        frame_ < other.frame_ :
-        universeID_ < other.universeID_;
+    universeID_ == o.universeID_ ?
+        frame_ < o.frame_ :
+        universeID_ < o.universeID_;
 }
 bool FrameID::isValidFrame() const {
     return

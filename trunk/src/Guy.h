@@ -31,7 +31,7 @@ public:
         
         TimeDirection timeDirection);
 
-    Guy(const Guy& other, TimeDirection nTimeDirection);
+    Guy(const Guy& o, TimeDirection nTimeDirection);
     
     std::size_t getIndex() const { return index_; }
     int getX()      const { return x_; }
@@ -59,7 +59,7 @@ public:
         getTimeDirection() const { return timeDirection_; }
 
 
-    bool operator==(const Guy& other) const;
+    bool operator==(const Guy& o) const;
     bool operator<(const Guy& second) const;
     
 private:
@@ -118,8 +118,8 @@ public:
     TimeDirection
         getTimeDirection() const { return guy_->getTimeDirection(); }
 
-    bool operator==(GuyConstPtr const& other) const { return *guy_ == *other.guy_; }
-    bool operator<(GuyConstPtr const& other) const { return *guy_ < *other.guy_; }
+    bool operator==(GuyConstPtr const& o) const { return *guy_ == *o.guy_; }
+    bool operator<(GuyConstPtr const& o) const { return *guy_ < *o.guy_; }
 private:
     Guy const* guy_;
 };

@@ -26,26 +26,26 @@ public:
         Environment const& env,
         TriggerSystem const& newTriggerSystem);
     
-    PhysicsEngine(PhysicsEngine const& other) :
-        env_(other.env_),
-        triggerSystem_(other.triggerSystem_)
+    PhysicsEngine(PhysicsEngine const& o) :
+        env_(o.env_),
+        triggerSystem_(o.triggerSystem_)
     {
     }
-    PhysicsEngine& operator=(BOOST_COPY_ASSIGN_REF(PhysicsEngine) other)
+    PhysicsEngine& operator=(BOOST_COPY_ASSIGN_REF(PhysicsEngine) o)
     {
-        env_ = other.env_;
-        triggerSystem_ = other.triggerSystem_;
+        env_ = o.env_;
+        triggerSystem_ = o.triggerSystem_;
         return *this;
     }
     
-    PhysicsEngine(BOOST_RV_REF(PhysicsEngine) other) :
-        env_(boost::move(other.env_)),
-        triggerSystem_(boost::move(other.triggerSystem_))
+    PhysicsEngine(BOOST_RV_REF(PhysicsEngine) o) :
+        env_(boost::move(o.env_)),
+        triggerSystem_(boost::move(o.triggerSystem_))
     {}
-    PhysicsEngine& operator=(BOOST_RV_REF(PhysicsEngine) other)
+    PhysicsEngine& operator=(BOOST_RV_REF(PhysicsEngine) o)
     {
-        env_ = boost::move(other.env_);
-        triggerSystem_ = boost::move(other.triggerSystem_);
+        env_ = boost::move(o.env_);
+        triggerSystem_ = boost::move(o.triggerSystem_);
         return *this;
     }
     typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;

@@ -24,10 +24,10 @@ class ObjectList : boost::equality_comparable<ObjectList<ListTypes> >
 {
 public:
     ObjectList();
-    ObjectList(ObjectList const& other);
-    ObjectList& operator=(BOOST_COPY_ASSIGN_REF(ObjectList) other);
-    ObjectList(BOOST_RV_REF(ObjectList) other);
-    ObjectList& operator=(BOOST_RV_REF(ObjectList) other);
+    ObjectList(ObjectList const& o);
+    ObjectList& operator=(BOOST_COPY_ASSIGN_REF(ObjectList) o);
+    ObjectList(BOOST_RV_REF(ObjectList) o);
+    ObjectList& operator=(BOOST_RV_REF(ObjectList) o);
     
     template<typename ObjectT>
     typename vector_of<ObjectT>::type const& getList() const;
@@ -38,13 +38,13 @@ public:
     template<typename ObjectRangeT>
     void addRange(ObjectRangeT const& toAdd);
 
-    void add(ObjectList const& other);
+    void add(ObjectList const& o);
     //MUST CALL this to make lists sorted (required for operator==)
     void sort();
 
-    void swap(ObjectList& other);
+    void swap(ObjectList& o);
 
-    bool operator==(ObjectList const& other) const;
+    bool operator==(ObjectList const& o) const;
     bool isEmpty() const;
 private:
     friend class ObjectPtrList<ListTypes>;

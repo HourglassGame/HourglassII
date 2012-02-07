@@ -17,14 +17,14 @@ std::size_t UniverseID::timelineLength() const
     return timelineLength_;
 }
 
-bool UniverseID::operator==(UniverseID const& other) const
+bool UniverseID::operator==(UniverseID const& o) const
 {
-    return timelineLength_ == other.timelineLength_;
+    return timelineLength_ == o.timelineLength_;
 }
 
-bool UniverseID::operator<(UniverseID const& other) const
+bool UniverseID::operator<(UniverseID const& o) const
 {
-    return timelineLength_ < other.timelineLength_;
+    return timelineLength_ < o.timelineLength_;
 }
 
 FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction)

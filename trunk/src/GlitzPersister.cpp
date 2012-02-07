@@ -22,12 +22,12 @@ Glitz const& GlitzPersister::getReverseGlitz() const
 {
     return reverseGlitz_;
 }
-bool GlitzPersister::operator==(GlitzPersister const& other) const
+bool GlitzPersister::operator==(GlitzPersister const& o) const
 {
-    return forwardsGlitz_ == other.forwardsGlitz_
-        && reverseGlitz_ == other.reverseGlitz_
-        && framesLeft_ == other.framesLeft_
-        && timeDirection_ == other.timeDirection_;
+    return forwardsGlitz_ == o.forwardsGlitz_
+        && reverseGlitz_ == o.reverseGlitz_
+        && framesLeft_ == o.framesLeft_
+        && timeDirection_ == o.timeDirection_;
 }
 bool GlitzPersister::operator<(GlitzPersister const& second) const
 {

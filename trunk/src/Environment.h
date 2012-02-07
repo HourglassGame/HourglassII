@@ -9,27 +9,27 @@ namespace hg {
     //stores the wall (the static environment over which the game is played)
     class Wall {
     public:
-    	Wall(Wall const& other) :
-            segmentSize_(other.segmentSize_),
-            wallmap_(other.wallmap_)
+    	Wall(Wall const& o) :
+            segmentSize_(o.segmentSize_),
+            wallmap_(o.wallmap_)
         {}
-    	Wall& operator=(BOOST_COPY_ASSIGN_REF(Wall) other)
+    	Wall& operator=(BOOST_COPY_ASSIGN_REF(Wall) o)
         {
-            segmentSize_ = other.segmentSize_;
-            wallmap_ = other.wallmap_;
+            segmentSize_ = o.segmentSize_;
+            wallmap_ = o.wallmap_;
             return *this;
         }
-    	Wall(BOOST_RV_REF(Wall) other) :
-    		segmentSize_(boost::move(other.segmentSize_)),
-    		wallmap_(boost::move(other.wallmap_))
+    	Wall(BOOST_RV_REF(Wall) o) :
+    		segmentSize_(boost::move(o.segmentSize_)),
+    		wallmap_(boost::move(o.wallmap_))
     	{
     	}
-    	Wall& operator=(BOOST_RV_REF(Wall) other)
+    	Wall& operator=(BOOST_RV_REF(Wall) o)
     	{
-    		segmentSize_ = boost::move(other.segmentSize_);
+    		segmentSize_ = boost::move(o.segmentSize_);
             //Note that boost::multi_array does not have a no-throw swap or
             //move constructor.
-    		wallmap_ = boost::move(other.wallmap_);
+    		wallmap_ = boost::move(o.wallmap_);
     		return *this;
     	}
         Wall(
@@ -107,24 +107,24 @@ namespace hg {
     //in which the game is played.
     //That is - the wall and gravity
     struct Environment {
-    	Environment(Environment const& other) :
-            wall(other.wall),
-            gravity(other.gravity)
+    	Environment(Environment const& o) :
+            wall(o.wall),
+            gravity(o.gravity)
         {
         }
-    	Environment& operator=(BOOST_COPY_ASSIGN_REF(Environment) other)
+    	Environment& operator=(BOOST_COPY_ASSIGN_REF(Environment) o)
         {
-            wall = other.wall;
-            gravity = other.gravity;
+            wall = o.wall;
+            gravity = o.gravity;
             return *this;
         }
-    	Environment(BOOST_RV_REF(Environment) other) :
-            wall(boost::move(other.wall)),
-            gravity(boost::move(other.gravity))
+    	Environment(BOOST_RV_REF(Environment) o) :
+            wall(boost::move(o.wall)),
+            gravity(boost::move(o.gravity))
         {}
-    	Environment& operator=(BOOST_RV_REF(Environment) other) {
-            wall = boost::move(other.wall);
-            gravity = boost::move(other.gravity);
+    	Environment& operator=(BOOST_RV_REF(Environment) o) {
+            wall = boost::move(o.wall);
+            gravity = boost::move(o.gravity);
             return *this;
         }
         Environment(Wall const& nWall, int nGravity):

@@ -12,16 +12,16 @@
 #include <cassert>
 
 namespace hg {
-Universe::Universe(BOOST_RV_REF(Universe) other) :
-	frames_(boost::move(other.frames_))
+Universe::Universe(BOOST_RV_REF(Universe) o) :
+	frames_(boost::move(o.frames_))
 {
 	assert(!frames_.empty());
 	fixFramesUniverses();
 }
-Universe& Universe::operator=(BOOST_RV_REF(Universe) other)
+Universe& Universe::operator=(BOOST_RV_REF(Universe) o)
 {
-	assert(!other.frames_.empty());
-	frames_ = boost::move(other.frames_);
+	assert(!o.frames_.empty());
+	frames_ = boost::move(o.frames_);
 	fixFramesUniverses();
 	return *this;
 }

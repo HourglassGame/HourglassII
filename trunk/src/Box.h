@@ -14,7 +14,7 @@ public:
         int illegalPortal,
         int arrivalBasis,
         TimeDirection timeDirection);
-    Box(Box const& other, TimeDirection timeDirection);
+    Box(Box const& o, TimeDirection timeDirection);
 
     int getX()      const { return x_; }
     int getY()      const { return y_; }
@@ -28,8 +28,8 @@ public:
     TimeDirection 
         getTimeDirection()    const { return timeDirection_; }
 
-    bool operator==(const Box& other) const;
-    bool operator<(const Box& other) const;
+    bool operator==(const Box& o) const;
+    bool operator<(const Box& o) const;
 
 private:
 
@@ -66,8 +66,8 @@ public:
     TimeDirection 
         getTimeDirection()    const { return box_->getTimeDirection(); }
 
-    bool operator==(const BoxConstPtr& other) const { return *box_ == *other.box_; }
-    bool operator<(const BoxConstPtr& other) const { return *box_ < *other.box_; }
+    bool operator==(const BoxConstPtr& o) const { return *box_ == *o.box_; }
+    bool operator<(const BoxConstPtr& o) const { return *box_ < *o.box_; }
 
 private:
     Box const* box_;

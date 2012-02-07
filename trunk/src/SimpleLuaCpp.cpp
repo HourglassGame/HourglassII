@@ -35,7 +35,7 @@ LuaState::LuaState()
 {
 }
 LuaState::LuaState(new_state_t) 
-    : is_oom(new bool(false)), ptr(lua_newstate(multi_thread_luaalloc, is_oom.get()))
+    : is_oom(new LuaUserData()), ptr(lua_newstate(multi_thread_luaalloc, is_oom.get()))
 {
     if (ptr) {
         lua_atpanic(ptr, &panic);

@@ -1,4 +1,5 @@
 #include "LuaUtilities.h"
+#include "LuaUserData.h"
 #include <fstream>
 #include <iostream>
 #include "lua/lualib.h"
@@ -64,7 +65,7 @@ static char const* safe_functions[] = {
 "ipairs",
 "next",
 "pairs",
-"pcall",
+//"pcall", //pcall and xpcall could catch the interruption error (see makeInterruptable). We need a custom version of them.
 "select",
 "tonumber",
 "tostring",
@@ -227,6 +228,30 @@ void sandboxFunction(lua_State* L, int index)
     int finalStackSize(lua_gettop(L));
 #endif
     assert(initialStackSize == finalStackSize);
+}
+
+struct InterruptLua {
+    InterruptLua(lua_State* L) :L_(L) {}
+    void operator()() const {
+        void* ud;
+        lua_getallocf(L_, &ud);
+        LuaUserData& actual_ud(*static_cast<LuaUserData*>(ud));
+        actual_ud.is_interrupted = true;
+    }
+private:
+    lua_State* L_;
+};
+
+static void interruption_hook(lua_State *L, lua_Debug *ar)
+{
+    
+}
+
+//OperationInterrupter::FunctionHandle
+LuaInterruptionHandle makeInterruptable(lua_State* L, OperationInterrupter& interrupter)
+{
+    lua_sethook(L, interruption_hook, LUA_MASKCOUNT, 1024);
+    return LuaInterruptionHandle(L, interrupter.addInterruptionFunction(move_function<void()>(InterruptLua(L))));
 }
 
 LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string const& chunkName)

@@ -20,7 +20,7 @@ public:
         mt::std::vector<Glitz>::type const& reverseGlitz,
         mt::std::vector<GuyOutputInfo>::type const& guyInformation);
     
-    void swap(FrameView& other);
+    void swap(FrameView& o);
     
     mt::std::vector<Glitz>::type const& getForwardsGlitz() const { return forwardsGlitz_; }
     mt::std::vector<Glitz>::type const& getReverseGlitz() const { return reverseGlitz_; }

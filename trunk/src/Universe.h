@@ -13,8 +13,8 @@ public:
     //creates a top level universe
     explicit Universe(std::size_t timelineLength);
     
-    Universe(BOOST_RV_REF(Universe) other);
-    Universe& operator=(BOOST_RV_REF(Universe) other);
+    Universe(BOOST_RV_REF(Universe) o);
+    Universe& operator=(BOOST_RV_REF(Universe) o);
     
     //Conversion from FrameID to equivalent Frame* within this universe
     //whichFrame must correspond to a frame that could actually 

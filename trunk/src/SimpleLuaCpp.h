@@ -6,14 +6,19 @@
 #include <boost/exception/enable_current_exception.hpp>
 #include "unique_ptr.h"
 #include "LuaError.h"
+#include "LuaUserData.h"
+#include "OperationInterruptedException.h"
 namespace hg {
 inline int panic (lua_State* L) {
     //Check whether this is a memory allocation error
     void* allocator_ud;
     lua_getallocf(L, &allocator_ud);
-    bool is_oom(*static_cast<bool*>(allocator_ud));
-    if (is_oom) {
+    LuaUserData& ud(*static_cast<LuaUserData*>(allocator_ud));
+    if (ud.is_out_of_memory) {
         throw std::bad_alloc();
+    }
+    else if (ud.is_interrupted) {
+        throw boost::enable_current_exception(OperationInterruptedException());
     }
     else {
         throw boost::enable_current_exception(LuaError(L));
@@ -28,22 +33,22 @@ struct LuaState {
     struct new_state_t {};
     LuaState();
     explicit LuaState(new_state_t);
-    LuaState(BOOST_RV_REF(LuaState) other) :
-        is_oom(new bool(false)), ptr(0)
+    LuaState(BOOST_RV_REF(LuaState) o) :
+        is_oom(new LuaUserData()), ptr(0)
     {
-        swap(other);
+        swap(o);
     }
-    LuaState& operator=(BOOST_RV_REF(LuaState) other)
+    LuaState& operator=(BOOST_RV_REF(LuaState) o)
     {
-        swap(other);
+        swap(o);
         return *this;
     }
-    void swap(LuaState& other) {
-        boost::swap(is_oom, other.is_oom);
-        boost::swap(ptr, other.ptr);
+    void swap(LuaState& o) {
+        boost::swap(is_oom, o.is_oom);
+        boost::swap(ptr, o.ptr);
     }
     ~LuaState();
-    unique_ptr<bool> is_oom;
+    unique_ptr<LuaUserData> is_oom;
     lua_State* ptr;
 private:
     BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)

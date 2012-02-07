@@ -67,5 +67,6 @@ private:
     //the specified interface, it is not safe to just use them for this).
     tbb::spin_mutex mutex_;
 };
+inline void swap(OperationInterrupter::FunctionHandle& l, OperationInterrupter::FunctionHandle& r) { l.swap(r); }
 }//namespace hg
 #endif //HG_OPERATION_interrupter_H

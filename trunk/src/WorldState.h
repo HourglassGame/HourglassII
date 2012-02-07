@@ -35,27 +35,27 @@ public:
         BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
         OperationInterrupter& interrupter*/);
 
-    void swap(WorldState& other);
+    void swap(WorldState& o);
 
-    WorldState(BOOST_RV_REF(WorldState) other) :
-        timeline_(boost::move(other.timeline_)),
-        playerInput_(boost::move(other.playerInput_)),
-        frameUpdateSet_(boost::move(other.frameUpdateSet_)),
-        physics_(boost::move(other.physics_)),
-        nextPlayerFrames_(boost::move(other.nextPlayerFrames_)),
-        currentPlayerFrames_(boost::move(other.currentPlayerFrames_)),
-        currentWinFrames_(boost::move(other.currentWinFrames_))
+    WorldState(BOOST_RV_REF(WorldState) o) :
+        timeline_(boost::move(o.timeline_)),
+        playerInput_(boost::move(o.playerInput_)),
+        frameUpdateSet_(boost::move(o.frameUpdateSet_)),
+        physics_(boost::move(o.physics_)),
+        nextPlayerFrames_(boost::move(o.nextPlayerFrames_)),
+        currentPlayerFrames_(boost::move(o.currentPlayerFrames_)),
+        currentWinFrames_(boost::move(o.currentWinFrames_))
     {}
      
-    WorldState& operator=(BOOST_RV_REF(WorldState) other)
+    WorldState& operator=(BOOST_RV_REF(WorldState) o)
     {
-        timeline_ = boost::move(other.timeline_);
-        playerInput_ = boost::move(other.playerInput_);
-        frameUpdateSet_ = boost::move(other.frameUpdateSet_);
-        physics_ = boost::move(other.physics_);
-        nextPlayerFrames_ = boost::move(other.nextPlayerFrames_);
-        currentPlayerFrames_ = boost::move(other.currentPlayerFrames_);
-        currentWinFrames_ = boost::move(other.currentWinFrames_);
+        timeline_ = boost::move(o.timeline_);
+        playerInput_ = boost::move(o.playerInput_);
+        frameUpdateSet_ = boost::move(o.frameUpdateSet_);
+        physics_ = boost::move(o.physics_);
+        nextPlayerFrames_ = boost::move(o.nextPlayerFrames_);
+        currentPlayerFrames_ = boost::move(o.currentPlayerFrames_);
+        currentWinFrames_ = boost::move(o.currentWinFrames_);
         return *this;
     }
 

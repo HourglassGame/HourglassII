@@ -17,10 +17,10 @@ FrameView::FrameView(
 {
 }
 
-void FrameView::swap(FrameView& other)
+void FrameView::swap(FrameView& o)
 {
-    boost::swap(forwardsGlitz_, other.forwardsGlitz_);
-    boost::swap(reverseGlitz_, other.reverseGlitz_);
-    boost::swap(guyInformation_, other.guyInformation_);
+    boost::swap(forwardsGlitz_, o.forwardsGlitz_);
+    boost::swap(reverseGlitz_, o.reverseGlitz_);
+    boost::swap(guyInformation_, o.guyInformation_);
 }
 }//namespace hg

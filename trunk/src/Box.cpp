@@ -17,52 +17,52 @@ Box::Box(
 {
 }
 
-Box::Box(Box const& other, hg::TimeDirection timeDirection) :
-        x_(other.x_), y_(other.y_),
-        xspeed_(other.xspeed_), yspeed_(other.yspeed_),
-        size_(other.size_),
-        illegalPortal_(other.illegalPortal_),
-        arrivalBasis_(other.arrivalBasis_),
+Box::Box(Box const& o, hg::TimeDirection timeDirection) :
+        x_(o.x_), y_(o.y_),
+        xspeed_(o.xspeed_), yspeed_(o.yspeed_),
+        size_(o.size_),
+        illegalPortal_(o.illegalPortal_),
+        arrivalBasis_(o.arrivalBasis_),
         timeDirection_(timeDirection)
 {
 }
 
-bool Box::operator==(Box const& other) const
+bool Box::operator==(Box const& o) const
 {
-    return x_ == other.x_
-        && y_ == other.y_
-        && xspeed_ == other.xspeed_
-        && yspeed_ == other.yspeed_
-        && size_ == other.size_
-        && illegalPortal_ == other.illegalPortal_
-        && arrivalBasis_ == other.arrivalBasis_
-        && timeDirection_ == other.timeDirection_;
+    return x_ == o.x_
+        && y_ == o.y_
+        && xspeed_ == o.xspeed_
+        && yspeed_ == o.yspeed_
+        && size_ == o.size_
+        && illegalPortal_ == o.illegalPortal_
+        && arrivalBasis_ == o.arrivalBasis_
+        && timeDirection_ == o.timeDirection_;
 }
 
-bool Box::operator<(const Box& other) const
+bool Box::operator<(const Box& o) const
 {
-    if (x_ == other.x_) {
-        if (y_ == other.y_) {
-            if (xspeed_ == other.xspeed_) {
-                if (yspeed_ == other.yspeed_) {
-                    if (size_ == other.size_) {
-                        if (illegalPortal_ == other.illegalPortal_) {
-                            if (arrivalBasis_ == other.arrivalBasis_) {
-                                return timeDirection_ < other.timeDirection_;
+    if (x_ == o.x_) {
+        if (y_ == o.y_) {
+            if (xspeed_ == o.xspeed_) {
+                if (yspeed_ == o.yspeed_) {
+                    if (size_ == o.size_) {
+                        if (illegalPortal_ == o.illegalPortal_) {
+                            if (arrivalBasis_ == o.arrivalBasis_) {
+                                return timeDirection_ < o.timeDirection_;
                             }
-                            return arrivalBasis_ < other.arrivalBasis_;
+                            return arrivalBasis_ < o.arrivalBasis_;
                         }
-                        return illegalPortal_ < other.illegalPortal_;
+                        return illegalPortal_ < o.illegalPortal_;
                     }
-                    return size_ < other.size_;
+                    return size_ < o.size_;
                 }
-                return yspeed_ < other.yspeed_;
+                return yspeed_ < o.yspeed_;
             }
-            return xspeed_ < other.xspeed_;
+            return xspeed_ < o.xspeed_;
         }
-        return y_ < other.y_;
+        return y_ < o.y_;
     }
-    return x_ < other.x_;
+    return x_ < o.x_;
 }
 std::ostream& operator<<(std::ostream& str, Box const& b)
 {

@@ -26,19 +26,19 @@ public:
      */
     explicit TimelineState(std::size_t timelineLength);
     
-    TimelineState(BOOST_RV_REF(TimelineState) other) :
-        universe_(boost::move(other.universe_)),
-        permanentDepartures_(boost::move(other.permanentDepartures_))
+    TimelineState(BOOST_RV_REF(TimelineState) o) :
+        universe_(boost::move(o.universe_)),
+        permanentDepartures_(boost::move(o.permanentDepartures_))
     {
     }
-    TimelineState& operator=(BOOST_RV_REF(TimelineState) other)
+    TimelineState& operator=(BOOST_RV_REF(TimelineState) o)
     {
-        universe_ = boost::move(other.universe_);
-        permanentDepartures_ = boost::move(other.permanentDepartures_);
+        universe_ = boost::move(o.universe_);
+        permanentDepartures_ = boost::move(o.permanentDepartures_);
         return *this;
     }
 
-    void swap(TimelineState& other);
+    void swap(TimelineState& o);
     
     /**
      * Updates the timeline with new departures and returns the set of frames
