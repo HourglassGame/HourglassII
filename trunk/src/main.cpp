@@ -102,7 +102,7 @@ namespace {
         typedef hg::TimeEngine::RunResult result_type;
         hg::TimeEngine::RunResult operator()()
         {
-            return timeEngine_->runToNextPlayerFrame(boost::move(inputList_)/*,interrupter*/);
+            return timeEngine_->runToNextPlayerFrame(boost::move(inputList_), *interrupter_);
         }
     private:
         hg::TimeEngine* timeEngine_;
@@ -117,7 +117,7 @@ namespace {
         CreateTimeEngine(hg::OperationInterrupter& interrupter) : interrupter_(&interrupter) {}
     
         hg::TimeEngine operator()() const {
-            return hg::TimeEngine(hg::loadLevelFromFile("level.lua", *interrupter_)/*, *interrupter_*/);
+            return hg::TimeEngine(hg::loadLevelFromFile("level.lua", *interrupter_), *interrupter_);
         }
     private:
         hg::OperationInterrupter* interrupter_;

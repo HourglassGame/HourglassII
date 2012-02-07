@@ -12,9 +12,10 @@
 namespace hg {
 //To identify which asserts are actual asserts, and which are checking results from lua
 #define luaassert assert
-TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
+TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter& interrupter) const
 {
     LuaState& sharedState(luaStates_->get());
+
     if (!sharedState.ptr) {
         sharedState = loadLuaStateFromVector(compiledLuaChunk_, "triggerSystem");
         loadSandboxedLibraries(sharedState.ptr);
@@ -24,7 +25,8 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState() const
 		multi_thread_new<DirectLuaTriggerFrameState>(
 			boost::ref(sharedState),
 			boost::cref(triggerOffsetsAndDefaults_),
-			arrivalLocationsSize_));
+			arrivalLocationsSize_,
+            boost::ref(interrupter)));
 }
 
 DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
@@ -35,13 +37,15 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
             std::vector<int>
         >
     > const& triggerOffsetsAndDefaults,
-    std::size_t arrivalLocationsSize) :
+    std::size_t arrivalLocationsSize,
+    OperationInterrupter& interrupter) :
         L_(sharedState),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
     lua_State* L(L_.ptr);
     LuaStackManager stackSaver(L);
+    LuaInterruptionHandle h(makeInterruptable(L, interrupter));
     luaL_checkstack(L, 1, 0);
     lua_pushvalue(L, -1);
     sandboxFunction(L, -1);
@@ -52,6 +56,7 @@ namespace {
 //interpreted as a Box.
 Box toBox(lua_State* L, std::size_t arrivalLocationsSize)
 {
+    LuaStackManager stack_manager(L);
     luaassert(lua_istable(L, -1) && "a box must be a table");
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
@@ -99,6 +104,7 @@ std::string abilityToString(Ability ability)
 
 PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
 {
+    LuaStackManager stack_manager(L);
     luaassert(lua_istable(L, -1) && "a portal must be a table");
     
     int index(readField<int>(L, "index") - 1);
@@ -115,6 +121,7 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
     
     int destinationIndex(-1);
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, "destinationIndex");
     if (!lua_isnil(L, -1)) {
         destinationIndex = to<int>(L) - 1;
@@ -193,6 +200,7 @@ ArrivalLocation toArrivalLocation(lua_State* L)
 
 unsigned readColourField(lua_State* L, char const* fieldName)
 {
+    LuaStackManager stack_manager(L);
     lua_getfield(L, -1, fieldName);
     unsigned r(readField<int>(L, "r"));
     unsigned g(readField<int>(L, "g"));
@@ -217,6 +225,8 @@ RetardedNotActuallyAGlitzGlitz toGlitz(lua_State* L)
 
 Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocationsSize)
 {
+    LuaStackManager stack_manager(L);
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, fieldName);
     Box retv(toBox(L, arrivalLocationsSize));
     lua_pop(L, 1);
@@ -347,21 +357,26 @@ PhysicsAffectingStuff
 
     LuaStackManager stackSaver(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "calculatePhysicsAffectingStuff");
     luaassert(lua_type(L, -1) == LUA_TFUNCTION);
     //push `frameNumber` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, getFrameNumber(currentFrame));
     //push `triggerArrivals` argument [
+    luaL_checkstack(L, 1, 0);
     lua_createtable(L, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
     int i(0);
     foreach (mt::std::vector<int>::type const& apparentTrigger, apparentTriggers) {
         ++i;
+        luaL_checkstack(L, 1, 0);
         lua_createtable(L, static_cast<int>(apparentTrigger.size()), 0);
         //insert each triggerElement into the table for the particular trigger
         int j(0);
         foreach (int triggerElement, apparentTrigger) {
             ++j;
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, triggerElement);
             lua_rawseti(L, -2, j);
         }
@@ -376,10 +391,12 @@ PhysicsAffectingStuff
     //TODO: better handling of sparsely populated tables.
     
     //read 'additionalBoxes' table:
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, "additionalBoxes");
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "additionalBoxes must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -2);
             retv.additionalBoxes.push_back(toBox(L, static_cast<int>(arrivalLocationsSize_)));
@@ -389,10 +406,12 @@ PhysicsAffectingStuff
     lua_pop(L, 1);
     
     //read 'collisions' table:
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, "collisions");
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "collisions must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -2);
             retv.collisions.push_back(to<Collision>(L));
@@ -402,10 +421,12 @@ PhysicsAffectingStuff
     lua_pop(L, 1);
     
     //read 'portals' table
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, "portals");
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "portals must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -2);
             retv.portals.push_back(toPortal(L, arrivalLocationsSize_));
@@ -415,10 +436,12 @@ PhysicsAffectingStuff
     lua_pop(L, 1);
     
     //read 'mutators' table
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, "mutators");
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "mutators must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -2);
             retv.mutators.push_back(toMutatorArea(L));
@@ -428,10 +451,12 @@ PhysicsAffectingStuff
     lua_pop(L, 1);
     
     //read 'arrivalLocations' table
+    luaL_checkstack(L, 1, 0);
     lua_getfield(L, -1, "arrivalLocations");
     luaassert(lua_istable(L, -1) && "arrivalLocations must be a table");
     for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
         luaassert(end == arrivalLocationsSize_);
+        luaL_checkstack(L, 1, 0);
         lua_pushinteger(L, i);
         lua_gettable(L, -2);
         retv.arrivalLocations.push_back(toArrivalLocation(L));
@@ -441,7 +466,6 @@ PhysicsAffectingStuff
     
     //pop return value
     lua_pop(L, 1);
-    //***** END EXCEPTION FREE REGION *****
     return retv;
 }
 
@@ -449,10 +473,10 @@ PhysicsAffectingStuff
 namespace {
 void pushGuy(lua_State* L, Guy const& guy)
 {
-    lua_checkstack(L, 1);
+    luaL_checkstack(L, 1, 0);
     lua_createtable(L, 0, 17);
-
-    lua_checkstack(L, 1);
+    LuaStackManager stack_manager(L);
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, guy.getIndex());
     lua_setfield(L, -2, "index");
     lua_pushinteger(L, guy.getX());
@@ -485,7 +509,7 @@ void pushGuy(lua_State* L, Guy const& guy)
     lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
     typedef std::pair<Ability const, int> PickupPair;
     foreach (PickupPair const& pickup, guy.getPickups()) {
-        lua_checkstack(L, 2);
+        luaL_checkstack(L, 2, 0);
         lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
         lua_rawset(L, -3);
@@ -498,7 +522,6 @@ void pushGuy(lua_State* L, Guy const& guy)
     lua_pushboolean(L, guy.getBoxCarrying());
     lua_setfield(L, -2, "boxCarrying");
     if (guy.getBoxCarrying()) {
-        lua_checkstack(L, 1);
         lua_pushinteger(L, guy.getBoxCarrySize());
         lua_setfield(L, -2, "boxCarrySize");
         lua_pushstring(L, guy.getBoxCarryDirection() == FORWARDS ? "forwards" : "reverse");
@@ -510,7 +533,10 @@ void pushGuy(lua_State* L, Guy const& guy)
 
 void pushBox(lua_State* L, Box const& box)
 {
+    luaL_checkstack(L, 1, 0);
     lua_createtable(L, 0, 10);
+    LuaStackManager stack_manager(L);
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, box.getX());
     lua_setfield(L, -2, "x");
     lua_pushinteger(L, box.getY());
@@ -544,13 +570,17 @@ void pushBox(lua_State* L, Box const& box)
 //TODO: fix code duplication with box version and portal version
 bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Guy const& potentialXer)
 {
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, functionName);
     luaassert(lua_isfunction(L, -1));
     //push `responsibleXIndex` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, responsibleXIndex + 1);
     //push `potentialX` argument
     pushGuy(L, potentialXer);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "guy");
     lua_setfield(L, -2, "type");
     //call function
@@ -564,13 +594,17 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
 }
 bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Box const& potentialXer)
 {
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, functionName);
     luaassert(lua_isfunction(L, -1));
     //push `responsibleXIndex` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, responsibleXIndex + 1);
     //push `potentialX` argument
     pushBox(L, potentialXer);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "box");
     lua_setfield(L, -2, "type");
     //call function
@@ -589,11 +623,14 @@ bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXI
 bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "shouldArrive");
     luaassert(lua_isfunction(L, -1));
     //push `potentialArriver` argument
     pushGuy(L, potentialArriver);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "guy");
     lua_setfield(L, -2, "type");
     //call function
@@ -608,11 +645,14 @@ bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 bool DirectLuaTriggerFrameState::shouldArrive(Box const& potentialArriver)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "shouldArrive");
     luaassert(lua_isfunction(L, -1));
     //push `potentialArriver` argument
     pushBox(L, potentialArriver);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "box");
     lua_setfield(L, -2, "type");
     //call function
@@ -635,16 +675,21 @@ bool DirectLuaTriggerFrameState::shouldPort(
     bool porterActionedPortal)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "shouldPort");
     luaassert(lua_isfunction(L, -1));
     //push `responsiblePortalIndex` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, responsiblePortalIndex + 1);
     //push `potentialPorter` argument
     pushGuy(L, potentialPorter);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "guy");
     lua_setfield(L, -2, "type");
     //push `porterActionedPortal` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushboolean(L, porterActionedPortal);
     //call function
     lua_call(L, 3, 1);
@@ -661,16 +706,21 @@ bool DirectLuaTriggerFrameState::shouldPort(
     bool porterActionedPortal)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "shouldPort");
     luaassert(lua_isfunction(L, -1));
     //push `responsiblePortalIndex` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushinteger(L, responsiblePortalIndex + 1);
     //push `potentialPorter` argument
     pushBox(L, potentialPorter);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "box");
     lua_setfield(L, -2, "type");
     //push `porterActionedPortal` argument
+    luaL_checkstack(L, 1, 0);
     lua_pushboolean(L, porterActionedPortal);
     //call function
     lua_call(L, 3, 1);
@@ -690,20 +740,25 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     Guy const& objectToManipulate)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "mutateObject");
     luaassert(lua_isfunction(L, -1));
     //push responsibleMutatorIndices argument
+    luaL_checkstack(L, 1, 0);
     lua_createtable(L, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
     foreach (int mutatorIndex, responsibleMutatorIndices) {
         ++i;
+        luaL_checkstack(L, 1, 0);
         lua_pushinteger(L, mutatorIndex);
         lua_rawseti(L, -2, i);
     }
     //push dynamicObject argument
     pushGuy(L, objectToManipulate);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "guy");
     lua_setfield(L, -2, "type");
     //call function
@@ -723,20 +778,25 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     Box const& objectToManipulate)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "mutateObject");
     luaassert(lua_isfunction(L, -1));
     //push responsibleMutatorIndices argument
+    luaL_checkstack(L, 1, 0);
     lua_createtable(L, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
     foreach (int mutatorIndex, responsibleMutatorIndices) {
         ++i;
+        luaL_checkstack(L, 1, 0);
         lua_pushinteger(L, mutatorIndex);
         lua_rawseti(L, -2, i);
     }
     //push dynamicObject argument
     pushBox(L, objectToManipulate);
+    luaL_checkstack(L, 1, 0);
     lua_pushstring(L, "box");
     lua_setfield(L, -2, "type");
     //call function
@@ -757,13 +817,15 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     Frame* currentFrame)
 {
     lua_State* L(L_.ptr);
+    LuaStackManager stack_manager(L);
     //push function to call
+    luaL_checkstack(L, 1, 0);
     lua_getglobal(L, "getDepartureInformation");
     luaassert(lua_isfunction(L, -1));
     //push `departures` argument [
     //TODO find out if sparse arrays count as
     //array elements or non-array elements
-    lua_checkstack(L, 1);
+    luaL_checkstack(L, 1, 0);
     lua_createtable(L, static_cast<int>(departures.size()), 0);
     int i(0);
     foreach (
@@ -771,10 +833,10 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         departures | boost::adaptors::map_values)
     {
         ++i;
-        lua_checkstack(L, 1);
+        luaL_checkstack(L, 1, 0);
         lua_createtable(L, 0, 2);
         {
-            lua_checkstack(L, 1);
+            luaL_checkstack(L, 1, 0);
             lua_createtable(L, static_cast<int>(departureSection.getList<Guy>().size()), 0);
             int j(0);
             foreach (Guy const& guy, departureSection.getList<Guy>()) {
@@ -785,6 +847,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
             lua_setfield(L, -2, "guys");
         }
         {
+            luaL_checkstack(L, 1, 0);
             lua_createtable(L, static_cast<int>(departureSection.getList<Box>().size()), 0);
             int j(0);
             foreach (Box const& box, departureSection.getList<Box>()) {
@@ -814,6 +877,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     */
     mt::std::vector<TriggerData>::type triggers;
     luaassert(lua_istable(L, -4));
+    luaL_checkstack(L, 2, 0);
     lua_pushnil(L);
     while (lua_next(L, -5) != 0) {
         luaassert(lua_isnumber(L, -2));
@@ -821,6 +885,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         mt::std::vector<int>::type value;
         assert(lua_istable(L, -1) && "trigger value must be a table");
         for (std::size_t k(1), end(lua_rawlen(L, -1)); k <= end; ++k) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, k);
             lua_gettable(L, -2);
             assert(lua_isnumber(L, -1));
@@ -861,6 +926,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     if (!lua_isnil(L, -3)) {
         luaassert(lua_istable(L, -3) && "background glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -3)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -4);
             backgroundGlitz.push_back(toGlitz(L));
@@ -874,6 +940,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     if (!lua_isnil(L, -2)) {
         luaassert(lua_istable(L, -2) && "foreground glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -2)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -3);
             foregroundGlitz.push_back(toGlitz(L));
@@ -911,6 +978,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "extra boxes list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+            luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -2);
             newBox.push_back(toObjectAndTimeBox(L, currentFrame, arrivalLocationsSize_));

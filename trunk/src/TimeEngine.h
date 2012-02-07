@@ -72,7 +72,7 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(BOOST_RV_REF(Level) level);
+    explicit TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter& interrupter);
 
     void swap(TimeEngine& o);
 
@@ -82,7 +82,7 @@ public:
      * in which the player had input.
      * Exception Safety: Weak
      */
-    RunResult runToNextPlayerFrame(InputList const& newInputData);
+    RunResult runToNextPlayerFrame(InputList const& newInputData, OperationInterrupter& interrupter);
 
     /**
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame

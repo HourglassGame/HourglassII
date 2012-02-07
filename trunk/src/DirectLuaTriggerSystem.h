@@ -22,8 +22,8 @@ class DirectLuaTriggerFrameState :
                 std::vector<int>
             >
         > const& triggerOffsetsAndDefaults,
-        std::size_t arrivalLocationsSize/*,
-        OperationInterrupter& interrupter*/);
+        std::size_t arrivalLocationsSize,
+        OperationInterrupter& interrupter);
     
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
@@ -153,7 +153,7 @@ public:
                 >
         > const& triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
-    virtual TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const;
+    virtual TriggerFrameState getFrameState(OperationInterrupter& interrupter) const;
     virtual TriggerSystemImplementation* clone() const
     {
         return new DirectLuaTriggerSystem(*this);

@@ -68,7 +68,7 @@ class BasicConfiguredTriggerSystem :
     public TriggerSystemImplementation
 {
     public:
-    virtual TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const {
+    virtual TriggerFrameState getFrameState(OperationInterrupter& /*interrupter*/) const {
     	return
     	    TriggerFrameState(
     	        multi_thread_new<BasicConfiguredTriggerFrameState>(boost::cref(*this)));

@@ -32,8 +32,8 @@ public:
         Guy const& initialGuy,
         FrameID const& guyStartTime,
         BOOST_RV_REF(PhysicsEngine) physics,
-        BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
-        OperationInterrupter& interrupter*/);
+        BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects,
+        OperationInterrupter& interrupter);
 
     void swap(WorldState& o);
 
@@ -65,7 +65,7 @@ public:
      * in exactly one frame and there are no waves.
      * Returns the set of frames that were executed (had different arrivals).
      */
-    FrameUpdateSet executeWorld(/*OperationInterrupter& interrupter*/);
+    FrameUpdateSet executeWorld(OperationInterrupter& interrupter);
 
     /**
      * Stores the given input data, allowing the player to exist for another step.
@@ -87,7 +87,7 @@ public:
 private:
     friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT
-        getDeparturesFromFrame(Frame* frame);
+        getDeparturesFromFrame(Frame* frame, OperationInterrupter& interrupter);
     
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to

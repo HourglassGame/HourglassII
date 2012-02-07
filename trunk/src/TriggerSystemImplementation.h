@@ -13,6 +13,7 @@
 #include "mt/boost/container/vector.hpp"
 #include "mt/boost/container/map.hpp"
 #include "mt/std/map"
+#include "OperationInterrupter.h"
 
 #include <boost/optional.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -176,7 +177,7 @@ inline void swap(TriggerFrameState& l, TriggerFrameState& r) { l.swap(r); }
 class TriggerSystemImplementation
 {
     public:
-    virtual TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const = 0;
+    virtual TriggerFrameState getFrameState(OperationInterrupter& interrupter) const = 0;
     virtual TriggerSystemImplementation* clone() const = 0;
     virtual ~TriggerSystemImplementation(){}
 };
