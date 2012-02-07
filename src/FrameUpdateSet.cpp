@@ -14,26 +14,26 @@ FrameUpdateSet::FrameUpdateSet() :
         updateSet_()
 {
 }
-FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const& other) :
-        isSet_(other.isSet_),
-        updateSet_(other.updateSet_)
+FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const& o) :
+        isSet_(o.isSet_),
+        updateSet_(o.updateSet_)
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) other)
+FrameUpdateSet& FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o)
 {
-    isSet_ = other.isSet_;
-    updateSet_ = other.updateSet_;
+    isSet_ = o.isSet_;
+    updateSet_ = o.updateSet_;
     return *this;
 }
-FrameUpdateSet::FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) other) :
-    isSet_(boost::move(other.isSet_)),
-    updateSet_(boost::move(other.updateSet_))   
+FrameUpdateSet::FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) o) :
+    isSet_(boost::move(o.isSet_)),
+    updateSet_(boost::move(o.updateSet_))   
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) other)
+FrameUpdateSet& FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) o)
 {
-    isSet_ = boost::move(other.isSet_);
-    updateSet_ = boost::move(other.updateSet_);
+    isSet_ = boost::move(o.isSet_);
+    updateSet_ = boost::move(o.updateSet_);
     return *this;
 }
 void FrameUpdateSet::add(Frame* frame)
@@ -42,18 +42,18 @@ void FrameUpdateSet::add(Frame* frame)
     updateSet_.push_back(frame);
     isSet_ = false;
 }
-void FrameUpdateSet::add(FrameUpdateSet const& other)
+void FrameUpdateSet::add(FrameUpdateSet const& o)
 {
     updateSet_.insert(
         updateSet_.end(),
-        other.updateSet_.begin(),
-        other.updateSet_.end());
+        o.updateSet_.begin(),
+        o.updateSet_.end());
     isSet_ = false;
 }
-void FrameUpdateSet::swap(FrameUpdateSet& other)
+void FrameUpdateSet::swap(FrameUpdateSet& o)
 {
-    boost::swap(updateSet_, other.updateSet_);
-    boost::swap(isSet_, other.isSet_);
+    boost::swap(updateSet_, o.updateSet_);
+    boost::swap(isSet_, o.isSet_);
 }
 
 void FrameUpdateSet::make_set() const
@@ -93,10 +93,10 @@ bool FrameUpdateSet::empty() const {
     return updateSet_.empty();
 }
 bool FrameUpdateSet::operator==(
-    FrameUpdateSet const& other)
+    FrameUpdateSet const& o)
 {
     make_set();
-    other.make_set();
-    return updateSet_ == other.updateSet_;
+    o.make_set();
+    return updateSet_ == o.updateSet_;
 }
 }

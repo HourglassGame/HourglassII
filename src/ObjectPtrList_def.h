@@ -37,10 +37,10 @@ struct InsertAddresses
 };
 }//namespace
 template<typename ListTypes>
-void ObjectPtrList<ListTypes>::add(ObjectList<ListTypes> const& other)
+void ObjectPtrList<ListTypes>::add(ObjectList<ListTypes> const& o)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(list_, other.list_), InsertAddresses());
+    n_ary_for_each(vector_tie(list_, o.list_), InsertAddresses());
 }
 //MUST CALL this before calling operator== on this ObjectPtrList<Normal> 
 template<typename ListTypes>
@@ -49,10 +49,10 @@ void ObjectPtrList<ListTypes>::sort()
     boost::fusion::for_each(list_, Sort());
 }
 template<typename ListTypes>
-void ObjectPtrList<ListTypes>::swap(ObjectPtrList<ListTypes>& other)
+void ObjectPtrList<ListTypes>::swap(ObjectPtrList<ListTypes>& o)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(list_, other.list_), Swap());
+    n_ary_for_each(vector_tie(list_, o.list_), Swap());
 }
 template<typename ListTypes>
 void swap(ObjectPtrList<ListTypes>& l, ObjectPtrList<ListTypes>& r)

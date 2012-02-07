@@ -50,16 +50,16 @@ public:
         Frame const* nextPlayerFrame_;
         FrameListList updatedFrames_;
     };
-    TimeEngine(BOOST_RV_REF(TimeEngine) other) :
-        speedOfTime_(boost::move(other.speedOfTime_)),
-        worldState_(boost::move(other.worldState_)),
-        wall_(boost::move(other.wall_))
+    TimeEngine(BOOST_RV_REF(TimeEngine) o) :
+        speedOfTime_(boost::move(o.speedOfTime_)),
+        worldState_(boost::move(o.worldState_)),
+        wall_(boost::move(o.wall_))
     {}
-    TimeEngine& operator=(BOOST_RV_REF(TimeEngine) other)
+    TimeEngine& operator=(BOOST_RV_REF(TimeEngine) o)
     {
-        speedOfTime_ = boost::move(other.speedOfTime_);
-        worldState_ = boost::move(other.worldState_);
-        wall_ = boost::move(other.wall_);
+        speedOfTime_ = boost::move(o.speedOfTime_);
+        worldState_ = boost::move(o.worldState_);
+        wall_ = boost::move(o.wall_);
         return *this;
     }
     /**
@@ -74,7 +74,7 @@ public:
      */
     explicit TimeEngine(BOOST_RV_REF(Level) level);
 
-    void swap(TimeEngine& other);
+    void swap(TimeEngine& o);
 
     /**
      * Takes the new input data and uses that to update the state of the world and returns the current player frame

@@ -11,8 +11,8 @@ public:
     virtual ~GlitzImplementation(){}
 private:
     virtual int order_ranking() const = 0;
-    virtual bool operator<(GlitzImplementation const& other) const = 0;
-    virtual bool operator==(GlitzImplementation const& other) const = 0;
+    virtual bool operator<(GlitzImplementation const& o) const = 0;
+    virtual bool operator==(GlitzImplementation const& o) const = 0;
     friend class Glitz;
 };
 }

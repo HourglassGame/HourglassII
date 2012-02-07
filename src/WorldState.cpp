@@ -68,16 +68,16 @@ WorldState::WorldState(
     }
 }
 
-void WorldState::swap(WorldState& other)
+void WorldState::swap(WorldState& o)
 {
-    boost::swap(timeline_, other.timeline_);
-    boost::swap(playerInput_, other.playerInput_);
-    boost::swap(frameUpdateSet_, other.frameUpdateSet_);
-    boost::swap(physics_, other.physics_);
-    boost::swap(nextPlayerFrames_, other.nextPlayerFrames_);
-    boost::swap(currentPlayerFrames_, other.currentPlayerFrames_);
-    boost::swap(currentWinFrames_, other.currentWinFrames_);
-    //boost::swap(task_group_context_, other.task_group_context_);
+    boost::swap(timeline_, o.timeline_);
+    boost::swap(playerInput_, o.playerInput_);
+    boost::swap(frameUpdateSet_, o.frameUpdateSet_);
+    boost::swap(physics_, o.physics_);
+    boost::swap(nextPlayerFrames_, o.nextPlayerFrames_);
+    boost::swap(currentPlayerFrames_, o.currentPlayerFrames_);
+    boost::swap(currentWinFrames_, o.currentWinFrames_);
+    //boost::swap(task_group_context_, o.task_group_context_);
 }
 
 Frame* WorldState::getFrame(FrameID const& whichFrame)

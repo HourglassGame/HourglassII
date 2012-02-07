@@ -12,32 +12,32 @@ namespace hg {
 class GlitzPersister : boost::totally_ordered<GlitzPersister>
 {
 public:
-    GlitzPersister(GlitzPersister const& other) :
-        forwardsGlitz_(other.forwardsGlitz_),
-        reverseGlitz_(other.reverseGlitz_),
-        framesLeft_(other.framesLeft_),
-        timeDirection_(other.timeDirection_)
+    GlitzPersister(GlitzPersister const& o) :
+        forwardsGlitz_(o.forwardsGlitz_),
+        reverseGlitz_(o.reverseGlitz_),
+        framesLeft_(o.framesLeft_),
+        timeDirection_(o.timeDirection_)
     {}
-    GlitzPersister(BOOST_RV_REF(GlitzPersister) other) :
-        forwardsGlitz_(boost::move(other.forwardsGlitz_)),
-        reverseGlitz_(boost::move(other.reverseGlitz_)),
-        framesLeft_(boost::move(other.framesLeft_)),
-        timeDirection_(boost::move(other.timeDirection_))
+    GlitzPersister(BOOST_RV_REF(GlitzPersister) o) :
+        forwardsGlitz_(boost::move(o.forwardsGlitz_)),
+        reverseGlitz_(boost::move(o.reverseGlitz_)),
+        framesLeft_(boost::move(o.framesLeft_)),
+        timeDirection_(boost::move(o.timeDirection_))
     {}
-    GlitzPersister& operator=(GlitzPersister const& other)
+    GlitzPersister& operator=(GlitzPersister const& o)
     {
-        forwardsGlitz_ = other.forwardsGlitz_;
-        reverseGlitz_ = other.reverseGlitz_;
-        framesLeft_ = other.framesLeft_;
-        timeDirection_ = other.timeDirection_;
+        forwardsGlitz_ = o.forwardsGlitz_;
+        reverseGlitz_ = o.reverseGlitz_;
+        framesLeft_ = o.framesLeft_;
+        timeDirection_ = o.timeDirection_;
         return *this;
     }
-    GlitzPersister& operator=(BOOST_RV_REF(GlitzPersister) other)
+    GlitzPersister& operator=(BOOST_RV_REF(GlitzPersister) o)
     {
-        forwardsGlitz_ = boost::move(other.forwardsGlitz_);
-        reverseGlitz_ = boost::move(other.reverseGlitz_);
-        framesLeft_ = boost::move(other.framesLeft_);
-        timeDirection_ = boost::move(other.timeDirection_);
+        forwardsGlitz_ = boost::move(o.forwardsGlitz_);
+        reverseGlitz_ = boost::move(o.reverseGlitz_);
+        framesLeft_ = boost::move(o.framesLeft_);
+        timeDirection_ = boost::move(o.timeDirection_);
         return *this;
     }
     
@@ -46,7 +46,7 @@ public:
     Glitz const& getForwardsGlitz() const;
     Glitz const& getReverseGlitz() const;
     
-    bool operator==(GlitzPersister const& other) const;
+    bool operator==(GlitzPersister const& o) const;
     bool operator<(GlitzPersister const& second) const;
 private:
     Glitz forwardsGlitz_;
@@ -67,8 +67,8 @@ public:
     Glitz const& getForwardsGlitz() const { return glitzPersister_->getForwardsGlitz(); }
     Glitz const& getReverseGlitz() const { return glitzPersister_->getReverseGlitz(); }
     
-    bool operator==(GlitzPersisterConstPtr const& other) const { return *glitzPersister_ == *other.glitzPersister_; }
-    bool operator<(GlitzPersisterConstPtr const& other) const { return *glitzPersister_ < *other.glitzPersister_; }
+    bool operator==(GlitzPersisterConstPtr const& o) const { return *glitzPersister_ == *o.glitzPersister_; }
+    bool operator<(GlitzPersisterConstPtr const& o) const { return *glitzPersister_ < *o.glitzPersister_; }
 private:
     GlitzPersister const* glitzPersister_;
 };

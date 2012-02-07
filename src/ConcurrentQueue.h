@@ -18,26 +18,26 @@ public:
         cond_(),
         queue_()
     {}
-    ConcurrentQueue(ConcurrentQueue const& other) :
+    ConcurrentQueue(ConcurrentQueue const& o) :
         mutex_(),
         cond_(),
-        queue_(other.queue_)
+        queue_(o.queue_)
     {
     }
-    ConcurrentQueue& operator=(BOOST_COPY_ASSIGN_REF(ConcurrentQueue) other)
+    ConcurrentQueue& operator=(BOOST_COPY_ASSIGN_REF(ConcurrentQueue) o)
     {
-        queue_ = other.queue_;
+        queue_ = o.queue_;
         return *this;
     }
-    ConcurrentQueue(BOOST_RV_REF(ConcurrentQueue) other) :
+    ConcurrentQueue(BOOST_RV_REF(ConcurrentQueue) o) :
         mutex_(),
         cond_(),
-        queue_(boost::move(other.queue_))
+        queue_(boost::move(o.queue_))
     {
     }
-    ConcurrentQueue& operator=(BOOST_RV_REF(ConcurrentQueue) other)
+    ConcurrentQueue& operator=(BOOST_RV_REF(ConcurrentQueue) o)
     {
-        queue_ = boost::move(other.queue_);
+        queue_ = boost::move(o.queue_);
         return *this;
     }
     

@@ -15,7 +15,7 @@ public:
     std::size_t getIndex() const { return index_; }
     mt::std::vector<int>::type const& getValue() const { return value_; }
     
-    bool operator==(const TriggerData& other) const;
+    bool operator==(const TriggerData& o) const;
     bool operator<(const TriggerData& second) const;
     
 private:
@@ -32,8 +32,8 @@ public:
     std::size_t getIndex() const { return triggerData_->getIndex(); }
     mt::std::vector<int>::type const& getValue() const { return triggerData_->getValue(); }
     
-    bool operator==(const TriggerDataConstPtr& other) const { return *triggerData_ < *other.triggerData_; }
-    bool operator<(const TriggerDataConstPtr& other) const { return *triggerData_ < *other.triggerData_;}
+    bool operator==(const TriggerDataConstPtr& o) const { return *triggerData_ < *o.triggerData_; }
+    bool operator<(const TriggerDataConstPtr& o) const { return *triggerData_ < *o.triggerData_;}
     
 private:
     TriggerData const* triggerData_;

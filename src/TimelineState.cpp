@@ -17,10 +17,10 @@ TimelineState::TimelineState(std::size_t timelineLength) :
 {
 }
 
-void TimelineState::swap(TimelineState& other)
+void TimelineState::swap(TimelineState& o)
 {
-    boost::swap(universe_, other.universe_);
-    boost::swap(permanentDepartures_, other.permanentDepartures_);
+    boost::swap(universe_, o.universe_);
+    boost::swap(permanentDepartures_, o.permanentDepartures_);
 }
 
 struct UpdateDeparturesFromFrame

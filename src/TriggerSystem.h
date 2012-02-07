@@ -17,24 +17,24 @@ public:
     TriggerSystem(unique_ptr<TriggerSystemImplementation> impl) :
         impl_(impl.release())
     {}
-    TriggerSystem(TriggerSystem const& other) : impl_(other.impl_) {}
-    TriggerSystem& operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) other)
+    TriggerSystem(TriggerSystem const& o) : impl_(o.impl_) {}
+    TriggerSystem& operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) o)
     {
-        impl_ = other.impl_;
+        impl_ = o.impl_;
         return *this;
     }
-    TriggerSystem(BOOST_RV_REF(TriggerSystem) other) :
-        impl_(boost::move(other.impl_))
+    TriggerSystem(BOOST_RV_REF(TriggerSystem) o) :
+        impl_(boost::move(o.impl_))
     {
     }
-    TriggerSystem& operator=(BOOST_RV_REF(TriggerSystem) other)
+    TriggerSystem& operator=(BOOST_RV_REF(TriggerSystem) o)
     {
-        impl_ = boost::move(other.impl_);
+        impl_ = boost::move(o.impl_);
         return *this;
     }
 
-    void swap(TriggerSystem& other) {
-        impl_.swap(other.impl_);
+    void swap(TriggerSystem& o) {
+        impl_.swap(o.impl_);
     }
     
     TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const

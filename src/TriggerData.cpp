@@ -10,13 +10,13 @@ value_(value)
             && "the max value is reserved for representing invalid/null indices");
 }
 
-bool TriggerData::operator==(const TriggerData& other) const
+bool TriggerData::operator==(const TriggerData& o) const
 {
-    return (index_ == other.index_) && (value_ == other.value_);
+    return (index_ == o.index_) && (value_ == o.value_);
 }
 
-bool TriggerData::operator<(const TriggerData& other) const
+bool TriggerData::operator<(const TriggerData& o) const
 {
-    return index_ < other.index_;
+    return index_ < o.index_;
 }
 }

@@ -11,36 +11,36 @@
 namespace hg {
 class Glitz : boost::totally_ordered<Glitz> {
 public:
-    Glitz(Glitz const& other) :
-        x_(other.x_), y_(other.y_),
-        width_(other.width_), height_(other.height_),
-        colour_(other.colour_),
-        impl_(other.impl_)
+    Glitz(Glitz const& o) :
+        x_(o.x_), y_(o.y_),
+        width_(o.width_), height_(o.height_),
+        colour_(o.colour_),
+        impl_(o.impl_)
     {}
 
-    Glitz(BOOST_RV_REF(Glitz) other) :
-        x_(other.x_), y_(other.y_),
-        width_(other.width_), height_(other.height_),
-        colour_(other.colour_),
-        impl_(boost::move(other.impl_))
+    Glitz(BOOST_RV_REF(Glitz) o) :
+        x_(o.x_), y_(o.y_),
+        width_(o.width_), height_(o.height_),
+        colour_(o.colour_),
+        impl_(boost::move(o.impl_))
     {}
     
-    Glitz& operator=(BOOST_COPY_ASSIGN_REF(Glitz) other) {
-        x_ = other.x_;
-        y_ = other.y_;
-        width_ = other.width_;
-        height_ = other.height_;
-        colour_ = other.colour_;
-        impl_ = other.impl_;
+    Glitz& operator=(BOOST_COPY_ASSIGN_REF(Glitz) o) {
+        x_ = o.x_;
+        y_ = o.y_;
+        width_ = o.width_;
+        height_ = o.height_;
+        colour_ = o.colour_;
+        impl_ = o.impl_;
         return *this;
     }
-    Glitz& operator=(BOOST_RV_REF(Glitz) other) {
-        x_ = boost::move(other.x_);
-        y_ = boost::move(other.y_);
-        width_ = boost::move(other.width_);
-        height_ = boost::move(other.height_);
-        colour_ = boost::move(other.colour_);
-        impl_ = boost::move(other.impl_);
+    Glitz& operator=(BOOST_RV_REF(Glitz) o) {
+        x_ = boost::move(o.x_);
+        y_ = boost::move(o.y_);
+        width_ = boost::move(o.width_);
+        height_ = boost::move(o.height_);
+        colour_ = boost::move(o.colour_);
+        impl_ = boost::move(o.impl_);
         return *this;
     }
 
@@ -86,16 +86,16 @@ public:
         return x_ < right.x_;
         */
     }
-    bool operator==(Glitz const& other) const {
-        return impl_->order_ranking() == other.impl_->order_ranking()
-            && *impl_ == *other.impl_;
+    bool operator==(Glitz const& o) const {
+        return impl_->order_ranking() == o.impl_->order_ranking()
+            && *impl_ == *o.impl_;
         
         /*
-        return x_ == other.x_
-            && y_ == other.y_
-            && width_ == other.width_
-            && height_ == other.height_
-            && colour_ == other.colour_;
+        return x_ == o.x_
+            && y_ == o.y_
+            && width_ == o.width_
+            && height_ == o.height_
+            && colour_ == o.colour_;
             */
     }
 private:

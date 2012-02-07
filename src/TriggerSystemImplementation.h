@@ -147,19 +147,19 @@ class TriggerFrameState
     explicit TriggerFrameState(TriggerFrameStateImplementation* impl) :
         impl_(impl)
     {}
-    TriggerFrameState(BOOST_RV_REF(TriggerFrameState) other) :
+    TriggerFrameState(BOOST_RV_REF(TriggerFrameState) o) :
         impl_(0)
     {
-        swap(other);
+        swap(o);
     }
-    TriggerFrameState& operator=(BOOST_RV_REF(TriggerFrameState) other)
+    TriggerFrameState& operator=(BOOST_RV_REF(TriggerFrameState) o)
     {
-        swap(other);
+        swap(o);
         return *this;
     }
-    void swap(TriggerFrameState& other)
+    void swap(TriggerFrameState& o)
     {
-        boost::swap(impl_, other.impl_);
+        boost::swap(impl_, o.impl_);
     }
     ~TriggerFrameState() {
         if (impl_) {

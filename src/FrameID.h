@@ -39,9 +39,9 @@ public:
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
     FrameID arbitraryFrameInUniverse(std::size_t frameNumber) const;
 
-    bool operator==(const FrameID& other) const;
+    bool operator==(const FrameID& o) const;
 
-    bool operator<(const FrameID& other) const;
+    bool operator<(const FrameID& o) const;
 
     bool isValidFrame() const;
 

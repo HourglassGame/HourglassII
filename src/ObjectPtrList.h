@@ -40,7 +40,7 @@ public:
             typename ConstPtr_of<ObjectT>::type>,
         const typename vector_of<typename ConstPtr_of<ObjectT>::type >::type> getList() const;
 
-    void add(const ObjectList<ListTypes>& other);
+    void add(const ObjectList<ListTypes>& o);
 
     template<typename SinglePassRange>
     void addRange(SinglePassRange const& toAdd);
@@ -48,7 +48,7 @@ public:
     //MUST CALL this to make lists sorted (required for deterministic physics)
     void sort();
 
-    void swap(ObjectPtrList& other);
+    void swap(ObjectPtrList& o);
 
 private:
     typedef typename
