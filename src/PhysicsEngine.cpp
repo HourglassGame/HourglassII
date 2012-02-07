@@ -51,10 +51,10 @@ struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const& arrivals,
     Frame* frame,
-    std::vector<InputList> const& playerInput/*,
-    OperationInterrupter& interrupter*/) const
+    std::vector<InputList> const& playerInput,
+    OperationInterrupter& interrupter) const
 {
-    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState());
+    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState(interrupter));
     
     //{extra boxes, collision, death, portal, pickup, arrival location}    
     PhysicsAffectingStuff const physicsTriggerStuff(

@@ -13,16 +13,16 @@
 namespace hg {
 struct ExecuteFrame
 {
-    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures/*, OperationInterrupter& interrupter*/) :
-        worldState_(&worldState), newDepartures_(&newDepartures)/*, interrupter_(&interrupter)*/
+    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures, OperationInterrupter& interrupter) :
+        worldState_(&worldState), newDepartures_(&newDepartures), interrupter_(&interrupter)
     {}
     void operator()(Frame* frame) const {
-        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame/*, interrupter*/));
+        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame, *interrupter_));
     }
 private:
     WorldState* worldState_;
     DepartureMap* newDepartures_;
-    /*OperationInterrupter* interrupter*/
+    OperationInterrupter* interrupter_;
 };
 
 WorldState::WorldState(
@@ -30,8 +30,8 @@ WorldState::WorldState(
     Guy const& initialGuy,
     FrameID const& guyStartTime,
     BOOST_RV_REF(PhysicsEngine) physics,
-    BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects/*,
-    OperationInterrupter& interrupter*/) :
+    BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects,
+    OperationInterrupter& interrupter) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
@@ -64,7 +64,7 @@ WorldState::WorldState(
     }
     //Run level for a while
     for (std::size_t i(0); i != timelineLength; ++i) {
-        executeWorld(/*interrupter*/);
+        executeWorld(interrupter);
     }
 }
 
@@ -77,7 +77,6 @@ void WorldState::swap(WorldState& o)
     boost::swap(nextPlayerFrames_, o.nextPlayerFrames_);
     boost::swap(currentPlayerFrames_, o.currentPlayerFrames_);
     boost::swap(currentWinFrames_, o.currentWinFrames_);
-    //boost::swap(task_group_context_, o.task_group_context_);
 }
 
 Frame* WorldState::getFrame(FrameID const& whichFrame)
@@ -91,13 +90,13 @@ std::size_t WorldState::getTimelineLength() const
 }
 
 PhysicsEngine::FrameDepartureT
-    WorldState::getDeparturesFromFrame(Frame* frame/*, OperationInterrupter& interrupter*/)
+    WorldState::getDeparturesFromFrame(Frame* frame, OperationInterrupter& interrupter)
 {
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(frame->getPrePhysics(),
                               frame,
-                              playerInput_/*,
-                              interrupter*/));
+                              playerInput_,
+                              interrupter));
     if (retv.currentPlayerFrame) {
         currentPlayerFrames_.add(frame);
     }
@@ -120,15 +119,27 @@ PhysicsEngine::FrameDepartureT
     return retv.departures;
 }
 
-FrameUpdateSet WorldState::executeWorld(/*OperationInterrupter& interrupter*/)
+struct InterruptTaskGroup {
+public:
+    InterruptTaskGroup(tbb::task_group_context& task_group_context):
+        task_group_context_(&task_group_context) {}
+    void operator()() const {
+        task_group_context_->cancel_group_execution();
+    }
+private:
+    tbb::task_group_context* task_group_context_;
+};
+
+FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
 {
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    //tbb::task_group_context group;
-    //interrupter.addInterruptionFunction(InterruptGroup(group));
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures/*, interrupter*/));
+    tbb::task_group_context group;
+    OperationInterrupter::FunctionHandle task_group_interrupt(
+        interrupter.addInterruptionFunction(move_function<void()>(InterruptTaskGroup(group))));
+    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures, interrupter), group);
     //Can `updateWithNewDepartures` take a long period of time?
     //If so, it needs to be given some way of being interrupted. (it needs to get passed the interrupter)
     frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures);

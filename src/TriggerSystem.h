@@ -37,9 +37,9 @@ public:
         impl_.swap(o.impl_);
     }
     
-    TriggerFrameState getFrameState(/*OperationInterrupter& interrupter*/) const
+    TriggerFrameState getFrameState(OperationInterrupter& interrupter) const
     {
-        return impl_.get().getFrameState();
+        return impl_.get().getFrameState(interrupter);
     }
 private:
     clone_ptr<TriggerSystemImplementation> impl_;

@@ -75,8 +75,8 @@ public:
     PhysicsEngine::PhysicsReturnT executeFrame(
         ObjectPtrList<Normal> const& arrivals,
         Frame* frame,
-        std::vector<InputList> const& playerInput/*,
-        OperationInterrupter& interrupter*/) const;
+        std::vector<InputList> const& playerInput,
+        OperationInterrupter& interrupter) const;
 private:
     Environment env_;
     TriggerSystem triggerSystem_;
