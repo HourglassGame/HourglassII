@@ -195,15 +195,20 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
     	switch (state) {
 			case LOADING_LEVEL:
 			{
-            /*
-				Event event;
-				while (app.GetEvent(event))
-				{
-					switch(event.Type) {
-						//TODO - if (closed or canceled) {cancel_loading(); exit();}
+                {
+                    sf::Event event;
+                    while (app.GetEvent(event))
+                    {
+                        switch(event.Type) {
+                        case sf::Event::Closed:
+                            interrupter->interrupt();
+                            futureTimeEngine.wait();
+                            app.Close();
+                            goto breakmainloop;
                         default: break;
-					}
-				}*/
+                        }
+                    }
+                }
 				if (futureTimeEngine.is_ready()) {
                     try {
                         timeEngine = hg::unique_ptr<hg::TimeEngine>(new hg::TimeEngine(futureTimeEngine.get()));
