@@ -77,7 +77,7 @@ Frame* getEntryFrame(Universe& universe, TimeDirection direction)
 {
     return universe.getEntryFrame(direction);
 }
-//Returns the frame with the index frameNumber within the universe, 
+//Returns the frame with the index frameNumber within the universe,
 //or the NullFrame if no such frame exists
 Frame* getArbitraryFrame(Universe& universe,std::size_t frameNumber)
 {

@@ -5,11 +5,11 @@
 #include <vector>
 namespace hg {
 //Singleton unit test driver.
-//This is a stand-in until we have a build system 
+//This is a stand-in until we have a build system
 //that is capable of reliably producing and running unit-tests.
 //This should at least allow us to start getting some benefits from testing.
 //The idea is that unit tests get put into objects that are globally constructed,
-//which register the tests in their constructors, and the first thing 
+//which register the tests in their constructors, and the first thing
 //that main does is to run all the tests in the test driver.
 class TestDriver : boost::noncopyable {
 public:

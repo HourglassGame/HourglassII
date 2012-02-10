@@ -140,22 +140,22 @@ void recursiveBoxCollision(
     mt::std::vector<std::size_t>::type& boxesSoFar,
     std::size_t index,
     int subtractionNumber);
-    
+
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(
     RandomAccessObjectAndTypeRange const& next,
     PhysicsEngine::FrameDepartureT& newDepartures);
-    
+
 void buildDepartures(
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type const& nextGuy,
     PhysicsEngine::FrameDepartureT& newDepartures,
     Frame* frame);
-    
+
 //bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
 bool wallAtExclusive(Wall const& wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const& env, int x, int y, int w, int h);
-    
+
 unsigned int Raytrace(
         Environment const& env,
         int sx, int sy, int px, int py,

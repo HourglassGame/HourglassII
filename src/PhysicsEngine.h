@@ -25,7 +25,7 @@ public:
     PhysicsEngine(
         Environment const& env,
         TriggerSystem const& newTriggerSystem);
-    
+
     PhysicsEngine(PhysicsEngine const& o) :
         env_(o.env_),
         triggerSystem_(o.triggerSystem_)
@@ -37,7 +37,7 @@ public:
         triggerSystem_ = o.triggerSystem_;
         return *this;
     }
-    
+
     PhysicsEngine(BOOST_RV_REF(PhysicsEngine) o) :
         env_(boost::move(o.env_)),
         triggerSystem_(boost::move(o.triggerSystem_))

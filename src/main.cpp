@@ -66,7 +66,7 @@ namespace {
     void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
     hg::TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange);
-    
+
     void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend);
     void generateReplay();
     template<typename F>
@@ -109,13 +109,13 @@ namespace {
         hg::InputList inputList_;
         hg::OperationInterrupter* interrupter_;
     };
-    
+
     struct CreateTimeEngine {
         //boost::result_of support
         typedef hg::TimeEngine result_type;
-    
+
         CreateTimeEngine(hg::OperationInterrupter& interrupter) : interrupter_(&interrupter) {}
-    
+
         hg::TimeEngine operator()() const {
             return hg::TimeEngine(hg::loadLevelFromFile("level.lua", *interrupter_), *interrupter_);
         }
@@ -140,7 +140,7 @@ namespace {
 int main(int argc, char* argv[])
 {
     initialseCurrentPath(argc, argv);
-    
+
     if(!hg::getTestDriver().passesAllTests()) {
         std::cerr << "Failed self-check! Aborting." << std::endl;
         return EXIT_FAILURE;
@@ -176,7 +176,7 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 
     //timeEngine would be a boost::optional if boost::optional supported r-value refs
     hg::unique_ptr<hg::TimeEngine> timeEngine;
-    
+
     enum {LOADING_LEVEL, RUNNING_LEVEL, AWAITING_INPUT} state(LOADING_LEVEL);
 
     hg::Input input;
@@ -406,7 +406,7 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
     {
         framesExecutedList.push_back(boost::distance(updateSet));
     }
-    
+
     if (waveInfo.currentPlayerFrame()) {
         hg::FrameView const& view(waveInfo.currentPlayerFrame()->getView());
         hg::TimeDirection currentGuyDirection(findCurrentGuyDirection(view.getGuyInformation()));
@@ -466,7 +466,7 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
             foreach (
                 std::size_t num,
-                framesExecutedList 
+                framesExecutedList
                 | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
             {
                 numberOfFramesExecutedString << ":" << num;

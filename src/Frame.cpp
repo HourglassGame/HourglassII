@@ -99,12 +99,12 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT& newDeparture)
     typedef boost::filtered_range<FrameNotNull<Normal>, FrameDeparturesT> filtered_range_t;
 
     filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<Normal>()));
-    filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull<Normal>()));    
-    
+    filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull<Normal>()));
+
     boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
     const boost::range_iterator<filtered_range_t>::type nend(boost::end(newDepartureFiltered));
-    
-    
+
+
     boost::range_iterator<filtered_range_t>::type oi(boost::begin(oldDepartureFiltered));
     const boost::range_iterator<filtered_range_t>::type oend(boost::end(oldDepartureFiltered));
 

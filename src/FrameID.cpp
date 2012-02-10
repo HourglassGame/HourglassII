@@ -29,8 +29,8 @@ FrameID::FrameID(const Frame* toConvert) :
 }
 FrameID FrameID::nextFrame(TimeDirection direction) const
 {
-    return 
-    isValidFrame() && nextFrameInSameUniverse(direction) ? 
+    return
+    isValidFrame() && nextFrameInSameUniverse(direction) ?
         FrameID(frame_ + direction, universeID_) :
         FrameID();
 }
