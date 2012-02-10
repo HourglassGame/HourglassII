@@ -36,7 +36,9 @@ public:
     void swap(TriggerSystem& o) {
         impl_.swap(o.impl_);
     }
-    
+    //In a break from the usual OperationInterrupter semantics,
+    //the interrupter which is passed to this function is used for the entire lifetime
+    //of the returned TriggerFrameState.
     TriggerFrameState getFrameState(OperationInterrupter& interrupter) const
     {
         return impl_.get().getFrameState(interrupter);

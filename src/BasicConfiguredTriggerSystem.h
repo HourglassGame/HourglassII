@@ -22,23 +22,19 @@ class BasicConfiguredTriggerFrameState :
             Frame const* /*currentFrame*/,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals/*,
-                OperationInterrupter& interrupter*/);
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
                 
                 
-    virtual bool shouldArrive(Guy const& /*potentialArriver*//*,OperationInterrupter& interrupter*/) { return true; }
-    virtual bool shouldArrive(Box const& /*potentialArriver*//*,OperationInterrupter& interrupter*/) { return true; }
+    virtual bool shouldArrive(Guy const& /*potentialArriver*/) { return true; }
+    virtual bool shouldArrive(Box const& /*potentialArriver*/) { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Guy const& /*potentialPorter*/,
-        bool /*porterActionedPortal*//*,
-        OperationInterrupter& interrupter*//*,
-        OperationInterrupter& interrupter*/) { return true; }
+        bool /*porterActionedPortal*/) { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Box const& /*potentialPorter*/,
-        bool /*porterActionedPortal*//*,
-        OperationInterrupter& interrupter*/) { return true; }
+        bool /*porterActionedPortal*/) { return true; }
     
     virtual boost::optional<Guy> mutateObject(
         mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
@@ -46,13 +42,11 @@ class BasicConfiguredTriggerFrameState :
         OperationInterrupter& interrupter*/) { return boost::optional<Guy>(objectToManipulate); }
     virtual boost::optional<Box> mutateObject(
         mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
-        Box const& objectToManipulate/*,
-        OperationInterrupter& interrupter*/) { return boost::optional<Box>(objectToManipulate); }
+        Box const& objectToManipulate) { return boost::optional<Box>(objectToManipulate); }
     
     virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame/*,
-        OperationInterrupter& interrupter*/);
+        Frame* currentFrame);
     
     friend class BasicConfiguredTriggerSystem;
     BasicConfiguredTriggerFrameState(BasicConfiguredTriggerSystem const& triggerSys);

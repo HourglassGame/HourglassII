@@ -3,7 +3,8 @@
 #include <utility>
 #include <memory>
 #include <boost/move/move.hpp>
-#include "unique_ptr.h"
+#include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include "multi_thread_deleter.h"
 namespace hg {
 
 namespace function {
@@ -164,7 +165,7 @@ public:
     
     template<typename F>
     move_function(BOOST_RV_REF(F) f, typename boost::enable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
-        f_(new function::detail::move_function_obj<F>(boost::move(f)))
+        f_(multi_thread_new<function::detail::move_function_obj<F>, boost::rv<F>&>(boost::move(f)))
     {
     }
     
@@ -172,14 +173,13 @@ public:
     typename boost::enable_if<boost::has_move_emulation_enabled<F>, move_function<void()>&>::type
     operator=(BOOST_RV_REF(F) f)
     {
-        f_ = hg::unique_ptr<function::detail::function_base<void()> >(
-            new function::detail::move_function_obj<F>(boost::move(f)));
+        unique_ptr_t(multi_thread_new<function::detail::move_function_obj<F> >(boost::move(f))).swap(f_);
         return *this;
     }
     
     template<typename F>
     move_function(F f, typename boost::disable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
-        f_(new function::detail::function_obj<F>(f))
+        f_(multi_thread_new<function::detail::function_obj<F> >(f))
     {
     }
     
@@ -187,8 +187,7 @@ public:
     typename boost::disable_if<boost::has_move_emulation_enabled<F>, move_function<void()>&>::type
     operator=(F f)
     {
-        f_ = hg::unique_ptr<function::detail::function_base<void()> >(
-            new function::detail::function_obj<F>(f));
+        unique_ptr_t(multi_thread_new<function::detail::function_obj<F> >(f)).swap(f_);
         return *this;
     }
     
@@ -206,7 +205,10 @@ public:
     bool operator!() const { return this->empty(); }
     
 private:
-    hg::unique_ptr<function::detail::function_base<void()> > f_;
+    typedef boost::interprocess::unique_ptr<
+        function::detail::function_base<void()>,
+        multi_thread_deleter<function::detail::function_base<void()> > > unique_ptr_t;
+    unique_ptr_t f_;
     BOOST_MOVABLE_BUT_NOT_COPYABLE(move_function)
 };
 } //namespace hg

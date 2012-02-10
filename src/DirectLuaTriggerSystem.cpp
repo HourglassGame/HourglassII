@@ -41,11 +41,11 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
     OperationInterrupter& interrupter) :
         L_(sharedState),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
-        arrivalLocationsSize_(arrivalLocationsSize)
+        arrivalLocationsSize_(arrivalLocationsSize),
+        interruptionHandle_(makeInterruptable(L_.ptr, interrupter))
 {
     lua_State* L(L_.ptr);
     LuaStackManager stackSaver(L);
-    LuaInterruptionHandle h(makeInterruptable(L, interrupter));
     luaL_checkstack(L, 1, 0);
     lua_pushvalue(L, -1);
     sandboxFunction(L, -1);
