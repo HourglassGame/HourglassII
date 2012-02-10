@@ -21,10 +21,10 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
     {
         assert(false && "Not Implemented!");
     }
-    
+
     virtual bool shouldArrive(Guy const& /*potentialArriver*/) { return true; }
     virtual bool shouldArrive(Box const& /*potentialArriver*/) { return true; }
-    
+
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Guy const& /*potentialPorter*/,
@@ -33,7 +33,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         int /*responsiblePortalIndex*/,
         Box const& /*potentialPorter*/,
         bool /*porterActionedPortal*/) { return true; }
-    
+
     virtual boost::optional<Guy> mutateObject(
         mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
         Guy const& objectToManipulate) { return objectToManipulate; }
@@ -55,7 +55,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
 
     bool testTester() {
         using namespace boost::assign;
-        
+
         std::vector<std::vector<bool> > wall;
         std::vector<bool> row;
         #define E row +=
@@ -79,13 +79,13 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         #undef D
         boost::array<boost::multi_array_types::index, 2> shape = {{ 20, 15 }};
         boost::multi_array<bool, 2> wallmap(shape);
-        
+
         for (std::size_t i(0), iend(shape[0]); i != iend; ++i) {
             for (std::size_t j(0), jend(shape[1]); j != jend; ++j) {
                 wallmap[i][j] = wall[j][i];
             }
         }
-        
+
         Wall actualWall(3200, wallmap);
         Environment env(actualWall, 30);
         std::vector<Box> boxArrivalList;
@@ -146,7 +146,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         FrameID frame(9654, UniverseID(10800));
         //This is testing a case which caused a crash. If this line does not cause a crash,
         //then the test has succeeded.
-        
+
         boxCollisionAlogorithm(
             env,
             boxArrivalList,
@@ -160,7 +160,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             mutators,
             triggerFrameState,
             frame);
-        
+
         return true;
     }
     struct tester {

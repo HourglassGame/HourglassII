@@ -72,7 +72,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
 	// send vector of collisions that occured (if any)
 	if (mutatorCollisions.size() != 0)
 	{
-    
+
 		boost::optional<Box> newBox = triggerFrameState.mutateObject(
 			mutatorCollisions,
 			Box(
@@ -104,7 +104,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
     else {
         normalDeparture = false;
     }
-	
+
 
 	// fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
@@ -683,7 +683,7 @@ void guyStep(
 				nextTimeDirection = newGuy->getTimeDirection();
 				// relativeIndex is missing for obvious reasons
 			}
-            
+
             guyGlitzAdder.addGlitzForGuy(
                 vector2<int>(x[i], y[i]),
                 vector2<int>(xspeed[i], yspeed[i]),
@@ -1007,7 +1007,7 @@ void boxCollisionAlogorithm(
 	bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
 	bool firstTimeThrough(true);
 	while (thereAreStillThingsToDo) {
-    
+
 		mt::std::vector<std::pair<bool,int> >::type top(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type bottom(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type left(oldBoxList.size());
@@ -1341,8 +1341,8 @@ void boxCollisionAlogorithm(
 			{
 				for (unsigned j = 0; j < i; ++j)
 				{
-					if (j != i 
-                        && !squished[j] 
+					if (j != i
+                        && !squished[j]
                         && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
 					{
                         if (std::abs(x[i] - x[j]) >= std::abs(y[i] - y[j])) // left or right
@@ -1411,7 +1411,7 @@ void boxCollisionAlogorithm(
 				recursiveBoxCollision(x, y, size, squished, pass, i, 1);
 			}
 		}
-        
+
 		// Check if I Must do What has Tobe Done (again)
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{

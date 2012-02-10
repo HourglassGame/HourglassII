@@ -48,11 +48,11 @@ private:
         is >> toRead.timelineLength_;
         return is;
     }
-    
+
     friend FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction);
     friend FrameID getArbitraryFrame(UniverseID const& universe, std::size_t frameNumber);
     friend std::size_t getTimelineLength(UniverseID const& universe);
-    
+
     friend class FrameID;
     friend std::size_t hash_value(const UniverseID& toHash);
     //timelineLength_ -- length of the universe.

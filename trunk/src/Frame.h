@@ -23,7 +23,7 @@ public:
     typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
 
     Frame(std::size_t frameNumber, Universe& universe);
-    
+
     Frame(Frame const& o) :
         frameNumber_(o.frameNumber_),
         universe_(o.universe_),
@@ -40,7 +40,7 @@ public:
         view_ = o.view_;
         return *this;
     }
-    
+
     //These "correct" functions are for rearranging pointers when universes get copied.
     //Changes universe_ to &newUniverse
     void correctUniverse(Universe& newUniverse);
@@ -79,7 +79,7 @@ private:
     Universe const& getUniverse() const;
     Universe& getUniverse();
     std::size_t getFrameNumber() const;
-    
+
     bool isNullFrame(Frame const* frame);
     friend Frame const* nextFrame(Frame const* frame, TimeDirection direction);
     friend Frame* nextFrame(Frame* frame, TimeDirection direction);
@@ -91,12 +91,12 @@ private:
     void insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert);
     void changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange);
     void clearArrival(Frame const* toClear);
-    
+
     /** Position of frame within universe_ */
     std::size_t frameNumber_;
     /** Back-link to universe which this frame is in */
     Universe* universe_;
-    
+
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
     FrameDeparturesT departures_;
     tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*> arrivals_;

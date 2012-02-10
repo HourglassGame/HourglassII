@@ -55,17 +55,17 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     OperationInterrupter& interrupter) const
 {
     TriggerFrameState triggerFrameState(triggerSystem_.getFrameState(interrupter));
-    
-    //{extra boxes, collision, death, portal, pickup, arrival location}    
+
+    //{extra boxes, collision, death, portal, pickup, arrival location}
     PhysicsAffectingStuff const physicsTriggerStuff(
         triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>()));
 
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox;
     mt::std::vector<char>::type nextBoxNormalDeparture;
-    
+
     mt::std::vector<Glitz>::type forwardsGlitz;
     mt::std::vector<Glitz>::type reverseGlitz;
-    
+
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
         env_,
@@ -95,7 +95,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type nextGuy;
     mt::std::vector<GlitzPersister>::type persistentGlitz;
     boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
-    
+
     FrameDepartureT newDepartures;
 
     // guys simple collision algorithm
@@ -141,10 +141,10 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     // add extra boxes to newDepartures
     buildDeparturesForComplexEntities(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
-    
+
     mt::std::vector<Glitz>::type forwardsGlitzFromPersister;
     mt::std::vector<Glitz>::type reverseGlitzFromPersister;
-    
+
     foreach (GlitzPersister const& persister, persistentGlitz) {
         forwardsGlitzFromPersister.push_back(persister.getForwardsGlitz());
         reverseGlitzFromPersister.push_back(persister.getReverseGlitz());
@@ -155,7 +155,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
-    
+
     // add data to departures
     return PhysicsReturnT(
         newDepartures,

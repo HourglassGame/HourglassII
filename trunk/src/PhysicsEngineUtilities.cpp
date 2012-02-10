@@ -28,17 +28,17 @@ template<typename T>
             obj.getX(), obj.getY(),
             obj.getWidth(), obj.getHeight(),
             forwardsColour));
-    
+
     Glitz oppositeDirectionGlitz(
         multi_thread_new<RectangleGlitz>(
             obj.getX() - obj.getXspeed(), obj.getY() - obj.getYspeed(),
             obj.getWidth(), obj.getHeight(),
             reverseColour));
-    
+
     forwardsGlitz.push_back(
         obj.getTimeDirection() == FORWARDS ?
         sameDirectionGlitz:oppositeDirectionGlitz);
-    
+
     reverseGlitz.push_back(
         obj.getTimeDirection() == REVERSE ?
         sameDirectionGlitz:oppositeDirectionGlitz);
@@ -53,18 +53,18 @@ FrameView makeFrameView(
 {
     mt::std::vector<Glitz>::type finalForwardsGlitz;
     mt::std::vector<Glitz>::type finalReverseGlitz;
-    
+
     foreach (RetardedNotActuallyAGlitzGlitz const& glitz, backgroundTriggerGlitz) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
     }
 
     boost::push_back(finalForwardsGlitz, forwardsGlitz);
     boost::push_back(finalReverseGlitz, reverseGlitz);
-    
+
     foreach (RetardedNotActuallyAGlitzGlitz const& glitz, foregroundTriggerGlitz) {
         pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
     }
-    
+
     return FrameView(finalForwardsGlitz, finalReverseGlitz, guyInfo);
 }
 
@@ -142,12 +142,12 @@ bool explodeBoxes(
 	// sign = 1, small to large (left to right / top to bottom)
 	// sign = -1, large to small (right to left / bottom to top)
 	pos[index] = boundSoFar;
-    
+
 	bool subSquished = false;
 
 	for (std::size_t i(0), isize(links[index].size()); i < isize; ++i)
 	{
-		subSquished = 
+		subSquished =
             explodeBoxes(
                 pos,
                 size,
@@ -192,7 +192,7 @@ bool explodeBoxesUpwards(
             // boxes sitting on this one
 			x[links[index][i]] = xTemp[links[index][i]] + x[index] - xTemp[index];
 		}
-		subSquished = 
+		subSquished =
             explodeBoxesUpwards(
                 x,
                 xTemp,
