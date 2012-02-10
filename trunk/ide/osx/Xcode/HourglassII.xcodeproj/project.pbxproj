@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */; };
 		200E810614B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */; };
 		200E810714B4792500D054F4 /* Box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E804214B4792500D054F4 /* Box.cpp */; };
 		200E810814B4792500D054F4 /* clone_ptr_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E804414B4792500D054F4 /* clone_ptr_test.cpp */; };
@@ -134,6 +135,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		200DE21514E4A05200172DD0 /* LuaInterruption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaInterruption.h; path = ../../../src/LuaInterruption.h; sourceTree = "<group>"; };
+		200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaInterruption.cpp; path = ../../../src/LuaInterruption.cpp; sourceTree = "<group>"; };
 		200E803C14B4792500D054F4 /* Ability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ability.h; path = ../../../src/Ability.h; sourceTree = SOURCE_ROOT; };
 		200E803D14B4792500D054F4 /* ArrivalLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrivalLocation.h; path = ../../../src/ArrivalLocation.h; sourceTree = SOURCE_ROOT; };
 		200E803E14B4792500D054F4 /* AttachmentMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AttachmentMap.h; path = ../../../src/AttachmentMap.h; sourceTree = SOURCE_ROOT; };
@@ -330,6 +333,7 @@
 		2015393714E0B14A00AE8B14 /* OperationInterruptedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OperationInterruptedException.h; path = ../../../src/OperationInterruptedException.h; sourceTree = "<group>"; };
 		201D503514D9305000FA5680 /* LuaStackManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaStackManager.h; path = ../../../src/LuaStackManager.h; sourceTree = "<group>"; };
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
+		202910D714E3B77100D90C07 /* multi_thread_deleter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread_deleter.h; path = ../../../src/multi_thread_deleter.h; sourceTree = "<group>"; };
 		202A488114DBD2AB0088D45E /* LuaUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LuaUserData.h; path = ../../../src/LuaUserData.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		202E857314BE84AE008F05EB /* GlitzPersister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = GlitzPersister.cpp; path = ../../../src/GlitzPersister.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
@@ -600,6 +604,8 @@
 			isa = PBXGroup;
 			children = (
 				201D503514D9305000FA5680 /* LuaStackManager.h */,
+				200DE21514E4A05200172DD0 /* LuaInterruption.h */,
+				200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */,
 				202A488114DBD2AB0088D45E /* LuaUserData.h */,
 				200E80B414B4792500D054F4 /* LuaUtilities.h */,
 				200E80B314B4792500D054F4 /* LuaUtilities.cpp */,
@@ -752,6 +758,7 @@
 			isa = PBXGroup;
 			children = (
 				208FD89014D16E600089BC25 /* default_delete.h */,
+				202910D714E3B77100D90C07 /* multi_thread_deleter.h */,
 				208FD89114D1810A0089BC25 /* default_clone.h */,
 				208FD89214D181300089BC25 /* memory_source_clone.h */,
 				202FA86514D29725000CD16A /* default_memory_source.h */,
@@ -988,6 +995,7 @@
 				203151F314C143060045161F /* lbitlib.cpp in Sources */,
 				203151F414C143060045161F /* lcorolib.cpp in Sources */,
 				203151F514C143060045161F /* lctype.cpp in Sources */,
+				200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

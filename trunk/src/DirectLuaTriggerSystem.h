@@ -4,6 +4,7 @@
 #include "SimpleLuaCpp.h"
 #include "ThreadLocal.h"
 #include "ObjectAndTime.h"
+#include "LuaInterruption.h"
 #include <string>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
@@ -30,36 +31,30 @@ class DirectLuaTriggerFrameState :
             Frame const* currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals/*
-            ,OperationInterrupter& interrupter*/);
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
     
-    virtual bool shouldArrive(Guy const& potentialArriver/*,OperationInterrupter& interrupter*/);
-    virtual bool shouldArrive(Box const& potentialArriver/*,OperationInterrupter& interrupter*/);
+    virtual bool shouldArrive(Guy const& potentialArriver);
+    virtual bool shouldArrive(Box const& potentialArriver);
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const& potentialPorter,
-        bool porterActionedPortal/*,
-        OperationInterrupter& interrupter*/);
+        bool porterActionedPortal);
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Box const& potentialPorter,
-        bool porterActionedPortal/*,
-        OperationInterrupter& interrupter*/);
+        bool porterActionedPortal);
     
     virtual boost::optional<Guy> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Guy const& objectToManipulate/*,
-        OperationInterrupter& interrupter*/);
+        Guy const& objectToManipulate);
     virtual boost::optional<Box> mutateObject(
         mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Box const& objectToManipulate/*,
-        OperationInterrupter& interrupter*/);
+        Box const& objectToManipulate);
     
     virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame/*,
-        OperationInterrupter& interrupter*/);
+        Frame* currentFrame);
     virtual ~DirectLuaTriggerFrameState();
 private:
     LuaState& L_;
@@ -76,6 +71,8 @@ private:
     //If a portal specifies an destinationIndex that is
     //larger than this, it is an error in the script and will be detected as such.
     std::size_t arrivalLocationsSize_;
+
+    LuaInterruptionHandle interruptionHandle_;
 
     DirectLuaTriggerFrameState(DirectLuaTriggerFrameState& o);
     DirectLuaTriggerFrameState& operator=(DirectLuaTriggerFrameState& o);

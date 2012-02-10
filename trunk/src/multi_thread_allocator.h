@@ -89,5 +89,13 @@ BOOST_PP_REPEAT(BOOST_PP_INC(HG_MAX_MULTI_THREAD_NEW_PARAMS), HG_MULTI_THREAD_NE
 
 #undef HG_MULTI_THREAD_NEW
 
+    template<typename T>
+    void multi_thread_delete(T* p) {
+        if (p) {
+            p->~T();
+            multi_thread_operator_delete(p);
+        }
+    }
+
 }
 #endif //HG_MULTI_THREAD_ALLOCATOR_H

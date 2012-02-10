@@ -1,7 +1,6 @@
 #include "OperationInterrupter.h"
 #include <boost/thread/locks.hpp>
-#include <boost/foreach.hpp>
-#define foreach BOOST_FOREACH
+#include "Foreach.h"
 namespace hg {
 //Operation interrupter holds its lock while running the interruption function.
 //This could potentially lead to deadlock, if the interruption function
@@ -20,12 +19,14 @@ void OperationInterrupter::interrupt() {
 
 OperationInterrupter::FunctionHandle OperationInterrupter::addInterruptionFunction(move_function<void()> interruptionFunction)
 {
-	tbb::spin_mutex::scoped_lock lock(mutex_);
+    assert(interruptionFunction
+        && "There is no good reason to ever add an Interruption Function that can't be called");
+    if (interrupted_) {
+        interruptionFunction();
+        return FunctionHandle();
+    }
+    tbb::spin_mutex::scoped_lock lock(mutex_);
     interruptionFunctions_.push_back(boost::move(interruptionFunction));
-    if (interrupted_ && interruptionFunctions_.back()) {
-		interruptionFunctions_.back()();
-        interruptionFunctions_.back() = move_function<void()>();
-	}
     return FunctionHandle(*this, interruptionFunctions_.end() - 1);
 }
 }//namespace hg
