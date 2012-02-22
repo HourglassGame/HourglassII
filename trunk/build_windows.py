@@ -18,7 +18,7 @@ class basic_gxx_compiler:
                 + ["-c"] + [source]
                 + ["-o"] + [output], stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
     def do_link(self, sources, output, library_directories, libraries):
         try:
@@ -33,7 +33,7 @@ class basic_gxx_compiler:
                 + list(map(lambda l: "-l" + l, libraries)),
                 stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
 
 class windres:
@@ -47,7 +47,7 @@ class windres:
                 + ["-o"] + [output],
                 stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            print(e.output)
+            print(e.output.decode("UTF-8"))
             raise
 
 def build_binary(
