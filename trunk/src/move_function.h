@@ -3,8 +3,23 @@
 #include <utility>
 #include <memory>
 #include <boost/move/move.hpp>
+#include <boost/config.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include "multi_thread_deleter.h"
+
+#ifdef BOOST_NO_EXPLICIT_CONVERSION_OPERATORS
+# define EXPLICIT_OPERATOR_BOOL(expression)                                            \
+private:                                                                               \
+    struct safe_bool_dummy { void nonnull() {} };                                      \
+    typedef void (safe_bool_dummy::*safe_bool)();                                      \
+public:                                                                                \
+    operator safe_bool() const { return (expression) ? 0 : &safe_bool_dummy::nonnull; }
+#else
+# define EXPLICIT_OPERATOR_BOOL(expression) \
+    explicit operator bool() const { return (expression); }
+#endif
+
+
 namespace hg {
 
 namespace function {
@@ -162,7 +177,7 @@ public:
         f_ = boost::move(o.f_);
         return *this;
     }
-    
+#ifdef BOOST_NO_RVALUE_REFERENCES
     template<typename F>
     move_function(BOOST_RV_REF(F) f, typename boost::enable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
         f_(multi_thread_new<function::detail::move_function_obj<F>, boost::rv<F>&>(boost::move(f)))
@@ -190,17 +205,28 @@ public:
         unique_ptr_t(multi_thread_new<function::detail::function_obj<F> >(f)).swap(f_);
         return *this;
     }
+#else
+    template<typename F>
+    move_function(F&& f) :
+        f_(multi_thread_new<function::detail::move_function_obj<F> >(boost::move(f)))
+    {
+    }
     
+    template<typename F>
+    move_function<void()>& operator=(F&& f)
+    {
+        unique_ptr_t(multi_thread_new<function::detail::move_function_obj<F> >(boost::move(f))).swap(f_);
+        return *this;
+    }
+#endif
+
     void operator()() const {
         (*f_)();
     }
     
-private:
-    struct dummy { void nonnull() {} };
-    typedef void (dummy::*safe_bool)();
-public:
+    EXPLICIT_OPERATOR_BOOL(empty())
+    
     bool empty() const { return !f_.get(); }
-    operator safe_bool () const { return (this->empty())? 0 : &dummy::nonnull; }
 
     bool operator!() const { return this->empty(); }
     
