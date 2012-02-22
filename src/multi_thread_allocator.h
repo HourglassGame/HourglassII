@@ -9,6 +9,10 @@
 
 #include <tbb/scalable_allocator.h>
 
+#include "forward.h"
+
+#include <boost/config.hpp>
+
 //#include "scalable_allocator.h"
 //#include "forward.h"
 namespace hg {
@@ -49,9 +53,9 @@ namespace hg {
     //  new T(args...),
     //except that it performs its allocation
     //using `multi_thread_operator_new`.
-    
+#if !(defined BOOST_NO_RVALUE_REFERENCES || defined BOOST_NO_VARIADIC_TEMPLATES)
     //C++11 version
-    /*
+    
     template<typename T, typename... Args>
     T* multi_thread_new(Args&&...args){
     	void* p(multi_thread_operator_new(sizeof(T)));
@@ -62,11 +66,12 @@ namespace hg {
     		multi_thread_operator_delete(p);
     		throw;
     	}
-    }*/
+    }
 
+#else
     //C++03 version:
     //Forwarding is emulated with "by value" passing.
-    //Use boost::ref or boost::cref to get reference behaviour.
+    //Use boost::ref, boost::cref or explicit parameter types to get reference behaviour.
     
 #ifndef HG_MAX_MULTI_THREAD_NEW_PARAMS
 # define HG_MAX_MULTI_THREAD_NEW_PARAMS 5
@@ -88,7 +93,7 @@ namespace hg {
 BOOST_PP_REPEAT(BOOST_PP_INC(HG_MAX_MULTI_THREAD_NEW_PARAMS), HG_MULTI_THREAD_NEW, _)
 
 #undef HG_MULTI_THREAD_NEW
-
+#endif
     template<typename T>
     void multi_thread_delete(T* p) {
         if (p) {
