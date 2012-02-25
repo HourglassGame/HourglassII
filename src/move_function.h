@@ -5,6 +5,7 @@
 #include <boost/move/move.hpp>
 #include <boost/config.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
+#include <boost/utility/enable_if.hpp>
 #include "multi_thread_deleter.h"
 
 #ifdef BOOST_NO_EXPLICIT_CONVERSION_OPERATORS
@@ -13,7 +14,7 @@ private:                                                                        
     struct safe_bool_dummy { void nonnull() {} };                                      \
     typedef void (safe_bool_dummy::*safe_bool)();                                      \
 public:                                                                                \
-    operator safe_bool() const { return (expression) ? 0 : &safe_bool_dummy::nonnull; }
+    operator safe_bool() const { return (expression) ? &safe_bool_dummy::nonnull : 0; }
 #else
 # define EXPLICIT_OPERATOR_BOOL(expression) \
     explicit operator bool() const { return (expression); }
