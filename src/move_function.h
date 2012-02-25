@@ -224,11 +224,9 @@ public:
         (*f_)();
     }
     
-    EXPLICIT_OPERATOR_BOOL(empty())
+    EXPLICIT_OPERATOR_BOOL(!empty())
     
     bool empty() const { return !f_.get(); }
-
-    bool operator!() const { return this->empty(); }
     
 private:
     typedef boost::interprocess::unique_ptr<
