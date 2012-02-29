@@ -17,7 +17,7 @@ struct map {
 			T,
 			Compare,
 			typename multi_thread_allocator<
-				::boost::container::containers_detail::pair<Key const, T>
+				::std::pair<Key const, T>
 			>::type
 		> type;
 };
