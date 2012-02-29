@@ -4,13 +4,11 @@
 
 BUG - Fix Div-by-zero in BoxCollisionAlgorithm
 
-BUG - Fix Crashes and Infinite loops that can be caused by loading ill-formed levels or
+BUG - Fix Crashes that can be caused by loading ill-formed levels or
     running out of memory while loading/running levels.
 
 BUG - make DirectLuaTriggerSystem deterministic + consistent
     (At the moment it isn't, due the the underspecified nature of floating point operations in C++)
-
-Make level loading be interruptable.
 
 Implement variable box/guy/segment sizes
 
@@ -69,7 +67,6 @@ Improve Input
  * Remove hardcoded portal/mutator actioned.
 
 Finish and Submit Boost patch(es).
-    * Thread
     * Container
 
 Allow boxes to be dropped somewhere other than at the feet of the guy.

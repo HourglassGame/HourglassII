@@ -8,6 +8,7 @@
 #include <boost/preprocessor/repetition.hpp>
 
 #include <tbb/scalable_allocator.h>
+#include "scalable_allocator.h"
 
 #include "forward.h"
 
@@ -20,7 +21,7 @@ namespace hg {
     //when multiple threads may be performing allocations/deallocations
     //simultaneously.
     template<typename T> struct multi_thread_allocator {
-        typedef tbb::scalable_allocator<T> type;
+        typedef tbb_scalable_allocator<T> type;
     };
 
     //Versions of the C library functions to use

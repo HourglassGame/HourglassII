@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		200AC21614F9128200B1E17F /* move_function_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200AC21514F9128200B1E17F /* move_function_test.cpp */; };
 		200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */; };
 		200E810614B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */; };
 		200E810714B4792500D054F4 /* Box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E804214B4792500D054F4 /* Box.cpp */; };
@@ -135,6 +136,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		200AC21514F9128200B1E17F /* move_function_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = move_function_test.cpp; path = ../../../src/move_function_test.cpp; sourceTree = "<group>"; };
 		200DE21514E4A05200172DD0 /* LuaInterruption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaInterruption.h; path = ../../../src/LuaInterruption.h; sourceTree = "<group>"; };
 		200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaInterruption.cpp; path = ../../../src/LuaInterruption.cpp; sourceTree = "<group>"; };
 		200E803C14B4792500D054F4 /* Ability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ability.h; path = ../../../src/Ability.h; sourceTree = SOURCE_ROOT; };
@@ -766,6 +768,7 @@
 				200E804514B4792500D054F4 /* clone_ptr.h */,
 				200E804414B4792500D054F4 /* clone_ptr_test.cpp */,
 				200E80B614B4792500D054F4 /* move_function.h */,
+				200AC21514F9128200B1E17F /* move_function_test.cpp */,
 				200E80B714B4792500D054F4 /* move.h */,
 				200E80FC14B4792500D054F4 /* unique_ptr.h */,
 				209D16C414BB3EEA00F225DA /* vector2.h */,
@@ -866,7 +869,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = "Team Causality";
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "HourglassII" */;
@@ -996,6 +999,7 @@
 				203151F414C143060045161F /* lcorolib.cpp in Sources */,
 				203151F514C143060045161F /* lctype.cpp in Sources */,
 				200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */,
+				200AC21614F9128200B1E17F /* move_function_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1025,6 +1029,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_CW_ASM_SYNTAX = NO;
@@ -1111,6 +1116,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_CW_ASM_SYNTAX = NO;
@@ -1196,6 +1202,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_CW_ASM_SYNTAX = NO;
@@ -1596,6 +1603,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_CW_ASM_SYNTAX = NO;
@@ -1668,6 +1676,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
 				CLANG_CXX_LIBRARY = "libstdc++";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
