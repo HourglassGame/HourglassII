@@ -82,7 +82,6 @@
 		200E815214B4792500D054F4 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810414B4792500D054F4 /* WorldState.cpp */; };
 		2027C25913FCB75900FBDF7B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2027C25813FCB75900FBDF7B /* libfreetype.a */; };
 		202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 202E857314BE84AE008F05EB /* GlitzPersister.cpp */; };
-		202FEF851598B62000F47F6C /* levels in Resources */ = {isa = PBXBuildFile; fileRef = 202FEF841598B62000F47F6C /* levels */; };
 		203151F314C143060045161F /* lbitlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151EF14C143060045161F /* lbitlib.cpp */; };
 		203151F414C143060045161F /* lcorolib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151F014C143060045161F /* lcorolib.cpp */; };
 		203151F514C143060045161F /* lctype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151F114C143060045161F /* lctype.cpp */; };
@@ -909,7 +908,6 @@
 			files = (
 				20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */,
 				20634FD514B9CAF100FFB0EE /* level.lua in Resources */,
-				202FEF851598B62000F47F6C /* levels in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
