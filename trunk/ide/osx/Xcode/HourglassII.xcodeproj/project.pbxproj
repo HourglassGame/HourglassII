@@ -82,6 +82,7 @@
 		200E815214B4792500D054F4 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810414B4792500D054F4 /* WorldState.cpp */; };
 		2027C25913FCB75900FBDF7B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2027C25813FCB75900FBDF7B /* libfreetype.a */; };
 		202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 202E857314BE84AE008F05EB /* GlitzPersister.cpp */; };
+		202FEF851598B62000F47F6C /* levels in Resources */ = {isa = PBXBuildFile; fileRef = 202FEF841598B62000F47F6C /* levels */; };
 		203151F314C143060045161F /* lbitlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151EF14C143060045161F /* lbitlib.cpp */; };
 		203151F414C143060045161F /* lcorolib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151F014C143060045161F /* lcorolib.cpp */; };
 		203151F514C143060045161F /* lctype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203151F114C143060045161F /* lctype.cpp */; };
@@ -341,11 +342,7 @@
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
 		202FA86514D29725000CD16A /* default_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_memory_source.h; path = ../../../src/default_memory_source.h; sourceTree = "<group>"; };
 		202FA86614D2984E000CD16A /* multi_thread_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread_memory_source.h; path = ../../../src/multi_thread_memory_source.h; sourceTree = "<group>"; };
-		202FEF7A15988C6E00F47F6C /* 1EasyStart.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 1EasyStart.lua; sourceTree = "<group>"; };
-		202FEF7B15988C6E00F47F6C /* 1EasyStart.replay */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 1EasyStart.replay; sourceTree = "<group>"; };
-		202FEF7C15988C6E00F47F6C /* 2OpenAndClosed.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 2OpenAndClosed.lua; sourceTree = "<group>"; };
-		202FEF7D15988C6E00F47F6C /* 2OpenAndClosed.replay */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = 2OpenAndClosed.replay; sourceTree = "<group>"; };
-		202FEF7E15988C6E00F47F6C /* TestLevel.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TestLevel.lua; sourceTree = "<group>"; };
+		202FEF841598B62000F47F6C /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../../../levels; sourceTree = "<group>"; };
 		203066C814C598B1005881F4 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../../../src/Canvas.h; sourceTree = "<group>"; };
 		203151EF14C143060045161F /* lbitlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lbitlib.cpp; sourceTree = "<group>"; };
 		203151F014C143060045161F /* lcorolib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lcorolib.cpp; sourceTree = "<group>"; };
@@ -632,19 +629,6 @@
 			name = Utility;
 			sourceTree = "<group>";
 		};
-		202FEF7915988C6E00F47F6C /* levels */ = {
-			isa = PBXGroup;
-			children = (
-				202FEF7A15988C6E00F47F6C /* 1EasyStart.lua */,
-				202FEF7B15988C6E00F47F6C /* 1EasyStart.replay */,
-				202FEF7C15988C6E00F47F6C /* 2OpenAndClosed.lua */,
-				202FEF7D15988C6E00F47F6C /* 2OpenAndClosed.replay */,
-				202FEF7E15988C6E00F47F6C /* TestLevel.lua */,
-			);
-			name = levels;
-			path = ../../../levels;
-			sourceTree = "<group>";
-		};
 		2068CCDE125F156F00028D2A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -810,7 +794,7 @@
 		29B97314FDCFA39411CA2CEA /* HourglassSetupTest */ = {
 			isa = PBXGroup;
 			children = (
-				202FEF7915988C6E00F47F6C /* levels */,
+				202FEF841598B62000F47F6C /* levels */,
 				202E857514BE84DB008F05EB /* todo.txt */,
 				2068CD3C125F158300028D2A /* Resources */,
 				2068CCDE125F156F00028D2A /* Sources */,
@@ -925,6 +909,7 @@
 			files = (
 				20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */,
 				20634FD514B9CAF100FFB0EE /* level.lua in Resources */,
+				202FEF851598B62000F47F6C /* levels in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
