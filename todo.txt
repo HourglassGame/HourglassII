@@ -68,6 +68,9 @@ Improve Input
 
 Finish and Submit Boost patch(es).
     * Container
+    * Variant (move-enable)
+    * Optional (move-enable)
+    * Thread (incompete type bug)
 
 Allow boxes to be dropped somewhere other than at the feet of the guy.
 
