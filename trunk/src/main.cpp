@@ -213,6 +213,7 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
                     try {
                         timeEngine = hg::unique_ptr<hg::TimeEngine>(new hg::TimeEngine(futureTimeEngine.get()));
                         input.setTimelineLength(timeEngine->getTimelineLength());
+                        inertia = hg::Inertia();
                         interrupter.reset();
                         state = AWAITING_INPUT;
                     }
