@@ -45,7 +45,7 @@ public:
     template<typename C>
     void destroy(C* c) { c->~C(); }
     
-    tbb_scalable_allocator<T> select_on_container_copy_construction() { return *this; }
+    tbb_scalable_allocator<T> select_on_container_copy_construction() const { return *this; }
 };
 
 template<typename T, typename U>
