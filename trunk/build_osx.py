@@ -76,6 +76,7 @@ class basic_gxx_compiler:
                 #+["-F/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/Profile"]
                 #+["-filelist", "/Users/evan/Documents/workspace/HourglassMac/HourglassSetupTest/build/HourglassSetupTest.build/Profile/HourglassIIXcode.build/Objects-normal/x86_64/HourglassII.LinkFileList"]
                 +["-mmacosx-version-min=10.4"]
+                +["-lfreetype"]
                 +["-lsfml-graphics-s"]
                 +["-lsfml-window-s"]
                 +["-lsfml-system-s"]
