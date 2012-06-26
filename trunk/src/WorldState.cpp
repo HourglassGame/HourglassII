@@ -9,7 +9,7 @@
 #include "Foreach.h"
 
 #include <utility>
-
+#include <boost/lexical_cast.hpp>
 namespace hg {
 struct ExecuteFrame
 {
@@ -17,6 +17,7 @@ struct ExecuteFrame
         worldState_(&worldState), newDepartures_(&newDepartures), interrupter_(&interrupter)
     {}
     void operator()(Frame* frame) const {
+        std::cerr << "Executing Frame " + boost::lexical_cast<std::string>(getFrameNumber(frame)) + '\n';
         newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame, *interrupter_));
     }
 private:
@@ -140,10 +141,12 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
     tbb::task_group_context group;
     OperationInterrupter::FunctionHandle task_group_interrupt(
         interrupter.addInterruptionFunction(move_function<void()>(InterruptTaskGroup(group))));
+    std::cerr << "Number of Executed Frames: " << returnSet.size() << '\n';
     parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures, interrupter), group);
     //Can `updateWithNewDepartures` take a long period of time?
     //If so, it needs to be given some way of being interrupted. (it needs to get passed the interrupter)
     frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures);
+    std::cerr << "Number of Modified Frames: " << frameUpdateSet_.size() << '\n';
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
             && "How can a consistent reality have a guy win in multiple frames?");
