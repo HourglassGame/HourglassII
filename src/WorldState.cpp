@@ -132,6 +132,7 @@ private:
 
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
 {
+    std::cerr << "Executing World\n";
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
