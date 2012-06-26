@@ -8,6 +8,7 @@
 #include "LuaError.h"
 #include "LuaUserData.h"
 #include "OperationInterruptedException.h"
+#include <iostream> 
 namespace hg {
 inline int panic (lua_State* L) {
     //Check whether this is a memory allocation error
@@ -16,6 +17,7 @@ inline int panic (lua_State* L) {
         throw std::bad_alloc();
     }
     else if (ud.is_interrupted) {
+        std::cerr << "Lua Interrupted\n";
         throw boost::enable_current_exception(OperationInterruptedException());
     }
     else {
