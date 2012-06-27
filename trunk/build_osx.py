@@ -17,7 +17,7 @@ class basic_gxx_compiler:
                 +["-pipe"]
                 +["-Wno-trigraphs"]
                 +["-fpascal-strings"]
-                #+["-O3"]
+                +["-O3"]
                 +["-mdynamic-no-pic"]
                 +["-Wmissing-field-initializers"]
                 +["-Wmissing-prototypes"]

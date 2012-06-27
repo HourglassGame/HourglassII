@@ -17,7 +17,6 @@ struct LuaUserData {
         is_out_of_memory_ = value;
     }
     void set_interrupted(bool value) {
-        std::cerr << std::string("set_interrupted(") + (value ? "true" : "false") + ")\n";
         is_interrupted_ = value;
     }
     bool is_out_of_memory() const { return is_out_of_memory_; }
