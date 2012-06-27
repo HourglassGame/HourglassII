@@ -12,15 +12,15 @@ namespace detail {
         RandomAccessRange& range, Func func, tbb::task_group_context& context)
     {
         
-        //tbb::parallel_do(boost::begin(range), boost::end(range), func, context);
-        boost::for_each(range, func);
+        tbb::parallel_do(boost::begin(range), boost::end(range), func, context);
+        //boost::for_each(range, func);
     }
     template<typename RandomAccessRange, typename Func>
     void parallel_for_each(
         RandomAccessRange const& range, Func func, tbb::task_group_context& context)
     {
-        //tbb::parallel_do(boost::begin(range), boost::end(range), func, context);
-        boost::for_each(range, func);
+        tbb::parallel_do(boost::begin(range), boost::end(range), func, context);
+        //boost::for_each(range, func);
     }
     template<typename RandomAccessRange, typename Func>
     struct parallel_for_each_struct {

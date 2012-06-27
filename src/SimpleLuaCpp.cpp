@@ -37,7 +37,6 @@ LuaState::LuaState()
 LuaState::LuaState(new_state_t) 
     : ud(new LuaUserData()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
 {
-    std::cerr << "LuaState: UserDataAddress: " + boost::lexical_cast<std::string>(static_cast<void*>(ud.get())) + '\n';
     if (ptr) {
         lua_atpanic(ptr, &panic);
     }

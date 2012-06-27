@@ -367,7 +367,7 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
                         app.UseVerticalSync(false);
                     }
                     else {
-                        app.SetFramerateLimit(3);
+                        app.SetFramerateLimit(60);
                         app.UseVerticalSync(true);
                     }
 					app.Display();

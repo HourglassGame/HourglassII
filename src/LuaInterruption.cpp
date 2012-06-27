@@ -4,7 +4,6 @@ namespace hg {
 struct InterruptLua {
     InterruptLua(LuaUserData* ud) :ud_(ud) {}
     void operator()() const {
-        std::cerr << "InterruptLua\n";
         ud_->set_interrupted(true);
     }
 private:

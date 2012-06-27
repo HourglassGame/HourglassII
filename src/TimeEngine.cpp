@@ -28,7 +28,6 @@ void TimeEngine::swap(TimeEngine& o) {
 TimeEngine::RunResult
 TimeEngine::runToNextPlayerFrame(const InputList& newInputData, OperationInterrupter& interrupter)
 {
-    std::cerr << "Running to next Frame\n";
     worldState_.addNewInputData(newInputData);
     FrameListList updatedList;
     updatedList.reserve(speedOfTime_);

@@ -51,7 +51,6 @@ public:
             boost::lock_guard<boost::mutex> lock(mutex_);
             shouldNotify = queue_.empty();
             queue_.push_back(boost::move(toPush));
-            std::cerr << "Element Pushed. Size: " <<  queue_.size() << '\n';
         }
         if (shouldNotify) {
             cond_.notify_one();
@@ -68,7 +67,6 @@ public:
         }
         T retv(boost::move(queue_.front()));
         queue_.pop_front();
-        std::cerr << "Element Popped. Size: " <<  queue_.size() << '\n';
         return boost::move(retv);
     }
 private:
