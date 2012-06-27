@@ -13,10 +13,10 @@ namespace hg {
 inline int panic (lua_State* L) {
     //Check whether this is a memory allocation error
     LuaUserData& ud(getUserData(L));
-    if (ud.is_out_of_memory) {
+    if (ud.is_out_of_memory()) {
         throw std::bad_alloc();
     }
-    else if (ud.is_interrupted) {
+    else if (ud.is_interrupted()) {
         std::cerr << "Lua Interrupted\n";
         throw boost::enable_current_exception(OperationInterruptedException());
     }
