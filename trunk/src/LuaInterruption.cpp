@@ -5,7 +5,7 @@ struct InterruptLua {
     InterruptLua(LuaUserData* ud) :ud_(ud) {}
     void operator()() const {
         std::cerr << "InterruptLua\n";
-        ud_->is_interrupted = true;
+        ud_->set_interrupted(true);
     }
 private:
     LuaUserData* ud_;
@@ -13,7 +13,7 @@ private:
 
 static void interruption_hook(lua_State* L, lua_Debug*)
 {
-    if (getUserData(L).is_interrupted) {
+    if (getUserData(L).is_interrupted()) {
         lua_pushnil(L);
         lua_error(L);
     }
