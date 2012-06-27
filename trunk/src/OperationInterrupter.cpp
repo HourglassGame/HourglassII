@@ -10,6 +10,7 @@ namespace hg {
 //its associated FunctionHandle has been released.")
 void OperationInterrupter::interrupt() {
 	tbb::spin_mutex::scoped_lock lock(mutex_);
+    std::cerr << "Interrupted\n";
 	interrupted_ = true;
     foreach (move_function<void()>& f, interruptionFunctions_) {
         f();

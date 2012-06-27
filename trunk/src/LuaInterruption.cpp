@@ -2,12 +2,13 @@
 #include "LuaUserData.h"
 namespace hg {
 struct InterruptLua {
-    InterruptLua(lua_State* L) :L_(L) {}
+    InterruptLua(LuaUserData* ud) :ud_(ud) {}
     void operator()() const {
-        getUserData(L_).is_interrupted = true;
+        std::cerr << "InterruptLua\n";
+        ud_->is_interrupted = true;
     }
 private:
-    lua_State* L_;
+    LuaUserData* ud_;
 };
 
 static void interruption_hook(lua_State* L, lua_Debug*)
@@ -22,6 +23,6 @@ static void interruption_hook(lua_State* L, lua_Debug*)
 LuaInterruptionHandle makeInterruptable(lua_State* L, OperationInterrupter& interrupter)
 {
     lua_sethook(L, interruption_hook, LUA_MASKCOUNT, 1024);
-    return LuaInterruptionHandle(L, interrupter.addInterruptionFunction(move_function<void()>(InterruptLua(L))));
+    return LuaInterruptionHandle(L, interrupter.addInterruptionFunction(move_function<void()>(InterruptLua(&getUserData(L)))));
 }
 }
