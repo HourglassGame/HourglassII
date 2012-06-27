@@ -8,11 +8,13 @@
 #include "LuaError.h"
 #include "LuaUserData.h"
 #include "OperationInterruptedException.h"
+#include <boost/lexical_cast.hpp>
 #include <iostream> 
 namespace hg {
 inline int panic (lua_State* L) {
     //Check whether this is a memory allocation error
     LuaUserData& ud(getUserData(L));
+    std::cerr << "panic: UserDataAddress: " + boost::lexical_cast<std::string>(static_cast<void*>(&ud)) + '\n';
     if (ud.is_out_of_memory()) {
         throw std::bad_alloc();
     }
@@ -34,7 +36,7 @@ struct LuaState {
     LuaState();
     explicit LuaState(new_state_t);
     LuaState(BOOST_RV_REF(LuaState) o) :
-        is_oom(new LuaUserData()), ptr(0)
+        ud(0), ptr(0)
     {
         swap(o);
     }
@@ -44,11 +46,11 @@ struct LuaState {
         return *this;
     }
     void swap(LuaState& o) {
-        boost::swap(is_oom, o.is_oom);
+        boost::swap(ud, o.ud);
         boost::swap(ptr, o.ptr);
     }
     ~LuaState();
-    unique_ptr<LuaUserData> is_oom;
+    unique_ptr<LuaUserData> ud;
     lua_State* ptr;
 private:
     BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)

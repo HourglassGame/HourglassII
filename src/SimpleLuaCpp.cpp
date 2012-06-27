@@ -13,7 +13,7 @@ namespace {
         size_t osize,
         size_t nsize)
     {
-        bool& is_oom(*static_cast<bool*>(ud));
+        LuaUserData& user_data(*static_cast<LuaUserData*>(ud));
         if (nsize == 0) {
             multi_thread_free(ptr);
             return 0;
@@ -23,20 +23,21 @@ namespace {
                 void* p(multi_thread_realloc(ptr, nsize));
                 return p ? p : ptr;
             }
-            if (is_oom) return 0;
+            if (user_data.is_out_of_memory()) return 0;
             void* p(multi_thread_realloc(ptr, nsize));
-            is_oom = !p;
+            user_data.set_out_of_memory(!p);
             return p;
         }
     }
 }
 LuaState::LuaState()
-    : is_oom(), ptr(0)
+    : ud(), ptr(0)
 {
 }
 LuaState::LuaState(new_state_t) 
-    : is_oom(new LuaUserData()), ptr(lua_newstate(multi_thread_luaalloc, is_oom.get()))
+    : ud(new LuaUserData()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
 {
+    std::cerr << "LuaState: UserDataAddress: " + boost::lexical_cast<std::string>(static_cast<void*>(ud.get())) + '\n';
     if (ptr) {
         lua_atpanic(ptr, &panic);
     }
