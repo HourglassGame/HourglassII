@@ -47,7 +47,12 @@ public:
         mt::boost::container::stable_vector<move_function<void()> >::type::iterator iterator_;
         BOOST_MOVABLE_BUT_NOT_COPYABLE(FunctionHandle)
     };
-    
+    OperationInterrupter() :
+        interrupted_(false),
+        interruptionFunctions_(),
+        mutex_()
+    {
+    }
     //Calls all currently active interruptionFunctions
     //Causes attempts to add new interruptionFunctions to immediately call
     //the passed interruptionFunction.

@@ -22,11 +22,12 @@ OperationInterrupter::FunctionHandle OperationInterrupter::addInterruptionFuncti
 {
     assert(interruptionFunction
         && "There is no good reason to ever add an Interruption Function that can't be called");
+    tbb::spin_mutex::scoped_lock lock(mutex_);
     if (interrupted_) {
+        std::cerr << "Already interrupted\n";
         interruptionFunction();
         return FunctionHandle();
     }
-    tbb::spin_mutex::scoped_lock lock(mutex_);
     interruptionFunctions_.push_back(boost::move(interruptionFunction));
     return FunctionHandle(*this, interruptionFunctions_.end() - 1);
 }
