@@ -6,7 +6,9 @@
 #include <boost/config.hpp>
 #include <boost/interprocess/smart_ptr/unique_ptr.hpp>
 #include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/decay.hpp>
 #include "multi_thread_deleter.h"
+#include "forward.h"
 
 #ifdef BOOST_NO_EXPLICIT_CONVERSION_OPERATORS
 # define EXPLICIT_OPERATOR_BOOL(expression)                                            \
@@ -72,21 +74,43 @@ private:
     F f_;
 };
 */
-template<>
-struct function_base<void()>
+
+template<typename R>
+struct function_base<R()>
 {
-    virtual void operator()() = 0;
+	typedef R result_type;
+    virtual R operator()() = 0;
     virtual ~function_base() {}
 };
 
-template<typename F>
-struct move_function_obj : function_base<void()>
+template<typename Functor, typename Signature>
+struct move_function_obj : function_base<Signature>
 {
-    move_function_obj(BOOST_RV_REF(F) f) :
+    move_function_obj(BOOST_RV_REF(Functor) f) :
     	f_(boost::move(f))
     {
     }
-    move_function_obj& operator=(BOOST_RV_REF(F) f)
+    move_function_obj& operator=(BOOST_RV_REF(Functor) f)
+    {
+        f_(boost::move(f));
+        return *this;
+    }
+    virtual typename function_base<Signature>::result_type operator()()
+    {
+        return f_();
+    }
+private:
+    Functor f_;
+};
+
+template<typename Functor>
+struct move_function_obj<Functor, void()> : function_base<void()>
+{
+    move_function_obj(BOOST_RV_REF(Functor) f) :
+    	f_(boost::move(f))
+    {
+    }
+    move_function_obj& operator=(BOOST_RV_REF(Functor) f)
     {
         f_(boost::move(f));
         return *this;
@@ -96,17 +120,37 @@ struct move_function_obj : function_base<void()>
         f_();
     }
 private:
-    F f_;
+    Functor f_;
 };
 
-template<typename F>
-struct function_obj : function_base<void()>
+template<typename Functor, typename Signature>
+struct function_obj : function_base<Signature>
 {
-    function_obj(F const& f) :
+    function_obj(Functor const& f) :
     	f_(f)
     {
     }
-    function_obj& operator=(F const& f)
+    function_obj& operator=(Functor const& f)
+    {
+        f_(f);
+        return *this;
+    }
+    virtual typename function_base<Signature>::result_type operator()()
+    {
+        return f_();
+    }
+private:
+    Functor f_;
+};
+
+template<typename Functor>
+struct function_obj<Functor, void()> : function_base<void()>
+{
+    function_obj(Functor const& f) :
+    	f_(f)
+    {
+    }
+    function_obj& operator=(Functor const& f)
     {
         f_(f);
         return *this;
@@ -116,8 +160,9 @@ struct function_obj : function_base<void()>
         f_();
     }
 private:
-    F f_;
+    Functor f_;
 };
+
 }
 }
 
@@ -164,8 +209,9 @@ private:
     BOOST_MOVABLE_BUT_NOT_COPYABLE(move_function)
 };
 */
-template<>
-class move_function<void()>
+
+template<typename R>
+class move_function<R()>
 {
 public:
 	move_function() : f_() {}
@@ -173,7 +219,7 @@ public:
         f_(boost::move(o.f_))
     {
     }
-    move_function<void()>& operator=(BOOST_RV_REF(move_function) o)
+    move_function<R()>& operator=(BOOST_RV_REF(move_function) o)
     {
         f_ = boost::move(o.f_);
         return *this;
@@ -181,54 +227,54 @@ public:
 #ifdef BOOST_NO_RVALUE_REFERENCES
     template<typename F>
     move_function(BOOST_RV_REF(F) f, typename boost::enable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
-        f_(multi_thread_new<function::detail::move_function_obj<F>, boost::rv<F>&>(boost::move(f)))
+        f_(multi_thread_new<function::detail::move_function_obj<F, R()>, boost::rv<F>&>(boost::move(f)))
     {
     }
-    
+
     template<typename F>
     typename boost::enable_if<boost::has_move_emulation_enabled<F>, move_function<void()>&>::type
     operator=(BOOST_RV_REF(F) f)
     {
-        unique_ptr_t(multi_thread_new<function::detail::move_function_obj<F> >(boost::move(f))).swap(f_);
+        unique_ptr_t(multi_thread_new<function::detail::move_function_obj<F, R()> >(boost::move(f))).swap(f_);
         return *this;
     }
-    
+
     template<typename F>
     move_function(F f, typename boost::disable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
-        f_(multi_thread_new<function::detail::function_obj<F> >(f))
+        f_(multi_thread_new<function::detail::function_obj<F, R()> >(f))
     {
     }
-    
+
     template<typename F>
     typename boost::disable_if<boost::has_move_emulation_enabled<F>, move_function<void()>&>::type
     operator=(F f)
     {
-        unique_ptr_t(multi_thread_new<function::detail::function_obj<F> >(f)).swap(f_);
+        unique_ptr_t(multi_thread_new<function::detail::function_obj<F, R()> >(f)).swap(f_);
         return *this;
     }
 #else
     template<typename F>
     move_function(F&& f) :
-        f_(multi_thread_new<function::detail::move_function_obj<F> >(boost::move(f)))
+        f_(multi_thread_new<function::detail::move_function_obj<typename boost::decay<F>::type, R()> >(hg::forward<F>(f)))
     {
     }
-    
+
     template<typename F>
     move_function<void()>& operator=(F&& f)
     {
-        unique_ptr_t(multi_thread_new<function::detail::move_function_obj<F> >(boost::move(f))).swap(f_);
+        unique_ptr_t(multi_thread_new<function::detail::move_function_obj<typename boost::decay<F>::type, R()> >(hg::forward<F>(f))).swap(f_);
         return *this;
     }
 #endif
 
-    void operator()() const {
-        (*f_)();
+    R operator()() const {
+        return (*f_)();
     }
-    
+
     EXPLICIT_OPERATOR_BOOL(!empty())
-    
+
     bool empty() const { return !f_.get(); }
-    
+
 private:
     typedef boost::interprocess::unique_ptr<
         function::detail::function_base<void()>,
