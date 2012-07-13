@@ -14,6 +14,7 @@ class basic_gxx_compiler:
                 + list(map(lambda i: "-I" + i, include_directories))
                 + ["-ftemplate-depth=128"]
                 + ["-O3"]
+                + ["-march=i486"]
                 + ["-std=c++0x"]
                 + ["-c"] + [source]
                 + ["-o"] + [output], stderr=subprocess.STDOUT)
@@ -110,10 +111,11 @@ boost_library_directory = "ext/boost/lib/"
 sfml_library_directory = "ext/SFML/lib/"
 tbb_library_directory = "ext/tbb/lib/"
 
-boost_serialization_lib = "boost_serialization-mgw45-mt-1_48"
-boost_filesystem_lib = "boost_filesystem-mgw45-mt-1_48"
-boost_system_lib = "boost_system-mgw45-mt-1_48"
-boost_thread_lib = "boost_thread-mgw45-mt-1_48"
+boost_serialization_lib = "boost_serialization-mgw45-mt-1_50"
+boost_filesystem_lib = "boost_filesystem-mgw45-mt-1_50"
+boost_system_lib = "boost_system-mgw45-mt-1_50"
+boost_thread_lib = "boost_thread-mgw45-mt-1_50"
+boost_chrono_lib = "boost_chrono-mgw45-mt-1_50"
 sfml_system_lib = "sfml-system-s"
 sfml_window_lib = "sfml-window-s"
 sfml_graphics_lib = "sfml-graphics-s"
@@ -129,7 +131,7 @@ compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "NDEBUG", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION"]
+defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "NDEBUG", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_USES_MOVE"]
 
 includes = [boost_include, sfml_inlcude, tbb_include]
 
@@ -140,7 +142,7 @@ library_directories = [
 libraries = [
     tbb_lib, tbb_malloc_lib,
     sfml_graphics_lib, sfml_window_lib, sfml_system_lib,
-    boost_filesystem_lib, boost_system_lib, boost_serialization_lib, boost_thread_lib]
+    boost_filesystem_lib, boost_system_lib, boost_serialization_lib, boost_thread_lib, boost_chrono_lib]
 
 dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll, libstd_cxx_dll]
 
@@ -172,7 +174,7 @@ def main():
         dlls)
 
     shutil.rmtree("build/intermediate")
-
+    
     #build release package
     os.chdir("build")
     subprocess.call([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
