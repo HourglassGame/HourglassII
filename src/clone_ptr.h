@@ -37,7 +37,7 @@ public:
         return *this = clone_ptr(o);
     }
     clone_ptr(BOOST_RV_REF(clone_ptr) o) :
-    	obj(o.obj), CloneManager(boost::move(static_cast<CloneManager&>(o)))
+    	CloneManager(boost::move(static_cast<CloneManager&>(o))), obj(o.obj)
     {
     	o.obj = 0;
     }

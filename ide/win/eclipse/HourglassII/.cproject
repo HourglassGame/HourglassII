@@ -37,17 +37,19 @@
 								<option id="gnu.cpp.compiler.option.other.pic.60291309" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.927014582" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="TBB_USE_CAPTURED_EXCEPTION"/>
+									<listOptionValue builtIn="false" value="BOOST_THREAD_USES_MOVE"/>
 									<listOptionValue builtIn="false" value="LUA_ANSI"/>
 									<listOptionValue builtIn="false" value="BOOST_MULTI_ARRAY_NO_GENERATORS"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
 									<listOptionValue builtIn="false" value="LUA_USE_APICHECK"/>
 								</option>
+								<option id="gnu.cpp.compiler.option.optimization.flags.328122668" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.197151755" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.650933930" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.mingw.exe.debug.option.optimization.level.823669491" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.mingw.exe.debug.option.debugging.level.919034370" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.include.paths.1461008501" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
+								<option id="gnu.c.compiler.option.include.paths.1461008501" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths"/>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.1561696844" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1695358776" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -64,10 +66,11 @@
 									<listOptionValue builtIn="false" value="sfml-graphics-s-d"/>
 									<listOptionValue builtIn="false" value="sfml-window-s-d"/>
 									<listOptionValue builtIn="false" value="sfml-system-s-d"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw45-mt-1_48"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw45-mt-1_48"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw45-mt-1_48"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw45-mt-1_48"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw45-mt-1_50"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.304655429" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-subsystem,windows" valueType="string"/>
 								<option id="gnu.cpp.link.option.userobjs.2033455066" name="Other objects" superClass="gnu.cpp.link.option.userobjs"/>
@@ -116,6 +119,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.2093967871" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="TBB_USE_CAPTURED_EXCEPTION"/>
+									<listOptionValue builtIn="false" value="BOOST_THREAD_USES_MOVE"/>
 									<listOptionValue builtIn="false" value="LUA_ANSI"/>
 									<listOptionValue builtIn="false" value="BOOST_MULTI_ARRAY_NO_GENERATORS"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
@@ -123,6 +127,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1175809425" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.other.pic.469435028" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1732550993" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1914366072" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.1057217890" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release">
@@ -152,10 +157,11 @@
 									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
 									<listOptionValue builtIn="false" value="sfml-window-s"/>
 									<listOptionValue builtIn="false" value="sfml-system-s"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw45-mt-1_48"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw45-mt-1_48"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw45-mt-1_48"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw45-mt-1_48"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw45-mt-1_50"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1232208659" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-subsystem,windows" valueType="string"/>
 								<option id="gnu.cpp.link.option.userobjs.1363739550" name="Other objects" superClass="gnu.cpp.link.option.userobjs"/>
