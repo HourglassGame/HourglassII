@@ -5,4 +5,16 @@ Boost version 1.50.0 -- http://www.boost.org/users/history/version_1_50_0.html
 SFML version 1.6 -- http://www.sfml-dev.org/download.php
 Threading Building Blocks version 4.0 -- http://threadingbuildingblocks.org/ver.php?fid=174
 
+These libraries must be compiled and placed in the following directory structure within the ext/ directory.
+
+boost/
+  lib/
+  include/
+SFML/
+  lib/
+  include/
+tbb/
+  lib/
+  include/
+
 Platform specific notes (including descriptions of the additional dependencies required by some platforms) are available in the `<PlatformName>ExternalDependencies.txt` files in this directory.
