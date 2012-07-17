@@ -36,7 +36,6 @@
 #include <boost/bind.hpp>
 
 #include <cstddef>
-//#include <debug/vector>
 #include <iostream>
 #include <utility>
 
