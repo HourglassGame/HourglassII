@@ -34,7 +34,7 @@ LuaState::LuaState()
     : ud(), ptr(0)
 {
 }
-LuaState::LuaState(new_state_t) 
+LuaState::LuaState(new_state_t)
     : ud(new LuaUserData()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
 {
     if (ptr) {
