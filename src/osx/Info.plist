@@ -17,6 +17,8 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>219 (pre-alpha)</string>
+	<string>333 (pre-alpha)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.puzzle-games</string>
 </dict>
 </plist>
