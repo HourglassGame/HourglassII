@@ -15,7 +15,7 @@ FrameID::FrameID() :
         universeID_(0)
 {
 }
-FrameID::FrameID(std::size_t frameNumber, const UniverseID& nuniverse) :
+FrameID::FrameID(int frameNumber, const UniverseID& nuniverse) :
         frame_(frameNumber),
         universeID_(nuniverse)
 {
@@ -42,9 +42,9 @@ bool FrameID::nextFrameInSameUniverse(TimeDirection direction) const
         (direction == REVERSE && frame_ != 0)
      || (direction == FORWARDS && frame_ != universeID_.timelineLength() - 1);
 }
-FrameID FrameID::arbitraryFrameInUniverse(std::size_t frameNumber) const
+FrameID FrameID::arbitraryFrameInUniverse(int frameNumber) const
 {
-    return frameNumber < universeID_.timelineLength() ?
+    return frameNumber >= 0 && frameNumber < universeID_.timelineLength() ?
         FrameID(frameNumber, universeID_) : FrameID();
 }
 
@@ -60,13 +60,13 @@ bool FrameID::operator<(const FrameID& o) const {
 }
 bool FrameID::isValidFrame() const {
     return
-    frame_ < universeID_.timelineLength() ?
+    frame_ >= 0 && frame_ < universeID_.timelineLength() ?
         true :
         (assert(frame_ == 0),
         assert(universeID_.timelineLength() == 0),
         false);
 }
-std::size_t FrameID::getFrameNumber() const {
+int FrameID::getFrameNumber() const {
     assert (isValidFrame());
     return frame_;
 }
@@ -99,7 +99,7 @@ UniverseID getUniverse(FrameID const& frame)
 {
     return frame.getUniverse();
 }
-std::size_t getFrameNumber(FrameID const& frame)
+int getFrameNumber(FrameID const& frame)
 {
     return frame.getFrameNumber();
 }

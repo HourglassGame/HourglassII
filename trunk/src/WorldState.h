@@ -28,7 +28,7 @@ public:
      */
     //Exception Safety: Strong
     WorldState(
-        std::size_t timelineLength,
+        int timelineLength,
         Guy const& initialGuy,
         FrameID const& guyStartTime,
         BOOST_RV_REF(PhysicsEngine) physics,
@@ -82,7 +82,7 @@ public:
 
     Frame* getFrame(FrameID const& whichFrame);
     
-    std::size_t getTimelineLength() const;
+    int getTimelineLength() const;
 
 private:
     friend struct ExecuteFrame;

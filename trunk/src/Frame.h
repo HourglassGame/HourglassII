@@ -22,7 +22,7 @@ class Frame {
 public:
     typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
 
-    Frame(std::size_t frameNumber, Universe& universe);
+    Frame(int frameNumber, Universe& universe);
 
     Frame(Frame const& o) :
         frameNumber_(o.frameNumber_),
@@ -78,22 +78,24 @@ private:
     bool nextFrameInSameUniverse(TimeDirection direction) const;
     Universe const& getUniverse() const;
     Universe& getUniverse();
-    std::size_t getFrameNumber() const;
-
-    bool isNullFrame(Frame const* frame);
+    int getFrameNumber() const;
+    //<Valid to call with NullFrame>
+    friend bool isNullFrame(Frame const* frame);
+    //</Valid to call with NullFrame>
+    //<Undefined to call with NullFrame>
     friend Frame const* nextFrame(Frame const* frame, TimeDirection direction);
     friend Frame* nextFrame(Frame* frame, TimeDirection direction);
     friend bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
     friend Universe& getUniverse(Frame* frame);
     friend Universe const& getUniverse(Frame const* frame);
-    friend std::size_t getFrameNumber(Frame const* frame);
-
+    friend int getFrameNumber(Frame const* frame);
+    //</Undefined to call with NullFrame>
     void insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert);
     void changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange);
     void clearArrival(Frame const* toClear);
 
     /** Position of frame within universe_ */
-    std::size_t frameNumber_;
+    int frameNumber_;
     /** Back-link to universe which this frame is in */
     Universe* universe_;
 
@@ -110,17 +112,5 @@ inline void swap(Frame& l, Frame& r)
     l = boost::move(r);
     r = boost::move(temp);
 }
-
-//<Undefined to call with NullFrame>
-//Frame* nextFrame(Frame const* frame, TimeDirection direction);
-//bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
-//unsigned int nextFramePauseLevelDifference(Frame const* frame, TimeDirection direction);
-//Universe& getUniverse(Frame const* frame);
-//Universe& getSubUniverse(Frame* frame, PauseInitiatorID const& initiatorID);
-//std::size_t getFrameNumber(Frame const* frame);
-//</Undefined to call with NullFrame>
-//<Valid to call with NullFrame>
-bool isNullFrame(Frame const* frame);
-//</Valid to call with NullFrame>
 }
 #endif //HG_FRAME_H

@@ -19,7 +19,7 @@ Level loadLevelFromFile(
     lua_call(L, 0, 0);
 
     unsigned speedOfTime(readGlobal<int>(L, "speedOfTime"));
-    std::size_t timelineLength(readGlobal<int>(L, "timelineLength"));
+    int timelineLength(readGlobal<int>(L, "timelineLength"));
     Environment environment(readGlobal<Environment>(L, "environment"));
     ObjectList<NonGuyDynamic> initialArrivals(readGlobal<InitialObjects>(L, "initialArrivals").list);
     InitialGuyArrival initialGuy(readGlobal<InitialGuyArrival>(L, "initialGuy"));

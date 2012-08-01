@@ -10,6 +10,9 @@ BUG - Fix Crashes that can be caused by loading ill-formed levels or
 BUG - make DirectLuaTriggerSystem deterministic + consistent
     (At the moment it isn't, due the the underspecified nature of floating point operations in C++)
 
+BUG - there is a lot of potential for numeric overflow in the code. Need to at least block
+      obviously out of range data coming from Lua.
+
 Implement variable box/guy/segment sizes
 
 Implement drawing of post-physics additional box departures. (Or should this be done by the triggersystem?)

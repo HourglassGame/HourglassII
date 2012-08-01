@@ -35,12 +35,15 @@ void Universe::fixFramesUniverses()
 }
 
 //creates a top level universe
-Universe::Universe(std::size_t timelineLength) :
+Universe::Universe(int timelineLength) :
     frames_()
 {
     assert(timelineLength > 0);
+    //This should probably be checked elsewhere, and should probably result in an exception
+    //because it is based on user input.
+    assert(timelineLength <= static_cast<std::size_t>(std::numeric_limits<int>::max()) && "int overflow detected, aborting");
     frames_.reserve(timelineLength);
-    foreach (std::size_t i, boost::irange<std::size_t>(0, timelineLength)) {
+    foreach (int i, boost::irange<int>(0, timelineLength)) {
         frames_.push_back(Frame(i, *this));
     }
 	assert(!frames_.empty());
@@ -59,16 +62,23 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
     //Never reached
     return 0;
 }
-Frame* Universe::getArbitraryFrame(std::size_t frameNumber)
+Frame* Universe::getArbitraryFrame(int frameNumber)
 {
     assert(!frames_.empty());
-    return frameNumber < frames_.size() ? &frames_[frameNumber] : 0;
+    return frameNumber >= 0 && frameNumber < getTimelineLength() ? &frames_[frameNumber] : 0;
+}
+Frame* Universe::getArbitraryFrameClamped(int frameNumber)
+{
+    assert(!frames_.empty());
+    if (frameNumber < 0) return &(*frames_.begin());
+    if (frameNumber >= getTimelineLength()) return &(*frames_.rbegin());
+    return &frames_[frameNumber];
 }
 //returns the length of this Universe's timeline
-std::size_t Universe::getTimelineLength() const
+int Universe::getTimelineLength() const
 {
     assert(!frames_.empty());
-    return frames_.size();
+    return static_cast<int>(frames_.size());
 }
 
 //Returns the first frame in the universe for objects travelling
@@ -79,12 +89,18 @@ Frame* getEntryFrame(Universe& universe, TimeDirection direction)
 }
 //Returns the frame with the index frameNumber within the universe,
 //or the NullFrame if no such frame exists
-Frame* getArbitraryFrame(Universe& universe,std::size_t frameNumber)
+Frame* getArbitraryFrame(Universe& universe, int frameNumber)
 {
     return universe.getArbitraryFrame(frameNumber);
 }
+//Returns the frame with the index closest to frameNumber within the universe.
+Frame* getArbitraryFrameClamped(Universe& universe, int frameNumber)
+{
+    return universe.getArbitraryFrameClamped(frameNumber);
+}
 //returns the length of this Universe's timeline
-std::size_t getTimelineLength(Universe const& universe) {
+int getTimelineLength(Universe const& universe)
+{
     return universe.getTimelineLength();
 }
 Frame* Universe::getFrame(FrameID const& whichFrame)
@@ -92,4 +108,4 @@ Frame* Universe::getFrame(FrameID const& whichFrame)
     assert(getTimelineLength() == whichFrame.getUniverse().timelineLength());
     return getArbitraryFrame(whichFrame.getFrameNumber());
 }
-}
+}//namespace hg

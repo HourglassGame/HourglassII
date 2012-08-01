@@ -26,7 +26,7 @@ private:
 };
 
 WorldState::WorldState(
-    std::size_t timelineLength,
+    int timelineLength,
     Guy const& initialGuy,
     FrameID const& guyStartTime,
     BOOST_RV_REF(PhysicsEngine) physics,
@@ -41,6 +41,7 @@ WorldState::WorldState(
         currentWinFrames_()
 {
     assert(guyStartTime.isValidFrame());
+    assert(timelineLength > 0);
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
@@ -59,11 +60,11 @@ WorldState::WorldState(
         timeline_.addArrivalsFromPermanentDepartureFrame(initialArrivals);
     }
     //triggerSystem can create departures, so every frame must be initially run:
-    for (std::size_t i(0); i != timelineLength; ++i) {
+    for (int i(0); i != timelineLength; ++i) {
         frameUpdateSet_.add(getArbitraryFrame(timeline_.getUniverse(), i));
     }
     //Run level for a while
-    for (std::size_t i(0); i != timelineLength; ++i) {
+    for (int i(0); i != timelineLength; ++i) {
         executeWorld(interrupter);
     }
 }
@@ -84,7 +85,7 @@ Frame* WorldState::getFrame(FrameID const& whichFrame)
     return timeline_.getFrame(whichFrame);
 }
 
-std::size_t WorldState::getTimelineLength() const
+int WorldState::getTimelineLength() const
 {
     return hg::getTimelineLength(timeline_.getUniverse());
 }

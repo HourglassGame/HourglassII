@@ -11,7 +11,7 @@ public:
     Input();
     void updateState(const sf::Input& input, int mouseXOfEndOfTimeline);
     InputList AsInputList() const;
-    void setTimelineLength(std::size_t newTimelineLength) { timelineLength = newTimelineLength; }
+    void setTimelineLength(int newTimelineLength) { timelineLength = newTimelineLength; }
 private:
     bool left;
     bool right;
@@ -23,7 +23,7 @@ private:
     int mouseX;
     int mouseY;
     int mouseTimelinePosition;
-    std::size_t timelineLength;
+    int timelineLength;
 };
 }
 #endif //HG_INPUT_H

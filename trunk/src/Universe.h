@@ -11,7 +11,7 @@ namespace hg {
 class Universe {
 public:
     //creates a top level universe
-    explicit Universe(std::size_t timelineLength);
+    explicit Universe(int timelineLength);
 
     Universe(BOOST_RV_REF(Universe) o);
     Universe& operator=(BOOST_RV_REF(Universe) o);
@@ -32,31 +32,34 @@ private:
     Frame* getEntryFrame(TimeDirection direction);
     //Returns the frame with the index frameNumber within the universe,
     //or the NullFrame if no such frame exists
-    Frame* getArbitraryFrame(std::size_t frameNumber);
+    Frame* getArbitraryFrame(int frameNumber);
+    //Returns the frame with the index closest to frameNumber within the universe.
+    Frame* getArbitraryFrameClamped(int frameNumber);
     //returns the length of this Universe's timeline
-    std::size_t getTimelineLength() const;
+    int getTimelineLength() const;
+    
     //</UniverseT interface>
-    //Returns the frame which this Universe is a sub universe of.
-    //The top level universe is a sub universe of the NullFrame
-    Frame* getInitiatorFrame(Universe const& universe);
     //Returns the first frame in the universe for objects traveling
     //in TimeDirection direction.
-    Frame* getEntryFrame(Universe& universe, TimeDirection direction);
+    friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
     //Returns the frame with the index frameNumber within the universe,
     //or the NullFrame if no such frame exists
-    Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
-
-    friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
-    friend Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
-    friend std::size_t getTimelineLength(Universe const& universe);
+    friend Frame* getArbitraryFrame(Universe& universe, int frameNumber);
+    //Returns the frame with the index closest to frameNumber within the universe.
+    friend Frame* getArbitraryFrameClamped(Universe& universe, int frameNumber);
+    //returns the length of this universe's timeline
+    friend int getTimelineLength(Universe const& universe);
 
     boost::container::vector<Frame> frames_;
 
     BOOST_MOVABLE_BUT_NOT_COPYABLE(Universe)
 };
+/*
 Frame* getEntryFrame(Universe& universe, TimeDirection direction);
-Frame* getArbitraryFrame(Universe& universe, std::size_t frameNumber);
-std::size_t getTimelineLength(Universe const& universe);
+Frame* getArbitraryFrame(Universe& universe, int frameNumber);
+ */
+int getTimelineLength(Universe const& universe);
+
 inline void swap(Universe& l, Universe& r)
 {
     Universe temp(boost::move(l));
