@@ -37,13 +37,12 @@
 								<option id="gnu.cpp.compiler.option.other.pic.60291309" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.927014582" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="TBB_USE_CAPTURED_EXCEPTION"/>
-									<listOptionValue builtIn="false" value="BOOST_THREAD_USES_MOVE"/>
 									<listOptionValue builtIn="false" value="LUA_ANSI"/>
 									<listOptionValue builtIn="false" value="BOOST_MULTI_ARRAY_NO_GENERATORS"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
 									<listOptionValue builtIn="false" value="LUA_USE_APICHECK"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.optimization.flags.328122668" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.328122668" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.197151755" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.650933930" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug">
@@ -127,7 +126,7 @@
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1175809425" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.other.pic.469435028" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
-								<option id="gnu.cpp.compiler.option.optimization.flags.1732550993" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.flags.1732550993" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1914366072" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.1057217890" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release">
@@ -181,8 +180,13 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="HourglassII.cdt.managedbuild.target.gnu.mingw.exe.3966914" name="Executable" projectType="cdt.managedbuild.target.gnu.mingw.exe"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/HourglassII"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/HourglassII"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/HourglassII"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
@@ -212,4 +216,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>
