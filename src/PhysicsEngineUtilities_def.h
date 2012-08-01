@@ -729,12 +729,12 @@ void guyStep(
 							}
 							Frame* portalTime(
 								nextPortal[j].getRelativeTime() ?
-								getArbitraryFrame(
-									getUniverse(frame),
-									getFrameNumber(frame) + nextPortal[j].getTimeDestination()):
-								getArbitraryFrame(
-									getUniverse(frame),
-									nextPortal[j].getTimeDestination()));
+                                    getArbitraryFrameClamped(
+                                        getUniverse(frame),
+                                        getFrameNumber(frame) + nextPortal[j].getTimeDestination()):
+                                    getArbitraryFrame(
+                                        getUniverse(frame),
+                                        nextPortal[j].getTimeDestination()));
 							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();
@@ -798,7 +798,7 @@ void guyStep(
 							}
 							Frame* portalTime(
 								nextPortal[j].getRelativeTime() ?
-									getArbitraryFrame(
+									getArbitraryFrameClamped(
 										getUniverse(frame),
 										getFrameNumber(frame) + nextPortal[j].getTimeDestination()) :
 									getArbitraryFrame(

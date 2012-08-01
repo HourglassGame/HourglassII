@@ -60,7 +60,7 @@ namespace {
         sf::RenderWindow& target,
         hg::mt::std::vector<hg::Glitz>::type const& glitz,
         hg::Wall const& wall);
-    void DrawTimeline(sf::RenderTarget& target, hg::TimeEngine::FrameListList const& waves, hg::FrameID playerFrame, std::size_t timelineLength);
+    void DrawTimeline(sf::RenderTarget& target, hg::TimeEngine::FrameListList const& waves, hg::FrameID playerFrame, int timelineLength);
     void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
     void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
@@ -396,7 +396,7 @@ hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(hg::FrameView c
 
 void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo)
 {
-    std::vector<std::size_t> framesExecutedList;
+    std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
@@ -465,7 +465,7 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
             foreach (
-                std::size_t num,
+                int num,
                 framesExecutedList
                 | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
             {
@@ -540,14 +540,14 @@ void DrawTimeline(
     sf::RenderTarget& target,
     hg::TimeEngine::FrameListList const& waves,
     hg::FrameID const playerFrame,
-    std::size_t timelineLength)
+    int timelineLength)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
     foreach (hg::FrameUpdateSet const& wave, waves) {
     	foreach (hg::Frame* frame, wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
-                    static_cast<std::size_t>(
+                    static_cast<int>(
                         (static_cast<double>(getFrameNumber(frame))/timelineLength)
                         *target.GetView().GetRect().GetWidth())
                     ] = true;
@@ -557,8 +557,8 @@ void DrawTimeline(
             }
         }
         bool inWaveRegion = false;
-        std::size_t leftOfWaveRegion = 0;
-        for (std::size_t i = 0; i != pixelsWhichHaveBeenDrawnIn.size(); ++i) {
+        int leftOfWaveRegion = 0;
+        for (int i = 0; i != pixelsWhichHaveBeenDrawnIn.size(); ++i) {
             bool pixelOn = pixelsWhichHaveBeenDrawnIn[i];
             if (pixelOn) {
                 if (!inWaveRegion) {

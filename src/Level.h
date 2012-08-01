@@ -13,7 +13,7 @@ class Level {
 public:
     Level(
         unsigned nspeedOfTime,
-        std::size_t ntimelineLength,
+        int ntimelineLength,
         BOOST_RV_REF(Environment) nenvironment,
         BOOST_RV_REF(ObjectList<NonGuyDynamic>) ninitialObjects,
         Guy const& ninitialGuy,
@@ -54,7 +54,7 @@ public:
         return *this;
     }
     unsigned speedOfTime;
-    std::size_t timelineLength;
+    int timelineLength;
     Environment environment;
     ObjectList<NonGuyDynamic> initialObjects;
     Guy initialGuy;

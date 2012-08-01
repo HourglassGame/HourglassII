@@ -3,7 +3,7 @@
 namespace hg {
 Level::Level(
     unsigned nspeedOfTime,
-    std::size_t ntimelineLength,
+    int ntimelineLength,
     BOOST_RV_REF(Environment) nenvironment,
     BOOST_RV_REF(ObjectList<NonGuyDynamic>) ninitialObjects,
     Guy const& ninitialGuy,

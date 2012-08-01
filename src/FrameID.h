@@ -26,7 +26,7 @@ public:
     FrameID();
 
     //Creates a FrameID referring to the given position in the given universe
-    FrameID(std::size_t frameNumber, const UniverseID& universe);
+    FrameID(int frameNumber, const UniverseID& universe);
 
     //Creates a FrameID corresponding to the given Frame*
     explicit FrameID(const Frame* toConvert);
@@ -37,7 +37,7 @@ public:
     bool nextFrameInSameUniverse(TimeDirection direction) const;
 
     // returns a frameID using frameNumber as 'distance' from the start of the universe in
-    FrameID arbitraryFrameInUniverse(std::size_t frameNumber) const;
+    FrameID arbitraryFrameInUniverse(int frameNumber) const;
 
     bool operator==(const FrameID& o) const;
 
@@ -45,7 +45,7 @@ public:
 
     bool isValidFrame() const;
 
-    std::size_t getFrameNumber() const;
+    int getFrameNumber() const;
     UniverseID const& getUniverse() const;
 private:
 
@@ -53,7 +53,7 @@ private:
     friend FrameID nextFrame(FrameID const& frame, TimeDirection direction);
     friend bool nextFrameInSameUniverse(FrameID const& frame, TimeDirection direction);
     friend UniverseID getUniverse(FrameID const& frame);
-    friend std::size_t getFrameNumber(FrameID const& frame);
+    friend int getFrameNumber(FrameID const& frame);
 
     friend class boost::serialization::access;
     template<class Archive>
@@ -76,7 +76,7 @@ private:
         return is;
     }
     //positiong of frame within universeID_
-    std::size_t frame_;
+    int frame_;
     UniverseID universeID_;
 };
 //Returns a std::size_t based on toHash such that two FrameIDs for which operator== returns true give the same std::size_t value;

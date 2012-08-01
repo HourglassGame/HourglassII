@@ -12,7 +12,7 @@
 #include <cassert>
 
 namespace hg {
-Frame::Frame(std::size_t frameNumber, Universe& universe):
+Frame::Frame(int frameNumber, Universe& universe):
         frameNumber_(frameNumber),
         universe_(&universe),
         departures_(),
@@ -47,7 +47,7 @@ Universe const& Frame::getUniverse() const {
 Universe& Frame::getUniverse() {
     return *universe_;
 }
-std::size_t Frame::getFrameNumber() const {
+int Frame::getFrameNumber() const {
     return frameNumber_;
 }
 
@@ -73,7 +73,7 @@ Universe& getUniverse(Frame * frame) {
     assert(frame);
     return frame->getUniverse();
 }
-std::size_t getFrameNumber(Frame const* frame) {
+int getFrameNumber(Frame const* frame) {
     assert(frame);
     return frame->getFrameNumber();
 }
