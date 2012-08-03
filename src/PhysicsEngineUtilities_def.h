@@ -918,10 +918,24 @@ void boxCollisionAlogorithm(
 
 	boost::sort(oldBoxList);
 
+	/*
+	std::cerr << "new step\n";
+	foreach (Collision const& platform, nextPlatform)
+	{
+		int pX(platform.getX());
+		int pY(platform.getY());
+		int pWidth(platform.getWidth());
+		int pHeight(platform.getHeight());
+		std::cerr << "Platform " << pX << ", " << pY << ", " << pWidth << ", " << pHeight << "\n";
+	}
+	*/
+
 	mt::std::vector<int>::type x(oldBoxList.size());
 	mt::std::vector<int>::type y(oldBoxList.size());
 	mt::std::vector<int>::type xTemp(oldBoxList.size());
 	mt::std::vector<int>::type yTemp(oldBoxList.size());
+	mt::std::vector<int>::type xPreBox(oldBoxList.size());
+	mt::std::vector<int>::type yPreBox(oldBoxList.size());
 	mt::std::vector<int>::type size(oldBoxList.size());
 	mt::std::vector<char>::type squished(oldBoxList.size());
 
@@ -1006,8 +1020,21 @@ void boxCollisionAlogorithm(
 	// do all the other things until there are no more things to do
 	bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
 	bool firstTimeThrough(true);
+	//unsigned int count(0);
 	while (thereAreStillThingsToDo) {
 
+		/*
+		++count;
+		if (count > 10)
+		{
+			std::cerr << count << "\n";
+			for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+			{
+				std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed() << ", " << oldBoxList[i].getYspeed() << ", 3200, -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
+			}
+			int bla = 1/0;
+		}
+		*/
 		mt::std::vector<std::pair<bool,int> >::type top(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type bottom(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type left(oldBoxList.size());
@@ -1023,6 +1050,8 @@ void boxCollisionAlogorithm(
 		//*** collide boxes with platforms and walls to discover the hard bounds on the system ***//
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
 			if (!squished[i]) {
+
+				//std::cerr << "Box " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
 				//** Check inside a wall, velocity independent which is why it is so complex **//
 				// intial keep-it-inside-the-level step
 				if (x[i] <= 0 || y[i] <= 0 || x[i] + size[i] > env.wall.roomWidth() || y[i] + size[i] > env.wall.roomHeight())
@@ -1047,10 +1076,10 @@ void boxCollisionAlogorithm(
 					}
 				}
 
-				// TryAgainWithMoreInterpolation is only to be triggered only when moving
+				// TryAgainWithMoreInterpolation is only to be triggered when moving
 				// the box by size[i] will ensure that the box still collides with the wall
 				// it is attempted to be moved out of.
-                if (false) {
+				if (false) {
                     TryAgainWithMoreInterpolation:
                     if (std::abs(x[i]-xTemp[i]) < std::abs(y[i]-yTemp[i])) {
                         x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
@@ -1249,10 +1278,6 @@ void boxCollisionAlogorithm(
 								{
 									x[i] = xTemp[i] + pDirection * oldBoxList[i].getTimeDirection() * platform.getXspeed();
 								}
-								else
-								{
-									x[i] = xTemp[i];
-								}
 							}
 							else
 							{
@@ -1275,6 +1300,17 @@ void boxCollisionAlogorithm(
 						}
 					}
 				}
+			}
+		}
+
+		// Store position before box collision
+		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+		{
+			if (!squished[i])
+			{
+				//std::cerr << "Wall " << i << ": " << x[i] << ", " << y[i] << " " << (right[i].first ? "> " : "  ") << (top[i].first ? "^ " : "  ") << (left[i].first ? "< " : "  ") << (bottom[i].first ? "v\n" : " \n");
+				xPreBox[i] = x[i];
+				yPreBox[i] = y[i];
 			}
 		}
 
@@ -1420,15 +1456,15 @@ void boxCollisionAlogorithm(
 				if (x[i] != xTemp[i] || y[i] != yTemp[i])
 				{
 					thereAreStillThingsToDo = true;
-					xTemp[i] = x[i];
-					yTemp[i] = y[i];
+					xTemp[i] = xPreBox[i];
+					yTemp[i] = yPreBox[i];
 				}
 			}
 		}
 		firstTimeThrough = false;
 	}
 
-	// get this junk out of here
+	// Send boxes
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 	{
 		if (!squished[i])
