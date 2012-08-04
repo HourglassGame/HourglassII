@@ -142,11 +142,13 @@ bool explodeBoxes(
 	// sign = 1, small to large (left to right / top to bottom)
 	// sign = -1, large to small (right to left / bottom to top)
 	pos[index] = boundSoFar;
+	//std::cerr << "Exploding " << index << ": " << boundSoFar << ", " << size[index] << ", " << sign << "\n";
 
 	bool subSquished = false;
 
 	for (std::size_t i(0), isize(links[index].size()); i < isize; ++i)
 	{
+		//std::cerr << "New Bound " << boundSoFar + ((sign == 1) ? size[index] : size[i]) * sign << ", " << ((sign == 1) ? size[index] : size[links[index][i]]) <<  "\n";
 		subSquished =
             explodeBoxes(
                 pos,
@@ -155,7 +157,7 @@ bool explodeBoxes(
                 toBeSquished,
                 bound,
                 links[index][i],
-                boundSoFar + size[index] * sign,
+                boundSoFar + ((sign == 1) ? size[index] : size[links[index][i]]) * sign,
                 sign)
             || subSquished;
 	}
@@ -180,8 +182,8 @@ bool explodeBoxesUpwards(
     std::size_t index,
     int boundSoFar)
 {
+	//int sign = -1;
 	y[index] = boundSoFar;
-	boundSoFar = boundSoFar - size[index];
 
 	bool subSquished = false;
 
@@ -203,7 +205,7 @@ bool explodeBoxesUpwards(
                 toBeSquished,
                 bound,
                 links[index][i],
-                boundSoFar)
+                boundSoFar - size[links[index][i]])
             || subSquished;
 	}
 
@@ -233,6 +235,7 @@ void recursiveBoxCollision(
                 majorAxis[i], minorAxis[i], size[i], size[i]) &&
 			std::abs(majorAxis[index] - majorAxis[i]) > std::abs(minorAxis[index] - minorAxis[i]) - subtractionNumber)
 		{
+			//std::cerr << "Collide link " << majorAxis[index] << ", " << size[index] << ", " << majorAxis[i] << ", " << size[i] << "\n";
 			int overlap = -(majorAxis[index] + size[index] - majorAxis[i]); // index must move UP
 			if (majorAxis[i] < majorAxis[index])
 			{
