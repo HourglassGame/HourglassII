@@ -167,7 +167,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         tester() {
             ::hg::getTestDriver().registerUnitTest(testTester);
         }
-    } tester;
+    } ;//tester;
 }
 }
 }

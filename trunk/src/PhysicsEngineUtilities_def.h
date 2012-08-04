@@ -483,64 +483,199 @@ void guyStep(
 
             if (carry[i])
             {
-                // TODO - Reimplementing this now!
-                //assert(false);
-//#if 0
                 bool droppable(false);
                 if (input.getDown() && supported[i])
                 {
                     int width(guyArrivalList[i].getWidth());
-                    int dropX(facing[i] ? x[i] + width : x[i] - guyArrivalList[i].getBoxCarrySize());
-                    int dropY(y[i]);
+                    int height(guyArrivalList[i].getHeight());
                     int dropSize(guyArrivalList[i].getBoxCarrySize());
+                    //int dropX(facing[i] ? x[i] + width : x[i] - guyArrivalList[i].getBoxCarrySize());
 
-                    if (!wallAtExclusive(env, dropX, dropY, dropSize, dropSize))
+                    // Initialise bounds on drops based on movement direction
+                    int dropY(y[i] + height - dropSize);
+                    int leftBound, rightBound;
+                    if (input.getLeft())
+					{
+                    	leftBound = x[i] - dropSize;
+                    	rightBound = x[i];
+					}
+                    else if (input.getRight())
                     {
-                        droppable = true;
-                        for (std::size_t j(0), jsize(nextBox.size()); droppable && j < jsize; ++j)
-                        {
-                            if (IntersectingRectanglesExclusive(
-                                    nextBox[j].object.getX(), nextBox[j].object.getY(),
-                                    nextBox[j].object.getSize(), nextBox[j].object.getSize(),
-                                    dropX, dropY, dropSize, dropSize))
-                            {
-                                droppable = false;
-                            }
-                        }
-                        for (std::size_t j(0), jsize(nextPlatform.size()); droppable && j < jsize; ++j)
-                        {
-                            if (IntersectingRectanglesExclusive(
-                                    nextPlatform[j].getX(), nextPlatform[j].getY(),
-                                    nextPlatform[j].getWidth(), nextPlatform[j].getHeight(),
-                                    dropX, dropY, dropSize, dropSize))
-                            {
-                                droppable = false;
-                            }
-                        }
-
-                        if (droppable)
-                        {
-                        	makeBoxAndTimeWithPortalsAndMutators(
-                                nextBox,
-                                nextBoxNormalDeparture,
-                                nextPortal,
-                                mutators,
-                                dropX,
-                                dropY,
-                                0,
-                                yspeed[i],
-                                dropSize,
-                                -1,
-                                guyArrivalList[i].getBoxCarryDirection(),
-                                triggerFrameState,
-                                boxGlitzAdder,
-                                frame);
-
-                            carry[i] = false;
-                            carrySize[i] = 0;
-                            carryDirection[i] = hg::INVALID;
-                        }
+                    	leftBound = x[i] - dropSize + width;
+                    	rightBound = x[i] + width;
                     }
+                    else
+                    {
+                    	if (dropSize < width)
+                    	{
+                    		leftBound = x[i];
+							rightBound = x[i] - dropSize + width;
+                    	}
+                    	else
+                    	{
+							leftBound = x[i] - dropSize + width;
+							rightBound = x[i];
+                    	}
+                    }
+
+                    //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
+
+                    // Narrow drop bounds with wall collision
+                    int cx = rightBound - rightBound % env.wall.segmentSize();
+                    int initial_cy = dropY - dropY % env.wall.segmentSize();
+                    while (cx < rightBound + dropSize)
+                    {
+                    	int cy = initial_cy;
+                    	while (cy < dropY + dropSize)
+                    	{
+							if (env.wall.at(cx,cy))
+							{
+								rightBound = cx - dropSize;
+								goto rightBoundCheckDoubleBreak;
+							}
+							cy += env.wall.segmentSize();
+                    	}
+                    	cx += env.wall.segmentSize();
+                    }
+                    rightBoundCheckDoubleBreak:
+
+                    //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
+
+                    cx = (leftBound + dropSize) - (leftBound + dropSize) % env.wall.segmentSize() - 1;
+                    while (cx > leftBound)
+					{
+                    	int cy = initial_cy;
+                    	while (cy < dropY + dropSize)
+						{
+                    		if (env.wall.at(cx,cy))
+							{
+                    			leftBound = cx + 1;
+								goto leftBoundCheckDoubleBreak;
+							}
+							cy += env.wall.segmentSize();
+						}
+						cx -= env.wall.segmentSize();
+					}
+                    leftBoundCheckDoubleBreak:
+
+                    //std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
+
+                    // Check bounds imposed by platforms
+                    if (rightBound >= leftBound)
+                    {
+                    	for (std::size_t j(0), jsize(nextPlatform.size()); j < jsize; ++j)
+						{
+                    		int px = nextPlatform[j].getX();
+                    		int py = nextPlatform[j].getY();
+                    		int pw = nextPlatform[j].getWidth();
+                    		int ph = nextPlatform[j].getHeight();
+							if (IntersectingRectanglesExclusive(
+									px, py, pw, ph,
+									leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+							{
+								if (px + pw > leftBound + dropSize && px < rightBound + dropSize)
+								{
+									rightBound = px - dropSize;
+								}
+								if (px < rightBound && px + pw > leftBound)
+								{
+									leftBound = px + pw;
+								}
+								if (rightBound < leftBound)
+								{
+									break;
+								}
+							}
+						}
+                    }
+                    //std::cerr << "After Plat " << leftBound << ", " << rightBound << "\n";
+
+                    // Check bounds imposed by boxes
+					if (rightBound >= leftBound)
+					{
+						for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
+						{
+							int bx = nextBox[j].object.getX();
+							int by = nextBox[j].object.getY();
+							int bs = nextBox[j].object.getSize();
+							if (IntersectingRectanglesExclusive(
+									bx, by, bs, bs,
+									leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+							{
+								if (bx + bs > leftBound + dropSize && bx < rightBound + dropSize)
+								{
+									rightBound = bx - dropSize;
+								}
+								if (bx < rightBound && bx + bs > leftBound)
+								{
+									leftBound = bx + bs;
+								}
+								if (rightBound < leftBound)
+								{
+									break;
+								}
+							}
+						}
+					}
+
+					//std::cerr << "After Box " << leftBound << ", " << rightBound << "\n";
+
+                    droppable = rightBound >= leftBound;
+
+					if (droppable)
+					{
+
+						// Choose where to drop it within bound
+						int dropX;
+						if (input.getLeft())
+						{
+							dropX = leftBound;
+						}
+						else if (input.getRight())
+						{
+							dropX = rightBound;
+						}
+						else
+						{
+							int midX = x[i]+width/2-dropSize/2;
+							if (leftBound <= midX)
+							{
+								if (midX <= rightBound)
+								{
+									dropX = midX;
+								}
+								else
+								{
+									dropX = rightBound;
+								}
+							}
+							else
+							{
+								dropX = leftBound;
+							}
+						}
+
+						// Add box
+						makeBoxAndTimeWithPortalsAndMutators(
+							nextBox,
+							nextBoxNormalDeparture,
+							nextPortal,
+							mutators,
+							dropX,
+							dropY,
+							0,
+							yspeed[i],
+							dropSize,
+							-1,
+							guyArrivalList[i].getBoxCarryDirection(),
+							triggerFrameState,
+							boxGlitzAdder,
+							frame);
+
+						carry[i] = false;
+						carrySize[i] = 0;
+						carryDirection[i] = hg::INVALID;
+					}
                 }
 
                 if (!droppable)
@@ -548,7 +683,6 @@ void guyStep(
                     carrySize[i] = guyArrivalList[i].getBoxCarrySize();
                     carryDirection[i] = guyArrivalList[i].getBoxCarryDirection();
                 }
-//#endif
             }
             else
             {
@@ -918,8 +1052,9 @@ void boxCollisionAlogorithm(
 
 	boost::sort(oldBoxList);
 
+
+	//std::cerr << "*** New Step ***\n";
 	/*
-	std::cerr << "new step\n";
 	foreach (Collision const& platform, nextPlatform)
 	{
 		int pX(platform.getX());
@@ -1022,7 +1157,6 @@ void boxCollisionAlogorithm(
 	bool firstTimeThrough(true);
 	//unsigned int count(0);
 	while (thereAreStillThingsToDo) {
-
 		/*
 		++count;
 		if (count > 10)
@@ -1030,11 +1164,13 @@ void boxCollisionAlogorithm(
 			std::cerr << count << "\n";
 			for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 			{
-				std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed() << ", " << oldBoxList[i].getYspeed() << ", 3200, -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
+				std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
+						<< ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
 			}
 			int bla = 1/0;
 		}
 		*/
+
 		mt::std::vector<std::pair<bool,int> >::type top(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type bottom(oldBoxList.size());
 		mt::std::vector<std::pair<bool,int> >::type left(oldBoxList.size());
@@ -1081,13 +1217,32 @@ void boxCollisionAlogorithm(
 				// it is attempted to be moved out of.
 				if (false) {
                     TryAgainWithMoreInterpolation:
+                    //std::cerr << "Interpolate " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
                     if (std::abs(x[i]-xTemp[i]) < std::abs(y[i]-yTemp[i])) {
-                        x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
-                        y[i] = y[i] - env.wall.segmentSize()*(y[i]-yTemp[i])/std::abs(y[i]-yTemp[i]);
+                        int newY;
+                    	if (y[i] < yTemp[i])
+                        {
+                        	newY = y[i] - y[i] % env.wall.segmentSize() + env.wall.segmentSize();
+                        }
+                        else
+                        {
+                        	newY = y[i] - y[i] % env.wall.segmentSize() - size[i];
+                        }
+                    	x[i] = x[i] - std::abs(y[i]-newY)*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
+						y[i] = newY;
                     }
                     else {
-                        y[i] = y[i] - env.wall.segmentSize()*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
-                        x[i] = x[i] - env.wall.segmentSize()*(x[i]-xTemp[i])/std::abs(x[i]-xTemp[i]);
+                    	int newX;
+						if (x[i] < xTemp[i])
+						{
+							newX = x[i] - x[i] % env.wall.segmentSize() + env.wall.segmentSize();
+						}
+						else
+						{
+							newX = x[i] - x[i] % env.wall.segmentSize() - size[i];
+						}
+						y[i] = y[i] - std::abs(x[i]-newX)*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
+						x[i] = newX;
                     }
                 }
 
@@ -1135,8 +1290,8 @@ void boxCollisionAlogorithm(
 							if (!w01) {
 								w01 = env.wall.at(x[i]+size[i]-xOff, y[i]+yOff);
 							}
-							if (!w01) {
-								w01 = env.wall.at(x[i]+xOff, y[i]+yOff);
+							if (!w11) {
+								w11 = env.wall.at(x[i]+xOff, y[i]+yOff);
 							}
 						}
 					}
@@ -1325,17 +1480,19 @@ void boxCollisionAlogorithm(
 					{
 						if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
 						{
-							if (std::abs(x[i] - x[j]) < std::abs(y[i] - y[j])) // top or bot
+							if (std::abs(x[i] + size[i]/2 - x[j] - size[j]/2) < std::abs(y[i] + size[i]/2 - y[j] - size[j]/2)) // top or bot
 							{
 								if (y[i] < y[j]) // i above j
 								{
 									bottomLinks[i].push_back(j);
 									topLinks[j].push_back(i);
+									//std::cerr << "Vert link " << i << " <-> " << j << "\n";
 								}
 								else // i below j
 								{
 									topLinks[i].push_back(j);
 									bottomLinks[j].push_back(i);
+									//std::cerr << "Vert link " << j << " <-> " << i << "\n";
 								}
 							}
 						}
@@ -1351,11 +1508,12 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-				if (bottom[i].first)
+				if (bottom[i].first) // Push boxes up
 				{
+					//explodeBoxes(y, size, topLinks, toBeSquished, top, i, bottom[i].second, -1);
 					explodeBoxesUpwards(x, xTemp, y, size, topLinks, firstTimeThrough, toBeSquished, top, i, bottom[i].second);
 				}
-				if (top[i].first)
+				if (top[i].first) // Push boxes down
 				{
 					explodeBoxes(y, size, bottomLinks, toBeSquished, bottom, i, top[i].second, 1);
 				}
@@ -1381,17 +1539,19 @@ void boxCollisionAlogorithm(
                         && !squished[j]
                         && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
 					{
-                        if (std::abs(x[i] - x[j]) >= std::abs(y[i] - y[j])) // left or right
+                        if (std::abs(x[i] + size[i]/2 - x[j] - size[j]/2) >= std::abs(y[i] + size[i]/2 - y[j] - size[j]/2)) // left or right
                         {
                             if (x[i] < x[j]) // i left of j
                             {
                                 rightLinks[i].push_back(j);
                                 leftLinks[j].push_back(i);
+                                //std::cerr << "Hori link " << i << " <-> " << j << "\n";
                             }
                             else // i right of j
                             {
                                 leftLinks[i].push_back(j);
                                 rightLinks[j].push_back(i);
+                                //std::cerr << "Hori link " << j << " <-> " << i << "\n";
                             }
                         }
 					}
@@ -1428,7 +1588,7 @@ void boxCollisionAlogorithm(
 			}
 		}
 
-		// Do something recusive!
+		// Collide boxes vertically which are still overlapping. These will be the unbounded ones
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
@@ -1438,7 +1598,7 @@ void boxCollisionAlogorithm(
 			}
 		}
 
-		// And now in that other dimension!
+		// Collide them horizontally
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
@@ -1448,7 +1608,7 @@ void boxCollisionAlogorithm(
 			}
 		}
 
-		// Check if I Must do What has Tobe Done (again)
+		// If anything moved then rerun box collision until nothing moves.
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
 			if (!squished[i])
