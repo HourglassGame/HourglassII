@@ -49,7 +49,7 @@
 #include "unique_ptr.h"
 #include "sfRenderTargetCanvas.h"
 #include "sfColour.h"
-
+#include "Maths.h"
 typedef sf::Color Colour;
 
 namespace {
@@ -394,6 +394,7 @@ hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(hg::FrameView c
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
+
 void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo)
 {
     std::vector<int> framesExecutedList;
@@ -404,7 +405,7 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
         hg::FrameUpdateSet const& updateSet,
         waveInfo.updatedFrames())
     {
-        framesExecutedList.push_back(boost::distance(updateSet));
+        framesExecutedList.push_back(static_cast<int>(boost::distance(updateSet)));
     }
 
     if (waveInfo.currentPlayerFrame()) {
@@ -432,8 +433,10 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
               hg::FrameID(
                 abs(
                   static_cast<int>(
-                    (app.GetInput().GetMouseX() * static_cast<long>(timeEngine.getTimelineLength()) / app.GetWidth())
-                     % static_cast<long>(timeEngine.getTimelineLength()))),
+                    hg::flooredModulo(static_cast<long>((app.GetInput().GetMouseX()
+                     * static_cast<long>(timeEngine.getTimelineLength())
+                     / app.GetWidth()))
+                    , static_cast<long>(timeEngine.getTimelineLength())))),
                 hg::UniverseID(timeEngine.getTimelineLength()));
             hg::Frame* frame(timeEngine.getFrame(drawnFrame));
             Draw(app,
@@ -558,7 +561,7 @@ void DrawTimeline(
         }
         bool inWaveRegion = false;
         int leftOfWaveRegion = 0;
-        for (int i = 0; i != pixelsWhichHaveBeenDrawnIn.size(); ++i) {
+        for (int i = 0; i != static_cast<int>(pixelsWhichHaveBeenDrawnIn.size()); ++i) {
             bool pixelOn = pixelsWhichHaveBeenDrawnIn[i];
             if (pixelOn) {
                 if (!inWaveRegion) {
