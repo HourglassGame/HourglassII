@@ -92,6 +92,7 @@
 		20469E0214B47D9E00FF6A02 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFD14B47D9E00FF6A02 /* libboost_thread.a */; };
 		20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
 		20634FD514B9CAF100FFB0EE /* level.lua in Resources */ = {isa = PBXBuildFile; fileRef = 20634FD414B9CAF100FFB0EE /* level.lua */; };
+		20B5C4A715D65EAA0074582F /* Maths_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20B5C4A615D65EAA0074582F /* Maths_test.cpp */; };
 		20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
 		20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
@@ -164,7 +165,7 @@
 		200E805214B4792500D054F4 /* DepartureMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DepartureMap.cpp; path = ../../../src/DepartureMap.cpp; sourceTree = SOURCE_ROOT; };
 		200E805314B4792500D054F4 /* DepartureMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DepartureMap.h; path = ../../../src/DepartureMap.h; sourceTree = SOURCE_ROOT; };
 		200E805414B4792500D054F4 /* DirectLuaTriggerSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = DirectLuaTriggerSystem.cpp; path = ../../../src/DirectLuaTriggerSystem.cpp; sourceTree = SOURCE_ROOT; };
-		200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = DirectLuaTriggerSystem.h; path = ../../../src/DirectLuaTriggerSystem.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = DirectLuaTriggerSystem.h; path = ../../../src/DirectLuaTriggerSystem.h; sourceTree = SOURCE_ROOT; };
 		200E805614B4792500D054F4 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Environment.cpp; path = ../../../src/Environment.cpp; sourceTree = SOURCE_ROOT; };
 		200E805714B4792500D054F4 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Environment.h; path = ../../../src/Environment.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E805814B4792500D054F4 /* Foreach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Foreach.h; path = ../../../src/Foreach.h; sourceTree = SOURCE_ROOT; };
@@ -202,7 +203,7 @@
 		200E807814B4792500D054F4 /* Level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Level.cpp; path = ../../../src/Level.cpp; sourceTree = SOURCE_ROOT; };
 		200E807914B4792500D054F4 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Level.h; path = ../../../src/Level.h; sourceTree = SOURCE_ROOT; };
 		200E807A14B4792500D054F4 /* LevelLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelLoader.cpp; path = ../../../src/LevelLoader.cpp; sourceTree = SOURCE_ROOT; };
-		200E807B14B4792500D054F4 /* LevelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LevelLoader.h; path = ../../../src/LevelLoader.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E807B14B4792500D054F4 /* LevelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LevelLoader.h; path = ../../../src/LevelLoader.h; sourceTree = SOURCE_ROOT; };
 		200E807E14B4792500D054F4 /* lapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = lapi.cpp; path = ../../../src/lua/lapi.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E807F14B4792500D054F4 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = ../../../src/lua/lapi.h; sourceTree = SOURCE_ROOT; };
 		200E808014B4792500D054F4 /* lauxlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lauxlib.cpp; path = ../../../src/lua/lauxlib.cpp; sourceTree = SOURCE_ROOT; };
@@ -320,8 +321,8 @@
 		200E80F714B4792500D054F4 /* TriggerData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TriggerData.cpp; path = ../../../src/TriggerData.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E80F814B4792500D054F4 /* TriggerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TriggerData.h; path = ../../../src/TriggerData.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E80F914B4792500D054F4 /* TriggerOffsetsAndDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TriggerOffsetsAndDefaults.h; path = ../../../src/TriggerOffsetsAndDefaults.h; sourceTree = SOURCE_ROOT; };
-		200E80FA14B4792500D054F4 /* TriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TriggerSystem.h; path = ../../../src/TriggerSystem.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TriggerSystemImplementation.h; path = ../../../src/TriggerSystemImplementation.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E80FA14B4792500D054F4 /* TriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TriggerSystem.h; path = ../../../src/TriggerSystem.h; sourceTree = SOURCE_ROOT; };
+		200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TriggerSystemImplementation.h; path = ../../../src/TriggerSystemImplementation.h; sourceTree = SOURCE_ROOT; };
 		200E80FC14B4792500D054F4 /* unique_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = unique_ptr.h; path = ../../../src/unique_ptr.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E80FD14B4792500D054F4 /* Universe_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Universe_fwd.h; path = ../../../src/Universe_fwd.h; sourceTree = SOURCE_ROOT; };
 		200E80FE14B4792500D054F4 /* Universe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Universe.cpp; path = ../../../src/Universe.cpp; sourceTree = SOURCE_ROOT; };
@@ -369,6 +370,8 @@
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
+		20B5C4A515D65E710074582F /* Maths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Maths.h; path = ../../../src/Maths.h; sourceTree = "<group>"; };
+		20B5C4A615D65EAA0074582F /* Maths_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Maths_test.cpp; path = ../../../src/Maths_test.cpp; sourceTree = "<group>"; };
 		20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sfRenderTargetCanvas.h; path = ../../../src/sfRenderTargetCanvas.h; sourceTree = "<group>"; };
 		20B9B32514C6DF1D00E65866 /* sfColour.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sfColour.h; path = ../../../src/sfColour.h; sourceTree = "<group>"; };
 		20C122DC159B622100367CA6 /* HourglassII */ = {isa = PBXFileReference; lastKnownFileType = folder; name = HourglassII; path = ../../../..; sourceTree = "<group>"; };
@@ -625,6 +628,7 @@
 		202E857714BF31E5008F05EB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				20B5C4A415D654C00074582F /* Maths */,
 				20B9B32814C7127800E65866 /* C++ */,
 				20B9B32914C712A600E65866 /* Containers */,
 			);
@@ -710,6 +714,15 @@
 				20469E0714B47E4300FF6A02 /* PkgInfo */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		20B5C4A415D654C00074582F /* Maths */ = {
+			isa = PBXGroup;
+			children = (
+				20B5C4A515D65E710074582F /* Maths.h */,
+				20B5C4A615D65EAA0074582F /* Maths_test.cpp */,
+			);
+			name = Maths;
 			sourceTree = "<group>";
 		};
 		20B9B32614C70DA900E65866 /* ObjectList */ = {
@@ -1006,6 +1019,7 @@
 				203151F514C143060045161F /* lctype.cpp in Sources */,
 				200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */,
 				200AC21614F9128200B1E17F /* move_function_test.cpp in Sources */,
+				20B5C4A715D65EAA0074582F /* Maths_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
