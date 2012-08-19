@@ -96,7 +96,7 @@ public:
     
     Wall const& getWall() const { return wall_; }
     
-    std::size_t getTimelineLength() const { return worldState_.getTimelineLength(); }
+    int getTimelineLength() const { return worldState_.getTimelineLength(); }
 private:
     unsigned int speedOfTime_;
     //state of world at end of last executed frame

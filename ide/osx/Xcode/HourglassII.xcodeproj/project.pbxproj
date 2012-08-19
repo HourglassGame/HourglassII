@@ -92,6 +92,7 @@
 		20469E0214B47D9E00FF6A02 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFD14B47D9E00FF6A02 /* libboost_thread.a */; };
 		20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
 		20634FD514B9CAF100FFB0EE /* level.lua in Resources */ = {isa = PBXBuildFile; fileRef = 20634FD414B9CAF100FFB0EE /* level.lua */; };
+		2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2064466C15D9FBF5009EF465 /* Levels_test.cpp */; };
 		20B5C4A715D65EAA0074582F /* Maths_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20B5C4A615D65EAA0074582F /* Maths_test.cpp */; };
 		20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
@@ -204,7 +205,7 @@
 		200E807914B4792500D054F4 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Level.h; path = ../../../src/Level.h; sourceTree = SOURCE_ROOT; };
 		200E807A14B4792500D054F4 /* LevelLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelLoader.cpp; path = ../../../src/LevelLoader.cpp; sourceTree = SOURCE_ROOT; };
 		200E807B14B4792500D054F4 /* LevelLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LevelLoader.h; path = ../../../src/LevelLoader.h; sourceTree = SOURCE_ROOT; };
-		200E807E14B4792500D054F4 /* lapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = lapi.cpp; path = ../../../src/lua/lapi.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		200E807E14B4792500D054F4 /* lapi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = lapi.cpp; path = ../../../src/lua/lapi.cpp; sourceTree = SOURCE_ROOT; };
 		200E807F14B4792500D054F4 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = ../../../src/lua/lapi.h; sourceTree = SOURCE_ROOT; };
 		200E808014B4792500D054F4 /* lauxlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lauxlib.cpp; path = ../../../src/lua/lauxlib.cpp; sourceTree = SOURCE_ROOT; };
 		200E808114B4792500D054F4 /* lauxlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = lauxlib.h; path = ../../../src/lua/lauxlib.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -225,7 +226,7 @@
 		200E809014B4792500D054F4 /* liolib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = liolib.cpp; path = ../../../src/lua/liolib.cpp; sourceTree = SOURCE_ROOT; };
 		200E809114B4792500D054F4 /* llex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = llex.cpp; path = ../../../src/lua/llex.cpp; sourceTree = SOURCE_ROOT; };
 		200E809214B4792500D054F4 /* llex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = llex.h; path = ../../../src/lua/llex.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		200E809314B4792500D054F4 /* llimits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = llimits.h; path = ../../../src/lua/llimits.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E809314B4792500D054F4 /* llimits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = llimits.h; path = ../../../src/lua/llimits.h; sourceTree = SOURCE_ROOT; };
 		200E809414B4792500D054F4 /* lmathlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lmathlib.cpp; path = ../../../src/lua/lmathlib.cpp; sourceTree = SOURCE_ROOT; };
 		200E809514B4792500D054F4 /* lmem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lmem.cpp; path = ../../../src/lua/lmem.cpp; sourceTree = SOURCE_ROOT; };
 		200E809614B4792500D054F4 /* lmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lmem.h; path = ../../../src/lua/lmem.h; sourceTree = SOURCE_ROOT; };
@@ -247,7 +248,7 @@
 		200E80A614B4792500D054F4 /* ltablib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = ltablib.cpp; path = ../../../src/lua/ltablib.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E80A714B4792500D054F4 /* ltm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ltm.cpp; path = ../../../src/lua/ltm.cpp; sourceTree = SOURCE_ROOT; };
 		200E80A814B4792500D054F4 /* ltm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ltm.h; path = ../../../src/lua/ltm.h; sourceTree = SOURCE_ROOT; };
-		200E80A914B4792500D054F4 /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = lua.h; path = ../../../src/lua/lua.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E80A914B4792500D054F4 /* lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = lua.h; path = ../../../src/lua/lua.h; sourceTree = SOURCE_ROOT; };
 		200E80AA14B4792500D054F4 /* luaconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = luaconf.h; path = ../../../src/lua/luaconf.h; sourceTree = SOURCE_ROOT; };
 		200E80AB14B4792500D054F4 /* lualib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lualib.h; path = ../../../src/lua/lualib.h; sourceTree = SOURCE_ROOT; };
 		200E80AC14B4792500D054F4 /* lundump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lundump.cpp; path = ../../../src/lua/lundump.cpp; sourceTree = SOURCE_ROOT; };
@@ -257,7 +258,7 @@
 		200E80B014B4792500D054F4 /* lzio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lzio.cpp; path = ../../../src/lua/lzio.cpp; sourceTree = SOURCE_ROOT; };
 		200E80B114B4792500D054F4 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = ../../../src/lua/lzio.h; sourceTree = SOURCE_ROOT; };
 		200E80B314B4792500D054F4 /* LuaUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = LuaUtilities.cpp; path = ../../../src/LuaUtilities.cpp; sourceTree = SOURCE_ROOT; };
-		200E80B414B4792500D054F4 /* LuaUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LuaUtilities.h; path = ../../../src/LuaUtilities.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E80B414B4792500D054F4 /* LuaUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LuaUtilities.h; path = ../../../src/LuaUtilities.h; sourceTree = SOURCE_ROOT; };
 		200E80B514B4792500D054F4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = main.cpp; path = ../../../src/main.cpp; sourceTree = SOURCE_ROOT; };
 		200E80B614B4792500D054F4 /* move_function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = move_function.h; path = ../../../src/move_function.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E80B714B4792500D054F4 /* move.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = move.h; path = ../../../src/move.h; sourceTree = SOURCE_ROOT; };
@@ -314,8 +315,8 @@
 		200E80F014B4792500D054F4 /* ThreadLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadLocal.h; path = ../../../src/ThreadLocal.h; sourceTree = SOURCE_ROOT; };
 		200E80F114B4792500D054F4 /* TimeDirection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimeDirection.cpp; path = ../../../src/TimeDirection.cpp; sourceTree = SOURCE_ROOT; };
 		200E80F214B4792500D054F4 /* TimeDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TimeDirection.h; path = ../../../src/TimeDirection.h; sourceTree = SOURCE_ROOT; };
-		200E80F314B4792500D054F4 /* TimeEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TimeEngine.cpp; path = ../../../src/TimeEngine.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
-		200E80F414B4792500D054F4 /* TimeEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TimeEngine.h; path = ../../../src/TimeEngine.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		200E80F314B4792500D054F4 /* TimeEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TimeEngine.cpp; path = ../../../src/TimeEngine.cpp; sourceTree = SOURCE_ROOT; };
+		200E80F414B4792500D054F4 /* TimeEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TimeEngine.h; path = ../../../src/TimeEngine.h; sourceTree = SOURCE_ROOT; };
 		200E80F514B4792500D054F4 /* TimelineState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TimelineState.cpp; path = ../../../src/TimelineState.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E80F614B4792500D054F4 /* TimelineState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TimelineState.h; path = ../../../src/TimelineState.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E80F714B4792500D054F4 /* TriggerData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = TriggerData.cpp; path = ../../../src/TriggerData.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -361,6 +362,7 @@
 		20556DB414C90DF700F71CFC /* FacingDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacingDirection.h; path = ../../../src/FacingDirection.h; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		20634FD414B9CAF100FFB0EE /* level.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; name = level.lua; path = ../../../level.lua; sourceTree = "<group>"; };
+		2064466C15D9FBF5009EF465 /* Levels_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Levels_test.cpp; path = ../../../src/Levels_test.cpp; sourceTree = "<group>"; };
 		208FD88E14D163140089BC25 /* GlitzImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzImplementation.h; path = ../../../src/GlitzImplementation.h; sourceTree = "<group>"; };
 		208FD88F14D16A180089BC25 /* RectangleGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RectangleGlitz.h; path = ../../../src/RectangleGlitz.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		208FD89014D16E600089BC25 /* default_delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_delete.h; path = ../../../src/default_delete.h; sourceTree = "<group>"; };
@@ -640,6 +642,7 @@
 			children = (
 				201D503414D9302A00FA5680 /* LuaUtilities */,
 				200E80B514B4792500D054F4 /* main.cpp */,
+				2064466C15D9FBF5009EF465 /* Levels_test.cpp */,
 				200E80EF14B4792500D054F4 /* TestDriver.h */,
 				200E80EE14B4792500D054F4 /* TestDriver.cpp */,
 				20B9B32514C6DF1D00E65866 /* sfColour.h */,
@@ -1020,6 +1023,7 @@
 				200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */,
 				200AC21614F9128200B1E17F /* move_function_test.cpp in Sources */,
 				20B5C4A715D65EAA0074582F /* Maths_test.cpp in Sources */,
+				2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

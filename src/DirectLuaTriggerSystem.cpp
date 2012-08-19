@@ -11,6 +11,7 @@
 #include <iostream>
 namespace hg {
 //To identify which asserts are actual asserts, and which are checking results from lua
+//luaassert is checking results from lua, and should eventually be replaced with an exception
 #define luaassert assert
 TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter& interrupter) const
 {
@@ -884,6 +885,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         int index(static_cast<int>(lua_tonumber(L, -2)) - 1);
         mt::std::vector<int>::type value;
         assert(lua_istable(L, -1) && "trigger value must be a table");
+        
         for (std::size_t k(1), end(lua_rawlen(L, -1)); k <= end; ++k) {
             luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, k);
@@ -895,6 +897,8 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         triggers.push_back(TriggerData(index, value));
         lua_pop(L, 1);
     }
+    luaassert(boost::distance(triggers) <= boost::distance(triggerOffsetsAndDefaults_)
+            && "The trigger system lua must not create more trigger departures than those declared with offsets and defaults");
     //read glitz return value
     //Glitz  return value looks like this:
     /*
