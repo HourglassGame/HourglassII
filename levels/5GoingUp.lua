@@ -551,7 +551,7 @@ local tempStore =
     protoButtons = {
         toggleSwitch{
             triggerID = 1,
-            timeDirection = 'reverse',
+            timeDirection = 'forwards',
             first = {
                 attachment = {platform = nil, xOffset = 10 * 3200, yOffset = 17 * 3200},
                 width = 800,
@@ -693,7 +693,7 @@ triggerSystem =
     -- C++ still manages offsets and defaults.
     triggerOffsetsAndDefaults = {
         {
-            offset=-1,
+            offset=1,
             default={0}
         },
         {
