@@ -150,6 +150,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
             if get("math.abs")(velocity) > maxSpeed then
                 velocity = sign(velocity) * maxSpeed
             end
+            velocity = velocity >= 0 and get("math.floor")(velocity) or get("math.ceil")(velocity)
             position = position + velocity
             return {position = position, velocity = velocity}
         end
