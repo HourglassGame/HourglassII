@@ -322,7 +322,7 @@ local function constructDynamicArea(proto, PnV)
     return {
         timeDirection = proto.timeDirection,
         width = proto.width, height = proto.height,
-        x = PnV.x, y = PnV.y, xSpeed = PnV.xSpeed, ySpeed = PnV.ySpeed}
+        x = PnV.x, y = PnV.y, xspeed = PnV.xspeed, yspeed = PnV.yspeed}
 end
 
 local function calculateButtonGlitz(proto, buttonPositionAndVelocity, buttonState)
@@ -551,7 +551,7 @@ local tempStore =
     protoButtons = {
         toggleSwitch{
             triggerID = 1,
-            timeDirection = 'forwards',
+            timeDirection = 'reverse',
             first = {
                 attachment = {platform = nil, xOffset = 10 * 3200, yOffset = 17 * 3200},
                 width = 800,
@@ -693,7 +693,7 @@ triggerSystem =
     -- C++ still manages offsets and defaults.
     triggerOffsetsAndDefaults = {
         {
-            offset=1,
+            offset=-1,
             default={0}
         },
         {
