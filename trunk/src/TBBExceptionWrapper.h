@@ -50,7 +50,7 @@ namespace hg {
         void operator()() const
         {
             try {
-                return f_();
+                f_();
             }
             catch (tbb::movable_exception<boost::exception_ptr> const& e) {
                 boost::rethrow_exception(e.data());
@@ -59,6 +59,7 @@ namespace hg {
                 //To get here the exception must have originated from outside the InnerExceptionWrapper.
                 //The only reasons that that can happen are:
                 //  * An exception in the copy-constructor or copy-assignment-operator of `R`.
+                //    (`R` would be the return type of `f_`, if this were generalized to non-void returns) 
                 //  * An exception originating from within the tbb scheduler
                 //In both cases, the only reasonable cause for the exception is a lack of memory,
                 //so this sort of exception is translated into a std::bad_alloc

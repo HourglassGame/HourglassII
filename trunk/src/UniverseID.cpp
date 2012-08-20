@@ -7,12 +7,12 @@
 
 #include "Universe.h"
 namespace hg {
-UniverseID::UniverseID(std::size_t timelineLength) :
+UniverseID::UniverseID(int timelineLength) :
     timelineLength_(timelineLength)
 {
 }
 
-std::size_t UniverseID::timelineLength() const
+int UniverseID::timelineLength() const
 {
     return timelineLength_;
 }
@@ -29,7 +29,7 @@ bool UniverseID::operator<(UniverseID const& o) const
 
 FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction)
 {
-    assert(getTimelineLength(universe));
+    assert(getTimelineLength(universe) >= 0);
     switch (direction) {
     case FORWARDS:
         return FrameID(0, universe);
@@ -41,11 +41,12 @@ FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction)
     //Never reached
     return FrameID();
 }
-FrameID getArbitraryFrame(UniverseID const& universe, std::size_t frameNumber)
+FrameID getArbitraryFrame(UniverseID const& universe, int frameNumber)
 {
-    return frameNumber < getTimelineLength(universe) ? FrameID(frameNumber, universe) : FrameID();
+    assert(getTimelineLength(universe) >= 0);
+    return frameNumber < getTimelineLength(universe) && frameNumber >= 0 ? FrameID(frameNumber, universe) : FrameID();
 }
-std::size_t getTimelineLength(UniverseID const& universe)
+int getTimelineLength(UniverseID const& universe)
 {
     return universe.timelineLength_;
 }

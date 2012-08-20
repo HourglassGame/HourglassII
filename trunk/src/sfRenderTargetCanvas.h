@@ -9,7 +9,7 @@ namespace hg {
 class sfRenderTargetCanvas : public Canvas
 {
 public:
-    sfRenderTargetCanvas(sf::RenderTarget& target) :
+    explicit sfRenderTargetCanvas(sf::RenderTarget& target) :
     target_(&target)
     {}
     virtual void drawRect(int x, int y, int width, int height, unsigned colour)

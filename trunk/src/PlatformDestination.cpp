@@ -10,29 +10,12 @@ namespace hg {
             assert(a);
             return a / abs(a);
         }
-        unsigned pow(unsigned num, unsigned n) {
-            unsigned retv(1);
-            for(unsigned i(0); i < n; ++i) {
-                retv *= num;
-            }
-            return retv;
-        }
         //Returns the integer square-root of num.
         //That is: the greatest integer that is 
         //less than or equal to the squareroot of num
         unsigned isqrt(unsigned num) {
             unsigned guess(1);
             while (guess * guess <= num) {
-                ++guess;
-            }
-            return guess - 1;
-        }
-        //Returns the integer Nth-root of num.
-        //That is: the greatest integer that is 
-        //less than or equal to the Nth-root of num
-        unsigned inthrt(unsigned num, unsigned n) {
-            unsigned guess(1);
-            while (pow(guess, n) <= num) {
                 ++guess;
             }
             return guess - 1;

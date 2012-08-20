@@ -11,8 +11,8 @@
 
 namespace hg {
 FrameID::FrameID() :
-        frame_(0),
-        universeID_(0)
+        frame_(-1),
+        universeID_(-1)
 {
 }
 FrameID::FrameID(int frameNumber, const UniverseID& nuniverse) :
@@ -62,8 +62,8 @@ bool FrameID::isValidFrame() const {
     return
     frame_ >= 0 && frame_ < universeID_.timelineLength() ?
         true :
-        (assert(frame_ == 0),
-        assert(universeID_.timelineLength() == 0),
+        (assert(frame_ == -1),
+        assert(universeID_.timelineLength() == -1),
         false);
 }
 int FrameID::getFrameNumber() const {
