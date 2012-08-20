@@ -39,9 +39,6 @@ Universe::Universe(int timelineLength) :
     frames_()
 {
     assert(timelineLength > 0);
-    //This should probably be checked elsewhere, and should probably result in an exception
-    //because it is based on user input.
-    assert(timelineLength <= static_cast<std::size_t>(std::numeric_limits<int>::max()) && "int overflow detected, aborting");
     frames_.reserve(timelineLength);
     foreach (int i, boost::irange<int>(0, timelineLength)) {
         frames_.push_back(Frame(i, *this));

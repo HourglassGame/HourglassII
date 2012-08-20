@@ -5,7 +5,7 @@
 namespace hg {
 class GuyOutputInfo {
 public:
-    GuyOutputInfo(TimeDirection timeDirection) :
+    explicit GuyOutputInfo(TimeDirection timeDirection) :
         timeDirection_(timeDirection) {}
     TimeDirection getTimeDirection() const { return timeDirection_; }
 private:

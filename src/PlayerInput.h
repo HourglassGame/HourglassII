@@ -4,7 +4,7 @@
 #include <vector>
 namespace hg {
 class PlayerInput {
-    PlayerInput(std::vector<InputList> const& input) :
+    explicit PlayerInput(std::vector<InputList> const& input) :
         input_(&input),
         isNextPlayerFrame_(false)
     {

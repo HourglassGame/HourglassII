@@ -23,10 +23,10 @@ class UniverseID {
 public:
     //top level universeID
     //timelineLength is always length of top-level universe
-    explicit UniverseID(std::size_t timelineLength);
+    explicit UniverseID(int timelineLength);
 
     //returns the length of the lowest level of this universe
-    std::size_t timelineLength() const;
+    int timelineLength() const;
 
     bool operator==(const UniverseID& o) const;
     bool operator<(const UniverseID& o) const;
@@ -50,13 +50,13 @@ private:
     }
 
     friend FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction);
-    friend FrameID getArbitraryFrame(UniverseID const& universe, std::size_t frameNumber);
-    friend std::size_t getTimelineLength(UniverseID const& universe);
+    friend FrameID getArbitraryFrame(UniverseID const& universe, int frameNumber);
+    friend int getTimelineLength(UniverseID const& universe);
 
     friend class FrameID;
     friend std::size_t hash_value(const UniverseID& toHash);
     //timelineLength_ -- length of the universe.
-    std::size_t timelineLength_;
+    int timelineLength_;
 };
 }
 #endif //HG_UNIVERSE_ID_H

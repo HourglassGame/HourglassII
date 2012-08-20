@@ -68,54 +68,6 @@ FrameView makeFrameView(
     return FrameView(finalForwardsGlitz, finalReverseGlitz, guyInfo);
 }
 
-template<typename GuyT>
-boost::optional<Vector2<int> > attemptDrop(
-    bool supported,
-    GuyT arrival,
-    bool facing,
-    Wall const& wall,
-    Vector2<int> const& guyPos,
-    mt::std::vector<Collision>::type const& nextPlatform,
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type& nextBox)
-{
-    boost::optional<Vector2<int> > retV;
-    if (supported)
-    {
-        int width(arrival.getWidth());
-        int dropX(facing ? guyPos.x + width : guyPos.x - arrival.getBoxCarrySize());
-        int dropY(guyPos.y);
-        int dropSize(arrival.getBoxCarrySize());
-#if 0
-        if (!wallAtExclusive(wall, dropX, dropY, dropSize, dropSize))
-        {
-            for (std::size_t j(0), jsize(nextBox.size()); droppable && j < jsize; ++j)
-            {
-                if (IntersectingRectanglesExclusive(
-                        nextBox[j].object.getX(), nextBox[j].object.getY(),
-                        nextBox[j].object.getSize(), nextBox[j].object.getSize(),
-                        dropX, dropY, dropSize, dropSize))
-                {
-                    droppable = false;
-                }
-            }
-            for (std::size_t j(0), jsize(nextPlatform.size()); droppable && j < jsize; ++j)
-            {
-                if (IntersectingRectanglesExclusive(
-                        nextPlatform[j].getX(), nextPlatform[j].getY(),
-                        nextPlatform[j].getWidth(), nextPlatform[j].getHeight(),
-                        dropX, dropY, dropSize, dropSize))
-                {
-                    droppable = false;
-                }
-            }
-        }
-#endif
-    }
-    return retV;
-}
-
-
-
 struct Collidables
 {
     Collidables(

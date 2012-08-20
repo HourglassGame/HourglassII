@@ -77,7 +77,7 @@ Box toBox(lua_State* L, std::size_t arrivalLocationsSize)
     if (!lua_isnil(L, -1)) {
         luaassert(lua_isnumber(L, -1));
         arrivalBasis = static_cast<int>(lua_tonumber(L, -1)) - 1;
-        luaassert(0 <= arrivalBasis && arrivalBasis < arrivalLocationsSize);
+        luaassert(0 <= arrivalBasis && arrivalBasis < static_cast<int>(arrivalLocationsSize));
     }
     lua_pop(L, 1);
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
@@ -567,59 +567,9 @@ void pushBox(lua_State* L, Box const& box)
     lua_pushstring(L, box.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
     lua_setfield(L, -2, "timeDirection");
 }
+}
 
 //TODO: fix code duplication with box version and portal version
-bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Guy const& potentialXer)
-{
-    LuaStackManager stack_manager(L);
-    //push function to call
-    luaL_checkstack(L, 1, 0);
-    lua_getglobal(L, functionName);
-    luaassert(lua_isfunction(L, -1));
-    //push `responsibleXIndex` argument
-    luaL_checkstack(L, 1, 0);
-    lua_pushinteger(L, responsibleXIndex + 1);
-    //push `potentialX` argument
-    pushGuy(L, potentialXer);
-    luaL_checkstack(L, 1, 0);
-    lua_pushstring(L, "guy");
-    lua_setfield(L, -2, "type");
-    //call function
-    lua_call(L, 2, 1);
-    //read return value
-    luaassert(lua_isboolean(L, -1));
-    bool retv(lua_toboolean(L, -1));
-    //pop return value
-    lua_pop(L, 1);
-    return retv;
-}
-bool doShouldXFunction(lua_State* L, char const* functionName, int responsibleXIndex, Box const& potentialXer)
-{
-    LuaStackManager stack_manager(L);
-    //push function to call
-    luaL_checkstack(L, 1, 0);
-    lua_getglobal(L, functionName);
-    luaassert(lua_isfunction(L, -1));
-    //push `responsibleXIndex` argument
-    luaL_checkstack(L, 1, 0);
-    lua_pushinteger(L, responsibleXIndex + 1);
-    //push `potentialX` argument
-    pushBox(L, potentialXer);
-    luaL_checkstack(L, 1, 0);
-    lua_pushstring(L, "box");
-    lua_setfield(L, -2, "type");
-    //call function
-    lua_call(L, 2, 1);
-    //read return value
-    luaassert(lua_isboolean(L, -1));
-    bool retv(lua_toboolean(L, -1));
-    //pop return value
-    lua_pop(L, 1);
-    return retv;
-}
-}
-
-
 //ARGH so much code duplication ):
 bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 {

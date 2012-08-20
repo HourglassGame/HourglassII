@@ -44,7 +44,7 @@ public:
         return *this;
     }
 
-    Glitz(GlitzImplementation* impl) :impl_(impl){
+    explicit Glitz(GlitzImplementation* impl) :impl_(impl){
         assert(impl);
     }
     
