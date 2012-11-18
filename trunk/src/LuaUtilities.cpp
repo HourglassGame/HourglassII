@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include "lua/lualib.h"
+#include "lua/lauxlib.h"
 
 //TODO everywhere:
 //* fix usage of lua_checkstack
