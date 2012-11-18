@@ -64,7 +64,6 @@
 		20469E0214B47D9E00FF6A02 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFD14B47D9E00FF6A02 /* libboost_thread.a */; };
 		20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
 		2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2064466C15D9FBF5009EF465 /* Levels_test.cpp */; };
-		20723E6E15E895CB00B5FDEA /* LuaModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20723E6C15E895CB00B5FDEA /* LuaModule.cpp */; };
 		20945A01160BF702005A94EE /* lapi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459C6160BF702005A94EE /* lapi.cpp */; };
 		20945A02160BF702005A94EE /* lauxlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459C8160BF702005A94EE /* lauxlib.cpp */; };
 		20945A03160BF702005A94EE /* lbaselib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459CA160BF702005A94EE /* lbaselib.cpp */; };
@@ -317,7 +316,6 @@
 		20556DB414C90DF700F71CFC /* FacingDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacingDirection.h; path = ../../../src/FacingDirection.h; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		2064466C15D9FBF5009EF465 /* Levels_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Levels_test.cpp; path = ../../../src/Levels_test.cpp; sourceTree = "<group>"; };
-		20723E6C15E895CB00B5FDEA /* LuaModule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaModule.cpp; path = ../../../src/LuaModule.cpp; sourceTree = "<group>"; };
 		20723E6D15E895CB00B5FDEA /* LuaModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaModule.h; path = ../../../src/LuaModule.h; sourceTree = "<group>"; };
 		208FD88E14D163140089BC25 /* GlitzImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzImplementation.h; path = ../../../src/GlitzImplementation.h; sourceTree = "<group>"; };
 		208FD88F14D16A180089BC25 /* RectangleGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RectangleGlitz.h; path = ../../../src/RectangleGlitz.h; sourceTree = "<group>"; };
@@ -640,7 +638,6 @@
 				20CCB2C415B6681800176180 /* UserDataProxyTable.h */,
 				201DF3A615F5793D00172501 /* UserDataProxyTable.cpp */,
 				20723E6D15E895CB00B5FDEA /* LuaModule.h */,
-				20723E6C15E895CB00B5FDEA /* LuaModule.cpp */,
 			);
 			name = LuaUtilities;
 			sourceTree = "<group>";
@@ -1015,7 +1012,6 @@
 				20B5C4A715D65EAA0074582F /* Maths_test.cpp in Sources */,
 				2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */,
 				201345EB15E4543400E73DA5 /* LayeredCanvas.cpp in Sources */,
-				20723E6E15E895CB00B5FDEA /* LuaModule.cpp in Sources */,
 				201DF3A715F5793D00172501 /* UserDataProxyTable.cpp in Sources */,
 				20945A01160BF702005A94EE /* lapi.cpp in Sources */,
 				20945A02160BF702005A94EE /* lauxlib.cpp in Sources */,
