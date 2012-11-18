@@ -23,12 +23,14 @@ public:
     {
         Glitz sameDirectionGlitz(
             multi_thread_new<RectangleGlitz>(
+                500,
                 position.x, position.y,
                 size, size,
                 0xFF00FF00u));
     
         Glitz oppositeDirectionGlitz(
             multi_thread_new<RectangleGlitz>(
+                500,
                 position.x - velocity.x, position.y - velocity.y,
                 size, size,
                 0x00FF0000u));

@@ -1,104 +1,4 @@
---========================================
---Example HourglassII level file.
---This file is intended to demonstrate 
---and partially document all of the
---lua level interface.
---========================================
-
---When a level is loaded the script for the level is run.
---The script must set the values of specific global
---variables which are required to describe a level.
-
---Precise documentation of what those fields actually are
---will come later, but for now this level should demonstrate
---all the supported features.
-
---All of the global fields that filled in by this file are compulsory
---(must be in every level)
-
---====   Further Development ====--
---Glitz is tricky, it is packaged with a level within the
---same folder as the level script. The rest is not yet designed.
-
---My current working model would restrict glitz to only stuff that
---had hard-coded semantics, and would not allow (for example)
---dynamic generation and definition of glitz.
-
---This is probably ok.
-
-speedOfTime = 3
-timelineLength = 10800
-environment = 
-{
-    gravity = 30,
-    wall = 
-    {
-        width = 20,
-        height = 15,
-        segmentSize = 3200,
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1},
-        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
-    }
-}
-initialGuy = 
-{
-    arrivalTime = 0,
-    arrival = 
-    {
-        x = 8700,
-        y = 20000,
-        xspeed = 0,
-        yspeed = 0,
-        width = 1600,
-        height = 3200,
-        pickups = {timeJump = -1, timeReverse = -1},
-        facing = "left",
-        boxCarrying = false,
-        --these two fields are only needed
-        --if boxCarrying is true.
-        --boxCarrySize = 0,
-        --boxCarryDirection = INVALID,
-        timeDirection = "forwards",
-    }
-}
---only boxes for now, but the plan is that this is all dynamic objects other than guys
-initialArrivals =
-{
-    {type = "box", x = 32400, y = 8000,  xspeed = 0, 	 yspeed = -600, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 46400, y = 14200, xspeed = -1000, yspeed = -500, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 46400, y = 10800, xspeed = -1000, yspeed = -500, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 46400, y = 17600, xspeed = -1000, yspeed = -500, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 46400, y = 21600, xspeed = -500,  yspeed = -500, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 6400,  y = 15600, xspeed = 1000,  yspeed = -500, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 56400, y = 15600, xspeed = 0,     yspeed = 0, 	size = 3200, timeDirection = "forwards"}
-}
-triggerSystem = 
-{
-    --DirectLua does a minimum amount of work in C++, before calling
-    --Lua with the same arguments and expecting the same return values
-    --as the TriggerSystem in C++
-    type = "DirectLua",
-    --This describes a lua chunk which will be loaded by TriggerFrameState
-    --to do its stuff.
-    system =
-    	
-        [===[
---the socialist alternative:
---get("HGUtil.include")(triggerSystem.lua)
---another win for capitalism:
+local triggerSystemString =[===[;
 local function list_iter (t)
     local i = 0
     local n = #t
@@ -150,13 +50,13 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
         local function solvePDEquation(destination, position, velocity)
             local function square(a) return a * a end
             local function sign(a) return get("math.abs")(a) / a end
-            
+
             local desiredPosition = destination.desiredPosition
             local deceleration = destination.deceleration
             local acceleration = destination.acceleration
             if desiredPosition ~= position then
-                if 
-                    (get("math.abs")(desiredPosition - position) <= get("math.abs")(velocity)) 
+                if
+                    (get("math.abs")(desiredPosition - position) <= get("math.abs")(velocity))
                         and
                     (get("math.abs")(velocity) <= deceleration)
                 then
@@ -170,7 +70,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
                         end
                     elseif
                         get("math.abs")(position - desiredPosition)
-							>
+                            >
                         (square(velocity - direction * acceleration) * 3 / (2 * deceleration))
                     then
                         velocity = velocity - direction * acceleration
@@ -185,30 +85,30 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
                     end
                 end
             else
-            	if get("math.abs")(velocity) <= deceleration then
-				    velocity = 0
-			    else
-				    velocity = velocity + (get("math.abs")(velocity)/velocity)*deceleration
-			    end
+                if get("math.abs")(velocity) <= deceleration then
+                    velocity = 0
+                else
+                    velocity = velocity + (get("math.abs")(velocity)/velocity)*deceleration
+                end
             end
             local maxSpeed = destination.maxSpeed
             if get("math.abs")(velocity) > maxSpeed then
-			    velocity = sign(velocity) * maxSpeed
-		    end
+                velocity = sign(velocity) * maxSpeed
+            end
             velocity = velocity >= 0 and get("math.floor")(velocity) or get("math.ceil")(velocity)
-		    position = position + velocity
+            position = position + velocity
             return {position = position, velocity = velocity}
         end
-        
-        local destination = 
+
+        local destination =
             triggerArrivals[self.buttonTriggerID][1] == 0 and
                 self.destinations.offDestination or self.destinations.onDestination
 
         local lastStateTrigger = triggerArrivals[self.lastStateTriggerID]
-        
+
         local horisontalPosAndVel = solvePDEquation(destination.xDestination, lastStateTrigger[1], lastStateTrigger[3])
         local verticalPosAndVel = solvePDEquation(destination.yDestination, lastStateTrigger[2], lastStateTrigger[4])
-        
+
         return
         {
             x = horisontalPosAndVel.position,
@@ -231,7 +131,7 @@ local function calculatePortals(protoPortals, collisions)
     local function calculatePortal(protoPortal, collisions)
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
-        
+
         return
         {
             index = protoPortal.index,
@@ -297,7 +197,7 @@ local function calculateButtonPositionsAndVelocities(protoButtons, collisions)
     return buttonPositionsAndVelocities
 end
 
-local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities, departures)
+local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities, departures, triggerArrivals)
     local function temporalIntersectingExclusive(protoButton, buttonPosition, object)
         local xa, ya
         if protoButton.timeDirection == 'forwards' then
@@ -312,7 +212,7 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
         if object.timeDirection == 'forwards' then
             xb = object.x
             yb = object.y
-        else 
+        else
             xb = object.x - object.xspeed
             yb = object.y - object.yspeed
         end
@@ -336,29 +236,32 @@ local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities,
     end
     local buttonStates = {}
     for i = 1, #protoButtons do
-        local intersecting = false
+        local buttonOn = false
+        if protoButtons[i].sticky and triggerArrivals[protoButtons[i].triggerID][1] ~= 0 then
+            buttonOn = true
+        end
         for frame, objectList in get("pairs")(departures) do
-            if intersecting then break end
+            if buttonOn then break end
             for box in list_iter(objectList.boxes) do
-                if intersecting 
+                if buttonOn
                     or temporalIntersectingExclusive(
                         protoButtons[i], buttonPositionsAndVelocities[i], box)
                 then
-                    intersecting = true
+                    buttonOn = true
                     break
                 end
             end
             for guy in list_iter(objectList.guys) do
-                if intersecting 
+                if buttonOn
                     or temporalIntersectingExclusive(
                         protoButtons[i], buttonPositionsAndVelocities[i], guy)
-                then 
-                    intersecting = true
+                then
+                    buttonOn = true
                     break
                 end
             end
         end
-        buttonStates[i] = intersecting
+        buttonStates[i] = buttonOn
     end
     return buttonStates
 end
@@ -430,126 +333,63 @@ local function calculateMutatorGlitz(protoMutator)
         timeDirection = protoMutator.timeDirection
     }
 end
-    
+
 local function fillButtonTriggers(triggers, protoButtons, buttonStates)
     for i = 1, #protoButtons do
         triggers[protoButtons[i].triggerID] = { buttonStates[i] and 1 or 0 }
     end
 end
 
-local tempStore = 
+local tempStore =
 {
     --mutable store data:
     buttonPositionsAndVelocities = {},
     outputTriggers = {},
     outputGlitz = {},
-    
+    triggerArrivals = nil,
+
     --constant proto-object data:
     protoPortals =
     {
         {
-            attachment = {platform = 1, xOffset = -4200, yOffset = -3200},
+            attachment = {platform = nil, xOffset = 25 * 3200, yOffset = 10 * 3200},
             index = 1,
-            width = 4200,
-            height = 4200,
+            width = 2 * 3200,
+            height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
             destinationIndex = 1,
             xDestination = 0,
-            yDestination = -16000,
-            relativeTime = true,
-            timeDestination = 120,
+            yDestination = 0,
+            relativeTime = false,
+            timeDestination = 0,
             illegalDestination = 1,
-            fallable = true,
+            fallable = false,
             winner = true
         }
     },
     protoCollisions = {
-        {
-            width = 6400,
-            height = 1600,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 2,
-            buttonTriggerID = 1,
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 22400,
-                        maxSpeed = 200,
-                        acceleration = 50,
-                        deceleration = 50
-                    },
-                    yDestination = {
-                        desiredPosition = 43800,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 38400,
-                        maxSpeed = 200,
-                        acceleration = 50,
-                        deceleration = 50
-                    },
-                    yDestination = {
-                        desiredPosition = 43800,
-                        maxSpeed = 300,
-                        acceleration = 20,
-                        deceleration = 20
-                    }
-                }
-            }
-        }
     },
     protoMutators = {
         {
-            data = {
-                x = 50000,
-                y = 25600,
-                xspeed = 0,
-                yspeed = 0,
-                width = 800,
-                height = 6400,
-                collisionOverlap = 0,
-                timeDirection = "forwards",
-            },
-            effect = function (self, object) -- butterfingers
-                if object.type == "guy" and object.boxCarrying then
-                    object.boxCarrying = false
-                    self.additionalEndBoxes[#self.additionalEndBoxes+1] = {
-                        box = {
-                            x = object.x + object.width/2 - object.boxCarrySize/2, 
-                            y = object.y - object.boxCarrySize, 
-                            xspeed = -object.xspeed, yspeed = -500, 
-                            size = object.boxCarrySize, 
-                            illegalPortal = nil, 
-                            arrivalBasis = nil, 
-                            timeDirection = object.boxCarryDirection}, 
-                        targetFrame = self.frameNumber+timeDirectionToInt(object.boxCarryDirection),
-                    }
-                end
-                return object
+            effect = function(tempStore, dynamicObject)
+                if not thisMutator.active then return dynamicObject end
+                if dynamicObject ~= 'guy' then return dynamicObject end
+                guy.pickups.timeJump = guy.pickups.timeJump + 1
+                thisMutator.active = false
+                return dynamicObject
             end,
+            x = 11 * 3200,
+            y = 11 * 3200,
+            width = 1600,
+            height = 1600,
+            xspeed = 0,
+            yspeed = 0,
+            timeDirection = 'forwards',
+            triggerID = 1
         }
     },
     protoButtons = {
-        {
-            attachment = {platform = 1, xOffset = 3200, yOffset = -800},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 1
-        },
-        {
-            attachment = {platform = nil, xOffset = 3200, yOffset = 37600},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 3
-        }
     }
 }
 --==Callin Definitions==--
@@ -557,42 +397,36 @@ local tempStore =
 --for trigger indices that did not arrive by the time this is called
 function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
     local retv = {}
-    
+
     tempStore.frameNumber = frameNumber
-    
+    tempStore.triggerArrivals = triggerArrivals
+
     retv.additionalBoxes = {}
     tempStore.additionalEndBoxes = {}
-    
-    tempStore.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
-    
-    --if frameNumber%300 == 0 then
-    --   retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 6400, y = 6400, xspeed = 0, yspeed = 0, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
-    --end
-    
-    --if frameNumber%2000 == 0 then
-    --    retv.additionalBoxes[#retv.additionalBoxes+1] = {x = 12800, y = 6400, xspeed = 600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = "forwards"}
-    --end
-    
+
     retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals)
     retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions)
-    retv.mutators = { [1] = tempStore.protoMutators[1].data}
+    --retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators)
+    retv.mutators = {}
     retv.arrivalLocations = calculateArrivalLocations(retv.portals)
-    
-    tempStore.portalActive = (triggerArrivals[3][1] == 1)
-    
+
     tempStore.buttonPositionsAndVelocities =
         calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions)
-     
+
     fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions)
-    
+
     for collision in list_iter(retv.collisions) do
         get("table.insert")(tempStore.outputGlitz, calculateCollisionGlitz(collision))
     end
-    
+
     for portal in list_iter(retv.portals) do
         get("table.insert")(tempStore.outputGlitz, calculatePortalGlitz(portal))
     end
-    
+
+    for mutator in list_iter(retv.mutators) do
+        get("table.insert")(tempStore.outputGlitz, calculateMutatorGlitz(mutator))
+    end
+
     return retv
 end
 
@@ -605,16 +439,19 @@ end
 function shouldArrive(dynamicObject)
     return true
 end
-function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal) 
-    return tempStore.portalActive
+function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
+    return true
 end
 function mutateObject(responsibleManipulatorIndices, dynamicObject)
-    return tempStore.protoMutators[1].effect(tempStore, dynamicObject)
+    for i in responsibleManipulatorIndices do
+        dynamicObject = tempStore.protoMutators[tempStore.activeMutators[i]].effect(tempStore, dynamicObject)
+    end
+    return dynamicObject
 end
-    
+
 function getDepartureInformation(departures)
     local buttonStates =
-        calculateButtonStates(tempStore.protoButtons, tempStore.buttonPositionsAndVelocities, departures)
+        calculateButtonStates(tempStore.protoButtons, tempStore.buttonPositionsAndVelocities, departures, tempStore.triggerArrivals)
 
     for i = 1, #tempStore.protoButtons do
         get("table.insert")(
@@ -624,38 +461,68 @@ function getDepartureInformation(departures)
                 tempStore.buttonPositionsAndVelocities[i],
                 buttonStates[i]))
     end
-    
-    get("table.insert")(tempStore.outputGlitz, calculateMutatorGlitz(tempStore.protoMutators[1].data))
-    
+
     fillButtonTriggers(tempStore.outputTriggers, tempStore.protoButtons, buttonStates)
-    
-    if tempStore.makeBox then
-        tempStore.additionalEndBoxes[#tempStore.additionalEndBoxes+1] = {
-            box = {x = 12800, y = 6400, xspeed = -600, yspeed = -400, size = 3200, illegalPortal = nil, arrivalBasis = nil, timeDirection = 'forwards'}, 
-            targetFrame = 500
-        }
-    end
-    
+
     return tempStore.outputTriggers, tempStore.outputGlitz, {}, tempStore.additionalEndBoxes
 end
-    ]===],
+    ]===]
 
+name = "Timebelt"
+speedOfTime = 3
+timelineLength = 10800
+environment =
+{
+    gravity = 22,
+    wall =
+    {
+        width = 32,
+        height = 19,
+        segmentSize = 3200,
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+        {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+        {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+        {1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    }
+}
+initialGuy =
+{
+    arrivalTime = 0,
+    arrival =
+    {
+        x = 7 * 1600,
+        y = 11 * 3200,
+        width = 1600,
+        height = 3200,
+        facing = "right",
+        timeDirection = "forwards",
+        pickups = {timeJump = 0, timeReverse = 0, timeGun = 0},
+    }
+}
+initialArrivals =
+{
+}
+triggerSystem =
+{
+    type = "DirectLua",
+    system = triggerSystemString,
 
     -- C++ still manages offsets and defaults.
-    triggerOffsetsAndDefaults = {
-        {
-            offset = 1,
-            default = {0}
-        },
-        {
-            offset = 1,
-            default = {38400, 43800, 0, 0}
-        },
-        {
-            offset = 1,
-            default = {0}
-        }
-    },
-    arrivalLocationsSize = 1
+    triggerOffsetsAndDefaults = {},
+    arrivalLocationsSize = 1,
 }
-

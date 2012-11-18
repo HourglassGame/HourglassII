@@ -13,6 +13,8 @@ BUG - make DirectLuaTriggerSystem deterministic + consistent
 BUG - there is a lot of potential for numeric overflow in the code. Need to at least block
       obviously out of range data coming from Lua.
 
+Better error reporting for level-file-not-found errors (and related errors).
+
 Implement variable box/guy/segment sizes
 
 Implement drawing of post-physics additional box departures. (Or should this be done by the triggersystem?)
@@ -89,6 +91,8 @@ Make sure the code still works on windows and linux
 *Something about it being a horrible hack currently
 *Put in better graphics than the current "coloured-rectangles"
 *Current guy marker (arrow over head or similar)
+
+Create a Level Editor that Jeffrey/Kieren/Etc can use.
 
 ----===== GAMEPLAY ====----
 

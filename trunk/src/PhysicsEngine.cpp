@@ -142,13 +142,13 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add extra boxes to newDepartures
     buildDeparturesForComplexEntities(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
 
-    mt::std::vector<Glitz>::type forwardsGlitzFromPersister;
-    mt::std::vector<Glitz>::type reverseGlitzFromPersister;
-
     foreach (GlitzPersister const& persister, persistentGlitz) {
-        forwardsGlitzFromPersister.push_back(persister.getForwardsGlitz());
-        reverseGlitzFromPersister.push_back(persister.getReverseGlitz());
+        forwardsGlitz.push_back(persister.getForwardsGlitz());
+        reverseGlitz.push_back(persister.getReverseGlitz());
     }
+
+    boost::push_back(forwardsGlitz, triggerSystemDepartureInformation.forwardsGlitz);
+    boost::push_back(reverseGlitz, triggerSystemDepartureInformation.reverseGlitz);
 
     buildDeparturesForComplexEntities(
         persistentGlitz | boost::adaptors::transformed(NextPersister(frame)), newDepartures);
@@ -159,12 +159,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add data to departures
     return PhysicsReturnT(
         newDepartures,
-        makeFrameView(
-            guyInfo,
-            triggerSystemDepartureInformation.backgroundGlitz,
-            triggerSystemDepartureInformation.foregroundGlitz,
-            forwardsGlitz,
-            reverseGlitz),
+        FrameView(forwardsGlitz, reverseGlitz, guyInfo),
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame);
