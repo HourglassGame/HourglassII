@@ -3,82 +3,144 @@
 #include <boost/move/move.hpp>
 #include <boost/checked_delete.hpp>
 #include <boost/type_traits/add_lvalue_reference.hpp>
+#include <boost/type_traits/integral_constant.hpp>
+#include <boost/type_traits/remove_reference.hpp>
 #include <boost/swap.hpp>
+#include "default_delete.h"
 
 //This is not a standard conforming unique_ptr implementation!!
 //However, it can be modified to be one if that is required.
 //I have simply not been bothered to implement
 //all the required functionality.
 namespace hg {
-template<class T> class unique_ptr
+namespace unique_ptr_detail {
+    namespace has_pointer_type_imp
+    {
+        template <class T> static long test(...);
+        template <class T> static char test(typename T::pointer* = 0);
+    }
+
+    template <class T>
+    struct has_pointer_type
+        : public boost::integral_constant<bool, sizeof has_pointer_type_imp::test<T>(0) == 1>
+    {
+    };
+
+    namespace pointer_type_imp
+    {
+        template <class T, class D, bool = has_pointer_type<D>::value>
+        struct pointer_type
+        {
+            typedef typename D::pointer type;
+        };
+
+        template <class T, class D>
+        struct pointer_type<T, D, false>
+        {
+            typedef T* type;
+        };
+    }
+
+    template <class T, class D>
+    struct pointer_type
+    {
+        typedef typename pointer_type_imp::pointer_type<T, typename boost::remove_reference<D>::type>::type type;
+    };
+}
+
+
+template<class T, class D = default_delete<T> > class unique_ptr : D
 {
 public:
+    typedef T element_type;
+    typedef D deleter_type;
+    typedef typename unique_ptr_detail::pointer_type<T, D>::type pointer;
     unique_ptr() :
-        ptr_(0)
+        D(),
+        p()
     {}
-    explicit unique_ptr(T* p) :
-        ptr_(p)
+    explicit unique_ptr(pointer p) :
+        D(),
+        p(p)
+    {
+    }
+    unique_ptr(pointer p, const D& d) :
+        D(d),
+        p(p)
+    {
+    }
+    unique_ptr(pointer p, BOOST_RV_REF(D) d) :
+        D(boost::move(d)),
+        p(p)
     {
     }
     unique_ptr(BOOST_RV_REF(unique_ptr) u) :
-        ptr_(u.ptr_)
+        D(boost::move(u.get_deleter())),
+        p(u.p)
     {
-        u.ptr_ = 0;
+        u.p = pointer();
     }
-    template <class U>
-    unique_ptr(BOOST_RV_REF(unique_ptr<U>) u) :
-        ptr_(u.ptr_)
+    template <class U, class E>
+    unique_ptr(BOOST_RV_REF_2_TEMPL_ARGS(unique_ptr, U, E) u) :
+        D(boost::move(u.D)),
+        p(u.p)
     {
-        u.ptr_ = 0;
+        u.p = pointer();
     }
     ~unique_ptr()
     {
-        boost::checked_delete(ptr_);
+        if (p) get_deleter()(p);
     }
     unique_ptr& operator=(BOOST_RV_REF(unique_ptr) u)
     {
-        boost::swap(ptr_, u.ptr_);
+        reset(u.release());
+        get_deleter() = boost::move(u.get_deleter());
         return *this;
     }
-    template <class U> unique_ptr& operator=(BOOST_RV_REF(unique_ptr<U>) u)
+    template <class U, class E> unique_ptr& operator=(BOOST_RV_REF_2_TEMPL_ARGS(unique_ptr, U, E) u)
     {
-        boost::swap(ptr_, u.ptr_);
+        reset(u.release());
+        get_deleter() = boost::move(u.get_deleter());
         return *this;
     }
     typename boost::add_lvalue_reference<T>::type operator*() const
     {
-        return *ptr_;
+        return *p;
     }
-    T* operator->() const
+    pointer operator->() const
     {
-        return ptr_;
+        return p;
     }
-    T* get() const
+    pointer get() const
     {
-        return ptr_;
+        return p;
     }
-    T* release()
+    deleter_type& get_deleter() { return *this; }
+    deleter_type const& get_deleter() const { return *this; }
+    pointer release()
     {
-        T* retv(ptr_);
-        ptr_ = 0;
+        pointer retv(p);
+        p = pointer();
         return retv;
     }
-    void reset(T* p = 0)
+    void reset(pointer p = pointer())
     {
-        boost::checked_delete(ptr_);
-        ptr_ = p;
+        pointer old_p(this->p);
+        this->p = p;
+        if (old_p) get_deleter()(old_p);
     }
     void swap(unique_ptr& u)
     {
-        boost::swap(ptr_, u.ptr_);
+        boost::swap(p, u.p);
+        boost::swap(get_deleter(), u.get_deleter());
     }
 
 private:
-    T* ptr_;
+    pointer p;
     
     BOOST_MOVABLE_BUT_NOT_COPYABLE(unique_ptr)
 };
-template<typename T> class unique_ptr<T[]>;
+template<class T> class unique_ptr<T[]>;
 template<typename T> void swap(unique_ptr<T>& l, unique_ptr<T>& r)
 {
     l.swap(r);

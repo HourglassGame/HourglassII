@@ -2,9 +2,9 @@
 #define HG_LEVEL_LOADER_H
 #include "Level.h"
 #include "OperationInterrupter.h"
-#include <string>
+#include <boost/filesystem/path.hpp>
 namespace hg {
 Level loadLevelFromFile(
-    std::string const& filename, OperationInterrupter& interrupter);
+    boost::filesystem::path const& levelPath, OperationInterrupter& interrupter);
 } //namespace hg
 #endif //HG_LEVEL_LOADER_H

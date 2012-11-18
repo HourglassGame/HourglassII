@@ -5,6 +5,7 @@
 #include "ThreadLocal.h"
 #include "ObjectAndTime.h"
 #include "LuaInterruption.h"
+#include "LuaModule.h"
 #include <string>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
@@ -142,7 +143,8 @@ class DirectLuaTriggerSystem :
 {
 public:
     DirectLuaTriggerSystem(
-        std::vector<char> const& triggerSystemLuaChunk,
+        std::vector<char> const& mainChunk,
+        std::vector<LuaModule> const& extraChunks,
         std::vector<
                 std::pair<
                     int,
@@ -164,7 +166,8 @@ private:
     //luaStates_ a cache, so ignoring its contents does not cause
     //any problems.
     lazy_ptr<ThreadLocal<LuaState> > luaStates_;
-    std::vector<char> compiledLuaChunk_;
+    std::vector<char> compiledMainChunk_;
+    std::vector<LuaModule> compiledExtraChunks_;
     std::vector<
         std::pair<
             int,

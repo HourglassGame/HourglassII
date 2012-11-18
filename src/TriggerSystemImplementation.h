@@ -55,17 +55,17 @@ class TriggerFrameStateImplementation
 
     struct DepartureInformation {
         DepartureInformation(
-            mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type const& ntriggerDepartures,
-            mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& nbackgroundGlitz,
-            mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& nforegroundGlitz,
-            mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nadditionalBoxDepartures):
-                triggerDepartures(ntriggerDepartures),
-                backgroundGlitz(nbackgroundGlitz),
-                foregroundGlitz(nforegroundGlitz),
-                additionalBoxDepartures(nadditionalBoxDepartures) {}
+            mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type const& triggerDepartures,
+            mt::std::vector<Glitz>::type const& forwardsGlitz,
+            mt::std::vector<Glitz>::type const& reverseGlitz,
+            mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& additionalBoxDepartures):
+                triggerDepartures(triggerDepartures),
+                forwardsGlitz(forwardsGlitz),
+                reverseGlitz(reverseGlitz),
+                additionalBoxDepartures(additionalBoxDepartures) {}
         mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type triggerDepartures;
-		mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type backgroundGlitz;
-        mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type foregroundGlitz;
+		mt::std::vector<Glitz>::type forwardsGlitz;
+        mt::std::vector<Glitz>::type reverseGlitz;
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type additionalBoxDepartures;
     };
 

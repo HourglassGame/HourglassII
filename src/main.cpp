@@ -9,6 +9,7 @@
 #include "TestDriver.h"
 #include "Foreach.h"
 #include "ReplayIO.h"
+#include "LayeredCanvas.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -116,7 +117,7 @@ namespace {
         CreateTimeEngine(hg::OperationInterrupter& interrupter) : interrupter_(&interrupter) {}
 
         hg::TimeEngine operator()() const {
-            return hg::TimeEngine(hg::loadLevelFromFile("level.lua", *interrupter_), *interrupter_);
+            return hg::TimeEngine(hg::loadLevelFromFile("level.lvl", *interrupter_), *interrupter_);
         }
     private:
         hg::OperationInterrupter* interrupter_;
@@ -224,6 +225,10 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
                     }
+                    catch(std::exception const& e) {
+                        std::cerr << e.what() << std::endl;
+                        goto breakmainloop;
+                    }
 				}
 				sf::String loadingGlyph("Loading Level...");
 				loadingGlyph.SetColor(Colour(255,255,255));
@@ -271,7 +276,6 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 					//playing replay -> playing game                        Keybinding: P or <get to end of replay>
 					switch (event.Type) {
 					case sf::Event::Closed:
-						//TODO - add something which cancels the execution of the time engine
                         interrupter->interrupt();
                         futureRunResult.wait();
 						app.Close();
@@ -378,10 +382,8 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 				break;
 			}
     	}
-    	continuemainloop:
-    	;
+    	continuemainloop:;
     }
-
     breakmainloop:
     timeEngineThread.interrupt();
     timeEngineThread.join();
@@ -529,14 +531,16 @@ void DrawWall(
     }
 }
 
-void DrawParticularGlitz(sf::RenderTarget& target, hg::Glitz const& glitz)
+void DrawParticularGlitz(hg::Glitz const& glitz, hg::LayeredCanvas& canvas)
 {
-    hg::sfRenderTargetCanvas canvas(target);
     glitz.display(canvas);
 }
 void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList)
 {
-	foreach (hg::Glitz const& glitz, glitzList) DrawParticularGlitz(target, glitz);
+    hg::sfRenderTargetCanvas canvas(target);
+    hg::LayeredCanvas layeredCanvas(canvas);
+	foreach (hg::Glitz const& glitz, glitzList) DrawParticularGlitz(glitz, layeredCanvas);
+    layeredCanvas.flush();
 }
 
 void DrawTimeline(

@@ -11,7 +11,7 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream> 
 namespace hg {
-inline int panic (lua_State* L) {
+inline int panic(lua_State* L) {
     //Check whether this is a memory allocation error
     LuaUserData& ud(getUserData(L));
     if (ud.is_out_of_memory()) {

@@ -1,15 +1,55 @@
 #include "DirectLuaTriggerSystem.h"
-#include <cassert>
+
+#include "lua/lua.h"
 #include "lua/lauxlib.h"
 #include "lua/lualib.h"
+
 #include "CommonTriggerCode.h"
 #include "ObjectAndTime.h"
 #include "LuaUtilities.h"
-#include "Foreach.h"
 #include "LuaStackManager.h"
+#include "LuaSandbox.h"
+#include "RectangleGlitz.h"
+
 #include <boost/ref.hpp>
+
 #include <iostream>
+
+#include <cassert>
+
+#include "Foreach.h"
 namespace hg {
+
+static int preloadReset(lua_State* L) {
+    //return deepcopy(upvalues[1])
+    
+    lua_newtable(L);//[newPreload]
+    lua_pushvalue(L, lua_upvalueindex(1)); //[newPreload, proto]
+    
+    lua_pushnil(L);//[newPreload, proto, nil]
+    while (lua_next(L, -2) != 0) {//[newPreload, proto, key, value]
+        lua_pushvalue(L, -2);//[newPreload, proto, key, value, key]
+        lua_insert(L, -2);//[newPreload, proto, key, key, value]
+        lua_settable(L, -5);//[newPreload, proto, key]
+    }
+    //[newPreload, proto]
+    lua_pop(L, 1);//[newPreload]
+    return 1;
+}
+
+static void setUpPreloadResetFunction(lua_State* L, std::vector<LuaModule> const& extraChunks) {
+    //protoPreload = makeTable(extraChunks.name -> load(extraChunks.chunk))
+    lua_createtable(L, 0, extraChunks.size());//[protoPreload]
+    foreach (LuaModule const& mod, extraChunks) {
+        pushFunctionFromVector(L, mod.chunk, mod.name);//[protoPreload, chunk]
+        lua_setfield(L, -2, mod.name.c_str());//[protoPreload]
+    }
+    
+    //registry.preloadReset = preloadReset with upvalue[1] = protoPreload
+    lua_pushcclosure(L, preloadReset, 1);//[preloadReset]
+    setPackagePreloadResetFunction(L);//[]
+}
+
 //To identify which asserts are actual asserts, and which are checking results from lua
 //luaassert is checking results from lua, and should eventually be replaced with an exception
 #define luaassert assert
@@ -18,8 +58,14 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter& in
     LuaState& sharedState(luaStates_->get());
 
     if (!sharedState.ptr) {
-        sharedState = loadLuaStateFromVector(compiledLuaChunk_, "triggerSystem");
-        loadSandboxedLibraries(sharedState.ptr);
+        LuaState L((LuaState::new_state_t()));
+
+        loadSandboxedLibraries(L.ptr);
+        
+        pushFunctionFromVector(L.ptr, compiledMainChunk_, "triggerSystem");
+        setUpPreloadResetFunction(L.ptr, compiledExtraChunks_);
+        
+        sharedState = boost::move(L);
     }
 
 	return TriggerFrameState(
@@ -49,7 +95,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
     LuaStackManager stackSaver(L);
     luaL_checkstack(L, 1, 0);
     lua_pushvalue(L, -1);
-    sandboxFunction(L, -1);
+    restoreGlobals(L);
     lua_call(L, 0, 0);
 }
 namespace {
@@ -210,18 +256,15 @@ unsigned readColourField(lua_State* L, char const* fieldName)
     return r << 24 | g << 16 | b << 8;
 }
 
-RetardedNotActuallyAGlitzGlitz toGlitz(lua_State* L)
+Glitz toGlitz(lua_State* L)
 {
+    int layer(readField<int>(L, "layer"));
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
     int width(readField<int>(L, "width"));
     int height(readField<int>(L, "height"));
-    int xspeed(readField<int>(L, "xspeed"));
-    int yspeed(readField<int>(L, "yspeed"));
-    unsigned forwardsColour(readColourField(L, "forwardsColour"));
-    unsigned reverseColour(readColourField(L, "reverseColour"));
-    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
-    return RetardedNotActuallyAGlitzGlitz(x, y, width, height, xspeed, yspeed, forwardsColour, reverseColour, timeDirection);
+    unsigned colour(readColourField(L, "colour"));
+    return Glitz(multi_thread_new<RectangleGlitz>(layer, x, y, width, height, colour));
 }
 
 Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocationsSize)
@@ -812,8 +855,9 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     //]
     //call function
+    //return values are: triggers, forwardsGlitz, reverseGlitz, extraBoxes
     lua_call(L, 1, 4);
-    
+
     //read triggers return value
     //Trigger return value looks like:
     /*
@@ -849,25 +893,22 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     luaassert(boost::distance(triggers) <= boost::distance(triggerOffsetsAndDefaults_)
             && "The trigger system lua must not create more trigger departures than those declared with offsets and defaults");
-    //read glitz return value
-    //Glitz  return value looks like this:
+    //read glitz return values
+    //Glitz return value looks like this:
     /*
     {
         {
+            layer = <number>
             x = <number>,
             y = <number>,
             width = <positive number or 0>,
             height = <positive number or 0>,
-            xspeed = <number>,
-            yspeed = <number>,
             --these colour numbers are in the range [0, 255]
             --TODO:
             --seriously consider making them be in the range [0, 1]!!
             --This would also warrant a change to the rest of the
             --glitz system throughout the engine.
-            forwardsColour = {r = <number>, g = <number>, b = <number>},
-            reverseColour = {r = <number>, g = <number>, b = <number>},
-            timeDirection = <'forwards' or 'reverse'>
+            colour = {r = <number>, g = <number>, b = <number>},
         },
         {
             <as above>
@@ -875,29 +916,28 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         ...
     }*/
 
-    // get background glitz departure
-    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type backgroundGlitz;
+    // get forwards glitz departure
+    mt::std::vector<Glitz>::type forwardsGlitz;
     if (!lua_isnil(L, -3)) {
-        luaassert(lua_istable(L, -3) && "background glitz list must be a table");
+        luaassert(lua_istable(L, -3) && "forwards glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -3)); i <= end; ++i) {
             luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -4);
-            backgroundGlitz.push_back(toGlitz(L));
+            forwardsGlitz.push_back(toGlitz(L));
             lua_pop(L, 1);
         }
     }
-    luaassert(backgroundGlitz.size());
     
-    // get forground glitz departure
-    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type foregroundGlitz;
+    // get reverse glitz departure
+    mt::std::vector<Glitz>::type reverseGlitz;
     if (!lua_isnil(L, -2)) {
-        luaassert(lua_istable(L, -2) && "foreground glitz list must be a table");
+        luaassert(lua_istable(L, -2) && "background glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -2)); i <= end; ++i) {
             luaL_checkstack(L, 1, 0);
             lua_pushinteger(L, i);
             lua_gettable(L, -3);
-            foregroundGlitz.push_back(toGlitz(L));
+            reverseGlitz.push_back(toGlitz(L));
             lua_pop(L, 1);
         }
     }
@@ -944,8 +984,8 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     lua_pop(L, 4);
     return DepartureInformation(
         calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame),
-        backgroundGlitz,
-        foregroundGlitz,
+        forwardsGlitz,
+        reverseGlitz,
         newBox);
 }
 
@@ -954,7 +994,7 @@ DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
 }
 
 namespace {
-std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
+std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk, char const* name) {
     std::pair<char const*, char const*> source_iterators;
     if (!sourceChunk.empty()) {
         source_iterators.first = &sourceChunk.front();
@@ -962,7 +1002,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
     }
     std::vector<char> compiledChunk;
     LuaState L((LuaState::new_state_t()));
-    if (lua_load(L.ptr, lua_VectorReader, &source_iterators, "source chunk", 0)) {
+    if (lua_load(L.ptr, lua_VectorReader, &source_iterators, name, 0)) {
         std::cerr << lua_tostring(L.ptr, -1) << std::endl;
     	luaassert(false);
     }
@@ -973,7 +1013,8 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk) {
 }
 }
 DirectLuaTriggerSystem::DirectLuaTriggerSystem(
-    std::vector<char> const& triggerSystemLuaChunk,
+    std::vector<char> const& mainChunk,
+    std::vector<LuaModule> const& extraChunks,
     std::vector<
             std::pair<
                 int,
@@ -981,10 +1022,14 @@ DirectLuaTriggerSystem::DirectLuaTriggerSystem(
             >
     > const& triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize) :
-        compiledLuaChunk_(compileLuaChunk(triggerSystemLuaChunk)),
+        compiledMainChunk_(compileLuaChunk(mainChunk, "Main Chunk")),
+        compiledExtraChunks_(extraChunks),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
+    foreach(LuaModule& module, compiledExtraChunks_) {
+        module.chunk = compileLuaChunk(module.chunk, module.name.c_str());
+    }
 }
 }
 

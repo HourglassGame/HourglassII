@@ -1,3 +1,4 @@
+#if 0
 #include "BasicConfiguredTriggerSystem.h"
 #include "ProtoStuff.h"
 #include "Universe.h"
@@ -308,3 +309,4 @@ BasicConfiguredTriggerFrameState::BasicConfiguredTriggerFrameState(BasicConfigur
 {
 }
 }//namespace hg
+#endif

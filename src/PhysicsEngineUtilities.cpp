@@ -15,59 +15,6 @@ void buildDepartures(
     buildDeparturesForComplexEntities(nextGuy, newDepartures);
 }
 
-
-template<typename T>
-    void pushBidirectional(
-        T const& obj,
-        unsigned forwardsColour, unsigned reverseColour,
-        mt::std::vector<Glitz>::type& forwardsGlitz,
-        mt::std::vector<Glitz>::type& reverseGlitz)
-{
-    Glitz sameDirectionGlitz(
-        multi_thread_new<RectangleGlitz>(
-            obj.getX(), obj.getY(),
-            obj.getWidth(), obj.getHeight(),
-            forwardsColour));
-
-    Glitz oppositeDirectionGlitz(
-        multi_thread_new<RectangleGlitz>(
-            obj.getX() - obj.getXspeed(), obj.getY() - obj.getYspeed(),
-            obj.getWidth(), obj.getHeight(),
-            reverseColour));
-
-    forwardsGlitz.push_back(
-        obj.getTimeDirection() == FORWARDS ?
-        sameDirectionGlitz:oppositeDirectionGlitz);
-
-    reverseGlitz.push_back(
-        obj.getTimeDirection() == REVERSE ?
-        sameDirectionGlitz:oppositeDirectionGlitz);
-}
-
-FrameView makeFrameView(
-    mt::std::vector<GuyOutputInfo>::type const& guyInfo,
-    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& backgroundTriggerGlitz,
-    mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type const& foregroundTriggerGlitz,
-    mt::std::vector<Glitz>::type const& forwardsGlitz,
-    mt::std::vector<Glitz>::type const& reverseGlitz)
-{
-    mt::std::vector<Glitz>::type finalForwardsGlitz;
-    mt::std::vector<Glitz>::type finalReverseGlitz;
-
-    foreach (RetardedNotActuallyAGlitzGlitz const& glitz, backgroundTriggerGlitz) {
-        pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
-    }
-
-    boost::push_back(finalForwardsGlitz, forwardsGlitz);
-    boost::push_back(finalReverseGlitz, reverseGlitz);
-
-    foreach (RetardedNotActuallyAGlitzGlitz const& glitz, foregroundTriggerGlitz) {
-        pushBidirectional(glitz, glitz.getForwardsColour(), glitz.getReverseColour(), finalForwardsGlitz, finalReverseGlitz);
-    }
-
-    return FrameView(finalForwardsGlitz, finalReverseGlitz, guyInfo);
-}
-
 struct Collidables
 {
     Collidables(

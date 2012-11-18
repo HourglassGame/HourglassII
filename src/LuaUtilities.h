@@ -13,6 +13,7 @@
 #include "DirectLuaTriggerSystem.h"
 #include "unique_ptr.h"
 #include "OperationInterrupter.h"
+#include <boost/filesystem/path.hpp>
 
 //Miscelaneous things related to lua that are useful in multiple places
 //Should be replaced by a more extensible and cohesive model eventually
@@ -26,12 +27,9 @@ int lua_VectorWriter(
     const void* p,
     size_t sz,
     void* ud);
-std::vector<char> loadFileIntoVector(std::string const& filename);
-void loadSandboxedLibraries(lua_State* L);
-//Before calling `sandboxFunction`, `loadSandboxedLibraries` must be called on the same lua_State, to
-//perform the necessary initialisation.
-void sandboxFunction(lua_State* L, int index);
-LuaState loadLuaStateFromVector(std::vector<char> const& luaData, std::string const& chunkName);
+std::vector<char> loadFileIntoVector(boost::filesystem::path const& filename);
+
+void pushFunctionFromVector(lua_State* L, std::vector<char> const& luaData, std::string const& chunkName);
 
 //Identical to lua_checkstack, but throws on failure.
 void checkstack(lua_State* L, int extra);
@@ -87,6 +85,9 @@ template<>
 std::string to<std::string>(lua_State* L, int index);
 
 template<>
+std::vector<std::string> to<std::vector<std::string> >(lua_State* L, int index);
+
+template<>
 TimeDirection to<TimeDirection>(lua_State* L, int index);
 
 template<>
@@ -121,9 +122,6 @@ Guy to<Guy>(lua_State* L, int index);
 
 template<>
 InitialGuy to<InitialGuy>(lua_State* L, int index);
-
-template<>
-TriggerSystem to<TriggerSystem>(lua_State* L, int index);
 
 template<>
 unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem> >(lua_State* L, int index);

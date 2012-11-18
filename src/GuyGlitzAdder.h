@@ -42,17 +42,18 @@ public:
             int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
             
-            forwardsGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(left, top, size.x, size.y, pnc.colour)));
+            forwardsGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
             forwardsGlitz_->push_back(
                 facing ?
-                    Glitz(multi_thread_new<RectangleGlitz>(hmid, top, halfwidth, halfheight, 0x32323200u)) :
-                    Glitz(multi_thread_new<RectangleGlitz>(left, top, halfwidth, halfheight, 0x32323200u)));
+                    Glitz(multi_thread_new<RectangleGlitz>(600, hmid, top, halfwidth, halfheight, 0x32323200u)) :
+                    Glitz(multi_thread_new<RectangleGlitz>(600, left, top, halfwidth, halfheight, 0x32323200u)));
             
             if (boxCarrying)
             {
                 forwardsGlitz_->push_back(
                     Glitz(
                         multi_thread_new<RectangleGlitz>(
+                            600,
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
                             boxCarrySize,
@@ -78,17 +79,18 @@ public:
             int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
 
-            reverseGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(left, top, size.x, size.y, pnc.colour)));
+            reverseGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
             reverseGlitz_->push_back(
                 facing ?
-                    Glitz(multi_thread_new<RectangleGlitz>(hmid, top, halfwidth, halfheight, 0x32323200u)) :
-                    Glitz(multi_thread_new<RectangleGlitz>(left, top, halfwidth, halfheight, 0x32323200u)));
+                    Glitz(multi_thread_new<RectangleGlitz>(600, hmid, top, halfwidth, halfheight, 0x32323200u)) :
+                    Glitz(multi_thread_new<RectangleGlitz>(600, left, top, halfwidth, halfheight, 0x32323200u)));
 
             if (boxCarrying)
             {
                 reverseGlitz_->push_back(
                     Glitz(
                         multi_thread_new<RectangleGlitz>(
+                            600,
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
                             boxCarrySize,
