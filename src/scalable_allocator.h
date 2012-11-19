@@ -48,6 +48,34 @@ public:
     tbb_scalable_allocator<T> select_on_container_copy_construction() const { return *this; }
 };
 
+template<>
+class tbb_scalable_allocator<void>
+{
+private:
+    template<typename P> struct Alloc
+        { typedef tbb::scalable_allocator<P> type; };
+    typedef typename Alloc<void>::type tbb_alloc;
+    tbb_alloc alloc;
+public:
+    typedef typename tbb_alloc::pointer          pointer;
+    typedef typename tbb_alloc::const_pointer    const_pointer;
+    typedef void*       void_pointer;
+    typedef void const* const_void_pointer;
+    typedef typename tbb_alloc::value_type value_type;
+
+    template<typename U> struct rebind
+        { typedef tbb_scalable_allocator<U> other; };
+
+    tbb_scalable_allocator() : alloc() {}
+    tbb_scalable_allocator(tbb_scalable_allocator const&)
+        : alloc() {}
+    template<typename U>
+    tbb_scalable_allocator(tbb_scalable_allocator<U> const&)
+        : alloc() {}
+
+    tbb_scalable_allocator<void> select_on_container_copy_construction() const { return *this; }
+};
+
 template<typename T, typename U>
 inline bool operator==(
     tbb_scalable_allocator<T> const&,
