@@ -57,11 +57,11 @@ private:
     typedef typename Alloc<void>::type tbb_alloc;
     tbb_alloc alloc;
 public:
-    typedef typename tbb_alloc::pointer          pointer;
-    typedef typename tbb_alloc::const_pointer    const_pointer;
+    typedef tbb_alloc::pointer          pointer;
+    typedef tbb_alloc::const_pointer    const_pointer;
     typedef void*       void_pointer;
     typedef void const* const_void_pointer;
-    typedef typename tbb_alloc::value_type value_type;
+    typedef tbb_alloc::value_type value_type;
 
     template<typename U> struct rebind
         { typedef tbb_scalable_allocator<U> other; };
