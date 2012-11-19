@@ -54,7 +54,7 @@ class tbb_scalable_allocator<void>
 private:
     template<typename P> struct Alloc
         { typedef tbb::scalable_allocator<P> type; };
-    typedef typename Alloc<void>::type tbb_alloc;
+    typedef Alloc<void>::type tbb_alloc;
     tbb_alloc alloc;
 public:
     typedef tbb_alloc::pointer          pointer;
