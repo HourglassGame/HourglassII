@@ -100,7 +100,7 @@ def create_bundle(
     shutil.copy(executable, "build/HourglassII/HourglassII.exe")
     for dll in dlls:
         shutil.copy(dll, "build/HourglassII/")
-    shutil.copy("level.lua", "build/HourglassII/level.lua")
+    shutil.copytree("level.lvl", "build/HourglassII/level.lvl")
     os.remove(executable)
 
 boost_include = "ext/boost/include/"

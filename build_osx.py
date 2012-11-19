@@ -214,7 +214,7 @@ def create_bundle(
         shutil.copy(dll, "build/HourglassII.app/Contents/Frameworks/")
     shutil.copy("src/osx/Info.plist", "build/HourglassII.app/Contents/Info.plist")
     shutil.copy("src/osx/PkgInfo", "build/HourglassII.app/Contents/PkgInfo")
-    shutil.copy("level.lua", "build/HourglassII.app/Contents/Resources/level.lua")
+    shutil.copytree("level.lvl", "build/HourglassII.app/Contents/Resources/level.lvl")
     shutil.copy("src/osx/HourglassSwirl.icns", "build/HourglassII.app/Contents/Resources/HourglassSwirl.icns")
 
     #delete lipo'd exe
