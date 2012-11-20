@@ -598,15 +598,17 @@ void guyStep(
 							int bx = nextBox[j].object.getX();
 							int by = nextBox[j].object.getY();
 							int bs = nextBox[j].object.getSize();
+							//std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
+							//std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
 							if (IntersectingRectanglesExclusive(
 									bx, by, bs, bs,
 									leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
 							{
-								if (bx + bs > leftBound + dropSize && bx < rightBound + dropSize)
+								if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
 								{
 									rightBound = bx - dropSize;
 								}
-								if (bx < rightBound && bx + bs > leftBound)
+								if (bx <= rightBound && bx + bs >= leftBound)
 								{
 									leftBound = bx + bs;
 								}
