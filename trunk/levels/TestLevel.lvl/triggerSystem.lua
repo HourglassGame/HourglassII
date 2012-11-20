@@ -92,7 +92,7 @@ local tempStore =
                             illegalPortal = nil, 
                             arrivalBasis = nil, 
                             timeDirection = object.boxCarryDirection}, 
-                        targetFrame = self.frameNumber+timeDirectionToInt(object.boxCarryDirection),
+                        targetFrame = self.frameNumber+bts.timeDirectionToInt(object.boxCarryDirection),
                     }
                 end
                 return object
@@ -100,14 +100,14 @@ local tempStore =
         }
     },
     protoButtons = {
-        {
+        bts.momentarySwitch{
             attachment = {platform = 1, xOffset = 3200, yOffset = -800},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
             triggerID = 1
         },
-        {
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 3200, yOffset = 37600},
             width = 3200,
             height = 800,

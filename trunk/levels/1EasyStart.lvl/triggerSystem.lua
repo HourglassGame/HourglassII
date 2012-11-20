@@ -86,7 +86,7 @@ local tempStore =
     protoMutators = {
     },
     protoButtons = {
-        {
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 12 * 3200 - 800},
             width = 3200,
             height = 800,

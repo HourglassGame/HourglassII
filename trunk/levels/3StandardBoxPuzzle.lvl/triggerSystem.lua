@@ -1,17 +1,19 @@
-local bts = require "global.basicTriggerSystem"
+bts = require "global.basicTriggerSystem"
 
-local tempStore = 
+local tempStore =
 {
     --mutable store data:
     buttonPositionsAndVelocities = {},
     outputTriggers = {},
     forwardsGlitz = {},
-	reverseGlitz = {},
+    reverseGlitz = {},
+    triggerArrivals = nil,
+
     --constant proto-object data:
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 10 * 3200},
+            attachment = {platform = nil, xOffset = 23 * 3200, yOffset = 6 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -21,13 +23,13 @@ local tempStore =
             xDestination = 0,
             yDestination = 0,
             relativeTime = true,
-            timeDestination = -8 * 60,
+            timeDestination = -10 * 60,
             illegalDestination = 1,
             fallable = false,
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 45 * 1600, yOffset = 10 * 3200},
+            attachment = {platform = nil, xOffset = 3 * 1600, yOffset = 25 * 1600},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -36,8 +38,8 @@ local tempStore =
             destinationIndex = 2,
             xDestination = 0,
             yDestination = 0,
-            relativeTime = true,
-            timeDestination = -8 * 60,
+            relativeTime = false,
+            timeDestination = 0,
             illegalDestination = 1,
             fallable = false,
             winner = true
@@ -46,7 +48,7 @@ local tempStore =
     protoCollisions = {
         {
             width = 3200,
-            height = 4 * 3200,
+            height = 3 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
@@ -54,27 +56,27 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 8 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 6 * 3200,
                         maxSpeed = 300,
-                        acceleration = 20,
-                        deceleration = 20
+                        acceleration = 50,
+                        deceleration = 50
                     }
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 8 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 300,
                         acceleration = 50,
                         deceleration = 50
@@ -87,7 +89,7 @@ local tempStore =
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 12 * 3200 - 800},
+            attachment = {platform = nil, xOffset = 21 * 3200, yOffset = 8 * 3200 - 800},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
@@ -95,7 +97,6 @@ local tempStore =
         }
     }
 }
-
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++
 --for trigger indices that did not arrive by the time this is called
@@ -110,7 +111,7 @@ calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
 function shouldArrive(dynamicObject)
     return true
 end
-function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal) 
+function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
     return true
 end
 function mutateObject(responsibleManipulatorIndices, dynamicObject)
@@ -118,3 +119,4 @@ function mutateObject(responsibleManipulatorIndices, dynamicObject)
 end
 
 getDepartureInformation = bts.getDepartureInformation(tempStore)
+
