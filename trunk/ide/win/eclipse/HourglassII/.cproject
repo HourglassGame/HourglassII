@@ -18,7 +18,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.exe.debug.2042837364" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.exe.debug.449756862" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.exe.debug"/>
-							<builder buildPath="${workspace_loc:/HourglassII/Debug}" id="cdt.managedbuild.tool.gnu.builder.mingw.base.2123774705" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<builder buildPath="${workspace_loc:/HourglassII/Debug}" id="cdt.managedbuild.tool.gnu.builder.mingw.base.2123774705" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="optimal" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
 							<tool command="as" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.assembler.mingw.exe.debug.2089920846" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.exe.debug">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.2134156566" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -60,16 +60,21 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HourglassII/ext/tbb/lib/}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.libs.1439587619" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="tbb_debug"/>
-									<listOptionValue builtIn="false" value="tbbmalloc_debug"/>
-									<listOptionValue builtIn="false" value="sfml-graphics-s-d"/>
-									<listOptionValue builtIn="false" value="sfml-window-s-d"/>
-									<listOptionValue builtIn="false" value="sfml-system-s-d"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_chrono-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="tbb"/>
+									<listOptionValue builtIn="false" value="tbbmalloc"/>
+									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
+									<listOptionValue builtIn="false" value="sfml-window-s"/>
+									<listOptionValue builtIn="false" value="sfml-system-s"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="opengl32"/>
+									<listOptionValue builtIn="false" value="glu32"/>
+									<listOptionValue builtIn="false" value="gdi32"/>
+									<listOptionValue builtIn="false" value="winmm"/>
+									<listOptionValue builtIn="false" value="freetype"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.304655429" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-subsystem,windows" valueType="string"/>
 								<option id="gnu.cpp.link.option.userobjs.2033455066" name="Other objects" superClass="gnu.cpp.link.option.userobjs"/>
@@ -99,8 +104,8 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.release.1337083001." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.exe.release.71691056" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.exe.release">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.exe.release.1946676170" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.exe.release"/>
-							<builder buildPath="${workspace_loc:/HourglassII/Release}" id="cdt.managedbuild.tool.gnu.builder.mingw.base.1881136404" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.exe.release.729745539" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.exe.release">
+							<builder buildPath="${workspace_loc:/HourglassII/Release}" id="cdt.managedbuild.tool.gnu.builder.mingw.base.1881136404" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" parallelBuildOn="true" parallelizationNumber="optimal" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<tool command="as" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.assembler.mingw.exe.release.729745539" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.exe.release">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.519596606" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.1186120396" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
@@ -108,9 +113,6 @@
 								<option id="gnu.cpp.compiler.mingw.exe.release.option.optimization.level.2034502094" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.mingw.exe.release.option.debugging.level.1828198724" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.430972915" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/include"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include-fixed"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HourglassII/ext/boost/include/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HourglassII/ext/tbb/include/}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HourglassII/ext/SFML/include/}&quot;"/>
@@ -132,14 +134,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.1057217890" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release">
 								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.mingw.exe.release.option.optimization.level.1639245138" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.release.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.mingw.exe.release.option.debugging.level.522132834" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.include.paths.273467580" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include/c++"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include/c++/mingw32"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include/c++/backward"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/include"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include"/>
-									<listOptionValue builtIn="false" value="f:/user~docs/keven/workspace/hourglassiisf/trunk/ext/mingw/lib/gcc/mingw32/4.5.2/include-fixed"/>
-								</option>
+								<option id="gnu.c.compiler.option.include.paths.273467580" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath"/>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.628138877" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1319779554" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -156,11 +151,16 @@
 									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
 									<listOptionValue builtIn="false" value="sfml-window-s"/>
 									<listOptionValue builtIn="false" value="sfml-system-s"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw45-mt-1_50"/>
-									<listOptionValue builtIn="false" value="boost_chrono-mgw45-mt-1_50"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="opengl32"/>
+									<listOptionValue builtIn="false" value="glu32"/>
+									<listOptionValue builtIn="false" value="gdi32"/>
+									<listOptionValue builtIn="false" value="winmm"/>
+									<listOptionValue builtIn="false" value="freetype"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1232208659" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-subsystem,windows" valueType="string"/>
 								<option id="gnu.cpp.link.option.userobjs.1363739550" name="Other objects" superClass="gnu.cpp.link.option.userobjs"/>
@@ -172,6 +172,9 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<sourceEntries>
+						<entry excluding="ext/**" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name=""/>
+					</sourceEntries>
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -184,29 +187,33 @@
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/HourglassII"/>
 		</configuration>
+		<configuration configurationName="Multiple configurations">
+			<resource resourceType="PROJECT" workspacePath="/HourglassII"/>
+		</configuration>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/HourglassII"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.1206526542;cdt.managedbuild.config.gnu.cross.exe.release.1206526542.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.794140717;cdt.managedbuild.tool.gnu.cpp.compiler.input.1171179077">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434;cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.650933930;cdt.managedbuild.tool.gnu.c.compiler.input.1695358776">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.1206526542;cdt.managedbuild.config.gnu.cross.exe.release.1206526542.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.794140717;cdt.managedbuild.tool.gnu.cpp.compiler.input.1171179077">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.debug.1286285132;cdt.managedbuild.config.gnu.cross.exe.debug.1286285132.;cdt.managedbuild.tool.gnu.cross.cpp.compiler.661939416;cdt.managedbuild.tool.gnu.cpp.compiler.input.81385987">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1337083001;cdt.managedbuild.config.gnu.mingw.exe.release.1337083001.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.1057217890;cdt.managedbuild.tool.gnu.c.compiler.input.1319779554">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.1206526542;cdt.managedbuild.config.gnu.cross.exe.release.1206526542.;cdt.managedbuild.tool.gnu.cross.c.compiler.1578825196;cdt.managedbuild.tool.gnu.c.compiler.input.1321883141">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1337083001;cdt.managedbuild.config.gnu.mingw.exe.release.1337083001.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.2063735253;cdt.managedbuild.tool.gnu.cpp.compiler.input.1914366072">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.cross.exe.release.1206526542;cdt.managedbuild.config.gnu.cross.exe.release.1206526542.;cdt.managedbuild.tool.gnu.cross.c.compiler.1578825196;cdt.managedbuild.tool.gnu.c.compiler.input.1321883141">
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.1337083001;cdt.managedbuild.config.gnu.mingw.exe.release.1337083001.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.1057217890;cdt.managedbuild.tool.gnu.c.compiler.input.1319779554">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434;cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug.314736036;cdt.managedbuild.tool.gnu.cpp.compiler.input.197151755">
@@ -216,5 +223,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>

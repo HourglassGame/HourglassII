@@ -1,6 +1,6 @@
 #include "LuaUtilities.h"
 #include "LuaUserData.h"
-#include <fstream>
+#include <boost/filesystem/fstream.hpp>
 #include <iostream>
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
@@ -14,9 +14,9 @@ std::vector<char> loadFileIntoVector(
     boost::filesystem::path const& filename)
 {
     std::vector<char> vec;
-    std::ifstream file;
+    boost::filesystem::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
-    file.open(filename.c_str());
+    file.open(filename);
     file.seekg(0, std::ios::end);
     std::streampos length(file.tellg());
     if (length) {
