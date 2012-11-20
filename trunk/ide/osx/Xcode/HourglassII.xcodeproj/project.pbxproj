@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		200AC21614F9128200B1E17F /* move_function_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200AC21514F9128200B1E17F /* move_function_test.cpp */; };
 		200DE21714E4A0AE00172DD0 /* LuaInterruption.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */; };
-		200E810614B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */; };
 		200E810714B4792500D054F4 /* Box.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E804214B4792500D054F4 /* Box.cpp */; };
 		200E810814B4792500D054F4 /* clone_ptr_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E804414B4792500D054F4 /* clone_ptr_test.cpp */; };
 		200E810914B4792500D054F4 /* ConcurrentFrameUpdateSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E804814B4792500D054F4 /* ConcurrentFrameUpdateSet.cpp */; };
@@ -148,8 +147,6 @@
 		200E803C14B4792500D054F4 /* Ability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ability.h; path = ../../../src/Ability.h; sourceTree = SOURCE_ROOT; };
 		200E803D14B4792500D054F4 /* ArrivalLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrivalLocation.h; path = ../../../src/ArrivalLocation.h; sourceTree = SOURCE_ROOT; };
 		200E803E14B4792500D054F4 /* AttachmentMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AttachmentMap.h; path = ../../../src/AttachmentMap.h; sourceTree = SOURCE_ROOT; };
-		200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BasicConfiguredTriggerSystem.cpp; path = ../../../src/BasicConfiguredTriggerSystem.cpp; sourceTree = SOURCE_ROOT; };
-		200E804014B4792500D054F4 /* BasicConfiguredTriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BasicConfiguredTriggerSystem.h; path = ../../../src/BasicConfiguredTriggerSystem.h; sourceTree = SOURCE_ROOT; };
 		200E804114B4792500D054F4 /* BoostHashCompare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoostHashCompare.h; path = ../../../src/BoostHashCompare.h; sourceTree = SOURCE_ROOT; };
 		200E804214B4792500D054F4 /* Box.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Box.cpp; path = ../../../src/Box.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E804314B4792500D054F4 /* Box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Box.h; path = ../../../src/Box.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -252,7 +249,6 @@
 		200E80DF14B4792500D054F4 /* prettyprint98.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = prettyprint98.hpp; path = ../../../src/prettyprint98.hpp; sourceTree = SOURCE_ROOT; };
 		200E80E214B4792500D054F4 /* ProtoStuff.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ProtoStuff.cpp; path = ../../../src/ProtoStuff.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E314B4792500D054F4 /* ProtoStuff.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ProtoStuff.h; path = ../../../src/ProtoStuff.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		200E80E414B4792500D054F4 /* RetardedNotActuallyAGlitzGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RetardedNotActuallyAGlitzGlitz.h; path = ../../../src/RetardedNotActuallyAGlitzGlitz.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E80E514B4792500D054F4 /* ReplayIO_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReplayIO_test.cpp; path = ../../../src/ReplayIO_test.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E614B4792500D054F4 /* ReplayIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReplayIO.cpp; path = ../../../src/ReplayIO.cpp; sourceTree = SOURCE_ROOT; };
 		200E80E714B4792500D054F4 /* ReplayIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ReplayIO.h; path = ../../../src/ReplayIO.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -715,7 +711,6 @@
 				200E80DD14B4792500D054F4 /* PortalArea.h */,
 				200E80E314B4792500D054F4 /* ProtoStuff.h */,
 				200E80E214B4792500D054F4 /* ProtoStuff.cpp */,
-				200E80E414B4792500D054F4 /* RetardedNotActuallyAGlitzGlitz.h */,
 				200E80E714B4792500D054F4 /* ReplayIO.h */,
 				200E80E614B4792500D054F4 /* ReplayIO.cpp */,
 				200E80E514B4792500D054F4 /* ReplayIO_test.cpp */,
@@ -783,8 +778,6 @@
 				200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */,
 				200E803D14B4792500D054F4 /* ArrivalLocation.h */,
 				20556DB314C90D2700F71CFC /* HourglassITriggerSystem.h */,
-				200E804014B4792500D054F4 /* BasicConfiguredTriggerSystem.h */,
-				200E803F14B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp */,
 				200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */,
 				200E805414B4792500D054F4 /* DirectLuaTriggerSystem.cpp */,
 				200E80F814B4792500D054F4 /* TriggerData.h */,
@@ -964,7 +957,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				200E810614B4792500D054F4 /* BasicConfiguredTriggerSystem.cpp in Sources */,
 				200E810714B4792500D054F4 /* Box.cpp in Sources */,
 				200E810814B4792500D054F4 /* clone_ptr_test.cpp in Sources */,
 				200E810914B4792500D054F4 /* ConcurrentFrameUpdateSet.cpp in Sources */,
