@@ -101,6 +101,7 @@ def create_bundle(
     for dll in dlls:
         shutil.copy(dll, "build/HourglassII/")
     shutil.copytree("level.lvl", "build/HourglassII/level.lvl")
+    shutil.copy("basicTriggerSystem.lua", "build/HourglassII/")
     os.remove(executable)
 
 boost_include = "ext/boost/include/"
@@ -111,16 +112,21 @@ boost_library_directory = "ext/boost/lib/"
 sfml_library_directory = "ext/SFML/lib/"
 tbb_library_directory = "ext/tbb/lib/"
 
-boost_serialization_lib = "boost_serialization-mgw45-mt-1_50"
-boost_filesystem_lib = "boost_filesystem-mgw45-mt-1_50"
-boost_system_lib = "boost_system-mgw45-mt-1_50"
-boost_thread_lib = "boost_thread-mgw45-mt-1_50"
-boost_chrono_lib = "boost_chrono-mgw45-mt-1_50"
+boost_serialization_lib = "boost_serialization-mgw47-mt-1_52"
+boost_filesystem_lib = "boost_filesystem-mgw47-mt-1_52"
+boost_system_lib = "boost_system-mgw47-mt-1_52"
+boost_thread_lib = "boost_thread-mgw47-mt-1_52"
+boost_chrono_lib = "boost_chrono-mgw47-mt-1_52"
 sfml_system_lib = "sfml-system-s"
 sfml_window_lib = "sfml-window-s"
 sfml_graphics_lib = "sfml-graphics-s"
 tbb_lib = "tbb"
 tbb_malloc_lib = "tbbmalloc"
+opengl_lib = "opengl32"
+glu_lib = "glu32"
+gdi_lib = "gdi32"
+winmm_lib = "winmm"
+freetype_lib = "freetype"
 
 tbb_dll = "ext/tbb/lib/tbb.dll"
 tbb_malloc_dll = "ext/tbb/lib/tbbmalloc.dll"
@@ -141,7 +147,7 @@ library_directories = [
 
 libraries = [
     tbb_lib, tbb_malloc_lib,
-    sfml_graphics_lib, sfml_window_lib, sfml_system_lib,
+    sfml_graphics_lib, sfml_window_lib, sfml_system_lib, opengl_lib, glu_lib, gdi_lib, winmm_lib, freetype_lib,
     boost_filesystem_lib, boost_system_lib, boost_serialization_lib, boost_thread_lib, boost_chrono_lib]
 
 dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll, libstd_cxx_dll]
