@@ -13,7 +13,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 23 * 3200, yOffset = 6 * 3200},
+            attachment = {platform = nil, xOffset = 23 * 3200, yOffset = 7 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -89,7 +89,7 @@ local tempStore =
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 21 * 3200, yOffset = 8 * 3200 - 800},
+            attachment = {platform = nil, xOffset = 21 * 3200, yOffset = 9 * 3200 - 800},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',

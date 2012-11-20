@@ -16,6 +16,7 @@ public:
         int x, int y,
         int xspeed, int yspeed,
         int width, int height,
+        int jumpSpeed,
         
         int illegalPortal,
         int arrivalBasis,
@@ -34,12 +35,13 @@ public:
     Guy(const Guy& o, TimeDirection nTimeDirection);
     
     std::size_t getIndex() const { return index_; }
-    int getX()      const { return x_; }
-    int getY()      const { return y_; }
-    int getXspeed() const { return xspeed_; }
-    int getYspeed() const { return yspeed_; }
-    int getWidth()  const { return width_; }
-    int getHeight() const { return height_; }
+    int getX()         const { return x_; }
+    int getY()         const { return y_; }
+    int getXspeed()    const { return xspeed_; }
+    int getYspeed()    const { return yspeed_; }
+    int getWidth()     const { return width_; }
+    int getHeight()    const { return height_; }
+    int getJumpSpeed() const { return jumpSpeed_; }
     
     int getIllegalPortal()    const { return illegalPortal_; }
     int getArrivalBasis() const { return arrivalBasis_; }
@@ -70,6 +72,7 @@ private:
     int yspeed_;
     int width_;
     int height_;
+    int jumpSpeed_;
 
     int illegalPortal_;
     int arrivalBasis_;
@@ -94,12 +97,13 @@ public:
     Guy const& get() const   { return *guy_; }
     
     std::size_t getIndex() const { return guy_->getIndex(); }
-    int getX()      const { return guy_->getX(); }
-    int getY()      const { return guy_->getY(); }
-    int getXspeed() const { return guy_->getXspeed(); }
-    int getYspeed() const { return guy_->getYspeed(); }
-    int getWidth()  const { return guy_->getWidth(); }
-    int getHeight() const { return guy_->getHeight(); }
+    int getX()         const { return guy_->getX(); }
+    int getY()         const { return guy_->getY(); }
+    int getXspeed()    const { return guy_->getXspeed(); }
+    int getYspeed()    const { return guy_->getYspeed(); }
+    int getWidth()     const { return guy_->getWidth(); }
+    int getHeight()    const { return guy_->getHeight(); }
+    int getJumpSpeed() const { return guy_->getJumpSpeed(); }
     
     int getIllegalPortal()    const { return guy_->getIllegalPortal(); }
     int getArrivalBasis() const { return guy_->getArrivalBasis(); }

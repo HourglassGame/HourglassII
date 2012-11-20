@@ -6,6 +6,7 @@ Guy::Guy(
     int x, int y,
     int xspeed, int yspeed,
     int width, int height,
+    int jumpSpeed,
     
     int illegalPortal,
     int arrivalBasis,
@@ -24,6 +25,7 @@ Guy::Guy(
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),
         width_(width), height_(height),
+        jumpSpeed_(jumpSpeed),
 
         illegalPortal_(illegalPortal),
         arrivalBasis_(arrivalBasis),
@@ -47,6 +49,7 @@ Guy::Guy(const Guy& o, TimeDirection timeDirection) :
         x_(o.x_), y_(o.y_),
         xspeed_(o.xspeed_), yspeed_(o.yspeed_),
         width_(o.width_), height_(o.height_),
+        jumpSpeed_(o.jumpSpeed_),
 
         illegalPortal_(o.illegalPortal_),
         arrivalBasis_(o.arrivalBasis_),
@@ -61,6 +64,7 @@ Guy::Guy(const Guy& o, TimeDirection timeDirection) :
         boxCarryDirection_(o.boxCarryDirection_),
 
         timeDirection_(timeDirection)
+
 {
 }
 
@@ -73,6 +77,7 @@ bool Guy::operator==(const Guy& o) const
         && yspeed_ == o.yspeed_
         && width_ == o.width_
         && height_ == o.height_
+        && jumpSpeed_ == o.jumpSpeed_
         && illegalPortal_ == o.illegalPortal_
         && arrivalBasis_ == o.arrivalBasis_
         && supported_ == o.supported_

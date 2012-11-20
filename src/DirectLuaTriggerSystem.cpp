@@ -535,6 +535,8 @@ void pushGuy(lua_State* L, Guy const& guy)
     lua_setfield(L, -2, "width");
     lua_pushinteger(L, guy.getHeight());
     lua_setfield(L, -2, "height");
+	lua_pushinteger(L, guy.getJumpSpeed());
+    lua_setfield(L, -2, "jumpSpeed");
     if (guy.getIllegalPortal() != -1) {
         lua_pushinteger(L, guy.getIllegalPortal() + 1);
         lua_setfield(L, -2, "illegalPortal");
