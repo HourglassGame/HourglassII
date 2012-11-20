@@ -1,4 +1,4 @@
-bts = require "global.basicTriggerSystem"
+local bts = require "global.basicTriggerSystem"
 
 local tempStore = 
 {
