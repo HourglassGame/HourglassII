@@ -286,6 +286,7 @@ Guy to<Guy>(lua_State* L, int index)
     int yspeed(readField<int>(L, "yspeed",index));
     int width(readField<int>(L, "width",index));
     int height(readField<int>(L, "height",index));
+	int jumpSpeed(readField<int>(L, "jumpSpeed",index));
     int illegalPortal(-1);
     lua_getfield(L, index, "illegalPortal");
     if (!lua_isnil(L, -1)) {
@@ -319,6 +320,7 @@ Guy to<Guy>(lua_State* L, int index)
         x, y,
         xspeed, yspeed,
         width, height,
+		jumpSpeed,
         illegalPortal,
         arrivalBasis,
         supported,
@@ -341,6 +343,7 @@ InitialGuy to<InitialGuy>(lua_State* L, int index)
     int yspeed(readFieldWithDefault<int>(L, "yspeed",index,0));
     int width(readFieldWithDefault<int>(L, "width",index,1600));
     int height(readFieldWithDefault<int>(L, "height",index,3200));
+	int jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
     mt::std::map<Ability, int>::type pickups(readField<mt::std::map<Ability, int>::type>(L, "pickups", index));
     FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
     bool boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
@@ -358,6 +361,7 @@ InitialGuy to<InitialGuy>(lua_State* L, int index)
         x, y,
         xspeed, yspeed,
         width, height,
+		jumpSpeed,
         -1,
         -1,
         false,

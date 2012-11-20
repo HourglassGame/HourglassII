@@ -234,6 +234,7 @@ void guyStep(
 
             int const width(guyArrivalList[i].getWidth());
             int const height(guyArrivalList[i].getHeight());
+            int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
             // chonofrag with platforms
 			foreach (Collision const& platform, nextPlatform)
@@ -273,7 +274,7 @@ void guyStep(
             // jump
             if (guyArrivalList[i].getSupported() && input.getUp())
             {
-                yspeed[i] = guyArrivalList[i].getSupportedSpeed() + JUMP_SPEED;
+                yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
             }
 
             // Y direction collisions
@@ -731,6 +732,7 @@ void guyStep(
 
     mt::std::vector<int>::type newWidth(guyArrivalList.size());
     mt::std::vector<int>::type newHeight(guyArrivalList.size());
+    mt::std::vector<int>::type newJumpSpeed(guyArrivalList.size());
     mt::std::vector<mt::std::map<Ability, int>::type >::type newPickups(guyArrivalList.size());
     mt::std::vector<int>::type illegalPortal(guyArrivalList.size());
     // arrivalBasis is always -1 for normalDeparture
@@ -756,6 +758,7 @@ void guyStep(
 
             newWidth[i] = guyArrivalList[i].getWidth();
             newHeight[i] = guyArrivalList[i].getHeight();
+            newJumpSpeed[i] = guyArrivalList[i].getJumpSpeed();
             newPickups[i] = mt::std::map<Ability, int>::type(guyArrivalList[i].getPickups());
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
@@ -785,6 +788,7 @@ void guyStep(
                         x[i], y[i],
 						xspeed[i], yspeed[i],
 						newWidth[i], newHeight[i],
+						newJumpSpeed[i],
 						guyArrivalList[i].getIllegalPortal(),
 						-1,
 						supported[i],
@@ -852,6 +856,7 @@ void guyStep(
 						}
 						else if (triggerFrameState.shouldPort(j,
 								Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+						        newJumpSpeed[i],
 								illegalPortal[i],-1,
 								supported[i],supportedSpeed[i], newPickups[i], facing[i],
 								carry[i],carrySize[i], carryDirection[i],nextTimeDirection),false))
@@ -921,6 +926,7 @@ void guyStep(
 								nextPortal[j].getCollisionOverlap())
 							&& (triggerFrameState.shouldPort(j,
 									Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+								    newJumpSpeed[i],
 									illegalPortal[i],-1,
 									supported[i],supportedSpeed[i], newPickups[i], facing[i],
 									carry[i],carrySize[i], carryDirection[i],nextTimeDirection),true)))
@@ -961,6 +967,7 @@ void guyStep(
 							x[i], y[i],
 							xspeed[i], yspeed[i],
 							newWidth[i], newHeight[i],
+							newJumpSpeed[i],
 
 							illegalPortal[i],
 							arrivalBasis,
@@ -1005,6 +1012,7 @@ void guyStep(
 					x[i], y[i],
 					xspeed[i], yspeed[i],
 					newWidth[i], newHeight[i],
+					newJumpSpeed[i],
 
 					illegalPortal[i],
 					-1,
