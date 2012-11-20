@@ -1,17 +1,19 @@
-local bts = require "global.basicTriggerSystem"
+bts = require "global.basicTriggerSystem"
 
-local tempStore = 
+local tempStore =
 {
     --mutable store data:
     buttonPositionsAndVelocities = {},
     outputTriggers = {},
     forwardsGlitz = {},
-	reverseGlitz = {},
+    reverseGlitz = {},
+    triggerArrivals = nil,
+
     --constant proto-object data:
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 10 * 3200},
+            attachment = {platform = nil, xOffset = 15 * 3200, yOffset = 16 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -20,14 +22,14 @@ local tempStore =
             destinationIndex = 1,
             xDestination = 0,
             yDestination = 0,
-            relativeTime = true,
-            timeDestination = -8 * 60,
+            relativeTime = false,
+            timeDestination = 0,
             illegalDestination = 1,
             fallable = false,
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 45 * 1600, yOffset = 10 * 3200},
+            attachment = {platform = nil, xOffset = 22 * 3200, yOffset = 16 * 3200},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -36,17 +38,17 @@ local tempStore =
             destinationIndex = 2,
             xDestination = 0,
             yDestination = 0,
-            relativeTime = true,
-            timeDestination = -8 * 60,
-            illegalDestination = 1,
+            relativeTime = false,
+            timeDestination = 0,
+            illegalDestination = 2,
             fallable = false,
             winner = true
         }
     },
     protoCollisions = {
         {
-            width = 3200,
-            height = 4 * 3200,
+            width = 3*3200,
+            height = 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
@@ -54,13 +56,13 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 18 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 3 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 20
@@ -68,34 +70,85 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 18 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
+                        desiredPosition = 18 * 3200,
                         maxSpeed = 300,
                         acceleration = 50,
                         deceleration = 50
                     }
                 }
             }
-        }
+        },
+        {
+            width = 3200,
+            height = 2*3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 4,
+            buttonTriggerID = 3,
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 21 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 14 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 20,
+                        deceleration = 20
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 21 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 16 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                }
+            }
+        },
     },
     protoMutators = {
     },
     protoButtons = {
-        bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 12 * 3200 - 800},
-            width = 3200,
-            height = 800,
+        bts.toggleSwitch{
+            triggerID = 1,
             timeDirection = 'forwards',
-            triggerID = 1
-        }
+            first = {
+                attachment = {platform = nil, xOffset = 10 * 3200, yOffset = 17 * 3200},
+                width = 800,
+                height = 1600,
+            },
+            second = {
+                attachment = {platform = nil, xOffset = 23 * 3200, yOffset = 4 * 3200},
+                width = 800,
+                height = 1600,
+            }
+        },
+        bts.momentarySwitch{
+            triggerID = 3,
+            timeDirection = 'forwards',
+            attachment = {platform = nil, xOffset = 29*3200 - 800, yOffset = 4 * 3200 },
+            width = 800,
+            height = 3200,
+        },
     }
 }
-
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++
 --for trigger indices that did not arrive by the time this is called
@@ -110,7 +163,7 @@ calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
 function shouldArrive(dynamicObject)
     return true
 end
-function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal) 
+function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
     return true
 end
 function mutateObject(responsibleManipulatorIndices, dynamicObject)

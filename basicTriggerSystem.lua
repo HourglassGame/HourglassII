@@ -1,4 +1,5 @@
 
+
 local function calculateCollisions(protoCollisions, triggerArrivals)
     local function calculateCollision(self, triggerArrivals)
         local function solvePDEquation(destination, position, velocity)
@@ -24,7 +25,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
                         end
                     elseif
                         math.abs(position - desiredPosition)
-							>
+                            >
                         (square(velocity - direction * acceleration) * 3 / (2 * deceleration))
                     then
                         velocity = velocity - direction * acceleration
@@ -39,18 +40,18 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
                     end
                 end
             else
-            	if math.abs(velocity) <= deceleration then
-				    velocity = 0
-			    else
-				    velocity = velocity + (math.abs(velocity)/velocity)*deceleration
-			    end
+                if math.abs(velocity) <= deceleration then
+                    velocity = 0
+                else
+                    velocity = velocity + (math.abs(velocity)/velocity)*deceleration
+               end
             end
             local maxSpeed = destination.maxSpeed
             if math.abs(velocity) > maxSpeed then
-			    velocity = sign(velocity) * maxSpeed
-		    end
+                velocity = sign(velocity) * maxSpeed
+            end
             velocity = velocity >= 0 and math.floor(velocity) or math.ceil(velocity)
-		    position = position + velocity
+            position = position + velocity
             return {position = position, velocity = velocity}
         end
         
@@ -81,24 +82,6 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
     return collisions
 end
 
-local function list_iter (t)
-    local i = 0
-    local n = #t
-    return function ()
-        i = i + 1
-        if i <= n then return t[i] end
-    end
-end
-
-local function timeDirectionToInt(dir)
-    if dir == 'forwards' then
-        return 1
-    elseif dir == 'reverse' then
-        return -1
-    else
-        return 0
-    end
-end
 
 local function snapAttachment(objectTimeDirection, attachment, collisions)
     local x
@@ -180,93 +163,25 @@ local function calculateArrivalLocations(portals)
 end
 
 local function calculateButtonPositionsAndVelocities(protoButtons, collisions)
-    local function calculateButtonPositionAndVelocity(protoButton, collisions)
-        local x, y, xspeed, yspeed =
-            snapAttachment(protoButton.timeDirection, protoButton.attachment, collisions)
-        return {
-            x = x,
-            y = y,
-            xspeed = xspeed,
-            yspeed = yspeed
-        }
-    end
-    buttonPositionsAndVelocities = {}
     for i, protoButton in ipairs(protoButtons) do
-        buttonPositionsAndVelocities[i] = calculateButtonPositionAndVelocity(protoButton, collisions)
+        protoButton:calcPnV(collisions)
     end
-    return buttonPositionsAndVelocities
-end
-
-local function calculateButtonStates(protoButtons, buttonPositionsAndVelocities, departures)
-    local function temporalIntersectingExclusive(protoButton, buttonPosition, object)
-        local xa, ya
-        if protoButton.timeDirection == 'forwards' then
-            xa = buttonPosition.x
-            ya = buttonPosition.y
-        else
-            xa = buttonPosition.x - buttonPosition.xspeed
-            ya = buttonPosition.y - buttonPosition.yspeed
-        end
-        local wa, ha = protoButton.width, protoButton.height
-        local xb, yb
-        if object.timeDirection == 'forwards' then
-            xb = object.x
-            yb = object.y
-        else 
-            xb = object.x - object.xspeed
-            yb = object.y - object.yspeed
-        end
-        local wb, hb = object.width, object.height
-        return
-            (
-                (xa < xb and xa + wa > xb)
-                 or
-                (xb < xa and xb + wb > xa)
-                 or
-                (xa == xb)
-            )
-             and
-            (
-                (ya < yb and ya + ha > yb)
-                 or
-                (yb < ya and yb + hb > ya)
-                 or
-                (ya == yb)
-            )
-    end
-    local buttonStates = {}
-    for i = 1, #protoButtons do
-        local intersecting = false
-        for frame, objectList in pairs(departures) do
-            if intersecting then break end
-            for box in list_iter(objectList.boxes) do
-                if intersecting 
-                    or temporalIntersectingExclusive(
-                        protoButtons[i], buttonPositionsAndVelocities[i], box)
-                then
-                    intersecting = true
-                    break
-                end
-            end
-            for guy in list_iter(objectList.guys) do
-                if intersecting 
-                    or temporalIntersectingExclusive(
-                        protoButtons[i], buttonPositionsAndVelocities[i], guy)
-                then 
-                    intersecting = true
-                    break
-                end
-            end
-        end
-        buttonStates[i] = intersecting
-    end
-    return buttonStates
 end
 
 local function fillCollisionTriggers(triggers, protoCollisions, collisions)
     for i = 1, #protoCollisions do
         triggers[protoCollisions[i].lastStateTriggerID] =
             {collisions[i].x, collisions[i].y, collisions[i].xspeed, collisions[i].yspeed}
+    end
+end
+
+
+local function list_iter(t)
+    local i = 0
+    local n = #t
+    return function ()
+        i = i + 1
+        if i <= n then return t[i] end
     end
 end
 
@@ -298,97 +213,290 @@ local function calculatePortalGlitz(portal)
     return calculateBidirectionalGlitz(350, portal, {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120})
 end
 
-local function calculateButtonGlitz(protoButton, buttonPositionAndVelocity, buttonState)
-    local colour = buttonState and {r = 150, g = 255, b = 150} or {r = 255, g = 150, b = 150}
-    
-    return calculateBidirectionalGlitz(
-        400,
-        {x = buttonPositionAndVelocity.x,
-         y = buttonPositionAndVelocity.y,
-         width = protoButton.width,
-         height = protoButton.height,
-         xspeed = buttonPositionAndVelocity.xspeed,
-         yspeed = buttonPositionAndVelocity.yspeed,
-         timeDirection = protoButton.timeDirection},
-        colour,
-        colour)
-end
 
-local function fillButtonTriggers(triggers, protoButtons, buttonStates)
+
+local function calculateButtonStates(protoButtons, departures, triggerArrivals)
     for i = 1, #protoButtons do
-        triggers[protoButtons[i].triggerID] = { buttonStates[i] and 1 or 0 }
+        protoButtons[i]:updateState(departures, triggerArrivals)
     end
 end
 
-local function calculatePhysicsAffectingStuff(tempStore)
+local function cloneAttachment(a)
+    return {platform = a.platform, xOffset = a.xOffset, yOffset = a.yOffset}
+end
+
+local function calculateButtonPositionAndVelocity(protoButton, collisions)
+    local x, y, xspeed, yspeed =
+        snapAttachment(protoButton.timeDirection, protoButton.attachment, collisions)
+    return {
+        x = x,
+        y = y,
+        xspeed = xspeed,
+        yspeed = yspeed
+    }
+end
+
+local function temporalIntersectingExclusive(a, b)
+    local xa, ya
+    if a.timeDirection == 'forwards' then
+        xa = a.x
+        ya = a.y
+    else
+        xa = a.x - a.xspeed
+        ya = a.y - a.yspeed
+    end
+    local wa, ha = a.width, a.height
+    local xb, yb
+    if b.timeDirection == 'forwards' then
+        xb = b.x
+        yb = b.y
+    else
+        xb = b.x - b.xspeed
+        yb = b.y - b.yspeed
+    end
+    local wb, hb = b.width, b.height
+    return
+        (
+            (xa < xb and xa + wa > xb)
+             or
+            (xb < xa and xb + wb > xa)
+             or
+            (xa == xb)
+        )
+         and
+        (
+            (ya < yb and ya + ha > yb)
+             or
+            (yb < ya and yb + hb > ya)
+             or
+            (ya == yb)
+        )
+end
+
+
+local function checkPressed(buttonArea, departures)
+    for frame, objectList in pairs(departures) do
+        for box in list_iter(objectList.boxes) do
+            if temporalIntersectingExclusive(buttonArea, box) then --Done
+                return true
+            end
+        end
+        for guy in list_iter(objectList.guys) do
+            if temporalIntersectingExclusive(buttonArea, guy) then --Done
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function constructDynamicArea(proto, PnV)
+    return {
+        timeDirection = proto.timeDirection,
+        width = proto.width, height = proto.height,
+        x = PnV.x, y = PnV.y, xspeed = PnV.xspeed, yspeed = PnV.yspeed}
+end
+
+
+local function calculateButtonGlitz(proto, buttonPositionAndVelocity, buttonState)
+    local colour = buttonState and {r = 150, g = 255, b = 150} or {r = 255, g = 150, b = 150}
+
+    return calculateBidirectionalGlitz(400, constructDynamicArea(proto, buttonPositionAndVelocity), colour, colour)
+end
+
+
+local function momentarySwitch(p)
+    local PnV = nil
+    local state = nil
+    
+    local triggerID = p.triggerID
+    local proto = {
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment), --Done
+        width = p.width,
+        height = p.height,
+    }
+    
+    return {
+        calcPnV = function(self, collisions)
+            PnV = calculateButtonPositionAndVelocity(proto, collisions) --Done
+        end,
+        updateState = function(self, departures, triggerArrivals)
+            state = checkPressed(constructDynamicArea(proto, PnV), departures) --Done
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state) -- Done
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[triggerID] = {state and 1 or 0}
+        end,
+    }
+end
+
+local function stickySwitch(p)
+    local PnV = nil
+    local state = nil
+    
+    local triggerID = p.triggerID
+    local proto = {
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment), --Done
+        width = p.width,
+        height = p.height,
+    }
+    
+    return {
+        calcPnV = function(self, collisions)
+            PnV = calculateButtonPositionAndVelocity(proto, collisions) --Done
+        end,
+        updateState = function(self, departures, triggerArrivals)
+            state = triggerArrivals[triggerID][1] == 1 or checkPressed(constructDynamicArea(proto, PnV), departures) --Done
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state) -- Done
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[triggerID] = {state and 1 or 0}
+        end,
+    }
+end
+
+local function toggleSwitch(p)
+    local function cloneButtonSegment(q)
+        return {
+            attachment = cloneAttachment(q.attachment), --Done
+            width = q.width,
+            height = q.height,
+        }
+    end
+    local firstPnV = nil
+    local secondPnV = nil
+    local switchState = nil
+    local function constructCompleteProto(timeDirection, segment)
+        return {
+            timeDirection = timeDirection,
+            attachment = segment.attachment,
+            width = segment.width, height = segment.height,
+            x = segment.x, y = segment.y}
+    end
+    return
+    {
+        calcPnV = function(self, collisions)
+            firstPnV = calculateButtonPositionAndVelocity(constructCompleteProto(self.timeDirection, self.first), collisions)
+            secondPnV = calculateButtonPositionAndVelocity(constructCompleteProto(self.timeDirection, self.second), collisions)
+        end,
+        updateState = function(self, departures, triggerArrivals)
+            local firstPressed = checkPressed(constructDynamicArea(constructCompleteProto(self.timeDirection, self.first), firstPnV), departures)
+            local secondPressed = checkPressed(constructDynamicArea(constructCompleteProto(self.timeDirection, self.second), secondPnV), departures)
+            
+            if firstPressed and secondPressed then
+                switchState = triggerArrivals[self.triggerID][1]
+                return
+            end
+            
+            if triggerArrivals[self.triggerID][1] == 0 then
+                if firstPressed then switchState = 1 else switchState = 0 end
+            else
+                if secondPressed then switchState = 0 else switchState = 1 end
+            end
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            do
+                local forGlitz, revGlitz = calculateButtonGlitz(constructCompleteProto(self.timeDirection, self.first), firstPnV, switchState == 1) -- Done
+                table.insert(forwardsGlitz, forGlitz)
+                table.insert(reverseGlitz, revGlitz)
+            end
+            do
+                local forGlitz, revGlitz = calculateButtonGlitz(constructCompleteProto(self.timeDirection, self.second), secondPnV, switchState == 0) -- Done
+                table.insert(forwardsGlitz, forGlitz)
+                table.insert(reverseGlitz, revGlitz)
+            end
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[self.triggerID] = {switchState}
+        end,
+        triggerID = p.triggerID,
+        timeDirection = p.timeDirection,
+        first = cloneButtonSegment(p.first),
+        second = cloneButtonSegment(p.second)
+    }
+    
+end
+
+
+function calculatePhysicsAffectingStuff(tempStore)
     return function (frameNumber, triggerArrivals)
         local retv = {}
-    
+
         tempStore.frameNumber = frameNumber
-    
+        tempStore.triggerArrivals = triggerArrivals
+
         retv.additionalBoxes = {}
         tempStore.additionalEndBoxes = {}
-    
-        retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals)
-        retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions)
-        retv.mutators = {} -- TODO
-        retv.arrivalLocations = calculateArrivalLocations(retv.portals)
-    
-        tempStore.buttonPositionsAndVelocities =
-            calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions)
-     
-        fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions)
-    
-        for collision in list_iter(retv.collisions) do
-            local forwardsGlitz, reverseGlitz = calculateCollisionGlitz(collision)
+
+        retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals) -- Done
+        retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions) -- Done
+        retv.mutators = {} --TODO
+        retv.arrivalLocations = calculateArrivalLocations(retv.portals) -- Done
+
+        calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions) -- Done
+
+        fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions) -- Done
+
+        for collision in list_iter(retv.collisions) do -- Done
+            local forwardsGlitz, reverseGlitz = calculateCollisionGlitz(collision) -- Done
             table.insert(tempStore.forwardsGlitz, forwardsGlitz)
             table.insert(tempStore.reverseGlitz, reverseGlitz)
         end
     
         for portal in list_iter(retv.portals) do
-            local forwardsGlitz, reverseGlitz = calculatePortalGlitz(portal)
+            local forwardsGlitz, reverseGlitz = calculatePortalGlitz(portal) -- Done
             table.insert(tempStore.forwardsGlitz, forwardsGlitz)
             table.insert(tempStore.reverseGlitz, reverseGlitz)
         end
-    
+
         return retv
     end
 end
+
+
 local function getDepartureInformation(tempStore)
     return function(departures)
-        local buttonStates =
-            calculateButtonStates(
-                tempStore.protoButtons,
-                tempStore.buttonPositionsAndVelocities,
-                departures)
-        
+        calculateButtonStates(tempStore.protoButtons, departures, tempStore.triggerArrivals) -- Done
+
         for i = 1, #tempStore.protoButtons do
-            local forwardsGlitz, reverseGlitz =
-                calculateButtonGlitz(
-                    tempStore.protoButtons[i],
-                    tempStore.buttonPositionsAndVelocities[i],
-                    buttonStates[i])
-            table.insert(tempStore.forwardsGlitz, forwardsGlitz)
-            table.insert(tempStore.reverseGlitz, reverseGlitz)
+            tempStore.protoButtons[i]:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz) --Done
         end
-        
-        table.insert(tempStore.forwardsGlitz, forwardsGlitz)
-        table.insert(tempStore.reverseGlitz, reverseGlitz)
-        
-        fillButtonTriggers(
-            tempStore.outputTriggers, tempStore.protoButtons, buttonStates)
-        
-        return tempStore.outputTriggers,
-               tempStore.forwardsGlitz,
-               tempStore.reverseGlitz,
-               tempStore.additionalEndBoxes
+
+        for i = 1, #tempStore.protoButtons do
+            tempStore.protoButtons[i]:fillTrigger(tempStore.outputTriggers) --Done
+        end
+
+        return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
     end
 end
 
-return
-{
-    getDepartureInformation = getDepartureInformation,
+local function timeDirectionToInt(dir)
+    if dir == 'forwards' then
+        return 1
+    elseif dir == 'reverse' then
+        return -1
+    else
+        return 0
+    end
+end
+
+return {
+    momentarySwitch = momentarySwitch,
+    toggleSwitch = toggleSwitch,
+    stickySwitch = stickySwitch,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
+    getDepartureInformation = getDepartureInformation,
     calculateBidirectionalGlitz = calculateBidirectionalGlitz,
     timeDirectionToInt = timeDirectionToInt,
 }
+

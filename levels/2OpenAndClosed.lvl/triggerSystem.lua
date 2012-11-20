@@ -1,4 +1,4 @@
-local bts = require "global.basicTriggerSystem"
+bts = require "global.basicTriggerSystem"
 
 local tempStore = 
 {
@@ -6,12 +6,14 @@ local tempStore =
     buttonPositionsAndVelocities = {},
     outputTriggers = {},
     forwardsGlitz = {},
-	reverseGlitz = {},
+    reverseGlitz = {},
+    triggerArrivals = nil,
+    
     --constant proto-object data:
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 10 * 3200},
+            attachment = {platform = nil, xOffset = 8 * 3200, yOffset = 13 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -20,14 +22,14 @@ local tempStore =
             destinationIndex = 1,
             xDestination = 0,
             yDestination = 0,
-            relativeTime = true,
-            timeDestination = -8 * 60,
+            relativeTime = false,
+            timeDestination = 0,
             illegalDestination = 1,
             fallable = false,
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 45 * 1600, yOffset = 10 * 3200},
+            attachment = {platform = nil, xOffset = 26 * 3200, yOffset = 25 * 1600},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -54,21 +56,59 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 39 * 1600,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 8 * 3200,
                         maxSpeed = 300,
-                        acceleration = 20,
-                        deceleration = 20
+                        acceleration = 50,
+                        deceleration = 50
                     }
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 39 * 1600,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 9 * 1600,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                }
+            }
+        },
+        {
+            width = 3200,
+            height = 4 * 3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 3,
+            buttonTriggerID = 1,
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 45 * 1600,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 9 * 1600,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 45 * 1600,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
@@ -86,10 +126,10 @@ local tempStore =
     protoMutators = {
     },
     protoButtons = {
-        bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 12 * 3200 - 800},
-            width = 3200,
-            height = 800,
+        bts.stickySwitch{
+            attachment = {platform = nil, xOffset = 4 * 3200, yOffset = 14 * 3200},
+            width = 800,
+            height = 1600,
             timeDirection = 'forwards',
             triggerID = 1
         }
@@ -97,8 +137,6 @@ local tempStore =
 }
 
 --==Callin Definitions==--
---triggerArrivals have already had default values inserted by C++
---for trigger indices that did not arrive by the time this is called
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
 
 --responsible*Index gives the position in the list of the thing that
