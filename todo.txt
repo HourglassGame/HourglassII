@@ -2,8 +2,6 @@
 
 ----===== DETAILED CODING ISSUES =====-----
 
-BUG - Fix Div-by-zero in BoxCollisionAlgorithm
-
 BUG - Fix Crashes that can be caused by loading ill-formed levels or
     running out of memory while loading/running levels.
 
@@ -15,14 +13,16 @@ BUG - there is a lot of potential for numeric overflow in the code. Need to at l
 
 Better error reporting for level-file-not-found errors (and related errors).
 
-Implement variable box/guy/segment sizes
+Implement variable box/guy/segment sizes - partially done, boxes can be different sized squares.
 
 Implement drawing of post-physics additional box departures. (Or should this be done by the triggersystem?)
     * For things with a relative arrival location, need some way of knnowing the absolute location to draw them at.
+Tim: Why should they draw? I think they should not always draw.
 
 Investigate the following inconsistency:
   Boxes which have departed in a special way cannot be stepped on by guys and
   cannot be picked up, but *can* stop guys from placing boxes
+Tim: special?
 
 Remove Portals, replace with Mutators. Requirements:
  * Pass player input when a guy collides with portal.
@@ -30,6 +30,7 @@ Remove Portals, replace with Mutators. Requirements:
  * Note: No need to pass object and time as mutators happen before any other time travel.
  * Remember to maintain the distinction between interactable boxes/guys and ones that 'left'.
    * Left if any of timeDirection, nextTime or arrival basis is not equal to the premutated value
+Tim: Bad idea I believe. Portals should do some special things because there are clear differences. Speed related.
 
 Add trigger-only data to Guys and Boxes.
  * Think about type; Vector? Map? Map of vectors?
@@ -37,6 +38,7 @@ Add trigger-only data to Guys and Boxes.
  * Vector is more general, we may change to that later...
 
 Think about removing illegal portal? With the above 2 things implemented it is possible.
+Tim: Bad idea to remove, again speed related.
 
 Allow trigger system to create persistent Glitz? (this is for lazy "now I want explosion gfx")
 
@@ -50,7 +52,7 @@ Unify the forwards and reverse glitz lists into a single "bidirectional glitz" l
 
 Time Guns
  * Physics: Finish raytrace algo
- * Requires persistent Glitz and line Glitz to visualise.
+ * Requires persistent Glitz and line Glitz to visualise. - apparently line is in
  
 Think about pause time
  * A Guy that departs to its current frame
@@ -60,6 +62,13 @@ Think about pause time
  * Does not work for boxes as they'd chronofrag themselves, would work if they could go ethereal for pause.
  * These pause times would be limited to a single agent. No 'alternate time stream' with 2 entities.
  * Aka reverse or forwards time in pause time means nothing.
+Tim: This method is really wierd when it is further pondered. There is technically no time stream at all, no other things can be "shot into" the "same" pause time. There is no same pause time. If A and B are paused in the same frame then they are symetrical.
+
+Pause Time Implementation thoughts:
+ * Extra time direction or flag, unsure of which. Guys need to remember their FORWARDS or BACKWARDS state when they entered pause time. Maybe two times, PAUSE_FORWARD and PAUSE_BACKWARD? Messy but so is another guy field. Guy is the only one which requires this field though so it would be ok.
+ * The only pause time object which is ever drawn should be the current guy.
+ * Prevent non-pause from affecting pause things (eg shooting).
+ * Prevent platform, box etc.. movement from affecting paused guys,
 
 Improve Input
  * Send frame of relevant input with mutateObject on Guys
