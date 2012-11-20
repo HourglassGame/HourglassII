@@ -101,6 +101,7 @@ def create_bundle(
     for dll in dlls:
         shutil.copy(dll, "build/HourglassII/")
     shutil.copytree("level.lvl", "build/HourglassII/level.lvl")
+    shutil.copytree("levels", "build/HourglassII/levels")
     shutil.copy("basicTriggerSystem.lua", "build/HourglassII/")
     os.remove(executable)
 
