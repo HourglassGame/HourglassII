@@ -390,4 +390,5 @@ return
     getDepartureInformation = getDepartureInformation,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
     calculateBidirectionalGlitz = calculateBidirectionalGlitz,
+    timeDirectionToInt = timeDirectionToInt,
 }

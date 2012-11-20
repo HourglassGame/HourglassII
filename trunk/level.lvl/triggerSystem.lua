@@ -92,7 +92,7 @@ local tempStore =
                             illegalPortal = nil, 
                             arrivalBasis = nil, 
                             timeDirection = object.boxCarryDirection}, 
-                        targetFrame = self.frameNumber+timeDirectionToInt(object.boxCarryDirection),
+                        targetFrame = self.frameNumber+bts.timeDirectionToInt(object.boxCarryDirection),
                     }
                 end
                 return object
