@@ -49,7 +49,7 @@ public:
         return *this;
     }
     typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
-    typedef mt::std::vector<RetardedNotActuallyAGlitzGlitz>::type NewGlitzType;
+    
     struct PhysicsReturnT
     {
     	PhysicsReturnT(

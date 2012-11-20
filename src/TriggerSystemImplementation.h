@@ -5,7 +5,6 @@
 #include "Box.h"
 #include "TriggerData.h"
 #include "ObjectPtrList.h"
-#include "RetardedNotActuallyAGlitzGlitz.h"
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
 #include "PhysicsAffectingStuff.h"

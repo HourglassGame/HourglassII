@@ -42,7 +42,6 @@
 
 #include <cmath>
 
-#include "BasicConfiguredTriggerSystem.h"
 #include "DirectLuaTriggerSystem.h"
 #include "LevelLoader.h"
 #include "ConcurrentQueue.h"
