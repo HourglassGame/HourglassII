@@ -29,7 +29,7 @@ local tempStore =
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 27 * 3200, yOffset = 7 * 3200},
+            attachment = {platform = nil, xOffset = 27 * 3200, yOffset = 9 * 3200},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
