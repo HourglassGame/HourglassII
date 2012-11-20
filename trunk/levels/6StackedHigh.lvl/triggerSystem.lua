@@ -13,7 +13,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 8 * 3200, yOffset = 14 * 3200},
+            attachment = {platform = nil, xOffset = 21 * 1600, yOffset = 16 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -29,7 +29,7 @@ local tempStore =
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 27 * 3200, yOffset = 7 * 3200},
+            attachment = {platform = nil, xOffset = 15 * 3200, yOffset = 9 * 3200},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
