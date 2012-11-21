@@ -840,7 +840,7 @@ void guyStep(
                 carryDirection[i]);
 
 			// Things that do time travel
-			// The occurance of one thing precludes subsequent ones
+			// The occurrence of one thing precludes subsequent ones
             bool normalDeparture = true;
 
             // falling through portals
