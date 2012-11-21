@@ -214,7 +214,8 @@ void guyStep(
             xspeed.push_back(0);
 			if (guyArrivalList[i].getTimePaused())
 			{
-				yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
+				// EVIL_TOKEN_1 see other token for the explaination of this + 1
+				yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity + 1);
 			}
 			else
 			{
@@ -241,7 +242,7 @@ void guyStep(
 		}
 
 		// Collision algo
-        if (guyArrivalList[i].getIndex() < playerInput.size())
+        if (guyArrivalList[i].getIndex() < playerInput.size() && !guyArrivalList[i].getTimePaused())
         {
             std::size_t relativeIndex(guyArrivalList[i].getIndex());
             InputList const& input(playerInput[relativeIndex]);
@@ -256,7 +257,7 @@ void guyStep(
 				int pX(platform.getX());
 				int pY(platform.getY());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS && !guyArrivalList[i].getTimePaused())
+				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -307,19 +308,7 @@ void guyStep(
 					TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
 					if (x[i] < boxX+boxSize && x[i]+width > boxX)
 					{
-						if (guyArrivalList[i].getTimePaused())
-						{
-							if (newY+height >= boxY && newY-yspeed[i]+height <= boxY)
-							{
-								boxThatIamStandingOn = j;
-								newY = boxY-height;
-								xspeed[i] = 0;
-								supported[i] = true;
-								bottom = true;
-								supportedSpeed[i] = 0;
-							}
-						}
-						else if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
+						if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
 						{
 							if (newY + height >= boxY-boxYspeed && newY + height-yspeed[i] <= boxY)
 							{
@@ -353,7 +342,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE && !guyArrivalList[i].getTimePaused())
+                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -368,10 +357,10 @@ void guyStep(
                     if (newY+height/2 < pY+pHeight/2)
                     {
                         newY = pY-height;
-                        xspeed[i] = guyArrivalList[i].getTimePaused() ? 0 : pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
+                        xspeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
                         bottom = true;
-                        supportedSpeed[i] = guyArrivalList[i].getTimePaused() ? 0 : pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
+                        supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
                     }
                     else
                     {
@@ -428,7 +417,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE && !guyArrivalList[i].getTimePaused())
+                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE)
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -482,6 +471,7 @@ void guyStep(
             y[i] = newY;
         }
     }
+	
     assert(boost::distance(x) == boost::distance(guyArrivalList));
     assert(boost::distance(y) == boost::distance(guyArrivalList));
     assert(boost::distance(xspeed) == boost::distance(guyArrivalList));
@@ -510,7 +500,9 @@ void guyStep(
             if (carry[i])
             {
                 bool droppable(false);
-                if (input.getDown() && supported[i])
+				// The pause part of this check is rather evil because a guy could be in the first frame of being in mid air.
+				// EVIL_TOKEN_1
+                if (input.getDown() && (supported[i] || (guyArrivalList[i].getTimePaused() && yspeed[i] == env.gravity && guyArrivalList[i].getSupported())))
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
@@ -682,7 +674,7 @@ void guyStep(
 								dropX = leftBound;
 							}
 						}
-
+						
 						// Add box
 						makeBoxAndTimeWithPortalsAndMutators(
 							nextBox,
@@ -751,6 +743,208 @@ void guyStep(
             }
         }
     }
+	
+	// Do movement for pause guys
+	// This is so pause guys can drop boxes and then stand on them
+	for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
+    {
+		if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getTimePaused())
+        {
+            std::size_t relativeIndex(guyArrivalList[i].getIndex());
+            InputList const& input(playerInput[relativeIndex]);
+
+            int const width(guyArrivalList[i].getWidth());
+            int const height(guyArrivalList[i].getHeight());
+            int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
+
+            // chonofrag with platforms
+			foreach (Collision const& platform, nextPlatform)
+			{
+				int pX(platform.getX());
+				int pY(platform.getY());
+				int pWidth(platform.getWidth());
+				int pHeight(platform.getHeight());
+
+				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+				{
+					finishedWith[i] = true;
+					continue;
+				}
+			}
+
+			// chonofrag with walls
+			if (wallAtExclusive(env, x[i], y[i], width, height))
+			{
+				finishedWith[i] = true;
+				continue;
+			}
+
+            bool bottom = false;
+            bool top = false;
+            bool left = false;
+            bool right = false;
+
+            std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
+
+            // jump
+            if (guyArrivalList[i].getSupported() && input.getUp())
+            {
+                yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+            }
+
+            // Y direction collisions
+            int newY(y[i] + yspeed[i]);
+
+            // box collision (only occurs in Y direction)
+            for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
+			{
+            	if (nextBoxNormalDeparture[j])
+            	{
+            		int boxX(nextBox[j].object.getX());
+					int boxY(nextBox[j].object.getY());
+					int boxXspeed(nextBox[j].object.getXspeed());
+					int boxYspeed(nextBox[j].object.getYspeed());
+					int boxSize(nextBox[j].object.getSize());
+					TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
+					if (x[i] < boxX+boxSize && x[i]+width > boxX)
+					{
+						if (newY+height >= boxY && newY-yspeed[i]+height <= boxY)
+						{
+							boxThatIamStandingOn = j;
+							newY = boxY-height;
+							xspeed[i] = 0;
+							supported[i] = true;
+							bottom = true;
+							supportedSpeed[i] = 0;
+						}
+					}
+            	}
+			}
+
+            // check platform collision in Y direction
+            foreach (Collision const& platform, nextPlatform)
+            {
+                int pX(platform.getX());
+                int pY(platform.getY());
+                int pWidth(platform.getWidth());
+                int pHeight(platform.getHeight());
+
+                if (IntersectingRectanglesExclusive(
+                        x[i], newY, width, height,
+                		pX - platform.getXspeed(), pY, pWidth, pHeight))
+                {
+                    if (newY+height/2 < pY+pHeight/2)
+                    {
+                        newY = pY-height;
+                        xspeed[i] = 0;
+                        supported[i] = true;
+                        bottom = true;
+                        supportedSpeed[i] = 0;
+                    }
+                    else
+                    {
+                        newY = pY + pHeight;
+                        top = true;
+                    }
+                }
+            }
+
+            //check wall collision in Y direction
+			if (yspeed[i] > 0) // down
+			{
+				if (env.wall.at(x[i], newY+height) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY+height)))
+				{
+					newY = ((newY+height)/env.wall.segmentSize())*env.wall.segmentSize() - height;
+					supported[i] = true;
+					bottom = true;
+					supportedSpeed[i] = 0;
+				}
+			}
+			else if (yspeed[i] < 0) // up
+			{
+				if  (env.wall.at(x[i], newY) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY)))
+				{
+					newY = (newY/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+					top = true;
+				}
+			}
+
+            if (bottom && top)
+            {
+            	finishedWith[i] = true;
+            	continue;
+            }
+
+            // X direction stuff
+            int newX(x[i] + xspeed[i]);
+
+            //check wall collision in X direction
+            if (input.getLeft())
+            {
+            	facing[i] = FacingDirection::LEFT;
+                newX += -250;
+            }
+            else if (input.getRight())
+            {
+            	facing[i] = FacingDirection::RIGHT;
+                newX += 250;
+            }
+
+            // platform collision
+            foreach (Collision const& platform, nextPlatform)
+            {
+                int pX(platform.getX());
+                int pY(platform.getY());
+                int pWidth = platform.getWidth();
+                int pHeight = platform.getHeight();
+
+                if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
+                {
+                    if (newX+width/2 < pX+pWidth/2)
+                    {
+                        newX = pX-width;
+                        right = true;
+                    }
+                    else
+                    {
+                        newX = pX+pWidth;
+                        left = true;
+                    }
+                }
+            }
+
+            if (newX-x[i] > 0) // right
+			{
+				if (env.wall.at(newX+width, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX+width, newY+height)))
+				{
+					newX = (newX+width)/env.wall.segmentSize()*env.wall.segmentSize() - width;
+					right = true;
+				}
+			}
+			else if (newX-x[i] < 0) // left
+			{
+				if (env.wall.at(newX, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX, newY+height)))
+				{
+					newX = (newX/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+					left = true;
+				}
+			}
+
+            if (left && right)
+			{
+				finishedWith[i] = true;
+				continue;
+			}
+
+			// Apply Change
+            xspeed[i] = newX-x[i];
+            yspeed[i] = newY-y[i];
+
+            x[i] = newX;
+            y[i] = newY;
+        }
+	}
+	
     assert(boost::distance(carry) == boost::distance(guyArrivalList));
     assert(boost::distance(carrySize) == boost::distance(guyArrivalList));
     assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
