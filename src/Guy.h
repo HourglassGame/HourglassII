@@ -30,9 +30,10 @@ public:
     	int boxCarrySize,
     	TimeDirection boxCarryDirection,
         
-        TimeDirection timeDirection);
+        TimeDirection timeDirection,
+		bool timePaused);
 
-    Guy(const Guy& o, TimeDirection nTimeDirection);
+    Guy(const Guy& o, TimeDirection nTimeDirection, bool nTimePaused);
     
     std::size_t getIndex() const { return index_; }
     int getX()         const { return x_; }
@@ -59,6 +60,7 @@ public:
 
     TimeDirection
         getTimeDirection() const { return timeDirection_; }
+	bool getTimePaused()    const { return timePaused_; }
 
 
     bool operator==(const Guy& o) const;
@@ -87,6 +89,7 @@ private:
     TimeDirection boxCarryDirection_;
 
     TimeDirection timeDirection_;
+	bool timePaused_;
 };
 
 class GuyConstPtr : boost::totally_ordered<GuyConstPtr>
@@ -121,6 +124,7 @@ public:
 
     TimeDirection
         getTimeDirection() const { return guy_->getTimeDirection(); }
+	bool getTimePaused()    const { return guy_->getTimePaused(); }
 
     bool operator==(GuyConstPtr const& o) const { return *guy_ == *o.guy_; }
     bool operator<(GuyConstPtr const& o) const { return *guy_ < *o.guy_; }
