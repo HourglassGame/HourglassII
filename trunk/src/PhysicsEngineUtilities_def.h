@@ -916,7 +916,7 @@ void guyStep(
 				{
 					normalDeparture = false;
 					nextTimeDirection *= -1;
-					nextTime = nextFrame(frame, nextTimeDirection);
+					nextTime = newTimePaused[i] ? frame : nextFrame(frame, nextTimeDirection);
 					carryDirection[i] *= -1;
 					if (timeReverse->second > 0)
 					{
