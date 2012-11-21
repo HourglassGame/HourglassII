@@ -178,7 +178,6 @@ bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, in
 template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_t playerInputSize);
 enum {
-	JUMP_SPEED 	= -550,
 	COLLISION_BUFFER_RANGE = 100,
 	HALF_COLLISION_BUFFER_RANGE = 50
 };
