@@ -24,7 +24,7 @@ bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_
         if (lastGuyIndex < playerInputSize - 1) return false;
         if (lastGuyIndex == playerInputSize - 1) return true;
         if (boost::distance(guyArrivals) == 1) return false;
-        return (boost::end(guyArrivals) - 2)->getIndex() == playerInputSize;
+        return (boost::end(guyArrivals) - 2)->getIndex() == playerInputSize - 1;
     }
 }
 
