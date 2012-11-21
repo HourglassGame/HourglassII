@@ -167,10 +167,12 @@ bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
     return wallAtExclusive(env.wall, x, y, w, h);
 }
 
-#if 0
-unsigned int Raytrace(
+
+void doGunRaytrace(
 		Environment const& env,
-		int sx, int sy, int px, int py, // start and position of target for trace
+		PhysicsObjectType& targetType,
+		int& targetId,
+		int sx, int sy, int px, int py,
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type box,
 		mt::std::vector<char>::type& nextBoxNormalDeparture,
 		mt::std::vector<int>::type gx, // other guy things
@@ -183,7 +185,9 @@ unsigned int Raytrace(
 	// starts in a wall all it can hit is a wall
 	if (env.wall.at(sx,sy))
 	{
-		return -1;
+		targetType = NONE;
+		targetId = -1;
+		return;
 	}
 
 	// shoot to the right if the direction has no length
@@ -193,7 +197,12 @@ unsigned int Raytrace(
 	}
 
 	int size = env.wall.segmentSize();
-
+	
+	// Find Wall
+	int dx = px - sx;
+	int dy = py - sy;
+	
+/*
 	if (sx < px && sy >= py) // top right, x safe
 	{
 		// find wall distance
@@ -249,9 +258,8 @@ unsigned int Raytrace(
 	{
 		assert(sx <= px && sy < py);
 
-	}
+	}*/
 }
-#endif
 
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)
 {

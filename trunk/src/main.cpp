@@ -412,7 +412,7 @@ void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::ty
         std::stringstream timeReverses;
         timeReverses << "timeReverses: " << mpickups[hg::TIME_REVERSE];
         sf::String timeReversesGlyph(timeReverses.str());
-        timeReversesGlyph.SetPosition(540, 375);
+        timeReversesGlyph.SetPosition(540, 370);
         timeReversesGlyph.SetSize(10.f);
         timeReversesGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(timeReversesGlyph);
@@ -421,10 +421,19 @@ void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::ty
         std::stringstream timeGuns;
         timeGuns << "timeGuns: " << mpickups[hg::TIME_GUN];
         sf::String timeGunsGlyph(timeGuns.str());
-        timeGunsGlyph.SetPosition(540, 400);
+        timeGunsGlyph.SetPosition(540, 390);
         timeGunsGlyph.SetSize(10.f);
         timeGunsGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(timeGunsGlyph);
+    }
+	{
+        std::stringstream timeGuns;
+        timeGuns << "timePauses: " << mpickups[hg::TIME_PAUSE];
+        sf::String timePausesGlyph(timeGuns.str());
+        timePausesGlyph.SetPosition(540, 410);
+        timePausesGlyph.SetSize(10.f);
+        timePausesGlyph.SetColor(Colour(200, 200, 200));
+        app.Draw(timePausesGlyph);
     }
 }
 

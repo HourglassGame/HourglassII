@@ -236,6 +236,9 @@ Ability to<Ability>(lua_State* L, int index)
     else if (abilityString == "timeGun") {
         return TIME_GUN;
     }
+	else if (abilityString == "timePause") {
+        return TIME_PAUSE;
+    }
     else {
         std::cerr << abilityString << std::endl;
         assert(false && "invalid ability string");

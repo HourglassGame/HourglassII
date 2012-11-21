@@ -11,6 +11,8 @@
 #include "BoxGlitzAdder.h"
 #include "GuyGlitzAdder.h"
 
+#include "PhysicsObjectType.h"
+
 #include <vector>
 #include "mt/boost/container/map.hpp"
 #include "mt/std/vector"
@@ -18,7 +20,6 @@
 #include <boost/move/move.hpp>
 
 #include "Frame_fwd.h"
-
 #include "Frame.h"
 #include "Universe.h"
 #include "Geometry.h"
@@ -156,17 +157,19 @@ void buildDepartures(
 bool wallAtExclusive(Wall const& wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const& env, int x, int y, int w, int h);
 
-unsigned int Raytrace(
-        Environment const& env,
-        int sx, int sy, int px, int py,
-        mt::std::vector<ObjectAndTime<Box, Frame*> >::type box,
-        mt::std::vector<char>::type& nextBoxNormalDeparture,
-        mt::std::vector<int>::type gx, // other guy things
-        mt::std::vector<int>::type gy,
-        mt::std::vector<int>::type gw,
-        mt::std::vector<int>::type gh,
-        mt::std::vector<char>::type shootable,
-        int myIndex);
+void doGunRaytrace(
+	Environment const& env,
+	PhysicsObjectType& targetType,
+	int& targetId,
+	int sx, int sy, int px, int py,
+	mt::std::vector<ObjectAndTime<Box, Frame*> >::type box,
+	mt::std::vector<char>::type& nextBoxNormalDeparture,
+	mt::std::vector<int>::type gx, // other guy things
+	mt::std::vector<int>::type gy,
+	mt::std::vector<int>::type gw,
+	mt::std::vector<int>::type gh,
+	mt::std::vector<char>::type shootable,
+	int myIndex);
 
 bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
