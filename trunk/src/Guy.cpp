@@ -20,7 +20,8 @@ Guy::Guy(
     int boxCarrySize,
     TimeDirection boxCarryDirection,
 
-    TimeDirection timeDirection) :
+    TimeDirection timeDirection,
+	bool timePaused) :
         index_(index),
         x_(x), y_(y),
         xspeed_(xspeed), yspeed_(yspeed),
@@ -39,11 +40,12 @@ Guy::Guy(
         boxCarrySize_(boxCarrySize),
         boxCarryDirection_(boxCarryDirection),
 
-        timeDirection_(timeDirection)
+        timeDirection_(timeDirection),
+		timePaused_(timePaused)
 {
 }
 
-Guy::Guy(const Guy& o, TimeDirection timeDirection) :
+Guy::Guy(const Guy& o, TimeDirection timeDirection, bool timePaused) :
         index_(o.index_),
 
         x_(o.x_), y_(o.y_),
@@ -63,8 +65,8 @@ Guy::Guy(const Guy& o, TimeDirection timeDirection) :
         boxCarrySize_(o.boxCarrySize_),
         boxCarryDirection_(o.boxCarryDirection_),
 
-        timeDirection_(timeDirection)
-
+        timeDirection_(timeDirection),
+		timePaused_(timePaused)
 {
 }
 
@@ -87,7 +89,8 @@ bool Guy::operator==(const Guy& o) const
         && boxCarrying_ == o.boxCarrying_
         && boxCarrySize_ == o.boxCarrySize_
         && boxCarryDirection_ == o.boxCarryDirection_
-        && timeDirection_ == o.timeDirection_;
+        && timeDirection_ == o.timeDirection_
+		&& timePaused_ == o.timePaused_;
 }
 bool Guy::operator<(const Guy& o) const
 {

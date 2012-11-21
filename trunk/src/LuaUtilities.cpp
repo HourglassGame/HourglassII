@@ -315,6 +315,7 @@ Guy to<Guy>(lua_State* L, int index)
         boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
     }
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
+	bool timePaused(readField<bool>(L, "timePaused", index));
     return Guy(
         relativeIndex,
         x, y,
@@ -330,7 +331,8 @@ Guy to<Guy>(lua_State* L, int index)
         boxCarrying,
         boxCarrySize,
         boxCarryDirection,
-        timeDirection);
+        timeDirection,
+		timePaused);
 }
 
 template<>
@@ -354,6 +356,7 @@ InitialGuy to<InitialGuy>(lua_State* L, int index)
         boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
     }
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
+	bool timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
     return
     InitialGuy(
       Guy(
@@ -371,7 +374,8 @@ InitialGuy to<InitialGuy>(lua_State* L, int index)
         boxCarrying,
         boxCarrySize,
         boxCarryDirection,
-        timeDirection));
+        timeDirection,
+		timePaused));
 }
 
 template<>

@@ -735,6 +735,7 @@ void guyStep(
     mt::std::vector<int>::type newJumpSpeed(guyArrivalList.size());
     mt::std::vector<mt::std::map<Ability, int>::type >::type newPickups(guyArrivalList.size());
     mt::std::vector<int>::type illegalPortal(guyArrivalList.size());
+	mt::std::vector<int>::type newTimePaused(guyArrivalList.size());
     // arrivalBasis is always -1 for normalDeparture
 
     // time travel, mutator and portal collision, item use
@@ -760,6 +761,7 @@ void guyStep(
             newHeight[i] = guyArrivalList[i].getHeight();
             newJumpSpeed[i] = guyArrivalList[i].getJumpSpeed();
             newPickups[i] = mt::std::map<Ability, int>::type(guyArrivalList[i].getPickups());
+			newTimePaused[i] = guyArrivalList[i].getTimePaused();
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
             Frame* nextTime(nextFrame(frame, nextTimeDirection));
@@ -798,7 +800,8 @@ void guyStep(
 						carry[i],
 						carrySize[i],
 						carryDirection[i],
-						nextTimeDirection
+						nextTimeDirection,
+						newTimePaused[i]
 					));
 				if (!newGuy)
 				{
@@ -811,6 +814,7 @@ void guyStep(
 				yspeed[i] = newGuy->getYspeed();
 				newWidth[i] = newGuy->getWidth();
 				newHeight[i] = newGuy->getHeight();
+				newJumpSpeed[i] = newGuy->getJumpSpeed();
 				illegalPortal[i] = newGuy->getIllegalPortal();
 				// arrivalBasis is missing with good reason
 				supported[i] = newGuy->getSupported();
@@ -821,6 +825,7 @@ void guyStep(
 				carrySize[i] = newGuy->getBoxCarrySize();
 				carryDirection[i] = newGuy->getBoxCarryDirection();
 				nextTimeDirection = newGuy->getTimeDirection();
+				newTimePaused[i] = newGuy->getTimePaused();
 				// relativeIndex is missing for obvious reasons
 			}
 
@@ -859,7 +864,7 @@ void guyStep(
 						        newJumpSpeed[i],
 								illegalPortal[i],-1,
 								supported[i],supportedSpeed[i], newPickups[i], facing[i],
-								carry[i],carrySize[i], carryDirection[i],nextTimeDirection),false))
+								carry[i],carrySize[i], carryDirection[i],nextTimeDirection,newTimePaused[i]),false))
 						{
 							if (nextPortal[j].getWinner())
 							{
@@ -897,8 +902,10 @@ void guyStep(
 
 				if (input.getAbility() == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
 				{
-					nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getFrameIdParam(0)));
+					//nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getFrameIdParam(0)));
 					normalDeparture = false;
+					nextTime = frame;
+					newTimePaused[i] = !newTimePaused[i];
 					if (timeJump->second > 0)
 					{
 						newPickups[i][hg::TIME_JUMP] = timeJump->second - 1;
@@ -929,7 +936,7 @@ void guyStep(
 								    newJumpSpeed[i],
 									illegalPortal[i],-1,
 									supported[i],supportedSpeed[i], newPickups[i], facing[i],
-									carry[i],carrySize[i], carryDirection[i],nextTimeDirection),true)))
+									carry[i],carrySize[i], carryDirection[i],nextTimeDirection,newTimePaused[i]),true)))
 						{
 							if (nextPortal[j].getWinner())
 							{
@@ -981,7 +988,8 @@ void guyStep(
 							carrySize[i],
 							carryDirection[i],
 
-							nextTimeDirection
+							nextTimeDirection,
+							newTimePaused[i]
 						),
 						nextTime
 					)
@@ -1026,9 +1034,10 @@ void guyStep(
 					carrySize[i],
 					carryDirection[i],
 
-                    guyArrivalList[i].getTimeDirection()
+                    guyArrivalList[i].getTimeDirection(),
+					newTimePaused[i]
 				),
-				nextFrame(frame, guyArrivalList[i].getTimeDirection())
+				newTimePaused[i] ? frame : nextFrame(frame, guyArrivalList[i].getTimeDirection())
 			)
 		);
 	}

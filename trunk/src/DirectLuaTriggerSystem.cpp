@@ -575,6 +575,8 @@ void pushGuy(lua_State* L, Guy const& guy)
     }
     lua_pushstring(L, guy.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
     lua_setfield(L, -2, "timeDirection");
+	lua_pushboolean(L, guy.getTimePaused());
+    lua_setfield(L, -2, "timPaused_");
 }
 
 void pushBox(lua_State* L, Box const& box)
