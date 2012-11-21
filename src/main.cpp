@@ -247,7 +247,9 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 					runningFromReplay = true;
 				}
 				else {
-					input.updateState(app.GetInput(), app.GetWidth());
+                    hg::Wall const& wall(timeEngine->getWall());
+                    double scalingFactor(std::max(wall.roomWidth()*.1/app.GetWidth(), wall.roomHeight()*1./app.GetHeight()));
+					input.updateState(app.GetInput(), app.GetWidth(), scalingFactor);
 					inputList = input.AsInputList();
 					runningFromReplay = false;
 				}

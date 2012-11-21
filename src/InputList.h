@@ -6,6 +6,7 @@
 #include <boost/operators.hpp>
 #include <istream>
 #include <ostream>
+#include <boost/serialization/version.hpp>
 
 #include <cassert>
 
@@ -26,8 +27,9 @@ public:
         bool down,
         bool use,
         Ability ability,
-        FrameID abilityParams,
-        int frameIdParamCount);
+        FrameID timeParam,
+        int xParam,
+        int yParam);
 
     bool operator==(InputList const& o) const
     {
@@ -37,8 +39,9 @@ public:
             && down == o.down
             && use == o.use
             && ability == o.ability
-            && frameIdParams == o.frameIdParams
-            && frameIdParamCount == o.frameIdParamCount;
+            && timeParam == o.timeParam
+            && xParam == o.xParam
+            && yParam == o.yParam;
     }
 
     bool getLeft()       const { return left; }
@@ -48,24 +51,21 @@ public:
     bool getUse()        const { return use; }
     Ability getAbility() const { return ability; }
 
-    FrameID getFrameIdParam(int param) const
-    {
-        if (param >= 0 && param < frameIdParamCount) {
-            return frameIdParams;
-        }
-        // throw exception here.
-        assert(false);
-        return FrameID();
-    }
+    FrameID getTimeParam() const { return timeParam; }
+    
+    int getXParam() const { return xParam; }
+    int getYParam() const { return yParam; }
+    
     InputList() :
-        left(false),
-        right(false),
-        up(false),
-        down(false),
-        use(false),
+        left(),
+        right(),
+        up(),
+        down(),
+        use(),
         ability(NO_ABILITY),
-        frameIdParams(),
-        frameIdParamCount(0)
+        timeParam(),
+        xParam(),
+        yParam()
     {
     }
 private:
@@ -76,15 +76,21 @@ private:
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
-        (void)version;
         ar & left;
         ar & right;
         ar & up;
         ar & down;
         ar & use;
         ar & ability;
-        ar & frameIdParams;
-        ar & frameIdParamCount;
+        ar & timeParam;
+        if (version == 0) {
+            int frameIdParamCount;
+            ar & frameIdParamCount;
+        }
+        if (version >= 1) {
+            ar & xParam;
+            ar & yParam;
+        }
     }
     
     bool left;
@@ -94,8 +100,10 @@ private:
     bool use;
 
     Ability ability;
-    FrameID frameIdParams;
-    int frameIdParamCount;
+    FrameID timeParam;
+    int xParam;
+    int yParam;
+    
     //more crappy serialization
     inline friend std::ostream& operator<<(std::ostream& os, InputList const& toPrint)
     {
@@ -105,8 +113,9 @@ private:
         os << toPrint.down << " ";
         os << toPrint.use << " ";
         os << toPrint.ability << " ";
-        os << toPrint.frameIdParams << " ";
-        os << toPrint.frameIdParamCount;
+        os << toPrint.timeParam << " ";
+        os << toPrint.xParam << " ";
+        os << toPrint.yParam;
         return os;
     }
     inline friend std::istream& operator>>(std::istream& is, InputList& toRead)
@@ -119,10 +128,12 @@ private:
         int ability;
         is >> ability;
         toRead.ability = static_cast<Ability>(ability);
-        is >> toRead.frameIdParams;
-        is >> toRead.frameIdParamCount;
+        is >> toRead.timeParam;
+        is >> toRead.xParam;
+        is >> toRead.yParam;
         return is;
     }
 };
 }
+BOOST_CLASS_VERSION(hg::InputList, 1)
 #endif //HG_INPUT_LIST_H

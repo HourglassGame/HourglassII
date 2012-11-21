@@ -9,13 +9,15 @@ namespace hg {
 class Input {
 public:
     Input();
-    void updateState(const sf::Input& input, int mouseXOfEndOfTimeline);
+    void updateState(const sf::Input& input, int mouseXOfEndOfTimeline, double mouseScale);
     InputList AsInputList() const;
     void setTimelineLength(int newTimelineLength) { timelineLength = newTimelineLength; }
 private:
     bool left;
     bool right;
     bool up;
+    int q;
+    int w;
     int down;
     int space;
     int mouseLeft;
