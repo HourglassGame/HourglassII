@@ -212,7 +212,21 @@ void guyStep(
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
             xspeed.push_back(0);
-			yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed() + env.gravity);
+			if (guyArrivalList[i].getTimePaused())
+			{
+				yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
+			}
+			else
+			{
+				if (relativePortal.getTimeDirection() * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
+				{
+					yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed() + env.gravity);
+				}
+				else
+				{
+					yspeed.push_back(guyArrivalList[i].getYspeed() - relativePortal.getYspeed() + env.gravity);
+				}
+			}
         }
         supported.push_back(false);
         supportedSpeed.push_back(0);
@@ -242,7 +256,7 @@ void guyStep(
 				int pX(platform.getX());
 				int pY(platform.getY());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
+				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS && !guyArrivalList[i].getTimePaused())
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -293,7 +307,19 @@ void guyStep(
 					TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
 					if (x[i] < boxX+boxSize && x[i]+width > boxX)
 					{
-						if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
+						if (guyArrivalList[i].getTimePaused())
+						{
+							if (newY+height >= boxY && newY-yspeed[i]+height <= boxY)
+							{
+								boxThatIamStandingOn = j;
+								newY = boxY-height;
+								xspeed[i] = 0;
+								supported[i] = true;
+								bottom = true;
+								supportedSpeed[i] = 0;
+							}
+						}
+						else if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
 						{
 							if (newY + height >= boxY-boxYspeed && newY + height-yspeed[i] <= boxY)
 							{
@@ -304,7 +330,6 @@ void guyStep(
 								bottom = true;
 								supportedSpeed[i] = -boxYspeed;
 							}
-
 						}
 						else
 						{
@@ -328,7 +353,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
+                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE && !guyArrivalList[i].getTimePaused())
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -343,10 +368,10 @@ void guyStep(
                     if (newY+height/2 < pY+pHeight/2)
                     {
                         newY = pY-height;
-                        xspeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
+                        xspeed[i] = guyArrivalList[i].getTimePaused() ? 0 : pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
                         supported[i] = true;
                         bottom = true;
-                        supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
+                        supportedSpeed[i] = guyArrivalList[i].getTimePaused() ? 0 : pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
                     }
                     else
                     {
@@ -403,7 +428,7 @@ void guyStep(
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE)
+                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE && !guyArrivalList[i].getTimePaused())
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
@@ -1017,7 +1042,38 @@ void guyStep(
     }
 
     // Only normal departures make it this far, time for inter-guy communication (eg guns)
+    // Do not want time gun shots to hit before forced things such as spikey death or fallable portals
     // This can now occur because NO POSITION CHANGE IS POSSIBLE PAST THIS POINT
+    // Order is important here because we don't want two guys to shoot each other at exactly the same time
+    for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
+	{
+    	if (finishedWith[i])
+		{
+			continue;
+		}
+
+		const std::size_t relativeIndex(guyArrivalList[i].getIndex());
+		const InputList& input = playerInput[relativeIndex];
+		
+		mt::std::map<Ability, int>::type::iterator timeGun(newPickups[i].find(TIME_GUN));
+
+		Ability inputAbility = input.getAbility();
+
+		if (inputAbility == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
+		{
+			Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
+			
+			PhysicsObjectType targetType = NONE;
+			int targetId = -1;
+			
+			if (timeGun->second > 0)
+			{
+				newPickups[i][hg::TIME_GUN] = timeGun->second - 1;
+			}
+		}
+	}
+
+    // Guys which depart normally
 	for (std::size_t i(0), size(guyArrivalList.size()); i != size; ++i)
 	{
 		if (finishedWith[i])

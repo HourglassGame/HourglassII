@@ -189,6 +189,9 @@ void doGunRaytrace(
 		targetId = -1;
 		return;
 	}
+	
+	targetType = BOX;
+	targetId = 2;
 
 	// shoot to the right if the direction has no length
 	if (sx == px && sy == py)
