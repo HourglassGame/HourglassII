@@ -64,7 +64,7 @@ namespace {
     void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
     void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
-    hg::TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange);
+    hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange);
 
     void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend);
     void generateReplay();
@@ -395,6 +395,36 @@ hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(hg::FrameView c
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
+void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups) {
+    hg::mt::std::map<hg::Ability, int>::type mpickups(pickups);
+    {
+        std::stringstream timeJump;
+        timeJump << "timeJumps: " << mpickups[hg::TIME_JUMP];
+        sf::String timeJumpGlyph(timeJump.str());
+        timeJumpGlyph.SetPosition(540, 350);
+        timeJumpGlyph.SetSize(10.f);
+        timeJumpGlyph.SetColor(Colour(200, 200, 200));
+        app.Draw(timeJumpGlyph);
+    }
+    {
+        std::stringstream timeReverses;
+        timeReverses << "timeReverses: " << mpickups[hg::TIME_REVERSE];
+        sf::String timeReversesGlyph(timeReverses.str());
+        timeReversesGlyph.SetPosition(540, 375);
+        timeReversesGlyph.SetSize(10.f);
+        timeReversesGlyph.SetColor(Colour(200, 200, 200));
+        app.Draw(timeReversesGlyph);
+    }
+    {
+        std::stringstream timeGuns;
+        timeGuns << "timeGuns: " << mpickups[hg::TIME_GUN];
+        sf::String timeGunsGlyph(timeGuns.str());
+        timeGunsGlyph.SetPosition(540, 400);
+        timeGunsGlyph.SetSize(10.f);
+        timeGunsGlyph.SetColor(Colour(200, 200, 200));
+        app.Draw(timeGunsGlyph);
+    }
+}
 
 void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo)
 {
@@ -411,13 +441,15 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
 
     if (waveInfo.currentPlayerFrame()) {
         hg::FrameView const& view(waveInfo.currentPlayerFrame()->getView());
-        hg::TimeDirection currentGuyDirection(findCurrentGuyDirection(view.getGuyInformation()));
+        hg::TimeDirection currentGuyDirection(findCurrentGuy(view.getGuyInformation()).getTimeDirection());
         inertia.save(hg::FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
         drawnFrame = hg::FrameID(waveInfo.currentPlayerFrame());
         Draw(
             app,
             getGlitzForDirection(view, currentGuyDirection),
             timeEngine.getWall());
+        
+        drawInventory(app, findCurrentGuy(view.getGuyInformation()).getPickups());
     }
     else {
         inertia.run();
@@ -615,9 +647,9 @@ struct CompareIndicies {
 };
 
 template<typename BidirectionalGuyRange>
-hg::TimeDirection findCurrentGuyDirection(BidirectionalGuyRange const& guyRange)
+hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange)
 {
-    return boost::begin(guyRange | boost::adaptors::reversed)->getTimeDirection();
+    return *boost::begin(guyRange | boost::adaptors::reversed);
 }
 
 

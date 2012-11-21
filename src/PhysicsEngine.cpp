@@ -30,12 +30,8 @@ PhysicsEngine::PhysicsEngine(
 {
 }
 
-static TimeDirection getTimeDirection(Guy const& guy) {
-    return guy.getTimeDirection();
-}
-
-static GuyOutputInfo constructGuyOutputInfo(TimeDirection timeDirection) {
-    return GuyOutputInfo(timeDirection);
+static GuyOutputInfo constructGuyOutputInfo(Guy const& guy) {
+    return GuyOutputInfo(guy.getTimeDirection(), guy.getPickups());
 }
 
 struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame*> >
@@ -89,7 +85,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boost::push_back(
         guyInfo,
         arrivals.getList<Guy>()
-            | boost::adaptors::transformed(getTimeDirection)
             | boost::adaptors::transformed(constructGuyOutputInfo));
 
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type nextGuy;
