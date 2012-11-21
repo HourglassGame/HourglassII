@@ -899,19 +899,20 @@ void guyStep(
 			{
 				mt::std::map<Ability, int>::type::iterator timeJump(newPickups[i].find(TIME_JUMP));
 				mt::std::map<Ability, int>::type::iterator timeReverse(newPickups[i].find(TIME_REVERSE));
+				mt::std::map<Ability, int>::type::iterator timePause(newPickups[i].find(TIME_PAUSE));
 
-				if (input.getAbility() == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
+				Ability inputAbility = input.getAbility();
+
+				if (inputAbility == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
 				{
-					//nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getFrameIdParam(0)));
+					nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
 					normalDeparture = false;
-					nextTime = frame;
-					newTimePaused[i] = !newTimePaused[i];
 					if (timeJump->second > 0)
 					{
 						newPickups[i][hg::TIME_JUMP] = timeJump->second - 1;
 					}
 				}
-				else if (input.getAbility() == hg::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
+				else if (inputAbility == hg::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
 				{
 					normalDeparture = false;
 					nextTimeDirection *= -1;
@@ -920,6 +921,16 @@ void guyStep(
 					if (timeReverse->second > 0)
 					{
 						newPickups[i][hg::TIME_REVERSE] = timeReverse->second - 1;
+					}
+				}
+				else if (inputAbility == hg::TIME_PAUSE && timePause != newPickups[i].end() && timePause->second != 0)
+				{
+					nextTime = frame;
+					newTimePaused[i] = !newTimePaused[i];
+					normalDeparture = false;
+					if (timePause->second > 0)
+					{
+						newPickups[i][hg::TIME_PAUSE] = timePause->second - 1;
 					}
 				}
 				else if (input.getUse() == true)
