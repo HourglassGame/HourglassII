@@ -207,8 +207,7 @@ void guyStep(
             xspeed.push_back(0);
 			if (guyArrivalList[i].getTimePaused())
 			{
-				// EVIL_TOKEN_1 see other token for the explaination of this + 1
-				yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity + 1);
+				yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
 			}
 			else
 			{
@@ -479,9 +478,8 @@ void guyStep(
             if (carry[i])
             {
                 bool droppable(false);
-				// The pause part of this check is rather evil because a guy could be in the first frame of being in mid air.
-				// EVIL_TOKEN_1
-                if (input.getDown() && (supported[i] || (guyArrivalList[i].getTimePaused() && yspeed[i] == env.gravity && guyArrivalList[i].getSupported())))
+
+                if (input.getDown())
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
@@ -491,30 +489,18 @@ void guyStep(
                     // Initialise bounds on drops based on movement direction
                     int dropY(y[i] + height - dropSize);
                     int leftBound, rightBound;
-                    if (input.getLeft())
+                   
+					if (dropSize < width)
 					{
-                    	leftBound = x[i] - dropSize;
-                    	rightBound = x[i];
+						leftBound = x[i];
+						rightBound = x[i] - dropSize + width;
 					}
-                    else if (input.getRight())
-                    {
-                    	leftBound = x[i] - dropSize + width;
-                    	rightBound = x[i] + width;
-                    }
-                    else
-                    {
-                    	if (dropSize < width)
-                    	{
-                    		leftBound = x[i];
-							rightBound = x[i] - dropSize + width;
-                    	}
-                    	else
-                    	{
-							leftBound = x[i] - dropSize + width;
-							rightBound = x[i];
-                    	}
-                    }
-
+					else
+					{
+						leftBound = x[i] - dropSize + width;
+						rightBound = x[i];
+					}
+                    
                     //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
 
                     // Narrow drop bounds with wall collision
