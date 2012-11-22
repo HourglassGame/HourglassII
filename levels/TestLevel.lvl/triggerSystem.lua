@@ -2,13 +2,6 @@ local bts = require "global.basicTriggerSystem"
 
 local tempStore = 
 {
-    --mutable store data:
-    buttonPositionsAndVelocities = {},
-    outputTriggers = {},
-    forwardsGlitz = {},
-    reverseGlitz = {},
-    
-    --constant proto-object data:
     protoPortals =
     {
         {
@@ -68,7 +61,8 @@ local tempStore =
             }
         }
     },
-    protoMutators = {
+    protoMutators = {},
+    protoMuts = {
         {
             data = {
                 x = 50000,
@@ -126,7 +120,7 @@ function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
     local retv = bts.calculatePhysicsAffectingStuff(tempStore)(frameNumber, triggerArrivals)
     
     tempStore.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
-    retv.mutators = { [1] = tempStore.protoMutators[1].data}
+    retv.mutators = { [1] = tempStore.protoMuts[1].data}
     tempStore.portalActive = (triggerArrivals[3][1] == 1)
     
     return retv
@@ -145,13 +139,13 @@ function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
     return tempStore.portalActive
 end
 function mutateObject(responsibleManipulatorIndices, dynamicObject)
-    return tempStore.protoMutators[1].effect(tempStore, dynamicObject)
+    return tempStore.protoMuts[1].effect(tempStore, dynamicObject)
 end
 
 function getDepartureInformation(departures)
     local outputTriggers, forwardsGlitz, reverseGlitz, additionalEndBoxes = bts.getDepartureInformation(tempStore)(departures)
     
-    local forwardsMutGlitz, reverseMutGlitz = calculateMutatorGlitz(tempStore.protoMutators[1].data)
+    local forwardsMutGlitz, reverseMutGlitz = calculateMutatorGlitz(tempStore.protoMuts[1].data)
     table.insert(forwardsGlitz, forwardsMutGlitz)
     table.insert(reverseGlitz, reverseMutGlitz)
 

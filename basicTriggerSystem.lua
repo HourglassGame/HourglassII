@@ -1,4 +1,10 @@
-
+local function map(f, l)
+    local r = {}
+    for i, v in ipairs(l) do
+        r[i] = f(v)
+    end
+    return r
+end
 
 local function calculateCollisions(protoCollisions, triggerArrivals)
     local function calculateCollision(self, triggerArrivals)
@@ -75,11 +81,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
             timeDirection = self.timeDirection
         }
     end
-    local collisions = {}
-    for i, protoCollision in ipairs(protoCollisions) do
-        collisions[i] = calculateCollision(protoCollision, triggerArrivals)
-    end
-    return collisions
+    return map(function(protoCollision) return calculateCollision(protoCollision, triggerArrivals) end, protoCollisions)
 end
 
 
@@ -155,11 +157,7 @@ local function calculateArrivalLocations(portals)
             timeDirection = portal.timeDirection
         }
     end
-    arrivalLocations = {}
-    for i, portal in ipairs(portals) do
-        arrivalLocations[i] = calculateArrivalLocation(portal)
-    end
-    return arrivalLocations
+    return map(calculateArrivalLocation, portals)
 end
 
 local function calculateButtonPositionsAndVelocities(protoButtons, collisions)
@@ -216,8 +214,8 @@ end
 
 
 local function calculateButtonStates(protoButtons, departures, triggerArrivals)
-    for i = 1, #protoButtons do
-        protoButtons[i]:updateState(departures, triggerArrivals)
+    for button in list_iter(protoButtons) do
+        button:updateState(departures, triggerArrivals)
     end
 end
 
@@ -423,15 +421,75 @@ local function toggleSwitch(p)
         timeDirection = p.timeDirection,
         first = cloneButtonSegment(p.first),
         second = cloneButtonSegment(p.second)
-    }
-    
+    }  
 end
 
+local function timeBelt(p)
+    local active = true
+    local triggerID = p.triggerID
+    local proto = {
+        timeDirection = p.timeDirection,
+        x = p.x, y = p.y,
+        width = p.width,
+        height = p.height,
+    }
+
+    return {
+        addMutator = function(self, triggerArrivals, mutators, activeMutators) 
+            if triggerArrivals[triggerID][1] == 1 then
+                mutators[#mutators+1] = {
+                    x = proto.x, y = proto.y,
+                    width = proto.width, height = proto.height,
+                    xspeed = 0, yspeed = 0,
+                    collisionOverlap = 0,
+                    timeDirection = proto.timeDirection
+                }
+                activeMutators[#activeMutators+1] = self
+            else
+                active = false
+            end
+        end,
+        effect = function(self, dynamicObject)
+            if not active then return dynamicObject end
+            if dynamicObject.type ~= 'guy' then return dynamicObject end
+            dynamicObject.pickups.timeJump = dynamicObject.pickups.timeJump + 1
+            active = false
+            return dynamicObject
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            if active then
+                local forGlitz, revGlitz =
+                    calculateBidirectionalGlitz(430, proto, {r = 150, g = 10, b = 150}, {r = 150, g = 10, b = 150})
+                table.insert(forwardsGlitz, forGlitz)
+                table.insert(reverseGlitz, revGlitz)
+            end
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[triggerID] = {active and 1 or 0}
+        end
+    }
+end
+
+local function calculateMutators(protoMutators, triggerArrivals)
+    local mutators = {}
+    --Ordered list of protoMutators that
+    --actually added mutators to `mutators`.
+    --(1-1 correspondence between index of
+    -- mutators and the responsible protoMutators)
+    local activeMutators = {}
+    for protoMutator in list_iter(protoMutators) do
+        protoMutator:addMutator(triggerArrivals, mutators, activeMutators)
+    end
+    return mutators, activeMutators
+end
 
 function calculatePhysicsAffectingStuff(tempStore)
     return function (frameNumber, triggerArrivals)
         local retv = {}
 
+        tempStore.outputTriggers = {}
+        tempStore.forwardsGlitz = {}
+        tempStore.reverseGlitz = {}
         tempStore.frameNumber = frameNumber
         tempStore.triggerArrivals = triggerArrivals
 
@@ -440,7 +498,7 @@ function calculatePhysicsAffectingStuff(tempStore)
 
         retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals) -- Done
         retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions) -- Done
-        retv.mutators = {} --TODO
+        retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, triggerArrivals) --TODO
         retv.arrivalLocations = calculateArrivalLocations(retv.portals) -- Done
 
         calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions) -- Done
@@ -463,17 +521,30 @@ function calculatePhysicsAffectingStuff(tempStore)
     end
 end
 
+local function mutateObject(tempStore)
+    return function(responsibleManipulatorIndices, dynamicObject)
+        for i in list_iter(responsibleManipulatorIndices) do
+            if dynamicObject then
+                dynamicObject = tempStore.activeMutators[i]:effect(dynamicObject)
+            end
+        end
+        return dynamicObject
+    end
+end
+
 
 local function getDepartureInformation(tempStore)
     return function(departures)
         calculateButtonStates(tempStore.protoButtons, departures, tempStore.triggerArrivals) -- Done
 
-        for i = 1, #tempStore.protoButtons do
-            tempStore.protoButtons[i]:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz) --Done
+        for protoButton in list_iter(tempStore.protoButtons) do
+            protoButton:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz) --Done
+            protoButton:fillTrigger(tempStore.outputTriggers) --Done
         end
 
-        for i = 1, #tempStore.protoButtons do
-            tempStore.protoButtons[i]:fillTrigger(tempStore.outputTriggers) --Done
+        for protoMutator in list_iter(tempStore.protoMutators) do
+            protoMutator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
+            protoMutator:fillTrigger(tempStore.outputTriggers)
         end
 
         return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
@@ -494,6 +565,8 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
+    timeBelt = timeBelt,
+    mutateObject = mutateObject,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
     getDepartureInformation = getDepartureInformation,
     calculateBidirectionalGlitz = calculateBidirectionalGlitz,

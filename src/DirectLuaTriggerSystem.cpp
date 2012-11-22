@@ -753,7 +753,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     foreach (int mutatorIndex, responsibleMutatorIndices) {
         ++i;
         luaL_checkstack(L, 1, 0);
-        lua_pushinteger(L, mutatorIndex);
+        lua_pushinteger(L, mutatorIndex + 1);
         lua_rawseti(L, -2, i);
     }
     //push dynamicObject argument
@@ -791,7 +791,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     foreach (int mutatorIndex, responsibleMutatorIndices) {
         ++i;
         luaL_checkstack(L, 1, 0);
-        lua_pushinteger(L, mutatorIndex);
+        lua_pushinteger(L, mutatorIndex + 1);
         lua_rawseti(L, -2, i);
     }
     //push dynamicObject argument

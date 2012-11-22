@@ -767,10 +767,10 @@ void guyStep(
             	{
             		int boxX(nextBox[j].object.getX());
 					int boxY(nextBox[j].object.getY());
-					int boxXspeed(nextBox[j].object.getXspeed());
-					int boxYspeed(nextBox[j].object.getYspeed());
+					//int boxXspeed(nextBox[j].object.getXspeed());
+					//int boxYspeed(nextBox[j].object.getYspeed());
 					int boxSize(nextBox[j].object.getSize());
-					TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
+					//TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
 					if (x[i] < boxX+boxSize && x[i]+width > boxX)
 					{
 						if (newY+height >= boxY && newY-yspeed[i]+height <= boxY)
@@ -1222,10 +1222,10 @@ void guyStep(
 
 		if (inputAbility == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
 		{
-			Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
+			//Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
 			
-			PhysicsObjectType targetType = NONE;
-			int targetId = -1;
+			//PhysicsObjectType targetType = NONE;
+			//int targetId = -1;
 			
 			if (timeGun->second > 0)
 			{
