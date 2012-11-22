@@ -1013,15 +1013,6 @@ void guyStep(
 				// relativeIndex is missing for obvious reasons
 			}
 
-            guyGlitzAdder.addGlitzForGuy(
-                vector2<int>(x[i], y[i]),
-                vector2<int>(newWidth[i], newHeight[i]),
-                nextTimeDirection,
-                facing[i],
-                carry[i],
-                carrySize[i],
-                carryDirection[i]);
-
 			// Things that do time travel
 			// The occurrence of one thing precludes subsequent ones
             bool normalDeparture = true;
@@ -1158,7 +1149,19 @@ void guyStep(
 					}
 				}
 			}
-
+			
+			if (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size()-1)
+			{
+				guyGlitzAdder.addGlitzForGuy(
+					vector2<int>(x[i], y[i]),
+					vector2<int>(newWidth[i], newHeight[i]),
+					nextTimeDirection,
+					facing[i],
+					carry[i],
+					carrySize[i],
+					carryDirection[i]);
+			}
+			
             if (not normalDeparture)
             {
             	nextGuy.push_back(
