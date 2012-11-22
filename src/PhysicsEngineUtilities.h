@@ -89,7 +89,12 @@ void boxCollisionAlogorithm(
     RandomAccessMutatorRange const& mutators,
     TriggerFrameState& triggerFrameState,
     FrameT const& frame);
-
+	
+void makeBoxGlitzListForNormalDepartures(
+    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
+	mt::std::vector<char>::type& nextBoxNormalDeparture,
+	BoxGlitzAdder const& boxGlitzAdder);	
+	
 template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
