@@ -28,10 +28,10 @@
 name = "TestLevel"
 speedOfTime = 3
 timelineLength = 10800
-environment = 
+environment =
 {
-    gravity = 30,
-    wall = 
+    gravity = 25,
+    wall =
     {
         width = 20,
         height = 15,
@@ -64,7 +64,7 @@ initialGuy =
         yspeed = 0,
         width = 1600,
         height = 3200,
-        pickups = {timeJump = -1, timeReverse = -1},
+        pickups = {timeJump = -1, timeReverse = -1, timePause = -1, timeGun = -1},
         facing = "left",
         boxCarrying = false,
         --these two fields are only needed
