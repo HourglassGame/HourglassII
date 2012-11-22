@@ -45,31 +45,6 @@ Guy::Guy(
 {
 }
 
-Guy::Guy(const Guy& o, TimeDirection timeDirection, bool timePaused) :
-        index_(o.index_),
-
-        x_(o.x_), y_(o.y_),
-        xspeed_(o.xspeed_), yspeed_(o.yspeed_),
-        width_(o.width_), height_(o.height_),
-        jumpSpeed_(o.jumpSpeed_),
-
-        illegalPortal_(o.illegalPortal_),
-        arrivalBasis_(o.arrivalBasis_),
-        supported_(o.supported_),
-        supportedSpeed_(o.supportedSpeed_),
-
-        pickups_(o.pickups_),
-        facing_(o.facing_),
-
-        boxCarrying_(o.boxCarrying_),
-        boxCarrySize_(o.boxCarrySize_),
-        boxCarryDirection_(o.boxCarryDirection_),
-
-        timeDirection_(timeDirection),
-		timePaused_(timePaused)
-{
-}
-
 bool Guy::operator==(const Guy& o) const
 {
     return index_ == o.index_

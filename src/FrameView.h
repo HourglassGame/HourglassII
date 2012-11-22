@@ -29,10 +29,12 @@ private:
     //Eventually `Glitz` will be evolve into a general purpose type
     //which is able to do everything glitz related
     //(rather than just store information for drawing rectangles).
-    //The order in the vector determines the draw order.
-    //(For those Glitz for which that makes sense).
+    //The draw order (where relevant) is determined by the order in the list
+    //(note-- on a LayeredCanvas, the actual order is also determined
+    //by the layer of the Glitz).
     mt::std::vector<Glitz>::type forwardsGlitz_;
     mt::std::vector<Glitz>::type reverseGlitz_;
+    
     //Filled with player positions, inventories, time-directions, indices etc
     //Could also have information about "pseudo-guys" who are
     //dead but still interesting to follow.
