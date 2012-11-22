@@ -31,7 +31,7 @@ public:
         Glitz oppositeDirectionGlitz(
             multi_thread_new<RectangleGlitz>(
                 500,
-                position.x - velocity.x, position.y - velocity.y,
+                position.x, position.y,
                 size, size,
                 0x00FF0000u));
         
