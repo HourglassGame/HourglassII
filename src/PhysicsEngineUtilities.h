@@ -65,7 +65,6 @@ void guyStep(
     mt::std::vector<MutatorArea>::type const& mutators,
     TriggerFrameState& triggerFrameState,
     GuyGlitzAdder const& guyGlitzAdder,
-    BoxGlitzAdder const& boxGlitzAdder,
     bool& nextPlayerFrame,
     bool& winFrame);
 
@@ -82,7 +81,6 @@ void boxCollisionAlogorithm(
     mt::std::vector<Box>::type const& additionalBox,
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
-    BoxGlitzAdder const& boxGlitzAdder,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -112,7 +110,6 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int oldIllegalPortal,
     TimeDirection oldTimeDirection,
     TriggerFrameState& triggerFrameState,
-    BoxGlitzAdder const& boxGlitzAdder,
     FrameT frame);
 
 bool explodeBoxesUpwards(

@@ -153,7 +153,6 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             additionalBoxes,
             nextBox,
             nextBoxNormalDeparture,
-            BoxGlitzAdder(forwardsGlitz, reverseGlitz),
             nextPlatform,
             nextPortal,
             arrivalLocations,
