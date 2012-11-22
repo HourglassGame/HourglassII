@@ -194,7 +194,7 @@ local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseCo
     }
     local oppositeDirectionGlitz = {
         layer = layer,
-        x = obj.x - obj.xspeed, y = obj.y - obj.yspeed,
+        x = obj.x, y = obj.y,
         width = obj.width, height = obj.height,
         colour = reverseColour
     }
