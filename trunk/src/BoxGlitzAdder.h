@@ -17,7 +17,6 @@ public:
     //with the given characteristics
     void addGlitzForBox(
         vector2<int> const& position,
-        vector2<int> const& velocity,
         int size,
         TimeDirection timeDirection) const
     {

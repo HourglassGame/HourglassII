@@ -24,7 +24,7 @@ void makeBoxGlitzListForNormalDepartures(
 	{
 		if (nextBoxNormalDeparture[j])
 		{
-			boxGlitzAdder.addGlitzForBox(vector2<int>(nextBox[j].object.getX(), nextBox[j].object.getY()), vector2<int>(0, 0), nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
+			boxGlitzAdder.addGlitzForBox(vector2<int>(nextBox[j].object.getX(), nextBox[j].object.getY()), nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
 		}
 	}
 }

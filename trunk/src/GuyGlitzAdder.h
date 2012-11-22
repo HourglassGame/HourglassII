@@ -17,7 +17,6 @@ public:
     //with the given characteristics
     void addGlitzForGuy(
         vector2<int> const& position,
-        vector2<int> const& velocity,
         vector2<int> const& size,
         TimeDirection timeDirection,
         bool facing,
