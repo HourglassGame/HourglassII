@@ -2,12 +2,6 @@ local bts = require "global.basicTriggerSystem"
 
 local tempStore = 
 {
-    --mutable store data:
-    buttonPositionsAndVelocities = {},
-    outputTriggers = {},
-    forwardsGlitz = {},
-	reverseGlitz = {},
-    --constant proto-object data:
     protoPortals =
     {
         {

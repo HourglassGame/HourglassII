@@ -213,11 +213,11 @@ void doGunRaytrace(
 		px = sx + 1;
 	}
 
-	int size = env.wall.segmentSize();
+	//int size = env.wall.segmentSize();
 	
 	// Find Wall
-	int dx = px - sx;
-	int dy = py - sy;
+	//int dx = px - sx;
+	//int dy = py - sy;
 	
 /*
 	if (sx < px && sy >= py) // top right, x safe
