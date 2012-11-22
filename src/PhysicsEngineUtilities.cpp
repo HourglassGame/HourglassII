@@ -15,6 +15,20 @@ void buildDepartures(
     buildDeparturesForComplexEntities(nextGuy, newDepartures);
 }
 
+void makeBoxGlitzListForNormalDepartures(
+    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
+	mt::std::vector<char>::type& nextBoxNormalDeparture,
+	BoxGlitzAdder const& boxGlitzAdder)	
+{
+	for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
+	{
+		if (nextBoxNormalDeparture[j])
+		{
+			boxGlitzAdder.addGlitzForBox(vector2<int>(nextBox[j].object.getX(), nextBox[j].object.getY()), vector2<int>(0, 0), nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
+		}
+	}
+}
+
 struct Collidables
 {
     Collidables(
