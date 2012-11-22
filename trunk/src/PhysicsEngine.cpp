@@ -69,7 +69,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.additionalBoxes,
         nextBox,
         nextBoxNormalDeparture,
-        BoxGlitzAdder(forwardsGlitz,reverseGlitz),
+        BoxGlitzAdder(forwardsGlitz, reverseGlitz),
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,

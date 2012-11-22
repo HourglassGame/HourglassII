@@ -392,7 +392,8 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
     return EXIT_SUCCESS;
 }
 
-hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(hg::FrameView const& view, hg::TimeDirection timeDirection)
+hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(
+    hg::FrameView const& view, hg::TimeDirection timeDirection)
 {
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
@@ -452,7 +453,8 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
 
     if (waveInfo.currentPlayerFrame()) {
         hg::FrameView const& view(waveInfo.currentPlayerFrame()->getView());
-        hg::TimeDirection currentGuyDirection(findCurrentGuy(view.getGuyInformation()).getTimeDirection());
+        hg::GuyOutputInfo const& currentGuy(findCurrentGuy(view.getGuyInformation()));
+        hg::TimeDirection currentGuyDirection(currentGuy.getTimeDirection());
         inertia.save(hg::FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
         drawnFrame = hg::FrameID(waveInfo.currentPlayerFrame());
         Draw(

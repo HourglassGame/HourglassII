@@ -41,7 +41,9 @@ public:
         return *this;
     }
     
-    GlitzPersister(Glitz const& forwardsGlitz, Glitz const& reverseGlitz, unsigned lifetime, TimeDirection timeDirection);
+    GlitzPersister(
+        Glitz const& forwardsGlitz, Glitz const& reverseGlitz,
+        unsigned lifetime, TimeDirection timeDirection);
     ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const;
     Glitz const& getForwardsGlitz() const;
     Glitz const& getReverseGlitz() const;

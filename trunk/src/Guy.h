@@ -32,8 +32,6 @@ public:
         
         TimeDirection timeDirection,
 		bool timePaused);
-
-    Guy(const Guy& o, TimeDirection nTimeDirection, bool nTimePaused);
     
     std::size_t getIndex() const { return index_; }
     int getX()         const { return x_; }
