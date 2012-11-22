@@ -90,44 +90,15 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         Environment env(actualWall, 30);
         std::vector<Box> boxArrivalList;
         boxArrivalList +=
-            //Box(3200, 28800, 0, 0, 3200, -1, -1, FORWARDS),
-            /*
-            Box(3200, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(3200, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(6400, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(8220, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(9600, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            *//*
-            Box(10701, 28800, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(11420, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(12800, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(13901, 28800, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(14620, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(16000, 35200, 0, 0, 3200, -1, -1, FORWARDS),*/
-            Box(19200, 34800, 1380, 3800, 3200, -1, -1, FORWARDS),//--
-            //Box(22400, 37400, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(22400, 40600, 0, 0, 3200, -1, -1, FORWARDS),//--
-            Box(25600, 40600, 0, 0, 3200, -1, -1, FORWARDS),//--
-            Box(28800, 38400, 0, 0, 3200, -1, -1, FORWARDS),//--
-            //Box(28850, 41600, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(32000, 38400, 0, 0, 3200, -1, -1, FORWARDS),//--
-            //Box(32552, 41600, 0, 0, 3200, -1, -1, FORWARDS),
-            //Box(33106, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            //Box(33711, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(35200, 38400, 0, 0, 3200, -1, -1, FORWARDS),//--
-            //Box(36711, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            //Box(36911, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(38400, 38400, 0, 0, 3200, -1, -1, FORWARDS),//--
-            //Box(38400, 41600, 0, 0, 3200, -1, -1, FORWARDS),
-            //Box(39911, 32000, 0, 0, 3200, -1, -1, FORWARDS),
-            //Box(40111, 35200, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(41600, 38400, 0, 0, 3200, -1, -1, FORWARDS)//--
-            /*,
-            Box(41600, 41600, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(56400, 28800, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(57600, 22400, 0, 0, 3200, -1, -1, FORWARDS)//,
-            Box(57600, 25600, 0, 0, 3200, -1, -1, FORWARDS)*/
-            ;
+            Box(19200, 34800, 1380, 3800, 3200, -1, -1, FORWARDS),
+            Box(22400, 40600, 0, 0, 3200, -1, -1, FORWARDS),
+            Box(25600, 40600, 0, 0, 3200, -1, -1, FORWARDS),
+            Box(28800, 38400, 0, 0, 3200, -1, -1, FORWARDS),
+            Box(32000, 38400, 0, 0, 3200, -1, -1, FORWARDS),
+            Box(35200, 38400, 0, 0, 3200, -1, -1, FORWARDS),
+            Box(38400, 38400, 0, 0, 3200, -1, -1, FORWARDS),
+            Box(41600, 38400, 0, 0, 3200, -1, -1, FORWARDS);
+        
         mt::std::vector<Box>::type additionalBoxes;
         mt::std::vector<ObjectAndTime<Box, FrameID> >::type nextBox;
         mt::std::vector<char>::type nextBoxNormalDeparture;
@@ -136,17 +107,14 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         std::vector<Collision> nextPlatform;
         nextPlatform += Collision(22400, 43800, 0, 0, 6400, 1600, FORWARDS);
         std::vector<PortalArea> nextPortal;
-        //nextPortal +=
-          //  PortalArea(0, 18200, 40600, 4200, 4200, 0, 0, 50, FORWARDS, 0, 0, -16000, 1, 120, 0, 1, 1);
         std::vector<ArrivalLocation> arrivalLocations;
         arrivalLocations += ArrivalLocation(18200, 4060, 0, 0, FORWARDS);
         std::vector<MutatorArea> mutators;
-        //mutators += MutatorArea(50000, 25600, 800, 6400, 0, 0, 0, FORWARDS);
         TriggerFrameState triggerFrameState(multi_thread_new<MockTriggerFrameStateImplementation>());
         FrameID frame(9654, UniverseID(10800));
+        
         //This is testing a case which caused a crash. If this line does not cause a crash,
         //then the test has succeeded.
-
         boxCollisionAlogorithm(
             env,
             boxArrivalList,
