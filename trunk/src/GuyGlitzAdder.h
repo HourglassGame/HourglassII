@@ -13,7 +13,7 @@ public:
         mt::std::vector<Glitz>::type& reverseGlitz) :
     forwardsGlitz_(&forwardsGlitz), reverseGlitz_(&reverseGlitz)
     {}
-    //Adds the glitz that would be appropriate for a box
+    //Adds the glitz that would be appropriate for a guy
     //with the given characteristics
     void addGlitzForGuy(
         vector2<int> const& position,
