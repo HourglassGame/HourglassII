@@ -7,6 +7,7 @@ namespace hg {
 namespace {
     char const metatableRegistryKey[] = "HG_UDPT_MetaTable";
     char const nilProxyRegistryKey[] = "HG_UDPT_Nil";
+    
     int UDPT_newindex(lua_State* L) {
         //Args: UDPT, key, value
         //(No need to check the arguments, because they cannot ever
@@ -91,6 +92,16 @@ namespace {
         }
         return 1;
     }
+    
+    int UDPT_gc(lua_State* L) {
+        //Args: UDPT
+        UDPT* udpt(static_cast<UDPT*>(lua_touserdata(L, 1)));
+        assert(udpt);
+        luaL_unref(L, LUA_REGISTRYINDEX, udpt->baseTable);
+        luaL_unref(L, LUA_REGISTRYINDEX, udpt->outerTable);
+        lua_pop(L, 1);
+        return 0;
+    }
 }
 //UDPT library initialization.
 //Must be called exactly once (per
@@ -110,7 +121,10 @@ void load_UDPT_lib(lua_State* L) {
     assert(metatableCreated); (void)metatableCreated;
     
     //__len
+    //not yet implemented
     //__metatable
+    lua_newtable(L);
+    lua_setfield(L, -2, "__metatable");
     //__index
     lua_pushcfunction(L, UDPT_index);
     lua_setfield(L, -2, "__index");
@@ -118,7 +132,8 @@ void load_UDPT_lib(lua_State* L) {
     lua_pushcfunction(L, UDPT_newindex);
     lua_setfield(L, -2, "__newindex");
     //__gc
-    //TODO
+    lua_pushcfunction(L, UDPT_gc);
+    lua_setfield(L, -2, "__gc");
     lua_pop(L, 1);
 }
 
