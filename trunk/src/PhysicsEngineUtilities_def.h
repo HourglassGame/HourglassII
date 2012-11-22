@@ -256,12 +256,6 @@ void guyStep(
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
-				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
-				{
-					pX -= platform.getXspeed();
-					pY -= platform.getYspeed();
-				}
 				int pWidth(platform.getWidth());
 				int pHeight(platform.getHeight());
 
@@ -310,19 +304,22 @@ void guyStep(
 					{
 						if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
 						{
-							if (newY + height >= boxY-boxYspeed && newY + height-yspeed[i] <= boxY)
+							//std::cerr << "Box Col " << getFrameNumber(frame) << ": " << newY + height << ", " << yspeed[i] << ",     " << boxY << ", " << boxYspeed << "\n";
+							// -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
+							if (newY + height >= boxY && newY+height-yspeed[i]-env.gravity <= boxY+boxYspeed)
 							{
 								boxThatIamStandingOn = j;
-								newY = boxY-height-boxYspeed;
+								newY = boxY-height;
 								xspeed[i] = -boxXspeed;
 								supported[i] = true;
 								bottom = true;
 								supportedSpeed[i] = -boxYspeed;
+								//std::cerr << "Hit " << newY + height << "\n";
 							}
 						}
 						else
 						{
-							if (newY+height >= boxY && newY-yspeed[i]+height <= boxY-boxYspeed)
+							if (newY+height >= boxY && newY+height-yspeed[i] <= boxY-boxYspeed)
 							{
 								boxThatIamStandingOn = j;
 								newY = boxY-height;
@@ -341,18 +338,13 @@ void guyStep(
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
-                TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
-                {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
-                }
+				TimeDirection pDirection(platform.getTimeDirection());
                 int pWidth(platform.getWidth());
                 int pHeight(platform.getHeight());
-
+				
                 if (IntersectingRectanglesExclusive(
                         x[i], newY, width, height,
-                		pX - pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed(), pY, pWidth, pHeight))
+                		pX, pY, pWidth, pHeight))
                 {
                     if (newY+height/2 < pY+pHeight/2)
                     {
@@ -416,12 +408,6 @@ void guyStep(
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
-                TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection*guyArrivalList[i].getTimeDirection() == hg::REVERSE)
-                {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
-                }
                 int pWidth = platform.getWidth();
                 int pHeight = platform.getHeight();
 
@@ -1393,11 +1379,6 @@ void boxCollisionAlogorithm(
 			foreach (Collision const& platform, nextPlatform) {
 				int pX(platform.getX());
 				int pY(platform.getY());
-				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * oldBoxList[i].getTimeDirection() == hg::FORWARDS) {
-					pX -= platform.getXspeed();
-					pY -= platform.getYspeed();
-				}
 				int pWidth(platform.getWidth());
 				int pHeight(platform.getHeight());
 
@@ -1693,11 +1674,6 @@ void boxCollisionAlogorithm(
 					int pX(platform.getX());
 					int pY(platform.getY());
 					TimeDirection pDirection(platform.getTimeDirection());
-					if (pDirection * oldBoxList[i].getTimeDirection() == hg::REVERSE)
-					{
-						pX -= platform.getXspeed();
-						pY -= platform.getYspeed();
-					}
 					int pWidth(platform.getWidth());
 					int pHeight(platform.getHeight());
 

@@ -34,7 +34,7 @@ public:
             } const pnc = 
                 timeDirection == FORWARDS ?
                     PNC(position.x, position.y, 0x96960000u) :
-                    PNC(position.x - velocity.x, position.y - velocity.y, 0x00009600u);
+                    PNC(position.x, position.y, 0x00009600u);
             
             int const left(pnc.x);
             int const top(pnc.y);
@@ -71,7 +71,7 @@ public:
             } const pnc = 
                 timeDirection == REVERSE ?
                     PNC(position.x, position.y, 0x96960000u) :
-                    PNC(position.x - velocity.x, position.y - velocity.y, 0x00009600u);
+                    PNC(position.x, position.y, 0x00009600u);
 
             int const left(pnc.x);
             int const top(pnc.y);
