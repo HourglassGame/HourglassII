@@ -248,11 +248,30 @@ void guyStep(
 				int pY(platform.getY());
 				int pWidth(platform.getWidth());
 				int pHeight(platform.getHeight());
-
-				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+				TimeDirection pDirection(platform.getTimeDirection());
+				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS) 
 				{
-					finishedWith[i] = true;
-					continue;
+					pX -= platform.getXspeed();
+					pY -= platform.getYspeed();
+					if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+					{
+						finishedWith[i] = true;
+						continue;
+					}
+				}
+				else
+				{
+					pX += platform.getXspeed();
+					pY += platform.getYspeed();
+					if (IntersectingRectanglesExclusive(x[i], y[i], width, height,
+						pX+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
+						pY+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
+						pWidth-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2, 
+						pHeight-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2))
+					{
+						finishedWith[i] = true;
+						continue;
+					}
 				}
 			}
 
@@ -1144,7 +1163,7 @@ void guyStep(
 				}
 			}
 			
-			if (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size()-1)
+			if (arrivalBasis == -1 && (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size()-1))
 			{
 				guyGlitzAdder.addGlitzForGuy(
 					vector2<int>(x[i], y[i]),
@@ -1334,8 +1353,16 @@ void boxCollisionAlogorithm(
             ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
             xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
             yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
-            x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
-			y[i] = yTemp[i] + oldBoxList[i].getYspeed() + relativePortal.getYspeed() + env.gravity;
+			if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == hg::FORWARDS)
+			{
+				x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
+				y[i] = yTemp[i] + oldBoxList[i].getYspeed() + relativePortal.getYspeed() + env.gravity;
+			}
+			else
+			{
+				x[i] = xTemp[i] + oldBoxList[i].getXspeed() - relativePortal.getXspeed();
+				y[i] = yTemp[i] + oldBoxList[i].getYspeed() - relativePortal.getYspeed() + env.gravity;
+			}
         }
         size[i] = oldBoxList[i].getSize();
 	}
@@ -1355,10 +1382,30 @@ void boxCollisionAlogorithm(
 				int pY(platform.getY());
 				int pWidth(platform.getWidth());
 				int pHeight(platform.getHeight());
-
-				if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
+				TimeDirection pDirection(platform.getTimeDirection());
+				if (pDirection * oldBoxList[i].getTimeDirection() == hg::FORWARDS) 
 				{
-					squished[i] = true;
+					pX -= platform.getXspeed();
+					pY -= platform.getYspeed();
+					if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
+					{
+						squished[i] = true;
+						continue;
+					}
+				}
+				else
+				{
+					pX += platform.getXspeed();
+					pY += platform.getYspeed();
+					if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
+						pX+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
+						pY+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
+						pWidth-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2, 
+						pHeight-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2))
+					{
+						squished[i] = true;
+						continue;
+					}
 				}
 			}
 		}
