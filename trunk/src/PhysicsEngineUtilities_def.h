@@ -28,21 +28,6 @@ bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_
     }
 }
 
-void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
-	mt::std::vector<char>::type& nextBoxNormalDeparture,
-	BoxGlitzAdder const& boxGlitzAdder)	
-{
-	for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
-	{
-		if (nextBoxNormalDeparture[j])
-		{
-			boxGlitzAdder.addGlitzForBox(vector2<int>(nextBox[j].object.getX(), nextBox[j].object.getY()), vector2<int>(0, 0), nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
-		}
-	}
-}
-
-
 template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
@@ -83,7 +68,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		}
 	}
 
-	// send vector of collisions that occured (if any)
+	// send vector of collisions that occurred (if any)
 	if (mutatorCollisions.size() != 0)
 	{
 
