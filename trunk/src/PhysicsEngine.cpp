@@ -111,6 +111,11 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         BoxGlitzAdder(forwardsGlitz, reverseGlitz),
         nextPlayerFrame,
         winFrame);
+		
+	makeBoxGlitzListForNormalDepartures(
+		nextBox,
+		nextBoxNormalDeparture,
+		BoxGlitzAdder(forwardsGlitz, reverseGlitz));
 
     buildDepartures(
         nextBox,

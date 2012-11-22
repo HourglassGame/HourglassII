@@ -28,6 +28,20 @@ bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_
     }
 }
 
+void makeBoxGlitzListForNormalDepartures(
+    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
+	mt::std::vector<char>::type& nextBoxNormalDeparture,
+	BoxGlitzAdder const& boxGlitzAdder)	
+{
+	for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
+	{
+		if (nextBoxNormalDeparture[j])
+		{
+			boxGlitzAdder.addGlitzForBox(vector2<int>(nextBox[j].object.getX(), nextBox[j].object.getY()), vector2<int>(0, 0), nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
+		}
+	}
+}
+
 
 template <
     typename RandomAccessPortalRange,
@@ -97,14 +111,8 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		//arrivalLocation = newBox->getArrivalLocation();
 		timeDirection = newBox->getTimeDirection();
 	}
-    bool normalDeparture = true;
-    if (timeDirection == oldTimeDirection && arrivalBasis == -1 /*&& nextTime == oldNextTime*/) {
-        boxGlitzAdder.addGlitzForBox(vector2<int>(x, y), vector2<int>(xspeed, yspeed), size, timeDirection);
-    }
-    else {
-        normalDeparture = false;
-    }
 
+    bool normalDeparture = timeDirection == oldTimeDirection && arrivalBasis == -1;
 
 	// fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
@@ -599,26 +607,29 @@ void guyStep(
 					{
 						for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 						{
-							int bx = nextBox[j].object.getX();
-							int by = nextBox[j].object.getY();
-							int bs = nextBox[j].object.getSize();
-							//std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
-							//std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
-							if (IntersectingRectanglesExclusive(
-									bx, by, bs, bs,
-									leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+							if (nextBoxNormalDeparture[j])
 							{
-								if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
+								int bx = nextBox[j].object.getX();
+								int by = nextBox[j].object.getY();
+								int bs = nextBox[j].object.getSize();
+								//std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
+								//std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
+								if (IntersectingRectanglesExclusive(
+										bx, by, bs, bs,
+										leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
 								{
-									rightBound = bx - dropSize;
-								}
-								if (bx <= rightBound && bx + bs >= leftBound)
-								{
-									leftBound = bx + bs;
-								}
-								if (rightBound < leftBound)
-								{
-									break;
+									if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
+									{
+										rightBound = bx - dropSize;
+									}
+									if (bx <= rightBound && bx + bs >= leftBound)
+									{
+										leftBound = bx + bs;
+									}
+									if (rightBound < leftBound)
+									{
+										break;
+									}
 								}
 							}
 						}
