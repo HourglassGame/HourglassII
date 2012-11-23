@@ -58,6 +58,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox;
     mt::std::vector<char>::type nextBoxNormalDeparture;
+    mt::std::vector<vector2<int> >::type nextBoxGlitzPos;
 
     mt::std::vector<Glitz>::type forwardsGlitz;
     mt::std::vector<Glitz>::type reverseGlitz;
@@ -69,6 +70,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.additionalBoxes,
         nextBox,
         nextBoxNormalDeparture,
+        nextBoxGlitzPos,
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
@@ -101,6 +103,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         nextGuy,
         nextBox,
         nextBoxNormalDeparture,
+        nextBoxGlitzPos,
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
@@ -109,10 +112,11 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         GuyGlitzAdder(forwardsGlitz, reverseGlitz),
         nextPlayerFrame,
         winFrame);
-		
+    
 	makeBoxGlitzListForNormalDepartures(
 		nextBox,
 		nextBoxNormalDeparture,
+        nextBoxGlitzPos,
 		BoxGlitzAdder(forwardsGlitz, reverseGlitz));
 
     buildDepartures(

@@ -81,6 +81,7 @@ void boxCollisionAlogorithm(
     mt::std::vector<Box>::type const& additionalBox,
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -91,6 +92,7 @@ void boxCollisionAlogorithm(
 void makeBoxGlitzListForNormalDepartures(
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
 	mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
 	BoxGlitzAdder const& boxGlitzAdder);	
 	
 template <
@@ -100,6 +102,7 @@ template <
 void makeBoxAndTimeWithPortalsAndMutators(
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     const RandomAccessPortalRange& portals,
     const RandomAccessMutatorRange& mutators,
     int x,
@@ -166,6 +169,7 @@ void doGunRaytrace(
 	int sx, int sy, int px, int py,
 	mt::std::vector<ObjectAndTime<Box, Frame*> >::type box,
 	mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
 	mt::std::vector<int>::type gx, // other guy things
 	mt::std::vector<int>::type gy,
 	mt::std::vector<int>::type gw,

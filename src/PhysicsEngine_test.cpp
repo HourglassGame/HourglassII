@@ -102,6 +102,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         mt::std::vector<Box>::type additionalBoxes;
         mt::std::vector<ObjectAndTime<Box, FrameID> >::type nextBox;
         mt::std::vector<char>::type nextBoxNormalDeparture;
+        mt::std::vector<vector2<int> >::type nextBoxGlitzPos;
         mt::std::vector<Glitz>::type forwardsGlitz;
         mt::std::vector<Glitz>::type reverseGlitz;
         std::vector<Collision> nextPlatform;
@@ -121,6 +122,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             additionalBoxes,
             nextBox,
             nextBoxNormalDeparture,
+            nextBoxGlitzPos,
             nextPlatform,
             nextPortal,
             arrivalLocations,
