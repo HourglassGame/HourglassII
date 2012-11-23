@@ -35,6 +35,7 @@ template <
 void makeBoxAndTimeWithPortalsAndMutators(
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     const RandomAccessPortalRange& portals,
     const RandomAccessMutatorRange& mutators,
     int x,
@@ -96,7 +97,10 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		timeDirection = newBox->getTimeDirection();
 	}
 
-    bool normalDeparture = timeDirection == oldTimeDirection && arrivalBasis == -1;
+    int glitzX = x;
+    int glitzY = y;
+
+    bool normalDeparture = timeDirection == oldTimeDirection;
 
 	// fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
@@ -145,6 +149,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
 				arrivalBasis,
 				timeDirection),
 			nextTime));
+    nextBoxGlitzPos.push_back(vector2<int>(glitzX, glitzY));
 }
 
 
@@ -158,6 +163,7 @@ void guyStep(
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type& nextGuy,
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     mt::std::vector<Collision>::type const& nextPlatform,
     mt::std::vector<PortalArea>::type const& nextPortal,
     mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
@@ -479,7 +485,7 @@ void guyStep(
     mt::std::vector<char>::type carry(guyArrivalList.size());
     mt::std::vector<int>::type carrySize(guyArrivalList.size());
     mt::std::vector<TimeDirection>::type carryDirection(guyArrivalList.size());
-	
+    
 	// Do movement for pause guys. Do box manipulation for all guys.
 	// This is to make pause guys not affect their past selves with box manipulation.
 	for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
@@ -859,6 +865,7 @@ void guyStep(
 						makeBoxAndTimeWithPortalsAndMutators(
 							nextBox,
 							nextBoxNormalDeparture,
+                            nextBoxGlitzPos,
 							nextPortal,
 							mutators,
 							dropX,
@@ -893,14 +900,15 @@ void guyStep(
                     //CAREFUL - loop modifies nextBox
                     mt::std::vector<ObjectAndTime<Box, Frame*> >::type::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
 					mt::std::vector<char>::type::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
-                    for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
+                    mt::std::vector<vector2<int> >::type::iterator nextBoxGlitzPosIt(nextBoxGlitzPos.begin());
+                    for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt, ++nextBoxGlitzPosIt)
                     {
                     	if (*nextBoxNormalDepartureIt)
 						{
 							int boxX = nextBoxIt->object.getX();
 							int boxY = nextBoxIt->object.getY();
 							int boxSize = nextBoxIt->object.getSize();
-							if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize)&& (y[i]+height > boxY))
+							if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize) && (y[i]+height > boxY))
 							{
 								carry[i] = true;
 								carrySize[i] = boxSize;
@@ -908,6 +916,7 @@ void guyStep(
 
 								nextBoxIt = nextBox.erase(nextBoxIt);
 								nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
+                                nextBoxGlitzPosIt = nextBoxGlitzPos.erase(nextBoxGlitzPosIt);
 								nextBoxEnd = nextBox.end();
 								break;
 							}
@@ -1025,6 +1034,9 @@ void guyStep(
 				newTimePaused[i] = newGuy->getTimePaused();
 				// relativeIndex is missing for obvious reasons
 			}
+
+            int glitzX = x[i];
+            int glitzY = y[i];
 
 			// Things that do time travel
 			// The occurrence of one thing precludes subsequent ones
@@ -1162,11 +1174,11 @@ void guyStep(
 					}
 				}
 			}
-			
-			if (arrivalBasis == -1 && (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size()-1))
+            
+			if (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size()-1)
 			{
 				guyGlitzAdder.addGlitzForGuy(
-					vector2<int>(x[i], y[i]),
+					vector2<int>(glitzX, glitzY),
 					vector2<int>(newWidth[i], newHeight[i]),
 					nextTimeDirection,
 					facing[i],
@@ -1297,6 +1309,7 @@ void boxCollisionAlogorithm(
     mt::std::vector<Box>::type const& additionalBox,
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
+    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -1911,6 +1924,7 @@ void boxCollisionAlogorithm(
 				makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
                     nextBoxNormalDeparture,
+                    nextBoxGlitzPos,
                     nextPortal,
                     mutators,
                     x[i],
@@ -1929,6 +1943,7 @@ void boxCollisionAlogorithm(
 				makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
                     nextBoxNormalDeparture,
+                    nextBoxGlitzPos,
                     nextPortal,
                     mutators,
                     x[i],
