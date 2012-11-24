@@ -18,14 +18,15 @@ void buildDepartures(
 void makeBoxGlitzListForNormalDepartures(
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
 	mt::std::vector<char>::type& nextBoxNormalDeparture,
-    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
 	BoxGlitzAdder const& boxGlitzAdder)	
 {
 	for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 	{
-        boxGlitzAdder.addGlitzForBox(
-            vector2<int>(nextBoxGlitzPos[j].x, nextBoxGlitzPos[j].y),
-            nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
+        if (nextBoxNormalDeparture[j]) {
+            boxGlitzAdder.addGlitzForBox(
+                vector2<int>(nextBox[j].object.getX(), nextBox[j].object.getY()),
+                nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
+        }
 	}
 }
 
@@ -189,7 +190,6 @@ void doGunRaytrace(
 		int sx, int sy, int px, int py,
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox,
 		mt::std::vector<char>::type& nextBoxNormalDeparture,
-        mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
 		mt::std::vector<int>::type gx, // other guy things
 		mt::std::vector<int>::type gy,
 		mt::std::vector<int>::type gw,
