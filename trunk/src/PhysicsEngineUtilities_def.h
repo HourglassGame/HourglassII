@@ -35,7 +35,6 @@ template <
 void makeBoxAndTimeWithPortalsAndMutators(
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
-    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     const RandomAccessPortalRange& portals,
     const RandomAccessMutatorRange& mutators,
     int x,
@@ -97,9 +96,6 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		timeDirection = newBox->getTimeDirection();
 	}
 
-    int glitzX = x;
-    int glitzY = y;
-
     bool normalDeparture = timeDirection == oldTimeDirection;
 
 	// fall through portals
@@ -149,7 +145,6 @@ void makeBoxAndTimeWithPortalsAndMutators(
 				arrivalBasis,
 				timeDirection),
 			nextTime));
-    nextBoxGlitzPos.push_back(vector2<int>(glitzX, glitzY));
 }
 
 
@@ -163,7 +158,6 @@ void guyStep(
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type& nextGuy,
     mt::std::vector<ObjectAndTime<Box, Frame*> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
-    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     mt::std::vector<Collision>::type const& nextPlatform,
     mt::std::vector<PortalArea>::type const& nextPortal,
     mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
@@ -865,7 +859,6 @@ void guyStep(
 						makeBoxAndTimeWithPortalsAndMutators(
 							nextBox,
 							nextBoxNormalDeparture,
-                            nextBoxGlitzPos,
 							nextPortal,
 							mutators,
 							dropX,
@@ -900,8 +893,7 @@ void guyStep(
                     //CAREFUL - loop modifies nextBox
                     mt::std::vector<ObjectAndTime<Box, Frame*> >::type::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
 					mt::std::vector<char>::type::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
-                    mt::std::vector<vector2<int> >::type::iterator nextBoxGlitzPosIt(nextBoxGlitzPos.begin());
-                    for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt, ++nextBoxGlitzPosIt)
+                    for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
                     {
                     	if (*nextBoxNormalDepartureIt)
 						{
@@ -916,7 +908,6 @@ void guyStep(
 
 								nextBoxIt = nextBox.erase(nextBoxIt);
 								nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
-                                nextBoxGlitzPosIt = nextBoxGlitzPos.erase(nextBoxGlitzPosIt);
 								nextBoxEnd = nextBox.end();
 								break;
 							}
@@ -1310,7 +1301,6 @@ void boxCollisionAlogorithm(
     mt::std::vector<Box>::type const& additionalBox,
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
-    mt::std::vector<vector2<int> >::type& nextBoxGlitzPos,
     RandomAccessPlatformRange const& nextPlatform,
     RandomAccessPortalRange const& nextPortal,
     RandomAccessArrivalLocationRange const& arrivalLocations,
@@ -1925,7 +1915,6 @@ void boxCollisionAlogorithm(
 				makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
                     nextBoxNormalDeparture,
-                    nextBoxGlitzPos,
                     nextPortal,
                     mutators,
                     x[i],
@@ -1944,7 +1933,6 @@ void boxCollisionAlogorithm(
 				makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
                     nextBoxNormalDeparture,
-                    nextBoxGlitzPos,
                     nextPortal,
                     mutators,
                     x[i],
