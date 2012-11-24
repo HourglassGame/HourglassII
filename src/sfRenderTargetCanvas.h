@@ -16,9 +16,9 @@ public:
     {
         target_->Draw(sf::Shape::Rectangle(x, y, x + width, y + height, interpretAsColour(colour)));
     }
-    virtual void drawLine(int xa, int ya, int xb, int yb, unsigned colour)
+    virtual void drawLine(int xa, int ya, int xb, int yb, int width, unsigned colour)
     {
-        target_->Draw(sf::Shape::Line(xa, ya, xb, yb, 1.f, interpretAsColour(colour)));
+        target_->Draw(sf::Shape::Line(xa, ya, xb, yb, width, interpretAsColour(colour)));
     }
 private:
     sf::RenderTarget* target_;

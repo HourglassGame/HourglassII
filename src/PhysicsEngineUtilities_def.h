@@ -1184,7 +1184,8 @@ void guyStep(
 					facing[i],
 					carry[i],
 					carrySize[i],
-					carryDirection[i]);
+					carryDirection[i],
+                    guyArrivalList[i].getIndex() == playerInput.size()-1);
 			}
 			
             if (not normalDeparture)

@@ -37,11 +37,11 @@ namespace lc_internal {
     };
     class LineDrawer : public Drawer {
     public:
-        LineDrawer(int xa, int ya, int xb, int yb, unsigned colour) :
-            xa(xa), ya(ya), xb(xb), yb(yb), colour(colour)
+        LineDrawer(int xa, int ya, int xb, int yb, int width, unsigned colour) :
+            xa(xa), ya(ya), xb(xb), yb(yb), width(width), colour(colour)
         {}
         void drawTo(Canvas& canvas) const {
-            canvas.drawLine(xa, ya, xb, yb, colour);
+            canvas.drawLine(xa, ya, xb, yb, width, colour);
         }
         LineDrawer* clone() const {
             return new LineDrawer(*this);
@@ -51,6 +51,7 @@ namespace lc_internal {
         int ya;
         int xb;
         int yb;
+        int width;
         unsigned colour;
     };
     class DrawCall {
@@ -86,8 +87,8 @@ LayeredCanvas::LayeredCanvas(Canvas& canvas) : canvas(&canvas), drawCalls()
 void LayeredCanvas::drawRect(int layer, int x, int y, int width, int height, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new RectDrawer(x, y, width, height, colour)));
 }
-void LayeredCanvas::drawLine(int layer, int xa, int ya, int xb, int yb, unsigned colour) {
-    drawCalls.push_back(DrawCall(layer, new LineDrawer(xa,ya,xb,yb,colour)));
+void LayeredCanvas::drawLine(int layer, int xa, int ya, int xb, int yb, int width, unsigned colour) {
+    drawCalls.push_back(DrawCall(layer, new LineDrawer(xa,ya,xb,yb,width,colour)));
 }
 void LayeredCanvas::flush() {
     boost::stable_sort(drawCalls);

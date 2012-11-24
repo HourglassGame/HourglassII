@@ -18,7 +18,7 @@ namespace hg {
     public:
         LayeredCanvas(Canvas& canvas);
         void drawRect(int layer, int x, int y, int width, int height, unsigned colour);
-        void drawLine(int layer, int xa, int ya, int xb, int yb, unsigned colour);
+        void drawLine(int layer, int xa, int ya, int xb, int yb, int width, unsigned colour);
         void flush();
         ~LayeredCanvas();
     private:

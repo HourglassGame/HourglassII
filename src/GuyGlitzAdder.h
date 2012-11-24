@@ -5,6 +5,7 @@
 #include "vector2.h"
 #include "multi_thread_allocator.h"
 #include "RectangleGlitz.h"
+#include "LineGlitz.h"
 namespace hg {
 class GuyGlitzAdder {
 public:
@@ -22,7 +23,8 @@ public:
         bool facing,
         bool boxCarrying,
         int boxCarrySize,
-        TimeDirection boxCarryDirection) const
+        TimeDirection boxCarryDirection,
+        bool currentGuy) const
     {
         //Forwards View
         {
@@ -60,6 +62,44 @@ public:
                             boxCarryDirection == FORWARDS ? 
                               0x96009600u : 0x00960000u)));
             }
+            
+            if (currentGuy) {
+                int tipx = hmid;
+                int tipy = top - 400;
+                int width = 200;
+                forwardsGlitz_->push_back(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            650,
+                            tipx,
+                            top - size.y/2 - 400,
+                            tipx,
+                            tipy,
+                            width,
+                            0xFF000000u)));
+                
+                forwardsGlitz_->push_back(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            650,
+                            tipx+halfwidth/2,
+                            top - size.y/4 - 400,
+                            hmid,
+                            tipy+200,
+                            width,
+                            0xFF000000u)));
+                
+                forwardsGlitz_->push_back(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            650,
+                            tipx-halfwidth/2,
+                            top - size.y/4 - 400,
+                            hmid,
+                            tipy+200,
+                            width,
+                            0xFF000000u)));
+            }
         }
         //Reverse View
         {
@@ -96,6 +136,43 @@ public:
                             boxCarrySize,
                             boxCarryDirection == REVERSE ? 
                               0x96009600u : 0x00960000u)));
+            }
+            if (currentGuy) {
+                int tipx = hmid;
+                int tipy = top - 400;
+                int width = 200;
+                reverseGlitz_->push_back(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            650,
+                            tipx,
+                            top - size.y/2 - 400,
+                            tipx,
+                            tipy,
+                            width,
+                            0xFF000000u)));
+                
+                reverseGlitz_->push_back(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            650,
+                            tipx+halfwidth/2,
+                            top - size.y/4 - 400,
+                            hmid,
+                            tipy+200,
+                            width,
+                            0xFF000000u)));
+                
+                reverseGlitz_->push_back(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            650,
+                            tipx-halfwidth/2,
+                            top - size.y/4 - 400,
+                            hmid,
+                            tipy+200,
+                            width,
+                            0xFF000000u)));
             }
         }
     }
