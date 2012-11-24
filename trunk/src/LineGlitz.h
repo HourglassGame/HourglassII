@@ -2,6 +2,7 @@
 #define HG_LINE_GLITZ_H
 #include "GlitzImplementation.h"
 #include <boost/cast.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
 namespace hg {
 class LineGlitz: public GlitzImplementation {
 public:
@@ -9,13 +10,15 @@ public:
         int layer,
         int xa, int ya,
         int xb, int yb,
+        int width,
         unsigned colour) :
             layer(layer),
             xa(xa), ya(ya),
             xb(xb), yb(yb),
+            width(width),
             colour(colour) {}
     virtual void display(LayeredCanvas& canvas) const {
-        canvas.drawLine(layer, xa/100., ya/100., xb/100., yb/100., colour);
+        canvas.drawLine(layer, xa/100., ya/100., xb/100., yb/100., width/100., colour);
     }
     virtual std::size_t clone_size() const {
         return sizeof(*this);
@@ -23,35 +26,19 @@ public:
     virtual LineGlitz* perform_clone(void* memory) const {
         return new (memory) LineGlitz(*this);
     }
+    
     virtual bool operator<(GlitzImplementation const& right) const {
         LineGlitz const& actual_right(*boost::polymorphic_downcast<LineGlitz const*>(&right));
-        if (layer == actual_right.layer) {
-            if (xa == actual_right.xa) {
-                if (ya == actual_right.ya) {
-                    if (xb == actual_right.xb) {
-                        if (yb == actual_right.yb) {
-                            return colour < actual_right.colour;
-                        }
-                        return yb < actual_right.yb;
-                    }
-                    return xb < actual_right.xb;
-                }
-                return ya < actual_right.ya;
-            }
-            return xa < actual_right.xa;
-        }
-        return layer < actual_right.layer;
+        return asTie() < actual_right.asTie();
     }
     virtual bool operator==(GlitzImplementation const& o) const {
         LineGlitz const& actual_other(*boost::polymorphic_downcast<LineGlitz const*>(&o));
-        return layer == actual_other.layer
-            && xa == actual_other.xa
-            && ya == actual_other.ya
-            && xb == actual_other.xb
-            && yb == actual_other.yb
-            && colour == actual_other.colour;
+        return asTie() == actual_other.asTie();
     }
 private:
+    boost::tuple<int const&, int const&, int const&, int const&, int const&, int const&, unsigned const&> asTie() const {
+        return boost::tie(layer, xa, ya, xb, yb, width, colour);
+    }
     virtual int order_ranking() const {
         return 1;
     }
@@ -61,6 +48,8 @@ private:
     int ya;
     int xb;
     int yb;
+    
+    int width;
     
     //Colour packed as |RRRRRRRR|GGGGGGGG|BBBBBBBB|*unused*|
     //Why? -- because lua is all ints, and I can't be bothered with a better interface for such a temporary thing.
