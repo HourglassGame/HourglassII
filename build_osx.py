@@ -126,11 +126,11 @@ class osx_compiler_set:
         self.i386 = osx_gxx_compiler(cxxbinary, ccbinary, "i386")
 
 def build_thin_binary(
-    filenamegenerator,
-    compiler,
-    sources, output,
-    defines, include_directories,
-    library_directories, libraries, additional_linker_flags):
+        filenamegenerator,
+        compiler,
+        sources, output,
+        defines, include_directories,
+        library_directories, libraries, additional_linker_flags):
     #compile sources into object files
     objects = []
     for f in sources:
@@ -182,15 +182,15 @@ def build_universal_binary(
 
 
 def create_bundle(
-    filenamegenerator,
-    compilers,
-    archs,
-    files_to_compile,
-    defines,
-    includes,
-    library_directories,
-    libraries,
-    dlls):
+        filenamegenerator,
+        compilers,
+        archs,
+        files_to_compile,
+        defines,
+        includes,
+        library_directories,
+        libraries,
+        dlls):
     universal_exe = filenamegenerator.__next__()
     build_universal_binary(
         filenamegenerator,
@@ -214,10 +214,10 @@ def create_bundle(
         shutil.copy(dll, "build/HourglassII.app/Contents/Frameworks/")
     shutil.copy("src/osx/Info.plist", "build/HourglassII.app/Contents/Info.plist")
     shutil.copy("src/osx/PkgInfo", "build/HourglassII.app/Contents/PkgInfo")
+    shutil.copy("basicTriggerSystem.lua", "build/HourglassII.app/Contents/Resources/basicTriggerSystem.lua")
     shutil.copytree("level.lvl", "build/HourglassII.app/Contents/Resources/level.lvl")
     shutil.copytree("levels", "build/HourglassII.app/Contents/Resources/levels")
     shutil.copy("src/osx/HourglassSwirl.icns", "build/HourglassII.app/Contents/Resources/HourglassSwirl.icns")
-
     #delete lipo'd exe
     os.remove(universal_exe)
 
