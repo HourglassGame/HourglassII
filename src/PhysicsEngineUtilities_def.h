@@ -975,7 +975,7 @@ void guyStep(
 						mutators[j].getWidth(), mutators[j].getHeight(),
 						mutators[j].getCollisionOverlap()))
 				{
-					mutatorCollisions.push_back(i);
+					mutatorCollisions.push_back(j);
 				}
 			}
 
