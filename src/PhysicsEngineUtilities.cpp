@@ -184,18 +184,17 @@ bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
 
 
 void doGunRaytrace(
-		Environment const& env,
 		PhysicsObjectType& targetType,
 		int& targetId,
-		int sx, int sy, int px, int py,
+		Environment const& env,
+		int& sx, int& sy, int& px, int& py,
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox,
 		mt::std::vector<char>::type& nextBoxNormalDeparture,
 		mt::std::vector<int>::type gx, // other guy things
 		mt::std::vector<int>::type gy,
 		mt::std::vector<int>::type gw,
 		mt::std::vector<int>::type gh,
-		mt::std::vector<char>::type shootable,
-		int myIndex) // don't hit myself
+		mt::std::vector<char>::type shootable)
 {
 	// starts in a wall all it can hit is a wall
 	if (env.wall.at(sx,sy))
@@ -205,8 +204,9 @@ void doGunRaytrace(
 		return;
 	}
 	
-	targetType = BOX;
-	targetId = 2;
+	targetType = NONE;
+	targetId = -1;
+	return;
 
 	// shoot to the right if the direction has no length
 	if (sx == px && sy == py)

@@ -11,8 +11,11 @@ class GuyGlitzAdder {
 public:
     GuyGlitzAdder(
         mt::std::vector<Glitz>::type& forwardsGlitz,
-        mt::std::vector<Glitz>::type& reverseGlitz) :
-    forwardsGlitz_(&forwardsGlitz), reverseGlitz_(&reverseGlitz)
+        mt::std::vector<Glitz>::type& reverseGlitz,
+		mt::std::vector<GlitzPersister>::type& persistentGlitz) :
+    forwardsGlitz_(&forwardsGlitz), 
+	reverseGlitz_(&reverseGlitz),
+	persistentGlitz_(&persistentGlitz)
     {}
     //Adds the glitz that would be appropriate for a guy
     //with the given characteristics
@@ -176,9 +179,62 @@ public:
             }
         }
     }
+	
+	void addLaserGlitz(
+        int x1,
+		int y1,
+		int x2,
+		int y2,
+		TimeDirection timeDirection) const
+	{
+		int width = 100;
+		persistentGlitz_->push_back(
+			GlitzPersister(
+				Glitz(
+					multi_thread_new<LineGlitz>(
+						650,
+						x1,
+						y1,
+						x2,
+						y2,
+						width,
+						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+				Glitz(
+					multi_thread_new<LineGlitz>(
+						650,
+						x1,
+						y1,
+						x2,
+						y2,
+						width,
+						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+				150,
+				timeDirection));
+		persistentGlitz_->push_back(
+			GlitzPersister(
+				Glitz(
+					multi_thread_new<RectangleGlitz>(
+						600, 
+						x2-200, 
+						y2-200, 
+						400, 
+						400,
+						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+				Glitz(
+					multi_thread_new<RectangleGlitz>(
+						600, 
+						x2-200, 
+						y2-200, 
+						400, 
+						400,
+						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+				150,
+				timeDirection));
+	}
 private:
     mt::std::vector<Glitz>::type* forwardsGlitz_;
     mt::std::vector<Glitz>::type* reverseGlitz_;
+	mt::std::vector<GlitzPersister>::type* persistentGlitz_;
 };
 }
 #endif //HG_GUY_GLITZ_ADDER_H

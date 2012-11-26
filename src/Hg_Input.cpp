@@ -62,7 +62,9 @@ InputList Input::AsInputList() const
 
     if (mouseRight == 1)
     {
-        return InputList(left, right, up, (down == 1), (space == 1), hg::TIME_REVERSE, FrameID(), 0, 0);
+        return InputList(
+            left, right, up, (down == 1), (space == 1),
+            hg::TIME_GUN, FrameID(mouseTimelinePosition, UniverseID(timelineLength)), mouseX, mouseY);
     }
 
     if (q == 1) {
@@ -70,9 +72,7 @@ InputList Input::AsInputList() const
     }
 
     if (w == 1) {
-        return InputList(
-            left, right, up, (down == 1), (space == 1),
-            hg::TIME_PAUSE, FrameID(mouseTimelinePosition, UniverseID(timelineLength)), mouseX, mouseY);
+		return InputList(left, right, up, (down == 1), (space == 1), hg::TIME_REVERSE, FrameID(), 0, 0);
     }
 
     return InputList(left, right, up, (down == 1), (space == 1), hg::NO_ABILITY, FrameID(), 0, 0);
