@@ -2,7 +2,7 @@
 #include "Canvas.h"
 #include "clone_ptr.h"
 #include <boost/range/algorithm/stable_sort.hpp>
-#include <boost/range/algorithm/for_each.hpp>
+#include <algorithm>
 
 #include <boost/bind/bind.hpp>
 #include <boost/ref.hpp>
@@ -90,10 +90,20 @@ void LayeredCanvas::drawRect(int layer, int x, int y, int width, int height, uns
 void LayeredCanvas::drawLine(int layer, int xa, int ya, int xb, int yb, int width, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new LineDrawer(xa,ya,xb,yb,width,colour)));
 }
-void LayeredCanvas::flush() {
-    boost::stable_sort(drawCalls);
-    boost::for_each(drawCalls, boost::bind(&DrawCall::drawTo, _1, boost::ref(*canvas)));
+Flusher LayeredCanvas::getFlusher() {
+    return Flusher(this);
 }
+
+void Flusher::partialFlush(int upperLimit) {
+    boost::container::vector<lc_internal::DrawCall>::iterator lowerBound(upperBound);
+    upperBound = std::upper_bound(lowerBound, boost::end(canvas->drawCalls), DrawCall(upperLimit, 0));
+    std::for_each(lowerBound, upperBound, boost::bind(&DrawCall::drawTo, _1, boost::ref(*canvas->canvas)));
+}
+Flusher::Flusher(LayeredCanvas* canvas) : canvas(canvas) {
+    boost::stable_sort(canvas->drawCalls);
+    upperBound = boost::begin(canvas->drawCalls);
+}
+
 LayeredCanvas::~LayeredCanvas(){}
 }//namespace hg
 

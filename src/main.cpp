@@ -62,7 +62,6 @@ namespace {
         hg::Wall const& wall);
     void DrawTimeline(sf::RenderTarget& target, hg::TimeEngine::FrameListList const& waves, hg::FrameID playerFrame, int timelineLength);
     void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
-    void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList);
     template<typename BidirectionalGuyRange>
     hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange);
 
@@ -551,8 +550,13 @@ void Draw(
     sf::View const& oldView(target.GetView());
     sf::View scaledView(sf::FloatRect(0.f, 0.f, target.GetWidth()/scalingFactor, target.GetHeight()/scalingFactor));
     target.SetView(scaledView);
-    DrawGlitz(target, glitz);
+    hg::sfRenderTargetCanvas canvas(target);
+    hg::LayeredCanvas layeredCanvas(canvas);
+	foreach (hg::Glitz const& particularGlitz, glitz) particularGlitz.display(layeredCanvas);
+    hg::Flusher flusher(layeredCanvas.getFlusher());
+    flusher.partialFlush(1000);
     DrawWall(target, wall);
+    flusher.partialFlush(std::numeric_limits<int>::max());
     target.SetView(oldView);
 }
 
@@ -573,18 +577,6 @@ void DrawWall(
             }
         }
     }
-}
-
-void DrawParticularGlitz(hg::Glitz const& glitz, hg::LayeredCanvas& canvas)
-{
-    glitz.display(canvas);
-}
-void DrawGlitz(sf::RenderTarget& target, hg::mt::std::vector<hg::Glitz>::type const& glitzList)
-{
-    hg::sfRenderTargetCanvas canvas(target);
-    hg::LayeredCanvas layeredCanvas(canvas);
-	foreach (hg::Glitz const& glitz, glitzList) DrawParticularGlitz(glitz, layeredCanvas);
-    layeredCanvas.flush();
 }
 
 void DrawTimeline(
