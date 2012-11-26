@@ -106,7 +106,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.arrivalLocations,
         physicsTriggerStuff.mutators,
         triggerFrameState,
-        GuyGlitzAdder(forwardsGlitz, reverseGlitz),
+        GuyGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
         nextPlayerFrame,
         winFrame);
     

@@ -287,7 +287,7 @@ void guyStep(
             bool left = false;
             bool right = false;
 
-            std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
+            //std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
             // jump
             if (guyArrivalList[i].getSupported() && input.getUp())
@@ -317,7 +317,7 @@ void guyStep(
 							// -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
 							if (newY + height >= boxY && newY+height-yspeed[i]-env.gravity <= boxY+boxYspeed)
 							{
-								boxThatIamStandingOn = j;
+								//boxThatIamStandingOn = j;
 								newY = boxY-height;
 								xspeed[i] = -boxXspeed;
 								supported[i] = true;
@@ -330,7 +330,7 @@ void guyStep(
 						{
 							if (newY+height >= boxY && newY+height-yspeed[i] <= boxY-boxYspeed)
 							{
-								boxThatIamStandingOn = j;
+								//boxThatIamStandingOn = j;
 								newY = boxY-height;
 								xspeed[i] = boxXspeed;
 								supported[i] = true;
@@ -520,7 +520,7 @@ void guyStep(
             bool left = false;
             bool right = false;
 
-            std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
+            //std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
             // jump
             if (guyArrivalList[i].getSupported() && input.getUp())
@@ -543,7 +543,7 @@ void guyStep(
 					{
 						if (newY+height >= boxY && newY-yspeed[i]+height <= boxY)
 						{
-							boxThatIamStandingOn = j;
+							//boxThatIamStandingOn = j;
 							newY = boxY-height;
 							xspeed[i] = 0;
 							supported[i] = true;
@@ -1239,10 +1239,71 @@ void guyStep(
 
 		if (inputAbility == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
 		{
-			//Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
+			// Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
+			mt::std::vector<char>::type shootable;
+			shootable.reserve(boost::distance(guyArrivalList));
 			
-			//PhysicsObjectType targetType = NONE;
-			//int targetId = -1;
+			for (std::size_t j(0), size(guyArrivalList.size()); j != size; ++j)
+			{
+				shootable.push_back(!finishedWith[j] && i != j && !newTimePaused[i]);
+			}
+			
+			// Parameters for ability. sx, sy, px and py are returned as line glitz params
+			Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
+			int sx = x[i] + newWidth[i]/2;
+			int sy = y[i] + newHeight[i]/4;
+			int px = input.getXParam();
+			int py = input.getYParam();
+			
+			// Return values from doGunRaytrace
+			PhysicsObjectType targetType = NONE;
+			int targetId = -1;
+			
+			doGunRaytrace(
+				targetType, targetId, env, 
+				sx,sy,px,py,
+				nextBox, nextBoxNormalDeparture,
+				x, y, xspeed, yspeed,
+				shootable);
+				
+			guyGlitzAdder.addLaserGlitz(sx,sy,px,py,guyArrivalList[i].getTimeDirection());
+				
+			if (targetType == GUY)
+			{
+				nextGuy.push_back(
+					ObjectAndTime<Guy, Frame*>(
+						Guy(
+                            guyArrivalList[targetId].getIndex() + 1,
+							x[targetId], y[targetId],
+							xspeed[targetId], yspeed[targetId],
+							newWidth[targetId], newHeight[targetId],
+							newJumpSpeed[targetId],
+
+							illegalPortal[targetId],
+							-1,
+							supported[targetId],
+							supportedSpeed[targetId],
+
+							newPickups[targetId],
+							facing[targetId],
+
+							carry[targetId],
+							carrySize[targetId],
+							carryDirection[targetId],
+
+							guyArrivalList[targetId].getTimeDirection(),
+							newTimePaused[targetId]
+						),
+						targetTime
+					)
+				);
+            	finishedWith[targetId] = true;
+			}
+			else if (targetType == BOX)
+			{
+				nextBox[targetId].frame = targetTime;
+				nextBoxNormalDeparture[targetId] = false;
+			}
 			
 			if (timeGun->second > 0)
 			{
