@@ -15,7 +15,7 @@ class clone_ptr : CloneManager
 public:
     clone_ptr() :
         CloneManager(),
-        obj(0)
+        obj()
     {
     }
     //clone_ptr takes ownership of p
@@ -24,7 +24,6 @@ public:
         CloneManager(),
         obj(p)
     {
-        assert(obj);
     }
     clone_ptr(clone_ptr const& o) :
         CloneManager(),
