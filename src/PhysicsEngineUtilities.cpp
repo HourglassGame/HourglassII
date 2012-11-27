@@ -182,7 +182,6 @@ bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
     return wallAtExclusive(env.wall, x, y, w, h);
 }
 
-
 void doGunRaytrace(
 		PhysicsObjectType& targetType,
 		int& targetId,
@@ -199,26 +198,24 @@ void doGunRaytrace(
 	// starts in a wall all it can hit is a wall
 	if (env.wall.at(sx,sy))
 	{
+		px = sx;
+		py = sy;
 		targetType = NONE;
 		targetId = -1;
 		return;
 	}
-	
-	targetType = NONE;
-	targetId = -1;
-	return;
 
-	// shoot to the right if the direction has no length
+	// prevent zero length vectors
 	if (sx == px && sy == py)
 	{
 		px = sx + 1;
 	}
 
-	//int size = env.wall.segmentSize();
+	int size = env.wall.segmentSize();
 	
 	// Find Wall
-	//int dx = px - sx;
-	//int dy = py - sy;
+	int dx = px - sx;
+	int dy = py - sy;
 	
 /*
 	if (sx < px && sy >= py) // top right, x safe
@@ -277,6 +274,64 @@ void doGunRaytrace(
 		assert(sx <= px && sy < py);
 
 	}*/
+}
+
+int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+{
+	// Returns the deepest edge of rectangle 2 that rectangle 1 is in.
+	// Does not assume intersection.
+	if (x1 + w1/2 < x2 + w2/2) // Left
+	{
+		if (y1 + h1/2 < y2 + h2/2) // Top Left
+		{
+			// y = m(x - x') + y'
+			// m = 1
+			if ((y1 + h1) < ((x1 + w1) - (x2)) + (y2))
+			{
+				return 1; // TOP
+			}
+			else
+			{
+				return 2; // LEFT
+			}
+		}
+		else // Bottom Left
+		{
+			if ((y1) < -((x1 + w1) - (x2)) + (y2 + h2))
+			{
+				return 2; // LEFT
+			}
+			else
+			{
+				return 3; // BOTTOM
+			}
+		}
+	}
+	else // Right
+	{
+		if (y1 + h1/2 < y2 + h2/2) // Top Right
+		{
+			if ((y1 + h1) < -((x1) - (x2 + w2)) + (y2))
+			{
+				return 1; // TOP
+			}
+			else
+			{
+				return 0; // RIGHT
+			}
+		}
+		else // Bottom Right
+		{
+			if ((y1) < ((x1) - (x2 + w2)) + (y2 + h2))
+			{
+				return 0; // RIGHT
+			}
+			else
+			{
+				return 3; // BOTTOM
+			}
+		}
+	}
 }
 
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)

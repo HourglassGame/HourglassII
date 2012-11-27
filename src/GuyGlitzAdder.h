@@ -192,7 +192,7 @@ public:
 			GlitzPersister(
 				Glitz(
 					multi_thread_new<LineGlitz>(
-						650,
+						1500,
 						x1,
 						y1,
 						x2,
@@ -201,7 +201,7 @@ public:
 						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
 				Glitz(
 					multi_thread_new<LineGlitz>(
-						650,
+						1500,
 						x1,
 						y1,
 						x2,
@@ -214,7 +214,7 @@ public:
 			GlitzPersister(
 				Glitz(
 					multi_thread_new<RectangleGlitz>(
-						600, 
+						1500, 
 						x2-200, 
 						y2-200, 
 						400, 
@@ -222,7 +222,7 @@ public:
 						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
 				Glitz(
 					multi_thread_new<RectangleGlitz>(
-						600, 
+						1500, 
 						x2-200, 
 						y2-200, 
 						400, 
@@ -231,6 +231,36 @@ public:
 				150,
 				timeDirection));
 	}
+	
+	void addDeathGlitz(
+		int x,
+		int y,
+		int width,
+		int height,
+		TimeDirection timeDirection) const
+	{
+		persistentGlitz_->push_back(
+			GlitzPersister(
+				Glitz(
+					multi_thread_new<RectangleGlitz>(
+						1500,
+						x,
+						y,
+						width,
+						height,
+						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+				Glitz(
+					multi_thread_new<RectangleGlitz>(
+						1500,
+						x,
+						y,
+						width,
+						height,
+						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+				150,
+				timeDirection));
+	}
+	
 private:
     mt::std::vector<Glitz>::type* forwardsGlitz_;
     mt::std::vector<Glitz>::type* reverseGlitz_;

@@ -171,7 +171,8 @@ void doGunRaytrace(
 	mt::std::vector<int>::type gw,
 	mt::std::vector<int>::type gh,
 	mt::std::vector<char>::type shootable);
-
+	
+int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
