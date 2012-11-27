@@ -174,6 +174,9 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
 void WorldState::addNewInputData(const InputList& newInputData)
 {
     playerInput_.push_back(newInputData);
+    foreach (Frame* frame, currentPlayerFrames_) {
+        frameUpdateSet_.add(frame);
+    }
     foreach (Frame* frame, nextPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }
