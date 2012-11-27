@@ -256,6 +256,7 @@ void guyStep(
 					if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
 					{
 						finishedWith[i] = true;
+						guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
 						continue;
 					}
 				}
@@ -270,6 +271,7 @@ void guyStep(
 						pHeight-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2))
 					{
 						finishedWith[i] = true;
+						guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
 						continue;
 					}
 				}
@@ -279,6 +281,7 @@ void guyStep(
 			if (wallAtExclusive(env, x[i], y[i], width, height))
 			{
 				finishedWith[i] = true;
+				guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
 				continue;
 			}
 
@@ -355,7 +358,8 @@ void guyStep(
                         x[i], newY, width, height,
                 		pX, pY, pWidth, pHeight))
                 {
-                    if (newY+height/2 < pY+pHeight/2)
+					int colDir = RectangleIntersectionDirection(x[i],newY,width,height,pX, pY, pWidth, pHeight);
+                    if (colDir == 1)
                     {
                         newY = pY-height;
                         xspeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
@@ -363,7 +367,7 @@ void guyStep(
                         bottom = true;
                         supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
                     }
-                    else
+                    else if (colDir == 3)
                     {
                         newY = pY + pHeight;
                         top = true;
@@ -394,6 +398,7 @@ void guyStep(
             if (bottom && top)
             {
             	finishedWith[i] = true;
+				guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
             	continue;
             }
 
@@ -455,6 +460,7 @@ void guyStep(
             if (left && right)
 			{
 				finishedWith[i] = true;
+				guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
 				continue;
 			}
 
