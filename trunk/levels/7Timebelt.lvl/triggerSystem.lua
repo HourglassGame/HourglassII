@@ -62,13 +62,14 @@ local tempStore =
         }
     },
     protoMutators = {
-        bts.timeBelt{
+        bts.pickup{
             x = 11 * 3200,
             y = 11 * 3200,
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
-            triggerID = 1
+            triggerID = 1,
+			pickupType = 'timeJump'
         }
     },
     protoButtons = {

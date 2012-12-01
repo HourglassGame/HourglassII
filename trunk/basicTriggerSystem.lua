@@ -424,7 +424,7 @@ local function toggleSwitch(p)
     }  
 end
 
-local function timeBelt(p)
+local function pickup(p)
     local active = true
     local triggerID = p.triggerID
     local proto = {
@@ -452,7 +452,7 @@ local function timeBelt(p)
         effect = function(self, dynamicObject)
             if not active then return dynamicObject end
             if dynamicObject.type ~= 'guy' then return dynamicObject end
-            dynamicObject.pickups.timeJump = dynamicObject.pickups.timeJump + 1
+            dynamicObject.pickups[p.pickupType] = dynamicObject.pickups[p.pickupType] + 1
             active = false
             return dynamicObject
         end,
@@ -565,7 +565,7 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
-    timeBelt = timeBelt,
+    pickup = pickup,
     mutateObject = mutateObject,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
     getDepartureInformation = getDepartureInformation,
