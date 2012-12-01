@@ -208,7 +208,7 @@ public:
 						y2,
 						width,
 						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-				150,
+				60,
 				timeDirection));
 		persistentGlitz_->push_back(
 			GlitzPersister(
@@ -228,7 +228,7 @@ public:
 						400, 
 						400,
 						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-				150,
+				60,
 				timeDirection));
 	}
 	
@@ -257,7 +257,7 @@ public:
 						width,
 						height,
 						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-				150,
+				60,
 				timeDirection));
 	}
 	

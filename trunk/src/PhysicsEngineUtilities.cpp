@@ -182,11 +182,273 @@ bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
     return wallAtExclusive(env.wall, x, y, w, h);
 }
 
+bool getRaytraceRectangleCollision(
+	int sx, int sy, 
+	int& px, int& py,
+	int left, int top,
+	int width, int height,
+	int dx, int dy,
+	bool mostlySideways)
+{
+	int right = left + width;
+	int bottom = top + height;
+
+	if (PointInRectangleExclusive(sx, sy, left, top, width, height))
+	{
+		px = sx;
+		py = sy;
+	}
+
+	if (px != sx || py != sy)
+	{
+		if (mostlySideways)
+		{
+			if (dx > 0)
+			{
+				if (left < px && right > sx)
+				{
+					if (dy > 0) // even Diagonal, OCTANT 0
+					{
+						if (bottom > sy)
+						{
+							if (sy + (left - sx)*dy/dx < bottom && sy + (right - sx)*dy/dx > top) 
+							{
+								// Test which face was hit
+								if (sy + (left - sx)*dy/dx < top)
+								{
+									int offFaceValue = sx + (top - sy)*dx/dy;
+									if (offFaceValue < px)
+									{
+										py = top;
+										px = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									px = left;
+									py = sy + (px - sx)*dy/dx;
+									return true;
+								}
+							}
+						}
+					}
+					else // odd Diagonal, OCTANT 7
+					{
+						if (top < sy)
+						{
+							if (sy + (right - sx)*dy/dx < bottom && sy + (left - sx)*dy/dx > top) 
+							{
+								// Test which face was hit
+								if (sy + (left - sx)*dy/dx > bottom)
+								{
+									int offFaceValue = sx + (bottom - sy)*dx/dy;
+									if (offFaceValue < px)
+									{
+										py = bottom;
+										px = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									px = left;
+									py = sy + (px - sx)*dy/dx;
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+			else // dx < 0
+			{
+				if (left < sx && right > px)
+				{
+					if (dy < 0) // even Diagonal, OCTANT 4
+					{
+						if (top < sy)
+						{
+							if (sy + (left - sx)*dy/dx < bottom && sy + (right - sx)*dy/dx > top) 
+							{
+								// Test which face was hit
+								if (sy + (right - sx)*dy/dx > bottom)
+								{
+									int offFaceValue = sx + (bottom - sy)*dx/dy;
+									if (offFaceValue > px)
+									{
+										py = bottom;
+										px = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									px = right;
+									py = sy + (px - sx)*dy/dx;
+									return true;
+								}
+							}
+						}
+					}
+					else // odd Diagonal, OCTANT 3
+					{
+						if (bottom > sy)
+						{
+							if (sy + (right - sx)*dy/dx < bottom && sy + (left - sx)*dy/dx > top) 
+							{
+								// Test which face was hit
+								if (sy + (right - sx)*dy/dx < top)
+								{
+									int offFaceValue = sx + (top - sy)*dx/dy;
+									if (offFaceValue > px)
+									{
+										py = top;
+										px = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									px = right;
+									py = sy + (px - sx)*dy/dx;
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		else // Mostly uppy-downy
+		{
+			if (dy > 0)
+			{
+				if (top < py && bottom > sy)
+				{
+					if (dx > 0) // even Diagonal, OCTANT 1
+					{
+						if (right > sx)
+						{
+							if (sx + (top - sy)*dx/dy < right && sx + (bottom - sy)*dx/dy > left) 
+							{
+								// Test which face was hit
+								if (sx + (top - sy)*dx/dy < left)
+								{
+									int offFaceValue = sy + (left - sx)*dy/dx;
+									if (offFaceValue < py)
+									{
+										px = left;
+										py = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									py = top;
+									px = sx + (py - sy)*dx/dy;
+									return true;
+								}
+							}
+						}
+					}
+					else // odd Diagonal, OCTANT 2
+					{
+						if (left < sx)
+						{
+							if (sx + (bottom - sy)*dx/dy < right && sx + (top - sy)*dx/dy > left) 
+							{
+								// Test which face was hit
+								if (sx + (top - sy)*dx/dy > right)
+								{
+									int offFaceValue = sy + (right - sx)*dy/dx;
+									if (offFaceValue < py)
+									{
+										px = right;
+										py = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									py = top;
+									px = sx + (py - sy)*dx/dy;
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+			else // dy < 0
+			{
+				if (top < sy && bottom > py)
+				{
+					if (dx < 0) // even Diagonal, OCTANT 5
+					{
+						if (left < sx)
+						{
+							if (sx + (top - sy)*dx/dy < right && sx + (bottom - sy)*dx/dy > left) 
+							{
+								// Test which face was hit
+								if (sx + (bottom - sy)*dx/dy > right)
+								{
+									int offFaceValue = sy + (right - sx)*dy/dx;
+									if (offFaceValue > py)
+									{
+										px = right;
+										py = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									py = bottom;
+									px = sx + (py - sy)*dx/dy;
+									return true;
+								}
+							}
+						}
+					}
+					else // odd Diagonal, OCTANT 6
+					{
+						if (right > sx)
+						{
+							if (sx + (bottom - sy)*dx/dy < right && sx + (top - sy)*dx/dy > left) 
+							{
+								// Test which face was hit
+								if (sx + (bottom - sy)*dx/dy < left)
+								{
+									int offFaceValue = sy + (left - sx)*dy/dx;
+									if (offFaceValue > py)
+									{
+										px = left;
+										py = offFaceValue;
+										return true;
+									}
+								}
+								else
+								{
+									py = bottom;
+									px = sx + (py - sy)*dx/dy;
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void doGunRaytrace(
 		PhysicsObjectType& targetType,
 		int& targetId,
 		Environment const& env,
 		int& sx, int& sy, int& px, int& py,
+		mt::std::vector<Collision>::type const& nextPlatform,
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox,
 		mt::std::vector<char>::type& nextBoxNormalDeparture,
 		mt::std::vector<int>::type gx, // other guy things
@@ -195,6 +457,9 @@ void doGunRaytrace(
 		mt::std::vector<int>::type gh,
 		mt::std::vector<char>::type shootable)
 {
+	// source x,y
+	// point  x,y
+
 	// starts in a wall all it can hit is a wall
 	if (env.wall.at(sx,sy))
 	{
@@ -213,67 +478,280 @@ void doGunRaytrace(
 
 	int size = env.wall.segmentSize();
 	
-	// Find Wall
+	// ***  Find Wall ***
 	int dx = px - sx;
 	int dy = py - sy;
+
+	int absDx = std::abs(dx);
+	int absDy = std::abs(dy);
 	
-/*
-	if (sx < px && sy >= py) // top right, x safe
+	bool mostlySideways = (absDx > absDy);
+	
+	if (mostlySideways)
 	{
-		// find wall distance
-		int tx = sx;
-		int ty = sy;
-		while (true)
+		if (dx > 0) // Right
 		{
-			int hDis = tx%size + size - sx;
-			int vDis = (ty-1)%size - sy;
-			if (vDis <= hDis * (py - sy)/(px - sx)) // both sides are non-positive
+			if (dy > 0) // Down Right
 			{
-				// next grid square on Right
-				tx = tx%size + size;
-				ty = tx * (py - sy)/(px - sx) + sy;
-				if (env.wall.at(tx,ty))
+				int dist = (sx/size + 1)*size - sx;
+				int nx, ny;
+				
+				while (true)
 				{
-					break;
+					nx = sx + dist;
+					ny = sy + dy*dist/dx;
+					
+					if (env.wall.at(nx-1,ny))
+					{
+						py = (ny/size)*size;
+						px = sx + (py - sy)*dx/dy;
+						break;
+					}
+					if (env.wall.at(nx,ny))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist + size;
 				}
 			}
-			else
+			else // Up Right
 			{
-				// next grid square on Top
-				ty = (ty-1)%size;
-				tx = ty * (px - sx)/(py - sy) + sx; // it is known (py - sy) != 0
-				if (env.wall.at(tx,ty))
+				int dist = (sx/size + 1)*size - sx;
+				int nx, ny;
+				
+				while (true)
 				{
-					break;
+					nx = sx + dist;
+					ny = sy + dy*dist/dx;
+					
+					if (env.wall.at(nx-1,ny))
+					{
+						py = (ny/size + 1)*size;
+						px = sx + (py - sy)*dx/dy;
+						break;
+					}
+					if (env.wall.at(nx,ny))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist + size;
 				}
 			}
 		}
-		int wallDistance = tx - sx;
-
-		// find all the boxes within wallDistance and on line
-		for (std::size_t j(0), jsize(box.size()); j < jsize; ++j)
+		else // Left
 		{
-			// only shoot normal departure boxes
-			if (nextBoxNormalDeparture[j])
+			if (dy > 0) // Down Left
 			{
-
+				int dist = (sx/size)*size - sx;
+				int nx, ny;
+				
+				while (true)
+				{
+					nx = sx + dist;
+					ny = sy + dy*dist/dx;
+					
+					if (env.wall.at(nx,ny))
+					{
+						py = (ny/size)*size;
+						px = sx + (py - sy)*dx/dy;
+						break;
+					}
+					if (env.wall.at(nx-1,ny))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist - size;
+				}
+			}
+			else // Up Left
+			{
+				int dist = (sx/size)*size - sx;
+				int nx, ny;
+				
+				while (true)
+				{
+					nx = sx + dist;
+					ny = sy + dy*dist/dx;
+					
+					if (env.wall.at(nx,ny))
+					{
+						py = (ny/size + 1)*size;
+						px = sx + (py - sy)*dx/dy;
+						break;
+					}
+					if (env.wall.at(nx-1,ny))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist - size;
+				}
 			}
 		}
-
 	}
-	else if (sx >= px && sy > py) // top left, y safe
+	else // Mostly Up or Down
 	{
-
+		if (dy > 0) // Down
+		{
+			if (dx > 0) // Down Right
+			{
+				int dist = (sy/size + 1)*size - sy;
+				int nx, ny;
+				
+				while (true)
+				{
+					ny = sy + dist;
+					nx = sx + dx*dist/dy;
+					
+					if (env.wall.at(nx,ny-1))
+					{
+						px = (nx/size)*size;
+						py = sy + (px - sx)*dy/dx;
+						break;
+					}
+					if (env.wall.at(nx,ny))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist + size;
+				}
+			}
+			else // Down Left
+			{
+				int dist = (sy/size + 1)*size - sy;
+				int nx, ny;
+				
+				while (true)
+				{
+					ny = sy + dist;
+					nx = sx + dx*dist/dy;
+					
+					if (env.wall.at(nx,ny-1))
+					{
+						px = (nx/size + 1)*size;
+						py = sy + (px - sx)*dy/dx;
+						break;
+					}
+					if (env.wall.at(nx,ny))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist + size;
+				}
+			}
+		}
+		else // Up
+		{
+			if (dy > 0) // Up Right
+			{
+				int dist = (sy/size)*size - sy;
+				int nx, ny;
+				
+				while (true)
+				{
+					ny = sy + dist;
+					nx = sx + dx*dist/dy;
+					
+					if (env.wall.at(nx,ny))
+					{
+						px = (nx/size)*size;
+						py = sy + (px - sx)*dy/dx;
+						break;
+					}
+					if (env.wall.at(nx,ny-1))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist - size;
+				}
+			}
+			else // Up Left
+			{
+				int dist = (sy/size)*size - sy;
+				int nx, ny;
+				
+				while (true)
+				{
+					ny = sy + dist;
+					nx = sx + dx*dist/dy;
+					
+					if (env.wall.at(nx,ny))
+					{
+						px = (nx/size + 1)*size;
+						py = sy + (px - sx)*dy/dx;
+						break;
+					}
+					if (env.wall.at(nx,ny-1))
+					{
+						py = ny;
+						px = nx;
+						break;
+					}
+					dist = dist - size;
+				}
+			}
+		}
 	}
-	else if (sx > px && sy <= py) // bottom left, x safe
+	
+	// *** Find Object Collisions ***
+	
+	// Platforms
+	for (std::size_t i(0), isize(nextPlatform.size()); i < isize; ++i)
 	{
-
+		getRaytraceRectangleCollision(
+			sx, sy, px, py,
+			nextPlatform[i].getX(), nextPlatform[i].getY(), 
+			nextPlatform[i].getWidth(), nextPlatform[i].getHeight(),
+			dx, dy, mostlySideways);
 	}
-	else // (sx <= px && sy < py) // bottom right, y safe
-	{
-		assert(sx <= px && sy < py);
 
-	}*/
+	// Box
+	for (std::size_t i(0), isize(nextBox.size()); i < isize; ++i)
+	{
+		if (nextBoxNormalDeparture[i])
+		{
+			if (getRaytraceRectangleCollision(
+				sx, sy, px, py,
+				nextBox[i].object.getX(), nextBox[i].object.getY(), 
+				nextBox[i].object.getSize(), nextBox[i].object.getSize(),
+				dx, dy, mostlySideways))
+			{
+				targetType = BOX;
+				targetId = i;
+			}
+		}
+	}
+	
+	// Guy
+	for (std::size_t i(0), isize(boost::distance(gx)); i < isize; ++i)
+	{
+		if (shootable[i])
+		{
+			if (getRaytraceRectangleCollision(
+				sx, sy, px, py,
+				gx[i], gy[i], 
+				gw[i], gh[i],
+				dx, dy, mostlySideways))
+			{
+				targetType = GUY;
+				targetId = i;
+			}
+		}
+	}
+	
 }
 
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
@@ -340,6 +818,15 @@ bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)
         (px <= x + w && px >= x)
         &&
         (py <= y + h && py >= y)
+        ;
+}
+
+bool PointInRectangleExclusive(int px, int py, int x, int y, int w, int h)
+{
+    return
+        (px < x + w && px > x)
+        &&
+        (py < y + h && py > y)
         ;
 }
 

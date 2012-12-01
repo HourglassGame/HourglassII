@@ -159,11 +159,20 @@ void buildDepartures(
 bool wallAtExclusive(Wall const& wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const& env, int x, int y, int w, int h);
 
+bool getRaytraceRectangleCollision(
+	int sx, int sy, 
+	int& px, int& py,
+	int left, int top,
+	int width, int height,
+	int dx, int dy,
+	bool mostlySideways);
+
 void doGunRaytrace(
 	PhysicsObjectType& targetType,
 	int& targetId,
 	Environment const& env,
 	int& sx, int& sy, int& px, int& py,
+	mt::std::vector<Collision>::type const& nextPlatform,
 	mt::std::vector<ObjectAndTime<Box, Frame*> >::type box,
 	mt::std::vector<char>::type& nextBoxNormalDeparture,
 	mt::std::vector<int>::type gx, // other guy things
@@ -175,6 +184,7 @@ void doGunRaytrace(
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
+bool PointInRectangleExclusive(int px, int py, int x, int y, int w, int h);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, int buffer);

@@ -1268,8 +1268,9 @@ void guyStep(
 			doGunRaytrace(
 				targetType, targetId, env, 
 				sx,sy,px,py,
+				nextPlatform,
 				nextBox, nextBoxNormalDeparture,
-				x, y, xspeed, yspeed,
+				x, y, newWidth, newHeight,
 				shootable);
 				
 			guyGlitzAdder.addLaserGlitz(sx,sy,px,py,guyArrivalList[i].getTimeDirection());
