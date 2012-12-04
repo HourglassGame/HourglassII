@@ -122,8 +122,16 @@ void makeBoxAndTimeWithPortalsAndMutators(
                 arrivalBasis = portals[i].getDestinationIndex();
                 x = x - portals[i].getX() + portals[i].getXdestination();
                 y = y - portals[i].getY() + portals[i].getYdestination();
-                xspeed = xspeed - portals[i].getXspeed();
-                yspeed = yspeed - portals[i].getXspeed();
+				if (portals[i].getTimeDirection() * timeDirection == hg::FORWARDS)
+                {
+                	xspeed = xspeed - portals[i].getXspeed();
+					yspeed = yspeed - portals[i].getYspeed();
+                }
+                else
+                {
+                	xspeed = xspeed + portals[i].getXspeed();
+					yspeed = yspeed + portals[i].getYspeed();
+                }
                 normalDeparture = false;
                 break;
             }
@@ -209,13 +217,16 @@ void guyStep(
 			}
 			else
 			{
+				//std::cerr << "Arrival Loc Speed " << getFrameNumber(frame) << ": " << relativePortal.getYspeed() << "\n";
 				if (relativePortal.getTimeDirection() * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
 				{
 					yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed() + env.gravity);
+					y[i] = y[i] - relativePortal.getYspeed();
 				}
 				else
 				{
 					yspeed.push_back(guyArrivalList[i].getYspeed() - relativePortal.getYspeed() + env.gravity);
+					y[i] = y[i] + relativePortal.getYspeed();
 				}
 			}
         }
@@ -223,6 +234,8 @@ void guyStep(
         supportedSpeed.push_back(0);
         finishedWith.push_back(false);
         facing.push_back(guyArrivalList[i].getFacing());
+		
+		//std::cerr << "Pre Physics Speed " << getFrameNumber(frame) << ": " << yspeed[i] << "\n";
 
         // Check with triggers if guy should affect frame
 		if (not triggerFrameState.shouldArrive(guyArrivalList[i]))
@@ -242,6 +255,25 @@ void guyStep(
             int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
             // chonofrag with platforms
+			/*
+			if (guyArrivalList[i].getArrivalBasis() != -1)
+			{
+				foreach (Collision const& platform, nextPlatform)
+				{
+					int pX(platform.getX());
+					int pY(platform.getY());
+					int pWidth(platform.getWidth());
+					int pHeight(platform.getHeight());
+					if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+					{
+						finishedWith[i] = true;
+						guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
+						continue;
+					}
+				}
+			}
+			*/
+			
 			foreach (Collision const& platform, nextPlatform)
 			{
 				int pX(platform.getX());
@@ -276,7 +308,7 @@ void guyStep(
 					}
 				}
 			}
-
+			
 			// chonofrag with walls
 			if (wallAtExclusive(env, x[i], y[i], width, height))
 			{
@@ -1081,8 +1113,18 @@ void guyStep(
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();
 							arrivalBasis = nextPortal[j].getDestinationIndex();
-							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
-							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
+							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+							if (nextPortal[i].getTimeDirection() * nextTimeDirection == hg::FORWARDS)
+							{
+								xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
+								yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
+							}
+							else
+							{
+								xspeed[i] = xspeed[i] + nextPortal[j].getXspeed();
+								yspeed[i] = yspeed[i] + nextPortal[j].getYspeed();
+							}
 							break;
 						}
 					}
@@ -1164,8 +1206,18 @@ void guyStep(
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();
 							arrivalBasis = nextPortal[j].getDestinationIndex();
-							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination() - nextPortal[j].getXspeed();
-							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination() - nextPortal[j].getYspeed();
+							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+							if (nextPortal[i].getTimeDirection() * nextTimeDirection == hg::FORWARDS)
+							{
+								xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
+								yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
+							}
+							else
+							{
+								xspeed[i] = xspeed[i] + nextPortal[j].getXspeed();
+								yspeed[i] = yspeed[i] + nextPortal[j].getYspeed();
+							}
 							break;
 						}
 					}
@@ -1423,15 +1475,17 @@ void boxCollisionAlogorithm(
         else
         {
             ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
-            xTemp[i] = relativePortal.getX() + oldBoxList[i].getX();
-            yTemp[i] = relativePortal.getY() + oldBoxList[i].getY();
 			if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == hg::FORWARDS)
 			{
+				xTemp[i] = relativePortal.getX() + oldBoxList[i].getX() - relativePortal.getXspeed();
+				yTemp[i] = relativePortal.getY() + oldBoxList[i].getY() - relativePortal.getYspeed();
 				x[i] = xTemp[i] + oldBoxList[i].getXspeed() + relativePortal.getXspeed();
 				y[i] = yTemp[i] + oldBoxList[i].getYspeed() + relativePortal.getYspeed() + env.gravity;
 			}
 			else
 			{
+				xTemp[i] = relativePortal.getX() + oldBoxList[i].getX() + relativePortal.getXspeed();
+				yTemp[i] = relativePortal.getY() + oldBoxList[i].getY() + relativePortal.getYspeed();
 				x[i] = xTemp[i] + oldBoxList[i].getXspeed() - relativePortal.getXspeed();
 				y[i] = yTemp[i] + oldBoxList[i].getYspeed() - relativePortal.getYspeed() + env.gravity;
 			}
