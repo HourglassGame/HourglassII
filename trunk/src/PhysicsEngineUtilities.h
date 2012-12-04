@@ -195,7 +195,7 @@ bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_
 enum {
 	COLLISION_BUFFER_RANGE = 100,
 	HALF_COLLISION_BUFFER_RANGE = 50,
-	REVERSE_PLATFORM_CHRONOFRAG_FUDGE = 100
+	REVERSE_PLATFORM_CHRONOFRAG_FUDGE = 250
 };
 }
 #include "PhysicsEngineUtilities_def.h"

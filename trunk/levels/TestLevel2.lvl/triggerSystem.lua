@@ -1,4 +1,4 @@
-if (false) then
+if (true) then
 
 
 local bts = require "global.basicTriggerSystem"
@@ -15,7 +15,7 @@ local tempStore =
             collisionOverlap = 50,
             timeDirection = 'forwards',
             destinationIndex = 1,
-            xDestination = 0,
+            xDestination = -3200,
             yDestination = 0,
             relativeTime = true,
             timeDestination = 0,
@@ -153,7 +153,7 @@ function shouldArrive(dynamicObject)
     return true
 end
 function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
-    return true
+    return dynamicObject.type == "box"
 end
 function mutateObject(responsibleManipulatorIndices, dynamicObject)
     return dynamicObject
