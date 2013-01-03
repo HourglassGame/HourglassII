@@ -14,7 +14,7 @@ void DepartureMap::makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor)
 }
 void DepartureMap::setDeparture(Frame* frame, BOOST_RV_REF(MapType::mapped_type) departingObjects)
 {
-    const_cast<MapType::mapped_type&>(const_cast<MapType const&>(map_).find(frame)->second) = boost::move(departingObjects);
+    map_.find(frame)->second = boost::move(departingObjects);
 }
 
 DepartureMap::iterator DepartureMap::begin()
