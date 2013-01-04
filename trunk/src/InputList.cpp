@@ -1,24 +1,52 @@
 #include "InputList.h"
 namespace hg {
+InputList::InputList() :
+    left(),
+    right(),
+    up(),
+    down(),
+    portalUsed(),
+    abilityUsed(),
+    abilityCursor(NO_ABILITY),
+    timeCursor(),
+    xCursor(),
+    yCursor()
+{
+}
 InputList::InputList(
     bool left,
     bool right,
     bool up,
     bool down,
-    bool use,
-    Ability ability,
-    FrameID timeParam,
-    int xParam,
-    int yParam) :
+    bool portalUsed,
+    bool abilityUsed,
+    Ability abilityCursor,
+    FrameID timeCursor,
+    int xCursor,
+    int yCursor) :
         left(left),
         right(right),
         up(up),
         down(down),
-        use(use),
-        ability(ability),
-        timeParam(timeParam),
-        xParam(xParam),
-        yParam(yParam)
+        portalUsed(portalUsed),
+        abilityUsed(abilityUsed),
+        abilityCursor(abilityCursor),
+        timeCursor(timeCursor),
+        xCursor(xCursor),
+        yCursor(yCursor)
 {
 }
+bool InputList::operator==(InputList const& o) const
+{
+    return left == o.left
+        && right == o.right
+        && up == o.up
+        && down == o.down
+        && portalUsed == o.portalUsed
+        && abilityUsed == o.abilityUsed
+        && abilityCursor == o.abilityCursor
+        && timeCursor == o.timeCursor
+        && xCursor == o.xCursor
+        && yCursor == o.yCursor;
 }
+} //namespace hg

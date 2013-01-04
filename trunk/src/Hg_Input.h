@@ -9,22 +9,20 @@ namespace hg {
 class Input {
 public:
     Input();
-    void updateState(const sf::Input& input, int mouseXOfEndOfTimeline, double mouseScale);
+    void updateState(sf::Input const& input, int mouseXOfEndOfTimeline, double mouseScale);
     InputList AsInputList() const;
-    void setTimelineLength(int newTimelineLength) { timelineLength = newTimelineLength; }
+    void setTimelineLength(int timelineLength) { this->timelineLength = timelineLength; }
 private:
     bool left;
     bool right;
     bool up;
-    int q;
-    int w;
     int down;
     int space;
     int mouseLeft;
-    int mouseRight;
+    Ability abilityCursor;
+    int mouseTimelinePosition;
     int mouseX;
     int mouseY;
-    int mouseTimelinePosition;
     int timelineLength;
 };
 }

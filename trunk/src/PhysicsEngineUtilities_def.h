@@ -1141,39 +1141,40 @@ void guyStep(
 				mt::std::map<Ability, int>::type::iterator timeReverse(newPickups[i].find(TIME_REVERSE));
 				mt::std::map<Ability, int>::type::iterator timePause(newPickups[i].find(TIME_PAUSE));
 
-				Ability inputAbility = input.getAbility();
-
-				if (inputAbility == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
-				{
-					nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
-					normalDeparture = false;
-					if (timeJump->second > 0)
-					{
-						newPickups[i][hg::TIME_JUMP] = timeJump->second - 1;
-					}
-				}
-				else if (inputAbility == hg::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
-				{
-					normalDeparture = false;
-					nextTimeDirection *= -1;
-					nextTime = newTimePaused[i] ? frame : nextFrame(frame, nextTimeDirection);
-					carryDirection[i] *= -1;
-					if (timeReverse->second > 0)
-					{
-						newPickups[i][hg::TIME_REVERSE] = timeReverse->second - 1;
-					}
-				}
-				else if (inputAbility == hg::TIME_PAUSE && timePause != newPickups[i].end() && timePause->second != 0)
-				{
-					nextTime = frame;
-					newTimePaused[i] = !newTimePaused[i];
-					normalDeparture = false;
-					if (timePause->second > 0)
-					{
-						newPickups[i][hg::TIME_PAUSE] = timePause->second - 1;
-					}
-				}
-				else if (input.getUse() == true)
+                if (input.getAbilityUsed()) {
+                    Ability abilityCursor = input.getAbilityCursor();
+                    if (abilityCursor == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
+                    {
+                        nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
+                        normalDeparture = false;
+                        if (timeJump->second > 0)
+                        {
+                            newPickups[i][hg::TIME_JUMP] = timeJump->second - 1;
+                        }
+                    }
+                    else if (abilityCursor == hg::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
+                    {
+                        normalDeparture = false;
+                        nextTimeDirection *= -1;
+                        nextTime = newTimePaused[i] ? frame : nextFrame(frame, nextTimeDirection);
+                        carryDirection[i] *= -1;
+                        if (timeReverse->second > 0)
+                        {
+                            newPickups[i][hg::TIME_REVERSE] = timeReverse->second - 1;
+                        }
+                    }
+                    else if (abilityCursor == hg::TIME_PAUSE && timePause != newPickups[i].end() && timePause->second != 0)
+                    {
+                        nextTime = frame;
+                        newTimePaused[i] = !newTimePaused[i];
+                        normalDeparture = false;
+                        if (timePause->second > 0)
+                        {
+                            newPickups[i][hg::TIME_PAUSE] = timePause->second - 1;
+                        }
+                    }
+                }
+				else if (input.getPortalUsed())
 				{
 					for (unsigned int j = 0; j < nextPortal.size(); ++j)
 					{
@@ -1295,9 +1296,7 @@ void guyStep(
 		
 		mt::std::map<Ability, int>::type::iterator timeGun(newPickups[i].find(TIME_GUN));
 
-		Ability inputAbility = input.getAbility();
-
-		if (inputAbility == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
+		if (input.getAbilityUsed() && input.getAbilityCursor() == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
 		{
 			// Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
 			mt::std::vector<char>::type shootable;
@@ -1309,11 +1308,11 @@ void guyStep(
 			}
 			
 			// Parameters for ability. sx, sy, px and py are returned as line glitz params
-			Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeParam()));
+			Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
 			int sx = x[i] + newWidth[i]/2;
 			int sy = y[i] + newHeight[i]/4;
-			int px = input.getXParam();
-			int py = input.getYParam();
+			int px = input.getXCursor();
+			int py = input.getYCursor();
 			
 			// Return values from doGunRaytrace
 			PhysicsObjectType targetType = NONE;

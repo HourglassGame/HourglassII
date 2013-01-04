@@ -20,59 +20,37 @@ namespace hg {
 class InputList : boost::equality_comparable<InputList>
 {
 public:
+    InputList();
     InputList(
         bool left,
         bool right,
         bool up,
         bool down,
-        bool use,
-        Ability ability,
-        FrameID timeParam,
-        int xParam,
-        int yParam);
+        bool portalUsed,
+        bool abilityUsed,
+        Ability abilityCursor,
+        FrameID timeCursor,
+        int xCursor,
+        int yCursor);
 
-    bool operator==(InputList const& o) const
-    {
-        return left == o.left
-            && right == o.right
-            && up == o.up
-            && down == o.down
-            && use == o.use
-            && ability == o.ability
-            && timeParam == o.timeParam
-            && xParam == o.xParam
-            && yParam == o.yParam;
-    }
+    bool operator==(InputList const& o) const;
 
     bool getLeft()       const { return left; }
     bool getRight()      const { return right; }
     bool getUp()         const { return up; }
     bool getDown()       const { return down; }
-    bool getUse()        const { return use; }
-    Ability getAbility() const { return ability; }
+    bool getPortalUsed() const { return portalUsed; }
+    
+    bool getAbilityUsed() const { return abilityUsed; }
+    Ability getAbilityCursor() const { return abilityCursor; }
+    FrameID getTimeCursor() const { return timeCursor; }
+    int getXCursor() const { return xCursor; }
+    int getYCursor() const { return yCursor; }
 
-    FrameID getTimeParam() const { return timeParam; }
-    
-    int getXParam() const { return xParam; }
-    int getYParam() const { return yParam; }
-    
-    InputList() :
-        left(),
-        right(),
-        up(),
-        down(),
-        use(),
-        ability(NO_ABILITY),
-        timeParam(),
-        xParam(),
-        yParam()
-    {
-    }
 private:
-
-    
     //Crappy serialization
     friend class boost::serialization::access;
+    
     template<class Archive>
     void serialize(Archive & ar, const unsigned int version)
     {
@@ -80,30 +58,41 @@ private:
         ar & right;
         ar & up;
         ar & down;
-        ar & use;
-        ar & ability;
-        ar & timeParam;
-        if (version == 0) {
-            int frameIdParamCount;
-            ar & frameIdParamCount;
+        ar & portalUsed;
+        if (version < 2) {
+            //Loading only, as version < current version.
+            ar & abilityCursor;
+            abilityUsed = abilityCursor != NO_ABILITY;
+            ar & timeCursor;
+            if (version == 0) {
+                int frameIdParamCount;
+                ar & frameIdParamCount;
+            }
+            if (version >= 1) {
+                ar & xCursor;
+                ar & yCursor;
+            }
         }
-        if (version >= 1) {
-            ar & xParam;
-            ar & yParam;
+        else {
+            ar & abilityUsed;
+            ar & abilityCursor;
+            ar & timeCursor;
+            ar & xCursor;
+            ar & yCursor;
         }
     }
-    
+
     bool left;
     bool right;
     bool up;
     bool down;
-    bool use;
+    bool portalUsed;
+    bool abilityUsed;
+    Ability abilityCursor;
+    FrameID timeCursor;
+    int xCursor;
+    int yCursor;
 
-    Ability ability;
-    FrameID timeParam;
-    int xParam;
-    int yParam;
-    
     //more crappy serialization
     inline friend std::ostream& operator<<(std::ostream& os, InputList const& toPrint)
     {
@@ -111,11 +100,12 @@ private:
         os << toPrint.right << " ";
         os << toPrint.up << " ";
         os << toPrint.down << " ";
-        os << toPrint.use << " ";
-        os << toPrint.ability << " ";
-        os << toPrint.timeParam << " ";
-        os << toPrint.xParam << " ";
-        os << toPrint.yParam;
+        os << toPrint.portalUsed << " ";
+        os << toPrint.abilityUsed << " ";
+        os << toPrint.abilityCursor << " ";
+        os << toPrint.timeCursor << " ";
+        os << toPrint.xCursor << " ";
+        os << toPrint.yCursor;
         return os;
     }
     inline friend std::istream& operator>>(std::istream& is, InputList& toRead)
@@ -124,16 +114,17 @@ private:
         is >> toRead.right;
         is >> toRead.up;
         is >> toRead.down;
-        is >> toRead.use;
-        int ability;
-        is >> ability;
-        toRead.ability = static_cast<Ability>(ability);
-        is >> toRead.timeParam;
-        is >> toRead.xParam;
-        is >> toRead.yParam;
+        is >> toRead.portalUsed;
+        is >> toRead.abilityUsed;
+        int abilityCursor;
+        is >> abilityCursor;
+        toRead.abilityCursor = static_cast<Ability>(abilityCursor);
+        is >> toRead.timeCursor;
+        is >> toRead.xCursor;
+        is >> toRead.yCursor;
         return is;
     }
 };
 }
-BOOST_CLASS_VERSION(hg::InputList, 1)
+BOOST_CLASS_VERSION(hg::InputList, 2)
 #endif //HG_INPUT_LIST_H

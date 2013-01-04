@@ -60,7 +60,12 @@ namespace {
         sf::RenderWindow& target,
         hg::mt::std::vector<hg::Glitz>::type const& glitz,
         hg::Wall const& wall);
-    void DrawTimeline(sf::RenderTarget& target, hg::TimeEngine::FrameListList const& waves, hg::FrameID playerFrame, int timelineLength);
+    void DrawTimeline(
+        sf::RenderTarget& target,
+        hg::TimeEngine::FrameListList const& waves,
+        hg::FrameID playerFrame,
+        hg::FrameID timeCursor,
+        int timelineLength);
     void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
     template<typename BidirectionalGuyRange>
     hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange);
@@ -319,7 +324,7 @@ int run_main(int /*argc*/, char const* const* /*argv*/)
 							currentReplayEnd = replay.end();
 							break;
 						//Save replay
-						case sf::Key::S:
+						case sf::Key::K:
 							//TODO - possible allow finer-grained access
 							//to replay data, even when the step has not
 							//yet completely finished. (ie allow access as soon as
@@ -397,40 +402,40 @@ hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
-void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups) {
+void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups, hg::Ability abilityCursor) {
     hg::mt::std::map<hg::Ability, int>::type mpickups(pickups);
     {
         std::stringstream timeJump;
-        timeJump << "timeJumps: " << mpickups[hg::TIME_JUMP];
+        timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << " timeJumps: " << mpickups[hg::TIME_JUMP];
         sf::String timeJumpGlyph(timeJump.str());
-        timeJumpGlyph.SetPosition(540, 350);
+        timeJumpGlyph.SetPosition(500, 350);
         timeJumpGlyph.SetSize(10.f);
         timeJumpGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(timeJumpGlyph);
     }
     {
         std::stringstream timeReverses;
-        timeReverses << "timeReverses: " << mpickups[hg::TIME_REVERSE];
+        timeReverses << (abilityCursor == hg::TIME_REVERSE ? "-->" : "   ") << "timeReverses: " << mpickups[hg::TIME_REVERSE];
         sf::String timeReversesGlyph(timeReverses.str());
-        timeReversesGlyph.SetPosition(540, 370);
+        timeReversesGlyph.SetPosition(500, 370);
         timeReversesGlyph.SetSize(10.f);
         timeReversesGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(timeReversesGlyph);
     }
     {
         std::stringstream timeGuns;
-        timeGuns << "timeGuns: " << mpickups[hg::TIME_GUN];
+        timeGuns << (abilityCursor == hg::TIME_GUN ? "-->" : "   ") << "timeGuns: " << mpickups[hg::TIME_GUN];
         sf::String timeGunsGlyph(timeGuns.str());
-        timeGunsGlyph.SetPosition(540, 390);
+        timeGunsGlyph.SetPosition(500, 390);
         timeGunsGlyph.SetSize(10.f);
         timeGunsGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(timeGunsGlyph);
     }
 	{
         std::stringstream timeGuns;
-        timeGuns << "timePauses: " << mpickups[hg::TIME_PAUSE];
+        timeGuns << (abilityCursor == hg::TIME_PAUSE ? "-->" : "   ") << "timePauses: " << mpickups[hg::TIME_PAUSE];
         sf::String timePausesGlyph(timeGuns.str());
-        timePausesGlyph.SetPosition(540, 410);
+        timePausesGlyph.SetPosition(500, 410);
         timePausesGlyph.SetSize(10.f);
         timePausesGlyph.SetColor(Colour(200, 200, 200));
         app.Draw(timePausesGlyph);
@@ -461,7 +466,7 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
             getGlitzForDirection(view, currentGuyDirection),
             timeEngine.getWall());
         
-        drawInventory(app, findCurrentGuy(view.getGuyInformation()).getPickups());
+        drawInventory(app, findCurrentGuy(view.getGuyInformation()).getPickups(), timeEngine.getReplayData().back().getAbilityCursor());
     }
     else {
         inertia.run();
@@ -489,7 +494,7 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
                  timeEngine.getWall());
         }
     }
-    DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame, timeEngine.getTimelineLength());
+    DrawTimeline(app, waveInfo.updatedFrames(), drawnFrame, timeEngine.getReplayData().back().getTimeCursor(), timeEngine.getTimelineLength());
     {
         std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
@@ -582,7 +587,8 @@ void DrawWall(
 void DrawTimeline(
     sf::RenderTarget& target,
     hg::TimeEngine::FrameListList const& waves,
-    hg::FrameID const playerFrame,
+    hg::FrameID playerFrame,
+    hg::FrameID timeCursor,
     int timelineLength)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
@@ -641,6 +647,15 @@ void DrawTimeline(
                 static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()+2)),
                 25.f,
                 Colour(200,200,0)));
+    }
+    if (timeCursor.isValidFrame()) {
+        target.Draw(
+            sf::Shape::Rectangle(
+                static_cast<float>(static_cast<int>(static_cast<double>(timeCursor.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()-1)),
+                10.f,
+                static_cast<float>(static_cast<int>(static_cast<double>(timeCursor.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()+2)),
+                25.f,
+                Colour(0,0,200)));
     }
 }
 
