@@ -71,7 +71,7 @@ InputList Input::AsInputList() const
         left,
         right,
         up,
-        down,
+        down == 1,
         space == 1,     //portalUsed
         mouseLeft == 1, //abilityUsed
         abilityCursor,  
