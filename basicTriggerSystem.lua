@@ -117,8 +117,7 @@ local function calculatePortals(protoPortals, collisions)
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
         
-        return
-        {
+		local retPortal =  {
             index = protoPortal.index,
             x = x,
             y = y,
@@ -137,8 +136,17 @@ local function calculatePortals(protoPortals, collisions)
             destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
             fallable = protoPortal.fallable,
-            winner = protoPortal.winner
+            winner = false
         }
+		
+		if protoPortal.winner then
+			retPortal.relativeTime = false
+			retPortal.timeDestination = 1
+			retPortal.relativeDirection = false
+		    retPortal.destinationDirection = 'reverse'
+		end
+		
+        return retPortal
     end
 
     local portals = {}
