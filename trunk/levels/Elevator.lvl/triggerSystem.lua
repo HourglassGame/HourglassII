@@ -124,7 +124,7 @@ local tempStore =
 		bts.basicTextGlitz{
 			x = 12.1 * 3200,
 			y = 13.2 * 3200,
-			text = "+10",
+			text = "-10",
 			size = 1400,
 			layer = 1600,
 			colour = {r = 255, g = 255, b = 255},
