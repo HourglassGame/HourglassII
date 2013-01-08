@@ -219,10 +219,34 @@ local function calculateCollisionGlitz(collision)
     return calculateBidirectionalGlitz(300, collision, {r = 50, g = 0, b = 0}, {r = 0, g = 0, b = 50})
 end
 
-local function calculatePortalGlitz(portal)
-    return calculateBidirectionalGlitz(350, portal, {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120})
+local function calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz)
+    local forGlitz, revGlitz = calculateBidirectionalGlitz(350, portal, {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120})
+	
+	-- Text does not support changing time directions
+	local text
+	if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
+		text = "Win"
+	elseif portal.relativeTime and portal.timeDestination > 0 then
+		text = "+" .. portal.timeDestination
+	else
+		text = portal.timeDestination
+	end
+	
+	local textGlitz = {
+		type = "text",
+		x = portal.x+portal.width/2-1600,
+		y = portal.y-2400,
+		text = text,
+		size = 2000,
+		layer = 440,
+		colour = {r = 0, g = 0, b = 0},
+	}
+	
+	table.insert(forwardsGlitz, forGlitz)
+	table.insert(reverseGlitz, revGlitz)
+	table.insert(forwardsGlitz, textGlitz)
+	table.insert(reverseGlitz, textGlitz)
 end
-
 
 
 local function calculateButtonStates(protoButtons, departures, triggerArrivals)
@@ -436,8 +460,17 @@ local function toggleSwitch(p)
     }  
 end
 
+
+local pickupNameMap = {
+	timeJump = "J", 
+	timeReverse = "R", 
+	timeGun = "G", 
+	timePause = "P"
+}
+
 local function pickup(p)
-    local active = true
+	
+	local active = true
     local triggerID = p.triggerID
     local proto = {
         timeDirection = p.timeDirection,
@@ -471,9 +504,20 @@ local function pickup(p)
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
             if active then
                 local forGlitz, revGlitz =
-                    calculateBidirectionalGlitz(430, proto, {r = 150, g = 10, b = 150}, {r = 150, g = 10, b = 150})
+                    calculateBidirectionalGlitz(430, proto, {r = 210, g = 10, b = 210}, {r = 210, g = 10, b = 210})
+				local textGlitz = {
+					type = "text",
+					x = proto.x+350,
+					y = proto.y-50,
+					text = pickupNameMap[p.pickupType],
+					size = 1400,
+					layer = 440,
+					colour = {r = 0, g = 0, b = 0},
+				}
                 table.insert(forwardsGlitz, forGlitz)
                 table.insert(reverseGlitz, revGlitz)
+				table.insert(forwardsGlitz, textGlitz)
+                table.insert(reverseGlitz, textGlitz)
             end
         end,
         fillTrigger = function(self, outputTriggers)
@@ -482,7 +526,7 @@ local function pickup(p)
     }
 end
 
-local function wire(p)
+local function wireGlitz(p)
 
 	local triggerID = p.triggerID
 	local useTriggerArrival = p.useTriggerArrival
@@ -494,7 +538,7 @@ local function wire(p)
     }
 
 	return {
-		calculateGlitz = function(self, physicsAffectingStuff, forwardsGlitz, reverseGlitz, triggerArrivals, outputTriggers)
+		calculateGlitz = function(self, forwardsGlitz, reverseGlitz, physicsAffectingStuff, triggerArrivals, outputTriggers)
 
 			local collisions = physicsAffectingStuff.collisions
 		
@@ -521,6 +565,42 @@ local function wire(p)
 			
 			table.insert(forwardsGlitz, forGlitz)
 			table.insert(reverseGlitz, revGlitz)
+		end,
+	}
+end
+
+local function basicRectangleGlitz(p)
+	local colour = p.colour
+	local layer = p.layer
+	local proto = {
+		x = p.x,
+		y = p.y,
+		width = p.width,
+		height = p.height,
+    }
+	return {
+		calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+			local forGlitz, revGlitz = calculateBidirectionalGlitz(layer, proto, colour, colour)
+			table.insert(forwardsGlitz, forGlitz)
+			table.insert(reverseGlitz, revGlitz)
+		end,
+	}
+end
+
+local function basicTextGlitz(p)
+	local proto = {
+		type = "text",
+		x = p.x,
+		y = p.y,
+		text = p.text,
+		size = p.size,
+		layer = p.layer,
+		colour = p.colour,
+	}
+	return {
+		calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+			table.insert(forwardsGlitz, proto)
+			table.insert(reverseGlitz, proto)
 		end,
 	}
 end
@@ -567,9 +647,7 @@ function calculatePhysicsAffectingStuff(tempStore)
         end
     
         for portal in list_iter(retv.portals) do
-            local forwardsGlitz, reverseGlitz = calculatePortalGlitz(portal) -- Done
-            table.insert(tempStore.forwardsGlitz, forwardsGlitz)
-            table.insert(tempStore.reverseGlitz, reverseGlitz)
+			calculatePortalGlitz(portal, tempStore.forwardsGlitz, tempStore.reverseGlitz) -- Done
         end
 		
 		tempStore.physicsAffectingStuff = retv
@@ -604,9 +682,11 @@ local function getDepartureInformation(tempStore)
             protoMutator:fillTrigger(tempStore.outputTriggers)
         end
 		
-		for protoGlitz in list_iter(tempStore.protoGlitz) do
-            protoGlitz:calculateGlitz(tempStore.physicsAffectingStuff, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.triggerArrivals, tempStore.outputTriggers)
-        end
+		if tempStore.protoGlitz then
+			for protoGlitz in list_iter(tempStore.protoGlitz) do
+				protoGlitz:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.physicsAffectingStuff, tempStore.triggerArrivals, tempStore.outputTriggers)
+			end
+		end
 
         return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
     end
@@ -627,7 +707,9 @@ return {
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
     pickup = pickup,
-	wire = wire,
+	wireGlitz = wireGlitz,
+	basicRectangleGlitz = basicRectangleGlitz,
+	basicTextGlitz = basicTextGlitz,
     mutateObject = mutateObject,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
     getDepartureInformation = getDepartureInformation,

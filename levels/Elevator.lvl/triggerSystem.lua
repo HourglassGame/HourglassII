@@ -73,7 +73,7 @@ local tempStore =
         },
     },
 	protoGlitz = {
-		bts.wire{
+		bts.wireGlitz{
 			x1 = {platform = 1, pos = 3.55 * 3200},
 			y1 = {platform = 1, pos = -0.55 * 3200 },
 			x2 = {platform = 1, pos = 3 * 3200},
@@ -81,37 +81,53 @@ local tempStore =
 			triggerID = 1,
 			useTriggerArrival = false
 		},
-		bts.wire{
+		bts.wireGlitz{
 			x1 = {platform = 1, pos = 3.45 * 3200},
 			y1 = {platform = 1, pos = -0.55 * 3200 },
 			x2 = {platform = nil, pos = 13.55 * 3200},
-			y2 = {platform = nil, pos = 13.55 * 3200},
+			y2 = {platform = nil, pos = 14.05 * 3200},
 			triggerID = 1,
 			useTriggerArrival = false
 		},
-		bts.wire{
+		bts.wireGlitz{
 			x1 = {platform = nil, pos = 13.55 * 3200},
-			y1 = {platform = nil, pos = 13.45 * 3200 },
+			y1 = {platform = nil, pos = 13.95 * 3200 },
 			x2 = {platform = nil, pos = 12.5 * 3200},
-			y2 = {platform = nil, pos = 13.55 * 3200},
+			y2 = {platform = nil, pos = 14.05 * 3200},
 			triggerID = 1,
 			useTriggerArrival = false
 		},
-		bts.wire{
+		bts.wireGlitz{
 			x1 = {platform = nil, pos = 11.45 * 3200},
-			y1 = {platform = nil, pos = 13.45 * 3200 },
+			y1 = {platform = nil, pos = 13.95 * 3200 },
 			x2 = {platform = nil, pos = 12.6 * 3200},
-			y2 = {platform = nil, pos = 13.55 * 3200},
+			y2 = {platform = nil, pos = 14.05 * 3200},
 			triggerID = 1,
 			useTriggerArrival = true
 		},
-		bts.wire{
+		bts.wireGlitz{
 			x1 = {platform = nil, pos = 11.45 * 3200},
 			y1 = {platform = nil, pos = 13 * 3200 },
 			x2 = {platform = nil, pos = 11.55 * 3200},
-			y2 = {platform = nil, pos = 13.55 * 3200},
+			y2 = {platform = nil, pos = 14.05 * 3200},
 			triggerID = 1,
 			useTriggerArrival = true
+		},
+		bts.basicRectangleGlitz{
+			x = 12.3 * 3200,
+			y = 13.7 * 3200,
+			width = 0.6 * 3200,
+			height = 0.6 * 3200,
+			layer = 1600,
+			colour = {r = 120, g = 120, b = 120},
+		},
+		bts.basicTextGlitz{
+			x = 12.1 * 3200,
+			y = 13.2 * 3200,
+			text = "+10",
+			size = 1400,
+			layer = 1600,
+			colour = {r = 255, g = 255, b = 255},
 		},
 	},
 }
