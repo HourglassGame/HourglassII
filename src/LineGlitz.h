@@ -3,6 +3,7 @@
 #include "GlitzImplementation.h"
 #include <boost/cast.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
+#include "LayeredCanvas.h"
 namespace hg {
 class LineGlitz: public GlitzImplementation {
 public:
