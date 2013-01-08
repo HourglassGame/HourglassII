@@ -133,6 +133,8 @@ local function calculatePortals(protoPortals, collisions)
             yDestination = protoPortal.yDestination,
             relativeTime = protoPortal.relativeTime,
             timeDestination = protoPortal.timeDestination,
+			relativeDirection = (protoPortal.relativeDirection ~= nil) or true,
+            destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
             fallable = protoPortal.fallable,
             winner = protoPortal.winner

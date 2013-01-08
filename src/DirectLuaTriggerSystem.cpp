@@ -183,6 +183,8 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
     int yDestination(readField<int>(L, "yDestination"));
     bool relativeTime(readField<bool>(L, "relativeTime"));
     int timeDestination(readField<int>(L, "timeDestination"));
+	bool relativeDirection(readField<bool>(L, "relativeDirection"));
+	TimeDirection destinationDirection(readField<TimeDirection>(L, "destinationDirection"));
     
     lua_getfield(L, -1, "illegalDestination");
     int illegalDestination;
@@ -210,6 +212,8 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
             xDestination, yDestination,
             relativeTime,
             timeDestination,
+			relativeDirection,
+			destinationDirection,
             illegalDestination,
             fallable,
             winner);
@@ -345,7 +349,7 @@ PhysicsAffectingStuff
             yspeed = <number>,
             width = <number>,
             height = <number>,
-            timeDirection = <'forwards' or 'backwards'>
+            timeDirection = <'forwards' or 'reverse'>
         }
     */
     //An array-table called "portals", containing
@@ -364,12 +368,14 @@ PhysicsAffectingStuff
             xspeed = <number>,
             yspeed = <number>,
             collisionOverlap = <number in range [0, 100]>,
-            timeDirection = <'forwards' or 'backwards'>,
+            timeDirection = <'forwards' or 'reverse'>,
             destinationIndex = <number between 1 and arrivalLocationsSize inclusive or nil>,
             xDestination = <number>,
             yDestination = <number>,
             relativeTime = <boolean>,
             timeDestination = <number>,
+			relativeDirection = <boolean>,
+            destinationDirection = <'forwards' or 'reverse'>,
             --nil indicates that no portals should be illegal 
             --for an object upon the arrival of that object
             --at its destination after travelling though this portal
@@ -389,7 +395,7 @@ PhysicsAffectingStuff
             xspeed = <number>
             yspeed = <number>
             collisionOverlap = <number in range [0, 100]>
-            timeDirection = <'forwards' or 'backwards'>
+            timeDirection = <'forwards' or 'reverse'>
         }
     */
     //An array-table called "arrivalLocations", containing
@@ -400,7 +406,7 @@ PhysicsAffectingStuff
             y = <number>,
             xspeed = <number>,
             yspeed = <number>,
-            timeDirection = <'forwards' or 'backwards'>
+            timeDirection = <'forwards' or 'reverse'>
         }
     */
     //IMPORTANT! - The "arrivalLocations" array-table is compulsary,

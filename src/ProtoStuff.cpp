@@ -101,6 +101,8 @@ PortalArea ProtoPortal::calculatePortalArea(
         yDestination_,
         relativeTime_,
         timeDestination_,
+        relativeDirection_,
+        destinationDirection_,
         illegalDestination_,
         fallable_,
         winner_);

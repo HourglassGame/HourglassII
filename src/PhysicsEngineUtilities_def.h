@@ -95,8 +95,8 @@ void makeBoxAndTimeWithPortalsAndMutators(
 		//arrivalLocation = newBox->getArrivalLocation();
 		timeDirection = newBox->getTimeDirection();
 	}
-
-    bool normalDeparture = timeDirection == oldTimeDirection;
+	
+	bool normalDeparture = timeDirection == oldTimeDirection;
 
 	// fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
@@ -117,7 +117,17 @@ void makeBoxAndTimeWithPortalsAndMutators(
                 		portals[i].getRelativeTime() ?
                     getArbitraryFrame(getUniverse(frame), getFrameNumber(frame) + portals[i].getTimeDestination()):
                     getArbitraryFrame(getUniverse(frame), portals[i].getTimeDestination()));
-                nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : FrameT();
+                
+				if (portals[i].getRelativeDirection())
+				{
+					timeDirection *= portals[i].getDestinationDirection();
+				}
+				else
+				{
+					timeDirection = portals[i].getDestinationDirection();
+				}
+				
+				nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : FrameT();
                 illegalPortal = portals[i].getIllegalDestination();
                 arrivalBasis = portals[i].getDestinationIndex();
 				std::cerr << "First y " << yspeed << "\n";
@@ -1111,6 +1121,16 @@ void guyStep(
                                     getArbitraryFrame(
                                         getUniverse(frame),
                                         nextPortal[j].getTimeDestination()));
+							
+							if (nextPortal[j].getRelativeDirection())
+							{
+								nextTimeDirection *= nextPortal[j].getDestinationDirection();
+							}
+							else
+							{
+								nextTimeDirection = nextPortal[j].getDestinationDirection();
+							}
+							
 							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();
@@ -1205,6 +1225,16 @@ void guyStep(
 									getArbitraryFrame(
 										getUniverse(frame),
 										nextPortal[j].getTimeDestination()));
+										
+							if (nextPortal[j].getRelativeDirection())
+							{
+								nextTimeDirection *= nextPortal[j].getDestinationDirection();
+							}
+							else
+							{
+								nextTimeDirection = nextPortal[j].getDestinationDirection();
+							}
+							
 							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();

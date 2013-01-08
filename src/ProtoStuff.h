@@ -37,6 +37,8 @@ struct ProtoPortal {
         int yDestination,
         bool relativeTime,
         int timeDestination,
+		bool relativeDirection,
+        TimeDirection destinationDirection,
         int illegalDestination,
         bool fallable,
         bool winner) :
@@ -51,6 +53,8 @@ struct ProtoPortal {
     yDestination_(yDestination),
     relativeTime_(relativeTime),
     timeDestination_(timeDestination),
+	relativeDirection_(relativeDirection),
+	destinationDirection_(destinationDirection),
     illegalDestination_(illegalDestination),
     fallable_(fallable),
     winner_(winner)
@@ -71,6 +75,8 @@ private:
     int yDestination_;
     bool relativeTime_;
     int timeDestination_;
+	bool relativeDirection_;
+    TimeDirection destinationDirection_;
     int illegalDestination_;
     bool fallable_;
     bool winner_;
