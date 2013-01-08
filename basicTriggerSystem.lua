@@ -83,9 +83,10 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
             return {position = position, velocity = velocity}
         end
         
-        local destination = 
-            triggerArrivals[self.buttonTriggerID][1] == 0 and
-                self.destinations.offDestination or self.destinations.onDestination
+        
+		local active = (self.buttonTriggerID and triggerArrivals[self.buttonTriggerID][1] == 1) 
+					or (self.triggerFunction and self.triggerFunction(triggerArrivals))
+		local destination = active and self.destinations.onDestination or self.destinations.offDestination
 
         local lastStateTrigger = triggerArrivals[self.lastStateTriggerID]
         
