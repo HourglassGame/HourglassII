@@ -307,7 +307,6 @@
 		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = SOURCE_ROOT; };
 		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
-		20556DB214C8EDC000F71CFC /* PlayerInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlayerInput.h; path = ../../../src/PlayerInput.h; sourceTree = "<group>"; };
 		20556DB314C90D2700F71CFC /* HourglassITriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HourglassITriggerSystem.h; path = ../../../src/HourglassITriggerSystem.h; sourceTree = "<group>"; };
 		20556DB414C90DF700F71CFC /* FacingDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacingDirection.h; path = ../../../src/FacingDirection.h; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -375,6 +374,7 @@
 		20945A23160BF751005A94EE /* lctype.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lctype.cpp; sourceTree = "<group>"; };
 		20945A25160BF7AB005A94EE /* lobject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lobject.cpp; sourceTree = "<group>"; };
 		2096CCA214D6EEB400C0A32C /* LuaError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaError.h; path = ../../../src/LuaError.h; sourceTree = "<group>"; };
+		209B3C85169BDFEC003C554D /* TextGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TextGlitz.h; path = ../../../src/TextGlitz.h; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
@@ -676,6 +676,7 @@
 				200E806614B4792500D054F4 /* Glitz.cpp */,
 				208FD88E14D163140089BC25 /* GlitzImplementation.h */,
 				201345E815E3694000E73DA5 /* LineGlitz.h */,
+				209B3C85169BDFEC003C554D /* TextGlitz.h */,
 				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
 				200E806B14B4792500D054F4 /* GuyOutputInfo.h */,
 				200E806A14B4792500D054F4 /* GuyOutputInfo.cpp */,
@@ -689,7 +690,6 @@
 				200E807314B4792500D054F4 /* InputList_fwd.h */,
 				200E807514B4792500D054F4 /* InputList.h */,
 				200E807414B4792500D054F4 /* InputList.cpp */,
-				20556DB214C8EDC000F71CFC /* PlayerInput.h */,
 				200E807614B4792500D054F4 /* InvalidLevelException.h */,
 				200E807714B4792500D054F4 /* Level_fwd.h */,
 				200E807914B4792500D054F4 /* Level.h */,
@@ -1052,7 +1052,7 @@
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -1110,7 +1110,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = "-Wstrict-overflow";
@@ -1125,7 +1124,7 @@
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -1183,7 +1182,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = "i386 x86_64";
@@ -1199,7 +1197,7 @@
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -1257,7 +1255,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				STRIP_INSTALLED_PRODUCT = NO;
 				VALID_ARCHS = "i386 x86_64";
@@ -1646,7 +1643,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				VALID_ARCHS = "i386 x86_64";
 				WARNING_CFLAGS = "-Wstrict-overflow";
@@ -1694,7 +1690,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "i386 x86_64";
@@ -1741,7 +1736,7 @@
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;

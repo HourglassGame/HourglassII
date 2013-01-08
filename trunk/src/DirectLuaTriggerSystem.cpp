@@ -10,6 +10,7 @@
 #include "LuaStackManager.h"
 #include "LuaSandbox.h"
 #include "RectangleGlitz.h"
+#include "TextGlitz.h"
 
 #include <boost/ref.hpp>
 
@@ -260,13 +261,27 @@ unsigned readColourField(lua_State* L, char const* fieldName)
 
 Glitz toGlitz(lua_State* L)
 {
-    int layer(readField<int>(L, "layer"));
-    int x(readField<int>(L, "x"));
-    int y(readField<int>(L, "y"));
-    int width(readField<int>(L, "width"));
-    int height(readField<int>(L, "height"));
-    unsigned colour(readColourField(L, "colour"));
-    return Glitz(multi_thread_new<RectangleGlitz>(layer, x, y, width, height, colour));
+    std::string type(readField<std::string>(L, "type"));
+    if (type == "rectangle") {
+        int layer(readField<int>(L, "layer"));
+        int x(readField<int>(L, "x"));
+        int y(readField<int>(L, "y"));
+        int width(readField<int>(L, "width"));
+        int height(readField<int>(L, "height"));
+        unsigned colour(readColourField(L, "colour"));
+        return Glitz(multi_thread_new<RectangleGlitz>(layer, x, y, width, height, colour));
+    }
+    if (type == "text") {
+        int layer(readField<int>(L, "layer"));
+        std::string text(readField<std::string>(L, "text"));
+        int x(readField<int>(L, "x"));
+        int y(readField<int>(L, "y"));
+        int size(readField<int>(L, "size"));
+        unsigned colour(readColourField(L, "colour"));
+        return Glitz(multi_thread_new<TextGlitz>(layer, text, x, y, size, colour));
+    }
+    std::cerr << "Unknown Glitz Type: " << type << "\n";
+    assert("Unknown Glitz Type" && false);
 }
 
 Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocationsSize)

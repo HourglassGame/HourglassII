@@ -42,6 +42,9 @@ public:
     //but since it can be pretty much
     //arbitrary drawing or other SFX/GFX (this is not yet implemented),
     //this ordering will too have to be pretty arbitrary unfortunately.
+    //RectangleGlitz = 0
+    //LineGlitz = 1
+    //TextGlitz = 2
     bool operator<(Glitz const& right) const {
         if (impl->order_ranking() == right.impl->order_ranking()) {
             return *impl < *right.impl;

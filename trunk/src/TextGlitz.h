@@ -1,55 +1,61 @@
-#ifndef HG_RECTANGLE_GLITZ_H
-#define HG_RECTANGLE_GLITZ_H
+#ifndef HG_TEXT_GLITZ_H
+#define HG_TEXT_GLITZ_H
 #include "GlitzImplementation.h"
 #include <boost/cast.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include "LayeredCanvas.h"
+#include <string>
 namespace hg {
-class RectangleGlitz: public GlitzImplementation {
+class TextGlitz: public GlitzImplementation {
 public:
-    RectangleGlitz(
+    TextGlitz(
         int layer,
+        std::string text,
         int x, int y,
-        int width, int height,
+        int size,
         unsigned colour) :
             layer(layer),
+            text(text),
             x(x), y(y),
-            width(width), height(height),
+            size(size),
             colour(colour) {}
     virtual void display(LayeredCanvas& canvas) const {
-        canvas.drawRect(layer, x/100., y/100., width/100., height/100., colour);
+        canvas.drawText(layer, text, x/100., y/100., size/100., colour);
     }
     virtual std::size_t clone_size() const {
         return sizeof *this;
     }
-    virtual RectangleGlitz* perform_clone(void* memory) const {
-        return new (memory) RectangleGlitz(*this);
+    virtual TextGlitz* perform_clone(void* memory) const {
+        return new (memory) TextGlitz(*this);
     }
+    
     virtual bool operator<(GlitzImplementation const& right) const {
-        RectangleGlitz const& actual_right(*boost::polymorphic_downcast<RectangleGlitz const*>(&right));
+        TextGlitz const& actual_right(*boost::polymorphic_downcast<TextGlitz const*>(&right));
         return asTie() < actual_right.asTie();
     }
     virtual bool operator==(GlitzImplementation const& o) const {
-        RectangleGlitz const& actual_other(*boost::polymorphic_downcast<RectangleGlitz const*>(&o));
+        TextGlitz const& actual_other(*boost::polymorphic_downcast<TextGlitz const*>(&o));
         return asTie() == actual_other.asTie();
     }
 private:
-    boost::tuple<int const&, int const&, int const&, int const&, int const&, unsigned const&> asTie() const {
-        return boost::tie(layer, x, y, width, height, colour);
+    boost::tuple<int const&, std::string const&, int const&, int const&, int const&, unsigned const&> asTie() const {
+        return boost::tie(layer, text, x, y, size, colour);
     }
     virtual int order_ranking() const {
-        return 0;
+        return 2;
     }
     int layer;
     
+    std::string text;
+    
     int x;
     int y;
-    int width;
-    int height;
+    
+    int size;
     
     //Colour packed as |RRRRRRRR|GGGGGGGG|BBBBBBBB|*unused*|
     //Why? -- because lua is all ints, and I can't be bothered with a better interface for such a temporary thing.
     unsigned colour;
 };
 }
-#endif //HG_RECTANGLE_GLITZ_H
+#endif //HG_TEXT_GLITZ_H

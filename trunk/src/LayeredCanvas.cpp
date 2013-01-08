@@ -54,6 +54,24 @@ namespace lc_internal {
         int width;
         unsigned colour;
     };
+    class TextDrawer : public Drawer {
+    public:
+        TextDrawer(std::string const& text, int x, int y, int size, unsigned colour) :
+            text(text), x(x), y(y), size(size), colour(colour)
+        {}
+        void drawTo(Canvas& canvas) const {
+            canvas.drawText(text, x, y, size, colour);
+        }
+        TextDrawer* clone() const {
+            return new TextDrawer(*this);
+        }
+    private:
+        std::string text;
+        int x;
+        int y;
+        int size;
+        unsigned colour;
+    };
     class DrawCall {
     public:
         DrawCall(int layer, Drawer* drawer) :drawer(drawer), layer(layer)
@@ -89,6 +107,9 @@ void LayeredCanvas::drawRect(int layer, int x, int y, int width, int height, uns
 }
 void LayeredCanvas::drawLine(int layer, int xa, int ya, int xb, int yb, int width, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new LineDrawer(xa,ya,xb,yb,width,colour)));
+}
+void LayeredCanvas::drawText(int layer, std::string const& text, int x, int y, int size, unsigned colour) {
+    drawCalls.push_back(DrawCall(layer, new TextDrawer(text,x,y,size,colour)));
 }
 Flusher LayeredCanvas::getFlusher() {
     return Flusher(this);
