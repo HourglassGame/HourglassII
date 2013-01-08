@@ -482,6 +482,49 @@ local function pickup(p)
     }
 end
 
+local function wire(p)
+
+	local triggerID = p.triggerID
+	local useTriggerArrival = p.useTriggerArrival
+	local proto = {
+        x1 = p.x1, 
+		y1 = p.y1,
+        x2 = p.x2,
+		y2 = p.y2
+    }
+
+	return {
+		calculateGlitz = function(self, physicsAffectingStuff, forwardsGlitz, reverseGlitz, triggerArrivals, outputTriggers)
+
+			local collisions = physicsAffectingStuff.collisions
+		
+			local x1 = proto.x1.pos + ((proto.x1.platform ~= nil and collisions[proto.x1.platform].x) or 0)
+			local y1 = proto.y1.pos + ((proto.y1.platform ~= nil and collisions[proto.y1.platform].y) or 0)
+			local x2 = proto.x2.pos + ((proto.x2.platform ~= nil and collisions[proto.x2.platform].x) or 0)
+			local y2 = proto.y2.pos + ((proto.y2.platform ~= nil and collisions[proto.y2.platform].y) or 0)
+		
+			local obj = {
+				x = (x1 < x2 and x1) or x2,
+				y = (y1 < y2 and y1) or y2,
+				width = (x1 < x2 and x2 - x1) or x1 - x2,
+				height = (y1 < y2 and y2 - y1) or y1 - y2,
+			}
+			
+			local forGlitz, revGlitz
+			
+			if (useTriggerArrival and triggerArrivals[triggerID][1] == 1) or 
+					(not useTriggerArrival and outputTriggers[triggerID][1] == 1) then
+				forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 0, g = 180, b = 0}, {r = 0, g = 180, b = 0})
+			else
+				forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 180, g = 0, b = 0}, {r = 180, g = 0, b = 0})
+			end
+			
+			table.insert(forwardsGlitz, forGlitz)
+			table.insert(reverseGlitz, revGlitz)
+		end,
+	}
+end
+
 local function calculateMutators(protoMutators, triggerArrivals)
     local mutators = {}
     --Ordered list of protoMutators that
@@ -512,7 +555,7 @@ function calculatePhysicsAffectingStuff(tempStore)
         retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions) -- Done
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, triggerArrivals) --TODO
         retv.arrivalLocations = calculateArrivalLocations(retv.portals) -- Done
-
+		
         calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions) -- Done
 
         fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions) -- Done
@@ -528,6 +571,8 @@ function calculatePhysicsAffectingStuff(tempStore)
             table.insert(tempStore.forwardsGlitz, forwardsGlitz)
             table.insert(tempStore.reverseGlitz, reverseGlitz)
         end
+		
+		tempStore.physicsAffectingStuff = retv
 
         return retv
     end
@@ -558,6 +603,10 @@ local function getDepartureInformation(tempStore)
             protoMutator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
             protoMutator:fillTrigger(tempStore.outputTriggers)
         end
+		
+		for protoGlitz in list_iter(tempStore.protoGlitz) do
+            protoGlitz:calculateGlitz(tempStore.physicsAffectingStuff, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.triggerArrivals, tempStore.outputTriggers)
+        end
 
         return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
     end
@@ -578,6 +627,7 @@ return {
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
     pickup = pickup,
+	wire = wire,
     mutateObject = mutateObject,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
     getDepartureInformation = getDepartureInformation,
