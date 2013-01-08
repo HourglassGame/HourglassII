@@ -1,4 +1,4 @@
-name = "Elevator"
+name = "Going Up"
 speedOfTime = 3
 timelineLength = 6000
 environment =
@@ -7,7 +7,7 @@ environment =
     wall =
     {
         width = 15,
-        height = 14,
+        height = 15,
         segmentSize = 3200,
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
         {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
@@ -23,6 +23,7 @@ environment =
         {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
         {1,1,1,1,1,1,1,1,1,1,0,0,0,1,1},
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     }
 }
 initialGuy =
