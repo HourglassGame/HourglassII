@@ -6,6 +6,28 @@ local function map(f, l)
     return r
 end
 
+local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseColour)
+    local sameDirectionGlitz = {
+        layer = layer,
+        type = "rectangle",
+        x = obj.x, y = obj.y,
+        width = obj.width, height = obj.height,
+        colour = forwardsColour
+    }
+    local oppositeDirectionGlitz = {
+        layer = layer,
+        type = "rectangle",
+        x = obj.x, y = obj.y,
+        width = obj.width, height = obj.height,
+        colour = reverseColour
+    }
+    if obj.timeDirection == 'forwards' then
+        return sameDirectionGlitz, oppositeDirectionGlitz
+    else
+        return oppositeDirectionGlitz, sameDirectionGlitz
+    end
+end
+
 local function calculateCollisions(protoCollisions, triggerArrivals)
     local function calculateCollision(self, triggerArrivals)
         local function solvePDEquation(destination, position, velocity)
@@ -112,7 +134,7 @@ local function snapAttachment(objectTimeDirection, attachment, collisions)
     return x, y, xspeed, yspeed
 end
 
-local function calculatePortals(protoPortals, collisions)
+local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, collisions, triggerArrivals)
     local function calculatePortal(protoPortal, collisions)
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
@@ -146,18 +168,52 @@ local function calculatePortals(protoPortals, collisions)
 		    retPortal.destinationDirection = 'reverse'
 		end
 		
-        return retPortal
+		local active = true
+		if protoPortal.triggerFunction then
+			active = protoPortal.triggerFunction(triggerArrivals)
+		end
+		
+        return retPortal, active
     end
 
-    local portals = {}
-    for i, protoPortal in ipairs(protoPortals) do
-        portals[i] = calculatePortal(protoPortal, collisions)
-    end
-    return portals
-end
+	local function calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
+	
+		local colour
+		if active then 
+			colour = {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120}
+		else
+			colour = {r = 50, g = 50, b = 50}, {r = 50, g = 50, b = 50}
+		end
 
-local function calculateArrivalLocations(portals)
-    local function calculateArrivalLocation(portal)
+		local forGlitz, revGlitz = calculateBidirectionalGlitz(350, portal, colour, colour)
+		
+		-- Text does not support changing time directions
+		local text
+		if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
+			text = "Win"
+		elseif portal.relativeTime and portal.timeDestination > 0 then
+			text = "+" .. portal.timeDestination
+		else
+			text = portal.timeDestination
+		end
+		
+		local textGlitz = {
+			type = "text",
+			x = portal.x+portal.width/2-1600,
+			y = portal.y-2400,
+			text = text,
+			size = 2000,
+			layer = 440,
+			colour = {r = 0, g = 0, b = 0},
+		}
+		
+		table.insert(forwardsGlitz, forGlitz)
+		table.insert(reverseGlitz, revGlitz)
+		table.insert(forwardsGlitz, textGlitz)
+		table.insert(reverseGlitz, textGlitz)
+	end
+	
+	local function calculateArrivalLocation(portal)
         return
         {
             x = portal.x,
@@ -167,7 +223,22 @@ local function calculateArrivalLocations(portals)
             timeDirection = portal.timeDirection
         }
     end
-    return map(calculateArrivalLocation, portals)
+	
+    local portals = {}
+	local portalCount = 0
+	local arrivalLocations = {}
+
+    for i, protoPortal in ipairs(protoPortals) do
+		local portal, active = calculatePortal(protoPortal, collisions)
+        calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
+		arrivalLocations[i] = calculateArrivalLocation(portal)
+		if active then
+			portalCount = portalCount + 1
+			portals[portalCount] = portal
+		end
+    end
+
+    return portals, arrivalLocations
 end
 
 local function calculateButtonPositionsAndVelocities(protoButtons, collisions)
@@ -193,61 +264,9 @@ local function list_iter(t)
     end
 end
 
-local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseColour)
-    local sameDirectionGlitz = {
-        layer = layer,
-        type = "rectangle",
-        x = obj.x, y = obj.y,
-        width = obj.width, height = obj.height,
-        colour = forwardsColour
-    }
-    local oppositeDirectionGlitz = {
-        layer = layer,
-        type = "rectangle",
-        x = obj.x, y = obj.y,
-        width = obj.width, height = obj.height,
-        colour = reverseColour
-    }
-    if obj.timeDirection == 'forwards' then
-        return sameDirectionGlitz, oppositeDirectionGlitz
-    else
-        return oppositeDirectionGlitz, sameDirectionGlitz
-    end
-end
-
 local function calculateCollisionGlitz(collision)
     return calculateBidirectionalGlitz(300, collision, {r = 50, g = 0, b = 0}, {r = 0, g = 0, b = 50})
 end
-
-local function calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz)
-    local forGlitz, revGlitz = calculateBidirectionalGlitz(350, portal, {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120})
-	
-	-- Text does not support changing time directions
-	local text
-	if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
-		text = "Win"
-	elseif portal.relativeTime and portal.timeDestination > 0 then
-		text = "+" .. portal.timeDestination
-	else
-		text = portal.timeDestination
-	end
-	
-	local textGlitz = {
-		type = "text",
-		x = portal.x+portal.width/2-1600,
-		y = portal.y-2400,
-		text = text,
-		size = 2000,
-		layer = 440,
-		colour = {r = 0, g = 0, b = 0},
-	}
-	
-	table.insert(forwardsGlitz, forGlitz)
-	table.insert(reverseGlitz, revGlitz)
-	table.insert(forwardsGlitz, textGlitz)
-	table.insert(reverseGlitz, textGlitz)
-end
-
 
 local function calculateButtonStates(protoButtons, departures, triggerArrivals)
     for button in list_iter(protoButtons) do
@@ -632,9 +651,13 @@ function calculatePhysicsAffectingStuff(tempStore)
         tempStore.additionalEndBoxes = {}
 
         retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals) -- Done
-        retv.portals = calculatePortals(tempStore.protoPortals, retv.collisions) -- Done
+        
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, triggerArrivals) --TODO
-        retv.arrivalLocations = calculateArrivalLocations(retv.portals) -- Done
+		
+		local portals, arrivalLocations = calculatePortals(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.protoPortals, retv.collisions, triggerArrivals) -- Done
+		
+		retv.portals = portals
+		retv.arrivalLocations = arrivalLocations
 		
         calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions) -- Done
 
@@ -644,10 +667,6 @@ function calculatePhysicsAffectingStuff(tempStore)
             local forwardsGlitz, reverseGlitz = calculateCollisionGlitz(collision) -- Done
             table.insert(tempStore.forwardsGlitz, forwardsGlitz)
             table.insert(tempStore.reverseGlitz, reverseGlitz)
-        end
-    
-        for portal in list_iter(retv.portals) do
-			calculatePortalGlitz(portal, tempStore.forwardsGlitz, tempStore.reverseGlitz) -- Done
         end
 		
 		tempStore.physicsAffectingStuff = retv
