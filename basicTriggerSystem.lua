@@ -183,7 +183,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
 		if active then 
 			colour = {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120}
 		else
-			colour = {r = 50, g = 50, b = 50}, {r = 50, g = 50, b = 50}
+			colour = {r = 70, g = 70, b = 70}, {r = 70, g = 70, b = 70}
 		end
 
 		local forGlitz, revGlitz = calculateBidirectionalGlitz(350, portal, colour, colour)
@@ -191,7 +191,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
 		-- Text does not support changing time directions
 		local text
 		if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
-			text = "Win"
+            text = active and "Win" or "Inactive"
 		elseif portal.relativeTime and portal.timeDestination > 0 then
 			text = "+" .. portal.timeDestination
 		else
