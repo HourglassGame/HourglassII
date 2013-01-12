@@ -419,6 +419,55 @@ local function stickySwitch(p)
     }
 end
 
+local function multiStickySwitch(p)
+    local PnV = {}
+    local state = nil
+	local individualState = {}
+	local buttons = p.buttons
+	local bCount = #p.buttons
+	local proto = {}
+    
+    local triggerID = p.triggerID
+	for i = 1, bCount do
+		proto[i] = {
+			timeDirection = p.timeDirection,
+			attachment = cloneAttachment(buttons[i].attachment),
+			width = buttons[i].width,
+			height = buttons[i].height,
+		}
+	end
+    
+    return {
+        calcPnV = function(self, collisions)
+            for i = 1, bCount do
+				PnV[i] = calculateButtonPositionAndVelocity(proto[i], collisions)
+			end
+        end,
+        updateState = function(self, departures, triggerArrivals)
+            state = triggerArrivals[triggerID][1] == 1
+			if not state then
+				state = true
+				for i = 1, bCount do
+					individualState[i] = checkPressed(constructDynamicArea(proto[i], PnV[i]), departures)
+					if not individualState[i] then 
+						state = false
+					end
+				end
+			end	
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            for i = 1, bCount do
+				local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], state or individualState[i]) -- Done
+				table.insert(forwardsGlitz, forGlitz)
+				table.insert(reverseGlitz, revGlitz)
+			end
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[triggerID] = {state and 1 or 0}
+        end,
+    }
+end
+
 local function toggleSwitch(p)
     local function cloneButtonSegment(q)
         return {
@@ -726,6 +775,7 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
+	multiStickySwitch = multiStickySwitch,
     pickup = pickup,
 	wireGlitz = wireGlitz,
 	basicRectangleGlitz = basicRectangleGlitz,
