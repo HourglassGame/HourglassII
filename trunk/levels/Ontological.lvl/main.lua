@@ -30,7 +30,7 @@ initialGuy =
         height = 3200,
         facing = "right",
         timeDirection = "forwards",
-        pickups = {timeJump = -1, timeReverse = 1, timeGun = 0, timePause = 0},
+        pickups = {timeJump = 0, timeReverse = 1, timeGun = 0, timePause = 0},
 		boxCarrying = false,
         boxCarrySize = 3200,
         boxCarryDirection = "forwards",
