@@ -603,6 +603,7 @@ end
 
 local function spikes(p)
 	local PnV = nil
+	local deathGlitz = {}
 	local proto = {
 		timeDirection = p.timeDirection,
 		attachment = cloneAttachment(p.attachment),
@@ -627,9 +628,21 @@ local function spikes(p)
 			local forGlitz, revGlitz = calculateBidirectionalGlitz(430, constructDynamicArea(proto, PnV), colour, colour)
 			table.insert(forwardsGlitz, forGlitz)
 			table.insert(reverseGlitz, revGlitz)
+			for i = 1, #deathGlitz do
+				local forGlitz, revGlitz = calculateBidirectionalGlitz(430, deathGlitz[i], {r = 255, g = 0, b = 0},  {r = 0, g = 255, b = 255})
+				table.insert(forwardsGlitz, forGlitz)
+				table.insert(reverseGlitz, revGlitz)
+			end
         end,
 		effect = function(self, dynamicObject)
             if dynamicObject.type == 'guy' then 
+				deathGlitz[#deathGlitz+1] = {
+					x = dynamicObject.x,
+					y = dynamicObject.y,
+					width = dynamicObject.width,
+					height = dynamicObject.height,
+					timeDirection = dynamicObject.timeDirection
+				}
 				return nil
 			else
 				return dynamicObject 
