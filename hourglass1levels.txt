@@ -1,0 +1,235 @@
+### 1. Easy start ###
+Summary: Introduces using past self to hold down button while future self goes through door.
+
+Status: Faithfully remade.
+
+
+### 2. Open and closed ###
+Summary: Similar to (1), introduces timing.
+
+Status: Faithfully remade.
+
+
+### 3. Standard box puzzle ###
+Summary: Introduces boxes.
+
+Status: Faithfully remade.
+
+
+### 4. Not so standard... ###
+Summary: Introduces taking boxes through portals.
+
+Status: Faithfully remade.
+
+
+### 5. Going up ###
+Summary: Many switch and timing elements. Only new thing is platform.
+
+Status: Faithfully remade.
+
+
+### 6. Stacked high ###
+Summary: Introduced infinite boxes.
+
+Status: Faithfully remade.
+
+
+### 7. Timebelt ###
+Summary: Introduced timeJump pickup and ability to move around obstructions.
+
+Status: Faithfully remade.
+
+
+### 8. All the way up ###
+Summary: Excersise in leaving guys on sitches to control platforms.
+
+Status: Not immediately worth remaking. No new features.
+
+
+### 9. One-way trip ###
+Summary: Similar to (4). Introduces laser switch.
+
+Status: Requires laser switch. Effectively a copy of (4).
+
+
+### 10. Triplicate ###
+Summary: Similar to (4) but with timeJump instead of portal.
+
+Status: Not currently worth remaking.
+
+
+### 11. Time and Space ###
+Summary: Introduces portal attached to platform.
+
+Status: A level such as this is worthwhile. More platform antics are possible.
+
+
+### 12. Fairly routine ###
+Summary: TimeJump is used to go around player created obstacle.
+
+Status: Simple enough to remake idea.
+
+
+### 13. Fish in a barrel ###
+Summary: Introduces timeGun to get a box past an obstruction.
+
+Status: Not remade, worth doing.
+
+
+### 14. Wrong way ###
+Summary: Player uses timeJump to go backwards up a down platform.
+
+Status: Level requires Game Pause and is harder to implement due to low jump height. Good UI tools would prevent chance of chronofrag in this level.
+
+
+### 15. Reverse ###
+Summary: Same as (14) yet implemented with timeReverse. Introduces timeReverse.
+
+Status: Can be made.
+
+
+### 16. Don't touch that ###
+Summary: Box duplication to pass spikes. Has timeJump.
+
+Status: Jump physics has changed so faithful implementation is problematic.
+
+
+### 17. It's a trap ###
+Summary: Level with timeJump and timeReverse at the same time.
+
+Status: Needs laser switch to remake. Worth doing.
+
+
+### 18. Alcatraz ###
+Summary: TimeJump into a moving box to win.
+
+Status: Requires Game Pause to reduce frustration. Jump physics changed but this can still be remade.
+
+
+### 19. Impossible? ###
+Summary: First programming level.
+
+Status: Faithfully remade.
+
+
+### 20. What goes down... ###
+Summary: First reverse box riding level. Box duplication via timeReverse.
+
+Status: Faithfully remade.
+
+
+### 21. ###
+Summary: 
+
+Status:
+
+
+### 22. ###
+Summary: 
+
+Status:
+
+
+### 23. ###
+Summary: 
+
+Status:
+
+
+### 24. ###
+Summary: 
+
+Status:
+
+
+### 25. ###
+Summary: 
+
+Status:
+
+
+### 26. ###
+Summary: 
+
+Status:
+
+
+### 27. ###
+Summary: 
+
+Status:
+
+
+### 28. ###
+Summary: 
+
+Status:
+
+
+### 29. ###
+Summary: 
+
+Status:
+
+
+### 30. ###
+Summary: 
+
+Status:
+
+
+### 31. ###
+Summary: 
+
+Status:
+
+
+### 32. ###
+Summary: 
+
+Status:
+
+
+### 33. ###
+Summary: 
+
+Status:
+
+
+### 34. ###
+Summary: 
+
+Status:
+
+
+### 35. ###
+Summary: 
+
+Status:
+
+
+### 36. Elevator ###
+Summary: 
+
+Status:
+
+
+###  ###
+Summary: 
+
+Status:
+
+
+###  ###
+Summary: 
+
+Status:
+
+
+###  ###
+Summary: 
+
+Status:
+
+
+
