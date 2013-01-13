@@ -65,8 +65,7 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            x = 8.25 * 3200,
-            y = 6 * 3200,
+            attachment = {platform = nil, xOffset = x = 8.25 * 3200, yOffset = 6 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -74,8 +73,7 @@ local tempStore =
 			pickupType = 'timeJump'
         },
 		bts.pickup{
-            x = 18.25 * 3200,
-            y = 12 * 3200,
+            attachment = {platform = nil, xOffset = 18.25 * 3200, yOffset = 12 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -91,7 +89,7 @@ local tempStore =
             timeDirection = 'forwards',
             triggerID = 1
         },
-		 bts.momentarySwitch{
+		bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 13 * 3200, yOffset = 9.75 * 3200},
             width = 3200,
             height = 800,

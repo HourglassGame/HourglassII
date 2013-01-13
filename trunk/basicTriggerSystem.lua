@@ -538,23 +538,25 @@ local pickupNameMap = {
 }
 
 local function pickup(p)
-	
+
+	local PnV = nil
 	local active = true
     local triggerID = p.triggerID
     local proto = {
         timeDirection = p.timeDirection,
-        x = p.x, y = p.y,
+        attachment = cloneAttachment(p.attachment),
         width = p.width,
         height = p.height,
     }
 
     return {
-        addMutator = function(self, triggerArrivals, mutators, activeMutators) 
-            if triggerArrivals[triggerID][1] == 1 then
-                mutators[#mutators+1] = {
-                    x = proto.x, y = proto.y,
+        addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
+			if triggerArrivals[triggerID][1] == 1 then
+				PnV = calculateButtonPositionAndVelocity(proto, collisions)
+				mutators[#mutators+1] = {
+                    x = PnV.x, y = PnV.y,
                     width = proto.width, height = proto.height,
-                    xspeed = 0, yspeed = 0,
+                    xspeed = PnV.xspeed, yspeed = PnV.yspeed,
                     collisionOverlap = 0,
                     timeDirection = proto.timeDirection
                 }
@@ -564,8 +566,12 @@ local function pickup(p)
             end
         end,
         effect = function(self, dynamicObject)
-            if not active then return dynamicObject end
-            if dynamicObject.type ~= 'guy' then return dynamicObject end
+            if not active then 
+				return dynamicObject 
+			end
+            if dynamicObject.type ~= 'guy' then 
+				return dynamicObject 
+			end
             dynamicObject.pickups[p.pickupType] = dynamicObject.pickups[p.pickupType] + 1
             active = false
             return dynamicObject
@@ -573,11 +579,11 @@ local function pickup(p)
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
             if active then
                 local forGlitz, revGlitz =
-                    calculateBidirectionalGlitz(430, proto, {r = 210, g = 10, b = 210}, {r = 210, g = 10, b = 210})
+                    calculateBidirectionalGlitz(430, constructDynamicArea(proto, PnV), {r = 210, g = 10, b = 210}, {r = 210, g = 10, b = 210})
 				local textGlitz = {
 					type = "text",
-					x = proto.x+350,
-					y = proto.y-50,
+					x = PnV.x+350,
+					y = PnV.y-50,
 					text = pickupNameMap[p.pickupType],
 					size = 1400,
 					layer = 440,
@@ -593,6 +599,45 @@ local function pickup(p)
             outputTriggers[triggerID] = {active and 1 or 0}
         end
     }
+end
+
+local function spikes(p)
+	local PnV = nil
+	local proto = {
+		timeDirection = p.timeDirection,
+		attachment = cloneAttachment(p.attachment),
+		width = p.width,
+		height = p.height,
+	}
+	
+	return {
+        addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
+            PnV = calculateButtonPositionAndVelocity(proto, collisions)
+			mutators[#mutators+1] = {
+				x = PnV.x, y = PnV.y,
+				width = proto.width, height = proto.height,
+				xspeed = PnV.xspeed, yspeed = PnV.yspeed,
+				collisionOverlap = 1, -- So that spikes just below the surface are not deadly
+				timeDirection = proto.timeDirection
+			}
+			activeMutators[#activeMutators+1] = self
+        end,
+		calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+			local colour = {r = 255, g = 0, b = 0}
+			local forGlitz, revGlitz = calculateBidirectionalGlitz(430, constructDynamicArea(proto, PnV), colour, colour)
+			table.insert(forwardsGlitz, forGlitz)
+			table.insert(reverseGlitz, revGlitz)
+        end,
+		effect = function(self, dynamicObject)
+            if dynamicObject.type == 'guy' then 
+				return nil
+			else
+				return dynamicObject 
+			end
+        end,
+		fillTrigger = function(self, outputTriggers)
+        end
+	}
 end
 
 local function boxOMatic(p)
@@ -634,7 +679,7 @@ local function boxOMatic(p)
 				newBox.xspeed = newBox.xspeed + PnV.xspeed
 				newBox.yspeed = newBox.yspeed + PnV.yspeed
 				
-				table.insert(additionalBoxes, newBox)
+				additionalBoxes[#additionalBoxes+1] = newBox
 			end
         end,
 	}
@@ -725,7 +770,7 @@ local function basicTextGlitz(p)
 	}
 end
 
-local function calculateMutators(protoMutators, triggerArrivals)
+local function calculateMutators(protoMutators, collisions, triggerArrivals)
     local mutators = {}
     --Ordered list of protoMutators that
     --actually added mutators to `mutators`.
@@ -733,7 +778,7 @@ local function calculateMutators(protoMutators, triggerArrivals)
     -- mutators and the responsible protoMutators)
     local activeMutators = {}
     for protoMutator in list_iter(protoMutators) do
-        protoMutator:addMutator(triggerArrivals, mutators, activeMutators)
+        protoMutator:addMutator(triggerArrivals, collisions, mutators, activeMutators)
     end
     return mutators, activeMutators
 end
@@ -753,7 +798,7 @@ function calculatePhysicsAffectingStuff(tempStore)
 
         retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals) -- Done
         
-        retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, triggerArrivals) --TODO
+        retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals) --TODO
 		
 		local portals, arrivalLocations = calculatePortals(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.protoPortals, retv.collisions, triggerArrivals) -- Done
 		
@@ -807,7 +852,7 @@ local function getDepartureInformation(tempStore)
 
         for protoMutator in list_iter(tempStore.protoMutators) do
             protoMutator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
-            protoMutator:fillTrigger(tempStore.outputTriggers)
+			protoMutator:fillTrigger(tempStore.outputTriggers)
         end
 		
 		if tempStore.protoGlitz then
@@ -836,6 +881,7 @@ return {
     stickySwitch = stickySwitch,
 	multiStickySwitch = multiStickySwitch,
     pickup = pickup,
+	spikes = spikes,
 	boxOMatic = boxOMatic,
 	wireGlitz = wireGlitz,
 	basicRectangleGlitz = basicRectangleGlitz,

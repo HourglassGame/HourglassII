@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 20.5 * 3200, yOffset = 11 * 3200},
+            attachment = {platform = nil, xOffset = 18 * 3200, yOffset = 8 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -18,27 +18,67 @@ local tempStore =
             timeDestination = 0,
             illegalDestination = 1,
             fallable = false,
-            winner = true,
+            winner = true
         }
     },
     protoCollisions = {
+        {
+            width = 2 * 3200,
+            height = 3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 6,
+            triggerFunction = function(triggers)
+				return triggers[3][1] == 1 and triggers[5][1] == 1
+			end,
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 20 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 5.25 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 22 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 5.25 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                }
+            }
+        },
 		{
-            width = 3200,
-            height = 4 * 3200,
+            width = 0,
+            height = 0,
             timeDirection = 'forwards',
             lastStateTriggerID = 7,
-			buttonTriggerID = 1,
+            buttonTriggerID = 4,
             destinations =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 6 * 3200,
-                        maxSpeed = 300,
+                        desiredPosition = 20 * 3200,
+                        maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = -1 * 3200,
+                        desiredPosition = 10.5 * 3200,
                         maxSpeed = 300,
                         acceleration = 50,
                         deceleration = 50
@@ -46,13 +86,13 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 6 * 3200,
-                        maxSpeed = 300,
+                        desiredPosition = 20 * 3200,
+                        maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 3 * 3200,
+                        desiredPosition = 10 * 3200,
                         maxSpeed = 300,
                         acceleration = 50,
                         deceleration = 50
@@ -60,130 +100,52 @@ local tempStore =
                 }
             }
         },
-		{
-            width = 3200,
-            height = 4 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 8,
-			buttonTriggerID = 2,
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 12 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    },
-                    yDestination = {
-                        desiredPosition = 1 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 12 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    },
-                    yDestination = {
-                        desiredPosition = 5 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    }
-                }
-            }
-        },
-		{
-            width = 3200,
-            height = 4 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 9,
-			buttonTriggerID = 3,
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 18 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    },
-                    yDestination = {
-                        desiredPosition = 3 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 18 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    },
-                    yDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
-                    }
-                }
-            }
-        }
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 5.25 * 3200},
+            attachment = {platform = nil, xOffset = 17.5 * 3200, yOffset = 4.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
-            triggerID = 4,
-			pickupType = 'timeJump'
+            triggerID = 1,
+			pickupType = 'timeReverse'
         },
 		bts.pickup{
-            attachment = {platform = nil, xOffset = 9.25 * 3200, yOffset = 7.25 * 3200},
+            attachment = {platform = nil, xOffset = 18.5 * 3200, yOffset = 4.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
-            triggerID = 5,
-			pickupType = 'timeJump'
+            triggerID = 2,
+			pickupType = 'timeReverse'
         },
-		bts.pickup{
-            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 9.25 * 3200},
-            width = 1600,
-            height = 1600,
+		bts.spikes{
+			attachment = {platform = 2, xOffset = 0 * 3200, yOffset = -0.5 * 3200},
+            width = 4 * 3200,
+            height = 0.5 * 3200,
             timeDirection = 'forwards',
-            triggerID = 6,
-			pickupType = 'timeGun'
-        }
+		},
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 3 * 3200, yOffset = 6.75 * 3200},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 1
-        },
-		bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 9 * 3200, yOffset = 8.75 * 3200},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 2
-        },
-		bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 15 * 3200, yOffset = 10.75 * 3200},
+            attachment = {platform = nil, xOffset = 5.5 * 3200, yOffset = 12.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
             triggerID = 3
+        },
+		bts.momentarySwitch{
+            attachment = {platform = nil, xOffset = 7.5 * 3200, yOffset = 11.75 * 3200},
+            width = 3200,
+            height = 800,
+            timeDirection = 'forwards',
+            triggerID = 4
+        },
+		bts.momentarySwitch{
+            attachment = {platform = nil, xOffset = 9.5 * 3200, yOffset = 12.75 * 3200},
+            width = 3200,
+            height = 800,
+            timeDirection = 'forwards',
+            triggerID = 5
         },
     }
 }
