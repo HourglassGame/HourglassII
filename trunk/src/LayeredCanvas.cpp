@@ -18,7 +18,7 @@ namespace lc_internal {
     };
     class RectDrawer : public Drawer {
     public:
-        RectDrawer(int x, int y, int width, int height, unsigned colour) :
+        RectDrawer(float x, float y, float width, float height, unsigned colour) :
             x(x), y(y), width(width), height(height), colour(colour)
         {
         }
@@ -29,15 +29,15 @@ namespace lc_internal {
             return new RectDrawer(*this);
         }
     private:
-        int x;
-        int y;
-        int width;
-        int height;
+        float x;
+        float y;
+        float width;
+        float height;
         unsigned colour;
     };
     class LineDrawer : public Drawer {
     public:
-        LineDrawer(int xa, int ya, int xb, int yb, int width, unsigned colour) :
+        LineDrawer(float xa, float ya, float xb, float yb, float width, unsigned colour) :
             xa(xa), ya(ya), xb(xb), yb(yb), width(width), colour(colour)
         {}
         void drawTo(Canvas& canvas) const {
@@ -47,16 +47,16 @@ namespace lc_internal {
             return new LineDrawer(*this);
         }
     private:
-        int xa;
-        int ya;
-        int xb;
-        int yb;
-        int width;
+        float xa;
+        float ya;
+        float xb;
+        float yb;
+        float width;
         unsigned colour;
     };
     class TextDrawer : public Drawer {
     public:
-        TextDrawer(std::string const& text, int x, int y, int size, unsigned colour) :
+        TextDrawer(std::string const& text, float x, float y, float size, unsigned colour) :
             text(text), x(x), y(y), size(size), colour(colour)
         {}
         void drawTo(Canvas& canvas) const {
@@ -67,9 +67,9 @@ namespace lc_internal {
         }
     private:
         std::string text;
-        int x;
-        int y;
-        int size;
+        float x;
+        float y;
+        float size;
         unsigned colour;
     };
     class DrawCall {
@@ -102,13 +102,13 @@ using namespace lc_internal;
 LayeredCanvas::LayeredCanvas(Canvas& canvas) : canvas(&canvas), drawCalls()
 {
 }
-void LayeredCanvas::drawRect(int layer, int x, int y, int width, int height, unsigned colour) {
+void LayeredCanvas::drawRect(int layer, float x, float y, float width, float height, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new RectDrawer(x, y, width, height, colour)));
 }
-void LayeredCanvas::drawLine(int layer, int xa, int ya, int xb, int yb, int width, unsigned colour) {
+void LayeredCanvas::drawLine(int layer, float xa, float ya, float xb, float yb, float width, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new LineDrawer(xa,ya,xb,yb,width,colour)));
 }
-void LayeredCanvas::drawText(int layer, std::string const& text, int x, int y, int size, unsigned colour) {
+void LayeredCanvas::drawText(int layer, std::string const& text, float x, float y, float size, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new TextDrawer(text,x,y,size,colour)));
 }
 Flusher LayeredCanvas::getFlusher() {

@@ -17,7 +17,7 @@ public:
             width(width), height(height),
             colour(colour) {}
     virtual void display(LayeredCanvas& canvas) const {
-        canvas.drawRect(layer, x/100., y/100., width/100., height/100., colour);
+        canvas.drawRect(layer, x/100.f, y/100.f, width/100.f, height/100.f, colour);
     }
     virtual std::size_t clone_size() const {
         return sizeof *this;

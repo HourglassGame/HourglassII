@@ -20,7 +20,7 @@ public:
             size(size),
             colour(colour) {}
     virtual void display(LayeredCanvas& canvas) const {
-        canvas.drawText(layer, text, x/100., y/100., size/100., colour);
+        canvas.drawText(layer, text, x/100.f, y/100.f, size/100.f, colour);
     }
     virtual std::size_t clone_size() const {
         return sizeof *this;

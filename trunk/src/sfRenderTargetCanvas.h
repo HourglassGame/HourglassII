@@ -13,15 +13,15 @@ public:
     explicit sfRenderTargetCanvas(sf::RenderTarget& target) :
     target_(&target)
     {}
-    virtual void drawRect(int x, int y, int width, int height, unsigned colour)
+    virtual void drawRect(float x, float y, float width, float height, unsigned colour)
     {
         target_->Draw(sf::Shape::Rectangle(x, y, x + width, y + height, interpretAsColour(colour)));
     }
-    virtual void drawLine(int xa, int ya, int xb, int yb, int width, unsigned colour)
+    virtual void drawLine(float xa, float ya, float xb, float yb, float width, unsigned colour)
     {
         target_->Draw(sf::Shape::Line(xa, ya, xb, yb, width, interpretAsColour(colour)));
     }
-    virtual void drawText(std::string const& text, int x, int y, int size, unsigned colour)
+    virtual void drawText(std::string const& text, float x, float y, float size, unsigned colour)
     {
         sf::String glyphs(text);
         glyphs.SetPosition(x, y);

@@ -19,7 +19,7 @@ public:
             width(width),
             colour(colour) {}
     virtual void display(LayeredCanvas& canvas) const {
-        canvas.drawLine(layer, xa/100., ya/100., xb/100., yb/100., width/100., colour);
+        canvas.drawLine(layer, xa/100.f, ya/100.f, xb/100.f, yb/100.f, width/100.f, colour);
     }
     virtual std::size_t clone_size() const {
         return sizeof(*this);
