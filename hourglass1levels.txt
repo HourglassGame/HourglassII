@@ -73,7 +73,7 @@ Status: Simple enough to remake idea.
 ### 13. Fish in a barrel ###
 Summary: Introduces timeGun to get a box past an obstruction.
 
-Status: Not remade, worth doing.
+Status: Faithfully remade.
 
 
 ### 14. Wrong way ###
@@ -160,10 +160,10 @@ Summary:
 Status:
 
 
-### 28. ###
-Summary: 
+### 28. Locked in ###
+Summary: Programming past guy to get pickup such that present guy can escape.
 
-Status:
+Status: Reduced jump height poses a problem for jumping up to the top level with one box. This has been remade with two boxes.
 
 
 ### 29. ###
