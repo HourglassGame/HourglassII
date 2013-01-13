@@ -291,23 +291,23 @@ local function calculateButtonPositionAndVelocity(protoButton, collisions)
 end
 
 local function temporalIntersectingExclusive(a, b)
-    local xa, ya
-    if a.timeDirection == 'forwards' then
-        xa = a.x
-        ya = a.y
-    else
-        xa = a.x - a.xspeed
-        ya = a.y - a.yspeed
-    end
+    local xa, ya = a.x, a.y
+    --if a.timeDirection == 'forwards' then
+    --    xa = a.x
+    --    ya = a.y
+    --else
+    --    xa = a.x - a.xspeed
+    --    ya = a.y - a.yspeed
+    --end
     local wa, ha = a.width, a.height
-    local xb, yb
-    if b.timeDirection == 'forwards' then
-        xb = b.x
-        yb = b.y
-    else
-        xb = b.x - b.xspeed
-        yb = b.y - b.yspeed
-    end
+    local xb, yb = b.x, b.y
+    --if b.timeDirection == 'forwards' then
+    --    xb = b.x
+    --    yb = b.y
+    --else
+    --    xb = b.x - b.xspeed
+    --    yb = b.y - b.yspeed
+    --end
     local wb, hb = b.width, b.height
     return
         (
