@@ -1,5 +1,6 @@
 #include "Hg_Input.h"
 #include "InputList.h"
+#include "Maths.h"
 namespace hg
 {
 static void updatePress(int& var, bool inputState)
@@ -59,7 +60,7 @@ void Input::updateState(const sf::Input& input, int mouseXOfEndOfTimeline, doubl
         abilityCursor = TIME_PAUSE;
     }
     if (input.IsMouseButtonDown(sf::Mouse::Right)) {
-        mouseTimelinePosition = static_cast<int>(input.GetMouseX()*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
+        mouseTimelinePosition = flooredModulo(static_cast<int>(input.GetMouseX()*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
     mouseX = input.GetMouseX()*mouseScale;
     mouseY = input.GetMouseY()*mouseScale;
