@@ -595,9 +595,55 @@ local function pickup(p)
     }
 end
 
+local function boxOMatic(p)
+	local PnV = nil
+	local boxCreationFunction = p.boxCreationFunction
+	local proto = {
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        width = p.width,
+        height = p.height,
+    }
+	
+	return {
+		calcPnV = function(self, collisions)
+            PnV = calculateButtonPositionAndVelocity(proto, collisions) --Done
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+		    local colour = {r = 150, g = 150, b = 255}
+            local forGlitz, revGlitz = calculateBidirectionalGlitz(800, constructDynamicArea(proto, PnV), colour, colour)
+			local textGlitz = {
+					type = "text",
+					x = PnV.x+150,
+					y = PnV.y+100,
+					text = "Box\n  O\nMatic",
+					size = 1200,
+					layer = 850,
+					colour = {r = 0, g = 0, b = 0},
+				}
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+			table.insert(forwardsGlitz, textGlitz)
+			table.insert(reverseGlitz, textGlitz)
+        end,
+        getAdditionalBoxes = function(self, triggers, frameNumber, additionalBoxes)
+            local newBox = boxCreationFunction(triggers, frameNumber)
+			if newBox then
+				newBox.x = newBox.x + PnV.x
+				newBox.y = newBox.y + PnV.y
+				newBox.xspeed = newBox.xspeed + PnV.xspeed
+				newBox.yspeed = newBox.yspeed + PnV.yspeed
+				
+				table.insert(additionalBoxes, newBox)
+			end
+        end,
+	}
+end
+
 local function wireGlitz(p)
 
 	local triggerID = p.triggerID
+	local triggerFunction = p.triggerFunction
 	local useTriggerArrival = p.useTriggerArrival
 	local proto = {
         x1 = p.x1, 
@@ -624,9 +670,14 @@ local function wireGlitz(p)
 			}
 			
 			local forGlitz, revGlitz
+			local active = false
+			if triggerID then
+				active = (useTriggerArrival and triggerArrivals[triggerID][1] == 1) or (not useTriggerArrival and outputTriggers[triggerID][1] == 1)
+			elseif triggerFunction then
+				active = triggerFunction(triggerArrivals, outputTriggers)
+			end
 			
-			if (useTriggerArrival and triggerArrivals[triggerID][1] == 1) or 
-					(not useTriggerArrival and outputTriggers[triggerID][1] == 1) then
+			if active then
 				forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 0, g = 180, b = 0}, {r = 0, g = 180, b = 0})
 			else
 				forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 180, g = 0, b = 0}, {r = 180, g = 0, b = 0})
@@ -719,6 +770,14 @@ function calculatePhysicsAffectingStuff(tempStore)
             table.insert(tempStore.reverseGlitz, reverseGlitz)
         end
 		
+		if tempStore.protoBoxCreators then
+			for protoBoxCreator in list_iter(tempStore.protoBoxCreators) do
+				protoBoxCreator:calcPnV(retv.collisions)
+				protoBoxCreator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
+				protoBoxCreator:getAdditionalBoxes(tempStore.triggerArrivals, tempStore.frameNumber, retv.additionalBoxes)
+			end
+		end
+		
 		tempStore.physicsAffectingStuff = retv
 
         return retv
@@ -777,6 +836,7 @@ return {
     stickySwitch = stickySwitch,
 	multiStickySwitch = multiStickySwitch,
     pickup = pickup,
+	boxOMatic = boxOMatic,
 	wireGlitz = wireGlitz,
 	basicRectangleGlitz = basicRectangleGlitz,
 	basicTextGlitz = basicTextGlitz,
