@@ -4,9 +4,9 @@
 namespace hg {
     class Canvas {
     public:
-        virtual void drawRect(int x, int y, int width, int height, unsigned colour) = 0;
-        virtual void drawLine(int xa, int ya, int xb, int yb, int width, unsigned colour) = 0;
-        virtual void drawText(std::string const& text, int x, int y, int size, unsigned colour) = 0;
+        virtual void drawRect(float x, float y, float width, float height, unsigned colour) = 0;
+        virtual void drawLine(float xa, float ya, float xb, float yb, float width, unsigned colour) = 0;
+        virtual void drawText(std::string const& text, float x, float y, float size, unsigned colour) = 0;
     protected:
         ~Canvas() {}
     };
