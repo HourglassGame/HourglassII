@@ -853,7 +853,7 @@ bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h)
 		{
 			return std::abs(x - (x1 + w/2)) < std::abs(y - (y1 + w/2));
 		}
-		else if  (x < x1 + w - h/2) // middle
+		else if  (y < y1 + h - w/2) // middle
 		{
 			return false;
 		}
