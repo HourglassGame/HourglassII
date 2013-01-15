@@ -130,7 +130,6 @@ void makeBoxAndTimeWithPortalsAndMutators(
 				nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : FrameT();
                 illegalPortal = portals[i].getIllegalDestination();
                 arrivalBasis = portals[i].getDestinationIndex();
-				std::cerr << "First y " << yspeed << "\n";
                 x = x - portals[i].getX() + portals[i].getXdestination();
                 y = y - portals[i].getY() + portals[i].getYdestination();
 				if (portals[i].getTimeDirection() * timeDirection == hg::FORWARDS)
@@ -143,7 +142,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
                 	xspeed = xspeed + portals[i].getXspeed();
 					yspeed = yspeed + portals[i].getYspeed();
                 }
-				std::cerr << "yspeed " << yspeed << "\n";
+				//std::cerr << "yspeed " << yspeed << "\n";
                 normalDeparture = false;
                 break;
             }
@@ -1522,8 +1521,6 @@ void boxCollisionAlogorithm(
 				x[i] = relx + oldBoxList[i].getXspeed();
 				y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
 			}
-			std::cerr << "yTemp " << yTemp[i] << "\n";
-			std::cerr << "Second y " << y[i] << "\n";
         }
         size[i] = oldBoxList[i].getSize();
 	}
