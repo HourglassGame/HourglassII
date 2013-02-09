@@ -8,18 +8,19 @@ Integral iabs(Integral a) {
 }
 
 //Returns floor(a/n) (with the division done exactly).
-//Assumes that the operator/ of Integral performs truncated
-//division.
+//Let ÷ be mathematical division, and / be C++ division.
+//We know
+//    a÷b = a/b + f (f is the remainder, not all divisions have exact Integral results)
+//and
+//    (a/b)*b + a%b == a (from the standard).
+//Together, these imply (through algebraic manipulation)
+//    sign(f) == sign(a%b)*sign(b)
+//We want the remainder (f) to always be >=0 (by definition of flooredDivision),
+//so when sign(f) < 0, we subtract 1 from a/n to make f > 0.
 template<typename Integral>
 Integral flooredDivision(Integral a, Integral n) {
-    //Assumes Integral division truncates.
     Integral q(a/n);
-    if ((a < 0 && !(n < 0)) || (n < 0 && !(a < 0))) {
-        //Take absolute value to avoid unspecified behaviour in C++03
-        if (iabs(a) % iabs(n) != 0) {
-            --q;
-        }
-    }
+    if ((a%n < 0 && n > 0) || (a%n > 0 && n < 0))  --q;
     return q;
 }
 
@@ -27,7 +28,7 @@ Integral flooredDivision(Integral a, Integral n) {
 //looping topologies. The result will always be between 0 and the
 //denominator, and will loop in a natural fashion (rather than swapping
 //the looping direction over the zero point (as in C++11),
-//or being unspecified (as in earlier C++).
+//or being unspecified (as in earlier C++)).
 //Returns x such that:
 //
 //Real a = Real(numerator)
