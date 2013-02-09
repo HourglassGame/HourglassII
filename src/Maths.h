@@ -7,8 +7,8 @@ Integral iabs(Integral a) {
     return a < 0 ? -a : a;
 }
 
-//Returns floor(a/n) (with the division done exactly).
 //Let ÷ be mathematical division, and / be C++ division.
+//Returns floor(a÷n).
 //We know
 //    a÷b = a/b + f (f is the remainder, not all divisions have exact Integral results)
 //and
