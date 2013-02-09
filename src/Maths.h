@@ -20,7 +20,7 @@ Integral iabs(Integral a) {
 template<typename Integral>
 Integral flooredDivision(Integral a, Integral n) {
     Integral q(a/n);
-    if ((a%n < 0 && n > 0) || (a%n > 0 && n < 0))  --q;
+    if ((a%n < 0 && n > 0) || (a%n > 0 && n < 0)) --q;
     return q;
 }
 
