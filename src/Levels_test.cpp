@@ -10,6 +10,13 @@ namespace hg {
 namespace levels_test {
 namespace {
 bool testLevels() {
+    //Iterate the `levels` folder.
+    //For every *.lvl that does not
+    //contain a file called "DoNotTest",
+    //load the level and run the given replay to exhaustion.
+    //For the test to pass, every replay must result in
+    //a win in the corresponding level.
+    //TODO
     return true;
 }
 
