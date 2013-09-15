@@ -772,9 +772,9 @@ void DrawTimelineContents(
     hg::UniverseID universe(timeEngine.getTimelineLength());
     
     namespace num = boost::numeric::ublas;
-    num::vector<double> const posStart(createVector3(128,0,0));
-    num::vector<double> const xMax(createVector3(128,255,0));
-    num::vector<double> const yMax(createVector3(128,0,255));
+    num::vector<double> const posStart(createVector3(255,0,0));
+    num::vector<double> const xMax(createVector3(255,255,127.5));
+    num::vector<double> const yMax(createVector3(0,0,128.5));
     
     num::vector<double> const xDif(xMax - posStart);
     num::vector<double> const yDif(yMax - posStart);
