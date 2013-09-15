@@ -766,7 +766,14 @@ void DrawTimelineContents(
             
             double x = hg::clamp(0., 255.*guy.getX()/timeEngine.getWall().roomWidth(), 255.);
             double y = hg::clamp(0., 255.*guy.getY()/timeEngine.getWall().roomHeight(), 255.);
-            timelineContents.SetPixel(left, top, guy.getBoxCarrying() ? Colour(x, y, 255) : Colour(x,y,0));
+            if (guy.getBoxCarrying())
+            {
+            	timelineContents.SetPixel(left, top, guy.getBoxCarryDirection() == guy.getTimeDirection() ? Colour(255, x, y) : Colour(0, x, y));
+            }
+            else
+            {
+            	 timelineContents.SetPixel(left, top, Colour(128,x,y));
+            }
         }
     }
     target.Draw(sf::Sprite(timelineContents, sf::Vector2f(0, 10.f)));

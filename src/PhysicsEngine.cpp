@@ -31,7 +31,7 @@ PhysicsEngine::PhysicsEngine(
 }
 
 static GuyOutputInfo constructGuyOutputInfo(Guy const& guy) {
-    return GuyOutputInfo(guy.getIndex(), guy.getTimeDirection(), guy.getPickups(), guy.getBoxCarrying(), guy.getX(), guy.getY());
+    return GuyOutputInfo(guy.getIndex(), guy.getTimeDirection(), guy.getPickups(), guy.getBoxCarrying(), guy.getBoxCarryDirection(), guy.getX(), guy.getY());
 }
 
 struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame *> >
