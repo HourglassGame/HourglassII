@@ -127,7 +127,7 @@ public:
     bool operator==(GuyConstPtr const& o) const { return *guy_ == *o.guy_; }
     bool operator<(GuyConstPtr const& o) const { return *guy_ < *o.guy_; }
 private:
-    Guy const* guy_;
+    Guy const *guy_;
 };
 
 template<>

@@ -4,11 +4,11 @@ ConcurrentTimeSet::ConcurrentTimeSet() :
         set_()
 {
 }
-void ConcurrentTimeSet::add(Frame* toAdd)
+void ConcurrentTimeSet::add(Frame *toAdd)
 {
     set_.insert(SetType::value_type(toAdd, ConcurrentTimeSet::Empty()));
 }
-void ConcurrentTimeSet::remove(Frame* toRemove)
+void ConcurrentTimeSet::remove(Frame *toRemove)
 {
     set_.erase(toRemove);
 }

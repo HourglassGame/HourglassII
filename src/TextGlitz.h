@@ -25,16 +25,16 @@ public:
     virtual std::size_t clone_size() const {
         return sizeof *this;
     }
-    virtual TextGlitz* perform_clone(void* memory) const {
+    virtual TextGlitz* perform_clone(void *memory) const {
         return new (memory) TextGlitz(*this);
     }
     
     virtual bool operator<(GlitzImplementation const& right) const {
-        TextGlitz const& actual_right(*boost::polymorphic_downcast<TextGlitz const*>(&right));
+        TextGlitz const& actual_right(*boost::polymorphic_downcast<TextGlitz const *>(&right));
         return asTie() < actual_right.asTie();
     }
     virtual bool operator==(GlitzImplementation const& o) const {
-        TextGlitz const& actual_other(*boost::polymorphic_downcast<TextGlitz const*>(&o));
+        TextGlitz const& actual_other(*boost::polymorphic_downcast<TextGlitz const *>(&o));
         return asTie() == actual_other.asTie();
     }
 private:

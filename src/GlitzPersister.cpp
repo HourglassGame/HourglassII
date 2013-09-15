@@ -10,7 +10,7 @@ GlitzPersister::GlitzPersister(
         framesLeft_(lifetime), timeDirection_(timeDirection)
 {
 }
-ObjectAndTime<GlitzPersister, Frame*> GlitzPersister::runStep(Frame* frame) const
+ObjectAndTime<GlitzPersister, Frame *> GlitzPersister::runStep(Frame *frame) const
 {
     return ObjectAndTime<GlitzPersister, Frame*>(
         GlitzPersister(

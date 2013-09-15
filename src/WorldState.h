@@ -80,14 +80,14 @@ public:
 
     std::vector<InputList> const& getReplayData() const { return playerInput_; }
 
-    Frame* getFrame(FrameID const& whichFrame);
+    Frame *getFrame(FrameID const& whichFrame);
     
     int getTimelineLength() const;
 
 private:
     friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT
-        getDeparturesFromFrame(Frame* frame, OperationInterrupter& interrupter);
+        getDeparturesFromFrame(Frame *frame, OperationInterrupter& interrupter);
     
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to

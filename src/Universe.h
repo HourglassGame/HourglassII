@@ -19,7 +19,7 @@ public:
     //Conversion from FrameID to equivalent Frame* within this universe
     //whichFrame must correspond to a frame that could actually
     //be in the universe.
-    Frame* getFrame(const FrameID& whichFrame);
+    Frame *getFrame(const FrameID& whichFrame);
 
 private:
     friend class Frame;
@@ -29,24 +29,24 @@ private:
     //<UniverseT interface>
     //Returns the first frame in the universe for objects traveling
     //in TimeDirection direction.
-    Frame* getEntryFrame(TimeDirection direction);
+    Frame *getEntryFrame(TimeDirection direction);
     //Returns the frame with the index frameNumber within the universe,
     //or the NullFrame if no such frame exists
-    Frame* getArbitraryFrame(int frameNumber);
+    Frame *getArbitraryFrame(int frameNumber);
     //Returns the frame with the index closest to frameNumber within the universe.
-    Frame* getArbitraryFrameClamped(int frameNumber);
+    Frame *getArbitraryFrameClamped(int frameNumber);
     //returns the length of this Universe's timeline
     int getTimelineLength() const;
     
     //</UniverseT interface>
     //Returns the first frame in the universe for objects traveling
     //in TimeDirection direction.
-    friend Frame* getEntryFrame(Universe& universe, TimeDirection direction);
+    friend Frame *getEntryFrame(Universe& universe, TimeDirection direction);
     //Returns the frame with the index frameNumber within the universe,
     //or the NullFrame if no such frame exists
-    friend Frame* getArbitraryFrame(Universe& universe, int frameNumber);
+    friend Frame *getArbitraryFrame(Universe& universe, int frameNumber);
     //Returns the frame with the index closest to frameNumber within the universe.
-    friend Frame* getArbitraryFrameClamped(Universe& universe, int frameNumber);
+    friend Frame *getArbitraryFrameClamped(Universe& universe, int frameNumber);
     //returns the length of this universe's timeline
     friend int getTimelineLength(Universe const& universe);
 
@@ -55,8 +55,8 @@ private:
     BOOST_MOVABLE_BUT_NOT_COPYABLE(Universe)
 };
 /*
-Frame* getEntryFrame(Universe& universe, TimeDirection direction);
-Frame* getArbitraryFrame(Universe& universe, int frameNumber);
+Frame *getEntryFrame(Universe& universe, TimeDirection direction);
+Frame *getArbitraryFrame(Universe& universe, int frameNumber);
  */
 int getTimelineLength(Universe const& universe);
 

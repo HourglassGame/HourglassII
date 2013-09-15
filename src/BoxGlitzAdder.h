@@ -41,8 +41,8 @@ public:
             timeDirection == REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
     }
 private:
-    mt::std::vector<Glitz>::type* forwardsGlitz_;
-    mt::std::vector<Glitz>::type* reverseGlitz_;
+    mt::std::vector<Glitz>::type *forwardsGlitz_;
+    mt::std::vector<Glitz>::type *reverseGlitz_;
 };
 }
 #endif //HG_BOX_GLITZ_ADDER_H

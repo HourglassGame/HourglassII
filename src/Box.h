@@ -2,6 +2,7 @@
 #define HG_BOX_H
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
+#include <boost/tuple/tuple.hpp>
 #include "ConstPtr_of_fwd.h"
 #include <ostream>
 namespace hg {
@@ -32,6 +33,11 @@ public:
     bool operator<(const Box& o) const;
 
 private:
+    boost::tuple<
+        int const&, int const&, int const&, int const&, int const&,
+        int const&, int const&,
+        TimeDirection const&>
+    asTie() const;
 
     int x_;
     int y_;
@@ -70,7 +76,7 @@ public:
     bool operator<(const BoxConstPtr& o) const { return *box_ < *o.box_; }
 
 private:
-    Box const* box_;
+    Box const *box_;
 };
 template<>
 struct ConstPtr_of<Box> {

@@ -29,9 +29,9 @@ namespace detail {
         {
             ::hg::detail::parallel_for_each(*range_, f_, *context_);
         }
-        RandomAccessRange* range_;
+        RandomAccessRange *range_;
         Func f_;
-        tbb::task_group_context* context_;
+        tbb::task_group_context *context_;
     };
 }
 //Const and non-const version to allow both const ranges and modifying Functions

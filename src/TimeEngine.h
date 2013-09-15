@@ -30,24 +30,24 @@ public:
     struct RunResult
     {
         RunResult(
-            Frame const* currentPlayerFrame,
-            Frame const* nextPlayerFrame,
+            Frame const *currentPlayerFrame,
+            Frame const *nextPlayerFrame,
             BOOST_RV_REF(FrameListList) updatedFrames) :
                 currentPlayerFrame_(currentPlayerFrame),
                 nextPlayerFrame_(nextPlayerFrame),
                 updatedFrames_(boost::move(updatedFrames))
         {}
-        Frame const* currentPlayerFrame() const {
+        Frame const *currentPlayerFrame() const {
             return currentPlayerFrame_;
         }
-        Frame const* nextPlayerFrame() const {
+        Frame const *nextPlayerFrame() const {
             return nextPlayerFrame_;
         }
         FrameListList const& updatedFrames() const {
             return updatedFrames_;
         }
-        Frame const* currentPlayerFrame_;
-        Frame const* nextPlayerFrame_;
+        Frame const *currentPlayerFrame_;
+        Frame const *nextPlayerFrame_;
         FrameListList updatedFrames_;
     };
     TimeEngine(BOOST_RV_REF(TimeEngine) o) :
@@ -90,7 +90,7 @@ public:
      * Please investigate this constness further!
      * Exception Safety: No Throw
      */
-    Frame* getFrame(FrameID const& whichFrame);
+    Frame *getFrame(FrameID const& whichFrame);
     // Exception Safety: Strong
     std::vector<InputList> const& getReplayData() const;
     

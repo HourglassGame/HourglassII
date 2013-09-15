@@ -172,10 +172,10 @@ template<typename RandomAccessGuyRange>
 void guyStep(
     Environment const& env,
     RandomAccessGuyRange const& guyArrivalList,
-    Frame* frame,
+    Frame *frame,
     std::vector<InputList> const& playerInput,
-    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type& nextGuy,
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type& nextBox,
+    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type& nextGuy,
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type& nextBox,
     mt::std::vector<char>::type& nextBoxNormalDeparture,
     mt::std::vector<Collision>::type const& nextPlatform,
     mt::std::vector<PortalArea>::type const& nextPortal,
@@ -940,7 +940,7 @@ void guyStep(
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
                     //CAREFUL - loop modifies nextBox
-                    mt::std::vector<ObjectAndTime<Box, Frame*> >::type::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
+                    mt::std::vector<ObjectAndTime<Box, Frame *> >::type::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
 					mt::std::vector<char>::type::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
                     for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
                     {
@@ -1010,7 +1010,7 @@ void guyStep(
 			newTimePaused[i] = guyArrivalList[i].getTimePaused();
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
-            Frame* nextTime(nextFrame(frame, nextTimeDirection));
+            Frame *nextTime(nextFrame(frame, nextTimeDirection));
             assert(!isNullFrame(frame));
 
             // Mutators
@@ -1112,7 +1112,7 @@ void guyStep(
 								normalDeparture = false;
 								break;
 							}
-							Frame* portalTime(
+							Frame *portalTime(
 								nextPortal[j].getRelativeTime() ?
                                     getArbitraryFrameClamped(
                                         getUniverse(frame),
@@ -1216,7 +1216,7 @@ void guyStep(
 								normalDeparture = false;
 								break;
 							}
-							Frame* portalTime(
+							Frame *portalTime(
 								nextPortal[j].getRelativeTime() ?
 									getArbitraryFrameClamped(
 										getUniverse(frame),
@@ -1272,7 +1272,7 @@ void guyStep(
             if (not normalDeparture)
             {
             	nextGuy.push_back(
-					ObjectAndTime<Guy, Frame*>(
+					ObjectAndTime<Guy, Frame *>(
 						Guy(
                             relativeIndex + 1,
 							x[i], y[i],
@@ -1337,7 +1337,7 @@ void guyStep(
 			}
 			
 			// Parameters for ability. sx, sy, px and py are returned as line glitz params
-			Frame* targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
+			Frame *targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
 			int sx = x[i] + newWidth[i]/2;
 			int sy = y[i] + newHeight[i]/4;
 			int px = input.getXCursor();
@@ -1360,7 +1360,7 @@ void guyStep(
 			if (targetType == GUY)
 			{
 				nextGuy.push_back(
-					ObjectAndTime<Guy, Frame*>(
+					ObjectAndTime<Guy, Frame *>(
 						Guy(
                             guyArrivalList[targetId].getIndex() + 1,
 							x[targetId], y[targetId],
@@ -1409,7 +1409,7 @@ void guyStep(
 			continue;
 		}
 		nextGuy.push_back(
-			ObjectAndTime<Guy, Frame*>(
+			ObjectAndTime<Guy, Frame *>(
 				Guy(
 					guyArrivalList[i].getIndex() + 1,
 					x[i], y[i],

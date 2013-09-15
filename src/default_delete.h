@@ -4,7 +4,7 @@
 namespace hg {
     template <typename T>
     struct default_delete {
-        void operator()(T* ptr) const { boost::checked_delete(ptr); }
+        void operator()(T *ptr) const { boost::checked_delete(ptr); }
     };
     template <typename T>
     struct default_delete<T[]> {

@@ -5,7 +5,7 @@ namespace hg {
     //Interprets colour as |...|RRRRRRRR|GGGGGGGG|BBBBBBBB|--------|
     inline sf::Color interpretAsColour(unsigned colour)
     {
-        return sf::Color((colour & 0xFF000000) >> 24, (colour & 0xFF0000) >> 16, (colour & 0xFF00) >> 8);
+        return sf::Color((colour & 0xFF000000) >> 24, (colour & 0x00FF0000) >> 16, (colour & 0x0000FF00) >> 8);
     }
 }
 

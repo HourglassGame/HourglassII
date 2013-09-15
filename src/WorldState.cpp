@@ -16,13 +16,13 @@ struct ExecuteFrame
     ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures, OperationInterrupter& interrupter) :
         worldState_(&worldState), newDepartures_(&newDepartures), interrupter_(&interrupter)
     {}
-    void operator()(Frame* frame) const {
+    void operator()(Frame *frame) const {
         newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame, *interrupter_));
     }
 private:
-    WorldState* worldState_;
-    DepartureMap* newDepartures_;
-    OperationInterrupter* interrupter_;
+    WorldState *worldState_;
+    DepartureMap *newDepartures_;
+    OperationInterrupter *interrupter_;
 };
 
 WorldState::WorldState(
@@ -45,7 +45,7 @@ WorldState::WorldState(
     Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
-        std::map<Frame*, ObjectList<Normal> > initialArrivals;
+        std::map<Frame *, ObjectList<Normal> > initialArrivals;
 
         // boxes
         foreach (Box const& box, initialObjects.getList<Box>())
@@ -80,7 +80,7 @@ void WorldState::swap(WorldState& o)
     boost::swap(currentWinFrames_, o.currentWinFrames_);
 }
 
-Frame* WorldState::getFrame(FrameID const& whichFrame)
+Frame *WorldState::getFrame(FrameID const& whichFrame)
 {
     return timeline_.getFrame(whichFrame);
 }
@@ -91,7 +91,7 @@ int WorldState::getTimelineLength() const
 }
 
 PhysicsEngine::FrameDepartureT
-    WorldState::getDeparturesFromFrame(Frame* frame, OperationInterrupter& interrupter)
+    WorldState::getDeparturesFromFrame(Frame *frame, OperationInterrupter& interrupter)
 {
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(frame->getPrePhysics(),
@@ -128,7 +128,7 @@ public:
         task_group_context_->cancel_group_execution();
     }
 private:
-    tbb::task_group_context* task_group_context_;
+    tbb::task_group_context *task_group_context_;
 };
 
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
@@ -171,13 +171,13 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
 /**
 * Stores the given input data, allowing the player to exist for another step.
 */
-void WorldState::addNewInputData(const InputList& newInputData)
+void WorldState::addNewInputData(InputList const& newInputData)
 {
     playerInput_.push_back(newInputData);
-    foreach (Frame* frame, currentPlayerFrames_) {
+    foreach (Frame *frame, currentPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }
-    foreach (Frame* frame, nextPlayerFrames_) {
+    foreach (Frame *frame, nextPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
@@ -199,7 +199,7 @@ void WorldState::addNewInputData(const InputList& newInputData)
     nextPlayerFrames_.clear();
 }
 
-Frame* WorldState::getCurrentPlayerFrame()
+Frame *WorldState::getCurrentPlayerFrame()
 {
     if (!currentPlayerFrames_.empty()) {
         assert(currentPlayerFrames_.size() == 1);
@@ -210,7 +210,7 @@ Frame* WorldState::getCurrentPlayerFrame()
     }
 }
 
-Frame* WorldState::getNextPlayerFrame()
+Frame *WorldState::getNextPlayerFrame()
 {
     if (!nextPlayerFrames_.empty()) {
         assert(nextPlayerFrames_.size() == 1);

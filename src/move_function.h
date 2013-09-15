@@ -226,7 +226,7 @@ public:
     }
 #ifdef BOOST_NO_RVALUE_REFERENCES
     template<typename F>
-    move_function(BOOST_RV_REF(F) f, typename boost::enable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
+    move_function(BOOST_RV_REF(F) f, typename boost::enable_if<boost::has_move_emulation_enabled<F> >::type *p=0) :
         f_(multi_thread_new<function::detail::move_function_obj<F, R()>, boost::rv<F>&>(boost::move(f)))
     {
     }

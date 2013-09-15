@@ -83,13 +83,13 @@ namespace hg {
         	return x - (x/segmentSize_)*segmentSize_ > y - (y/segmentSize_)*segmentSize_;
         }
 
-        int segmentSize() const{
+        int segmentSize() const {
             return segmentSize_;
         }
-        int roomWidth() const{
+        int roomWidth() const {
         	return static_cast<int>(wallmap_.shape()[0] * segmentSize_);
 		}
-		int roomHeight() const{
+		int roomHeight() const {
 			return static_cast<int>(wallmap_.shape()[1] * segmentSize_);
 		}
     private:

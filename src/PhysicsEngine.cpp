@@ -31,22 +31,22 @@ PhysicsEngine::PhysicsEngine(
 }
 
 static GuyOutputInfo constructGuyOutputInfo(Guy const& guy) {
-    return GuyOutputInfo(guy.getTimeDirection(), guy.getPickups());
+    return GuyOutputInfo(guy.getIndex(), guy.getTimeDirection(), guy.getPickups(), guy.getBoxCarrying());
 }
 
-struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame*> >
+struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame *> >
 {
-    NextPersister(Frame* frame): frame_(frame) {}
-    ObjectAndTime<GlitzPersister, Frame*> operator()(GlitzPersister const& persister) const {
+    NextPersister(Frame *frame): frame_(frame) {}
+    ObjectAndTime<GlitzPersister, Frame *> operator()(GlitzPersister const& persister) const {
         return persister.runStep(frame_);
     }
     private:
-    Frame* frame_;
+    Frame *frame_;
 };
 
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const& arrivals,
-    Frame* frame,
+    Frame *frame,
     std::vector<InputList> const& playerInput,
     OperationInterrupter& interrupter) const
 {
@@ -56,7 +56,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     PhysicsAffectingStuff const physicsTriggerStuff(
         triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>()));
 
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox;
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type nextBox;
     mt::std::vector<char>::type nextBoxNormalDeparture;
 
     mt::std::vector<Glitz>::type forwardsGlitz;

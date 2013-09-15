@@ -26,12 +26,12 @@ void Frame::correctUniverse(Universe& newUniverse)
     universe_ = &newUniverse;
 }
 
-Frame const* Frame::nextFrame(TimeDirection direction) const {
+Frame const *Frame::nextFrame(TimeDirection direction) const {
     assert(direction != INVALID);
     return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
 }
 
-Frame* Frame::nextFrame(TimeDirection direction) {
+Frame *Frame::nextFrame(TimeDirection direction) {
     assert(direction != INVALID);
     return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
 }
@@ -51,33 +51,33 @@ int Frame::getFrameNumber() const {
     return frameNumber_;
 }
 
-Frame const* nextFrame(Frame const* frame, TimeDirection direction)
+Frame const *nextFrame(Frame const *frame, TimeDirection direction)
 {
     assert(frame);
     return frame->nextFrame(direction);
 }
-Frame* nextFrame(Frame* frame, TimeDirection direction)
+Frame *nextFrame(Frame *frame, TimeDirection direction)
 {
     assert(frame);
     return frame->nextFrame(direction);
 }
-bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction) {
+bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction) {
     assert(frame);
     return frame->nextFrameInSameUniverse(direction);
 }
-Universe const& getUniverse(Frame const* frame) {
+Universe const& getUniverse(Frame const *frame) {
     assert(frame);
     return frame->getUniverse();
 }
-Universe& getUniverse(Frame * frame) {
+Universe& getUniverse(Frame *frame) {
     assert(frame);
     return frame->getUniverse();
 }
-int getFrameNumber(Frame const* frame) {
+int getFrameNumber(Frame const *frame) {
     assert(frame);
     return frame->getFrameNumber();
 }
-bool isNullFrame(Frame const* frame) {
+bool isNullFrame(Frame const *frame) {
     return !frame;
 }
 

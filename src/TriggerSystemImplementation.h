@@ -28,7 +28,7 @@ class TriggerFrameStateImplementation
     public:
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
-            Frame const* currentFrame,
+            Frame const *currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
@@ -54,15 +54,15 @@ class TriggerFrameStateImplementation
 
     struct DepartureInformation {
         DepartureInformation(
-            mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type const& triggerDepartures,
+            mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type const& triggerDepartures,
             mt::std::vector<Glitz>::type const& forwardsGlitz,
             mt::std::vector<Glitz>::type const& reverseGlitz,
-            mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& additionalBoxDepartures):
+            mt::std::vector<ObjectAndTime<Box, Frame *> >::type const& additionalBoxDepartures):
                 triggerDepartures(triggerDepartures),
                 forwardsGlitz(forwardsGlitz),
                 reverseGlitz(reverseGlitz),
                 additionalBoxDepartures(additionalBoxDepartures) {}
-        mt::std::map<Frame*, mt::std::vector<TriggerData>::type>::type triggerDepartures;
+        mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type triggerDepartures;
 		mt::std::vector<Glitz>::type forwardsGlitz;
         mt::std::vector<Glitz>::type reverseGlitz;
 		mt::std::vector<ObjectAndTime<Box, Frame*> >::type additionalBoxDepartures;
@@ -70,7 +70,7 @@ class TriggerFrameStateImplementation
 
     virtual DepartureInformation getDepartureInformation(
         mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame) = 0;
+        Frame *currentFrame) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
 };
@@ -116,7 +116,7 @@ class TriggerFrameState
     
     DepartureInformation getDepartureInformation(
             mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-            Frame* currentFrame)
+            Frame *currentFrame)
     {
         return impl_->getDepartureInformation(departures, currentFrame);
     }

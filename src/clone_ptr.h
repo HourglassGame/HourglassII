@@ -20,7 +20,7 @@ public:
     }
     //clone_ptr takes ownership of p
     //(that is, it does not clone p)
-    explicit clone_ptr(Cloneable* p) :
+    explicit clone_ptr(Cloneable *p) :
         CloneManager(),
         obj(p)
     {
@@ -60,14 +60,14 @@ public:
         assert(obj);
         return *obj;
     }
-    Cloneable* operator->() const {
+    Cloneable *operator->() const {
         return obj;
     }
     Cloneable& operator*() const {
         return *obj;
     }
 private:
-    Cloneable* obj;
+    Cloneable *obj;
     BOOST_COPYABLE_AND_MOVABLE(clone_ptr)
 };
 template <typename Cloneable, typename CloneManager>

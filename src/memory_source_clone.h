@@ -5,8 +5,8 @@ namespace hg {
     //is closer to malloc and free.
     template<typename T, typename MemorySource>
     struct memory_source_clone :private MemorySource {
-        T* new_clone(T const& toClone) const {
-            void* p(MemorySource::alloc(toClone.clone_size()));
+        T *new_clone(T const& toClone) const {
+            void *p(MemorySource::alloc(toClone.clone_size()));
             try {
                 return toClone.perform_clone(p);
             } catch (...) {
@@ -14,7 +14,7 @@ namespace hg {
                 throw;
             }
         }
-        void delete_clone(T* toDelete) const {
+        void delete_clone(T *toDelete) const {
             if (toDelete) {
                 toDelete->~T();
                 MemorySource::free(toDelete);

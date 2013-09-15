@@ -54,12 +54,12 @@ public:
      */
     //Consider moving this into constructor
     void addArrivalsFromPermanentDepartureFrame(
-    	std::map<Frame*, ObjectList<Normal> > const& initialArrivals);
+    	std::map<Frame *, ObjectList<Normal> > const& initialArrivals);
 
     /**
      * Converts FrameID into Frame*
      */
-    Frame* getFrame(FrameID const& whichFrame);
+    Frame *getFrame(FrameID const& whichFrame);
     Universe& getUniverse() {
         return universe_;
     }
