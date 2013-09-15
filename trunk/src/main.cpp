@@ -762,7 +762,11 @@ void DrawTimelineContents(
         foreach (hg::GuyOutputInfo const& guy, frame->getView().getGuyInformation()) {
             double left = frameNumber*target.GetView().GetRect().GetWidth()/timelineLength;
             double top = height*guy.getIndex()/numberOfGuys;
-            timelineContents.SetPixel(left, top, guy.getBoxCarrying() ? Colour(5, 5, 255) : Colour(250,250,0));
+            
+            
+            double x = hg::clamp(0., 255.*guy.getX()/timeEngine.getWall().roomWidth(), 255.);
+            double y = hg::clamp(0., 255.*guy.getY()/timeEngine.getWall().roomHeight(), 255.);
+            timelineContents.SetPixel(left, top, guy.getBoxCarrying() ? Colour(x, y, 255) : Colour(x,y,0));
         }
     }
     target.Draw(sf::Sprite(timelineContents, sf::Vector2f(0, 10.f)));

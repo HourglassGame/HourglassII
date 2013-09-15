@@ -1,5 +1,6 @@
 #ifndef HG_MATHS_H
 #define HG_MATHS_H
+#include <algorithm>
 namespace hg {
 
 template<typename Integral>
@@ -39,6 +40,13 @@ template<typename Integral>
 Integral flooredModulo(Integral a, Integral n) {
     return a - n * flooredDivision(a, n);
 }
+
+
+template<typename T>
+T clamp(T lower, T val, T upper) {
+    return std::max(lower, std::min(val, upper));
+}
+
 }//namespace hg
 #endif //HG_MATHS_H
 
