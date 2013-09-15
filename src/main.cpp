@@ -12,6 +12,7 @@
 #include "LayeredCanvas.h"
 #include <SFML/Graphics.hpp>
 
+#include <boost/numeric/ublas/vector.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/assign.hpp>
 #include <boost/range/adaptor/reversed.hpp>
@@ -747,6 +748,18 @@ void DrawWall(
     }
 }
 
+Colour asColour(boost::numeric::ublas::vector<double> const& vec) {
+    //To silence "unused function" warning
+    (void)boost_numeric_ublas_abs<unsigned int>;
+    (void)boost_numeric_ublas_abs<unsigned long>;
+    return Colour(vec[0], vec[1], vec[2]);
+}
+boost::numeric::ublas::vector<double> createVector3(double const x, double const y, double const z) {
+    boost::numeric::ublas::vector<double> vec(3);
+    vec[0]=x; vec[1]=y; vec[2]=z;
+    return vec;
+}
+
 
 void DrawTimelineContents(
     sf::RenderTarget& target,
@@ -757,29 +770,41 @@ void DrawTimelineContents(
     double numberOfGuys(timeEngine.getReplayData().size()+1);
     double timelineLength(timeEngine.getTimelineLength());
     hg::UniverseID universe(timeEngine.getTimelineLength());
+    
+    namespace num = boost::numeric::ublas;
+    num::vector<double> const posStart(createVector3(128,0,0));
+    num::vector<double> const xMax(createVector3(128,255,0));
+    num::vector<double> const yMax(createVector3(128,0,255));
+    
+    num::vector<double> const xDif(xMax - posStart);
+    num::vector<double> const yDif(yMax - posStart);
+    
     for(int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame *frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         foreach (hg::GuyOutputInfo const& guy, frame->getView().getGuyInformation()) {
             double left = frameNumber*target.GetView().GetRect().GetWidth()/timelineLength;
             double top = height*guy.getIndex()/numberOfGuys;
             
+            double xPos = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
+            double yPos = guy.getY()/static_cast<double>(timeEngine.getWall().roomHeight());
             
-            //double x = hg::clamp(0., 255.*guy.getX()/timeEngine.getWall().roomWidth(), 255.);
-            //double y = hg::clamp(0., 255.*guy.getY()/timeEngine.getWall().roomHeight(), 255.);
+            num::vector<double> positionColourVec(3);
+            positionColourVec = posStart + xDif*xPos + yDif*yPos;
             
-            int scale = 4;
-            
-            double x = hg::flooredModulo(guy.getX(), timeEngine.getWall().roomWidth()/scale)*255./(timeEngine.getWall().roomWidth()/scale);
-            double y = hg::flooredModulo(guy.getY(), timeEngine.getWall().roomHeight()/scale)*255./(timeEngine.getWall().roomHeight()/scale);
-            
-            for (int pos(top), end(std::min(height, top+4)); pos != end; ++pos) {
+            Colour const colour(asColour(positionColourVec));
+
+            int pos(top);
+            for (int end(std::min(height, top+1)); pos != end; ++pos) {
                 timelineContents.SetPixel(
                     left, pos,
                     !guy.getBoxCarrying() ?
-                        Colour(128,x,y) :
+                        colour :
                         guy.getBoxCarryDirection() == guy.getTimeDirection() ?
-                            Colour(255, x, y)
-                          : Colour(0, x, y));
+                            Colour(255, 0, 255)
+                          : Colour(0, 255, 0));
+            }
+            for (int end(std::min(height, top+4)); pos != end; ++pos) {
+                timelineContents.SetPixel(left, pos, colour);
             }
         }
     }
