@@ -764,8 +764,14 @@ void DrawTimelineContents(
             double top = height*guy.getIndex()/numberOfGuys;
             
             
-            double x = hg::clamp(0., 255.*guy.getX()/timeEngine.getWall().roomWidth(), 255.);
-            double y = hg::clamp(0., 255.*guy.getY()/timeEngine.getWall().roomHeight(), 255.);
+            //double x = hg::clamp(0., 255.*guy.getX()/timeEngine.getWall().roomWidth(), 255.);
+            //double y = hg::clamp(0., 255.*guy.getY()/timeEngine.getWall().roomHeight(), 255.);
+            
+            int scale = 4;
+            
+            double x = hg::flooredModulo(guy.getX(), timeEngine.getWall().roomWidth()/scale)*255./(timeEngine.getWall().roomWidth()/scale);
+            double y = hg::flooredModulo(guy.getY(), timeEngine.getWall().roomHeight()/scale)*255./(timeEngine.getWall().roomHeight()/scale);
+            
             for (int pos(top), end(std::min(height, top+4)); pos != end; ++pos) {
                 timelineContents.SetPixel(
                     left, pos,
