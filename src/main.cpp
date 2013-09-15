@@ -70,6 +70,7 @@ namespace {
         sf::RenderTarget& target,
         hg::TimeEngine& timeEngine,
         double height);
+    void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength);
     void DrawTimeline(
         sf::RenderTarget& target,
         hg::TimeEngine& timeEngine,
@@ -867,6 +868,19 @@ void DrawWaves(
     }
 }
 
+void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength) {
+    for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5*60) {
+        float left(frameNo/static_cast<double>(timelineLength)*target.GetView().GetRect().GetWidth());
+        target.Draw(
+            sf::Shape::Rectangle(
+                left,
+                0.f,
+                left+1.,
+                10.f,
+                Colour(255,255,0)));
+    }
+}
+
 void DrawTimeline(
     sf::RenderTarget& target,
     hg::TimeEngine& timeEngine,
@@ -876,6 +890,8 @@ void DrawTimeline(
     int timelineLength)
 {
     double height = 75.;
+    
+    DrawTicks(target, timelineLength);
     
     DrawWaves(target, waves, timelineLength, height);
     
