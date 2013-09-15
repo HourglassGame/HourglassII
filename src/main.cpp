@@ -769,10 +769,16 @@ void DrawTimelineContents(
             if (guy.getBoxCarrying())
             {
             	timelineContents.SetPixel(left, top, guy.getBoxCarryDirection() == guy.getTimeDirection() ? Colour(255, x, y) : Colour(0, x, y));
+            	timelineContents.SetPixel(left, top+1, guy.getBoxCarryDirection() == guy.getTimeDirection() ? Colour(255, x, y) : Colour(0, x, y));
+            	timelineContents.SetPixel(left, top+2, guy.getBoxCarryDirection() == guy.getTimeDirection() ? Colour(255, x, y) : Colour(0, x, y));
+            	timelineContents.SetPixel(left, top+3, guy.getBoxCarryDirection() == guy.getTimeDirection() ? Colour(255, x, y) : Colour(0, x, y));
             }
             else
             {
             	 timelineContents.SetPixel(left, top, Colour(128,x,y));
+            	 timelineContents.SetPixel(left, top+1, Colour(128,x,y));
+            	 timelineContents.SetPixel(left, top+2, Colour(128,x,y));
+            	 timelineContents.SetPixel(left, top+3, Colour(128,x,y));
             }
         }
     }
