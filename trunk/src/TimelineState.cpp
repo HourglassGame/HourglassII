@@ -45,7 +45,7 @@ TimelineState::updateWithNewDepartures(
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
-		std::map<Frame*, ObjectList<Normal> > const& initialArrivals)
+		std::map<Frame *, ObjectList<Normal> > const& initialArrivals)
 {
     typedef std::pair<Frame*, ObjectList<Normal> > ArrivalT;
     foreach (ArrivalT const& arrival, initialArrivals) {

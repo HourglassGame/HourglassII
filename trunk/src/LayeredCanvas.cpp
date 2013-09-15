@@ -12,7 +12,7 @@ namespace hg {
 namespace lc_internal {
     class Drawer {
     public:
-        virtual Drawer* clone() const = 0;
+        virtual Drawer *clone() const = 0;
         virtual void drawTo(Canvas& canvas) const = 0;
         virtual ~Drawer(){}
     };
@@ -25,7 +25,7 @@ namespace lc_internal {
         void drawTo(Canvas& canvas) const {
             canvas.drawRect(x, y, width, height, colour);
         }
-        RectDrawer* clone() const {
+        RectDrawer *clone() const {
             return new RectDrawer(*this);
         }
     private:
@@ -43,7 +43,7 @@ namespace lc_internal {
         void drawTo(Canvas& canvas) const {
             canvas.drawLine(xa, ya, xb, yb, width, colour);
         }
-        LineDrawer* clone() const {
+        LineDrawer *clone() const {
             return new LineDrawer(*this);
         }
     private:
@@ -62,7 +62,7 @@ namespace lc_internal {
         void drawTo(Canvas& canvas) const {
             canvas.drawText(text, x, y, size, colour);
         }
-        TextDrawer* clone() const {
+        TextDrawer *clone() const {
             return new TextDrawer(*this);
         }
     private:

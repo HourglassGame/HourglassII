@@ -30,7 +30,7 @@ public:
         target_->Draw(glyphs);
     }
 private:
-    sf::RenderTarget* target_;
+    sf::RenderTarget *target_;
 };
 }
 #endif //HG_SF_RENDER_TARGET_CANVAS_H

@@ -21,7 +21,7 @@
 #include "Foreach.h"
 namespace hg {
 
-static int preloadReset(lua_State* L) {
+static int preloadReset(lua_State *L) {
     //return deepcopy(upvalues[1])
     
     lua_newtable(L);//[newPreload]
@@ -38,7 +38,7 @@ static int preloadReset(lua_State* L) {
     return 1;
 }
 
-static void setUpPreloadResetFunction(lua_State* L, std::vector<LuaModule> const& extraChunks) {
+static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const& extraChunks) {
     //protoPreload = makeTable(extraChunks.name -> load(extraChunks.chunk))
     lua_createtable(L, 0, extraChunks.size());//[protoPreload]
     foreach (LuaModule const& mod, extraChunks) {
@@ -92,7 +92,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
         arrivalLocationsSize_(arrivalLocationsSize),
         interruptionHandle_(makeInterruptable(L_.ptr, interrupter))
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stackSaver(L);
     luaL_checkstack(L, 1, 0);
     lua_pushvalue(L, -1);
@@ -102,7 +102,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
 namespace {
 //Gives the value of the element at the top of the stack of L,
 //interpreted as a Box.
-Box toBox(lua_State* L, std::size_t arrivalLocationsSize)
+Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
 {
     LuaStackManager stack_manager(L);
     luaassert(lua_istable(L, -1) && "a box must be a table");
@@ -152,7 +152,7 @@ std::string abilityToString(Ability ability)
     }
 }
 
-PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
+PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
 {
     LuaStackManager stack_manager(L);
     luaassert(lua_istable(L, -1) && "a portal must be a table");
@@ -219,7 +219,7 @@ PortalArea toPortal(lua_State* L, std::size_t arrivalLocationsSize)
             winner);
 }
 
-MutatorArea toMutatorArea(lua_State* L)
+MutatorArea toMutatorArea(lua_State *L)
 {
     luaassert(lua_istable(L, -1) && "a mutator must be a table");
     
@@ -241,7 +241,7 @@ MutatorArea toMutatorArea(lua_State* L)
             timeDirection);
 }
 
-ArrivalLocation toArrivalLocation(lua_State* L)
+ArrivalLocation toArrivalLocation(lua_State *L)
 {
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
@@ -252,7 +252,7 @@ ArrivalLocation toArrivalLocation(lua_State* L)
     return ArrivalLocation(x, y, xspeed, yspeed, timeDirection);
 }
 
-unsigned readColourField(lua_State* L, char const* fieldName)
+unsigned readColourField(lua_State *L, char const *fieldName)
 {
     LuaStackManager stack_manager(L);
     lua_getfield(L, -1, fieldName);
@@ -263,7 +263,7 @@ unsigned readColourField(lua_State* L, char const* fieldName)
     return r << 24 | g << 16 | b << 8;
 }
 
-Glitz toGlitz(lua_State* L)
+Glitz toGlitz(lua_State *L)
 {
     std::string type(readField<std::string>(L, "type"));
     if (type == "rectangle") {
@@ -288,7 +288,7 @@ Glitz toGlitz(lua_State* L)
     assert("Unknown Glitz Type" && false);
 }
 
-Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocationsSize)
+Box readBoxField(lua_State *L, char const *fieldName, std::size_t arrivalLocationsSize)
 {
     LuaStackManager stack_manager(L);
     luaL_checkstack(L, 1, 0);
@@ -298,9 +298,9 @@ Box readBoxField(lua_State* L, char const* fieldName, std::size_t arrivalLocatio
     return retv;
 }
 
-ObjectAndTime<Box, Frame*> toObjectAndTimeBox(lua_State* L, Frame* currentFrame, std::size_t arrivalLocationsSize)
+ObjectAndTime<Box, Frame *> toObjectAndTimeBox(lua_State *L, Frame *currentFrame, std::size_t arrivalLocationsSize)
 {
-    return ObjectAndTime<Box, Frame*>(
+    return ObjectAndTime<Box, Frame *>(
         readBoxField(L, "box", arrivalLocationsSize),
         getArbitraryFrame(getUniverse(currentFrame), readField<int>(L, "targetFrame")));
 }
@@ -309,7 +309,7 @@ ObjectAndTime<Box, Frame*> toObjectAndTimeBox(lua_State* L, Frame* currentFrame,
 
 PhysicsAffectingStuff
     DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
-        Frame const* currentFrame,
+        Frame const *currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
@@ -415,7 +415,7 @@ PhysicsAffectingStuff
     //that need it must contain an integer in the range [1, n]
     //where n is that number of tables in arrivalLocations.
     
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     
     mt::std::vector<mt::std::vector<int>::type>::type
         apparentTriggers(calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals));
@@ -538,7 +538,7 @@ PhysicsAffectingStuff
 
 
 namespace {
-void pushGuy(lua_State* L, Guy const& guy)
+void pushGuy(lua_State *L, Guy const& guy)
 {
     luaL_checkstack(L, 1, 0);
     lua_createtable(L, 0, 17);
@@ -602,7 +602,7 @@ void pushGuy(lua_State* L, Guy const& guy)
     lua_setfield(L, -2, "timePaused");
 }
 
-void pushBox(lua_State* L, Box const& box)
+void pushBox(lua_State *L, Box const& box)
 {
     luaL_checkstack(L, 1, 0);
     lua_createtable(L, 0, 10);
@@ -643,7 +643,7 @@ void pushBox(lua_State* L, Box const& box)
 //ARGH so much code duplication ):
 bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -665,7 +665,7 @@ bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
 }
 bool DirectLuaTriggerFrameState::shouldArrive(Box const& potentialArriver)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -695,7 +695,7 @@ bool DirectLuaTriggerFrameState::shouldPort(
     Guy const& potentialPorter,
     bool porterActionedPortal)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -726,7 +726,7 @@ bool DirectLuaTriggerFrameState::shouldPort(
     Box const& potentialPorter,
     bool porterActionedPortal)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -760,7 +760,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     mt::std::vector<int>::type const& responsibleMutatorIndices,
     Guy const& objectToManipulate)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -798,7 +798,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     mt::std::vector<int>::type const& responsibleMutatorIndices,
     Box const& objectToManipulate)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -834,10 +834,10 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
 }
 
 TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState::getDepartureInformation(
-    mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-    Frame* currentFrame)
+    mt::boost::container::map<Frame *, ObjectList<Normal> >::type const& departures,
+    Frame *currentFrame)
 {
-    lua_State* L(L_.ptr);
+    lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
     //push function to call
     luaL_checkstack(L, 1, 0);
@@ -995,7 +995,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         ...
     }
     */
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type newBox;
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type newBox;
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "extra boxes list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
@@ -1021,8 +1021,8 @@ DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
 }
 
 namespace {
-std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk, char const* name) {
-    std::pair<char const*, char const*> source_iterators;
+std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk, char const *name) {
+    std::pair<char const *, char const *> source_iterators;
     if (!sourceChunk.empty()) {
         source_iterators.first = &sourceChunk.front();
         source_iterators.second = &sourceChunk.front() + sourceChunk.size();

@@ -23,7 +23,7 @@ namespace hg {
 class ConcurrentTimeSet {
     struct Empty {};
     //hash map is being used as set, second template argument (Empty) is unused filler.
-    typedef tbb::concurrent_hash_map<Frame*, Empty, BoostHashCompare<Frame*> > SetType;
+    typedef tbb::concurrent_hash_map<Frame *, Empty, BoostHashCompare<Frame*> > SetType;
 public:
     ConcurrentTimeSet();
     ConcurrentTimeSet(ConcurrentTimeSet const& o) :

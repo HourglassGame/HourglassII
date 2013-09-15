@@ -14,7 +14,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
     public:
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
-            Frame const* /*currentFrame*/,
+            Frame const */*currentFrame*/,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::boost::container::vector<TriggerDataConstPtr>::type const> const& /*triggerArrivals*/)
@@ -43,8 +43,8 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
 
     virtual DepartureInformation
     getDepartureInformation(
-        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& /*departures*/,
-        Frame* /*currentFrame*/)
+        mt::boost::container::map<Frame *, ObjectList<Normal> >::type const& /*departures*/,
+        Frame */*currentFrame*/)
     {
         assert(false && "Not implemented");
     }

@@ -5,10 +5,10 @@
 namespace hg {
 
 void buildDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
-    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type const& nextGuy,
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const& nextBox,
+    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type const& nextGuy,
     PhysicsEngine::FrameDepartureT& newDepartures,
-    Frame* frame)
+    Frame *frame)
 {
     (void)frame;
     buildDeparturesForComplexEntities(nextBox, newDepartures);
@@ -16,7 +16,7 @@ void buildDepartures(
 }
 
 void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const& nextBox,
 	mt::std::vector<char>::type& nextBoxNormalDeparture,
 	BoxGlitzAdder const& boxGlitzAdder)	
 {
@@ -33,14 +33,14 @@ void makeBoxGlitzListForNormalDepartures(
 struct Collidables
 {
     Collidables(
-        Wall const* nwalls,
-        mt::std::vector<Collision>::type const* nplatforms,
-        mt::std::vector<ObjectAndTime<Box, Frame*> >::type const* nboxes) :
+        Wall const *nwalls,
+        mt::std::vector<Collision>::type const *nplatforms,
+        mt::std::vector<ObjectAndTime<Box, Frame *> >::type const *nboxes) :
         walls(nwalls), platforms(nplatforms), boxes(nboxes) {}
 
-    Wall const* walls;
-    mt::std::vector<Collision>::type const* platforms;
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const* boxes;
+    Wall const *walls;
+    mt::std::vector<Collision>::type const *platforms;
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const *boxes;
 };
 
 bool explodeBoxes(
@@ -449,7 +449,7 @@ void doGunRaytrace(
 		Environment const& env,
 		int& sx, int& sy, int& px, int& py,
 		mt::std::vector<Collision>::type const& nextPlatform,
-		mt::std::vector<ObjectAndTime<Box, Frame*> >::type nextBox,
+		mt::std::vector<ObjectAndTime<Box, Frame *> >::type nextBox,
 		mt::std::vector<char>::type& nextBoxNormalDeparture,
 		mt::std::vector<int>::type gx, // other guy things
 		mt::std::vector<int>::type gy,

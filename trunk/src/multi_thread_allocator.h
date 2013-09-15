@@ -27,14 +27,14 @@ namespace hg {
     //Versions of the C library functions to use
     //when multiple threads may be performing allocations/deallocations
     //simultaneously.
-    inline void* multi_thread_malloc(std::size_t size) { return scalable_malloc(size); }
-    inline void  multi_thread_free(void* p) { return scalable_free(p); }
-    inline void* multi_thread_calloc(size_t n, size_t size) { return scalable_calloc(n, size); }
-    inline void* multi_thread_realloc(void* p, size_t size) { return scalable_realloc(p, size); }
+    inline void *multi_thread_malloc(std::size_t size) { return scalable_malloc(size); }
+    inline void  multi_thread_free(void *p) { return scalable_free(p); }
+    inline void *multi_thread_calloc(size_t n, size_t size) { return scalable_calloc(n, size); }
+    inline void *multi_thread_realloc(void *p, size_t size) { return scalable_realloc(p, size); }
     
-    inline void* multi_thread_operator_new(std::size_t size) {
+    inline void *multi_thread_operator_new(std::size_t size) {
         while (true) {
-            if (void* pointer = multi_thread_malloc(size)) {
+            if (void *pointer = multi_thread_malloc(size)) {
                 return pointer;
             }
             if (std::new_handler handler = std::set_new_handler(0)) {
@@ -58,8 +58,8 @@ namespace hg {
     //C++11 version
     
     template<typename T, typename... Args>
-    T* multi_thread_new(Args&&...args){
-    	void* p(multi_thread_operator_new(sizeof(T)));
+    T *multi_thread_new(Args&&...args){
+    	void *p(multi_thread_operator_new(sizeof(T)));
     	try {
     		return new (p) T(hg::forward<Args>(args)...);
     	}
@@ -80,8 +80,8 @@ namespace hg {
 
 #define HG_MULTI_THREAD_NEW(Z, N, _)                                                \
     template<typename T BOOST_PP_COMMA_IF(N) BOOST_PP_ENUM_PARAMS(N, typename A)>   \
-        T* multi_thread_new(BOOST_PP_ENUM_BINARY_PARAMS(N, A, a)) {                 \
-        void* p(multi_thread_operator_new(sizeof(T)));                              \
+        T *multi_thread_new(BOOST_PP_ENUM_BINARY_PARAMS(N, A, a)) {                 \
+        void *p(multi_thread_operator_new(sizeof(T)));                              \
         try {                                                                       \
             return new (p) T(BOOST_PP_ENUM_PARAMS(N, a));                           \
         }                                                                           \
@@ -96,7 +96,7 @@ BOOST_PP_REPEAT(BOOST_PP_INC(HG_MAX_MULTI_THREAD_NEW_PARAMS), HG_MULTI_THREAD_NE
 #undef HG_MULTI_THREAD_NEW
 #endif
     template<typename T>
-    void multi_thread_delete(T* p) {
+    void multi_thread_delete(T *p) {
         if (p) {
             p->~T();
             multi_thread_operator_delete(p);

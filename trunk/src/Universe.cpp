@@ -45,7 +45,7 @@ Universe::Universe(int timelineLength) :
     }
 	assert(!frames_.empty());
 }
-Frame* Universe::getEntryFrame(TimeDirection direction)
+Frame *Universe::getEntryFrame(TimeDirection direction)
 {
     assert(!frames_.empty());
     switch (direction) {
@@ -59,12 +59,12 @@ Frame* Universe::getEntryFrame(TimeDirection direction)
     //Never reached
     return 0;
 }
-Frame* Universe::getArbitraryFrame(int frameNumber)
+Frame *Universe::getArbitraryFrame(int frameNumber)
 {
     assert(!frames_.empty());
     return frameNumber >= 0 && frameNumber < getTimelineLength() ? &frames_[frameNumber] : 0;
 }
-Frame* Universe::getArbitraryFrameClamped(int frameNumber)
+Frame *Universe::getArbitraryFrameClamped(int frameNumber)
 {
     assert(!frames_.empty());
     if (frameNumber < 0) return &(*frames_.begin());
@@ -80,18 +80,18 @@ int Universe::getTimelineLength() const
 
 //Returns the first frame in the universe for objects travelling
 //in TimeDirection direction.
-Frame* getEntryFrame(Universe& universe, TimeDirection direction)
+Frame *getEntryFrame(Universe& universe, TimeDirection direction)
 {
     return universe.getEntryFrame(direction);
 }
 //Returns the frame with the index frameNumber within the universe,
 //or the NullFrame if no such frame exists
-Frame* getArbitraryFrame(Universe& universe, int frameNumber)
+Frame *getArbitraryFrame(Universe& universe, int frameNumber)
 {
     return universe.getArbitraryFrame(frameNumber);
 }
 //Returns the frame with the index closest to frameNumber within the universe.
-Frame* getArbitraryFrameClamped(Universe& universe, int frameNumber)
+Frame *getArbitraryFrameClamped(Universe& universe, int frameNumber)
 {
     return universe.getArbitraryFrameClamped(frameNumber);
 }
@@ -100,7 +100,7 @@ int getTimelineLength(Universe const& universe)
 {
     return universe.getTimelineLength();
 }
-Frame* Universe::getFrame(FrameID const& whichFrame)
+Frame *Universe::getFrame(FrameID const& whichFrame)
 {
     assert(getTimelineLength() == whichFrame.getUniverse().timelineLength());
     return getArbitraryFrame(whichFrame.getFrameNumber());

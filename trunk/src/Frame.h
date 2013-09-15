@@ -20,7 +20,7 @@ namespace hg {
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
 public:
-    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDeparturesT;
+    typedef mt::boost::container::map<Frame *, ObjectList<Normal> >::type FrameDeparturesT;
 
     Frame(int frameNumber, Universe& universe);
 
@@ -73,35 +73,35 @@ private:
     friend class UniverseID;
 
     //Private to enforce use of non-member variants.
-    Frame const* nextFrame(TimeDirection direction) const;
-    Frame* nextFrame(TimeDirection direction);
+    Frame const *nextFrame(TimeDirection direction) const;
+    Frame *nextFrame(TimeDirection direction);
     bool nextFrameInSameUniverse(TimeDirection direction) const;
     Universe const& getUniverse() const;
     Universe& getUniverse();
     int getFrameNumber() const;
     //<Valid to call with NullFrame>
-    friend bool isNullFrame(Frame const* frame);
+    friend bool isNullFrame(Frame const *frame);
     //</Valid to call with NullFrame>
     //<Undefined to call with NullFrame>
-    friend Frame const* nextFrame(Frame const* frame, TimeDirection direction);
-    friend Frame* nextFrame(Frame* frame, TimeDirection direction);
-    friend bool nextFrameInSameUniverse(Frame const* frame, TimeDirection direction);
-    friend Universe& getUniverse(Frame* frame);
-    friend Universe const& getUniverse(Frame const* frame);
-    friend int getFrameNumber(Frame const* frame);
+    friend Frame const *nextFrame(Frame const *frame, TimeDirection direction);
+    friend Frame *nextFrame(Frame* frame, TimeDirection direction);
+    friend bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction);
+    friend Universe& getUniverse(Frame *frame);
+    friend Universe const& getUniverse(Frame const *frame);
+    friend int getFrameNumber(Frame const *frame);
     //</Undefined to call with NullFrame>
-    void insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert);
-    void changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange);
-    void clearArrival(Frame const* toClear);
+    void insertArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type& toInsert);
+    void changeArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type& toChange);
+    void clearArrival(Frame const *toClear);
 
     /** Position of frame within universe_ */
     int frameNumber_;
     /** Back-link to universe which this frame is in */
-    Universe* universe_;
+    Universe *universe_;
 
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
     FrameDeparturesT departures_;
-    tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*> arrivals_;
+    tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *> arrivals_;
 
     FrameView view_;
 };

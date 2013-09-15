@@ -4,7 +4,7 @@
 namespace hg {
     template <typename T>
     struct multi_thread_deleter {
-        void operator()(T* ptr) const { multi_thread_delete(ptr); }
+        void operator()(T *ptr) const { multi_thread_delete(ptr); }
     };
     template <typename T>
     struct multi_thread_deleter<T[]>;

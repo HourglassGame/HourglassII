@@ -123,18 +123,18 @@ public:
     	if (!ptr_) ptr_ = new T();
         return *ptr_;
     }
-    T* operator->() const
+    T *operator->() const
     {
     	if (!ptr_) ptr_ = new T();
         return ptr_;
     }
-    T* get() const
+    T *get() const
     {
     	if (!ptr_) ptr_ = new T();
         return ptr_;
     }
 private:
-    mutable T* ptr_;
+    mutable T *ptr_;
     BOOST_COPYABLE_AND_MOVABLE(lazy_ptr)
 };
 

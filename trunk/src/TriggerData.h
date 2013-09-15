@@ -36,7 +36,7 @@ public:
     bool operator<(const TriggerDataConstPtr& o) const { return *triggerData_ < *o.triggerData_;}
     
 private:
-    TriggerData const* triggerData_;
+    TriggerData const *triggerData_;
 
 };
 template<>

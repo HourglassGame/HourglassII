@@ -36,7 +36,7 @@ namespace hg {
         ~LayeredCanvas();
     private:
         friend class Flusher;
-        Canvas* canvas;
+        Canvas *canvas;
         boost::container::vector<lc_internal::DrawCall> drawCalls;
     };
 }//namespace hg

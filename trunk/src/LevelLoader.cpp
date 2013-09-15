@@ -45,7 +45,7 @@ namespace {
     };
 }
 
-static TriggerSystem loadDirectLuaTriggerSystem(lua_State* L, path const& levelPath) {
+static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const& levelPath) {
     std::string system(readField<std::string>(L, "system"));
     std::vector<std::string> luaPackageNames(readField<std::vector<std::string> >(L, "luaFiles", -1));
     
@@ -65,7 +65,7 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State* L, path const& levelP
           readField<int>(L, "arrivalLocationsSize")));
 }
 
-static TriggerSystem loadTriggerSystem(lua_State* L, char const* fieldName, path const& levelPath) {
+static TriggerSystem loadTriggerSystem(lua_State *L, char const* fieldName, path const& levelPath) {
     lua_getglobal(L, fieldName);
     std::string type(readField<std::string>(L, "type"));
     if (type == "DirectLua") {
@@ -84,7 +84,7 @@ Level loadLevelFromFile(
     std::vector<char> levelChunk(loadFileIntoVector(levelPath/path("main.lua")));
     LuaState levelGenerator((LuaState::new_state_t()));
     
-    lua_State* L(levelGenerator.ptr);
+    lua_State *L(levelGenerator.ptr);
     pushFunctionFromVector(L, levelChunk, "Level");
     
     LuaInterruptionHandle h(makeInterruptable(L, interrupter));

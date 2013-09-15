@@ -38,11 +38,11 @@ public:
     FrameUpdateSet& operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o);
     FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) o);
     FrameUpdateSet& operator=(BOOST_RV_REF(FrameUpdateSet) o);
-    void add(Frame* frame);
+    void add(Frame *frame);
     void add(FrameUpdateSet const& o);
     void swap(FrameUpdateSet& o);
 
-    typedef boost::container::vector<Frame*> SetType;
+    typedef boost::container::vector<Frame *> SetType;
 
     //Privacy leak here, it is an error to use the iterators as anything more than a BidirectionalIterator
     //I should define my own iterator class, but I can't be bothered right now

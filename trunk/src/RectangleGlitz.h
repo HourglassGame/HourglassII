@@ -22,7 +22,7 @@ public:
     virtual std::size_t clone_size() const {
         return sizeof *this;
     }
-    virtual RectangleGlitz* perform_clone(void* memory) const {
+    virtual RectangleGlitz *perform_clone(void *memory) const {
         return new (memory) RectangleGlitz(*this);
     }
     virtual bool operator<(GlitzImplementation const& right) const {

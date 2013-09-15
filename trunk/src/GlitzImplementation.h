@@ -7,7 +7,7 @@ class GlitzImplementation {
 public:
     virtual void display(LayeredCanvas& canvas) const = 0;
     virtual std::size_t clone_size() const = 0;
-    virtual GlitzImplementation* perform_clone(void* memory) const = 0;
+    virtual GlitzImplementation *perform_clone(void *memory) const = 0;
 
     virtual ~GlitzImplementation(){}
 private:

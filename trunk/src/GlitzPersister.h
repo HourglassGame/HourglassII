@@ -65,14 +65,14 @@ public:
     typedef GlitzPersister base_type;
     GlitzPersister const& get() const   { return *glitzPersister_; }
     
-    ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const { return glitzPersister_->runStep(frame); }
+    ObjectAndTime<GlitzPersister, Frame *> runStep(Frame *frame) const { return glitzPersister_->runStep(frame); }
     Glitz const& getForwardsGlitz() const { return glitzPersister_->getForwardsGlitz(); }
     Glitz const& getReverseGlitz() const { return glitzPersister_->getReverseGlitz(); }
     
     bool operator==(GlitzPersisterConstPtr const& o) const { return *glitzPersister_ == *o.glitzPersister_; }
     bool operator<(GlitzPersisterConstPtr const& o) const { return *glitzPersister_ < *o.glitzPersister_; }
 private:
-    GlitzPersister const* glitzPersister_;
+    GlitzPersister const *glitzPersister_;
 };
 
 template<>

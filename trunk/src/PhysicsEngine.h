@@ -74,7 +74,7 @@ public:
     // executes frame and returns departures
     PhysicsEngine::PhysicsReturnT executeFrame(
         ObjectPtrList<Normal> const& arrivals,
-        Frame* frame,
+        Frame *frame,
         std::vector<InputList> const& playerInput,
         OperationInterrupter& interrupter) const;
 private:

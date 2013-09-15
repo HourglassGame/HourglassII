@@ -29,11 +29,11 @@ public:
     }
     
     virtual bool operator<(GlitzImplementation const& right) const {
-        LineGlitz const& actual_right(*boost::polymorphic_downcast<LineGlitz const*>(&right));
+        LineGlitz const& actual_right(*boost::polymorphic_downcast<LineGlitz const *>(&right));
         return asTie() < actual_right.asTie();
     }
     virtual bool operator==(GlitzImplementation const& o) const {
-        LineGlitz const& actual_other(*boost::polymorphic_downcast<LineGlitz const*>(&o));
+        LineGlitz const& actual_other(*boost::polymorphic_downcast<LineGlitz const *>(&o));
         return asTie() == actual_other.asTie();
     }
 private:
