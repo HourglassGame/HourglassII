@@ -754,19 +754,18 @@ void DrawTimelineContents(
     double height)
 {
     sf::Image timelineContents(target.GetView().GetRect().GetWidth(), height, Colour(0, 0, 0, 0));
-    double oldestGuy(timeEngine.getReplayData().size());
+    double numberOfGuys(timeEngine.getReplayData().size()+1);
     double timelineLength(timeEngine.getTimelineLength());
     hg::UniverseID universe(timeEngine.getTimelineLength());
     for(int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame *frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         foreach (hg::GuyOutputInfo const& guy, frame->getView().getGuyInformation()) {
             double left = frameNumber*target.GetView().GetRect().GetWidth()/timelineLength;
-            double top = height*guy.getIndex()/oldestGuy;
+            double top = height*guy.getIndex()/numberOfGuys;
             timelineContents.SetPixel(left, top, guy.getBoxCarrying() ? Colour(5, 5, 255) : Colour(250,250,0));
         }
     }
-    target.Draw(
-        sf::Sprite(timelineContents, sf::Vector2f(0, 10.f)));
+    target.Draw(sf::Sprite(timelineContents, sf::Vector2f(0, 10.f)));
 }
 
 void DrawWaves(
