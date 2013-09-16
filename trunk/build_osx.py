@@ -217,6 +217,7 @@ def create_bundle(
     shutil.copy("basicTriggerSystem.lua", "build/HourglassII.app/Contents/Resources/basicTriggerSystem.lua")
     shutil.copytree("level.lvl", "build/HourglassII.app/Contents/Resources/level.lvl")
     shutil.copytree("levels", "build/HourglassII.app/Contents/Resources/levels")
+	shutil.copytree("GlitzData", "build/HourglassII.app/Contents/Resources/GlitzData")
     shutil.copy("src/osx/HourglassSwirl.icns", "build/HourglassII.app/Contents/Resources/HourglassSwirl.icns")
     #delete lipo'd exe
     os.remove(universal_exe)
