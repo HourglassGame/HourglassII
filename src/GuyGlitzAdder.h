@@ -13,9 +13,9 @@ public:
         mt::std::vector<Glitz>::type& forwardsGlitz,
         mt::std::vector<Glitz>::type& reverseGlitz,
 		mt::std::vector<GlitzPersister>::type& persistentGlitz) :
-    forwardsGlitz_(&forwardsGlitz), 
-	reverseGlitz_(&reverseGlitz),
-	persistentGlitz_(&persistentGlitz)
+    forwardsGlitz(&forwardsGlitz),
+	reverseGlitz(&reverseGlitz),
+	persistentGlitz(&persistentGlitz)
     {}
     //Adds the glitz that would be appropriate for a guy
     //with the given characteristics
@@ -46,15 +46,15 @@ public:
             int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
             
-            forwardsGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
-            forwardsGlitz_->push_back(
+            forwardsGlitz->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
+            forwardsGlitz->push_back(
                 facing ?
                     Glitz(multi_thread_new<RectangleGlitz>(600, hmid, top, halfwidth, halfheight, 0x32323200u)) :
                     Glitz(multi_thread_new<RectangleGlitz>(600, left, top, halfwidth, halfheight, 0x32323200u)));
             
             if (boxCarrying)
             {
-                forwardsGlitz_->push_back(
+                forwardsGlitz->push_back(
                     Glitz(
                         multi_thread_new<RectangleGlitz>(
                             600,
@@ -70,7 +70,7 @@ public:
                 int tipx = hmid;
                 int tipy = top - 400;
                 int width = 200;
-                forwardsGlitz_->push_back(
+                forwardsGlitz->push_back(
                     Glitz(
                         multi_thread_new<LineGlitz>(
                             650,
@@ -81,7 +81,7 @@ public:
                             width,
                             0xFF000000u)));
                 
-                forwardsGlitz_->push_back(
+                forwardsGlitz->push_back(
                     Glitz(
                         multi_thread_new<LineGlitz>(
                             650,
@@ -92,7 +92,7 @@ public:
                             width,
                             0xFF000000u)));
                 
-                forwardsGlitz_->push_back(
+                forwardsGlitz->push_back(
                     Glitz(
                         multi_thread_new<LineGlitz>(
                             650,
@@ -121,15 +121,15 @@ public:
             int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
 
-            reverseGlitz_->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
-            reverseGlitz_->push_back(
+            reverseGlitz->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
+            reverseGlitz->push_back(
                 facing ?
                     Glitz(multi_thread_new<RectangleGlitz>(600, hmid, top, halfwidth, halfheight, 0x32323200u)) :
                     Glitz(multi_thread_new<RectangleGlitz>(600, left, top, halfwidth, halfheight, 0x32323200u)));
 
             if (boxCarrying)
             {
-                reverseGlitz_->push_back(
+                reverseGlitz->push_back(
                     Glitz(
                         multi_thread_new<RectangleGlitz>(
                             600,
@@ -144,7 +144,7 @@ public:
                 int tipx = hmid;
                 int tipy = top - 400;
                 int width = 200;
-                reverseGlitz_->push_back(
+                reverseGlitz->push_back(
                     Glitz(
                         multi_thread_new<LineGlitz>(
                             650,
@@ -155,7 +155,7 @@ public:
                             width,
                             0xFF000000u)));
                 
-                reverseGlitz_->push_back(
+                reverseGlitz->push_back(
                     Glitz(
                         multi_thread_new<LineGlitz>(
                             650,
@@ -166,7 +166,7 @@ public:
                             width,
                             0xFF000000u)));
                 
-                reverseGlitz_->push_back(
+                reverseGlitz->push_back(
                     Glitz(
                         multi_thread_new<LineGlitz>(
                             650,
@@ -185,10 +185,12 @@ public:
 		int y1,
 		int x2,
 		int y2,
+        int xAim,
+        int yAim,
 		TimeDirection timeDirection) const
 	{
 		int width = 100;
-		persistentGlitz_->push_back(
+		persistentGlitz->push_back(
 			GlitzPersister(
 				Glitz(
 					multi_thread_new<LineGlitz>(
@@ -210,21 +212,21 @@ public:
 						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
 				60,
 				timeDirection));
-		persistentGlitz_->push_back(
+		persistentGlitz->push_back(
 			GlitzPersister(
 				Glitz(
 					multi_thread_new<RectangleGlitz>(
 						1500, 
-						x2-200, 
-						y2-200, 
+						xAim-200,
+						yAim-200,
 						400, 
 						400,
 						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
 				Glitz(
 					multi_thread_new<RectangleGlitz>(
 						1500, 
-						x2-200, 
-						y2-200, 
+						xAim-200,
+						yAim-200,
 						400, 
 						400,
 						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
@@ -239,7 +241,7 @@ public:
 		int height,
 		TimeDirection timeDirection) const
 	{
-		persistentGlitz_->push_back(
+		persistentGlitz->push_back(
 			GlitzPersister(
 				Glitz(
 					multi_thread_new<RectangleGlitz>(
@@ -262,9 +264,9 @@ public:
 	}
 	
 private:
-    mt::std::vector<Glitz>::type* forwardsGlitz_;
-    mt::std::vector<Glitz>::type* reverseGlitz_;
-	mt::std::vector<GlitzPersister>::type* persistentGlitz_;
+    mt::std::vector<Glitz>::type *forwardsGlitz;
+    mt::std::vector<Glitz>::type *reverseGlitz;
+	mt::std::vector<GlitzPersister>::type *persistentGlitz;
 };
 }
 #endif //HG_GUY_GLITZ_ADDER_H

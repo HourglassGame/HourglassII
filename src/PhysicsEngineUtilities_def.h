@@ -1355,7 +1355,7 @@ void guyStep(
 				x, y, newWidth, newHeight,
 				shootable);
 				
-			guyGlitzAdder.addLaserGlitz(sx,sy,px,py,guyArrivalList[i].getTimeDirection());
+			guyGlitzAdder.addLaserGlitz(sx,sy,px,py,input.getXCursor(),input.getYCursor(),guyArrivalList[i].getTimeDirection());
 				
 			if (targetType == GUY)
 			{
