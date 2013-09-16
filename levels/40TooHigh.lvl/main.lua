@@ -1,6 +1,6 @@
 name = "Too High"
 speedOfTime = 3
-timelineLength = 5400
+timelineLength = 10800
 environment =
 {
     gravity = 25,
