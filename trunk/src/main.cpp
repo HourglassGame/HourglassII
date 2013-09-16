@@ -756,8 +756,8 @@ Colour asColour(sf::Vector3<double>const& vec) {
 
 Colour guyPositionToColour(double xFrac, double yFrac) {
     static sf::Vector3<double> const posStart(255,0,0);
-    static sf::Vector3<double> const xMax(255,255,127.5);
-    static sf::Vector3<double> const yMax(0,0,128.5);
+    static sf::Vector3<double> const xMax(127,255,0);
+    static sf::Vector3<double> const yMax(128,0,255);
     
     static sf::Vector3<double> const xDif(xMax - posStart);
     static sf::Vector3<double> const yDif(yMax - posStart);
