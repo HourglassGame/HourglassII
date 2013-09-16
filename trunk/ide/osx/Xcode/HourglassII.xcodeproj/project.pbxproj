@@ -51,10 +51,12 @@
 		200E815114B4792500D054F4 /* UniverseID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810114B4792500D054F4 /* UniverseID.cpp */; };
 		200E815214B4792500D054F4 /* WorldState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200E810414B4792500D054F4 /* WorldState.cpp */; };
 		201345EB15E4543400E73DA5 /* LayeredCanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201345EA15E4543400E73DA5 /* LayeredCanvas.cpp */; };
+		2014155E17E74CEE00109D7B /* GlitzData in Resources */ = {isa = PBXBuildFile; fileRef = 2014155D17E74CEE00109D7B /* GlitzData */; };
 		201DF3A715F5793D00172501 /* UserDataProxyTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 201DF3A615F5793D00172501 /* UserDataProxyTable.cpp */; };
 		2021B82E15E7C967008D2F2E /* level.lvl in Resources */ = {isa = PBXBuildFile; fileRef = 2021B82D15E7C967008D2F2E /* level.lvl */; };
 		2027C25913FCB75900FBDF7B /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2027C25813FCB75900FBDF7B /* libfreetype.a */; };
 		202E857414BE84AE008F05EB /* GlitzPersister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 202E857314BE84AE008F05EB /* GlitzPersister.cpp */; };
+		203508B417E68A4800ABF21A /* ResourceManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 203508B217E68A4800ABF21A /* ResourceManager.cpp */; };
 		2039E7B5165929FA0075481C /* LuaSandbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2039E7B3165929FA0075481C /* LuaSandbox.cpp */; };
 		20469DFE14B47D9E00FF6A02 /* libboost_chrono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DF914B47D9E00FF6A02 /* libboost_chrono.a */; };
 		20469DFF14B47D9E00FF6A02 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */; };
@@ -141,6 +143,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2004AB8F16B4C8DB00C307E1 /* Scene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Scene.h; path = ../../../src/Scene.h; sourceTree = "<group>"; };
 		200AC21514F9128200B1E17F /* move_function_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = move_function_test.cpp; path = ../../../src/move_function_test.cpp; sourceTree = "<group>"; };
 		200DE21514E4A05200172DD0 /* LuaInterruption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaInterruption.h; path = ../../../src/LuaInterruption.h; sourceTree = "<group>"; };
 		200DE21614E4A0AE00172DD0 /* LuaInterruption.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaInterruption.cpp; path = ../../../src/LuaInterruption.cpp; sourceTree = "<group>"; };
@@ -284,6 +287,8 @@
 		200E810514B4792500D054F4 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = WorldState.h; path = ../../../src/WorldState.h; sourceTree = SOURCE_ROOT; };
 		201345E815E3694000E73DA5 /* LineGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LineGlitz.h; path = ../../../src/LineGlitz.h; sourceTree = "<group>"; };
 		201345EA15E4543400E73DA5 /* LayeredCanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LayeredCanvas.cpp; path = ../../../src/LayeredCanvas.cpp; sourceTree = "<group>"; };
+		2014155D17E74CEE00109D7B /* GlitzData */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GlitzData; path = ../../../GlitzData; sourceTree = "<group>"; };
+		2014155F17E7526B00109D7B /* ImageGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImageGlitz.h; path = ../../../src/ImageGlitz.h; sourceTree = "<group>"; };
 		2015393714E0B14A00AE8B14 /* OperationInterruptedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OperationInterruptedException.h; path = ../../../src/OperationInterruptedException.h; sourceTree = "<group>"; };
 		201D503514D9305000FA5680 /* LuaStackManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaStackManager.h; path = ../../../src/LuaStackManager.h; sourceTree = "<group>"; };
 		201DF3A615F5793D00172501 /* UserDataProxyTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UserDataProxyTable.cpp; path = ../../../src/UserDataProxyTable.cpp; sourceTree = "<group>"; };
@@ -297,6 +302,8 @@
 		202FA86614D2984E000CD16A /* multi_thread_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread_memory_source.h; path = ../../../src/multi_thread_memory_source.h; sourceTree = "<group>"; };
 		202FEF841598B62000F47F6C /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../../../levels; sourceTree = "<group>"; };
 		203066C814C598B1005881F4 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../../../src/Canvas.h; sourceTree = "<group>"; };
+		203508B217E68A4800ABF21A /* ResourceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourceManager.cpp; path = ../../../src/ResourceManager.cpp; sourceTree = "<group>"; };
+		203508B317E68A4800ABF21A /* ResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourceManager.h; path = ../../../src/ResourceManager.h; sourceTree = "<group>"; };
 		2039E7B3165929FA0075481C /* LuaSandbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaSandbox.cpp; path = ../../../src/LuaSandbox.cpp; sourceTree = "<group>"; };
 		2039E7B4165929FA0075481C /* LuaSandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaSandbox.h; path = ../../../src/LuaSandbox.h; sourceTree = "<group>"; };
 		20469DF914B47D9E00FF6A02 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = ../../../ext/boost/lib/libboost_chrono.a; sourceTree = SOURCE_ROOT; };
@@ -312,6 +319,7 @@
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		2064466C15D9FBF5009EF465 /* Levels_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Levels_test.cpp; path = ../../../src/Levels_test.cpp; sourceTree = "<group>"; };
 		20723E6D15E895CB00B5FDEA /* LuaModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaModule.h; path = ../../../src/LuaModule.h; sourceTree = "<group>"; };
+		207C0DA916B50770005D4110 /* RunningGameScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RunningGameScene.h; path = ../../../src/RunningGameScene.h; sourceTree = "<group>"; };
 		208FD88E14D163140089BC25 /* GlitzImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzImplementation.h; path = ../../../src/GlitzImplementation.h; sourceTree = "<group>"; };
 		208FD88F14D16A180089BC25 /* RectangleGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RectangleGlitz.h; path = ../../../src/RectangleGlitz.h; sourceTree = "<group>"; };
 		208FD89014D16E600089BC25 /* default_delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_delete.h; path = ../../../src/default_delete.h; sourceTree = "<group>"; };
@@ -653,16 +661,20 @@
 			children = (
 				201D503414D9302A00FA5680 /* LuaUtilities */,
 				200E80B514B4792500D054F4 /* main.cpp */,
+				203508B317E68A4800ABF21A /* ResourceManager.h */,
+				203508B217E68A4800ABF21A /* ResourceManager.cpp */,
+				2004AB8F16B4C8DB00C307E1 /* Scene.h */,
+				207C0DA916B50770005D4110 /* RunningGameScene.h */,
 				2064466C15D9FBF5009EF465 /* Levels_test.cpp */,
 				200E80EF14B4792500D054F4 /* TestDriver.h */,
 				200E80EE14B4792500D054F4 /* TestDriver.cpp */,
 				20B9B32514C6DF1D00E65866 /* sfColour.h */,
-				20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */,
 				202E857714BF31E5008F05EB /* Utility */,
 				200E804114B4792500D054F4 /* BoostHashCompare.h */,
+				203066C814C598B1005881F4 /* Canvas.h */,
+				20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */,
 				20F68E9D15E47113006B68AC /* LayeredCanvas.h */,
 				201345EA15E4543400E73DA5 /* LayeredCanvas.cpp */,
-				203066C814C598B1005881F4 /* Canvas.h */,
 				200E805714B4792500D054F4 /* Environment.h */,
 				200E805614B4792500D054F4 /* Environment.cpp */,
 				200E806014B4792500D054F4 /* FrameUpdateSet_fwd.h */,
@@ -675,9 +687,10 @@
 				200E806714B4792500D054F4 /* Glitz.h */,
 				200E806614B4792500D054F4 /* Glitz.cpp */,
 				208FD88E14D163140089BC25 /* GlitzImplementation.h */,
+				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
 				201345E815E3694000E73DA5 /* LineGlitz.h */,
 				209B3C85169BDFEC003C554D /* TextGlitz.h */,
-				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
+				2014155F17E7526B00109D7B /* ImageGlitz.h */,
 				200E806B14B4792500D054F4 /* GuyOutputInfo.h */,
 				200E806A14B4792500D054F4 /* GuyOutputInfo.cpp */,
 				200E806D14B4792500D054F4 /* Hg_Input.h */,
@@ -724,6 +737,7 @@
 		2068CD3C125F158300028D2A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2014155D17E74CEE00109D7B /* GlitzData */,
 				20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */,
 				2021B82D15E7C967008D2F2E /* level.lvl */,
 				20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */,
@@ -940,6 +954,7 @@
 				20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */,
 				2021B82E15E7C967008D2F2E /* level.lvl in Resources */,
 				20FEFC631658BFFB009FE3AB /* basicTriggerSystem.lua in Resources */,
+				2014155E17E74CEE00109D7B /* GlitzData in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1038,6 +1053,7 @@
 				20945A24160BF751005A94EE /* lctype.cpp in Sources */,
 				20945A26160BF7AB005A94EE /* lobject.cpp in Sources */,
 				2039E7B5165929FA0075481C /* LuaSandbox.cpp in Sources */,
+				203508B417E68A4800ABF21A /* ResourceManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1084,6 +1100,7 @@
 				GCC_CW_ASM_SYNTAX = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					BOOST_THREAD_USES_MOVE,
 					BOOST_MULTI_ARRAY_NO_GENERATORS,
 					HG_COMPILE_TESTS,
 				);
@@ -1229,6 +1246,7 @@
 				GCC_CW_ASM_SYNTAX = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					BOOST_THREAD_USES_MOVE,
 					BOOST_MULTI_ARRAY_NO_GENERATORS,
 					HG_COMPILE_TESTS,
 				);
@@ -1663,6 +1681,7 @@
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
+					BOOST_THREAD_USES_MOVE,
 					NDEBUG,
 					BOOST_MULTI_ARRAY_NO_GENERATORS,
 				);

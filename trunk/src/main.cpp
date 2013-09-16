@@ -10,6 +10,7 @@
 #include "Foreach.h"
 #include "ReplayIO.h"
 #include "LayeredCanvas.h"
+#include "ResourceManager.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -55,11 +56,12 @@ typedef sf::Color Colour;
 namespace {
     void initialseCurrentPath(std::vector<std::string> const& args);
     int run_main(std::vector<std::string> const& args);
-    void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo);
+    void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo, hg::LevelResources const& resources);
     void Draw(
         sf::RenderWindow& target,
         hg::mt::std::vector<hg::Glitz>::type const& glitz,
-        hg::Wall const& wall);
+        hg::Wall const& wall,
+        hg::LevelResources const& resources);
     void DrawWaves(
         sf::RenderTarget& target,
         hg::TimeEngine::FrameListList const& waves,
@@ -129,13 +131,15 @@ namespace {
         //boost::result_of support
         typedef hg::TimeEngine result_type;
 
-        CreateTimeEngine(hg::OperationInterrupter& interrupter) : interrupter_(&interrupter) {}
+        CreateTimeEngine(std::string const& filename, hg::OperationInterrupter& interrupter)
+            : filename(filename), interrupter(&interrupter) {}
 
         hg::TimeEngine operator()() const {
-            return hg::TimeEngine(hg::loadLevelFromFile("level.lvl", *interrupter_), *interrupter_);
+            return hg::TimeEngine(hg::loadLevelFromFile(filename, *interrupter), *interrupter);
         }
     private:
-        hg::OperationInterrupter *interrupter_;
+        std::string filename;
+        hg::OperationInterrupter *interrupter;
     };
 }
 
@@ -296,17 +300,20 @@ int run_main(std::vector<std::string> const& args)
     hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
 
+    std::string const levelPath("level.lvl");
+
     hg::unique_ptr<hg::OperationInterrupter> interrupter(new hg::OperationInterrupter());
 
     boost::unique_future<hg::TimeEngine> futureTimeEngine(
     	enqueue_task(
     		timeEngineTaskQueue,
-    		CreateTimeEngine(*interrupter)));
+    		CreateTimeEngine(levelPath, *interrupter)));
 
     //timeEngine would be a boost::optional if boost::optional supported r-value refs
     hg::unique_ptr<hg::TimeEngine> timeEngine;
+    hg::LevelResources levelResources;
 
-    enum {LOADING_LEVEL, RUNNING_LEVEL, AWAITING_INPUT, PAUSED} state(LOADING_LEVEL);
+    enum {LOADING_LEVEL, LOADING_RESOURCES, RUNNING_LEVEL, AWAITING_INPUT, PAUSED} state(LOADING_LEVEL);
 
     hg::Input input;
 
@@ -352,7 +359,7 @@ int run_main(std::vector<std::string> const& args)
                         input.setTimelineLength(timeEngine->getTimelineLength());
                         inertia = hg::Inertia();
                         interrupter.reset();
-                        state = AWAITING_INPUT;
+                        state = LOADING_RESOURCES;
                     }
                     catch (hg::LuaError const& e) {
                         std::cerr << "There was an error in some lua, the error message was:\n" << e.message << std::endl;
@@ -376,6 +383,20 @@ int run_main(std::vector<std::string> const& args)
 				app.Display();
 				break;
 			}
+            case LOADING_RESOURCES:
+            {
+                //Due to SFML limitations, resource loading must be done in the main window thread.
+                //These limitations could be removed by weaning ourselves off SFML
+                sf::String loadingGlyph("Loading Resources...");
+				loadingGlyph.SetColor(Colour(255,255,255));
+				loadingGlyph.SetPosition(520, 450);
+				loadingGlyph.SetSize(12.f);
+				app.Clear();
+				app.Draw(loadingGlyph);
+				app.Display();
+                levelResources = hg::loadLevelResources(levelPath, "GlitzData");
+                state = AWAITING_INPUT;
+            }
 			case AWAITING_INPUT:
 			{
 				hg::InputList inputList;
@@ -433,7 +454,7 @@ int run_main(std::vector<std::string> const& args)
 						    futureTimeEngine =
 						    	enqueue_task(
 						    		timeEngineTaskQueue,
-						    		CreateTimeEngine(*interrupter));
+						    		CreateTimeEngine(levelPath, *interrupter));
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Load replay
@@ -449,7 +470,7 @@ int run_main(std::vector<std::string> const& args)
 						    futureTimeEngine =
 						    	enqueue_task(
 						    		timeEngineTaskQueue,
-						    		CreateTimeEngine(*interrupter));
+						    		CreateTimeEngine(levelPath, *interrupter));
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Interrupt replay and begin Playing
@@ -486,7 +507,7 @@ int run_main(std::vector<std::string> const& args)
 				}
 				if (futureRunResult.is_ready()) {
 					try {
-						runStep(*timeEngine, app, inertia, futureRunResult.get());
+						runStep(*timeEngine, app, inertia, futureRunResult.get(), levelResources);
                         interrupter.reset();
 					}
 					catch (hg::PlayerVictoryException const&) {
@@ -607,7 +628,7 @@ void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::ty
     }
 }
 
-void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo)
+void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo, hg::LevelResources const& resources)
 {
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
@@ -629,7 +650,8 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
         Draw(
             app,
             getGlitzForDirection(view, currentGuyDirection),
-            timeEngine.getWall());
+            timeEngine.getWall(),
+            resources);
         
         drawInventory(app, findCurrentGuy(view.getGuyInformation()).getPickups(), timeEngine.getReplayData().back().getAbilityCursor());
     }
@@ -641,7 +663,8 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
             hg::Frame *frame(timeEngine.getFrame(inertialFrame));
             Draw(app,
                  getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
-                 timeEngine.getWall());
+                 timeEngine.getWall(),
+                 resources);
         }
         else {
             drawnFrame =
@@ -656,7 +679,8 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
             hg::Frame *frame(timeEngine.getFrame(drawnFrame));
             Draw(app,
                  getGlitzForDirection(frame->getView(), hg::FORWARDS),
-                 timeEngine.getWall());
+                 timeEngine.getWall(),
+                 resources);
         }
     }
     DrawTimeline(app, timeEngine, waveInfo.updatedFrames(), drawnFrame, timeEngine.getReplayData().back().getTimeCursor(), timeEngine.getTimelineLength());
@@ -710,7 +734,8 @@ void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& ine
 void Draw(
     sf::RenderWindow& target,
     hg::mt::std::vector<hg::Glitz>::type const& glitz,
-    hg::Wall const& wall)
+    hg::Wall const& wall,
+    hg::LevelResources const& resources)
 {
     target.Clear(Colour(255,255,255));
     //Number by which all positions are be multiplied
@@ -720,7 +745,7 @@ void Draw(
     sf::View const& oldView(target.GetView());
     sf::View scaledView(sf::FloatRect(0.f, 0.f, target.GetWidth()/scalingFactor, target.GetHeight()/scalingFactor));
     target.SetView(scaledView);
-    hg::sfRenderTargetCanvas canvas(target);
+    hg::sfRenderTargetCanvas canvas(target, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
 	foreach (hg::Glitz const& particularGlitz, glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
