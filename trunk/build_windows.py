@@ -102,7 +102,7 @@ def create_bundle(
         shutil.copy(dll, "build/HourglassII/")
     shutil.copytree("level.lvl", "build/HourglassII/level.lvl")
     shutil.copytree("levels", "build/HourglassII/levels")
-	shutil.copytree("GlitzData", "build/HourglassII/GlitzData")
+    shutil.copytree("GlitzData", "build/HourglassII/GlitzData")
     shutil.copy("basicTriggerSystem.lua", "build/HourglassII/")
     os.remove(executable)
 
@@ -139,7 +139,7 @@ compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "NDEBUG", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_USES_MOVE"]
+defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_USES_MOVE"]
 
 includes = [boost_include, sfml_inlcude, tbb_include]
 
