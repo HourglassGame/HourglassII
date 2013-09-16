@@ -12,7 +12,6 @@
 #include "LayeredCanvas.h"
 #include <SFML/Graphics.hpp>
 
-#include <boost/numeric/ublas/vector.hpp>
 #include <boost/multi_array.hpp>
 #include <boost/assign.hpp>
 #include <boost/range/adaptor/reversed.hpp>
@@ -70,6 +69,7 @@ namespace {
         sf::RenderTarget& target,
         hg::TimeEngine& timeEngine,
         double height);
+    void DrawColours(sf::RenderWindow& target, int roomWidth, int roomHeight);
     void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength);
     void DrawTimeline(
         sf::RenderTarget& target,
@@ -727,6 +727,7 @@ void Draw(
     flusher.partialFlush(1000);
     DrawWall(target, wall);
     flusher.partialFlush(std::numeric_limits<int>::max());
+    if (target.GetInput().IsKeyDown(sf::Key::LShift)) DrawColours(target, wall.roomWidth(), wall.roomHeight());
     target.SetView(oldView);
 }
 
@@ -749,18 +750,33 @@ void DrawWall(
     }
 }
 
-Colour asColour(boost::numeric::ublas::vector<double> const& vec) {
-    //To silence "unused function" warning
-    (void)boost_numeric_ublas_abs<unsigned int>;
-    (void)boost_numeric_ublas_abs<unsigned long>;
-    return Colour(vec[0], vec[1], vec[2]);
-}
-boost::numeric::ublas::vector<double> createVector3(double const x, double const y, double const z) {
-    boost::numeric::ublas::vector<double> vec(3);
-    vec[0]=x; vec[1]=y; vec[2]=z;
-    return vec;
+Colour asColour(sf::Vector3<double>const& vec) {
+    return Colour(vec.x, vec.y, vec.z);
 }
 
+Colour guyPositionToColour(double xFrac, double yFrac) {
+    static sf::Vector3<double> const posStart(255,0,0);
+    static sf::Vector3<double> const xMax(255,255,127.5);
+    static sf::Vector3<double> const yMax(0,0,128.5);
+    
+    static sf::Vector3<double> const xDif(xMax - posStart);
+    static sf::Vector3<double> const yDif(yMax - posStart);
+
+    return asColour(posStart + xDif*xFrac + yDif*yFrac);
+}
+
+void DrawColours(sf::RenderWindow& target, int roomWidth, int roomHeight)
+{
+    sf::Image colours(roomWidth/100, roomHeight/100, Colour(0, 0, 0, 0));
+    for (int x(0); x != roomWidth/100; ++x) {
+        for (int y(0); y != roomHeight/100; ++y) {
+            Colour colour(guyPositionToColour(x*100./roomWidth,y*100./roomHeight));
+            colour.a = 220;
+            colours.SetPixel(x, y, colour);
+        }
+    }
+    target.Draw(sf::Sprite(colours, sf::Vector2f(0, 0)));
+}
 
 void DrawTimelineContents(
     sf::RenderTarget& target,
@@ -768,34 +784,23 @@ void DrawTimelineContents(
     double height)
 {
     sf::Image timelineContents(target.GetView().GetRect().GetWidth(), height, Colour(0, 0, 0, 0));
-    double numberOfGuys(timeEngine.getReplayData().size()+1);
-    double timelineLength(timeEngine.getTimelineLength());
-    hg::UniverseID universe(timeEngine.getTimelineLength());
+    double const numberOfGuys(timeEngine.getReplayData().size()+1);
+    double const timelineLength(timeEngine.getTimelineLength());
+    hg::UniverseID const universe(timeEngine.getTimelineLength());
     
-    namespace num = boost::numeric::ublas;
-    num::vector<double> const posStart(createVector3(255,0,0));
-    num::vector<double> const xMax(createVector3(255,255,127.5));
-    num::vector<double> const yMax(createVector3(0,0,128.5));
-    
-    num::vector<double> const xDif(xMax - posStart);
-    num::vector<double> const yDif(yMax - posStart);
-    
-    for(int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
-        hg::Frame *frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
+    for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
+        hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         foreach (hg::GuyOutputInfo const& guy, frame->getView().getGuyInformation()) {
             double left = frameNumber*target.GetView().GetRect().GetWidth()/timelineLength;
-            double top = height*guy.getIndex()/numberOfGuys;
+            double top = (height-4)*guy.getIndex()/numberOfGuys;
             
-            double xPos = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
-            double yPos = guy.getY()/static_cast<double>(timeEngine.getWall().roomHeight());
-            
-            num::vector<double> positionColourVec(3);
-            positionColourVec = posStart + xDif*xPos + yDif*yPos;
-            
-            Colour const colour(asColour(positionColourVec));
+            double xFrac = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
+            double yFrac = guy.getY()/static_cast<double>(timeEngine.getWall().roomHeight());
+
+            Colour const colour(guyPositionToColour(xFrac, yFrac));
 
             int pos(top);
-            for (int end(std::min(height, top+1)); pos != end; ++pos) {
+            for (int const end(top+1); pos != end; ++pos) {
                 timelineContents.SetPixel(
                     left, pos,
                     !guy.getBoxCarrying() ?
@@ -804,7 +809,7 @@ void DrawTimelineContents(
                             Colour(255, 0, 255)
                           : Colour(0, 255, 0));
             }
-            for (int end(std::min(height, top+4)); pos != end; ++pos) {
+            for (int const end(top+4); pos != end; ++pos) {
                 timelineContents.SetPixel(left, pos, colour);
             }
         }
