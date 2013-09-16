@@ -4,7 +4,7 @@
 #include "OperationInterrupter.h"
 #include <boost/filesystem/path.hpp>
 namespace hg {
-Level loadLevelFromFile(
-    boost::filesystem::path const& levelPath, OperationInterrupter& interrupter);
-} //namespace hg
+    Level loadLevelFromFile(
+        boost::filesystem::path const& levelPath, OperationInterrupter& interrupter);
+}
 #endif //HG_LEVEL_LOADER_H

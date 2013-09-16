@@ -45,6 +45,7 @@ public:
     //RectangleGlitz = 0
     //LineGlitz = 1
     //TextGlitz = 2
+    //ImageGlitz = 3
     bool operator<(Glitz const& right) const {
         if (impl->order_ranking() == right.impl->order_ranking()) {
             return *impl < *right.impl;

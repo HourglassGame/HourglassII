@@ -7,6 +7,47 @@
 #include "RectangleGlitz.h"
 #include "LineGlitz.h"
 namespace hg {
+
+inline void addCurrentGuyArrow(
+    mt::std::vector<Glitz>::type& glitzList, int hmid, int top, int halfwidth, vector2<int> size)
+{
+    int tipx = hmid;
+    int tipy = top - 400;
+    int width = 200;
+    glitzList.push_back(
+        Glitz(
+            multi_thread_new<LineGlitz>(
+                650,
+                tipx,
+                top - size.y/2 - 400,
+                tipx,
+                tipy,
+                width,
+                0xFF000000u)));
+    
+    glitzList.push_back(
+        Glitz(
+            multi_thread_new<LineGlitz>(
+                650,
+                tipx+halfwidth/2,
+                top - size.y/4 - 400,
+                hmid,
+                tipy+200,
+                width,
+                0xFF000000u)));
+    
+    glitzList.push_back(
+        Glitz(
+            multi_thread_new<LineGlitz>(
+                650,
+                tipx-halfwidth/2,
+                top - size.y/4 - 400,
+                hmid,
+                tipy+200,
+                width,
+                0xFF000000u)));
+}
+
 class GuyGlitzAdder {
 public:
     GuyGlitzAdder(
@@ -43,66 +84,31 @@ public:
             int const left(pnc.x);
             int const top(pnc.y);
             int const halfwidth(size.x/2);
-            int const halfheight(size.y/2);
+            //int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
             
-            forwardsGlitz->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
-            forwardsGlitz->push_back(
+            forwardsGlitz->push_back(Glitz(multi_thread_new<ImageGlitz>(
+                600,
                 facing ?
-                    Glitz(multi_thread_new<RectangleGlitz>(600, hmid, top, halfwidth, halfheight, 0x32323200u)) :
-                    Glitz(multi_thread_new<RectangleGlitz>(600, left, top, halfwidth, halfheight, 0x32323200u)));
+                    (timeDirection == FORWARDS ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
+                    (timeDirection == FORWARDS ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
+                left, top, size.x, size.y)));
             
             if (boxCarrying)
             {
                 forwardsGlitz->push_back(
                     Glitz(
-                        multi_thread_new<RectangleGlitz>(
+                        multi_thread_new<ImageGlitz>(
                             600,
+                            boxCarryDirection == FORWARDS ? 
+                              "global.box" : "global.box_r",
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
                             boxCarrySize,
-                            boxCarrySize,
-                            boxCarryDirection == FORWARDS ? 
-                              0x96009600u : 0x00960000u)));
+                            boxCarrySize)));
             }
             
-            if (currentGuy) {
-                int tipx = hmid;
-                int tipy = top - 400;
-                int width = 200;
-                forwardsGlitz->push_back(
-                    Glitz(
-                        multi_thread_new<LineGlitz>(
-                            650,
-                            tipx,
-                            top - size.y/2 - 400,
-                            tipx,
-                            tipy,
-                            width,
-                            0xFF000000u)));
-                
-                forwardsGlitz->push_back(
-                    Glitz(
-                        multi_thread_new<LineGlitz>(
-                            650,
-                            tipx+halfwidth/2,
-                            top - size.y/4 - 400,
-                            hmid,
-                            tipy+200,
-                            width,
-                            0xFF000000u)));
-                
-                forwardsGlitz->push_back(
-                    Glitz(
-                        multi_thread_new<LineGlitz>(
-                            650,
-                            tipx-halfwidth/2,
-                            top - size.y/4 - 400,
-                            hmid,
-                            tipy+200,
-                            width,
-                            0xFF000000u)));
-            }
+            if (currentGuy) addCurrentGuyArrow(*forwardsGlitz, hmid, top, halfwidth, size);
         }
         //Reverse View
         {
@@ -118,65 +124,29 @@ public:
             int const left(pnc.x);
             int const top(pnc.y);
             int const halfwidth(size.x/2);
-            int const halfheight(size.y/2);
+            //int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
 
-            reverseGlitz->push_back(Glitz(multi_thread_new<RectangleGlitz>(600, left, top, size.x, size.y, pnc.colour)));
-            reverseGlitz->push_back(
+            reverseGlitz->push_back(Glitz(multi_thread_new<ImageGlitz>(
+                600,
                 facing ?
-                    Glitz(multi_thread_new<RectangleGlitz>(600, hmid, top, halfwidth, halfheight, 0x32323200u)) :
-                    Glitz(multi_thread_new<RectangleGlitz>(600, left, top, halfwidth, halfheight, 0x32323200u)));
-
+                    (timeDirection == REVERSE ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
+                    (timeDirection == REVERSE ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
+                left, top, size.x, size.y)));
             if (boxCarrying)
             {
                 reverseGlitz->push_back(
                     Glitz(
-                        multi_thread_new<RectangleGlitz>(
+                        multi_thread_new<ImageGlitz>(
                             600,
+                            boxCarryDirection == REVERSE ? 
+                              "global.box" : "global.box_r",
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
                             boxCarrySize,
-                            boxCarrySize,
-                            boxCarryDirection == REVERSE ? 
-                              0x96009600u : 0x00960000u)));
+                            boxCarrySize)));
             }
-            if (currentGuy) {
-                int tipx = hmid;
-                int tipy = top - 400;
-                int width = 200;
-                reverseGlitz->push_back(
-                    Glitz(
-                        multi_thread_new<LineGlitz>(
-                            650,
-                            tipx,
-                            top - size.y/2 - 400,
-                            tipx,
-                            tipy,
-                            width,
-                            0xFF000000u)));
-                
-                reverseGlitz->push_back(
-                    Glitz(
-                        multi_thread_new<LineGlitz>(
-                            650,
-                            tipx+halfwidth/2,
-                            top - size.y/4 - 400,
-                            hmid,
-                            tipy+200,
-                            width,
-                            0xFF000000u)));
-                
-                reverseGlitz->push_back(
-                    Glitz(
-                        multi_thread_new<LineGlitz>(
-                            650,
-                            tipx-halfwidth/2,
-                            top - size.y/4 - 400,
-                            hmid,
-                            tipy+200,
-                            width,
-                            0xFF000000u)));
-            }
+            if (currentGuy) addCurrentGuyArrow(*reverseGlitz, hmid, top, halfwidth, size);
         }
     }
 	
