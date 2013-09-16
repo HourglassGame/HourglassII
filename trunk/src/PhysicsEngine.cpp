@@ -29,11 +29,22 @@ PhysicsEngine::PhysicsEngine(
         triggerSystem_(triggerSystem)
 {
 }
-
-static GuyOutputInfo constructGuyOutputInfo(Guy const& guy) {
-    return GuyOutputInfo(guy.getIndex(), guy.getTimeDirection(), guy.getPickups(), guy.getBoxCarrying(), guy.getBoxCarryDirection(), guy.getX(), guy.getY());
-}
-
+struct ConstructGuyOutputInfo : std::unary_function<Guy const&, GuyOutputInfo>{
+    ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation>::type const& arrivalLocations) :
+        arrivalLocations(&arrivalLocations) {}
+    GuyOutputInfo operator()(Guy const& guy) const {
+        int x = guy.getX();
+        int y = guy.getY();
+        if (guy.getArrivalBasis() != -1) {
+            x += (*arrivalLocations)[guy.getArrivalBasis()].getX();
+            y += (*arrivalLocations)[guy.getArrivalBasis()].getY();
+        }
+        return GuyOutputInfo(
+            guy.getIndex(), guy.getTimeDirection(), guy.getPickups(),
+            guy.getBoxCarrying(), guy.getBoxCarryDirection(), x, y);
+    }
+    mt::std::vector<ArrivalLocation>::type const *arrivalLocations;
+};
 struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame *> >
 {
     NextPersister(Frame *frame): frame_(frame) {}
@@ -84,7 +95,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boost::push_back(
         guyInfo,
         arrivals.getList<Guy>()
-            | boost::adaptors::transformed(constructGuyOutputInfo));
+            | boost::adaptors::transformed(ConstructGuyOutputInfo(physicsTriggerStuff.arrivalLocations)));
 
     mt::std::vector<ObjectAndTime<Guy, Frame*> >::type nextGuy;
     mt::std::vector<GlitzPersister>::type persistentGlitz;
