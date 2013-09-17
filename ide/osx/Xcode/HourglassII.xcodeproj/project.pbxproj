@@ -287,12 +287,12 @@
 		200E810514B4792500D054F4 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = WorldState.h; path = ../../../src/WorldState.h; sourceTree = SOURCE_ROOT; };
 		201345E815E3694000E73DA5 /* LineGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LineGlitz.h; path = ../../../src/LineGlitz.h; sourceTree = "<group>"; };
 		201345EA15E4543400E73DA5 /* LayeredCanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LayeredCanvas.cpp; path = ../../../src/LayeredCanvas.cpp; sourceTree = "<group>"; };
-		2014155D17E74CEE00109D7B /* GlitzData */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GlitzData; path = ../../../GlitzData; sourceTree = "<group>"; };
+		2014155D17E74CEE00109D7B /* GlitzData */ = {isa = PBXFileReference; lastKnownFileType = folder; name = GlitzData; path = ../../../data/GlitzData; sourceTree = "<group>"; };
 		2014155F17E7526B00109D7B /* ImageGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImageGlitz.h; path = ../../../src/ImageGlitz.h; sourceTree = "<group>"; };
 		2015393714E0B14A00AE8B14 /* OperationInterruptedException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OperationInterruptedException.h; path = ../../../src/OperationInterruptedException.h; sourceTree = "<group>"; };
 		201D503514D9305000FA5680 /* LuaStackManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaStackManager.h; path = ../../../src/LuaStackManager.h; sourceTree = "<group>"; };
 		201DF3A615F5793D00172501 /* UserDataProxyTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UserDataProxyTable.cpp; path = ../../../src/UserDataProxyTable.cpp; sourceTree = "<group>"; };
-		2021B82D15E7C967008D2F2E /* level.lvl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = level.lvl; path = ../../../level.lvl; sourceTree = "<group>"; };
+		2021B82D15E7C967008D2F2E /* level.lvl */ = {isa = PBXFileReference; lastKnownFileType = folder; name = level.lvl; path = ../../../data/level.lvl; sourceTree = "<group>"; };
 		2027C25813FCB75900FBDF7B /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../ext/freetype/lib/libfreetype.a; sourceTree = SOURCE_ROOT; };
 		202910D714E3B77100D90C07 /* multi_thread_deleter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread_deleter.h; path = ../../../src/multi_thread_deleter.h; sourceTree = "<group>"; };
 		202A488114DBD2AB0088D45E /* LuaUserData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LuaUserData.h; path = ../../../src/LuaUserData.h; sourceTree = "<group>"; };
@@ -300,7 +300,7 @@
 		202E857514BE84DB008F05EB /* todo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; name = todo.txt; path = ../../../../todo.txt; sourceTree = "<group>"; };
 		202FA86514D29725000CD16A /* default_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_memory_source.h; path = ../../../src/default_memory_source.h; sourceTree = "<group>"; };
 		202FA86614D2984E000CD16A /* multi_thread_memory_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = multi_thread_memory_source.h; path = ../../../src/multi_thread_memory_source.h; sourceTree = "<group>"; };
-		202FEF841598B62000F47F6C /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../../../levels; sourceTree = "<group>"; };
+		202FEF841598B62000F47F6C /* levels */ = {isa = PBXFileReference; lastKnownFileType = folder; name = levels; path = ../../../data/levels; sourceTree = "<group>"; };
 		203066C814C598B1005881F4 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../../../src/Canvas.h; sourceTree = "<group>"; };
 		203508B217E68A4800ABF21A /* ResourceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourceManager.cpp; path = ../../../src/ResourceManager.cpp; sourceTree = "<group>"; };
 		203508B317E68A4800ABF21A /* ResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourceManager.h; path = ../../../src/ResourceManager.h; sourceTree = "<group>"; };
@@ -402,7 +402,7 @@
 		20F06FC01474B3E00019ADB4 /* libtbb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbb.dylib; path = ../../../ext/tbb/lib/libtbb.dylib; sourceTree = SOURCE_ROOT; };
 		20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbbmalloc.dylib; path = ../../../ext/tbb/lib/libtbbmalloc.dylib; sourceTree = SOURCE_ROOT; };
 		20F68E9D15E47113006B68AC /* LayeredCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LayeredCanvas.h; path = ../../../src/LayeredCanvas.h; sourceTree = "<group>"; };
-		20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = basicTriggerSystem.lua; path = ../../../basicTriggerSystem.lua; sourceTree = "<group>"; };
+		20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = basicTriggerSystem.lua; path = ../../../data/basicTriggerSystem.lua; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* HourglassII.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassII.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
