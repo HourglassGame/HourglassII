@@ -291,6 +291,13 @@ struct RunningGameScene {
 };
 #endif
 
+static hg::FrameID mousePosToFrameID(sf::RenderWindow const& app, hg::TimeEngine const& timeEngine) {
+    int const timelineLength = timeEngine.getTimelineLength();
+    double const mouseXFraction = app.GetInput().GetMouseX()*1./app.GetWidth();
+    int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
+    return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
+}
+
 int run_main(std::vector<std::string> const& args)
 {
     sf::RenderWindow app(sf::VideoMode(640, 480), "Hourglass II");
@@ -506,6 +513,12 @@ int run_main(std::vector<std::string> const& args)
 					}
 				}
 				if (futureRunResult.is_ready()) {
+                    if (app.GetInput().IsKeyDown(sf::Key::Period)) {
+                        inertia.save(mousePosToFrameID(app, *timeEngine), hg::FORWARDS);
+                    }
+                    if (app.GetInput().IsKeyDown(sf::Key::Comma)) {
+                        inertia.save(mousePosToFrameID(app, *timeEngine), hg::REVERSE);
+                    }
 					try {
 						runStep(*timeEngine, app, inertia, futureRunResult.get(), levelResources);
                         interrupter.reset();
@@ -628,7 +641,12 @@ void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::ty
     }
 }
 
-void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo, hg::LevelResources const& resources)
+void runStep(
+        hg::TimeEngine& timeEngine,
+        sf::RenderWindow& app,
+        hg::Inertia& inertia,
+        hg::TimeEngine::RunResult const& waveInfo,
+        hg::LevelResources const& resources)
 {
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
