@@ -806,7 +806,6 @@ function calculatePhysicsAffectingStuff(tempStore)
         tempStore.reverseGlitz = {}
         tempStore.frameNumber = frameNumber
         tempStore.triggerArrivals = triggerArrivals
-		tempStore.outputTriggers = triggerArrivals
 
         retv.additionalBoxes = {}
         tempStore.additionalEndBoxes = {}

@@ -415,7 +415,7 @@ mutateObject = bts.mutateObject(tempStore)
 function getDepartureInformation(departures)
 	bts.getDepartureInformation(tempStore)(departures)
 	
-	tempStore.outputTriggers[6][1] = tempStore.outputTriggers[1][1]*(1 - tempStore.outputTriggers[2][1])
+	tempStore.outputTriggers[6] = {tempStore.outputTriggers[1][1]*(1 - tempStore.outputTriggers[2][1])}
 	
 	return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
 end
