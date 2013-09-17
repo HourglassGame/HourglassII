@@ -13,7 +13,7 @@ local tempStore =
             timeDirection = 'forwards',
             destinationIndex = 1,
             xDestination = 0,
-            yDestination = -6*3200,
+            yDestination = -7*3200,
             relativeTime = false,
             timeDestination = 0,
             illegalDestination = 1,
@@ -189,20 +189,206 @@ local tempStore =
         bts.multiStickySwitch{
             buttons = {
 				{
-					attachment = {platform = nil, xOffset = 6.75 * 3200, yOffset = 10.75 * 3200},
-					width = 3200,
+					attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 10.75 * 3200},
+					width = 1600,
 					height = 800,
 				},
 				{
-					attachment = {platform = nil, xOffset = 13.25 * 3200, yOffset = 10.75 * 3200},
-					width = 3200,
+					attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 10.75 * 3200},
+					width = 1600,
 					height = 800,
 				},
 			},
             timeDirection = 'forwards',
             triggerID = 9
         },
-    }
+    },
+	protoGlitz = {
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 7.45 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 7.55 * 3200},
+			y2 = {platform = nil, pos = 6 * 3200},
+			triggerID = 1,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 7.45 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 8.55 * 3200},
+			y2 = {platform = nil, pos = 5.55 * 3200},
+			triggerID = 1,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 8.55 * 3200},
+			y1 = {platform = nil, pos = 5.55 * 3200},
+			x2 = {platform = nil, pos = 8.45 * 3200},
+			y2 = {platform = nil, pos = 4.45 * 3200},
+			triggerID = 1,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 8.45 * 3200},
+			y1 = {platform = nil, pos = 4.45 * 3200},
+			x2 = {platform = nil, pos = 9.55 * 3200},
+			y2 = {platform = nil, pos = 4.55 * 3200},
+			triggerID = 1,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 7.45 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 8.55 * 3200},
+			y2 = {platform = nil, pos = 5.55 * 3200},
+			triggerID = 1,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 13.45 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 13.55 * 3200},
+			y2 = {platform = nil, pos = 6 * 3200},
+			triggerID = 2,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 13.55 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 12.45 * 3200},
+			y2 = {platform = nil, pos = 5.55 * 3200},
+			triggerID = 2,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 12.55 * 3200},
+			y1 = {platform = nil, pos = 5.55 * 3200},
+			x2 = {platform = nil, pos = 12.45 * 3200},
+			y2 = {platform = nil, pos = 4.45 * 3200},
+			triggerID = 2,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 12.55 * 3200},
+			y1 = {platform = nil, pos = 4.55 * 3200},
+			x2 = {platform = nil, pos = 9.45 * 3200},
+			y2 = {platform = nil, pos = 4.45 * 3200},
+			triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[2][1] == 0 end,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 9.45 * 3200},
+			y1 = {platform = nil, pos = 4.45 * 3200},
+			x2 = {platform = nil, pos = 9.55 * 3200},
+			y2 = {platform = nil, pos = 5.55 * 3200},
+			triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[1][1]*(1-triggerArrivals[2][1]) == 1 end,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 9.45 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 10.55 * 3200},
+			y2 = {platform = nil, pos = 5.55 * 3200},
+			triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[1][1]*(1-triggerArrivals[2][1]) == 1 end,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 10.45 * 3200},
+			y1 = {platform = nil, pos = 5.45 * 3200},
+			x2 = {platform = nil, pos = 10.55 * 3200},
+			y2 = {platform = nil, pos = 6 * 3200},
+			triggerID = 6,
+			useTriggerArrival = true
+		},
+		bts.basicRectangleGlitz{
+			x = 12.3 * 3200,
+			y = 4.3 * 3200,
+			width = 0.4 * 3200,
+			height = 0.4 * 3200,
+			layer = 1600,
+			colour = {r = 80, g = 80, b = 80},
+		},
+		bts.basicTextGlitz{
+			x = 12.45 * 3200,
+			y = 4.2 * 3200,
+			text = "!",
+			size = 1400,
+			layer = 1600,
+			colour = {r = 255, g = 255, b = 255},
+		},
+		bts.basicRectangleGlitz{
+			x = 9.3 * 3200,
+			y = 4.3 * 3200,
+			width = 0.4 * 3200,
+			height = 0.4 * 3200,
+			layer = 1600,
+			colour = {r = 80, g = 80, b = 80},
+		},
+		bts.basicTextGlitz{
+			x = 9.35 * 3200,
+			y = 4.2 * 3200,
+			text = "&",
+			size = 1400,
+			layer = 1600,
+			colour = {r = 255, g = 255, b = 255},
+		},
+		bts.basicRectangleGlitz{
+			x = 10.2 * 3200,
+			y = 5.2 * 3200,
+			width = 0.6 * 3200,
+			height = 0.6 * 3200,
+			layer = 1600,
+			colour = {r = 120, g = 120, b = 120},
+		},
+		bts.basicTextGlitz{
+			x = 10.3 * 3200,
+			y = 4.7 * 3200,
+			text = "-5",
+			size = 1400,
+			layer = 1600,
+			colour = {r = 255, g = 255, b = 255},
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 7.2 * 3200},
+			y1 = {platform = nil, pos = 11.45 * 3200},
+			x2 = {platform = nil, pos = 13.8 * 3200},
+			y2 = {platform = nil, pos = 11.55 * 3200},
+			triggerID = 9,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 7.2 * 3200},
+			y1 = {platform = nil, pos = 11 * 3200},
+			x2 = {platform = nil, pos = 7.3 * 3200},
+			y2 = {platform = nil, pos = 11.55 * 3200},
+			triggerID = 9,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 8.7 * 3200},
+			y1 = {platform = nil, pos = 11 * 3200},
+			x2 = {platform = nil, pos = 8.8 * 3200},
+			y2 = {platform = nil, pos = 11.55 * 3200},
+			triggerID = 9,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 12.2 * 3200},
+			y1 = {platform = nil, pos = 11 * 3200},
+			x2 = {platform = nil, pos = 12.3 * 3200},
+			y2 = {platform = nil, pos = 11.55 * 3200},
+			triggerID = 9,
+			useTriggerArrival = false
+		},
+		bts.wireGlitz{
+			x1 = {platform = nil, pos = 13.7 * 3200},
+			y1 = {platform = nil, pos = 11 * 3200},
+			x2 = {platform = nil, pos = 13.8 * 3200},
+			y2 = {platform = nil, pos = 11.55 * 3200},
+			triggerID = 9,
+			useTriggerArrival = false
+		},
+	},
 }
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++
