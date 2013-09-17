@@ -52,7 +52,7 @@ inline mt::std::map<Frame *, mt::std::vector<TriggerData>::type >::type calculat
         retv[
             getArbitraryFrame(
                 universe, 
-                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[i].first)].push_back(
+                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[triggers[i].getIndex()].first)].push_back(
                     triggers[i]);
     }
     return retv;
