@@ -573,7 +573,7 @@ local function pickup(p)
             if dynamicObject.type ~= 'guy' then 
 				return dynamicObject 
 			end
-            dynamicObject.pickups[p.pickupType] = dynamicObject.pickups[p.pickupType] + 1
+            dynamicObject.pickups[p.pickupType] = dynamicObject.pickups[p.pickupType] + (p.pickupNumber or 1)
             active = false
             return dynamicObject
         end,
