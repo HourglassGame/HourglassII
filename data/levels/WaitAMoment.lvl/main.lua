@@ -31,7 +31,7 @@ initialGuy =
         height = 3200,
         facing = "right",
         timeDirection = "forwards",
-        pickups = {timeJump = -1, timeReverse = 0, timeGun = 0, timePause = 0},
+        pickups = {timePause = 0},
     }
 }
 initialArrivals =
