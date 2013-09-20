@@ -170,7 +170,7 @@ Wall to<Wall>(lua_State* L, int index)
         }
         lua_pop(L, 1);
     }
-    return Wall(segmentSize, wall);
+    return Wall(segmentSize, wall, "HourglassI");
 }
 
 template<>

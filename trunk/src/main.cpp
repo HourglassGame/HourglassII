@@ -11,6 +11,7 @@
 #include "ReplayIO.h"
 #include "LayeredCanvas.h"
 #include "ResourceManager.h"
+#include "RenderWindow.h"
 #include <SFML/Graphics.hpp>
 
 #include <boost/multi_array.hpp>
@@ -56,12 +57,19 @@ typedef sf::Color Colour;
 namespace {
     void initialseCurrentPath(std::vector<std::string> const& args);
     int run_main(std::vector<std::string> const& args);
-    void runStep(hg::TimeEngine& timeEngine, sf::RenderWindow& app, hg::Inertia& inertia, hg::TimeEngine::RunResult const& waveInfo, hg::LevelResources const& resources);
+    void runStep(
+        hg::TimeEngine& timeEngine,
+        hg::RenderWindow& app,
+        hg::Inertia& inertia,
+        hg::TimeEngine::RunResult const& waveInfo,
+        hg::LevelResources const& resources,
+        sf::Image const& wallImage);
     void Draw(
-        sf::RenderWindow& target,
+        hg::RenderWindow& target,
         hg::mt::std::vector<hg::Glitz>::type const& glitz,
         hg::Wall const& wall,
-        hg::LevelResources const& resources);
+        hg::LevelResources const& resources,
+        sf::Image const& wallImage);
     void DrawWaves(
         sf::RenderTarget& target,
         hg::TimeEngine::FrameListList const& waves,
@@ -71,7 +79,7 @@ namespace {
         sf::RenderTarget& target,
         hg::TimeEngine& timeEngine,
         double height);
-    void DrawColours(sf::RenderWindow& target, int roomWidth, int roomHeight);
+    void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight);
     void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength);
     void DrawTimeline(
         sf::RenderTarget& target,
@@ -80,7 +88,7 @@ namespace {
         hg::FrameID playerFrame,
         hg::FrameID timeCursor,
         int timelineLength);
-    void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
+    //void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
     template<typename BidirectionalGuyRange>
     hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange);
 
@@ -254,7 +262,7 @@ int new_run_main(std::vector<std::string> const& args) {
 }
 
 static void run_game(hg::UserInterface& ui) {
-    InputStream inputStream(ui.getInputStream);
+    InputStream inputStream(ui.getInputStream());
     WindowHandle mainWindow(ui.createWindow(sf::VideoMode(640, 480), "Hourglass II"));
 
     GameState state;
@@ -291,19 +299,22 @@ struct RunningGameScene {
 };
 #endif
 
-static hg::FrameID mousePosToFrameID(sf::RenderWindow const& app, hg::TimeEngine const& timeEngine) {
+static hg::FrameID mousePosToFrameID(hg::RenderWindow const& app, hg::TimeEngine const& timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    double const mouseXFraction = app.GetInput().GetMouseX()*1./app.GetWidth();
+    double const mouseXFraction = app.getInputState().getMousePosition().x*1./app.getSize().x;
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }
 
 int run_main(std::vector<std::string> const& args)
 {
-    sf::RenderWindow app(sf::VideoMode(640, 480), "Hourglass II");
-    app.UseVerticalSync(true);
-    app.SetFramerateLimit(60);
-
+    hg::RenderWindow app(sf::VideoMode(640, 480), "Hourglass II");
+    app.setVerticalSyncEnabled(true);
+    app.setFramerateLimit(60);
+    sf::Font defaultFontObj;
+    assert(defaultFontObj.loadFromFile("Arial.ttf"));
+    hg::defaultFont = &defaultFontObj;
+    
     hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
 
@@ -319,6 +330,7 @@ int run_main(std::vector<std::string> const& args)
     //timeEngine would be a boost::optional if boost::optional supported r-value refs
     hg::unique_ptr<hg::TimeEngine> timeEngine;
     hg::LevelResources levelResources;
+    sf::Image wallImage;
 
     enum {LOADING_LEVEL, LOADING_RESOURCES, RUNNING_LEVEL, AWAITING_INPUT, PAUSED} state(LOADING_LEVEL);
 
@@ -334,7 +346,7 @@ int run_main(std::vector<std::string> const& args)
     std::ofstream replayLogOut("replayLogOut");
     boost::unique_future<hg::TimeEngine::RunResult> futureRunResult;
     bool runningFromReplay(false);
-    while (app.IsOpened()) {
+    while (app.isOpen()) {
     	switch (state) {
 			case LOADING_LEVEL:
 			{
@@ -348,13 +360,13 @@ int run_main(std::vector<std::string> const& args)
                 //          interrupter
                 {
                     sf::Event event;
-                    while (app.GetEvent(event))
+                    while (app.pollEvent(event))
                     {
-                        switch(event.Type) {
+                        switch(event.type) {
                         case sf::Event::Closed:
                             interrupter->interrupt();
                             futureTimeEngine.wait();
-                            app.Close();
+                            app.close();
                             goto breakmainloop;
                         default: break;
                         }
@@ -381,27 +393,32 @@ int run_main(std::vector<std::string> const& args)
                         goto breakmainloop;
                     }
 				}
-				sf::String loadingGlyph("Loading Level...");
-				loadingGlyph.SetColor(Colour(255,255,255));
-				loadingGlyph.SetPosition(520, 450);
-				loadingGlyph.SetSize(12.f);
-				app.Clear();
-				app.Draw(loadingGlyph);
-				app.Display();
+				sf::Text loadingGlyph;
+                loadingGlyph.setFont(*hg::defaultFont);
+                loadingGlyph.setString("Loading Level...");
+				loadingGlyph.setColor(Colour(255,255,255));
+				loadingGlyph.setPosition(520, 450);
+				loadingGlyph.setCharacterSize(12.f);
+				app.clear();
+				app.draw(loadingGlyph);
+				app.display();
 				break;
 			}
             case LOADING_RESOURCES:
             {
                 //Due to SFML limitations, resource loading must be done in the main window thread.
                 //These limitations could be removed by weaning ourselves off SFML
-                sf::String loadingGlyph("Loading Resources...");
-				loadingGlyph.SetColor(Colour(255,255,255));
-				loadingGlyph.SetPosition(520, 450);
-				loadingGlyph.SetSize(12.f);
-				app.Clear();
-				app.Draw(loadingGlyph);
-				app.Display();
+                sf::Text loadingGlyph;
+                loadingGlyph.setFont(*hg::defaultFont);
+                loadingGlyph.setString("Loading Resources...");
+				loadingGlyph.setColor(Colour(255,255,255));
+				loadingGlyph.setPosition(520, 450);
+				loadingGlyph.setCharacterSize(12);
+				app.clear();
+				app.draw(loadingGlyph);
+				app.display();
                 levelResources = hg::loadLevelResources(levelPath, "GlitzData");
+                wallImage = hg::loadAndBakeWallImage(timeEngine->getWall());
                 state = AWAITING_INPUT;
             }
 			case AWAITING_INPUT:
@@ -414,8 +431,8 @@ int run_main(std::vector<std::string> const& args)
 				}
 				else {
                     hg::Wall const& wall(timeEngine->getWall());
-                    double scalingFactor(std::max(wall.roomWidth()*1./app.GetWidth(), wall.roomHeight()*1./app.GetHeight()));
-					input.updateState(app.GetInput(), app.GetWidth(), scalingFactor);
+                    double scalingFactor(std::max(wall.roomWidth()*1./app.getSize().x, wall.roomHeight()*1./app.getSize().y));
+					input.updateState(app.getInputState(), app.getSize().x, scalingFactor);
 					inputList = input.AsInputList();
 					runningFromReplay = false;
 				}
@@ -431,7 +448,7 @@ int run_main(std::vector<std::string> const& args)
 			case RUNNING_LEVEL:
 			{
 				sf::Event event;
-				while (app.GetEvent(event))
+				while (app.pollEvent(event))
 				{
 					//States + transitions:
 					//Not really a state machine!
@@ -441,16 +458,16 @@ int run_main(std::vector<std::string> const& args)
 					//playing replay -> new game + playing game             Keybinding: R
 					//playing replay -> new game + playing replay           Keybinding: L
 					//playing replay -> playing game                        Keybinding: C or <get to end of replay>
-					switch (event.Type) {
+					switch (event.type) {
 					case sf::Event::Closed:
                         interrupter->interrupt();
                         futureRunResult.wait();
-						app.Close();
+						app.close();
 						goto breakmainloop;
 					case sf::Event::KeyPressed:
-						switch(event.Key.Code) {
+						switch(event.key.code) {
 						//Restart
-						case sf::Key::R:
+						case sf::Keyboard::R:
 							currentReplayIt = replay.end();
 							currentReplayEnd = replay.end();
 							replayLogOut.close();
@@ -465,7 +482,7 @@ int run_main(std::vector<std::string> const& args)
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Load replay
-						case sf::Key::L:
+						case sf::Keyboard::L:
 							replay = hg::loadReplay("replay");
 							currentReplayIt = replay.begin();
 							currentReplayEnd = replay.end();
@@ -481,12 +498,12 @@ int run_main(std::vector<std::string> const& args)
 							state = LOADING_LEVEL;
 							goto continuemainloop;
 						//Interrupt replay and begin Playing
-						case sf::Key::C:
+						case sf::Keyboard::C:
 							currentReplayIt = replay.end();
 							currentReplayEnd = replay.end();
 							break;
 						//Save replay
-						case sf::Key::K:
+						case sf::Keyboard::K:
 							//TODO - possible allow finer-grained access
 							//to replay data, even when the step has not
 							//yet completely finished. (ie allow access as soon as
@@ -497,30 +514,51 @@ int run_main(std::vector<std::string> const& args)
 							saveReplay("replay", timeEngine->getReplayData());
 							break;
 						//Generate a replay from replayLogIn
-						case sf::Key::G:
+						case sf::Keyboard::G:
 							generateReplay();
 							break;
-                        case sf::Key::P:
+                        case sf::Keyboard::P:
                             state = PAUSED;
                             goto continuemainloop;
                         break;
+                        
 						default:
 							break;
 						}
 						break;
+                    case sf::Event::MouseButtonPressed:
+                        switch (event.mouseButton.button) {
+                        case sf::Mouse::Right:
+                        //    std::cout << "RightMousePressed\n";
+                        break;
+                        default:break;
+                        }
+                    break;
+                    case sf::Event::MouseButtonReleased:
+                        switch (event.mouseButton.button) {
+                        case sf::Mouse::Right:
+                        //    std::cout << "RightMouseReleased\n";
+                        break;
+                        default:break;
+                        }
+                    break;
+
 					default:
 						break;
 					}
 				}
 				if (futureRunResult.is_ready()) {
-                    if (app.GetInput().IsKeyDown(sf::Key::Period)) {
+                    if (app.getInputState().isKeyPressed(sf::Keyboard::Period)) {
                         inertia.save(mousePosToFrameID(app, *timeEngine), hg::FORWARDS);
                     }
-                    if (app.GetInput().IsKeyDown(sf::Key::Comma)) {
+                    if (app.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
                         inertia.save(mousePosToFrameID(app, *timeEngine), hg::REVERSE);
                     }
+                    if (app.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
+                        inertia.reset();
+                    }
 					try {
-						runStep(*timeEngine, app, inertia, futureRunResult.get(), levelResources);
+						runStep(*timeEngine, app, inertia, futureRunResult.get(), levelResources, wallImage);
                         interrupter.reset();
 					}
 					catch (hg::PlayerVictoryException const&) {
@@ -536,25 +574,27 @@ int run_main(std::vector<std::string> const& args)
 						goto breakmainloop;
 					}
 					if (runningFromReplay) {
-						sf::String replayGlyph("R");
-						replayGlyph.SetColor(Colour(255,0,0));
-						replayGlyph.SetPosition(580, 32);
-						replayGlyph.SetSize(32.f);
-						app.Draw(replayGlyph);
+						sf::Text replayGlyph;
+                        replayGlyph.setFont(*hg::defaultFont);
+                        replayGlyph.setString("R");
+						replayGlyph.setColor(Colour(255,0,0));
+						replayGlyph.setPosition(580, 32);
+						replayGlyph.setCharacterSize(32.f);
+						app.draw(replayGlyph);
 					}
-                    if (app.GetInput().IsKeyDown(sf::Key::F)) {
-                        app.SetFramerateLimit(0);
-                        app.UseVerticalSync(false);
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+                        app.setFramerateLimit(0);
+                        app.setVerticalSyncEnabled(false);
                     }
                     else {
-                        app.SetFramerateLimit(60);
-                        app.UseVerticalSync(true);
+                        app.setFramerateLimit(60);
+                        app.setVerticalSyncEnabled(true);
                     }
-					app.Display();
+					app.display();
 					state = AWAITING_INPUT;
 				}
                 else {
-                    sf::Sleep(.001f);
+                    sf::sleep(sf::seconds(.001f));
                 }
 				break;
 			}
@@ -562,17 +602,17 @@ int run_main(std::vector<std::string> const& args)
             {
                 {
                     sf::Event event;
-                    while (app.GetEvent(event))
+                    while (app.pollEvent(event))
                     {
-                        switch(event.Type) {
+                        switch(event.type) {
                         case sf::Event::Closed:
                             interrupter->interrupt();
                             futureTimeEngine.wait();
-                            app.Close();
+                            app.close();
                             goto breakmainloop;
                         case sf::Event::KeyPressed:
-						    switch(event.Key.Code) {
-                            case sf::Key::P:
+						    switch(event.key.code) {
+                            case sf::Keyboard::P:
                                 state = RUNNING_LEVEL;
                                 break;
                             default: break;
@@ -581,7 +621,7 @@ int run_main(std::vector<std::string> const& args)
                         }
                     }
                 }
-                sf::Sleep(.001f);
+                sf::sleep(sf::seconds(.001f));
             }
     	}
     	continuemainloop:;
@@ -601,52 +641,61 @@ hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(
 
 Colour const uiTextColour(100,100,200);
 
-void drawInventory(sf::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups, hg::Ability abilityCursor) {
+void drawInventory(hg::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups, hg::Ability abilityCursor) {
     hg::mt::std::map<hg::Ability, int>::type mpickups(pickups);
     {
         std::stringstream timeJump;
-        timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << " timeJumps: " << mpickups[hg::TIME_JUMP];
-        sf::String timeJumpGlyph(timeJump.str());
-        timeJumpGlyph.SetPosition(500, 350);
-        timeJumpGlyph.SetSize(10.f);
-        timeJumpGlyph.SetColor(uiTextColour);
-        app.Draw(timeJumpGlyph);
+        timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << "timeJumps: " << mpickups[hg::TIME_JUMP];
+        sf::Text timeJumpGlyph;
+        timeJumpGlyph.setFont(*hg::defaultFont);
+        timeJumpGlyph.setString(timeJump.str());
+        timeJumpGlyph.setPosition(500, 350);
+        timeJumpGlyph.setCharacterSize(10.f);
+        timeJumpGlyph.setColor(uiTextColour);
+        app.draw(timeJumpGlyph);
     }
     {
         std::stringstream timeReverses;
         timeReverses << (abilityCursor == hg::TIME_REVERSE ? "-->" : "   ") << "timeReverses: " << mpickups[hg::TIME_REVERSE];
-        sf::String timeReversesGlyph(timeReverses.str());
-        timeReversesGlyph.SetPosition(500, 370);
-        timeReversesGlyph.SetSize(10.f);
-        timeReversesGlyph.SetColor(uiTextColour);
-        app.Draw(timeReversesGlyph);
+        sf::Text timeReversesGlyph;
+        timeReversesGlyph.setFont(*hg::defaultFont);
+        timeReversesGlyph.setString(timeReverses.str());
+        timeReversesGlyph.setPosition(500, 370);
+        timeReversesGlyph.setCharacterSize(10.f);
+        timeReversesGlyph.setColor(uiTextColour);
+        app.draw(timeReversesGlyph);
     }
     {
         std::stringstream timeGuns;
         timeGuns << (abilityCursor == hg::TIME_GUN ? "-->" : "   ") << "timeGuns: " << mpickups[hg::TIME_GUN];
-        sf::String timeGunsGlyph(timeGuns.str());
-        timeGunsGlyph.SetPosition(500, 390);
-        timeGunsGlyph.SetSize(10.f);
-        timeGunsGlyph.SetColor(uiTextColour);
-        app.Draw(timeGunsGlyph);
+        sf::Text timeGunsGlyph;
+        timeGunsGlyph.setFont(*hg::defaultFont);
+        timeGunsGlyph.setString(timeGuns.str());
+        timeGunsGlyph.setPosition(500, 390);
+        timeGunsGlyph.setCharacterSize(10.f);
+        timeGunsGlyph.setColor(uiTextColour);
+        app.draw(timeGunsGlyph);
     }
 	{
         std::stringstream timeGuns;
         timeGuns << (abilityCursor == hg::TIME_PAUSE ? "-->" : "   ") << "timePauses: " << mpickups[hg::TIME_PAUSE];
-        sf::String timePausesGlyph(timeGuns.str());
-        timePausesGlyph.SetPosition(500, 410);
-        timePausesGlyph.SetSize(10.f);
-        timePausesGlyph.SetColor(uiTextColour);
-        app.Draw(timePausesGlyph);
+        sf::Text timePausesGlyph;
+        timePausesGlyph.setFont(*hg::defaultFont);
+        timePausesGlyph.setString(timeGuns.str());
+        timePausesGlyph.setPosition(500, 410);
+        timePausesGlyph.setCharacterSize(10.f);
+        timePausesGlyph.setColor(uiTextColour);
+        app.draw(timePausesGlyph);
     }
 }
 
 void runStep(
-        hg::TimeEngine& timeEngine,
-        sf::RenderWindow& app,
-        hg::Inertia& inertia,
-        hg::TimeEngine::RunResult const& waveInfo,
-        hg::LevelResources const& resources)
+    hg::TimeEngine& timeEngine,
+    hg::RenderWindow& app,
+    hg::Inertia& inertia,
+    hg::TimeEngine::RunResult const& waveInfo,
+    hg::LevelResources const& resources,
+    sf::Image const& wallImage)
 {
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
@@ -669,7 +718,8 @@ void runStep(
             app,
             getGlitzForDirection(view, currentGuyDirection),
             timeEngine.getWall(),
-            resources);
+            resources,
+            wallImage);
         
         drawInventory(app, findCurrentGuy(view.getGuyInformation()).getPickups(), timeEngine.getReplayData().back().getAbilityCursor());
     }
@@ -682,43 +732,49 @@ void runStep(
             Draw(app,
                  getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                  timeEngine.getWall(),
-                 resources);
+                 resources,
+                 wallImage);
         }
         else {
             drawnFrame =
               hg::FrameID(
                 abs(
                   static_cast<int>(
-                    hg::flooredModulo(static_cast<long>((app.GetInput().GetMouseX()
+                    hg::flooredModulo(static_cast<long>((sf::Mouse::getPosition(app.getWindow()).x
                      * static_cast<long>(timeEngine.getTimelineLength())
-                     / app.GetWidth()))
+                     / app.getSize().x))
                     , static_cast<long>(timeEngine.getTimelineLength())))),
                 hg::UniverseID(timeEngine.getTimelineLength()));
             hg::Frame *frame(timeEngine.getFrame(drawnFrame));
             Draw(app,
                  getGlitzForDirection(frame->getView(), hg::FORWARDS),
                  timeEngine.getWall(),
-                 resources);
+                 resources,
+                 wallImage);
         }
     }
-    DrawTimeline(app, timeEngine, waveInfo.updatedFrames(), drawnFrame, timeEngine.getReplayData().back().getTimeCursor(), timeEngine.getTimelineLength());
+    DrawTimeline(app.getRenderTarget(), timeEngine, waveInfo.updatedFrames(), drawnFrame, timeEngine.getReplayData().back().getTimeCursor(), timeEngine.getTimelineLength());
     {
         std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
-        sf::String currentPlayerGlyph(currentPlayerIndex.str());
-        currentPlayerGlyph.SetPosition(580, 433);
-        currentPlayerGlyph.SetSize(10.f);
-        currentPlayerGlyph.SetColor(uiTextColour);
-        app.Draw(currentPlayerGlyph);
+        sf::Text currentPlayerGlyph;
+        currentPlayerGlyph.setFont(*hg::defaultFont);
+        currentPlayerGlyph.setString(currentPlayerIndex.str());
+        currentPlayerGlyph.setPosition(580, 433);
+        currentPlayerGlyph.setCharacterSize(10.f);
+        currentPlayerGlyph.setColor(uiTextColour);
+        app.draw(currentPlayerGlyph);
     }
     {
         std::stringstream frameNumberString;
         frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
-        sf::String frameNumberGlyph(frameNumberString.str());
-        frameNumberGlyph.SetPosition(580, 445);
-        frameNumberGlyph.SetSize(8.f);
-        frameNumberGlyph.SetColor(uiTextColour);
-        app.Draw(frameNumberGlyph);
+        sf::Text frameNumberGlyph;
+        frameNumberGlyph.setFont(*hg::defaultFont);
+        frameNumberGlyph.setString(frameNumberString.str());
+        frameNumberGlyph.setPosition(580, 445);
+        frameNumberGlyph.setCharacterSize(8.f);
+        frameNumberGlyph.setColor(uiTextColour);
+        app.draw(frameNumberGlyph);
     }
     {
         std::stringstream numberOfFramesExecutedString;
@@ -732,48 +788,56 @@ void runStep(
                 numberOfFramesExecutedString << ":" << num;
             }
         }
-        sf::String numberOfFramesExecutedGlyph(numberOfFramesExecutedString.str());
-        numberOfFramesExecutedGlyph.SetPosition(580, 455);
-        numberOfFramesExecutedGlyph.SetSize(8.f);
-        numberOfFramesExecutedGlyph.SetColor(uiTextColour);
-        app.Draw(numberOfFramesExecutedGlyph);
+        sf::Text numberOfFramesExecutedGlyph;
+        numberOfFramesExecutedGlyph.setFont(*hg::defaultFont);
+        numberOfFramesExecutedGlyph.setString(numberOfFramesExecutedString.str());
+        numberOfFramesExecutedGlyph.setPosition(580, 455);
+        numberOfFramesExecutedGlyph.setCharacterSize(8.f);
+        numberOfFramesExecutedGlyph.setColor(uiTextColour);
+        app.draw(numberOfFramesExecutedGlyph);
     }
-    {
+    /*{
         std::stringstream fpsstring;
         fpsstring << (1./app.GetFrameTime());
-        sf::String fpsglyph(fpsstring.str());
-        fpsglyph.SetPosition(600, 465);
-        fpsglyph.SetSize(8.f);
-        fpsglyph.SetColor(uiTextColour);
-        app.Draw(fpsglyph);
-    }
+        sf::Text fpsglyph;
+        fpsglyph.setFont(*hg::defaultFont);
+        fpsglyph.setString(fpsstring.str());
+        fpsglyph.setPosition(600, 465);
+        fpsglyph.setCharacterSize(8.f);
+        fpsglyph.setColor(uiTextColour);
+        app.draw(fpsglyph);
+    }*/
 }
 
 void Draw(
-    sf::RenderWindow& target,
+    hg::RenderWindow& target,
     hg::mt::std::vector<hg::Glitz>::type const& glitz,
     hg::Wall const& wall,
-    hg::LevelResources const& resources)
+    hg::LevelResources const& resources,
+    sf::Image const& wallImage)
 {
-    target.Clear(Colour(255,255,255));
+    target.clear(Colour(255,255,255));
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
     //window.
-    double scalingFactor(std::min(target.GetWidth()*100./wall.roomWidth(), target.GetHeight()*100./wall.roomHeight()));
-    sf::View const& oldView(target.GetView());
-    sf::View scaledView(sf::FloatRect(0.f, 0.f, target.GetWidth()/scalingFactor, target.GetHeight()/scalingFactor));
-    target.SetView(scaledView);
-    hg::sfRenderTargetCanvas canvas(target, resources);
+    double scalingFactor(std::min(target.getSize().x*100./wall.roomWidth(), target.getSize().y*100./wall.roomHeight()));
+    sf::View const& oldView(target.getView());
+    sf::View scaledView(sf::FloatRect(0.f, 0.f, target.getSize().x/scalingFactor, target.getSize().y/scalingFactor));
+    target.setView(scaledView);
+    hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), resources);
     hg::LayeredCanvas layeredCanvas(canvas);
 	foreach (hg::Glitz const& particularGlitz, glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
     flusher.partialFlush(1000);
-    DrawWall(target, wall);
+    sf::Texture wallTex;
+    wallTex.loadFromImage(wallImage);
+    target.draw(sf::Sprite(wallTex));
+    //DrawWall(target, wall);
     flusher.partialFlush(std::numeric_limits<int>::max());
-    if (target.GetInput().IsKeyDown(sf::Key::LShift)) DrawColours(target, wall.roomWidth(), wall.roomHeight());
-    target.SetView(oldView);
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) DrawColours(target, wall.roomWidth(), wall.roomHeight());
+    target.setView(oldView);
 }
-
+/*
 void DrawWall(
     sf::RenderTarget& target,
     hg::Wall const& wall)
@@ -792,7 +856,7 @@ void DrawWall(
         }
     }
 }
-
+*/
 Colour asColour(sf::Vector3<double>const& vec) {
     return Colour(vec.x, vec.y, vec.z);
 }
@@ -808,17 +872,21 @@ Colour guyPositionToColour(double xFrac, double yFrac) {
     return asColour(posStart + xDif*xFrac + yDif*yFrac);
 }
 
-void DrawColours(sf::RenderWindow& target, int roomWidth, int roomHeight)
+void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight)
 {
-    sf::Image colours(roomWidth/100, roomHeight/100, Colour(0, 0, 0, 0));
+    sf::Image colours;
+    colours.create(roomWidth/100, roomHeight/100, Colour(0, 0, 0, 0));
     for (int x(0); x != roomWidth/100; ++x) {
         for (int y(0); y != roomHeight/100; ++y) {
             Colour colour(guyPositionToColour(x*100./roomWidth,y*100./roomHeight));
             colour.a = 220;
-            colours.SetPixel(x, y, colour);
+            colours.setPixel(x, y, colour);
         }
     }
-    target.Draw(sf::Sprite(colours, sf::Vector2f(0, 0)));
+    sf::Texture tex;
+    tex.loadFromImage(colours);
+    
+    target.draw(sf::Sprite(tex));
 }
 
 void DrawTimelineContents(
@@ -826,7 +894,8 @@ void DrawTimelineContents(
     hg::TimeEngine& timeEngine,
     double height)
 {
-    sf::Image timelineContents(target.GetView().GetRect().GetWidth(), height, Colour(0, 0, 0, 0));
+    sf::Image timelineContents;
+    timelineContents.create(target.getView().getSize().x, height, Colour(0, 0, 0, 0));
     double const numberOfGuys(timeEngine.getReplayData().size()+1);
     double const timelineLength(timeEngine.getTimelineLength());
     hg::UniverseID const universe(timeEngine.getTimelineLength());
@@ -834,7 +903,7 @@ void DrawTimelineContents(
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         foreach (hg::GuyOutputInfo const& guy, frame->getView().getGuyInformation()) {
-            double left = frameNumber*target.GetView().GetRect().GetWidth()/timelineLength;
+            double left = frameNumber*target.getView().getSize().x/timelineLength;
             double top = (height-4)*guy.getIndex()/numberOfGuys;
             
             double xFrac = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
@@ -844,7 +913,7 @@ void DrawTimelineContents(
 
             int pos(top);
             for (int const end(top+1); pos != end; ++pos) {
-                timelineContents.SetPixel(
+                timelineContents.setPixel(
                     left, pos,
                     !guy.getBoxCarrying() ?
                         colour :
@@ -853,11 +922,15 @@ void DrawTimelineContents(
                           : Colour(0, 255, 0));
             }
             for (int const end(top+4); pos != end; ++pos) {
-                timelineContents.SetPixel(left, pos, colour);
+                timelineContents.setPixel(left, pos, colour);
             }
         }
     }
-    target.Draw(sf::Sprite(timelineContents, sf::Vector2f(0, 10.f)));
+    sf::Texture tex;
+    tex.loadFromImage(timelineContents);
+    sf::Sprite sprite(tex);
+    sprite.setPosition(0.f, 10.f);
+    target.draw(sprite);
 }
 
 void DrawWaves(
@@ -866,14 +939,14 @@ void DrawWaves(
     int timelineLength,
     double height)
 {
-    std::vector<char> pixelsWhichHaveBeenDrawnIn(target.GetView().GetRect().GetWidth());
+    std::vector<char> pixelsWhichHaveBeenDrawnIn(target.getView().getSize().x);
     foreach (hg::FrameUpdateSet const& wave, waves) {
     	foreach (hg::Frame *frame, wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
                     static_cast<int>(
                         (static_cast<double>(getFrameNumber(frame))/timelineLength)
-                        *target.GetView().GetRect().GetWidth())
+                        *target.getView().getSize().x)
                     ] = true;
             }
             else {
@@ -892,40 +965,31 @@ void DrawWaves(
             }
             else {
                 if (inWaveRegion) {
-                    target.Draw(
-                        sf::Shape::Rectangle(
-                            static_cast<float>(leftOfWaveRegion),
-                            10.f,
-                            static_cast<float>(i),
-                            10.f+height,
-                            Colour(250,0,0)));
+                    sf::RectangleShape wavegroup(sf::Vector2f(i-leftOfWaveRegion, height));
+                    wavegroup.setPosition(leftOfWaveRegion, 10.f);
+                    wavegroup.setFillColor(Colour(250,0,0));
+                    target.draw(wavegroup);
                     inWaveRegion = false;
                 }
             }
         }
         //Draw when waves extend to far right.
         if (inWaveRegion) {
-            target.Draw(
-                sf::Shape::Rectangle(
-                    static_cast<float>(leftOfWaveRegion),
-                    10.f,
-                    static_cast<float>(target.GetView().GetRect().GetWidth()),
-                    10.f+height,
-                    Colour(250,0,0)));
+            sf::RectangleShape wavegroup(sf::Vector2f(target.getView().getSize().x-leftOfWaveRegion, height));
+            wavegroup.setPosition(leftOfWaveRegion, 10.f);
+            wavegroup.setFillColor(Colour(250,0,0));
+            target.draw(wavegroup);
         }
     }
 }
 
 void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength) {
     for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5*60) {
-        float left(frameNo/static_cast<double>(timelineLength)*target.GetView().GetRect().GetWidth());
-        target.Draw(
-            sf::Shape::Rectangle(
-                left,
-                0.f,
-                left+1.,
-                10.f,
-                Colour(255,255,0)));
+        float left(frameNo/static_cast<double>(timelineLength)*target.getView().getSize().x);
+        sf::RectangleShape tick(sf::Vector2f(1., 10.));
+        tick.setFillColor(Colour(255,255,0));
+        tick.setPosition(sf::Vector2f(left, 0.));
+        target.draw(tick);
     }
 }
 
@@ -944,22 +1008,16 @@ void DrawTimeline(
     DrawWaves(target, waves, timelineLength, height);
     
     if (playerFrame.isValidFrame()) {
-        target.Draw(
-            sf::Shape::Rectangle(
-                static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()-1)),
-                10.f,
-                static_cast<float>(static_cast<int>(static_cast<double>(playerFrame.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()+2)),
-                10.f+height,
-                Colour(200,200,0)));
+        sf::RectangleShape playerLine(sf::Vector2f(3, height));
+        playerLine.setPosition(playerFrame.getFrameNumber()*target.getView().getSize().x/timelineLength, 10.f);
+        playerLine.setFillColor(Colour(200,200,0));
+        target.draw(playerLine);
     }
     if (timeCursor.isValidFrame()) {
-        target.Draw(
-            sf::Shape::Rectangle(
-                static_cast<float>(static_cast<int>(static_cast<double>(timeCursor.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()-1)),
-                10.f,
-                static_cast<float>(static_cast<int>(static_cast<double>(timeCursor.getFrameNumber())/timelineLength*target.GetView().GetRect().GetWidth()+2)),
-                10.f+height,
-                Colour(0,0,200)));
+        sf::RectangleShape timeCursorLine(sf::Vector2f(3, height));
+        timeCursorLine.setPosition(timeCursor.getFrameNumber()*target.getView().getSize().x/timelineLength, 10.f);
+        timeCursorLine.setFillColor(Colour(0,0,200));
+        target.draw(timeCursorLine);
     }
     DrawTimelineContents(target, timeEngine, height);
 }

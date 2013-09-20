@@ -5,23 +5,27 @@
 
 #include <boost/move/move.hpp>
 #include <boost/multi_array.hpp>
+#include <string>
 namespace hg {
     //stores the wall (the static environment over which the game is played)
     class Wall {
     public:
     	Wall(Wall const& o) :
             segmentSize_(o.segmentSize_),
-            wallmap_(o.wallmap_)
+            wallmap_(o.wallmap_),
+            tilesetName_(o.tilesetName_)
         {}
     	Wall& operator=(BOOST_COPY_ASSIGN_REF(Wall) o)
         {
             segmentSize_ = o.segmentSize_;
             wallmap_ = o.wallmap_;
+            tilesetName_ = o.tilesetName_;
             return *this;
         }
     	Wall(BOOST_RV_REF(Wall) o) :
     		segmentSize_(boost::move(o.segmentSize_)),
-    		wallmap_(boost::move(o.wallmap_))
+    		wallmap_(boost::move(o.wallmap_)),
+            tilesetName_(boost::move(o.tilesetName_))
     	{
     	}
     	Wall& operator=(BOOST_RV_REF(Wall) o)
@@ -30,13 +34,16 @@ namespace hg {
             //Note that boost::multi_array does not have a no-throw swap or
             //move constructor.
     		wallmap_ = boost::move(o.wallmap_);
+            tilesetName_ = boost::move(o.tilesetName_);
     		return *this;
     	}
         Wall(
             int segmentSize,
-            boost::multi_array<bool, 2> const& wallmap) :
+            boost::multi_array<bool, 2> const& wallmap,
+            std::string const& tilesetName) :
                 segmentSize_(segmentSize),
-                wallmap_(wallmap)
+                wallmap_(wallmap),
+                tilesetName_(tilesetName)
         {
         }
 
@@ -45,18 +52,21 @@ namespace hg {
         {
         	if (x < 0 || y < 0) return true;
 
-        	unsigned aX(x/segmentSize_);
-			unsigned aY(y/segmentSize_);
+        	unsigned const aX(x/segmentSize_);
+			unsigned const aY(y/segmentSize_);
 
 			return aX >= wallmap_.size() || aY >= wallmap_[aX].size() || wallmap_[aX][aY];
         }
-        /*
+        
         bool atIndex(int x, int y) const
         {
             if (x < 0 || y < 0) return true;
-            
-            return x >= wallmap_.size() || aY >= wallmap_[aX].size() || wallmap_[x][y];
-        }*/
+
+            unsigned const aX(x);
+			unsigned const aY(y);
+
+			return aX >= wallmap_.size() || aY >= wallmap_[aX].size() || wallmap_[aX][aY];
+        }
 
         Rect<int> transformBounds(Rect<int> const& input)
         {
@@ -92,9 +102,13 @@ namespace hg {
 		int roomHeight() const {
 			return static_cast<int>(wallmap_.shape()[1] * segmentSize_);
 		}
+        std::string const& tilesetName() const {
+            return tilesetName_;
+        }
     private:
         int segmentSize_;
         boost::multi_array<bool, 2> wallmap_;
+        std::string tilesetName_;
         BOOST_COPYABLE_AND_MOVABLE(Wall)
     };
     inline void swap(Wall& l, Wall& r)
