@@ -6,10 +6,10 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "Foreach.h"
 namespace hg {
-sf::Font const*defaultFont;
+sf::Font const *defaultFont;
 namespace fs = boost::filesystem;
-inline
-boost::iterator_range<fs::directory_iterator>
+namespace {
+inline boost::iterator_range<fs::directory_iterator>
 directory_range(fs::path const& path)
 {
     return boost::iterator_range<fs::directory_iterator>(
@@ -17,20 +17,21 @@ directory_range(fs::path const& path)
         fs::directory_iterator());
 }
 
-namespace {
 inline bool isImageFile(fs::path const& file) {
     return file.extension() == ".png";
 }
 
 inline sf::Image loadImage(fs::path const& file) {
     sf::Image img;
-    assert(img.loadFromFile(file.string()));
+	bool loaded(img.loadFromFile(file.string()));
+    assert(loaded);
     return img;
 }
 
 inline sf::Texture loadTexture(fs::path const& file) {
     sf::Texture img;
-    assert(img.loadFromFile(file.string()));
+	bool loaded(img.loadFromFile(file.string()));
+    assert(loaded);
     return img;
 }
 
@@ -51,7 +52,8 @@ sf::Sprite spriteForBlock(sf::Texture const& tex, double x, double y, double siz
     sprite.setScale(sf::Vector2f(size*1.f/tex.getSize().x, size*1.f/tex.getSize().y));
     return sprite;
 }
-}
+}//namespace
+
 LevelResources loadLevelResources(std::string const& levelPath, std::string const& globalsPath) {
     LevelResources resources;
     loadPackage(resources, "global.", globalsPath);
@@ -98,14 +100,13 @@ sf::Image loadAndBakeWallImage(Wall const& wall) {
         for(int y(0), yend(roomIndexHeight); y != yend; ++y) {
             if (wall.atIndex(x, y)) {
                 foregroundTexture.draw(spriteForBlock(blockTextures[wall.atIndex(x+1, y)][wall.atIndex(x, y-1)][wall.atIndex(x-1, y)][wall.atIndex(x, y+1)], x*segmentSize, y*segmentSize, segmentSize));
-                //foregroundTexture.copy(blockImages[wall.atIndex(x+1, y)][wall.atIndex(x, y-1)][wall.atIndex(x-1, y)][wall.atIndex(x, y+1)], x*segmentSize, y*segmentSize);
+                foregroundTexture.draw(spriteForBlock(blockTextures[wall.atIndex(x+1, y)][wall.atIndex(x, y-1)][wall.atIndex(x-1, y)][wall.atIndex(x, y+1)], x*segmentSize, y*segmentSize, segmentSize));
                 for (int vpos(-1); vpos <= 1; vpos+=2) {
                     for(int hpos(-1); hpos <= 1; hpos+=2) {
                         if(wall.atIndex(x+hpos, y) && wall.atIndex(x, y+vpos) && !wall.atIndex(x+hpos, y+vpos)) {
                             int const bottom((vpos+1)/2);
                             int const right((hpos+1)/2);
                             foregroundTexture.draw(spriteForBlock(cornerTextures[bottom][right], x*segmentSize+right*segmentSize/2., y*segmentSize+bottom*segmentSize/2., segmentSize/2.));
-                            //foregroundTexture.copy(cornerImages[bottom][right], x*segmentSize+right*segmentSize/2, y*segmentSize+bottom*segmentSize/2);
                         }
                     }
                 }
@@ -117,4 +118,4 @@ sf::Image loadAndBakeWallImage(Wall const& wall) {
     return foregroundImage;
 }
 
-}
+} //namespace hg

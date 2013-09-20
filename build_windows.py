@@ -3,53 +3,52 @@ import shutil
 import os
 import os.path
 import subprocess
+
+def runsubprocess(command_and_args):
+    try:
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        subprocess.check_output(
+            command_and_args,
+            stderr=subprocess.STDOUT,
+            startupinfo=startupinfo)
+    except subprocess.CalledProcessError as e:
+        print(e.output.decode("UTF-8"))
+        raise
+
 class basic_gxx_compiler:
     def __init__(self, cxxbinary):
         self.cxx = cxxbinary
     def do_compile(self, source, output, defines, include_directories):
-        try:
-            subprocess.check_output(
-                [self.cxx]
-                + list(map(lambda d: "-D" + d, defines))
-                + list(map(lambda i: "-I" + i, include_directories))
-                + ["-ftemplate-depth=128"]
-                + ["-O3"]
-                + ["-march=i486"]
-                + ["-std=c++0x"]
-                + ["-c"] + [source]
-                + ["-o"] + [output], stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            print(e.output.decode("UTF-8"))
-            raise
+        runsubprocess(
+            [self.cxx]
+            + list(map(lambda d: "-D" + d, defines))
+            + list(map(lambda i: "-I" + i, include_directories))
+            + ["-ftemplate-depth=128"]
+            + ["-O3"]
+            + ["-march=i486"]
+            + ["-std=c++0x"]
+            + ["-c"] + [source]
+            + ["-o"] + [output])
     def do_link(self, sources, output, library_directories, libraries):
-        try:
-            subprocess.check_output(
-                [self.cxx]
-                + ["-s"]
-                + list(map(lambda L: "-L" + L, library_directories))
-                + ["-Wl,-subsystem,windows"]
-                + ["-Xlinker", "--enable-auto-import"]
-                + ["-o"] + [output]
-                + sources
-                + list(map(lambda l: "-l" + l, libraries)),
-                stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            print(e.output.decode("UTF-8"))
-            raise
+        runsubprocess(
+            [self.cxx]
+            + ["-s"]
+            + list(map(lambda L: "-L" + L, library_directories))
+            + ["-Wl,-subsystem,windows"]
+            + ["-Xlinker", "--enable-auto-import"]
+            + ["-o"] + [output]
+            + sources
+            + list(map(lambda l: "-l" + l, libraries)))
 
 class windres:
     def __init__(self, windresbinary):
         self.windres = windresbinary
     def do_compile(self, input, output):
-        try:
-            subprocess.check_output(
-                [self.windres]
-                + [input]
-                + ["-o"] + [output],
-                stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            print(e.output.decode("UTF-8"))
-            raise
+        runsubprocess(
+            [self.windres]
+            + [input]
+            + ["-o"] + [output])
 
 def build_binary(
     filenamegenerator,
@@ -100,59 +99,28 @@ def create_bundle(
     shutil.copy(executable, "build/HourglassII/HourglassII.exe")
     for dll in dlls:
         shutil.copy(dll, "build/HourglassII/")
-    shutil.copytree("level.lvl", "build/HourglassII/level.lvl")
-    shutil.copytree("levels", "build/HourglassII/levels")
-    shutil.copytree("GlitzData", "build/HourglassII/GlitzData")
-    shutil.copy("basicTriggerSystem.lua", "build/HourglassII/")
+    shutil.copytree("data", "build/HourglassII/data")
     os.remove(executable)
-
-boost_include = "ext/boost/include/"
-sfml_inlcude = "ext/SFML/include/"
-tbb_include = "ext/tbb/include/"
-
-boost_library_directory = "ext/boost/lib/"
-sfml_library_directory = "ext/SFML/lib/"
-tbb_library_directory = "ext/tbb/lib/"
-
-boost_serialization_lib = "boost_serialization-mgw47-mt-1_52"
-boost_filesystem_lib = "boost_filesystem-mgw47-mt-1_52"
-boost_system_lib = "boost_system-mgw47-mt-1_52"
-boost_thread_lib = "boost_thread-mgw47-mt-1_52"
-boost_chrono_lib = "boost_chrono-mgw47-mt-1_52"
-sfml_system_lib = "sfml-system-s"
-sfml_window_lib = "sfml-window-s"
-sfml_graphics_lib = "sfml-graphics-s"
-tbb_lib = "tbb"
-tbb_malloc_lib = "tbbmalloc"
-opengl_lib = "opengl32"
-glu_lib = "glu32"
-gdi_lib = "gdi32"
-winmm_lib = "winmm"
-freetype_lib = "freetype"
-
-tbb_dll = "ext/tbb/lib/tbb.dll"
-tbb_malloc_dll = "ext/tbb/lib/tbbmalloc.dll"
-libgcc_dll = "C:/MinGW/bin/libgcc_s_dw2-1.dll"
-libstd_cxx_dll = "C:/MinGW/bin/libstdc++-6.dll"
 
 compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_USES_MOVE"]
+defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_USES_MOVE", "NDEBUG"]
 
-includes = [boost_include, sfml_inlcude, tbb_include]
+includes = ["ext/boost/include/", "ext/SFML/include/","ext/tbb/include/"]
 
-library_directories = [
-     boost_library_directory, sfml_library_directory,
-     tbb_library_directory]
+library_directories = ["ext/boost/lib/", "ext/SFML/lib/", "ext/tbb/lib/"]
 
 libraries = [
-    tbb_lib, tbb_malloc_lib,
-    sfml_graphics_lib, sfml_window_lib, sfml_system_lib, opengl_lib, glu_lib, gdi_lib, winmm_lib, freetype_lib,
-    boost_filesystem_lib, boost_system_lib, boost_serialization_lib, boost_thread_lib, boost_chrono_lib]
+    "tbb", "tbbmalloc",
+    "sfml-graphics-2", "sfml-window-2", "sfml-system-2", "opengl32", "glu32", "gdi32", "winmm",
+    "boost_serialization-mgw47-mt-1_52", "boost_filesystem-mgw47-mt-1_52", "boost_system-mgw47-mt-1_52", "boost_thread-mgw47-mt-1_52", "boost_chrono-mgw47-mt-1_52"]
 
-dlls = [tbb_dll, tbb_malloc_dll, libgcc_dll, libstd_cxx_dll]
+dlls = [
+    "ext/tbb/lib/tbb.dll", "ext/tbb/lib/tbbmalloc.dll",
+    "C:/MinGW/bin/libgcc_s_dw2-1.dll", "C:/MinGW/bin/libstdc++-6.dll",
+    "ext/sfml/lib/sfml-graphics-2.dll", "ext/sfml/lib/sfml-window-2.dll", "ext/sfml/lib/sfml-system-2.dll"]
 
 rc_file = "src/windows/resource.rc"
 def main():
@@ -185,7 +153,7 @@ def main():
     
     #build release package
     os.chdir("build")
-    subprocess.call([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
+    runsubprocess([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
     os.chdir("..")
 if __name__ == "__main__":
     main()

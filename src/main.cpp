@@ -188,6 +188,9 @@ void initialseCurrentPath(std::vector<std::string> const& args)
 #if defined(__APPLE__) && defined(__MACH__)
     assert(args.size() >= 1);
     current_path(boost::filesystem::path(args[0]).remove_filename()/"../Resources/");
+#elif defined(_WIN32)
+	assert(args.size() >= 1);
+    current_path(boost::filesystem::path(args[0]).remove_filename()/"data/");
 #endif
 }
 #if 0
@@ -312,7 +315,8 @@ int run_main(std::vector<std::string> const& args)
     app.setVerticalSyncEnabled(true);
     app.setFramerateLimit(60);
     sf::Font defaultFontObj;
-    assert(defaultFontObj.loadFromFile("Arial.ttf"));
+	bool fontLoaded(defaultFontObj.loadFromFile("Arial.ttf"));
+    assert(fontLoaded);
     hg::defaultFont = &defaultFontObj;
     
     hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
@@ -526,23 +530,6 @@ int run_main(std::vector<std::string> const& args)
 							break;
 						}
 						break;
-                    case sf::Event::MouseButtonPressed:
-                        switch (event.mouseButton.button) {
-                        case sf::Mouse::Right:
-                        //    std::cout << "RightMousePressed\n";
-                        break;
-                        default:break;
-                        }
-                    break;
-                    case sf::Event::MouseButtonReleased:
-                        switch (event.mouseButton.button) {
-                        case sf::Mouse::Right:
-                        //    std::cout << "RightMouseReleased\n";
-                        break;
-                        default:break;
-                        }
-                    break;
-
 					default:
 						break;
 					}
@@ -821,7 +808,7 @@ void Draw(
     //to shrink or enlarge the level to the size of the
     //window.
     double scalingFactor(std::min(target.getSize().x*100./wall.roomWidth(), target.getSize().y*100./wall.roomHeight()));
-    sf::View const& oldView(target.getView());
+    sf::View oldView(target.getView());
     sf::View scaledView(sf::FloatRect(0.f, 0.f, target.getSize().x/scalingFactor, target.getSize().y/scalingFactor));
     target.setView(scaledView);
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), resources);
