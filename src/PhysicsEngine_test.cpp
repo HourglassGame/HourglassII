@@ -86,7 +86,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             }
         }
 
-        Wall actualWall(3200, wallmap);
+        Wall actualWall(3200, wallmap, "HourglassI");
         Environment env(actualWall, 30);
         std::vector<Box> boxArrivalList;
         boxArrivalList +=

@@ -2,14 +2,16 @@
 #define HG_INPUT_H
 
 #include "Ability.h"
-#include <SFML/Window/Input.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
+#include "RenderWindow.h"
 #include "InputList_fwd.h"
 #include <cstdlib>
 namespace hg {
 class Input {
 public:
     Input();
-    void updateState(sf::Input const& input, int mouseXOfEndOfTimeline, double mouseScale);
+    void updateState(hg::RenderWindow::InputState const& keyState, int mouseXOfEndOfTimeline, double mouseScale);
     InputList AsInputList() const;
     void setTimelineLength(int timelineLength) { this->timelineLength = timelineLength; }
 private:

@@ -37,33 +37,42 @@ Input::Input() :
 {
 }
 
-void Input::updateState(const sf::Input& input, int mouseXOfEndOfTimeline, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const& input, int mouseXOfEndOfTimeline, double mouseScale)
 {
-    left = input.IsKeyDown(sf::Key::A);
-    right = input.IsKeyDown(sf::Key::D);
-    up = input.IsKeyDown(sf::Key::W);
-    updatePress(down, input.IsKeyDown(sf::Key::S));
-    updatePress(space, input.IsKeyDown(sf::Key::Space));
+    left = input.isKeyPressed(sf::Keyboard::A);
+    right = input.isKeyPressed(sf::Keyboard::D);
+    up = input.isKeyPressed(sf::Keyboard::W);
+    updatePress(down, input.isKeyPressed(sf::Keyboard::S));
+    updatePress(space, input.isKeyPressed(sf::Keyboard::Space));
     
-    updatePress(mouseLeft, input.IsMouseButtonDown(sf::Mouse::Left));
+    updatePress(mouseLeft, input.isMouseButtonPressed(sf::Mouse::Left));
 
-    if (input.IsKeyDown(sf::Key::Num1)) {
+    if (input.isKeyPressed(sf::Keyboard::Num1)) {
         abilityCursor = TIME_JUMP;
     }
-    if (input.IsKeyDown(sf::Key::Num2)) {
+    if (input.isKeyPressed(sf::Keyboard::Num2)) {
         abilityCursor = TIME_REVERSE;
     }
-    if (input.IsKeyDown(sf::Key::Num3)) {
+    if (input.isKeyPressed(sf::Keyboard::Num3)) {
         abilityCursor = TIME_GUN;
     }
-    if (input.IsKeyDown(sf::Key::Num4)) {
+    if (input.isKeyPressed(sf::Keyboard::Num4)) {
         abilityCursor = TIME_PAUSE;
     }
-    if (input.IsMouseButtonDown(sf::Mouse::Right)) {
-        mouseTimelinePosition = flooredModulo(static_cast<int>(input.GetMouseX()*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+    if (input.isMouseButtonPressed(sf::Mouse::Right)) {
+        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
-    mouseX = input.GetMouseX()*mouseScale;
-    mouseY = input.GetMouseY()*mouseScale;
+    if (input.isMouseButtonPressed(sf::Mouse::Middle)) {
+        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+    }
+    if (input.isMouseButtonPressed(sf::Mouse::XButton1)) {
+        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+    }
+    if (input.isMouseButtonPressed(sf::Mouse::XButton2)) {
+        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+    }
+    mouseX = input.getMousePosition().x*mouseScale;
+    mouseY = input.getMousePosition().y*mouseScale;
 }
 
 InputList Input::AsInputList() const

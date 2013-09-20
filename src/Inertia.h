@@ -6,6 +6,9 @@
 namespace hg {
 class Inertia {
     public:
+    void reset() {
+        frame_ = FrameID();
+    }
     void save(FrameID const& frame, TimeDirection direction)
     {
         frame_ = frame;

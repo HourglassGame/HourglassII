@@ -97,6 +97,13 @@
 		20945A22160BF702005A94EE /* lzio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459FF160BF702005A94EE /* lzio.cpp */; };
 		20945A24160BF751005A94EE /* lctype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20945A23160BF751005A94EE /* lctype.cpp */; };
 		20945A26160BF7AB005A94EE /* lobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20945A25160BF7AB005A94EE /* lobject.cpp */; };
+		2097500217E8330500EF15B2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2097500117E8330500EF15B2 /* IOKit.framework */; };
+		2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2097500317E8337900EF15B2 /* Carbon.framework */; };
+		2097500E17E84A8B00EF15B2 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2097500D17E84A8B00EF15B2 /* libjpeg.a */; };
+		2097501217E84CD700EF15B2 /* glew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2097501117E84CD700EF15B2 /* glew.cpp */; };
+		2097501417E866B300EF15B2 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2097501317E866B300EF15B2 /* Arial.ttf */; };
+		2097501717E92CEB00EF15B2 /* RenderWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2097501517E92CEB00EF15B2 /* RenderWindow.cpp */; };
+		20ADB1CB17E7F90100B6FB1F /* Tilesets in Resources */ = {isa = PBXBuildFile; fileRef = 20ADB1CA17E7F90100B6FB1F /* Tilesets */; };
 		20B5C4A715D65EAA0074582F /* Maths_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20B5C4A615D65EAA0074582F /* Maths_test.cpp */; };
 		20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
@@ -382,10 +389,18 @@
 		20945A23160BF751005A94EE /* lctype.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lctype.cpp; sourceTree = "<group>"; };
 		20945A25160BF7AB005A94EE /* lobject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lobject.cpp; sourceTree = "<group>"; };
 		2096CCA214D6EEB400C0A32C /* LuaError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaError.h; path = ../../../src/LuaError.h; sourceTree = "<group>"; };
+		2097500117E8330500EF15B2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		2097500317E8337900EF15B2 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		2097500D17E84A8B00EF15B2 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = ../../../ext/jpeg/lib/libjpeg.a; sourceTree = "<group>"; };
+		2097501117E84CD700EF15B2 /* glew.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = glew.cpp; path = ../../../src/glew.cpp; sourceTree = "<group>"; };
+		2097501317E866B300EF15B2 /* Arial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Arial.ttf; path = ../../../data/Arial.ttf; sourceTree = "<group>"; };
+		2097501517E92CEB00EF15B2 /* RenderWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderWindow.cpp; path = ../../../src/RenderWindow.cpp; sourceTree = "<group>"; };
+		2097501617E92CEB00EF15B2 /* RenderWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderWindow.h; path = ../../../src/RenderWindow.h; sourceTree = "<group>"; };
 		209B3C85169BDFEC003C554D /* TextGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TextGlitz.h; path = ../../../src/TextGlitz.h; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; };
+		20ADB1CA17E7F90100B6FB1F /* Tilesets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Tilesets; path = ../../../data/Tilesets; sourceTree = "<group>"; };
 		20B5C4A515D65E710074582F /* Maths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Maths.h; path = ../../../src/Maths.h; sourceTree = "<group>"; };
 		20B5C4A615D65EAA0074582F /* Maths_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Maths_test.cpp; path = ../../../src/Maths_test.cpp; sourceTree = "<group>"; };
 		20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sfRenderTargetCanvas.h; path = ../../../src/sfRenderTargetCanvas.h; sourceTree = "<group>"; };
@@ -424,12 +439,15 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2097500E17E84A8B00EF15B2 /* libjpeg.a in Frameworks */,
 				20ED640B1370F386004E799C /* libsfml-graphics-s.a in Frameworks */,
 				20ED640D1370F38D004E799C /* libsfml-window-s.a in Frameworks */,
 				20ED640C1370F38A004E799C /* libsfml-system-s.a in Frameworks */,
 				20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */,
 				20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */,
 				20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */,
+				2097500217E8330500EF15B2 /* IOKit.framework in Frameworks */,
+				2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */,
 				2027C25913FCB75900FBDF7B /* libfreetype.a in Frameworks */,
 				20F06FC11474B3E00019ADB4 /* libtbb.dylib in Frameworks */,
 				20F06FC31474B3E00019ADB4 /* libtbbmalloc.dylib in Frameworks */,
@@ -661,6 +679,8 @@
 			children = (
 				201D503414D9302A00FA5680 /* LuaUtilities */,
 				200E80B514B4792500D054F4 /* main.cpp */,
+				2097501617E92CEB00EF15B2 /* RenderWindow.h */,
+				2097501517E92CEB00EF15B2 /* RenderWindow.cpp */,
 				203508B317E68A4800ABF21A /* ResourceManager.h */,
 				203508B217E68A4800ABF21A /* ResourceManager.cpp */,
 				2004AB8F16B4C8DB00C307E1 /* Scene.h */,
@@ -730,6 +750,7 @@
 				200E80E814B4792500D054F4 /* scalable_allocator.h */,
 				200E80ED14B4792500D054F4 /* TBBExceptionWrapper.h */,
 				20029FF012F0FD95000E2DBC /* TimeEngine */,
+				2097501117E84CD700EF15B2 /* glew.cpp */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -737,6 +758,8 @@
 		2068CD3C125F158300028D2A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2097501317E866B300EF15B2 /* Arial.ttf */,
+				20ADB1CA17E7F90100B6FB1F /* Tilesets */,
 				2014155D17E74CEE00109D7B /* GlitzData */,
 				20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */,
 				2021B82D15E7C967008D2F2E /* level.lvl */,
@@ -838,6 +861,9 @@
 		29B97314FDCFA39411CA2CEA /* HourglassSetupTest */ = {
 			isa = PBXGroup;
 			children = (
+				2097500D17E84A8B00EF15B2 /* libjpeg.a */,
+				2097500317E8337900EF15B2 /* Carbon.framework */,
+				2097500117E8330500EF15B2 /* IOKit.framework */,
 				202FEF841598B62000F47F6C /* levels */,
 				202E857514BE84DB008F05EB /* todo.txt */,
 				2068CD3C125F158300028D2A /* Resources */,
@@ -955,6 +981,8 @@
 				2021B82E15E7C967008D2F2E /* level.lvl in Resources */,
 				20FEFC631658BFFB009FE3AB /* basicTriggerSystem.lua in Resources */,
 				2014155E17E74CEE00109D7B /* GlitzData in Resources */,
+				20ADB1CB17E7F90100B6FB1F /* Tilesets in Resources */,
+				2097501417E866B300EF15B2 /* Arial.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1054,6 +1082,8 @@
 				20945A26160BF7AB005A94EE /* lobject.cpp in Sources */,
 				2039E7B5165929FA0075481C /* LuaSandbox.cpp in Sources */,
 				203508B417E68A4800ABF21A /* ResourceManager.cpp in Sources */,
+				2097501217E84CD700EF15B2 /* glew.cpp in Sources */,
+				2097501717E92CEB00EF15B2 /* RenderWindow.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1122,6 +1152,9 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
+					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
+					"\"$(SRCROOT)/../../../ext/glew/lib\"",
+					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1156,6 +1189,7 @@
 				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Wno-long-long";
 				SDKROOT = macosx;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
@@ -1194,6 +1228,9 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
+					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
+					"\"$(SRCROOT)/../../../ext/glew/lib\"",
+					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1268,6 +1305,9 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
+					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
+					"\"$(SRCROOT)/../../../ext/glew/lib\"",
+					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1656,6 +1696,9 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
+					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
+					"\"$(SRCROOT)/../../../ext/glew/lib\"",
+					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1704,6 +1747,9 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
+					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
+					"\"$(SRCROOT)/../../../ext/glew/lib\"",
+					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";

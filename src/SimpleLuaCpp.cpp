@@ -7,9 +7,9 @@
 #include <limits>
 namespace hg {
 namespace {
-    void* multi_thread_luaalloc (
-        void* ud,
-        void* ptr,
+    void *multi_thread_luaalloc (
+        void *ud,
+        void *ptr,
         size_t osize,
         size_t nsize)
     {
@@ -20,11 +20,11 @@ namespace {
         }
         else {
             if (osize >= nsize) {
-                void* p(multi_thread_realloc(ptr, nsize));
+                void *p(multi_thread_realloc(ptr, nsize));
                 return p ? p : ptr;
             }
             if (user_data.is_out_of_memory()) return 0;
-            void* p(multi_thread_realloc(ptr, nsize));
+            void *p(multi_thread_realloc(ptr, nsize));
             user_data.set_out_of_memory(!p);
             return p;
         }
