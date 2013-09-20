@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1146096434" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -62,19 +60,18 @@
 								<option id="gnu.cpp.link.option.libs.1439587619" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="tbb"/>
 									<listOptionValue builtIn="false" value="tbbmalloc"/>
-									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
-									<listOptionValue builtIn="false" value="sfml-window-s"/>
-									<listOptionValue builtIn="false" value="sfml-system-s"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="sfml-graphics-2"/>
+									<listOptionValue builtIn="false" value="sfml-window-2"/>
+									<listOptionValue builtIn="false" value="sfml-system-2"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_54"/>
 									<listOptionValue builtIn="false" value="opengl32"/>
 									<listOptionValue builtIn="false" value="glu32"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
 									<listOptionValue builtIn="false" value="winmm"/>
-									<listOptionValue builtIn="false" value="freetype"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.304655429" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-subsystem,windows" valueType="string"/>
 								<option id="gnu.cpp.link.option.userobjs.2033455066" name="Other objects" superClass="gnu.cpp.link.option.userobjs"/>
@@ -96,10 +93,10 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.release.1337083001" moduleId="org.eclipse.cdt.core.settings" name="Release">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -151,19 +148,18 @@
 								<option id="gnu.cpp.link.option.libs.298530116" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="tbb"/>
 									<listOptionValue builtIn="false" value="tbbmalloc"/>
-									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
-									<listOptionValue builtIn="false" value="sfml-window-s"/>
-									<listOptionValue builtIn="false" value="sfml-system-s"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_52"/>
-									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_52"/>
+									<listOptionValue builtIn="false" value="sfml-graphics-2"/>
+									<listOptionValue builtIn="false" value="sfml-window-2"/>
+									<listOptionValue builtIn="false" value="sfml-system-2"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_54"/>
 									<listOptionValue builtIn="false" value="opengl32"/>
 									<listOptionValue builtIn="false" value="glu32"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
 									<listOptionValue builtIn="false" value="winmm"/>
-									<listOptionValue builtIn="false" value="freetype"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1232208659" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-Wl,-subsystem,windows" valueType="string"/>
 								<option id="gnu.cpp.link.option.userobjs.1363739550" name="Other objects" superClass="gnu.cpp.link.option.userobjs"/>
@@ -226,4 +222,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>
