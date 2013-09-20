@@ -115,7 +115,7 @@ library_directories = ["ext/boost/lib/", "ext/SFML/lib/", "ext/tbb/lib/"]
 libraries = [
     "tbb", "tbbmalloc",
     "sfml-graphics-2", "sfml-window-2", "sfml-system-2", "opengl32", "glu32", "gdi32", "winmm",
-    "boost_serialization-mgw47-mt-1_52", "boost_filesystem-mgw47-mt-1_52", "boost_system-mgw47-mt-1_52", "boost_thread-mgw47-mt-1_52", "boost_chrono-mgw47-mt-1_52"]
+    "boost_serialization-mgw47-mt-1_54", "boost_filesystem-mgw47-mt-1_54", "boost_system-mgw47-mt-1_54", "boost_thread-mgw47-mt-1_54", "boost_chrono-mgw47-mt-1_54"]
 
 dlls = [
     "ext/tbb/lib/tbb.dll", "ext/tbb/lib/tbbmalloc.dll",
