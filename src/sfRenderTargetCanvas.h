@@ -40,13 +40,13 @@ public:
     {
         sf::Vector2f const pa(xa, ya);
         sf::Vector2f const pb(xb, yb);
-        sf::Vector2f d(normal(pa-pb)*(100*width/2.f));
+        sf::Vector2f d(normal(pa-pb)*(width/2.f));
         sf::ConvexShape line;
         line.setPointCount(4);
         line.setPoint(0, pa - d);
-        line.setPoint(0, pb - d);
-        line.setPoint(0, pb + d);
-        line.setPoint(0, pa + d);
+        line.setPoint(1, pb - d);
+        line.setPoint(2, pb + d);
+        line.setPoint(3, pa + d);
         line.setFillColor(interpretAsColour(colour));
         target->draw(line);
     }
