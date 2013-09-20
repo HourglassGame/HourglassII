@@ -1152,9 +1152,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
-					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
-					"\"$(SRCROOT)/../../../ext/glew/lib\"",
-					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
+					../../../ext/jpeg/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1228,9 +1226,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
-					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
-					"\"$(SRCROOT)/../../../ext/glew/lib\"",
-					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
+					../../../ext/jpeg/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1305,9 +1301,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
-					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
-					"\"$(SRCROOT)/../../../ext/glew/lib\"",
-					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
+					../../../ext/jpeg/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1696,9 +1690,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
-					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
-					"\"$(SRCROOT)/../../../ext/glew/lib\"",
-					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
+					../../../ext/jpeg/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
@@ -1747,9 +1739,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					../../../ext/freetype/lib,
-					"\"$(SRCROOT)/../../../../../../../ExternalLibraries/glew/library/lib\"",
-					"\"$(SRCROOT)/../../../ext/glew/lib\"",
-					"\"$(SRCROOT)/../../../ext/jpeg/lib\"",
+					../../../ext/jpeg/lib,
 				);
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRIVATE_HEADERS_FOLDER_PATH = "";
