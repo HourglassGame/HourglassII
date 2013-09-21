@@ -4,7 +4,6 @@ import os
 import os.path
 import subprocess
 
-
 def runsubprocess(command_and_args):
     try:
         startupinfo = subprocess.STARTUPINFO()
@@ -52,11 +51,11 @@ class windres:
             + ["-o"] + [output])
 
 def build_binary(
-    filenamegenerator,
-    compiler, rc_compiler,
-    sources, rc_file, output,
-    defines, include_directories,
-    library_directories, libraries):
+        filenamegenerator,
+        compiler, rc_compiler,
+        sources, rc_file, output,
+        defines, include_directories,
+        library_directories, libraries):
     #compile sources into object files
     objects = []
     for f in sources:
@@ -124,6 +123,7 @@ dlls = [
     "ext/sfml/lib/sfml-graphics-2.dll", "ext/sfml/lib/sfml-window-2.dll", "ext/sfml/lib/sfml-system-2.dll"]
 
 rc_file = "src/windows/resource.rc"
+
 def main():
     files_to_compile = glob.glob("src/*.cpp") + glob.glob("src/lua/*.cpp")
     def iota():
@@ -156,5 +156,6 @@ def main():
     os.chdir("build")
     runsubprocess([seven_zip_binary, "a", "HourglassII.7z", "HourglassII/", "-mx9"])
     os.chdir("..")
+
 if __name__ == "__main__":
     main()
