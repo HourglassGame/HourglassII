@@ -34,7 +34,7 @@ def upload(revision):
          release_filename)
     #scp file
     runsubprocess(
-        ["F:/Program Files/PuTTY/pscp.exe"]
+        ["C:/Program Files/PuTTY/pscp.exe"]
         + ["-i", "Sourceforge.ppk"]
         + [release_filename]
         + ["evanwallace,hourglassii@frs.sourceforge.net"
