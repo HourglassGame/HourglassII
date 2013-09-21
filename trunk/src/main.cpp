@@ -174,11 +174,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    if (false) {
-        //To remove "unsed function" warning
-        //return new_run_main(args);
-        //return run_main(args);
-    }
     return run_main(args);
 }
 
@@ -193,9 +188,8 @@ void initialseCurrentPath(std::vector<std::string> const& args)
     current_path(boost::filesystem::path(args[0]).remove_filename()/"data/");
 #endif
 }
+
 #if 0
-
-
 struct AsyncWindow {
     
 };
