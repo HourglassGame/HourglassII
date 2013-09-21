@@ -22,7 +22,7 @@ def upload(revision):
     #scp file
     subprocess.call(
         ["F:/Program Files/PuTTY/pscp.exe"]
-        + ["-i", "F:/User~Docs/Keven/Workspace/ssh_key/Sourceforge.ppk"]
+        + ["-i", "Sourceforge.ppk"]
         + [release_filename]
         + ["evanwallace,hourglassii@frs.sourceforge.net"
            +":/home/frs/project/h/ho/hourglassii/Release/Windows/"])
