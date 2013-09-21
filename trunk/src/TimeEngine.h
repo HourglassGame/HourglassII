@@ -49,6 +49,37 @@ public:
         Frame const *currentPlayerFrame_;
         Frame const *nextPlayerFrame_;
         FrameListList updatedFrames_;
+        
+        RunResult(RunResult const& o)
+            : currentPlayerFrame_(o.currentPlayerFrame_),
+              nextPlayerFrame_(o.nextPlayerFrame_),
+              updatedFrames_(o.updatedFrames_)
+        {}
+
+        RunResult& operator=(BOOST_COPY_ASSIGN_REF(RunResult) o)
+        {
+            currentPlayerFrame_ = o.currentPlayerFrame_;
+            nextPlayerFrame_ = o.nextPlayerFrame_;
+            updatedFrames_= o.updatedFrames_;
+            return *this;
+        }
+
+        RunResult(BOOST_RV_REF(RunResult) o)
+            : currentPlayerFrame_(boost::move(o.currentPlayerFrame_)),
+              nextPlayerFrame_(boost::move(o.nextPlayerFrame_)),
+              updatedFrames_(boost::move(o.updatedFrames_))
+        {}
+
+        RunResult& operator=(BOOST_RV_REF(RunResult) o)
+        {
+            currentPlayerFrame_ = boost::move(o.currentPlayerFrame_);
+            nextPlayerFrame_ = boost::move(o.nextPlayerFrame_);
+            updatedFrames_ = boost::move(o.updatedFrames_);
+            return *this;
+        }
+        
+    private:
+        BOOST_COPYABLE_AND_MOVABLE(RunResult)
     };
     TimeEngine(BOOST_RV_REF(TimeEngine) o) :
         speedOfTime_(boost::move(o.speedOfTime_)),
