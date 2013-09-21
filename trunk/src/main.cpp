@@ -689,7 +689,24 @@ void runStep(
         framesExecutedList.push_back(static_cast<int>(boost::distance(updateSet)));
     }
 
-    if (waveInfo.currentPlayerFrame()) {
+    if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
+        drawnFrame =
+              hg::FrameID(
+                abs(
+                  static_cast<int>(
+                    hg::flooredModulo(static_cast<long>((sf::Mouse::getPosition(app.getWindow()).x
+                     * static_cast<long>(timeEngine.getTimelineLength())
+                     / app.getSize().x))
+                    , static_cast<long>(timeEngine.getTimelineLength())))),
+                hg::UniverseID(timeEngine.getTimelineLength()));
+        hg::Frame *frame(timeEngine.getFrame(drawnFrame));
+        Draw(app,
+             getGlitzForDirection(frame->getView(), hg::FORWARDS),
+             timeEngine.getWall(),
+             resources,
+             wallImage);
+    }
+    else if (waveInfo.currentPlayerFrame()) {
         hg::FrameView const& view(waveInfo.currentPlayerFrame()->getView());
         hg::GuyOutputInfo const& currentGuy(findCurrentGuy(view.getGuyInformation()));
         hg::TimeDirection currentGuyDirection(currentGuy.getTimeDirection());
