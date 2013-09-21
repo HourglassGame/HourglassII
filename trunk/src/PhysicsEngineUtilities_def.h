@@ -949,7 +949,7 @@ void guyStep(
 							int boxX = nextBoxIt->object.getX();
 							int boxY = nextBoxIt->object.getY();
 							int boxSize = nextBoxIt->object.getSize();
-							if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize) && (y[i]+height > boxY))
+							if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize) && (y[i]+height >= boxY+boxSize))
 							{
 								carry[i] = true;
 								carrySize[i] = boxSize;
