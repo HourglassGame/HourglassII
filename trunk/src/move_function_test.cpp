@@ -11,7 +11,7 @@ namespace {
         if (a) {
             passed = false;
         }
-        a = testOperatorBool;
+        a = &testOperatorBool;
         passed = passed && a;
         if (a) {
             //No problem

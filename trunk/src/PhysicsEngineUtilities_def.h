@@ -249,7 +249,7 @@ void guyStep(
 		//std::cerr << "Pre Physics Speed " << getFrameNumber(frame) << ": " << yspeed[i] << "\n";
 
         // Check with triggers if guy should affect frame
-		if (not triggerFrameState.shouldArrive(guyArrivalList[i]))
+		if (!triggerFrameState.shouldArrive(guyArrivalList[i]))
 		{
 			finishedWith[i] = true;
 			continue;
@@ -1269,7 +1269,7 @@ void guyStep(
                     guyArrivalList[i].getIndex() == playerInput.size()-1);
 			}
 			
-            if (not normalDeparture)
+            if (!normalDeparture)
             {
             	nextGuy.push_back(
 					ObjectAndTime<Guy, Frame *>(
@@ -1489,7 +1489,7 @@ void boxCollisionAlogorithm(
 
 	// Check with triggers if the box should arrive at all
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
-		if (not triggerFrameState.shouldArrive(oldBoxList[i])) {
+		if (!triggerFrameState.shouldArrive(oldBoxList[i])) {
 			squished[i] = true;
 		}
 	}
@@ -1527,7 +1527,7 @@ void boxCollisionAlogorithm(
 
 	// Destroy boxes that are overlapping with platforms and walls
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
-		if (not squished[i]) {
+		if (!squished[i]) {
 			if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i]+size[i]-1, yTemp[i])
 					&& env.wall.at(xTemp[i], yTemp[i]+size[i]-1) && env.wall.at(xTemp[i]+size[i], yTemp[i]+size[i]-1))
 			{
