@@ -20,6 +20,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
                 mt::boost::container::vector<TriggerDataConstPtr>::type const> const& /*triggerArrivals*/)
     {
         assert(false && "Not Implemented!");
+		throw std::runtime_error("Not Implemented Exception");
     }
 
     virtual bool shouldArrive(Guy const& /*potentialArriver*/) { return true; }
@@ -47,6 +48,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         Frame */*currentFrame*/)
     {
         assert(false && "Not implemented");
+		throw std::runtime_error("Not Implemented Exception");
     }
 
     virtual ~MockTriggerFrameStateImplementation(){}
