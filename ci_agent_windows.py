@@ -7,6 +7,19 @@ import traceback
 import os.path
 import os
 import imp
+
+def runsubprocess(command_and_args):
+    try:
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        return subprocess.check_output(
+            command_and_args,
+            stderr=subprocess.STDOUT,
+            startupinfo=startupinfo)
+    except subprocess.CalledProcessError as e:
+        print(e.output.decode("UTF-8"))
+        raise
+
 def build():
     import build_windows
     imp.reload(build_windows)
@@ -20,7 +33,7 @@ def upload(revision):
         "build/HourglassII.7z",
          release_filename)
     #scp file
-    subprocess.call(
+    runsubprocess(
         ["F:/Program Files/PuTTY/pscp.exe"]
         + ["-i", "Sourceforge.ppk"]
         + [release_filename]
@@ -29,14 +42,13 @@ def upload(revision):
 
 def svn_up():
     print("Updating...")
-    output = subprocess.check_output(["svn"] + ["up"]).decode("UTF-8").replace("\r\n", "\n")
+    output = runsubprocess(["svn"] + ["up"]).decode("UTF-8").replace("\r\n", "\n")
     print("Updated to revision",
       re.search(r"^((At revision )|(Updated to revision ))([0-9]*)\.$", output, re.MULTILINE).group(4))
 
 def svnversion():
     return int(
-      re.search(r"Last Changed Rev: ([0-9]*)", subprocess.check_output(["svn", "info"]).decode("UTF-8")).group(1))
-
+      re.search(r"Last Changed Rev: ([0-9]*)", runsubprocess(["svn", "info"]).decode("UTF-8")).group(1))
 
 def main():
     try:

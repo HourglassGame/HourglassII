@@ -4,11 +4,12 @@ import os
 import os.path
 import subprocess
 
+
 def runsubprocess(command_and_args):
     try:
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        subprocess.check_output(
+        return subprocess.check_output(
             command_and_args,
             stderr=subprocess.STDOUT,
             startupinfo=startupinfo)
