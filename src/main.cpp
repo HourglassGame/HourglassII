@@ -55,6 +55,7 @@
 typedef sf::Color Colour;
 
 namespace {
+    void unsync_iostreams_with_stdio();
     void initialseCurrentPath(std::vector<std::string> const& args);
     int run_main(std::vector<std::string> const& args);
     void runStep(
@@ -94,6 +95,8 @@ namespace {
 
     void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend);
     void generateReplay();
+
+
     template<typename F>
     boost::unique_future<typename boost::result_of<F()>::type> enqueue_task(hg::ConcurrentQueue<hg::move_function<void()> >& queue, F f)
     {
@@ -102,6 +105,7 @@ namespace {
         queue.push(hg::move_function<void()>(boost::move(task)));
         return boost::move(future);
     }
+
 
     struct FunctionQueueRunner
     {
@@ -116,6 +120,7 @@ namespace {
     private:
         hg::ConcurrentQueue<hg::move_function<void()> >& taskQueue_;
     };
+
 
     struct RunToNextPlayerFrame
     {
@@ -134,6 +139,7 @@ namespace {
         hg::InputList inputList_;
         hg::OperationInterrupter *interrupter_;
     };
+
 
     struct CreateTimeEngine {
         //boost::result_of support
@@ -167,6 +173,8 @@ namespace {
 int main(int argc, char *argv[])
 {
     std::vector<std::string> args(argv, argv+argc);
+    
+    unsync_iostreams_with_stdio();
     initialseCurrentPath(args);
 
     if(!hg::getTestDriver().passesAllTests()) {
@@ -177,7 +185,21 @@ int main(int argc, char *argv[])
     return run_main(args);
 }
 
+
 namespace  {
+void unsync_iostreams_with_stdio() {
+    std::cin.sync_with_stdio(false);
+    std::cout.sync_with_stdio(false);
+    std::cerr.sync_with_stdio(false);
+    std::clog.sync_with_stdio(false);
+    
+    std::wcin.sync_with_stdio(false);
+    std::wcout.sync_with_stdio(false);
+    std::wcerr.sync_with_stdio(false);
+    std::wclog.sync_with_stdio(false);
+}
+
+
 void initialseCurrentPath(std::vector<std::string> const& args)
 {
 #if defined(__APPLE__) && defined(__MACH__)
@@ -188,6 +210,7 @@ void initialseCurrentPath(std::vector<std::string> const& args)
     current_path(boost::filesystem::path(args[0]).remove_filename()/"data/");
 #endif
 }
+
 
 #if 0
 struct AsyncWindow {
@@ -296,12 +319,14 @@ struct RunningGameScene {
 };
 #endif
 
+
 static hg::FrameID mousePosToFrameID(hg::RenderWindow const& app, hg::TimeEngine const& timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
     double const mouseXFraction = app.getInputState().getMousePosition().x*1./app.getSize().x;
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }
+
 
 int run_main(std::vector<std::string> const& args)
 {
@@ -312,6 +337,8 @@ int run_main(std::vector<std::string> const& args)
 	bool fontLoaded(defaultFontObj.loadFromFile("Arial.ttf"));
     assert(fontLoaded);
     hg::defaultFont = &defaultFontObj;
+    
+    //bool doneWithTest(false);
     
     hg::ConcurrentQueue<hg::move_function<void()> > timeEngineTaskQueue;
     boost::thread timeEngineThread((FunctionQueueRunner(timeEngineTaskQueue)));
@@ -445,6 +472,29 @@ int run_main(std::vector<std::string> const& args)
 			}
 			case RUNNING_LEVEL:
 			{
+            #if 0
+                //TEST ONLY {
+                if (!doneWithTest) {
+                    if (app.getInputState().isKeyPressed(sf::Keyboard::Space)) {
+                        doneWithTest = true;
+                    }
+                    replay = hg::loadReplay("replay");
+                    currentReplayIt = replay.begin();
+                    currentReplayEnd = replay.end();
+                    replayLogOut.close();
+                    replayLogOut.open("replayLogOut");
+                    interrupter->interrupt();
+                    futureRunResult.wait();
+                    interrupter = hg::unique_ptr<hg::OperationInterrupter>(new hg::OperationInterrupter());
+                    futureTimeEngine =
+                        enqueue_task(
+                            timeEngineTaskQueue,
+                            CreateTimeEngine(levelPath, *interrupter));
+                    state = LOADING_LEVEL;
+                    goto continuemainloop;
+                }
+                //}
+            #endif
 				sf::Event event;
 				while (app.pollEvent(event))
 				{
@@ -563,7 +613,7 @@ int run_main(std::vector<std::string> const& args)
 						replayGlyph.setCharacterSize(32.f);
 						app.draw(replayGlyph);
 					}
-                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F)) {
+                    if (app.getInputState().isKeyPressed(sf::Keyboard::F)) {
                         app.setFramerateLimit(0);
                         app.setVerticalSyncEnabled(false);
                     }
@@ -614,13 +664,16 @@ int run_main(std::vector<std::string> const& args)
     return EXIT_SUCCESS;
 }
 
+
 hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(
     hg::FrameView const& view, hg::TimeDirection timeDirection)
 {
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
+
 Colour const uiTextColour(100,100,200);
+
 
 void drawInventory(hg::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups, hg::Ability abilityCursor) {
     hg::mt::std::map<hg::Ability, int>::type mpickups(pickups);
@@ -669,6 +722,7 @@ void drawInventory(hg::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::ty
         app.draw(timePausesGlyph);
     }
 }
+
 
 void runStep(
     hg::TimeEngine& timeEngine,
@@ -807,6 +861,7 @@ void runStep(
     }*/
 }
 
+
 void Draw(
     hg::RenderWindow& target,
     hg::mt::std::vector<hg::Glitz>::type const& glitz,
@@ -832,9 +887,10 @@ void Draw(
     target.draw(sf::Sprite(wallTex));
     //DrawWall(target, wall);
     flusher.partialFlush(std::numeric_limits<int>::max());
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) DrawColours(target, wall.roomWidth(), wall.roomHeight());
+    if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) DrawColours(target, wall.roomWidth(), wall.roomHeight());
     target.setView(oldView);
 }
+
 /*
 void DrawWall(
     sf::RenderTarget& target,
@@ -855,9 +911,11 @@ void DrawWall(
     }
 }
 */
+
 Colour asColour(sf::Vector3<double>const& vec) {
     return Colour(vec.x, vec.y, vec.z);
 }
+
 
 Colour guyPositionToColour(double xFrac, double yFrac) {
     static sf::Vector3<double> const posStart(255,0,0);
@@ -869,6 +927,7 @@ Colour guyPositionToColour(double xFrac, double yFrac) {
 
     return asColour(posStart + xDif*xFrac + yDif*yFrac);
 }
+
 
 void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight)
 {
@@ -886,6 +945,7 @@ void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight)
     
     target.draw(sf::Sprite(tex));
 }
+
 
 void DrawTimelineContents(
     sf::RenderTarget& target,
@@ -930,6 +990,7 @@ void DrawTimelineContents(
     sprite.setPosition(0.f, 10.f);
     target.draw(sprite);
 }
+
 
 void DrawWaves(
     sf::RenderTarget& target,
@@ -981,6 +1042,7 @@ void DrawWaves(
     }
 }
 
+
 void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength) {
     for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5*60) {
         float left(frameNo/static_cast<double>(timelineLength)*target.getView().getSize().x);
@@ -990,6 +1052,7 @@ void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength) {
         target.draw(tick);
     }
 }
+
 
 void DrawTimeline(
     sf::RenderTarget& target,
@@ -1020,12 +1083,14 @@ void DrawTimeline(
     DrawTimelineContents(target, timeEngine, height);
 }
 
+
 struct CompareIndicies {
     template<typename IndexableType>
     bool operator()(IndexableType const& l, IndexableType const& r) {
         return l.getIndex() < r.getIndex();
     }
 };
+
 
 template<typename BidirectionalGuyRange>
 hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange)
@@ -1038,6 +1103,8 @@ void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend)
 {
     toAppendTo << toAppend << " " << std::flush;
 }
+
+
 void generateReplay()
 {
     std::ifstream replayLogIn("replayLogIn");
