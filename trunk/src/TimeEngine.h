@@ -43,20 +43,20 @@ public:
         Frame const *nextPlayerFrame() const {
             return nextPlayerFrame_;
         }
-        FrameListList const& updatedFrames() const {
+        FrameListList const &updatedFrames() const {
             return updatedFrames_;
         }
         Frame const *currentPlayerFrame_;
         Frame const *nextPlayerFrame_;
         FrameListList updatedFrames_;
         
-        RunResult(RunResult const& o)
+        RunResult(RunResult const &o)
             : currentPlayerFrame_(o.currentPlayerFrame_),
               nextPlayerFrame_(o.nextPlayerFrame_),
               updatedFrames_(o.updatedFrames_)
         {}
 
-        RunResult& operator=(BOOST_COPY_ASSIGN_REF(RunResult) o)
+        RunResult &operator=(BOOST_COPY_ASSIGN_REF(RunResult) o)
         {
             currentPlayerFrame_ = o.currentPlayerFrame_;
             nextPlayerFrame_ = o.nextPlayerFrame_;
@@ -70,7 +70,7 @@ public:
               updatedFrames_(boost::move(o.updatedFrames_))
         {}
 
-        RunResult& operator=(BOOST_RV_REF(RunResult) o)
+        RunResult &operator=(BOOST_RV_REF(RunResult) o)
         {
             currentPlayerFrame_ = boost::move(o.currentPlayerFrame_);
             nextPlayerFrame_ = boost::move(o.nextPlayerFrame_);
@@ -86,7 +86,7 @@ public:
         worldState_(boost::move(o.worldState_)),
         wall_(boost::move(o.wall_))
     {}
-    TimeEngine& operator=(BOOST_RV_REF(TimeEngine) o)
+    TimeEngine &operator=(BOOST_RV_REF(TimeEngine) o)
     {
         speedOfTime_ = boost::move(o.speedOfTime_);
         worldState_ = boost::move(o.worldState_);
@@ -103,9 +103,9 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter& interrupter);
+    explicit TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter &interrupter);
 
-    void swap(TimeEngine& o);
+    void swap(TimeEngine &o);
 
     /**
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
@@ -113,7 +113,7 @@ public:
      * in which the player had input.
      * Exception Safety: Weak
      */
-    RunResult runToNextPlayerFrame(InputList const& newInputData, OperationInterrupter& interrupter);
+    RunResult runToNextPlayerFrame(InputList const &newInputData, OperationInterrupter &interrupter);
 
     /**
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
@@ -121,11 +121,11 @@ public:
      * Please investigate this constness further!
      * Exception Safety: No Throw
      */
-    Frame *getFrame(FrameID const& whichFrame);
+    Frame *getFrame(FrameID const &whichFrame);
     // Exception Safety: Strong
-    std::vector<InputList> const& getReplayData() const;
+    std::vector<InputList> const &getReplayData() const;
     
-    Wall const& getWall() const { return wall_; }
+    Wall const &getWall() const { return wall_; }
     
     int getTimelineLength() const { return worldState_.getTimelineLength(); }
 private:

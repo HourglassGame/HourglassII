@@ -13,7 +13,7 @@
 namespace hg {
 struct ExecuteFrame
 {
-    ExecuteFrame(WorldState& worldState, DepartureMap& newDepartures, OperationInterrupter& interrupter) :
+    ExecuteFrame(WorldState &worldState, DepartureMap &newDepartures, OperationInterrupter &interrupter) :
         worldState_(&worldState), newDepartures_(&newDepartures), interrupter_(&interrupter)
     {}
     void operator()(Frame *frame) const {
@@ -27,11 +27,11 @@ private:
 
 WorldState::WorldState(
     int timelineLength,
-    Guy const& initialGuy,
-    FrameID const& guyStartTime,
+    Guy const &initialGuy,
+    FrameID const &guyStartTime,
     BOOST_RV_REF(PhysicsEngine) physics,
     BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects,
-    OperationInterrupter& interrupter) :
+    OperationInterrupter &interrupter) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
@@ -42,13 +42,13 @@ WorldState::WorldState(
 {
     assert(guyStartTime.isValidFrame());
     assert(timelineLength > 0);
-    Frame* guyStartFrame(timeline_.getFrame(guyStartTime));
+    Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
         std::map<Frame *, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        foreach (Box const& box, initialObjects.getList<Box>())
+        foreach (Box const &box, initialObjects.getList<Box>())
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), box.getTimeDirection())].add(box);
         }
@@ -69,7 +69,7 @@ WorldState::WorldState(
     }
 }
 
-void WorldState::swap(WorldState& o)
+void WorldState::swap(WorldState &o)
 {
     boost::swap(timeline_, o.timeline_);
     boost::swap(playerInput_, o.playerInput_);
@@ -80,7 +80,7 @@ void WorldState::swap(WorldState& o)
     boost::swap(currentWinFrames_, o.currentWinFrames_);
 }
 
-Frame *WorldState::getFrame(FrameID const& whichFrame)
+Frame *WorldState::getFrame(FrameID const &whichFrame)
 {
     return timeline_.getFrame(whichFrame);
 }
@@ -91,7 +91,7 @@ int WorldState::getTimelineLength() const
 }
 
 PhysicsEngine::FrameDepartureT
-    WorldState::getDeparturesFromFrame(Frame *frame, OperationInterrupter& interrupter)
+    WorldState::getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter)
 {
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(frame->getPrePhysics(),
@@ -122,7 +122,7 @@ PhysicsEngine::FrameDepartureT
 
 struct InterruptTaskGroup {
 public:
-    InterruptTaskGroup(tbb::task_group_context& task_group_context):
+    InterruptTaskGroup(tbb::task_group_context &task_group_context):
         task_group_context_(&task_group_context) {}
     void operator()() const {
         task_group_context_->cancel_group_execution();
@@ -131,7 +131,7 @@ private:
     tbb::task_group_context *task_group_context_;
 };
 
-FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
+FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 {
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
@@ -171,7 +171,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter& interrupter)
 /**
 * Stores the given input data, allowing the player to exist for another step.
 */
-void WorldState::addNewInputData(InputList const& newInputData)
+void WorldState::addNewInputData(InputList const &newInputData)
 {
     playerInput_.push_back(newInputData);
     foreach (Frame *frame, currentPlayerFrames_) {

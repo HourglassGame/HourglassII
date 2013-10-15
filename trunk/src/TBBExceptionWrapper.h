@@ -22,7 +22,7 @@ namespace hg {
     class TBBInnerExceptionWrapper
     {
     public:
-        TBBInnerExceptionWrapper(F const& f) :
+        TBBInnerExceptionWrapper(F const &f) :
             f_(f)
         {}
     public:
@@ -43,7 +43,7 @@ namespace hg {
     class TBBOuterExceptionWrapper
     {
     public:
-        TBBOuterExceptionWrapper(F const& f) :
+        TBBOuterExceptionWrapper(F const &f) :
             f_(f)
         {}
     public:
@@ -52,10 +52,10 @@ namespace hg {
             try {
                 f_();
             }
-            catch (tbb::movable_exception<boost::exception_ptr> const& e) {
+            catch (tbb::movable_exception<boost::exception_ptr> const &e) {
                 boost::rethrow_exception(e.data());
             }
-            catch (tbb::tbb_exception const&) {
+            catch (tbb::tbb_exception const &) {
                 //To get here the exception must have originated from outside the InnerExceptionWrapper.
                 //The only reasons that that can happen are:
                 //  * An exception in the copy-constructor or copy-assignment-operator of `R`.

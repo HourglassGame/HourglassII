@@ -19,7 +19,7 @@ Box::Box(
 {
 }
 
-Box::Box(Box const& o, hg::TimeDirection timeDirection) :
+Box::Box(Box const &o, hg::TimeDirection timeDirection) :
         x_(o.x_), y_(o.y_),
         xspeed_(o.xspeed_), yspeed_(o.yspeed_),
         size_(o.size_),
@@ -29,20 +29,20 @@ Box::Box(Box const& o, hg::TimeDirection timeDirection) :
 {
 }
 
-bool Box::operator==(Box const& o) const
+bool Box::operator==(Box const &o) const
 {
     return asTie() == o.asTie();
 }
 
-bool Box::operator<(const Box& o) const
+bool Box::operator<(const Box &o) const
 {
     return asTie() < o.asTie();
 }
 
 boost::tuple<
-        int const&, int const&, int const&, int const&, int const&,
-        int const&, int const&,
-        TimeDirection const&>
+        int const &, int const &, int const &, int const &, int const &,
+        int const &, int const &,
+        TimeDirection const &>
 Box::asTie() const {
     return boost::tie(
             x_, y_, xspeed_, yspeed_, size_,
@@ -50,7 +50,7 @@ Box::asTie() const {
             timeDirection_);
 }
 
-std::ostream& operator<<(std::ostream& str, Box const& b)
+std::ostream &operator<<(std::ostream &str, Box const &b)
 {
     return 
       str << "{"

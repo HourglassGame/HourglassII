@@ -17,17 +17,17 @@ int UniverseID::timelineLength() const
     return timelineLength_;
 }
 
-bool UniverseID::operator==(UniverseID const& o) const
+bool UniverseID::operator==(UniverseID const &o) const
 {
     return timelineLength_ == o.timelineLength_;
 }
 
-bool UniverseID::operator<(UniverseID const& o) const
+bool UniverseID::operator<(UniverseID const &o) const
 {
     return timelineLength_ < o.timelineLength_;
 }
 
-FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction)
+FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction)
 {
     assert(getTimelineLength(universe) >= 0);
     switch (direction) {
@@ -41,17 +41,17 @@ FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction)
     //Never reached
     return FrameID();
 }
-FrameID getArbitraryFrame(UniverseID const& universe, int frameNumber)
+FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber)
 {
     assert(getTimelineLength(universe) >= 0);
     return frameNumber < getTimelineLength(universe) && frameNumber >= 0 ? FrameID(frameNumber, universe) : FrameID();
 }
-int getTimelineLength(UniverseID const& universe)
+int getTimelineLength(UniverseID const &universe)
 {
     return universe.timelineLength_;
 }
 
-std::size_t hash_value(UniverseID const& toHash)
+std::size_t hash_value(UniverseID const &toHash)
 {
     std::size_t seed(0);
     boost::hash_combine(seed, toHash.timelineLength_);

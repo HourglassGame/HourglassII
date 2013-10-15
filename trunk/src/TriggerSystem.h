@@ -17,8 +17,8 @@ public:
     TriggerSystem(unique_ptr<TriggerSystemImplementation> impl) :
         impl_(impl.release())
     {}
-    TriggerSystem(TriggerSystem const& o) : impl_(o.impl_) {}
-    TriggerSystem& operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) o)
+    TriggerSystem(TriggerSystem const &o) : impl_(o.impl_) {}
+    TriggerSystem &operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) o)
     {
         impl_ = o.impl_;
         return *this;
@@ -27,19 +27,19 @@ public:
         impl_(boost::move(o.impl_))
     {
     }
-    TriggerSystem& operator=(BOOST_RV_REF(TriggerSystem) o)
+    TriggerSystem &operator=(BOOST_RV_REF(TriggerSystem) o)
     {
         impl_ = boost::move(o.impl_);
         return *this;
     }
 
-    void swap(TriggerSystem& o) {
+    void swap(TriggerSystem &o) {
         impl_.swap(o.impl_);
     }
     //In a break from the usual OperationInterrupter semantics,
     //the interrupter which is passed to this function is used for the entire lifetime
     //of the returned TriggerFrameState.
-    TriggerFrameState getFrameState(OperationInterrupter& interrupter) const
+    TriggerFrameState getFrameState(OperationInterrupter &interrupter) const
     {
         return impl_.get().getFrameState(interrupter);
     }
@@ -47,7 +47,7 @@ private:
     clone_ptr<TriggerSystemImplementation> impl_;
     BOOST_COPYABLE_AND_MOVABLE(TriggerSystem)
 };
-inline void swap(TriggerSystem& l, TriggerSystem& r)
+inline void swap(TriggerSystem &l, TriggerSystem &r)
 {
     l.swap(r);
 }

@@ -9,7 +9,7 @@ class Inertia {
     void reset() {
         frame_ = FrameID();
     }
-    void save(FrameID const& frame, TimeDirection direction)
+    void save(FrameID const &frame, TimeDirection direction)
     {
         frame_ = frame;
         direction_ = direction;

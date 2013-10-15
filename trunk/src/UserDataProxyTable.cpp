@@ -8,7 +8,7 @@ namespace {
     char const metatableRegistryKey[] = "HG_UDPT_MetaTable";
     char const nilProxyRegistryKey[] = "HG_UDPT_Nil";
     
-    int UDPT_newindex(lua_State* L) {
+    int UDPT_newindex(lua_State *L) {
         //Args: UDPT, key, value
         //(No need to check the arguments, because they cannot ever
         // be anything else (because metamethods
@@ -22,7 +22,7 @@ namespace {
         //    UDPT.outer[key] = HG_UDPT_Nil;
         //}
         
-        UDPT* udpt(static_cast<UDPT*>(lua_touserdata(L, 1)));
+        UDPT *udpt(static_cast<UDPT *>(lua_touserdata(L, 1)));
         assert(udpt);
         
         lua_rawgeti(L, LUA_REGISTRYINDEX, udpt->outerTable);
@@ -43,7 +43,7 @@ namespace {
         return 0;
     }
     
-    int UDPT_index(lua_State* L) {
+    int UDPT_index(lua_State *L) {
         //Args: UDPT, key
         
         //v = UDPT.outer[key]
@@ -60,7 +60,7 @@ namespace {
         //}
         
         //UDPT, key
-        UDPT* udpt(static_cast<UDPT*>(lua_touserdata(L, 1)));
+        UDPT *udpt(static_cast<UDPT *>(lua_touserdata(L, 1)));
         
         lua_rawgeti(L, LUA_REGISTRYINDEX, udpt->outerTable);
         //UDPT, key, outerTable
@@ -93,9 +93,9 @@ namespace {
         return 1;
     }
     
-    int UDPT_gc(lua_State* L) {
+    int UDPT_gc(lua_State *L) {
         //Args: UDPT
-        UDPT* udpt(static_cast<UDPT*>(lua_touserdata(L, 1)));
+        UDPT *udpt(static_cast<UDPT *>(lua_touserdata(L, 1)));
         assert(udpt);
         luaL_unref(L, LUA_REGISTRYINDEX, udpt->baseTable);
         luaL_unref(L, LUA_REGISTRYINDEX, udpt->outerTable);
@@ -113,7 +113,7 @@ namespace {
 //lua_State. These include the
 //metatable used by UDPTs, as well as
 //the magic constant used to represent nil.
-void load_UDPT_lib(lua_State* L) {
+void load_UDPT_lib(lua_State *L) {
     int nilProxyCreated(luaL_newmetatable(L, nilProxyRegistryKey));
     assert(nilProxyCreated); (void)nilProxyCreated;
     lua_pop(L, 1);
@@ -138,13 +138,13 @@ void load_UDPT_lib(lua_State* L) {
 }
 
 struct LuaRefDeleter {
-    explicit LuaRefDeleter(lua_State* L) : L(L) {}
+    explicit LuaRefDeleter(lua_State *L) : L(L) {}
     void operator()(int ref) {
         luaL_unref(L, LUA_REGISTRYINDEX, ref);
     }
     typedef int pointer;
 private:
-    lua_State* L;
+    lua_State *L;
 };
 
 //[-1,+1,m]
@@ -152,7 +152,7 @@ private:
 //stack (which must be a table), and
 //pushes a proxy table which wraps
 //that table.
-int create_proxy_table(lua_State* L) {
+int create_proxy_table(lua_State *L) {
     //Create outer table
     lua_newtable(L);
     
@@ -161,7 +161,7 @@ int create_proxy_table(lua_State* L) {
     unique_ptr<int, LuaRefDeleter> baseRef(luaL_ref(L, LUA_REGISTRYINDEX), LuaRefDeleter(L));
 
     //Create the proxy table -- give it sufficient size to carry two "references"
-    UDPT* rawProxyTable(static_cast<UDPT*>(lua_newuserdata(L, sizeof (UDPT))));
+    UDPT *rawProxyTable(static_cast<UDPT *>(lua_newuserdata(L, sizeof (UDPT))));
     
     //Set its fields appropriately (with the base table and outer table).
     //None of these operations should throw.
@@ -173,15 +173,15 @@ int create_proxy_table(lua_State* L) {
     return 1;
 }
 //[0,+1,-]
-void get_base_table(lua_State* L, UDPT const* proxyTable) {
+void get_base_table(lua_State *L, UDPT const *proxyTable) {
     lua_rawgeti(L, LUA_REGISTRYINDEX, proxyTable->baseTable);
 }
 //[-1,0,e]
-void set_outer_table(lua_State* L, UDPT const* proxyTable) {
+void set_outer_table(lua_State *L, UDPT const *proxyTable) {
     lua_rawseti(L, LUA_REGISTRYINDEX, proxyTable->outerTable);
 }
 
-int UDPT_wrap_all(lua_State* L) {
+int UDPT_wrap_all(lua_State *L) {
     return 1;
 }
 

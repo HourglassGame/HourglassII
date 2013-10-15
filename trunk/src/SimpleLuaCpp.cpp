@@ -13,7 +13,7 @@ namespace {
         size_t osize,
         size_t nsize)
     {
-        LuaUserData& user_data(*static_cast<LuaUserData*>(ud));
+        LuaUserData &user_data(*static_cast<LuaUserData*>(ud));
         if (nsize == 0) {
             multi_thread_free(ptr);
             return 0;

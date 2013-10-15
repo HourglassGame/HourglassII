@@ -11,7 +11,7 @@ namespace hg {
 class Input {
 public:
     Input();
-    void updateState(hg::RenderWindow::InputState const& keyState, int mouseXOfEndOfTimeline, double mouseScale);
+    void updateState(hg::RenderWindow::InputState const &keyState, int mouseXOfEndOfTimeline, double mouseScale);
     InputList AsInputList() const;
     void setTimelineLength(int timelineLength) { this->timelineLength = timelineLength; }
 private:

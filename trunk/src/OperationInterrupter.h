@@ -14,7 +14,7 @@ public:
     public:
         FunctionHandle() : interrupter_(), iterator_() {}
         FunctionHandle(
-            OperationInterrupter& interrupter,
+            OperationInterrupter &interrupter,
             mt::boost::container::stable_vector<move_function<void()> >::type::iterator iterator)
                 : interrupter_(&interrupter), iterator_(iterator) {}
         
@@ -24,26 +24,26 @@ public:
             swap(o);
         }
         
-        FunctionHandle& operator=(BOOST_RV_REF(FunctionHandle) o)
+        FunctionHandle &operator=(BOOST_RV_REF(FunctionHandle) o)
         {
             swap(o);
             return *this;
         }
         
-        void swap(FunctionHandle& o) {
+        void swap(FunctionHandle &o) {
             boost::swap(interrupter_, o.interrupter_);
             boost::swap(iterator_, o.iterator_);
         }
         
         ~FunctionHandle() {
             if (interrupter_) {
-                OperationInterrupter& i(*interrupter_);
+                OperationInterrupter &i(*interrupter_);
                 tbb::spin_mutex::scoped_lock lock(i.mutex_);
                 i.interruptionFunctions_.erase(iterator_);
             }
         }
     private:
-        OperationInterrupter* interrupter_;
+        OperationInterrupter *interrupter_;
         mt::boost::container::stable_vector<move_function<void()> >::type::iterator iterator_;
         BOOST_MOVABLE_BUT_NOT_COPYABLE(FunctionHandle)
     };
@@ -72,6 +72,6 @@ private:
     //the specified interface, it is not safe to just use them for this).
     tbb::spin_mutex mutex_;
 };
-inline void swap(OperationInterrupter::FunctionHandle& l, OperationInterrupter::FunctionHandle& r) { l.swap(r); }
+inline void swap(OperationInterrupter::FunctionHandle &l, OperationInterrupter::FunctionHandle &r) { l.swap(r); }
 }//namespace hg
 #endif //HG_OPERATION_interrupter_H

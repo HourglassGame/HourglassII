@@ -13,7 +13,7 @@ Guy::Guy(
     bool supported,
     int supportedSpeed,
 
-    mt::std::map<Ability, int>::type const& pickups,
+    mt::std::map<Ability, int>::type const &pickups,
     FacingDirection::FacingDirection facing,
 
     bool boxCarrying,
@@ -45,7 +45,7 @@ Guy::Guy(
 {
 }
 
-bool Guy::operator==(const Guy& o) const
+bool Guy::operator==(const Guy &o) const
 {
     return index_ == o.index_
         && x_ == o.x_
@@ -67,7 +67,7 @@ bool Guy::operator==(const Guy& o) const
         && timeDirection_ == o.timeDirection_
 		&& timePaused_ == o.timePaused_;
 }
-bool Guy::operator<(const Guy& o) const
+bool Guy::operator<(const Guy &o) const
 {
     return index_ < o.index_;
 }

@@ -12,7 +12,7 @@
 #include <cassert>
 
 namespace hg {
-Frame::Frame(int frameNumber, Universe& universe):
+Frame::Frame(int frameNumber, Universe &universe):
         frameNumber_(frameNumber),
         universe_(&universe),
         departures_(),
@@ -21,7 +21,7 @@ Frame::Frame(int frameNumber, Universe& universe):
 {
 }
 
-void Frame::correctUniverse(Universe& newUniverse)
+void Frame::correctUniverse(Universe &newUniverse)
 {
     universe_ = &newUniverse;
 }
@@ -41,10 +41,10 @@ bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
             || (frameNumber_ != universe_->getTimelineLength() - 1 && direction == FORWARDS);
 }
 
-Universe const& Frame::getUniverse() const {
+Universe const &Frame::getUniverse() const {
     return *universe_;
 }
-Universe& Frame::getUniverse() {
+Universe &Frame::getUniverse() {
     return *universe_;
 }
 int Frame::getFrameNumber() const {
@@ -65,11 +65,11 @@ bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction) {
     assert(frame);
     return frame->nextFrameInSameUniverse(direction);
 }
-Universe const& getUniverse(Frame const *frame) {
+Universe const &getUniverse(Frame const *frame) {
     assert(frame);
     return frame->getUniverse();
 }
-Universe& getUniverse(Frame *frame) {
+Universe &getUniverse(Frame *frame) {
     assert(frame);
     return frame->getUniverse();
 }
@@ -83,14 +83,14 @@ bool isNullFrame(Frame const *frame) {
 
 namespace {
     template<typename ListTypes>
-    struct FrameNotNull : std::unary_function<std::pair<Frame* const, ObjectList<ListTypes> > const&, bool> {
-        bool operator()(Frame::FrameDeparturesT::value_type const& pair) const {
+    struct FrameNotNull : std::unary_function<std::pair<Frame *const, ObjectList<ListTypes> > const &, bool> {
+        bool operator()(Frame::FrameDeparturesT::value_type const &pair) const {
             return !isNullFrame(pair.first);
         }
     };
 }
 
-FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT& newDeparture)
+FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &newDeparture)
 {
     FrameUpdateSet changedTimes;
 
@@ -158,7 +158,7 @@ end:
 ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal>  retv;
-    foreach (ObjectList<Normal> const& value,
+    foreach (ObjectList<Normal> const &value,
     		arrivals_
             | boost::adaptors::map_values
             | boost::adaptors::indirected)
@@ -172,7 +172,7 @@ ObjectPtrList<Normal> Frame::getPrePhysics() const
 ObjectPtrList<Normal> Frame::getPostPhysics() const
 {
     ObjectPtrList<Normal>  retv;
-    foreach (ObjectList<Normal> const& value,
+    foreach (ObjectList<Normal> const &value,
     		departures_ | boost::adaptors::map_values)
     {
         retv.add(value);
@@ -181,17 +181,17 @@ ObjectPtrList<Normal> Frame::getPostPhysics() const
     return retv;
 }
 
-void Frame::addArrival(Frame const* source, ObjectList<Normal> const* arrival)
+void Frame::addArrival(Frame const *source, ObjectList<Normal> const *arrival)
 {
     insertArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type(source, arrival));
 }
-void Frame::insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toInsert)
+void Frame::insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type &toInsert)
 {
     bool didInsert(arrivals_.insert(toInsert));
     (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
-void Frame::changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type& toChange)
+void Frame::changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type &toChange)
 {
     tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::accessor access;
     if (arrivals_.find(access, toChange.first))
@@ -201,7 +201,7 @@ void Frame::changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectLis
     }
     assert(false && "Should only call change when the element does exist");
 }
-void Frame::clearArrival(Frame const* toClear)
+void Frame::clearArrival(Frame const *toClear)
 {
     bool didErase(arrivals_.erase(toClear));
     (void) didErase;

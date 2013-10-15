@@ -32,7 +32,7 @@ template<typename> class function_base;
 template<typename R, typename... ArgTypes>
 struct function_base<R(ArgTypes...)>
 {
-    virtual R operator()(ArgTypes&&... args) = 0;
+    virtual R operator()(ArgTypes &&...args) = 0;
     virtual ~function_base() {}
 };
 template<typename F, typename R, typename... ArgTypes>
@@ -47,7 +47,7 @@ struct function_obj : function_base<R(ArgTypes...)>
         f_(boost::move(f));
         return *this;
     }
-    virtual R operator()(ArgTypes&&... args)
+    virtual R operator()(ArgTypes &&...args)
     {
         return f_(hg::forward<ArgTypes>(args)...);
     }
@@ -66,7 +66,7 @@ struct function_obj<F, void, ArgTypes...> : function_base<void(ArgTypes...)>
         f_(boost::move(f));
         return *this;
     }
-    virtual void operator()(ArgTypes&&... args)
+    virtual void operator()(ArgTypes &&...args)
     {
         f_(hg::forward<ArgTypes>(args)...);
     }
@@ -90,7 +90,7 @@ struct move_function_obj : function_base<Signature>
     	f_(boost::move(f))
     {
     }
-    move_function_obj& operator=(BOOST_RV_REF(Functor) f)
+    move_function_obj &operator=(BOOST_RV_REF(Functor) f)
     {
         f_(boost::move(f));
         return *this;
@@ -110,7 +110,7 @@ struct move_function_obj<Functor, void()> : function_base<void()>
     	f_(boost::move(f))
     {
     }
-    move_function_obj& operator=(BOOST_RV_REF(Functor) f)
+    move_function_obj &operator=(BOOST_RV_REF(Functor) f)
     {
         f_(boost::move(f));
         return *this;
@@ -126,11 +126,11 @@ private:
 template<typename Functor, typename Signature>
 struct function_obj : function_base<Signature>
 {
-    function_obj(Functor const& f) :
+    function_obj(Functor const &f) :
     	f_(f)
     {
     }
-    function_obj& operator=(Functor const& f)
+    function_obj &operator=(Functor const &f)
     {
         f_(f);
         return *this;
@@ -146,11 +146,11 @@ private:
 template<typename Functor>
 struct function_obj<Functor, void()> : function_base<void()>
 {
-    function_obj(Functor const& f) :
+    function_obj(Functor const &f) :
     	f_(f)
     {
     }
-    function_obj& operator=(Functor const& f)
+    function_obj &operator=(Functor const &f)
     {
         f_(f);
         return *this;
@@ -201,7 +201,7 @@ public:
             new function::detail::function_obj<F, R, ArgTypes...>(boost::move(f)));
         return *this;
     }
-    R operator()(ArgTypes&&... args) const {
+    R operator()(ArgTypes &&...args) const {
         return (*f_)(hg::forward<ArgTypes>(args)...);
     }
 private:
@@ -240,7 +240,7 @@ public:
     }
 
     template<typename F>
-    move_function(F f, typename boost::disable_if<boost::has_move_emulation_enabled<F> >::type* p=0) :
+    move_function(F f, typename boost::disable_if<boost::has_move_emulation_enabled<F> >::type *p=0) :
         f_(multi_thread_new<function::detail::function_obj<F, R()> >(f))
     {
     }
@@ -254,13 +254,13 @@ public:
     }
 #else
     template<typename F>
-    move_function(F&& f) :
+    move_function(F &&f) :
         f_(multi_thread_new<function::detail::move_function_obj<typename boost::decay<F>::type, R()> >(hg::forward<F>(f)))
     {
     }
 
     template<typename F>
-    move_function<void()>& operator=(F&& f)
+    move_function<void()>& operator=(F &&f)
     {
         unique_ptr_t(multi_thread_new<function::detail::move_function_obj<typename boost::decay<F>::type, R()> >(hg::forward<F>(f))).swap(f_);
         return *this;

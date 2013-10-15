@@ -38,10 +38,10 @@ static int preloadReset(lua_State *L) {
     return 1;
 }
 
-static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const& extraChunks) {
+static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const &extraChunks) {
     //protoPreload = makeTable(extraChunks.name -> load(extraChunks.chunk))
     lua_createtable(L, 0, extraChunks.size());//[protoPreload]
-    foreach (LuaModule const& mod, extraChunks) {
+    foreach (LuaModule const &mod, extraChunks) {
         pushFunctionFromVector(L, mod.chunk, mod.name);//[protoPreload, chunk]
         lua_setfield(L, -2, mod.name.c_str());//[protoPreload]
     }
@@ -54,9 +54,9 @@ static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const
 //To identify which asserts are actual asserts, and which are checking results from lua
 //luaassert is checking results from lua, and should eventually be replaced with an exception
 #define luaassert assert
-TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter& interrupter) const
+TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &interrupter) const
 {
-    LuaState& sharedState(luaStates_->get());
+    LuaState &sharedState(luaStates_->get());
 
     if (!sharedState.ptr) {
         LuaState L((LuaState::new_state_t()));
@@ -78,15 +78,15 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter& in
 }
 
 DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
-    LuaState& sharedState,
+    LuaState &sharedState,
     std::vector<
         std::pair<
             int,
             std::vector<int>
         >
-    > const& triggerOffsetsAndDefaults,
+    > const &triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize,
-    OperationInterrupter& interrupter) :
+    OperationInterrupter &interrupter) :
         L_(sharedState),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         arrivalLocationsSize_(arrivalLocationsSize),
@@ -312,7 +312,7 @@ PhysicsAffectingStuff
         Frame const *currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals)
 {
     //All indicies viewed or written by lua count starting from 1, and are adjusted
     //before geing used in c++.
@@ -435,7 +435,7 @@ PhysicsAffectingStuff
     lua_createtable(L, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
     int i(0);
-    foreach (mt::std::vector<int>::type const& apparentTrigger, apparentTriggers) {
+    foreach (mt::std::vector<int>::type const &apparentTrigger, apparentTriggers) {
         ++i;
         luaL_checkstack(L, 1, 0);
         lua_createtable(L, static_cast<int>(apparentTrigger.size()), 0);
@@ -538,7 +538,7 @@ PhysicsAffectingStuff
 
 
 namespace {
-void pushGuy(lua_State *L, Guy const& guy)
+void pushGuy(lua_State *L, Guy const &guy)
 {
     luaL_checkstack(L, 1, 0);
     lua_createtable(L, 0, 17);
@@ -577,7 +577,7 @@ void pushGuy(lua_State *L, Guy const& guy)
     
     lua_createtable(L, static_cast<int>(guy.getPickups().size()), 0);
     typedef std::pair<Ability const, int> PickupPair;
-    foreach (PickupPair const& pickup, guy.getPickups()) {
+    foreach (PickupPair const &pickup, guy.getPickups()) {
         luaL_checkstack(L, 2, 0);
         lua_pushstring(L, abilityToString(pickup.first).c_str());
         lua_pushinteger(L, pickup.second);
@@ -602,7 +602,7 @@ void pushGuy(lua_State *L, Guy const& guy)
     lua_setfield(L, -2, "timePaused");
 }
 
-void pushBox(lua_State *L, Box const& box)
+void pushBox(lua_State *L, Box const &box)
 {
     luaL_checkstack(L, 1, 0);
     lua_createtable(L, 0, 10);
@@ -641,7 +641,7 @@ void pushBox(lua_State *L, Box const& box)
 
 //TODO: fix code duplication with box version and portal version
 //ARGH so much code duplication ):
-bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
+bool DirectLuaTriggerFrameState::shouldArrive(Guy const &potentialArriver)
 {
     lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
@@ -663,7 +663,7 @@ bool DirectLuaTriggerFrameState::shouldArrive(Guy const& potentialArriver)
     lua_pop(L, 1);
     return retv;
 }
-bool DirectLuaTriggerFrameState::shouldArrive(Box const& potentialArriver)
+bool DirectLuaTriggerFrameState::shouldArrive(Box const &potentialArriver)
 {
     lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
@@ -692,7 +692,7 @@ bool DirectLuaTriggerFrameState::shouldArrive(Box const& potentialArriver)
 //it refers to the `i` in `nextPortal[i]`.
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
-    Guy const& potentialPorter,
+    Guy const &potentialPorter,
     bool porterActionedPortal)
 {
     lua_State *L(L_.ptr);
@@ -723,7 +723,7 @@ bool DirectLuaTriggerFrameState::shouldPort(
 }
 bool DirectLuaTriggerFrameState::shouldPort(
     int responsiblePortalIndex,
-    Box const& potentialPorter,
+    Box const &potentialPorter,
     bool porterActionedPortal)
 {
     lua_State *L(L_.ptr);
@@ -757,8 +757,8 @@ bool DirectLuaTriggerFrameState::shouldPort(
 //Unfortunately the current implementation allows lua to return all sorts of nonsensical things
 //for Guys (eg, change relative index, change illegalPortal, supportedSpeed etc.. none of these make much sense)
 boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
-    mt::std::vector<int>::type const& responsibleMutatorIndices,
-    Guy const& objectToManipulate)
+    mt::std::vector<int>::type const &responsibleMutatorIndices,
+    Guy const &objectToManipulate)
 {
     lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
@@ -795,8 +795,8 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     return retv;
 }
 boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
-    mt::std::vector<int>::type const& responsibleMutatorIndices,
-    Box const& objectToManipulate)
+    mt::std::vector<int>::type const &responsibleMutatorIndices,
+    Box const &objectToManipulate)
 {
     lua_State *L(L_.ptr);
     LuaStackManager stack_manager(L);
@@ -834,7 +834,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
 }
 
 TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState::getDepartureInformation(
-    mt::boost::container::map<Frame *, ObjectList<Normal> >::type const& departures,
+    mt::boost::container::map<Frame *, ObjectList<Normal> >::type const &departures,
     Frame *currentFrame)
 {
     lua_State *L(L_.ptr);
@@ -850,7 +850,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     lua_createtable(L, static_cast<int>(departures.size()), 0);
     int i(0);
     foreach (
-        ObjectList<Normal> const& departureSection,
+        ObjectList<Normal> const &departureSection,
         departures | boost::adaptors::map_values)
     {
         ++i;
@@ -860,7 +860,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
             luaL_checkstack(L, 1, 0);
             lua_createtable(L, static_cast<int>(departureSection.getList<Guy>().size()), 0);
             int j(0);
-            foreach (Guy const& guy, departureSection.getList<Guy>()) {
+            foreach (Guy const &guy, departureSection.getList<Guy>()) {
                 ++j;
                 pushGuy(L, guy);
                 lua_rawseti(L, -2, j);
@@ -871,7 +871,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
             luaL_checkstack(L, 1, 0);
             lua_createtable(L, static_cast<int>(departureSection.getList<Box>().size()), 0);
             int j(0);
-            foreach (Box const& box, departureSection.getList<Box>()) {
+            foreach (Box const &box, departureSection.getList<Box>()) {
                 ++j;
                 pushBox(L, box);
                 lua_rawseti(L, -2, j);
@@ -1021,7 +1021,7 @@ DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
 }
 
 namespace {
-std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk, char const *name) {
+std::vector<char> compileLuaChunk(std::vector<char> const &sourceChunk, char const *name) {
     std::pair<char const *, char const *> source_iterators;
     if (!sourceChunk.empty()) {
         source_iterators.first = &sourceChunk.front();
@@ -1040,21 +1040,21 @@ std::vector<char> compileLuaChunk(std::vector<char> const& sourceChunk, char con
 }
 }
 DirectLuaTriggerSystem::DirectLuaTriggerSystem(
-    std::vector<char> const& mainChunk,
-    std::vector<LuaModule> const& extraChunks,
+    std::vector<char> const &mainChunk,
+    std::vector<LuaModule> const &extraChunks,
     std::vector<
             std::pair<
                 int,
                 std::vector<int>
             >
-    > const& triggerOffsetsAndDefaults,
+    > const &triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize) :
         compiledMainChunk_(compileLuaChunk(mainChunk, "Main Chunk")),
         compiledExtraChunks_(extraChunks),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
-    foreach(LuaModule& module, compiledExtraChunks_) {
+    foreach(LuaModule &module, compiledExtraChunks_) {
         module.chunk = compileLuaChunk(module.chunk, module.name.c_str());
     }
 }

@@ -7,7 +7,7 @@ namespace hg {
 class LuaInterruptionHandle {
 public:
     LuaInterruptionHandle() : L_(), functionHandle_(){}
-    LuaInterruptionHandle(lua_State* L, OperationInterrupter::FunctionHandle functionHandle) :
+    LuaInterruptionHandle(lua_State *L, OperationInterrupter::FunctionHandle functionHandle) :
         L_(L), functionHandle_(boost::move(functionHandle)) {}
     
     LuaInterruptionHandle(BOOST_RV_REF(LuaInterruptionHandle) o) :
@@ -15,11 +15,11 @@ public:
     {
         o.L_ = 0;
     }
-    LuaInterruptionHandle& operator=(BOOST_RV_REF(LuaInterruptionHandle) o) {
+    LuaInterruptionHandle &operator=(BOOST_RV_REF(LuaInterruptionHandle) o) {
         swap(o);
         return *this;
     }
-    void swap(LuaInterruptionHandle& o) {
+    void swap(LuaInterruptionHandle &o) {
         boost::swap(L_, o.L_);
         boost::swap(functionHandle_, o.functionHandle_);
     }
@@ -29,11 +29,11 @@ public:
         }
     }
 private:
-    lua_State* L_;
+    lua_State *L_;
     OperationInterrupter::FunctionHandle functionHandle_;
     BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaInterruptionHandle)
 };
-inline void swap(LuaInterruptionHandle& l, LuaInterruptionHandle& r) { l.swap(r); }
+inline void swap(LuaInterruptionHandle &l, LuaInterruptionHandle &r) { l.swap(r); }
 
 //Registers a interruptionFunction with interruper.
 //Also puts a debug hook into L, which checks an interruption flag and raises an error if it is set.
@@ -48,7 +48,7 @@ inline void swap(LuaInterruptionHandle& l, LuaInterruptionHandle& r) { l.swap(r)
 //   to be interrupted.
 //4. The interruption error must not be caught by the lua code, and when it is
 //   eventually caught, it must result in an interrupted_exception.
-LuaInterruptionHandle makeInterruptable(lua_State* L, OperationInterrupter& interrupter);
+LuaInterruptionHandle makeInterruptable(lua_State *L, OperationInterrupter &interrupter);
 }
 
 #endif //HG_LUA_INTERRUPTION_H

@@ -23,15 +23,15 @@ class PhysicsEngine
 {
 public:
     PhysicsEngine(
-        Environment const& env,
-        TriggerSystem const& newTriggerSystem);
+        Environment const &env,
+        TriggerSystem const &newTriggerSystem);
 
-    PhysicsEngine(PhysicsEngine const& o) :
+    PhysicsEngine(PhysicsEngine const &o) :
         env_(o.env_),
         triggerSystem_(o.triggerSystem_)
     {
     }
-    PhysicsEngine& operator=(BOOST_COPY_ASSIGN_REF(PhysicsEngine) o)
+    PhysicsEngine &operator=(BOOST_COPY_ASSIGN_REF(PhysicsEngine) o)
     {
         env_ = o.env_;
         triggerSystem_ = o.triggerSystem_;
@@ -42,7 +42,7 @@ public:
         env_(boost::move(o.env_)),
         triggerSystem_(boost::move(o.triggerSystem_))
     {}
-    PhysicsEngine& operator=(BOOST_RV_REF(PhysicsEngine) o)
+    PhysicsEngine &operator=(BOOST_RV_REF(PhysicsEngine) o)
     {
         env_ = boost::move(o.env_);
         triggerSystem_ = boost::move(o.triggerSystem_);
@@ -53,8 +53,8 @@ public:
     struct PhysicsReturnT
     {
     	PhysicsReturnT(
-            FrameDepartureT const& Ndepartures,
-            FrameView const& Nview,
+            FrameDepartureT const &Ndepartures,
+            FrameView const &Nview,
             bool NcurrentPlayerFrame,
     		bool NnextPlayerFrame,
     		bool NcurrentWinFrame) :
@@ -73,16 +73,16 @@ public:
 
     // executes frame and returns departures
     PhysicsEngine::PhysicsReturnT executeFrame(
-        ObjectPtrList<Normal> const& arrivals,
+        ObjectPtrList<Normal> const &arrivals,
         Frame *frame,
-        std::vector<InputList> const& playerInput,
-        OperationInterrupter& interrupter) const;
+        std::vector<InputList> const &playerInput,
+        OperationInterrupter &interrupter) const;
 private:
     Environment env_;
     TriggerSystem triggerSystem_;
     BOOST_COPYABLE_AND_MOVABLE(PhysicsEngine)
 };
-inline void swap(PhysicsEngine& l, PhysicsEngine& r)
+inline void swap(PhysicsEngine &l, PhysicsEngine &r)
 {
     PhysicsEngine temp(boost::move(l));
     l = boost::move(r);

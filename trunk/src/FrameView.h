@@ -16,15 +16,15 @@ class FrameView {
 public:
     FrameView();
     FrameView(
-        mt::std::vector<Glitz>::type const& forwardsGlitz,
-        mt::std::vector<Glitz>::type const& reverseGlitz,
-        mt::std::vector<GuyOutputInfo>::type const& guyInformation);
+        mt::std::vector<Glitz>::type const &forwardsGlitz,
+        mt::std::vector<Glitz>::type const &reverseGlitz,
+        mt::std::vector<GuyOutputInfo>::type const &guyInformation);
     
-    void swap(FrameView& o);
+    void swap(FrameView &o);
     
-    mt::std::vector<Glitz>::type const& getForwardsGlitz() const { return forwardsGlitz_; }
-    mt::std::vector<Glitz>::type const& getReverseGlitz() const { return reverseGlitz_; }
-    mt::std::vector<GuyOutputInfo>::type const& getGuyInformation() const { return guyInformation_; }
+    mt::std::vector<Glitz>::type const &getForwardsGlitz() const { return forwardsGlitz_; }
+    mt::std::vector<Glitz>::type const &getReverseGlitz() const { return reverseGlitz_; }
+    mt::std::vector<GuyOutputInfo>::type const &getGuyInformation() const { return guyInformation_; }
 private:
     //Eventually `Glitz` will be evolve into a general purpose type
     //which is able to do everything glitz related
@@ -45,6 +45,6 @@ private:
     //This can store the relevant space part.
     mt::std::vector<GuyOutputInfo>::type guyInformation_;
 };
-inline void swap(FrameView& a, FrameView& b) { a.swap(b); }
+inline void swap(FrameView &a, FrameView &b) { a.swap(b); }
 }//namespace hg
 #endif //HG_FRAME_VIEW_H

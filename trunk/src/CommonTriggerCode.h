@@ -19,34 +19,34 @@ typedef boost::transformed_range<
             
 inline mt::std::vector<mt::std::vector<int>::type>::type
     calculateApparentTriggers(
-        std::vector<std::pair<int, std::vector<int> > > const& triggerOffsetsAndDefaults,
-        TriggerDataRange const& triggerArrivals)
+        std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
+        TriggerDataRange const &triggerArrivals)
 {
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
     apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
-    foreach (TriggerOffsetAndDefault const& offsetAndDefault, triggerOffsetsAndDefaults) {
+    foreach (TriggerOffsetAndDefault const &offsetAndDefault, triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
             mt::std::vector<int>::type(
                     offsetAndDefault.second.begin(),
                     offsetAndDefault.second.end()));
     }
     
-    foreach (TriggerData const& arrival, triggerArrivals) {
+    foreach (TriggerData const &arrival, triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }
     return apparentTriggers;
 }
 
 inline mt::std::map<Frame *, mt::std::vector<TriggerData>::type >::type calculateActualTriggerDepartures(
-    mt::std::vector<TriggerData>::type const& triggers,
-    std::vector<std::pair<int, std::vector<int> > > const& triggerOffsetsAndDefaults,
-    Frame* currentFrame)
+    mt::std::vector<TriggerData>::type const &triggers,
+    std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
+    Frame *currentFrame)
 {
     mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type retv;
-    Universe& universe(getUniverse(currentFrame));
+    Universe &universe(getUniverse(currentFrame));
     for (std::size_t i(0), end(boost::distance(triggers)); i != end; ++i)
     {
         retv[

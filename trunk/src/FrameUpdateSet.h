@@ -34,13 +34,13 @@ class FrameUpdateSet : boost::equality_comparable<FrameUpdateSet> {
 public:
     FrameUpdateSet();
 
-    FrameUpdateSet(FrameUpdateSet const& o);
-    FrameUpdateSet& operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o);
+    FrameUpdateSet(FrameUpdateSet const &o);
+    FrameUpdateSet &operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o);
     FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) o);
-    FrameUpdateSet& operator=(BOOST_RV_REF(FrameUpdateSet) o);
+    FrameUpdateSet &operator=(BOOST_RV_REF(FrameUpdateSet) o);
     void add(Frame *frame);
-    void add(FrameUpdateSet const& o);
-    void swap(FrameUpdateSet& o);
+    void add(FrameUpdateSet const &o);
+    void swap(FrameUpdateSet &o);
 
     typedef boost::container::vector<Frame *> SetType;
 
@@ -70,13 +70,13 @@ public:
     //The only visible result of this is that it eliminates race conditions
     //in the lazy evaluation of the set.
     void make_set() const;
-    bool operator==(FrameUpdateSet const& o);
+    bool operator==(FrameUpdateSet const &o);
 private:
     mutable bool isSet_;
     mutable SetType updateSet_;
     BOOST_COPYABLE_AND_MOVABLE(FrameUpdateSet)
 };
-inline void swap(FrameUpdateSet& l, FrameUpdateSet& r) { l.swap(r); }
+inline void swap(FrameUpdateSet &l, FrameUpdateSet &r) { l.swap(r); }
 
 }
 #endif //HG_FRAME_UPDATE_SET_H

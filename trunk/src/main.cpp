@@ -56,44 +56,44 @@ typedef sf::Color Colour;
 
 namespace {
     void unsync_iostreams_with_stdio();
-    void initialseCurrentPath(std::vector<std::string> const& args);
-    int run_main(std::vector<std::string> const& args);
+    void initialseCurrentPath(std::vector<std::string> const &args);
+    int run_main(std::vector<std::string> const &args);
     void runStep(
-        hg::TimeEngine& timeEngine,
-        hg::RenderWindow& app,
-        hg::Inertia& inertia,
-        hg::TimeEngine::RunResult const& waveInfo,
-        hg::LevelResources const& resources,
-        sf::Image const& wallImage);
+        hg::TimeEngine &timeEngine,
+        hg::RenderWindow &app,
+        hg::Inertia &inertia,
+        hg::TimeEngine::RunResult const &waveInfo,
+        hg::LevelResources const &resources,
+        sf::Image const &wallImage);
     void Draw(
-        hg::RenderWindow& target,
-        hg::mt::std::vector<hg::Glitz>::type const& glitz,
-        hg::Wall const& wall,
-        hg::LevelResources const& resources,
-        sf::Image const& wallImage);
+        hg::RenderWindow &target,
+        hg::mt::std::vector<hg::Glitz>::type const &glitz,
+        hg::Wall const &wall,
+        hg::LevelResources const &resources,
+        sf::Image const &wallImage);
     void DrawWaves(
-        sf::RenderTarget& target,
-        hg::TimeEngine::FrameListList const& waves,
+        sf::RenderTarget &target,
+        hg::TimeEngine::FrameListList const &waves,
         int timelineLength,
         double height);
     void DrawTimelineContents(
-        sf::RenderTarget& target,
-        hg::TimeEngine& timeEngine,
+        sf::RenderTarget &target,
+        hg::TimeEngine &timeEngine,
         double height);
-    void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight);
-    void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength);
+    void DrawColours(hg::RenderWindow &target, int roomWidth, int roomHeight);
+    void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength);
     void DrawTimeline(
-        sf::RenderTarget& target,
-        hg::TimeEngine& timeEngine,
-        hg::TimeEngine::FrameListList const& waves,
+        sf::RenderTarget &target,
+        hg::TimeEngine &timeEngine,
+        hg::TimeEngine::FrameListList const &waves,
         hg::FrameID playerFrame,
         hg::FrameID timeCursor,
         int timelineLength);
-    //void DrawWall(sf::RenderTarget& target, hg::Wall const& wallData);
+    //void DrawWall(sf::RenderTarget &target, hg::Wall const &wallData);
     template<typename BidirectionalGuyRange>
-    hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange);
+    hg::GuyOutputInfo const &findCurrentGuy(BidirectionalGuyRange const &guyRange);
 
-    void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend);
+    void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend);
     void generateReplay();
 
 
@@ -124,7 +124,7 @@ namespace {
 
     struct RunToNextPlayerFrame
     {
-        RunToNextPlayerFrame(hg::TimeEngine& timeEngine, hg::InputList const& inputList, hg::OperationInterrupter& interrupter) :
+        RunToNextPlayerFrame(hg::TimeEngine &timeEngine, hg::InputList const &inputList, hg::OperationInterrupter &interrupter) :
             timeEngine_(&timeEngine),
             inputList_(inputList),
             interrupter_(&interrupter)
@@ -145,7 +145,7 @@ namespace {
         //boost::result_of support
         typedef hg::TimeEngine result_type;
 
-        CreateTimeEngine(std::string const& filename, hg::OperationInterrupter& interrupter)
+        CreateTimeEngine(std::string const &filename, hg::OperationInterrupter &interrupter)
             : filename(filename), interrupter(&interrupter) {}
 
         hg::TimeEngine operator()() const {
@@ -200,7 +200,7 @@ void unsync_iostreams_with_stdio() {
 }
 
 
-void initialseCurrentPath(std::vector<std::string> const& args)
+void initialseCurrentPath(std::vector<std::string> const &args)
 {
 #if defined(__APPLE__) && defined(__MACH__)
     assert(args.size() >= 1);
@@ -273,7 +273,7 @@ struct RunHourglassOperation {
     
 };
 
-int new_run_main(std::vector<std::string> const& args) {
+int new_run_main(std::vector<std::string> const &args) {
     hg::UserInterface ui;
     boost::thread gameThread(run_game, ui);
     ui.run();
@@ -281,7 +281,7 @@ int new_run_main(std::vector<std::string> const& args) {
     return 0;
 }
 
-static void run_game(hg::UserInterface& ui) {
+static void run_game(hg::UserInterface &ui) {
     InputStream inputStream(ui.getInputStream());
     WindowHandle mainWindow(ui.createWindow(sf::VideoMode(640, 480), "Hourglass II"));
 
@@ -320,7 +320,7 @@ struct RunningGameScene {
 #endif
 
 
-static hg::FrameID mousePosToFrameID(hg::RenderWindow const& app, hg::TimeEngine const& timeEngine) {
+static hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
     double const mouseXFraction = app.getInputState().getMousePosition().x*1./app.getSize().x;
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
@@ -328,7 +328,7 @@ static hg::FrameID mousePosToFrameID(hg::RenderWindow const& app, hg::TimeEngine
 }
 
 
-int run_main(std::vector<std::string> const& args)
+int run_main(std::vector<std::string> const &args)
 {
     hg::RenderWindow app(sf::VideoMode(640, 480), "Hourglass II");
     app.setVerticalSyncEnabled(true);
@@ -405,15 +405,15 @@ int run_main(std::vector<std::string> const& args)
                         interrupter.reset();
                         state = LOADING_RESOURCES;
                     }
-                    catch (hg::LuaError const& e) {
+                    catch (hg::LuaError const &e) {
                         std::cerr << "There was an error in some lua, the error message was:\n" << e.message << std::endl;
 						goto breakmainloop;
                     }
-                    catch (std::bad_alloc const&) {
+                    catch (std::bad_alloc const &) {
 						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
                     }
-                    catch (std::exception const& e) {
+                    catch (std::exception const &e) {
                         std::cerr << e.what() << std::endl;
                         goto breakmainloop;
                     }
@@ -455,7 +455,7 @@ int run_main(std::vector<std::string> const& args)
 					runningFromReplay = true;
 				}
 				else {
-                    hg::Wall const& wall(timeEngine->getWall());
+                    hg::Wall const &wall(timeEngine->getWall());
                     double scalingFactor(std::max(wall.roomWidth()*1./app.getSize().x, wall.roomHeight()*1./app.getSize().y));
 					input.updateState(app.getInputState(), app.getSize().x, scalingFactor);
 					inputList = input.AsInputList();
@@ -592,15 +592,15 @@ int run_main(std::vector<std::string> const& args)
 						runStep(*timeEngine, app, inertia, futureRunResult.get(), levelResources, wallImage);
                         interrupter.reset();
 					}
-					catch (hg::PlayerVictoryException const&) {
+					catch (hg::PlayerVictoryException const &) {
 						std::cout << "Congratulations, a winner is you" << std::endl;
 						goto breakmainloop;
 					}
-                    catch (hg::LuaError const& e) {
+                    catch (hg::LuaError const &e) {
                         std::cerr << "There was an error in some lua, the error message was:\n" << e.message << std::endl;
 						goto breakmainloop;
                     }
-					catch (std::bad_alloc const&) {
+					catch (std::bad_alloc const &) {
 						std::cerr << "oops... ran out of memory ):" << std::endl;
 						goto breakmainloop;
 					}
@@ -665,8 +665,8 @@ int run_main(std::vector<std::string> const& args)
 }
 
 
-hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(
-    hg::FrameView const& view, hg::TimeDirection timeDirection)
+hg::mt::std::vector<hg::Glitz>::type const &getGlitzForDirection(
+    hg::FrameView const &view, hg::TimeDirection timeDirection)
 {
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
@@ -675,7 +675,7 @@ hg::mt::std::vector<hg::Glitz>::type const& getGlitzForDirection(
 Colour const uiTextColour(100,100,200);
 
 
-void drawInventory(hg::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::type const& pickups, hg::Ability abilityCursor) {
+void drawInventory(hg::RenderWindow &app, hg::mt::std::map<hg::Ability, int>::type const &pickups, hg::Ability abilityCursor) {
     hg::mt::std::map<hg::Ability, int>::type mpickups(pickups);
     {
         std::stringstream timeJump;
@@ -725,19 +725,19 @@ void drawInventory(hg::RenderWindow& app, hg::mt::std::map<hg::Ability, int>::ty
 
 
 void runStep(
-    hg::TimeEngine& timeEngine,
-    hg::RenderWindow& app,
-    hg::Inertia& inertia,
-    hg::TimeEngine::RunResult const& waveInfo,
-    hg::LevelResources const& resources,
-    sf::Image const& wallImage)
+    hg::TimeEngine &timeEngine,
+    hg::RenderWindow &app,
+    hg::Inertia &inertia,
+    hg::TimeEngine::RunResult const &waveInfo,
+    hg::LevelResources const &resources,
+    sf::Image const &wallImage)
 {
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames()));
     foreach (
-        hg::FrameUpdateSet const& updateSet,
+        hg::FrameUpdateSet const &updateSet,
         waveInfo.updatedFrames())
     {
         framesExecutedList.push_back(static_cast<int>(boost::distance(updateSet)));
@@ -761,8 +761,8 @@ void runStep(
              wallImage);
     }
     else if (waveInfo.currentPlayerFrame()) {
-        hg::FrameView const& view(waveInfo.currentPlayerFrame()->getView());
-        hg::GuyOutputInfo const& currentGuy(findCurrentGuy(view.getGuyInformation()));
+        hg::FrameView const &view(waveInfo.currentPlayerFrame()->getView());
+        hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation()));
         hg::TimeDirection currentGuyDirection(currentGuy.getTimeDirection());
         inertia.save(hg::FrameID(waveInfo.currentPlayerFrame()), currentGuyDirection);
         drawnFrame = hg::FrameID(waveInfo.currentPlayerFrame());
@@ -863,11 +863,11 @@ void runStep(
 
 
 void Draw(
-    hg::RenderWindow& target,
-    hg::mt::std::vector<hg::Glitz>::type const& glitz,
-    hg::Wall const& wall,
-    hg::LevelResources const& resources,
-    sf::Image const& wallImage)
+    hg::RenderWindow &target,
+    hg::mt::std::vector<hg::Glitz>::type const &glitz,
+    hg::Wall const &wall,
+    hg::LevelResources const &resources,
+    sf::Image const &wallImage)
 {
     target.clear(Colour(255,255,255));
     //Number by which all positions are be multiplied
@@ -879,7 +879,7 @@ void Draw(
     target.setView(scaledView);
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), resources);
     hg::LayeredCanvas layeredCanvas(canvas);
-	foreach (hg::Glitz const& particularGlitz, glitz) particularGlitz.display(layeredCanvas);
+	foreach (hg::Glitz const &particularGlitz, glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
     flusher.partialFlush(1000);
     sf::Texture wallTex;
@@ -893,8 +893,8 @@ void Draw(
 
 /*
 void DrawWall(
-    sf::RenderTarget& target,
-    hg::Wall const& wall)
+    sf::RenderTarget &target,
+    hg::Wall const &wall)
 {
     for (int i(0), iend(wall.roomWidth()); i != iend; i += wall.segmentSize()) {
         for (int j(0), jend(wall.roomHeight()); j != jend; j += wall.segmentSize()) {
@@ -912,7 +912,7 @@ void DrawWall(
 }
 */
 
-Colour asColour(sf::Vector3<double>const& vec) {
+Colour asColour(sf::Vector3<double>const &vec) {
     return Colour(vec.x, vec.y, vec.z);
 }
 
@@ -929,7 +929,7 @@ Colour guyPositionToColour(double xFrac, double yFrac) {
 }
 
 
-void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight)
+void DrawColours(hg::RenderWindow &target, int roomWidth, int roomHeight)
 {
     sf::Image colours;
     colours.create(roomWidth/100, roomHeight/100, Colour(0, 0, 0, 0));
@@ -948,8 +948,8 @@ void DrawColours(hg::RenderWindow& target, int roomWidth, int roomHeight)
 
 
 void DrawTimelineContents(
-    sf::RenderTarget& target,
-    hg::TimeEngine& timeEngine,
+    sf::RenderTarget &target,
+    hg::TimeEngine &timeEngine,
     double height)
 {
     sf::Image timelineContents;
@@ -960,7 +960,7 @@ void DrawTimelineContents(
     
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
-        foreach (hg::GuyOutputInfo const& guy, frame->getView().getGuyInformation()) {
+        foreach (hg::GuyOutputInfo const &guy, frame->getView().getGuyInformation()) {
             double left = frameNumber*target.getView().getSize().x/timelineLength;
             double top = (height-4)*guy.getIndex()/numberOfGuys;
             
@@ -993,13 +993,13 @@ void DrawTimelineContents(
 
 
 void DrawWaves(
-    sf::RenderTarget& target,
-    hg::TimeEngine::FrameListList const& waves,
+    sf::RenderTarget &target,
+    hg::TimeEngine::FrameListList const &waves,
     int timelineLength,
     double height)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.getView().getSize().x);
-    foreach (hg::FrameUpdateSet const& wave, waves) {
+    foreach (hg::FrameUpdateSet const &wave, waves) {
     	foreach (hg::Frame *frame, wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
@@ -1043,7 +1043,7 @@ void DrawWaves(
 }
 
 
-void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength) {
+void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength) {
     for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5*60) {
         float left(frameNo/static_cast<double>(timelineLength)*target.getView().getSize().x);
         sf::RectangleShape tick(sf::Vector2f(1., 10.));
@@ -1055,9 +1055,9 @@ void DrawTicks(sf::RenderTarget& target, std::size_t const timelineLength) {
 
 
 void DrawTimeline(
-    sf::RenderTarget& target,
-    hg::TimeEngine& timeEngine,
-    hg::TimeEngine::FrameListList const& waves,
+    sf::RenderTarget &target,
+    hg::TimeEngine &timeEngine,
+    hg::TimeEngine::FrameListList const &waves,
     hg::FrameID playerFrame,
     hg::FrameID timeCursor,
     int timelineLength)
@@ -1086,20 +1086,20 @@ void DrawTimeline(
 
 struct CompareIndicies {
     template<typename IndexableType>
-    bool operator()(IndexableType const& l, IndexableType const& r) {
+    bool operator()(IndexableType const &l, IndexableType const &r) {
         return l.getIndex() < r.getIndex();
     }
 };
 
 
 template<typename BidirectionalGuyRange>
-hg::GuyOutputInfo const& findCurrentGuy(BidirectionalGuyRange const& guyRange)
+hg::GuyOutputInfo const &findCurrentGuy(BidirectionalGuyRange const &guyRange)
 {
     return *boost::begin(guyRange | boost::adaptors::reversed);
 }
 
 
-void saveReplayLog(std::ostream& toAppendTo, hg::InputList const& toAppend)
+void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend)
 {
     toAppendTo << toAppend << " " << std::flush;
 }

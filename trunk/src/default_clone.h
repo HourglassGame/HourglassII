@@ -3,7 +3,7 @@
 namespace hg {
     template<typename T>
     struct default_clone {
-        T *new_clone(T const& toClone) const { return toClone.clone(); }
+        T *new_clone(T const &toClone) const { return toClone.clone(); }
         void delete_clone(T *toDelete) const { delete toDelete; }
     };
 }

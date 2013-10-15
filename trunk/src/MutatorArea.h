@@ -27,7 +27,7 @@ public:
     TimeDirection 
         getTimeDirection() const { return timeDirection_; }
 
-    friend std::ostream& operator<<(std::ostream& os, MutatorArea const& toPrint)
+    friend std::ostream &operator<<(std::ostream &os, MutatorArea const &toPrint)
     {
         #define HG_MUTATOR_AREA_PRINT(obj) os << #obj << ": " << toPrint.obj << std::endl
         HG_MUTATOR_AREA_PRINT(x_);

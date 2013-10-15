@@ -78,7 +78,7 @@ public:
     bool getFallable() const { return fallable_; }
     bool getWinner() const { return winner_; }
     
-    friend std::ostream& operator<<(std::ostream& os, PortalArea const& toPrint)
+    friend std::ostream &operator<<(std::ostream &os, PortalArea const &toPrint)
     {
         os << '{';
 #define HG_PORTAL_AREA_PRINT(field) os << #field << "=" << toPrint.field

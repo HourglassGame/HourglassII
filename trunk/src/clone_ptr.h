@@ -25,12 +25,12 @@ public:
         obj(p)
     {
     }
-    clone_ptr(clone_ptr const& o) :
+    clone_ptr(clone_ptr const &o) :
         CloneManager(),
         obj(o.obj?CloneManager::new_clone(*o.obj):0)
     {
     }
-    clone_ptr& operator=(BOOST_COPY_ASSIGN_REF(clone_ptr) o)
+    clone_ptr &operator=(BOOST_COPY_ASSIGN_REF(clone_ptr) o)
     {
         //Forward to move assignment operator
         return *this = clone_ptr(o);
@@ -40,30 +40,30 @@ public:
     {
     	o.obj = 0;
     }
-    clone_ptr& operator=(BOOST_RV_REF(clone_ptr) o)
+    clone_ptr &operator=(BOOST_RV_REF(clone_ptr) o)
 	{
 		swap(o);
 		return *this;
 	}
-    void swap(clone_ptr& o) {
+    void swap(clone_ptr &o) {
         boost::swap(obj, o.obj);
-        boost::swap(static_cast<CloneManager&>(*this), static_cast<CloneManager&>(o));
+        boost::swap(static_cast<CloneManager &>(*this), static_cast<CloneManager &>(o));
     }
     ~clone_ptr() {
         CloneManager::delete_clone(obj);
     }
-    Cloneable& get() {
+    Cloneable &get() {
         assert(obj);
         return *obj;
     }
-    Cloneable const& get() const {
+    Cloneable const &get() const {
         assert(obj);
         return *obj;
     }
     Cloneable *operator->() const {
         return obj;
     }
-    Cloneable& operator*() const {
+    Cloneable &operator*() const {
         return *obj;
     }
 private:
@@ -71,6 +71,6 @@ private:
     BOOST_COPYABLE_AND_MOVABLE(clone_ptr)
 };
 template <typename Cloneable, typename CloneManager>
-inline void swap(clone_ptr<Cloneable, CloneManager>& l, clone_ptr<Cloneable, CloneManager>& r) { l.swap(r); }
+inline void swap(clone_ptr<Cloneable, CloneManager> &l, clone_ptr<Cloneable, CloneManager> &r) { l.swap(r); }
 }
 #endif //HG_CLONE_PTR_H

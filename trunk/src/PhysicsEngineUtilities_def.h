@@ -1,8 +1,8 @@
 namespace hg {
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(
-    RandomAccessObjectAndTypeRange const& next,
-    PhysicsEngine::FrameDepartureT& newDepartures)
+    RandomAccessObjectAndTypeRange const &next,
+    PhysicsEngine::FrameDepartureT &newDepartures)
 {
 	foreach (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime, next)
     {
@@ -11,7 +11,7 @@ void buildDeparturesForComplexEntities(
 }
 
 template<typename RandomAccessGuyRange>
-bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_t playerInputSize)
+bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_t playerInputSize)
 {
     //The arrivals are sorted
     //The current player arrival can be either the last arrival, or the second last arrival.
@@ -33,10 +33,10 @@ template <
     typename RandomAccessMutatorRange,
     typename FrameT>
 void makeBoxAndTimeWithPortalsAndMutators(
-    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
-    mt::std::vector<char>::type& nextBoxNormalDeparture,
-    const RandomAccessPortalRange& portals,
-    const RandomAccessMutatorRange& mutators,
+    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
+    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    const RandomAccessPortalRange &portals,
+    const RandomAccessMutatorRange &mutators,
     int x,
     int y,
     int xspeed,
@@ -44,7 +44,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int size,
     int oldIllegalPortal,
     TimeDirection const oldTimeDirection,
-    TriggerFrameState& triggerFrameState,
+    TriggerFrameState &triggerFrameState,
     FrameT frame)
 {
     TimeDirection timeDirection(oldTimeDirection);
@@ -170,21 +170,21 @@ void makeBoxAndTimeWithPortalsAndMutators(
 
 template<typename RandomAccessGuyRange>
 void guyStep(
-    Environment const& env,
-    RandomAccessGuyRange const& guyArrivalList,
+    Environment const &env,
+    RandomAccessGuyRange const &guyArrivalList,
     Frame *frame,
-    std::vector<InputList> const& playerInput,
-    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type& nextGuy,
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type& nextBox,
-    mt::std::vector<char>::type& nextBoxNormalDeparture,
-    mt::std::vector<Collision>::type const& nextPlatform,
-    mt::std::vector<PortalArea>::type const& nextPortal,
-    mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
-    mt::std::vector<MutatorArea>::type const& mutators,
-    TriggerFrameState& triggerFrameState,
-    GuyGlitzAdder const& guyGlitzAdder,
-    bool& nextPlayerFrame,
-    bool& winFrame)
+    std::vector<InputList> const &playerInput,
+    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type &nextGuy,
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type &nextBox,
+    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    mt::std::vector<Collision>::type const &nextPlatform,
+    mt::std::vector<PortalArea>::type const &nextPortal,
+    mt::std::vector<ArrivalLocation>::type const &arrivalLocations,
+    mt::std::vector<MutatorArea>::type const &mutators,
+    TriggerFrameState &triggerFrameState,
+    GuyGlitzAdder const &guyGlitzAdder,
+    bool &nextPlayerFrame,
+    bool &winFrame)
 {
     mt::std::vector<int>::type x;
     mt::std::vector<int>::type y;
@@ -218,7 +218,7 @@ void guyStep(
         }
         else
         {
-            ArrivalLocation const& relativePortal(arrivalLocations[guyArrivalList[i].getArrivalBasis()]);
+            ArrivalLocation const &relativePortal(arrivalLocations[guyArrivalList[i].getArrivalBasis()]);
             x.push_back(relativePortal.getX() + guyArrivalList[i].getX());
             y.push_back(relativePortal.getY() + guyArrivalList[i].getY());
             xspeed.push_back(0);
@@ -259,7 +259,7 @@ void guyStep(
         if (guyArrivalList[i].getIndex() < playerInput.size() && !guyArrivalList[i].getTimePaused())
         {
             std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            InputList const& input(playerInput[relativeIndex]);
+            InputList const &input(playerInput[relativeIndex]);
 
             int const width(guyArrivalList[i].getWidth());
             int const height(guyArrivalList[i].getHeight());
@@ -269,7 +269,7 @@ void guyStep(
 			/*
 			if (guyArrivalList[i].getArrivalBasis() != -1)
 			{
-				foreach (Collision const& platform, nextPlatform)
+				foreach (Collision const &platform, nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
@@ -285,7 +285,7 @@ void guyStep(
 			}
 			*/
 			
-			foreach (Collision const& platform, nextPlatform)
+			foreach (Collision const &platform, nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -389,7 +389,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            foreach (Collision const& platform, nextPlatform)
+            foreach (Collision const &platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -461,7 +461,7 @@ void guyStep(
             }
 
             // platform collision
-            foreach (Collision const& platform, nextPlatform)
+            foreach (Collision const &platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -536,14 +536,14 @@ void guyStep(
 		if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getTimePaused())
         {
             std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            InputList const& input(playerInput[relativeIndex]);
+            InputList const &input(playerInput[relativeIndex]);
 
             int const width(guyArrivalList[i].getWidth());
             int const height(guyArrivalList[i].getHeight());
             int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
             // chonofrag with platforms
-			foreach (Collision const& platform, nextPlatform)
+			foreach (Collision const &platform, nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -604,7 +604,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            foreach (Collision const& platform, nextPlatform)
+            foreach (Collision const &platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -673,7 +673,7 @@ void guyStep(
             }
 
             // platform collision
-            foreach (Collision const& platform, nextPlatform)
+            foreach (Collision const &platform, nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -734,7 +734,7 @@ void guyStep(
 			carryDirection[i] = hg::INVALID;
 
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
-            InputList const& input(playerInput[relativeIndex]);
+            InputList const &input(playerInput[relativeIndex]);
 
             if (carry[i])
             {
@@ -998,7 +998,7 @@ void guyStep(
         if (guyArrivalList[i].getIndex() < playerInput.size())
         {
             const std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            const InputList& input = playerInput[relativeIndex];
+            const InputList &input = playerInput[relativeIndex];
 
             int arrivalBasis = -1;
             illegalPortal[i] = -1;
@@ -1321,7 +1321,7 @@ void guyStep(
 		}
 
 		const std::size_t relativeIndex(guyArrivalList[i].getIndex());
-		const InputList& input = playerInput[relativeIndex];
+		const InputList &input = playerInput[relativeIndex];
 		
 		mt::std::map<Ability, int>::type::iterator timeGun(newPickups[i].find(TIME_GUN));
 
@@ -1446,17 +1446,17 @@ template <
     typename RandomAccessMutatorRange,
     typename FrameT>
 void boxCollisionAlogorithm(
-    Environment const& env,
-    RandomAccessBoxRange const& boxArrivalList,
-    mt::std::vector<Box>::type const& additionalBox,
-    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
-    mt::std::vector<char>::type& nextBoxNormalDeparture,
-    RandomAccessPlatformRange const& nextPlatform,
-    RandomAccessPortalRange const& nextPortal,
-    RandomAccessArrivalLocationRange const& arrivalLocations,
-    RandomAccessMutatorRange const& mutators,
-    TriggerFrameState& triggerFrameState,
-    FrameT const& frame)
+    Environment const &env,
+    RandomAccessBoxRange const &boxArrivalList,
+    mt::std::vector<Box>::type const &additionalBox,
+    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
+    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    RandomAccessPlatformRange const &nextPlatform,
+    RandomAccessPortalRange const &nextPortal,
+    RandomAccessArrivalLocationRange const &arrivalLocations,
+    RandomAccessMutatorRange const &mutators,
+    TriggerFrameState &triggerFrameState,
+    FrameT const &frame)
 {
 	mt::std::vector<Box>::type oldBoxList;
 
@@ -1468,7 +1468,7 @@ void boxCollisionAlogorithm(
 
 	//std::cerr << "*** New Step ***\n";
 	/*
-	foreach (Collision const& platform, nextPlatform)
+	foreach (Collision const &platform, nextPlatform)
 	{
 		int pX(platform.getX());
 		int pY(platform.getY());
@@ -1504,7 +1504,7 @@ void boxCollisionAlogorithm(
         }
         else
         {
-            ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
+            ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 			int relx = relativePortal.getX() + oldBoxList[i].getX();
 			int rely = relativePortal.getY() + oldBoxList[i].getY();
 			if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == hg::FORWARDS)
@@ -1535,7 +1535,7 @@ void boxCollisionAlogorithm(
 				continue;
 			}
 
-			foreach (Collision const& platform, nextPlatform) {
+			foreach (Collision const &platform, nextPlatform) {
 				int pX(platform.getX());
 				int pY(platform.getY());
 				int pWidth(platform.getWidth());
@@ -1848,7 +1848,7 @@ void boxCollisionAlogorithm(
 				}
 
 				// Check inside a platform
-				foreach (Collision const& platform, nextPlatform)
+				foreach (Collision const &platform, nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
@@ -2083,7 +2083,7 @@ void boxCollisionAlogorithm(
 			}
 			else
 			{
-				ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
+				ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 				int relx = relativePortal.getX() + oldBoxList[i].getX();
 				int rely = relativePortal.getY() + oldBoxList[i].getY();
 				if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == hg::FORWARDS)

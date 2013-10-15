@@ -28,8 +28,8 @@ public:
     //returns the length of the lowest level of this universe
     int timelineLength() const;
 
-    bool operator==(const UniverseID& o) const;
-    bool operator<(const UniverseID& o) const;
+    bool operator==(const UniverseID &o) const;
+    bool operator<(const UniverseID &o) const;
 private:
     friend class boost::serialization::access;
     template<class Archive>
@@ -38,23 +38,23 @@ private:
         (void)version;
         ar & timelineLength_;
     }
-        inline friend std::ostream& operator<<(std::ostream& os, UniverseID const& toPrint)
+        inline friend std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint)
     {
         os << toPrint.timelineLength_;
         return os;
     }
-    inline friend std::istream& operator>>(std::istream& is, UniverseID& toRead)
+    inline friend std::istream &operator>>(std::istream &is, UniverseID &toRead)
     {
         is >> toRead.timelineLength_;
         return is;
     }
 
-    friend FrameID getEntryFrame(UniverseID const& universe, TimeDirection direction);
-    friend FrameID getArbitraryFrame(UniverseID const& universe, int frameNumber);
-    friend int getTimelineLength(UniverseID const& universe);
+    friend FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction);
+    friend FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
+    friend int getTimelineLength(UniverseID const &universe);
 
     friend class FrameID;
-    friend std::size_t hash_value(const UniverseID& toHash);
+    friend std::size_t hash_value(const UniverseID &toHash);
     //timelineLength_ -- length of the universe.
     int timelineLength_;
 };

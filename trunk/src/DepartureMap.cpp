@@ -3,16 +3,16 @@
 #include "Foreach.h"
 #include <utility>
 namespace hg {
-void DepartureMap::makeSpaceFor(FrameUpdateSet const& toMakeSpaceFor)
+void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor)
 {
     map_.rehash(toMakeSpaceFor.size());
     //removes the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
-    foreach (Frame* frame, toMakeSpaceFor)
+    foreach (Frame *frame, toMakeSpaceFor)
     {
         map_.insert(value_type(frame, MapType::mapped_type()));
     }
 }
-void DepartureMap::setDeparture(Frame* frame, BOOST_RV_REF(MapType::mapped_type) departingObjects)
+void DepartureMap::setDeparture(Frame *frame, BOOST_RV_REF(MapType::mapped_type) departingObjects)
 {
     map_.find(frame)->second = boost::move(departingObjects);
 }

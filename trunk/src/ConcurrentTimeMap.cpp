@@ -18,7 +18,7 @@ void ConcurrentTimeMap::add(Frame *toAdd, TimeDirection direction)
 void ConcurrentTimeMap::remove(Frame const *toRemove)
 {
     //const_cast well defined and safe as toRemove never written through,
-    //and removing a frame* does not modify the underlying frame
+    //and removing a frame * does not modify the underlying frame
     map_.erase(const_cast<Frame *>(toRemove));
 }
 }

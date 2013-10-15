@@ -17,7 +17,7 @@ namespace fs = boost::filesystem;
 
 
 namespace {
-    path translateToActualPath(std::string const& packageName, path const& levelPath) {
+    path translateToActualPath(std::string const &packageName, path const &levelPath) {
         //Sanitise and translate (throw if given filename is broken or unsanitary).
         //THIS FUNCTION IS CURRENTLY RETARDED -- it allows levels to read any file on the filesystem.
         
@@ -34,18 +34,18 @@ namespace {
     }
     struct LoadNamedModule {
         typedef LuaModule result_type;
-        LoadNamedModule(path const& levelPath) : levelPath(&levelPath) {}
+        LoadNamedModule(path const &levelPath) : levelPath(&levelPath) {}
         
-        LuaModule operator()(std::string const& packageName) const {
+        LuaModule operator()(std::string const &packageName) const {
             return LuaModule(
                 packageName,
                 loadFileIntoVector(translateToActualPath(packageName, *levelPath)));
         }
-        path const* levelPath;
+        path const *levelPath;
     };
 }
 
-static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const& levelPath) {
+static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelPath) {
     std::string system(readField<std::string>(L, "system"));
     std::vector<std::string> luaPackageNames(readField<std::vector<std::string> >(L, "luaFiles", -1));
     
@@ -65,7 +65,7 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const& levelP
           readField<int>(L, "arrivalLocationsSize")));
 }
 
-static TriggerSystem loadTriggerSystem(lua_State *L, char const* fieldName, path const& levelPath) {
+static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path const &levelPath) {
     lua_getglobal(L, fieldName);
     std::string type(readField<std::string>(L, "type"));
     if (type == "DirectLua") {
@@ -78,8 +78,8 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const* fieldName, path
 }
 
 Level loadLevelFromFile(
-    boost::filesystem::path const& levelPath,
-    OperationInterrupter& interrupter)
+    boost::filesystem::path const &levelPath,
+    OperationInterrupter &interrupter)
 {
     std::vector<char> levelChunk(loadFileIntoVector(levelPath/path("main.lua")));
     LuaState levelGenerator((LuaState::new_state_t()));
@@ -96,7 +96,7 @@ Level loadLevelFromFile(
     Environment environment(readGlobal<Environment>(L, "environment"));
     ObjectList<NonGuyDynamic> initialArrivals(readGlobal<InitialObjects>(L, "initialArrivals").list);
     InitialGuyArrival initialGuy(readGlobal<InitialGuyArrival>(L, "initialGuy"));
-    Guy& guyArrival(initialGuy.arrival);
+    Guy &guyArrival(initialGuy.arrival);
     FrameID guyStartTime(initialGuy.arrivalTime, UniverseID(timelineLength));
     TriggerSystem triggerSystem(loadTriggerSystem(L, "triggerSystem", levelPath));
     

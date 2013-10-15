@@ -23,7 +23,7 @@ ObjectList<ListTypes>::ObjectList() :
 {
 }
 template<typename ListTypes>
-ObjectList<ListTypes>::ObjectList(ObjectList const& o) :
+ObjectList<ListTypes>::ObjectList(ObjectList const &o) :
 #ifndef NDEBUG
     sorted(o.sorted),
 #endif //NDEBUG
@@ -62,7 +62,7 @@ namespace {
 	struct Insert
 	{
 		template<typename Container, typename SinglePassRange>
-		void operator()(Container& toInsertInto, const SinglePassRange& toInsert) const
+		void operator()(Container &toInsertInto, const SinglePassRange &toInsert) const
 		{
 			boost::push_back(toInsertInto, toInsert);
 		}
@@ -112,7 +112,7 @@ namespace {
 	struct Empty
 	{
 		template<typename T>
-		bool operator()(const T& toCheck)
+		bool operator()(const T &toCheck)
 		{
 			return toCheck.empty();
 		}

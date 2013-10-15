@@ -29,13 +29,13 @@ public:
     //Exception Safety: Strong
     WorldState(
         int timelineLength,
-        Guy const& initialGuy,
-        FrameID const& guyStartTime,
+        Guy const &initialGuy,
+        FrameID const &guyStartTime,
         BOOST_RV_REF(PhysicsEngine) physics,
         BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects,
-        OperationInterrupter& interrupter);
+        OperationInterrupter &interrupter);
 
-    void swap(WorldState& o);
+    void swap(WorldState &o);
 
     WorldState(BOOST_RV_REF(WorldState) o) :
         timeline_(boost::move(o.timeline_)),
@@ -47,7 +47,7 @@ public:
         currentWinFrames_(boost::move(o.currentWinFrames_))
     {}
      
-    WorldState& operator=(BOOST_RV_REF(WorldState) o)
+    WorldState &operator=(BOOST_RV_REF(WorldState) o)
     {
         timeline_ = boost::move(o.timeline_);
         playerInput_ = boost::move(o.playerInput_);
@@ -65,29 +65,29 @@ public:
      * in exactly one frame and there are no waves.
      * Returns the set of frames that were executed (had different arrivals).
      */
-    FrameUpdateSet executeWorld(OperationInterrupter& interrupter);
+    FrameUpdateSet executeWorld(OperationInterrupter &interrupter);
 
     /**
      * Stores the given input data, allowing the player to exist for another step.
      */
-    void addNewInputData(InputList const& newInputData);
+    void addNewInputData(InputList const &newInputData);
 
     /**
     * Returns the frame containing the oldest (highest relative index) Guy who has input.
     */
-    Frame* getNextPlayerFrame();
-    Frame* getCurrentPlayerFrame();
+    Frame *getNextPlayerFrame();
+    Frame *getCurrentPlayerFrame();
 
-    std::vector<InputList> const& getReplayData() const { return playerInput_; }
+    std::vector<InputList> const &getReplayData() const { return playerInput_; }
 
-    Frame *getFrame(FrameID const& whichFrame);
+    Frame *getFrame(FrameID const &whichFrame);
     
     int getTimelineLength() const;
 
 private:
     friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT
-        getDeparturesFromFrame(Frame *frame, OperationInterrupter& interrupter);
+        getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter);
     
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to
@@ -112,6 +112,6 @@ private:
 
     BOOST_MOVABLE_BUT_NOT_COPYABLE(WorldState)
 };
-inline void swap(WorldState& l, WorldState& r) { l.swap(r); }
+inline void swap(WorldState &l, WorldState &r) { l.swap(r); }
 }
 #endif //HG_WORLD_STATE_H

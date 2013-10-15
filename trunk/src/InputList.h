@@ -33,7 +33,7 @@ public:
         int xCursor,
         int yCursor);
 
-    bool operator==(InputList const& o) const;
+    bool operator==(InputList const &o) const;
 
     bool getLeft()       const { return left; }
     bool getRight()      const { return right; }
@@ -94,7 +94,7 @@ private:
     int yCursor;
 
     //more crappy serialization
-    inline friend std::ostream& operator<<(std::ostream& os, InputList const& toPrint)
+    inline friend std::ostream &operator<<(std::ostream &os, InputList const &toPrint)
     {
         os << toPrint.left << " ";
         os << toPrint.right << " ";
@@ -108,7 +108,7 @@ private:
         os << toPrint.yCursor;
         return os;
     }
-    inline friend std::istream& operator>>(std::istream& is, InputList& toRead)
+    inline friend std::istream &operator>>(std::istream &is, InputList &toRead)
     {
         is >> toRead.left;
         is >> toRead.right;

@@ -17,7 +17,7 @@ TimelineState::TimelineState(std::size_t timelineLength) :
 {
 }
 
-void TimelineState::swap(TimelineState& o)
+void TimelineState::swap(TimelineState &o)
 {
     boost::swap(universe_, o.universe_);
     boost::swap(permanentDepartures_, o.permanentDepartures_);
@@ -25,18 +25,18 @@ void TimelineState::swap(TimelineState& o)
 
 struct UpdateDeparturesFromFrame
 {
-    UpdateDeparturesFromFrame(ConcurrentFrameUpdateSet& framesWithChangedArrivals) :
+    UpdateDeparturesFromFrame(ConcurrentFrameUpdateSet &framesWithChangedArrivals) :
             framesWithChangedArrivals_(framesWithChangedArrivals)
     {}
-    void operator()(DepartureMap::value_type& newDeparture) const {
+    void operator()(DepartureMap::value_type &newDeparture) const {
         framesWithChangedArrivals_.add(newDeparture.first->updateDeparturesFromHere(newDeparture.second));
     }
-    ConcurrentFrameUpdateSet& framesWithChangedArrivals_;
+    ConcurrentFrameUpdateSet &framesWithChangedArrivals_;
 };
 
 FrameUpdateSet
 TimelineState::updateWithNewDepartures(
-	DepartureMap& newDepartures/*, tbb::task_group_context& context*/)
+	DepartureMap &newDepartures/*, tbb::task_group_context &context*/)
 {
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(
@@ -45,16 +45,16 @@ TimelineState::updateWithNewDepartures(
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
-		std::map<Frame *, ObjectList<Normal> > const& initialArrivals)
+		std::map<Frame *, ObjectList<Normal> > const &initialArrivals)
 {
     typedef std::pair<Frame*, ObjectList<Normal> > ArrivalT;
-    foreach (ArrivalT const& arrival, initialArrivals) {
+    foreach (ArrivalT const &arrival, initialArrivals) {
         permanentDepartures_[arrival.first].add(arrival.second);
         permanentDepartures_[arrival.first].sort();
         arrival.first->addArrival(0, &(permanentDepartures_[arrival.first]));
     }
 }
-Frame* TimelineState::getFrame(FrameID const& whichFrame)
+Frame *TimelineState::getFrame(FrameID const &whichFrame)
 {
     return universe_.getFrame(whichFrame);
 }

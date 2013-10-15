@@ -13,7 +13,7 @@ namespace lc_internal {
     class Drawer {
     public:
         virtual Drawer *clone() const = 0;
-        virtual void drawTo(Canvas& canvas) const = 0;
+        virtual void drawTo(Canvas &canvas) const = 0;
         virtual ~Drawer(){}
     };
     class RectDrawer : public Drawer {
@@ -22,7 +22,7 @@ namespace lc_internal {
             x(x), y(y), width(width), height(height), colour(colour)
         {
         }
-        void drawTo(Canvas& canvas) const {
+        void drawTo(Canvas &canvas) const {
             canvas.drawRect(x, y, width, height, colour);
         }
         RectDrawer *clone() const {
@@ -40,7 +40,7 @@ namespace lc_internal {
         LineDrawer(float xa, float ya, float xb, float yb, float width, unsigned colour) :
             xa(xa), ya(ya), xb(xb), yb(yb), width(width), colour(colour)
         {}
-        void drawTo(Canvas& canvas) const {
+        void drawTo(Canvas &canvas) const {
             canvas.drawLine(xa, ya, xb, yb, width, colour);
         }
         LineDrawer *clone() const {
@@ -56,10 +56,10 @@ namespace lc_internal {
     };
     class TextDrawer : public Drawer {
     public:
-        TextDrawer(std::string const& text, float x, float y, float size, unsigned colour) :
+        TextDrawer(std::string const &text, float x, float y, float size, unsigned colour) :
             text(text), x(x), y(y), size(size), colour(colour)
         {}
-        void drawTo(Canvas& canvas) const {
+        void drawTo(Canvas &canvas) const {
             canvas.drawText(text, x, y, size, colour);
         }
         TextDrawer *clone() const {
@@ -74,11 +74,11 @@ namespace lc_internal {
     };
     class ImageDrawer : public Drawer {
     public:
-        ImageDrawer(std::string const& key, float x, float y, float width, float height) :
+        ImageDrawer(std::string const &key, float x, float y, float width, float height) :
             key(key), x(x), y(y), width(width), height(height)
         {
         }
-        void drawTo(Canvas& canvas) const {
+        void drawTo(Canvas &canvas) const {
             canvas.drawImage(key, x, y, width, height);
         }
         ImageDrawer *clone() const {
@@ -93,23 +93,23 @@ namespace lc_internal {
     };
     class DrawCall {
     public:
-        DrawCall(int layer, Drawer* drawer) :drawer(drawer), layer(layer)
+        DrawCall(int layer, Drawer *drawer) :drawer(drawer), layer(layer)
         {
         }
         
-        DrawCall(DrawCall const& o) : drawer(o.drawer), layer(o.layer)
+        DrawCall(DrawCall const &o) : drawer(o.drawer), layer(o.layer)
         {}
         
-        DrawCall& operator=(DrawCall const& o) {
+        DrawCall &operator=(DrawCall const &o) {
             drawer = o.drawer;
             layer = o.layer;
             return *this;
         }
         
-        bool operator<(DrawCall const& o) const {
+        bool operator<(DrawCall const &o) const {
             return layer < o.layer;
         }
-        void drawTo(Canvas& canvas) const {
+        void drawTo(Canvas &canvas) const {
             drawer->drawTo(canvas);
         }
     private:
@@ -118,7 +118,7 @@ namespace lc_internal {
     };
 }
 using namespace lc_internal;
-LayeredCanvas::LayeredCanvas(Canvas& canvas) : canvas(&canvas), drawCalls()
+LayeredCanvas::LayeredCanvas(Canvas &canvas) : canvas(&canvas), drawCalls()
 {
 }
 void LayeredCanvas::drawRect(int layer, float x, float y, float width, float height, unsigned colour) {
@@ -127,10 +127,10 @@ void LayeredCanvas::drawRect(int layer, float x, float y, float width, float hei
 void LayeredCanvas::drawLine(int layer, float xa, float ya, float xb, float yb, float width, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new LineDrawer(xa,ya,xb,yb,width,colour)));
 }
-void LayeredCanvas::drawText(int layer, std::string const& text, float x, float y, float size, unsigned colour) {
+void LayeredCanvas::drawText(int layer, std::string const &text, float x, float y, float size, unsigned colour) {
     drawCalls.push_back(DrawCall(layer, new TextDrawer(text,x,y,size,colour)));
 }
-void LayeredCanvas::drawImage(int layer, std::string const& key, float x, float y, float width, float height) {
+void LayeredCanvas::drawImage(int layer, std::string const &key, float x, float y, float width, float height) {
     drawCalls.push_back(DrawCall(layer, new ImageDrawer(key, x, y, width, height)));
 }
 Flusher LayeredCanvas::getFlusher() {
@@ -142,7 +142,7 @@ void Flusher::partialFlush(int upperLimit) {
     upperBound = std::upper_bound(lowerBound, boost::end(canvas->drawCalls), DrawCall(upperLimit, 0));
     std::for_each(lowerBound, upperBound, boost::bind(&DrawCall::drawTo, _1, boost::ref(*canvas->canvas)));
 }
-Flusher::Flusher(LayeredCanvas* canvas) : canvas(canvas) {
+Flusher::Flusher(LayeredCanvas *canvas) : canvas(canvas) {
     boost::stable_sort(canvas->drawCalls);
     upperBound = boost::begin(canvas->drawCalls);
 }

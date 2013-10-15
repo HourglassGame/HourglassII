@@ -14,12 +14,12 @@ FrameUpdateSet::FrameUpdateSet() :
         updateSet_()
 {
 }
-FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const& o) :
+FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const &o) :
         isSet_(o.isSet_),
         updateSet_(o.updateSet_)
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o)
+FrameUpdateSet &FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o)
 {
     isSet_ = o.isSet_;
     updateSet_ = o.updateSet_;
@@ -30,19 +30,19 @@ FrameUpdateSet::FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) o) :
     updateSet_(boost::move(o.updateSet_))   
 {
 }
-FrameUpdateSet& FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) o)
+FrameUpdateSet &FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) o)
 {
     isSet_ = boost::move(o.isSet_);
     updateSet_ = boost::move(o.updateSet_);
     return *this;
 }
-void FrameUpdateSet::add(Frame* frame)
+void FrameUpdateSet::add(Frame *frame)
 {
     assert(frame);
     updateSet_.push_back(frame);
     isSet_ = false;
 }
-void FrameUpdateSet::add(FrameUpdateSet const& o)
+void FrameUpdateSet::add(FrameUpdateSet const &o)
 {
     updateSet_.insert(
         updateSet_.end(),
@@ -50,7 +50,7 @@ void FrameUpdateSet::add(FrameUpdateSet const& o)
         o.updateSet_.end());
     isSet_ = false;
 }
-void FrameUpdateSet::swap(FrameUpdateSet& o)
+void FrameUpdateSet::swap(FrameUpdateSet &o)
 {
     boost::swap(updateSet_, o.updateSet_);
     boost::swap(isSet_, o.isSet_);
@@ -93,7 +93,7 @@ bool FrameUpdateSet::empty() const {
     return updateSet_.empty();
 }
 bool FrameUpdateSet::operator==(
-    FrameUpdateSet const& o)
+    FrameUpdateSet const &o)
 {
     make_set();
     o.make_set();

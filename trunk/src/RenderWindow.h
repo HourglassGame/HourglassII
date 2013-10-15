@@ -10,8 +10,8 @@ namespace hg {
 struct RenderWindow {
     struct InputState {
         InputState(
-            std::vector<bool> const& pressedKeys,
-            std::vector<bool> const& pressedMouseButtons,
+            std::vector<bool> const &pressedKeys,
+            std::vector<bool> const &pressedMouseButtons,
             sf::Vector2i mousePosition):
                 pressedKeys(pressedKeys),
                 pressedMouseButtons(pressedMouseButtons),
@@ -35,13 +35,13 @@ struct RenderWindow {
         sf::Vector2i mousePosition;
     };
     struct InputStateTracker {
-        InputStateTracker(sf::RenderWindow const& window) :
+        InputStateTracker(sf::RenderWindow const &window) :
             pressedKeys(sf::Keyboard::KeyCount),
             pressedMouseButtons(sf::Mouse::ButtonCount),
             mousePos(sf::Mouse::getPosition(window))
         {
         }
-        void processEvent(sf::Event const& event) {
+        void processEvent(sf::Event const &event) {
             switch (event.type) {
                 case sf::Event::Closed:                 ///< The window requested to be closed (no data)
                 case sf::Event::Resized:                ///< The window was resized (data in event.size)
@@ -108,11 +108,11 @@ struct RenderWindow {
     }
     
     //sf::RenderWindow Interface:
-    sf::RenderTarget& getRenderTarget() {
+    sf::RenderTarget &getRenderTarget() {
         return renderWindow;
     }
     
-    sf::Window const& getWindow() const {
+    sf::Window const &getWindow() const {
         return renderWindow;
     }
     
@@ -121,13 +121,13 @@ struct RenderWindow {
 
     RenderWindow(
         sf::VideoMode mode,
-        const sf::String& title,
+        const sf::String &title,
         sf::Uint32 style = sf::Style::Default,
-        const sf::ContextSettings& settings = sf::ContextSettings()) :
+        const sf::ContextSettings &settings = sf::ContextSettings()) :
             renderWindow(mode, title, style, settings), inputStateTracker(renderWindow)
     {}
 
-    explicit RenderWindow(sf::WindowHandle handle, const sf::ContextSettings& settings = sf::ContextSettings()) :
+    explicit RenderWindow(sf::WindowHandle handle, const sf::ContextSettings &settings = sf::ContextSettings()) :
         renderWindow(handle, settings), inputStateTracker(renderWindow)
     {}
 
@@ -135,14 +135,14 @@ struct RenderWindow {
     //Window Functions:
     void create(
         sf::VideoMode mode,
-        const sf::String& title,
+        const sf::String &title,
         sf::Uint32 style = sf::Style::Default,
-        const sf::ContextSettings& settings = sf::ContextSettings())
+        const sf::ContextSettings &settings = sf::ContextSettings())
     {
         renderWindow.create(mode, title, style, settings);
     }
 
-    void create(sf::WindowHandle handle, const sf::ContextSettings& settings = sf::ContextSettings())
+    void create(sf::WindowHandle handle, const sf::ContextSettings &settings = sf::ContextSettings())
     {
         renderWindow.create(handle, settings);
     }
@@ -155,17 +155,17 @@ struct RenderWindow {
         return renderWindow.isOpen();
     }
 
-    const sf::ContextSettings& getSettings() const {
+    const sf::ContextSettings &getSettings() const {
         return renderWindow.getSettings();
     }
 
-    bool pollEvent(sf::Event& event) {
+    bool pollEvent(sf::Event &event) {
         bool eventCaptured(renderWindow.pollEvent(event));
         if (eventCaptured) inputStateTracker.processEvent(event);
         return eventCaptured;
     }
 
-    bool waitEvent(sf::Event& event) {
+    bool waitEvent(sf::Event &event) {
         bool eventCaptured(renderWindow.waitEvent(event));
         if (eventCaptured) inputStateTracker.processEvent(event);
         return eventCaptured;
@@ -175,7 +175,7 @@ struct RenderWindow {
         return renderWindow.getPosition();
     }
 
-    void setPosition(const sf::Vector2i& position) {
+    void setPosition(const sf::Vector2i &position) {
         renderWindow.setPosition(position);
     }
 
@@ -187,11 +187,11 @@ struct RenderWindow {
         renderWindow.setSize(size);
     }
     
-    void setTitle(const sf::String& title) {
+    void setTitle(const sf::String &title) {
         renderWindow.setTitle(title);
     }
 
-    void setIcon(unsigned int width, unsigned int height, const sf::Uint8* pixels) {
+    void setIcon(unsigned int width, unsigned int height, sf::Uint8 const *pixels) {
         renderWindow.setIcon(width, height, pixels);
     }
 
@@ -243,48 +243,48 @@ struct RenderWindow {
     }
     
     //====== sf::RenderTarget functions ======
-    void clear(const sf::Color& color = sf::Color(0, 0, 0, 255)) {
+    void clear(const sf::Color &color = sf::Color(0, 0, 0, 255)) {
         return renderWindow.clear(color);
     }
 
-    void setView(const sf::View& view) {
+    void setView(const sf::View &view) {
         renderWindow.setView(view);
     }
 
-    const sf::View& getView() const {
+    const sf::View &getView() const {
         return renderWindow.getView();
     }
 
-    const sf::View& getDefaultView() const {
+    const sf::View &getDefaultView() const {
         return renderWindow.getDefaultView();
     }
 
-    sf::IntRect getViewport(const sf::View& view) const {
+    sf::IntRect getViewport(const sf::View &view) const {
         return renderWindow.getViewport(view);
     }
 
-    sf::Vector2f mapPixelToCoords(const sf::Vector2i& point) const {
+    sf::Vector2f mapPixelToCoords(const sf::Vector2i &point) const {
         return renderWindow.mapPixelToCoords(point);
     }
 
-    sf::Vector2f mapPixelToCoords(const sf::Vector2i& point, const sf::View& view) const {
+    sf::Vector2f mapPixelToCoords(const sf::Vector2i &point, const sf::View &view) const {
         return renderWindow.mapPixelToCoords(point, view);
     }
 
-    sf::Vector2i mapCoordsToPixel(const sf::Vector2f& point) const {
+    sf::Vector2i mapCoordsToPixel(const sf::Vector2f &point) const {
         return renderWindow.mapCoordsToPixel(point);
     }
 
-    sf::Vector2i mapCoordsToPixel(const sf::Vector2f& point, const sf::View& view) const {
+    sf::Vector2i mapCoordsToPixel(const sf::Vector2f &point, const sf::View &view) const {
         return renderWindow.mapCoordsToPixel(point, view);
     }
 
-    void draw(const sf::Drawable& drawable, const sf::RenderStates& states = sf::RenderStates::Default) {
+    void draw(const sf::Drawable &drawable, const sf::RenderStates &states = sf::RenderStates::Default) {
         return renderWindow.draw(drawable, states);
     }
 
-    void draw(const sf::Vertex* vertices, unsigned int vertexCount,
-              sf::PrimitiveType type, const sf::RenderStates& states = sf::RenderStates::Default)
+    void draw(sf::Vertex const*vertices, unsigned int vertexCount,
+              sf::PrimitiveType type, const sf::RenderStates &states = sf::RenderStates::Default)
     {
         renderWindow.draw(vertices, vertexCount, type, states);
     }

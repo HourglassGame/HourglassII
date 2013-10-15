@@ -15,14 +15,14 @@ FrameID::FrameID() :
         universeID_(-1)
 {
 }
-FrameID::FrameID(int frameNumber, const UniverseID& nuniverse) :
+FrameID::FrameID(int frameNumber, UniverseID const &nuniverse) :
         frame_(frameNumber),
         universeID_(nuniverse)
 {
     assert(isValidFrame());
 }
 //Creates a FrameID corresponding to the given Frame*
-FrameID::FrameID(const Frame* toConvert) :
+FrameID::FrameID(const Frame *toConvert) :
         frame_(toConvert->frameNumber_),
         universeID_(getTimelineLength(*toConvert->universe_))
 {
@@ -48,11 +48,11 @@ FrameID FrameID::arbitraryFrameInUniverse(int frameNumber) const
         FrameID(frameNumber, universeID_) : FrameID();
 }
 
-bool FrameID::operator==(const FrameID& o) const {
+bool FrameID::operator==(FrameID const &o) const {
     return frame_ == o.frame_ && universeID_ == o.universeID_;
 }
 
-bool FrameID::operator<(const FrameID& o) const {
+bool FrameID::operator<(FrameID const &o) const {
     return
     universeID_ == o.universeID_ ?
         frame_ < o.frame_ :
@@ -70,10 +70,10 @@ int FrameID::getFrameNumber() const {
     assert (isValidFrame());
     return frame_;
 }
-UniverseID const& FrameID::getUniverse() const {
+UniverseID const &FrameID::getUniverse() const {
     return universeID_;
 }
-std::size_t hash_value(const FrameID& toHash) {
+std::size_t hash_value(FrameID const &toHash) {
     std::size_t seed(0);
     return
     toHash.isValidFrame() ?
@@ -83,23 +83,23 @@ std::size_t hash_value(const FrameID& toHash) {
         seed);
 }
 
-bool isNullFrame(FrameID const& frame)
+bool isNullFrame(FrameID const &frame)
 {
     return !frame.isValidFrame();
 }
-FrameID nextFrame(FrameID const& frame, TimeDirection direction)
+FrameID nextFrame(FrameID const &frame, TimeDirection direction)
 {
     return frame.nextFrame(direction);
 }
-bool nextFrameInSameUniverse(FrameID const& frame, TimeDirection direction)
+bool nextFrameInSameUniverse(FrameID const &frame, TimeDirection direction)
 {
     return frame.nextFrameInSameUniverse(direction);
 }
-UniverseID getUniverse(FrameID const& frame)
+UniverseID getUniverse(FrameID const &frame)
 {
     return frame.getUniverse();
 }
-int getFrameNumber(FrameID const& frame)
+int getFrameNumber(FrameID const &frame)
 {
     return frame.getFrameNumber();
 }

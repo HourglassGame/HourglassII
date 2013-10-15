@@ -3,7 +3,7 @@
 #include "Guy.h"
 namespace hg {
 struct InitialGuy {
-    explicit InitialGuy(Guy const& nguy) : guy(nguy) {}
+    explicit InitialGuy(Guy const &nguy) : guy(nguy) {}
     Guy guy;
 };
 }

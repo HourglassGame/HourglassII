@@ -32,10 +32,10 @@ public:
     size_type max_size() const { return alloc.max_size(); }
     
     tbb_scalable_allocator() : alloc() {}
-    tbb_scalable_allocator(tbb_scalable_allocator const&)
+    tbb_scalable_allocator(tbb_scalable_allocator const &)
         : alloc() {}
     template<typename U>
-    tbb_scalable_allocator(tbb_scalable_allocator<U> const&)
+    tbb_scalable_allocator(tbb_scalable_allocator<U> const &)
         : alloc() {}
     
     template<typename C, typename Args>
@@ -67,10 +67,10 @@ public:
         { typedef tbb_scalable_allocator<U> other; };
 
     tbb_scalable_allocator() : alloc() {}
-    tbb_scalable_allocator(tbb_scalable_allocator const&)
+    tbb_scalable_allocator(tbb_scalable_allocator const &)
         : alloc() {}
     template<typename U>
-    tbb_scalable_allocator(tbb_scalable_allocator<U> const&)
+    tbb_scalable_allocator(tbb_scalable_allocator<U> const &)
         : alloc() {}
 
     tbb_scalable_allocator<void> select_on_container_copy_construction() const { return *this; }
@@ -78,12 +78,12 @@ public:
 
 template<typename T, typename U>
 inline bool operator==(
-    tbb_scalable_allocator<T> const&,
-    tbb_scalable_allocator<U> const&) { return true; }
+    tbb_scalable_allocator<T> const &,
+    tbb_scalable_allocator<U> const &) { return true; }
 
 template<typename T, typename U>
 inline bool operator!=(
-    tbb_scalable_allocator<T> const&,
-    tbb_scalable_allocator<U> const&) { return false; }
+    tbb_scalable_allocator<T> const &,
+    tbb_scalable_allocator<U> const &) { return false; }
 }//namespace hg
 #endif //HG_TBB_ALLOCATOR_H

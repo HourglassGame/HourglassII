@@ -26,10 +26,10 @@ class ConcurrentTimeSet {
     typedef tbb::concurrent_hash_map<Frame *, Empty, BoostHashCompare<Frame*> > SetType;
 public:
     ConcurrentTimeSet();
-    ConcurrentTimeSet(ConcurrentTimeSet const& o) :
+    ConcurrentTimeSet(ConcurrentTimeSet const &o) :
         set_(o.set_)
     {}
-    ConcurrentTimeSet& operator=(BOOST_COPY_ASSIGN_REF(ConcurrentTimeSet) o)
+    ConcurrentTimeSet &operator=(BOOST_COPY_ASSIGN_REF(ConcurrentTimeSet) o)
     {
         return *this = ConcurrentTimeSet(o);
     }
@@ -38,16 +38,16 @@ public:
     {
         set_.swap(o.set_);
    	}
-    ConcurrentTimeSet& operator=(BOOST_RV_REF(ConcurrentTimeSet) o)
+    ConcurrentTimeSet &operator=(BOOST_RV_REF(ConcurrentTimeSet) o)
     {
         set_.swap(o.set_);
         return *this;
     }
     //Must never try to add or remove a particular frame concurrently,
     //only has safe concurrent access when called with different frames
-    void add(Frame* toAdd);
-    void remove(Frame* toRemove);
-    void swap(ConcurrentTimeSet& o) {
+    void add(Frame *toAdd);
+    void remove(Frame *toRemove);
+    void swap(ConcurrentTimeSet &o) {
         set_.swap(o.set_);
     }
     void clear() {
@@ -93,7 +93,7 @@ private:
     SetType set_;
     BOOST_COPYABLE_AND_MOVABLE(ConcurrentTimeSet)
 };
-inline void swap(ConcurrentTimeSet& l, ConcurrentTimeSet& r)
+inline void swap(ConcurrentTimeSet &l, ConcurrentTimeSet &r)
 {
     ConcurrentTimeSet temp(boost::move(l));
     l = boost::move(r);

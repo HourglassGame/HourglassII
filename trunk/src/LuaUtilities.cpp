@@ -11,7 +11,7 @@
 //   (apply RAII, throw exceptions consistently on bad input, make the lua execution be interuptable)
 namespace hg {
 std::vector<char> loadFileIntoVector(
-    boost::filesystem::path const& filename)
+    boost::filesystem::path const &filename)
 {
     std::vector<char> vec;
     boost::filesystem::ifstream file;
@@ -29,25 +29,25 @@ std::vector<char> loadFileIntoVector(
 
 int lua_VectorWriter(
     lua_State *L,
-    const void* p,
+    const void *p,
     size_t sz,
-    void* ud)
+    void *ud)
 {
     (void)L;
-    std::vector<char>& vec(*static_cast<std::vector<char>*>(ud));
-    vec.insert(vec.end(), static_cast<char const*>(p), static_cast<char const*>(p) + sz);
+    std::vector<char>& vec(*static_cast<std::vector<char> *>(ud));
+    vec.insert(vec.end(), static_cast<char const *>(p), static_cast<char const *>(p) + sz);
     return 0;
 }
 
-const char * lua_VectorReader (
+const char *lua_VectorReader (
     lua_State *L,
     void *ud,
     size_t *size)
 {
     (void)L;
-    std::pair<char const*, char const*>& data(*static_cast<std::pair<char const*, char const*>*> (ud));
+    std::pair<char const *, char const *>& data(*static_cast<std::pair<char const *, char const *> *>(ud));
     if (data.first != data.second) {
-        const char* retv(data.first);
+        const char *retv(data.first);
         *size = data.second - data.first;
         data.first = data.second;
         return retv;
@@ -58,7 +58,7 @@ const char * lua_VectorReader (
 }
 
 
-void pushFunctionFromVector(lua_State* L, std::vector<char> const& luaData, std::string const& chunkName)
+void pushFunctionFromVector(lua_State *L, std::vector<char> const &luaData, std::string const &chunkName)
 {
     if (luaL_loadbuffer(L, luaData.empty() ? "" : &luaData.front() , luaData.size(), chunkName.c_str()) != LUA_OK) {
         std::cerr << lua_tostring(L, -1) << std::endl;
@@ -67,7 +67,7 @@ void pushFunctionFromVector(lua_State* L, std::vector<char> const& luaData, std:
     assert(lua_type(L, -1) == LUA_TFUNCTION);
 }
 
-void checkstack(lua_State* L, int extra)
+void checkstack(lua_State *L, int extra)
 {
     if (!lua_checkstack(L, extra)) {
         //Maybe change to a more specific error?
@@ -78,25 +78,25 @@ void checkstack(lua_State* L, int extra)
 }
 
 template<>
-bool isValid<bool>(lua_State* L, int index)
+bool isValid<bool>(lua_State *L, int index)
 {
     return lua_isboolean(L, index);
 }
 
 template<>
-bool to<bool>(lua_State* L, int index)
+bool to<bool>(lua_State *L, int index)
 {
     //TODO: better error checking
     assert(lua_isboolean(L, index));
     return lua_toboolean(L, index);
 }
 template<>
-bool isValid<int>(lua_State* L, int index)
+bool isValid<int>(lua_State *L, int index)
 {
     return lua_isnumber(L, index);
 }
 template<>
-int to<int>(lua_State* L, int index)
+int to<int>(lua_State *L, int index)
 {
     //TODO: better rounding/handling of non-integers!
     assert(lua_isnumber(L, index));
@@ -104,14 +104,14 @@ int to<int>(lua_State* L, int index)
 }
 
 template<>
-std::string to<std::string>(lua_State* L, int index)
+std::string to<std::string>(lua_State *L, int index)
 {
     assert(lua_isstring(L, index));
     return std::string(lua_tostring(L, index));
 }
 
 template<>
-std::vector<std::string> to<std::vector<std::string> >(lua_State* L, int index) {
+std::vector<std::string> to<std::vector<std::string> >(lua_State *L, int index) {
     
     assert(lua_istable(L, index));
     lua_len(L, index);
@@ -127,10 +127,10 @@ std::vector<std::string> to<std::vector<std::string> >(lua_State* L, int index) 
 }
 
 template<>
-TimeDirection to<TimeDirection>(lua_State* L, int index)
+TimeDirection to<TimeDirection>(lua_State *L, int index)
 {
     assert(lua_isstring(L, index));
-    char const* timeDirectionString(lua_tostring(L, index));
+    char const *timeDirectionString(lua_tostring(L, index));
     TimeDirection retv(INVALID);
     if (strcmp(timeDirectionString, "forwards") == 0) {
         retv = FORWARDS;
@@ -146,7 +146,7 @@ TimeDirection to<TimeDirection>(lua_State* L, int index)
 }
 
 template<>
-Wall to<Wall>(lua_State* L, int index)
+Wall to<Wall>(lua_State *L, int index)
 {
     int segmentSize(readField<int>(L, "segmentSize", index));
     int width(readField<int>(L, "width", index));
@@ -174,13 +174,13 @@ Wall to<Wall>(lua_State* L, int index)
 }
 
 template<>
-Environment to<Environment>(lua_State* L, int index)
+Environment to<Environment>(lua_State *L, int index)
 {
     return Environment(readField<Wall>(L, "wall", index), readField<int>(L, "gravity", index));
 }
 
 template<>
-InitialBox to<InitialBox>(lua_State* L, int index)
+InitialBox to<InitialBox>(lua_State *L, int index)
 {
     assert(lua_istable(L, index) && "an initial box must be a table");
     assert(readField<std::string>(L, "type", index) == "box" 
@@ -196,7 +196,7 @@ InitialBox to<InitialBox>(lua_State* L, int index)
 }
 
 template<>
-InitialObjects to<InitialObjects>(lua_State* L, int index)
+InitialObjects to<InitialObjects>(lua_State *L, int index)
 {
     ObjectList<NonGuyDynamic> retv;
     for (std::size_t i(1), iend(lua_rawlen(L, index)); i <= iend; ++i) {
@@ -217,14 +217,14 @@ InitialObjects to<InitialObjects>(lua_State* L, int index)
 
 
 template<>
-InitialGuyArrival to<InitialGuyArrival>(lua_State* L, int index)
+InitialGuyArrival to<InitialGuyArrival>(lua_State *L, int index)
 {
     return InitialGuyArrival(readField<int>(L, "arrivalTime", index), readField<InitialGuy>(L, "arrival", index).guy);
 }
 
 
 template<>
-Ability to<Ability>(lua_State* L, int index)
+Ability to<Ability>(lua_State *L, int index)
 {
     std::string abilityString(lua_tostring(L, index));
     if (abilityString == "timeJump") {
@@ -247,7 +247,7 @@ Ability to<Ability>(lua_State* L, int index)
 }
 
 template<>
-FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State* L, int index)
+FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State *L, int index)
 {
     std::string facingString(lua_tostring(L, index));
     if (facingString == "left") {
@@ -264,7 +264,7 @@ FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State*
 
 template<>
 mt::std::map<Ability, int>::type
-    to<mt::std::map<Ability, int>::type>(lua_State* L, int index)
+    to<mt::std::map<Ability, int>::type>(lua_State *L, int index)
 {
     assert(lua_istable(L, index) && "pickups must be a table");
     mt::std::map<Ability, int>::type retv;
@@ -339,7 +339,7 @@ Guy to<Guy>(lua_State* L, int index)
 }
 
 template<>
-InitialGuy to<InitialGuy>(lua_State* L, int index)
+InitialGuy to<InitialGuy>(lua_State *L, int index)
 {
     assert(lua_istable(L, index) && "an initial guy must be a table");
     int x(readField<int>(L, "x",index));
@@ -382,7 +382,7 @@ InitialGuy to<InitialGuy>(lua_State* L, int index)
 }
 
 template<>
-TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index)
+TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
 {
     std::vector<std::pair<int, std::vector<int> > > toad;
     std::size_t iend(lua_rawlen(L, index));
@@ -410,7 +410,7 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State* L, int index)
 }
 
 template<>
-Collision to<Collision>(lua_State* L, int index)
+Collision to<Collision>(lua_State *L, int index)
 {
     assert(lua_istable(L, -1) && "a collision must be a table");
 

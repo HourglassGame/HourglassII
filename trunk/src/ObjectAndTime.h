@@ -5,7 +5,7 @@ namespace hg {
     struct ObjectAndTime
     {
         ObjectAndTime(
-            Object const& nobject,
+            Object const &nobject,
             FrameT nframe) :
                 object(nobject),
                 frame(nframe) {}

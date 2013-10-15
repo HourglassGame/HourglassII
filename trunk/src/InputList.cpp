@@ -36,7 +36,7 @@ InputList::InputList(
         yCursor(yCursor)
 {
 }
-bool InputList::operator==(InputList const& o) const
+bool InputList::operator==(InputList const &o) const
 {
     return left == o.left
         && right == o.right

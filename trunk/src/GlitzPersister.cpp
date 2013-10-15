@@ -4,7 +4,7 @@
 #include <boost/tuple/tuple_comparison.hpp>
 namespace hg {
 GlitzPersister::GlitzPersister(
-    Glitz const& forwardsGlitz, Glitz const& reverseGlitz,
+    Glitz const &forwardsGlitz, Glitz const &reverseGlitz,
     unsigned lifetime, TimeDirection timeDirection) :
         forwardsGlitz_(forwardsGlitz), reverseGlitz_(reverseGlitz),
         framesLeft_(lifetime), timeDirection_(timeDirection)
@@ -18,9 +18,9 @@ ObjectAndTime<GlitzPersister, Frame *> GlitzPersister::runStep(Frame *frame) con
             framesLeft_ - 1, timeDirection_),
         framesLeft_ ? nextFrame(frame, timeDirection_) : 0);
 }
-Glitz const& GlitzPersister::getForwardsGlitz() const{ return forwardsGlitz_; }
-Glitz const& GlitzPersister::getReverseGlitz() const { return reverseGlitz_; }
-bool GlitzPersister::operator==(GlitzPersister const& o) const
+Glitz const &GlitzPersister::getForwardsGlitz() const{ return forwardsGlitz_; }
+Glitz const &GlitzPersister::getReverseGlitz() const { return reverseGlitz_; }
+bool GlitzPersister::operator==(GlitzPersister const &o) const
 {
     return
         boost::tie(
@@ -31,7 +31,7 @@ bool GlitzPersister::operator==(GlitzPersister const& o) const
             o.forwardsGlitz_, o.reverseGlitz_,
             o.framesLeft_, o.timeDirection_);
 }
-bool GlitzPersister::operator<(GlitzPersister const& o) const
+bool GlitzPersister::operator<(GlitzPersister const &o) const
 {
     return
         boost::tie(
