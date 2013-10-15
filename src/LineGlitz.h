@@ -18,26 +18,26 @@ public:
             xb(xb), yb(yb),
             width(width),
             colour(colour) {}
-    virtual void display(LayeredCanvas& canvas) const {
+    virtual void display(LayeredCanvas &canvas) const {
         canvas.drawLine(layer, xa/100.f, ya/100.f, xb/100.f, yb/100.f, width/100.f, colour);
     }
     virtual std::size_t clone_size() const {
         return sizeof(*this);
     }
-    virtual LineGlitz* perform_clone(void* memory) const {
+    virtual LineGlitz *perform_clone(void *memory) const {
         return new (memory) LineGlitz(*this);
     }
     
-    virtual bool operator<(GlitzImplementation const& right) const {
-        LineGlitz const& actual_right(*boost::polymorphic_downcast<LineGlitz const *>(&right));
+    virtual bool operator<(GlitzImplementation const &right) const {
+        LineGlitz const &actual_right(*boost::polymorphic_downcast<LineGlitz const *>(&right));
         return asTie() < actual_right.asTie();
     }
-    virtual bool operator==(GlitzImplementation const& o) const {
-        LineGlitz const& actual_other(*boost::polymorphic_downcast<LineGlitz const *>(&o));
+    virtual bool operator==(GlitzImplementation const &o) const {
+        LineGlitz const &actual_other(*boost::polymorphic_downcast<LineGlitz const *>(&o));
         return asTie() == actual_other.asTie();
     }
 private:
-    boost::tuple<int const&, int const&, int const&, int const&, int const&, int const&, unsigned const&> asTie() const {
+    boost::tuple<int const &, int const &, int const &, int const &, int const &, int const &, unsigned const &> asTie() const {
         return boost::tie(layer, xa, ya, xb, yb, width, colour);
     }
     virtual int order_ranking() const {

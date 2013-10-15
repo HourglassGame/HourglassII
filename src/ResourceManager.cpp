@@ -10,43 +10,43 @@ sf::Font const *defaultFont;
 namespace fs = boost::filesystem;
 namespace {
 inline boost::iterator_range<fs::directory_iterator>
-directory_range(fs::path const& path)
+directory_range(fs::path const &path)
 {
     return boost::iterator_range<fs::directory_iterator>(
         fs::directory_iterator(path),
         fs::directory_iterator());
 }
 
-inline bool isImageFile(fs::path const& file) {
+inline bool isImageFile(fs::path const &file) {
     return file.extension() == ".png";
 }
 
-inline sf::Image loadImage(fs::path const& file) {
+inline sf::Image loadImage(fs::path const &file) {
     sf::Image img;
 	bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
     return img;
 }
 
-inline sf::Texture loadTexture(fs::path const& file) {
+inline sf::Texture loadTexture(fs::path const &file) {
     sf::Texture img;
 	bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
     return img;
 }
 
-inline void loadPackage(LevelResources& resourceStore, std::string const& prefix, std::string const& directory) {
+inline void loadPackage(LevelResources &resourceStore, std::string const &prefix, std::string const &directory) {
     fs::path package_directory(directory);
     assert(fs::is_directory(package_directory));
-    foreach (fs::directory_entry const& entry, directory_range(package_directory)) {
-        fs::path const& file(entry);
+    foreach (fs::directory_entry const &entry, directory_range(package_directory)) {
+        fs::path const &file(entry);
         if (isImageFile(file)) {
             resourceStore.images[prefix + file.stem().string()] = loadImage(file);
         }
     }
 }
 
-sf::Sprite spriteForBlock(sf::Texture const& tex, double x, double y, double size) {
+sf::Sprite spriteForBlock(sf::Texture const &tex, double x, double y, double size) {
     sf::Sprite sprite(tex);
     sprite.setPosition(sf::Vector2f(x,y));
     sprite.setScale(sf::Vector2f(size*1.f/tex.getSize().x, size*1.f/tex.getSize().y));
@@ -54,7 +54,7 @@ sf::Sprite spriteForBlock(sf::Texture const& tex, double x, double y, double siz
 }
 }//namespace
 
-LevelResources loadLevelResources(std::string const& levelPath, std::string const& globalsPath) {
+LevelResources loadLevelResources(std::string const &levelPath, std::string const &globalsPath) {
     LevelResources resources;
     loadPackage(resources, "global.", globalsPath);
     loadPackage(resources, "", levelPath);
@@ -62,7 +62,7 @@ LevelResources loadLevelResources(std::string const& levelPath, std::string cons
 }
 
 
-sf::Image loadAndBakeWallImage(Wall const& wall) {
+sf::Image loadAndBakeWallImage(Wall const &wall) {
     int const segmentSize = wall.segmentSize()/100;
     int const roomWidth = wall.roomWidth()/100;
     int const roomHeight = wall.roomHeight()/100;

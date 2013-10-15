@@ -6,7 +6,7 @@
 #include <boost/swap.hpp>
 
 namespace hg {
-TimeEngine::TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter& interrupter) :
+TimeEngine::TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter &interrupter) :
         speedOfTime_(level.speedOfTime),
         worldState_(
             level.timelineLength,
@@ -19,14 +19,14 @@ TimeEngine::TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter& interrup
 {
 }
 
-void TimeEngine::swap(TimeEngine& o) {
+void TimeEngine::swap(TimeEngine &o) {
     boost::swap(speedOfTime_, o.speedOfTime_);
     boost::swap(worldState_, o.worldState_);
     boost::swap(wall_, o.wall_);
 }
 
 TimeEngine::RunResult
-TimeEngine::runToNextPlayerFrame(const InputList& newInputData, OperationInterrupter& interrupter)
+TimeEngine::runToNextPlayerFrame(const InputList &newInputData, OperationInterrupter &interrupter)
 {
     worldState_.addNewInputData(newInputData);
     FrameListList updatedList;
@@ -40,12 +40,12 @@ TimeEngine::runToNextPlayerFrame(const InputList& newInputData, OperationInterru
         boost::move(updatedList));
 }
 
-std::vector<InputList> const& TimeEngine::getReplayData() const
+std::vector<InputList> const &TimeEngine::getReplayData() const
 {
     return worldState_.getReplayData();
 }
 
-Frame* TimeEngine::getFrame(const FrameID& whichFrame)
+Frame *TimeEngine::getFrame(const FrameID &whichFrame)
 {
     return worldState_.getFrame(whichFrame);
 }

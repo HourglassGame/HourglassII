@@ -15,7 +15,7 @@ public:
         int illegalPortal,
         int arrivalBasis,
         TimeDirection timeDirection);
-    Box(Box const& o, TimeDirection timeDirection);
+    Box(Box const &o, TimeDirection timeDirection);
 
     int getX()      const { return x_; }
     int getY()      const { return y_; }
@@ -29,14 +29,14 @@ public:
     TimeDirection 
         getTimeDirection()    const { return timeDirection_; }
 
-    bool operator==(const Box& o) const;
-    bool operator<(const Box& o) const;
+    bool operator==(const Box &o) const;
+    bool operator<(const Box &o) const;
 
 private:
     boost::tuple<
-        int const&, int const&, int const&, int const&, int const&,
-        int const&, int const&,
-        TimeDirection const&>
+        int const &, int const &, int const &, int const &, int const &,
+        int const &, int const &,
+        TimeDirection const &>
     asTie() const;
 
     int x_;
@@ -50,15 +50,15 @@ private:
 
     TimeDirection timeDirection_;
     //For debugging
-    friend std::ostream& operator<<(std::ostream& str, Box const& b);
+    friend std::ostream &operator<<(std::ostream &str, Box const &b);
 };
 
 class BoxConstPtr : boost::totally_ordered<BoxConstPtr>
 {
 public:
-    BoxConstPtr(Box const& box) : box_(&box) {}
+    BoxConstPtr(Box const &box) : box_(&box) {}
     typedef Box base_type;
-    Box const& get() const  { return *box_; }
+    Box const &get() const  { return *box_; }
     
     int getX()      const { return box_->getX(); }
     int getY()      const { return box_->getY(); }
@@ -67,13 +67,13 @@ public:
     int getSize()   const { return box_->getSize(); }
     int getWidth()  const { return box_->getWidth(); }
     int getHeight() const { return box_->getHeight(); }
-    int getIllegalPortal()    const { return box_->getIllegalPortal(); }
+    int getIllegalPortal()const { return box_->getIllegalPortal(); }
 	int getArrivalBasis() const { return box_->getArrivalBasis(); }
     TimeDirection 
-        getTimeDirection()    const { return box_->getTimeDirection(); }
+        getTimeDirection()const { return box_->getTimeDirection(); }
 
-    bool operator==(const BoxConstPtr& o) const { return *box_ == *o.box_; }
-    bool operator<(const BoxConstPtr& o) const { return *box_ < *o.box_; }
+    bool operator==(BoxConstPtr const &o) const { return *box_ == *o.box_; }
+    bool operator< (BoxConstPtr const &o) const { return *box_ <  *o.box_; }
 
 private:
     Box const *box_;

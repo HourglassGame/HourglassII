@@ -5,9 +5,9 @@
 namespace hg {
 
 void buildDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const& nextBox,
-    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type const& nextGuy,
-    PhysicsEngine::FrameDepartureT& newDepartures,
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const &nextBox,
+    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type const &nextGuy,
+    PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame)
 {
     (void)frame;
@@ -16,9 +16,9 @@ void buildDepartures(
 }
 
 void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const& nextBox,
-	mt::std::vector<char>::type& nextBoxNormalDeparture,
-	BoxGlitzAdder const& boxGlitzAdder)	
+    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const &nextBox,
+	mt::std::vector<char>::type &nextBoxNormalDeparture,
+	BoxGlitzAdder const &boxGlitzAdder)	
 {
 	for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 	{
@@ -44,11 +44,11 @@ struct Collidables
 };
 
 bool explodeBoxes(
-    mt::std::vector<int>::type& pos,
-    mt::std::vector<int>::type const& size,
-    mt::std::vector<mt::std::vector<std::size_t>::type >::type const& links,
-    mt::std::vector<char>::type& toBeSquished,
-    mt::std::vector<std::pair<bool, int> >::type const& bound,
+    mt::std::vector<int>::type &pos,
+    mt::std::vector<int>::type const &size,
+    mt::std::vector<mt::std::vector<std::size_t>::type >::type const &links,
+    mt::std::vector<char>::type &toBeSquished,
+    mt::std::vector<std::pair<bool, int> >::type const &bound,
     std::size_t index,
     int boundSoFar,
     int sign)
@@ -85,14 +85,14 @@ bool explodeBoxes(
 }
 
 bool explodeBoxesUpwards(
-    mt::std::vector<int>::type& x,
-    mt::std::vector<int>::type const& xTemp,
-    mt::std::vector<int>::type& y,
-    mt::std::vector<int>::type const& size,
-    mt::std::vector<mt::std::vector<std::size_t>::type >::type const& links,
+    mt::std::vector<int>::type &x,
+    mt::std::vector<int>::type const &xTemp,
+    mt::std::vector<int>::type &y,
+    mt::std::vector<int>::type const &size,
+    mt::std::vector<mt::std::vector<std::size_t>::type >::type const &links,
     bool firstTime,
-    mt::std::vector<char>::type& toBeSquished,
-    mt::std::vector<std::pair<bool, int> >::type const& bound,
+    mt::std::vector<char>::type &toBeSquished,
+    mt::std::vector<std::pair<bool, int> >::type const &bound,
     std::size_t index,
     int boundSoFar)
 {
@@ -131,11 +131,11 @@ bool explodeBoxesUpwards(
 	return false;
 }
 void recursiveBoxCollision(
-    mt::std::vector<int>::type& majorAxis,
-    mt::std::vector<int>::type const& minorAxis,
-    mt::std::vector<int>::type const& size,
-    mt::std::vector<char>::type const& squished,
-    mt::std::vector<std::size_t>::type& boxesSoFar,
+    mt::std::vector<int>::type &majorAxis,
+    mt::std::vector<int>::type const &minorAxis,
+    mt::std::vector<int>::type const &size,
+    mt::std::vector<char>::type const &squished,
+    mt::std::vector<std::size_t>::type &boxesSoFar,
     std::size_t index,
     int subtractionNumber) // horizontal wins a tie
 {
@@ -168,23 +168,23 @@ void recursiveBoxCollision(
 	}
 }
 #if 0
-bool wallAtInclusive(Environment const& env, int x, int y, int w, int h)
+bool wallAtInclusive(Environment const &env, int x, int y, int w, int h)
 {
     return env.wall.at(x, y) || env.wall.at(x+w, y) || env.wall.at(x, y+h) || env.wall.at(x+w, y+h);
 }
 #endif
-bool wallAtExclusive(Wall const& wall, int x, int y, int w, int h)
+bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h)
 {
     return wall.at(x+1, y+1) || wall.at(x+w-1, y+1) || wall.at(x+1, y+h-1) || wall.at(x+w-1, y+h-1);
 }
-bool wallAtExclusive(Environment const& env, int x, int y, int w, int h)
+bool wallAtExclusive(Environment const &env, int x, int y, int w, int h)
 {
     return wallAtExclusive(env.wall, x, y, w, h);
 }
 
 bool getRaytraceRectangleCollision(
 	int sx, int sy, 
-	int& px, int& py,
+	int &px, int &py,
 	int left, int top,
 	int width, int height,
 	int dx, int dy,
@@ -444,13 +444,13 @@ bool getRaytraceRectangleCollision(
 }
 
 void doGunRaytrace(
-		PhysicsObjectType& targetType,
-		int& targetId,
-		Environment const& env,
-		int& sx, int& sy, int& px, int& py,
-		mt::std::vector<Collision>::type const& nextPlatform,
+		PhysicsObjectType &targetType,
+		int &targetId,
+		Environment const &env,
+		int &sx, int &sy, int &px, int &py,
+		mt::std::vector<Collision>::type const &nextPlatform,
 		mt::std::vector<ObjectAndTime<Box, Frame *> >::type nextBox,
-		mt::std::vector<char>::type& nextBoxNormalDeparture,
+		mt::std::vector<char>::type &nextBoxNormalDeparture,
 		mt::std::vector<int>::type gx, // other guy things
 		mt::std::vector<int>::type gy,
 		mt::std::vector<int>::type gw,

@@ -9,7 +9,7 @@
 namespace hg {
 
 inline void addCurrentGuyArrow(
-    mt::std::vector<Glitz>::type& glitzList, int hmid, int top, int halfwidth, vector2<int> size)
+    mt::std::vector<Glitz>::type &glitzList, int hmid, int top, int halfwidth, vector2<int> size)
 {
     int tipx = hmid;
     int tipy = top - 400;
@@ -51,9 +51,9 @@ inline void addCurrentGuyArrow(
 class GuyGlitzAdder {
 public:
     GuyGlitzAdder(
-        mt::std::vector<Glitz>::type& forwardsGlitz,
-        mt::std::vector<Glitz>::type& reverseGlitz,
-		mt::std::vector<GlitzPersister>::type& persistentGlitz) :
+        mt::std::vector<Glitz>::type &forwardsGlitz,
+        mt::std::vector<Glitz>::type &reverseGlitz,
+		mt::std::vector<GlitzPersister>::type &persistentGlitz) :
     forwardsGlitz(&forwardsGlitz),
 	reverseGlitz(&reverseGlitz),
 	persistentGlitz(&persistentGlitz)
@@ -61,8 +61,8 @@ public:
     //Adds the glitz that would be appropriate for a guy
     //with the given characteristics
     void addGlitzForGuy(
-        vector2<int> const& position,
-        vector2<int> const& size,
+        vector2<int> const &position,
+        vector2<int> const &size,
         TimeDirection timeDirection,
         bool facing,
         bool boxCarrying,

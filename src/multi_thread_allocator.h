@@ -47,7 +47,7 @@ namespace hg {
             }
         }
     }
-    inline void multi_thread_operator_delete(void* p) {
+    inline void multi_thread_operator_delete(void *p) {
         multi_thread_free(p);
     }
     //multi_thread_new<T>(args...)
@@ -117,7 +117,7 @@ BOOST_PP_REPEAT(BOOST_PP_INC(HG_MAX_MULTI_THREAD_NEW_PARAMS), HG_MULTI_THREAD_NE
 #elif !(defined BOOST_NO_RVALUE_REFERENCES || defined BOOST_NO_VARIADIC_TEMPLATES)
 	//C++11 version
     template<typename T, typename... Args>
-    T *multi_thread_new(Args&&...args){
+    T *multi_thread_new(Args &&...args){
     	void *p(multi_thread_operator_new(sizeof(T)));
     	try {
     		return new (p) T(hg::forward<Args>(args)...);

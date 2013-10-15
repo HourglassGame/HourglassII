@@ -18,7 +18,7 @@
 
 namespace {
 template<class SequenceOfSequences, class Func>
-void n_ary_for_each(SequenceOfSequences const & s, Func const & f)
+void n_ary_for_each(SequenceOfSequences const &s, Func const &f)
 {
     using namespace boost::fusion;
     boost::fusion::for_each(zip_view<SequenceOfSequences>(s),
@@ -27,7 +27,7 @@ void n_ary_for_each(SequenceOfSequences const & s, Func const & f)
 struct Swap
 {
     template<typename T1, typename T2>
-    void operator()(T1& lhs, T2& rhs) const {
+    void operator()(T1 &lhs, T2 &rhs) const {
         boost::swap(lhs, rhs);
     }
 };
@@ -35,13 +35,13 @@ struct Swap
 template<typename T>
 struct Equivalent
 {
-    bool operator()(const T& l, const T& r) const {
+    bool operator()(const T &l, const T &r) const {
         return !(l < r) && !(r < l);
     }
 };
 
 template<typename ForwardRange>
-bool containsNoEquivalentElements(const ForwardRange& range)
+bool containsNoEquivalentElements(const ForwardRange &range)
 {
     return boost::adjacent_find<boost::return_found>(
             range,
@@ -54,15 +54,15 @@ struct Sort
 {
     template <typename ListType>
     void operator()(
-        ListType& toSort,
-        typename boost::disable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type> >::type* = 0) const
+        ListType &toSort,
+        typename boost::disable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type> >::type * = 0) const
     {
         boost::sort(toSort, std::less<typename boost::range_value<ListType>::type>());
     }
     template <typename ListType>
     void operator()(
-        ListType& toSort,
-        typename boost::enable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type > >::type* = 0) const
+        ListType &toSort,
+        typename boost::enable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type > >::type * = 0) const
     {
         boost::sort(toSort, std::less<typename boost::range_value<ListType>::type>());
         //These lists are sorted on a criterion that allows equivalent elements to not be equal.

@@ -17,34 +17,34 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             Frame const */*currentFrame*/,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& /*triggerArrivals*/)
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const &/*triggerArrivals*/)
     {
         assert(false && "Not Implemented!");
 		throw std::runtime_error("Not Implemented Exception");
     }
 
-    virtual bool shouldArrive(Guy const& /*potentialArriver*/) { return true; }
-    virtual bool shouldArrive(Box const& /*potentialArriver*/) { return true; }
+    virtual bool shouldArrive(Guy const &/*potentialArriver*/) { return true; }
+    virtual bool shouldArrive(Box const &/*potentialArriver*/) { return true; }
 
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
-        Guy const& /*potentialPorter*/,
+        Guy const &/*potentialPorter*/,
         bool /*porterActionedPortal*/) { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
-        Box const& /*potentialPorter*/,
+        Box const &/*potentialPorter*/,
         bool /*porterActionedPortal*/) { return true; }
 
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
-        Guy const& objectToManipulate) { return objectToManipulate; }
+        mt::std::vector<int>::type const &/*responsibleMutatorIndices*/,
+        Guy const &objectToManipulate) { return objectToManipulate; }
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int>::type const& /*responsibleMutatorIndices*/,
-        Box const& objectToManipulate) { return objectToManipulate; }
+        mt::std::vector<int>::type const &/*responsibleMutatorIndices*/,
+        Box const &objectToManipulate) { return objectToManipulate; }
 
     virtual DepartureInformation
     getDepartureInformation(
-        mt::boost::container::map<Frame *, ObjectList<Normal> >::type const& /*departures*/,
+        mt::boost::container::map<Frame *, ObjectList<Normal> >::type const &/*departures*/,
         Frame */*currentFrame*/)
     {
         assert(false && "Not implemented");

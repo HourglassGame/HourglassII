@@ -10,13 +10,13 @@ namespace hg
 class TriggerData : boost::totally_ordered<TriggerData>
 {
 public:
-    TriggerData(std::size_t index, mt::std::vector<int>::type const& value);
+    TriggerData(std::size_t index, mt::std::vector<int>::type const &value);
 
     std::size_t getIndex() const { return index_; }
-    mt::std::vector<int>::type const& getValue() const { return value_; }
+    mt::std::vector<int>::type const &getValue() const { return value_; }
     
-    bool operator==(const TriggerData& o) const;
-    bool operator<(const TriggerData& second) const;
+    bool operator==(const TriggerData &o) const;
+    bool operator<(const TriggerData &second) const;
     
 private:
     std::size_t index_;
@@ -26,14 +26,14 @@ private:
 class TriggerDataConstPtr : boost::totally_ordered<TriggerDataConstPtr>
 {
 public:
-    TriggerDataConstPtr(TriggerData const& triggerData) : triggerData_(&triggerData) {}
+    TriggerDataConstPtr(TriggerData const &triggerData) : triggerData_(&triggerData) {}
     typedef TriggerData base_type;
-    TriggerData const& get() const { return *triggerData_; }
+    TriggerData const &get() const { return *triggerData_; }
     std::size_t getIndex() const { return triggerData_->getIndex(); }
-    mt::std::vector<int>::type const& getValue() const { return triggerData_->getValue(); }
+    mt::std::vector<int>::type const &getValue() const { return triggerData_->getValue(); }
     
-    bool operator==(const TriggerDataConstPtr& o) const { return *triggerData_ < *o.triggerData_; }
-    bool operator<(const TriggerDataConstPtr& o) const { return *triggerData_ < *o.triggerData_;}
+    bool operator==(const TriggerDataConstPtr &o) const { return *triggerData_ < *o.triggerData_; }
+    bool operator<(const TriggerDataConstPtr &o) const { return *triggerData_ < *o.triggerData_;}
     
 private:
     TriggerData const *triggerData_;

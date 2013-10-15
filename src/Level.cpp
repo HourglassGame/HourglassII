@@ -6,8 +6,8 @@ Level::Level(
     int ntimelineLength,
     BOOST_RV_REF(Environment) nenvironment,
     BOOST_RV_REF(ObjectList<NonGuyDynamic>) ninitialObjects,
-    Guy const& ninitialGuy,
-    FrameID const& nguyStartTime,
+    Guy const &ninitialGuy,
+    FrameID const &nguyStartTime,
     BOOST_RV_REF(TriggerSystem) ntriggerSystem) :
         speedOfTime(nspeedOfTime),
         timelineLength(ntimelineLength),

@@ -24,27 +24,27 @@ class ObjectList : boost::equality_comparable<ObjectList<ListTypes> >
 {
 public:
     ObjectList();
-    ObjectList(ObjectList const& o);
-    ObjectList& operator=(BOOST_COPY_ASSIGN_REF(ObjectList) o);
+    ObjectList(ObjectList const &o);
+    ObjectList &operator=(BOOST_COPY_ASSIGN_REF(ObjectList) o);
     ObjectList(BOOST_RV_REF(ObjectList) o);
-    ObjectList& operator=(BOOST_RV_REF(ObjectList) o);
+    ObjectList &operator=(BOOST_RV_REF(ObjectList) o);
     
     template<typename ObjectT>
-    typename vector_of<ObjectT>::type const& getList() const;
+    typename vector_of<ObjectT>::type const &getList() const;
     
     template<typename ObjectT>
-    void add(ObjectT const& toCopy);
+    void add(ObjectT const &toCopy);
     
     template<typename ObjectRangeT>
-    void addRange(ObjectRangeT const& toAdd);
+    void addRange(ObjectRangeT const &toAdd);
 
-    void add(ObjectList const& o);
+    void add(ObjectList const &o);
     //MUST CALL this to make lists sorted (required for operator==)
     void sort();
 
-    void swap(ObjectList& o);
+    void swap(ObjectList &o);
 
-    bool operator==(ObjectList const& o) const;
+    bool operator==(ObjectList const &o) const;
     bool isEmpty() const;
 private:
     friend class ObjectPtrList<ListTypes>;
@@ -62,7 +62,7 @@ template<typename ObjectT>
 void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r);
 template<typename ListTypes>
 template<typename ObjectT>
-void ObjectList<ListTypes>::add(ObjectT const& toCopy)
+void ObjectList<ListTypes>::add(ObjectT const &toCopy)
 {
     boost::fusion::deref(
         boost::fusion::find<
@@ -75,7 +75,7 @@ void ObjectList<ListTypes>::add(ObjectT const& toCopy)
 }
 template<typename ListTypes>
 template<typename ObjectRangeT>
-void ObjectList<ListTypes>::addRange(const ObjectRangeT& toAdd)
+void ObjectList<ListTypes>::addRange(const ObjectRangeT &toAdd)
 {
     boost::push_back(
         boost::fusion::deref(
@@ -93,7 +93,7 @@ void ObjectList<ListTypes>::addRange(const ObjectRangeT& toAdd)
 //if you have code which depends on the order of the resulting range.
 template<typename ListTypes>
 template<typename ObjectT>
-typename vector_of<ObjectT>::type const& ObjectList<ListTypes>::getList() const
+typename vector_of<ObjectT>::type const &ObjectList<ListTypes>::getList() const
 {
     return boost::fusion::deref(
         boost::fusion::find<

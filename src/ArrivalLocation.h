@@ -22,7 +22,7 @@ public:
     TimeDirection 
         getTimeDirection() const { return timeDirection_; }
 
-    friend std::ostream& operator<<(std::ostream& os, ArrivalLocation const& toPrint)
+    friend std::ostream &operator<<(std::ostream &os, ArrivalLocation const &toPrint)
     {
         #define HG_ARRIVAL_LOCATION_PRINT(obj) os << #obj << ": " << toPrint.obj << std::endl
         HG_ARRIVAL_LOCATION_PRINT(x_);

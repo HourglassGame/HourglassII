@@ -23,16 +23,16 @@
 
 namespace hg {
 PhysicsEngine::PhysicsEngine(
-    Environment const& env,
-    TriggerSystem const& triggerSystem) :
+    Environment const &env,
+    TriggerSystem const &triggerSystem) :
         env_(env),
         triggerSystem_(triggerSystem)
 {
 }
-struct ConstructGuyOutputInfo : std::unary_function<Guy const&, GuyOutputInfo>{
-    ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation>::type const& arrivalLocations) :
+struct ConstructGuyOutputInfo : std::unary_function<Guy const &, GuyOutputInfo>{
+    ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation>::type const &arrivalLocations) :
         arrivalLocations(&arrivalLocations) {}
-    GuyOutputInfo operator()(Guy const& guy) const {
+    GuyOutputInfo operator()(Guy const &guy) const {
         int x = guy.getX();
         int y = guy.getY();
         if (guy.getArrivalBasis() != -1) {
@@ -45,10 +45,10 @@ struct ConstructGuyOutputInfo : std::unary_function<Guy const&, GuyOutputInfo>{
     }
     mt::std::vector<ArrivalLocation>::type const *arrivalLocations;
 };
-struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<GlitzPersister, Frame *> >
+struct NextPersister : std::unary_function<GlitzPersister const &, ObjectAndTime<GlitzPersister, Frame *> >
 {
     NextPersister(Frame *frame): frame_(frame) {}
-    ObjectAndTime<GlitzPersister, Frame *> operator()(GlitzPersister const& persister) const {
+    ObjectAndTime<GlitzPersister, Frame *> operator()(GlitzPersister const &persister) const {
         return persister.runStep(frame_);
     }
     private:
@@ -56,10 +56,10 @@ struct NextPersister : std::unary_function<GlitzPersister const&, ObjectAndTime<
 };
 
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
-    ObjectPtrList<Normal> const& arrivals,
+    ObjectPtrList<Normal> const &arrivals,
     Frame *frame,
-    std::vector<InputList> const& playerInput,
-    OperationInterrupter& interrupter) const
+    std::vector<InputList> const &playerInput,
+    OperationInterrupter &interrupter) const
 {
     TriggerFrameState triggerFrameState(triggerSystem_.getFrameState(interrupter));
 
@@ -143,7 +143,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
             newDepartures,
             frame));
     typedef triggerDepartures_t::value_type triggerDeparture_t;
-    foreach (triggerDeparture_t const& triggerDeparture, triggerSystemDepartureInformation.triggerDepartures) {
+    foreach (triggerDeparture_t const &triggerDeparture, triggerSystemDepartureInformation.triggerDepartures) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
@@ -151,7 +151,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add extra boxes to newDepartures
     buildDeparturesForComplexEntities(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
 
-    foreach (GlitzPersister const& persister, persistentGlitz) {
+    foreach (GlitzPersister const &persister, persistentGlitz) {
         forwardsGlitz.push_back(persister.getForwardsGlitz());
         reverseGlitz.push_back(persister.getReverseGlitz());
     }

@@ -52,21 +52,21 @@ struct SortObjectList {
 
 template<typename RandomAccessGuyRange>
 void guyStep(
-    Environment const& env,
-    RandomAccessGuyRange const& guyArrivalList,
-    Frame* frame,
-    std::vector<InputList> const& playerInput,
-    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type& nextGuy,
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type& nextBox,
-    mt::std::vector<char>::type& nextBoxNormalDeparture,
-    mt::std::vector<Collision>::type const& nextPlatform,
-    mt::std::vector<PortalArea>::type const& nextPortal,
-    mt::std::vector<ArrivalLocation>::type const& arrivalLocations,
-    mt::std::vector<MutatorArea>::type const& mutators,
-    TriggerFrameState& triggerFrameState,
-    GuyGlitzAdder const& guyGlitzAdder,
-    bool& nextPlayerFrame,
-    bool& winFrame);
+    Environment const &env,
+    RandomAccessGuyRange const &guyArrivalList,
+    Frame *frame,
+    std::vector<InputList> const &playerInput,
+    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type &nextGuy,
+    mt::std::vector<ObjectAndTime<Box, Frame*> >::type &nextBox,
+    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    mt::std::vector<Collision>::type const &nextPlatform,
+    mt::std::vector<PortalArea>::type const &nextPortal,
+    mt::std::vector<ArrivalLocation>::type const &arrivalLocations,
+    mt::std::vector<MutatorArea>::type const &mutators,
+    TriggerFrameState &triggerFrameState,
+    GuyGlitzAdder const &guyGlitzAdder,
+    bool &nextPlayerFrame,
+    bool &winFrame);
 
 template <
     typename RandomAccessBoxRange,
@@ -76,32 +76,32 @@ template <
     typename RandomAccessMutatorRange,
     typename FrameT>
 void boxCollisionAlogorithm(
-    Environment const& env,
-    RandomAccessBoxRange const& boxArrivalList,
-    mt::std::vector<Box>::type const& additionalBox,
-    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
-    mt::std::vector<char>::type& nextBoxNormalDeparture,
-    RandomAccessPlatformRange const& nextPlatform,
-    RandomAccessPortalRange const& nextPortal,
-    RandomAccessArrivalLocationRange const& arrivalLocations,
-    RandomAccessMutatorRange const& mutators,
-    TriggerFrameState& triggerFrameState,
-    FrameT const& frame);
+    Environment const &env,
+    RandomAccessBoxRange const &boxArrivalList,
+    mt::std::vector<Box>::type const &additionalBox,
+    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
+    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    RandomAccessPlatformRange const &nextPlatform,
+    RandomAccessPortalRange const &nextPortal,
+    RandomAccessArrivalLocationRange const &arrivalLocations,
+    RandomAccessMutatorRange const &mutators,
+    TriggerFrameState &triggerFrameState,
+    FrameT const &frame);
 	
 void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
-	mt::std::vector<char>::type& nextBoxNormalDeparture,
-	BoxGlitzAdder const& boxGlitzAdder);	
+    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const &nextBox,
+	mt::std::vector<char>::type &nextBoxNormalDeparture,
+	BoxGlitzAdder const &boxGlitzAdder);	
 	
 template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
     typename FrameT>
 void makeBoxAndTimeWithPortalsAndMutators(
-    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type& nextBox,
-    mt::std::vector<char>::type& nextBoxNormalDeparture,
-    const RandomAccessPortalRange& portals,
-    const RandomAccessMutatorRange& mutators,
+    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
+    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    const RandomAccessPortalRange &portals,
+    const RandomAccessMutatorRange &mutators,
     int x,
     int y,
     int xspeed,
@@ -109,72 +109,72 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int size,
     int oldIllegalPortal,
     TimeDirection oldTimeDirection,
-    TriggerFrameState& triggerFrameState,
+    TriggerFrameState &triggerFrameState,
     FrameT frame);
 
 bool explodeBoxesUpwards(
-    mt::std::vector<int>::type& x,
-    mt::std::vector<int>::type const& xTemp,
-    mt::std::vector<int>::type& y,
-    mt::std::vector<int>::type const& size,
-    mt::std::vector<mt::std::vector<std::size_t>::type >::type const& links,
+    mt::std::vector<int>::type &x,
+    mt::std::vector<int>::type const &xTemp,
+    mt::std::vector<int>::type &y,
+    mt::std::vector<int>::type const &size,
+    mt::std::vector<mt::std::vector<std::size_t>::type >::type const &links,
     bool firstTime,
-    mt::std::vector<char>::type& toBeSquished,
-    mt::std::vector<std::pair<bool, int> >::type const& bound,
+    mt::std::vector<char>::type &toBeSquished,
+    mt::std::vector<std::pair<bool, int> >::type const &bound,
     std::size_t index,
     int boundSoFar);
 
 
 bool explodeBoxes(
-    mt::std::vector<int>::type& pos,
-    mt::std::vector<int>::type const& size,
-    mt::std::vector<mt::std::vector<std::size_t>::type >::type const& links,
-    mt::std::vector<char>::type& toBeSquished,
-    mt::std::vector<std::pair<bool, int> >::type const& bound,
+    mt::std::vector<int>::type &pos,
+    mt::std::vector<int>::type const &size,
+    mt::std::vector<mt::std::vector<std::size_t>::type >::type const &links,
+    mt::std::vector<char>::type &toBeSquished,
+    mt::std::vector<std::pair<bool, int> >::type const &bound,
     std::size_t index,
     int boundSoFar,
     int sign);
 
 void recursiveBoxCollision(
-    mt::std::vector<int>::type& majorAxis,
-    mt::std::vector<int>::type const& minorAxis,
-    mt::std::vector<int>::type const& size,
-    mt::std::vector<char>::type const& squished,
-    mt::std::vector<std::size_t>::type& boxesSoFar,
+    mt::std::vector<int>::type &majorAxis,
+    mt::std::vector<int>::type const &minorAxis,
+    mt::std::vector<int>::type const &size,
+    mt::std::vector<char>::type const &squished,
+    mt::std::vector<std::size_t>::type &boxesSoFar,
     std::size_t index,
     int subtractionNumber);
 
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(
-    RandomAccessObjectAndTypeRange const& next,
-    PhysicsEngine::FrameDepartureT& newDepartures);
+    RandomAccessObjectAndTypeRange const &next,
+    PhysicsEngine::FrameDepartureT &newDepartures);
 
 void buildDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const& nextBox,
-    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type const& nextGuy,
-    PhysicsEngine::FrameDepartureT& newDepartures,
-    Frame* frame);
+    mt::std::vector<ObjectAndTime<Box, Frame*> >::type const &nextBox,
+    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type const &nextGuy,
+    PhysicsEngine::FrameDepartureT &newDepartures,
+    Frame *frame);
 
-//bool wallAtInclusive(const Environment& env, int x, int y, int w, int h);
-bool wallAtExclusive(Wall const& wall, int x, int y, int w, int h);
-bool wallAtExclusive(Environment const& env, int x, int y, int w, int h);
+//bool wallAtInclusive(const Environment &env, int x, int y, int w, int h);
+bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h);
+bool wallAtExclusive(Environment const &env, int x, int y, int w, int h);
 
 bool getRaytraceRectangleCollision(
 	int sx, int sy, 
-	int& px, int& py,
+	int &px, int &py,
 	int left, int top,
 	int width, int height,
 	int dx, int dy,
 	bool mostlySideways);
 
 void doGunRaytrace(
-	PhysicsObjectType& targetType,
-	int& targetId,
-	Environment const& env,
-	int& sx, int& sy, int& px, int& py,
-	mt::std::vector<Collision>::type const& nextPlatform,
+	PhysicsObjectType &targetType,
+	int &targetId,
+	Environment const &env,
+	int &sx, int &sy, int &px, int &py,
+	mt::std::vector<Collision>::type const &nextPlatform,
 	mt::std::vector<ObjectAndTime<Box, Frame*> >::type box,
-	mt::std::vector<char>::type& nextBoxNormalDeparture,
+	mt::std::vector<char>::type &nextBoxNormalDeparture,
 	mt::std::vector<int>::type gx, // other guy things
 	mt::std::vector<int>::type gy,
 	mt::std::vector<int>::type gw,
@@ -191,7 +191,7 @@ bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int
 bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
 template<typename RandomAccessGuyRange>
-bool currentPlayerInArrivals(RandomAccessGuyRange const& guyArrivals, std::size_t playerInputSize);
+bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_t playerInputSize);
 enum {
 	COLLISION_BUFFER_RANGE = 100,
 	HALF_COLLISION_BUFFER_RANGE = 50,

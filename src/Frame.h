@@ -22,16 +22,16 @@ class Frame {
 public:
     typedef mt::boost::container::map<Frame *, ObjectList<Normal> >::type FrameDeparturesT;
 
-    Frame(int frameNumber, Universe& universe);
+    Frame(int frameNumber, Universe &universe);
 
-    Frame(Frame const& o) :
+    Frame(Frame const &o) :
         frameNumber_(o.frameNumber_),
         universe_(o.universe_),
         departures_(o.departures_),
         arrivals_(o.arrivals_),
         view_(o.view_)
     {}
-    Frame& operator=(Frame const& o)
+    Frame &operator=(Frame const &o)
     {
         frameNumber_ = o.frameNumber_;
         universe_ = o.universe_;
@@ -43,14 +43,14 @@ public:
 
     //These "correct" functions are for rearranging pointers when universes get copied.
     //Changes universe_ to &newUniverse
-    void correctUniverse(Universe& newUniverse);
+    void correctUniverse(Universe &newUniverse);
 
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
-    FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT& newDeparture);
+    FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT &newDeparture);
 
-    void setView(FrameView& newView) { view_.swap(newView); }
-    FrameView const& getView() const { return view_; }
+    void setView(FrameView &newView) { view_.swap(newView); }
+    FrameView const &getView() const { return view_; }
     /**
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
@@ -65,7 +65,7 @@ public:
     ObjectPtrList<Normal>  getPostPhysics() const;
 
     //Used for adding arrivals from permanent departure frame
-    void addArrival(Frame const* source, ObjectList<Normal> const* arrival);
+    void addArrival(Frame const *source, ObjectList<Normal> const *arrival);
 
 private:
     friend class FrameID;
@@ -76,22 +76,22 @@ private:
     Frame const *nextFrame(TimeDirection direction) const;
     Frame *nextFrame(TimeDirection direction);
     bool nextFrameInSameUniverse(TimeDirection direction) const;
-    Universe const& getUniverse() const;
-    Universe& getUniverse();
+    Universe const &getUniverse() const;
+    Universe &getUniverse();
     int getFrameNumber() const;
     //<Valid to call with NullFrame>
     friend bool isNullFrame(Frame const *frame);
     //</Valid to call with NullFrame>
     //<Undefined to call with NullFrame>
     friend Frame const *nextFrame(Frame const *frame, TimeDirection direction);
-    friend Frame *nextFrame(Frame* frame, TimeDirection direction);
+    friend Frame *nextFrame(Frame *frame, TimeDirection direction);
     friend bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction);
-    friend Universe& getUniverse(Frame *frame);
-    friend Universe const& getUniverse(Frame const *frame);
+    friend Universe &getUniverse(Frame *frame);
+    friend Universe const &getUniverse(Frame const *frame);
     friend int getFrameNumber(Frame const *frame);
     //</Undefined to call with NullFrame>
-    void insertArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type& toInsert);
-    void changeArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type& toChange);
+    void insertArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type &toInsert);
+    void changeArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type &toChange);
     void clearArrival(Frame const *toClear);
 
     /** Position of frame within universe_ */
@@ -106,7 +106,7 @@ private:
     FrameView view_;
 };
 
-inline void swap(Frame& l, Frame& r)
+inline void swap(Frame &l, Frame &r)
 {
     Frame temp(boost::move(l));
     l = boost::move(r);

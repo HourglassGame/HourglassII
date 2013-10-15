@@ -10,12 +10,12 @@ namespace hg {
     //stores the wall (the static environment over which the game is played)
     class Wall {
     public:
-    	Wall(Wall const& o) :
+    	Wall(Wall const &o) :
             segmentSize_(o.segmentSize_),
             wallmap_(o.wallmap_),
             tilesetName_(o.tilesetName_)
         {}
-    	Wall& operator=(BOOST_COPY_ASSIGN_REF(Wall) o)
+    	Wall &operator=(BOOST_COPY_ASSIGN_REF(Wall) o)
         {
             segmentSize_ = o.segmentSize_;
             wallmap_ = o.wallmap_;
@@ -28,7 +28,7 @@ namespace hg {
             tilesetName_(boost::move(o.tilesetName_))
     	{
     	}
-    	Wall& operator=(BOOST_RV_REF(Wall) o)
+    	Wall &operator=(BOOST_RV_REF(Wall) o)
     	{
     		segmentSize_ = boost::move(o.segmentSize_);
             //Note that boost::multi_array does not have a no-throw swap or
@@ -39,8 +39,8 @@ namespace hg {
     	}
         Wall(
             int segmentSize,
-            boost::multi_array<bool, 2> const& wallmap,
-            std::string const& tilesetName) :
+            boost::multi_array<bool, 2> const &wallmap,
+            std::string const &tilesetName) :
                 segmentSize_(segmentSize),
                 wallmap_(wallmap),
                 tilesetName_(tilesetName)
@@ -68,7 +68,7 @@ namespace hg {
 			return aX >= wallmap_.size() || aY >= wallmap_[aX].size() || wallmap_[aX][aY];
         }
 
-        Rect<int> transformBounds(Rect<int> const& input)
+        Rect<int> transformBounds(Rect<int> const &input)
         {
             int minx(input.x/segmentSize_);
             if(input.x < 0) minx -= 1;
@@ -102,7 +102,7 @@ namespace hg {
 		int roomHeight() const {
 			return static_cast<int>(wallmap_.shape()[1] * segmentSize_);
 		}
-        std::string const& tilesetName() const {
+        std::string const &tilesetName() const {
             return tilesetName_;
         }
     private:
@@ -111,7 +111,7 @@ namespace hg {
         std::string tilesetName_;
         BOOST_COPYABLE_AND_MOVABLE(Wall)
     };
-    inline void swap(Wall& l, Wall& r)
+    inline void swap(Wall &l, Wall &r)
     {
         Wall temp(boost::move(l));
         l = boost::move(r);
@@ -121,12 +121,12 @@ namespace hg {
     //in which the game is played.
     //That is - the wall and gravity
     struct Environment {
-    	Environment(Environment const& o) :
+    	Environment(Environment const &o) :
             wall(o.wall),
             gravity(o.gravity)
         {
         }
-    	Environment& operator=(BOOST_COPY_ASSIGN_REF(Environment) o)
+    	Environment &operator=(BOOST_COPY_ASSIGN_REF(Environment) o)
         {
             wall = o.wall;
             gravity = o.gravity;
@@ -136,12 +136,12 @@ namespace hg {
             wall(boost::move(o.wall)),
             gravity(boost::move(o.gravity))
         {}
-    	Environment& operator=(BOOST_RV_REF(Environment) o) {
+    	Environment &operator=(BOOST_RV_REF(Environment) o) {
             wall = boost::move(o.wall);
             gravity = boost::move(o.gravity);
             return *this;
         }
-        Environment(Wall const& nWall, int nGravity):
+        Environment(Wall const &nWall, int nGravity):
             wall(nWall),
             gravity(nGravity)
         {
@@ -151,7 +151,7 @@ namespace hg {
     private:
         BOOST_COPYABLE_AND_MOVABLE(Environment)
     };
-    inline void swap(Environment& l, Environment& r)
+    inline void swap(Environment &l, Environment &r)
     {
         Environment temp(boost::move(l));
         l = boost::move(r);

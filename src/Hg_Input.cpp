@@ -3,23 +3,11 @@
 #include "Maths.h"
 namespace hg
 {
-static void updatePress(int& var, bool inputState)
+static void updatePress(int &var, bool inputState)
 {
-    if (inputState)
-    {
-        if (var == 0)
-        {
-            var = 1;
-        }
-        else
-        {
-            var = -1;
-        }
-    }
-    else
-    {
-        var = 0;
-    }
+    var = inputState ?
+            var == 0 ? 1 : -1
+          : 0;
 }
 
 Input::Input() :
@@ -37,7 +25,7 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const& input, int mouseXOfEndOfTimeline, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXOfEndOfTimeline, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
     right = input.isKeyPressed(sf::Keyboard::D);

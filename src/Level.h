@@ -16,11 +16,11 @@ public:
         int ntimelineLength,
         BOOST_RV_REF(Environment) nenvironment,
         BOOST_RV_REF(ObjectList<NonGuyDynamic>) ninitialObjects,
-        Guy const& ninitialGuy,
-        FrameID const& nguyStartTime,
+        Guy const &ninitialGuy,
+        FrameID const &nguyStartTime,
         BOOST_RV_REF(TriggerSystem) ntriggerSystem);
 
-    Level(Level const& o) :
+    Level(Level const &o) :
         speedOfTime(o.speedOfTime),
         timelineLength(o.timelineLength),
         environment(o.environment),
@@ -29,7 +29,7 @@ public:
         guyStartTime(o.guyStartTime),
         triggerSystem(o.triggerSystem)
     {}
-    Level& operator=(BOOST_COPY_ASSIGN_REF(Level) o)
+    Level &operator=(BOOST_COPY_ASSIGN_REF(Level) o)
     {
         return *this = Level(o);
     }
@@ -42,7 +42,7 @@ public:
         guyStartTime(boost::move(o.guyStartTime)),
         triggerSystem(boost::move(o.triggerSystem))
     {}
-    Level& operator=(BOOST_RV_REF(Level) o)
+    Level &operator=(BOOST_RV_REF(Level) o)
     {
         speedOfTime = boost::move(o.speedOfTime);
         timelineLength = boost::move(o.timelineLength);

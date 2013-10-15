@@ -25,10 +25,10 @@ private:
     bool is_out_of_memory_;
     tbb::atomic<bool> is_interrupted_;
 };
-inline LuaUserData& getUserData(lua_State* L) {
-    void* ud;
+inline LuaUserData &getUserData(lua_State *L) {
+    void *ud;
     lua_getallocf(L, &ud);
-    return *static_cast<LuaUserData*>(ud);
+    return *static_cast<LuaUserData *>(ud);
 }
 }
 #endif

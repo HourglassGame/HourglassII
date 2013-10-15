@@ -11,7 +11,7 @@
 namespace hg {
 class Glitz : boost::totally_ordered<Glitz> {
 public:
-    Glitz(Glitz const& o) :
+    Glitz(Glitz const &o) :
         impl(o.impl)
     {}
 
@@ -19,22 +19,22 @@ public:
         impl(boost::move(o.impl))
     {}
     
-    Glitz& operator=(BOOST_COPY_ASSIGN_REF(Glitz) o) {
+    Glitz &operator=(BOOST_COPY_ASSIGN_REF(Glitz) o) {
         impl = o.impl;
         return *this;
     }
-    Glitz& operator=(BOOST_RV_REF(Glitz) o) {
+    Glitz &operator=(BOOST_RV_REF(Glitz) o) {
         impl = boost::move(o.impl);
         return *this;
     }
 
-    explicit Glitz(GlitzImplementation* impl)
+    explicit Glitz(GlitzImplementation *impl)
       : impl(impl)
     {
         assert(impl);
     }
     
-    void display(LayeredCanvas& canvas) const {
+    void display(LayeredCanvas &canvas) const {
         impl->display(canvas);
     }
 
@@ -46,13 +46,13 @@ public:
     //LineGlitz = 1
     //TextGlitz = 2
     //ImageGlitz = 3
-    bool operator<(Glitz const& right) const {
+    bool operator<(Glitz const &right) const {
         if (impl->order_ranking() == right.impl->order_ranking()) {
             return *impl < *right.impl;
         }
         return impl->order_ranking() < right.impl->order_ranking();
     }
-    bool operator==(Glitz const& o) const {
+    bool operator==(Glitz const &o) const {
         return
                impl->order_ranking() == o.impl->order_ranking()
             && *impl == *o.impl;

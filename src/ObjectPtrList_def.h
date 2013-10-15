@@ -25,11 +25,11 @@ namespace {
 struct InsertAddresses
 {
     template<typename Container, typename ForwardRange>
-    void operator()(Container& toInsertInto, ForwardRange const& toInsert) const
+    void operator()(Container &toInsertInto, ForwardRange const &toInsert) const
     {
         toInsertInto.reserve(boost::distance(toInsertInto) + boost::distance(toInsert));
         typedef typename boost::range_value<ForwardRange>::type ObjType;
-        foreach (ObjType const& obj, toInsert) {
+        foreach (ObjType const &obj, toInsert) {
             toInsertInto.push_back(
             		typename ConstPtr_of<ObjType>::type(obj));
         }
@@ -37,7 +37,7 @@ struct InsertAddresses
 };
 }//namespace
 template<typename ListTypes>
-void ObjectPtrList<ListTypes>::add(ObjectList<ListTypes> const& o)
+void ObjectPtrList<ListTypes>::add(ObjectList<ListTypes> const &o)
 {
     using namespace boost::fusion;
     n_ary_for_each(vector_tie(list_, o.list_), InsertAddresses());

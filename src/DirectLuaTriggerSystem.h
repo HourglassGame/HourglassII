@@ -17,55 +17,55 @@ class DirectLuaTriggerFrameState :
 {
     public:
     DirectLuaTriggerFrameState(
-        LuaState& sharedState,
+        LuaState &sharedState,
         std::vector<
             std::pair<
                 int,
                 std::vector<int>
             >
-        > const& triggerOffsetsAndDefaults,
+        > const &triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize,
-        OperationInterrupter& interrupter);
+        OperationInterrupter &interrupter);
     
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
-            Frame const* currentFrame,
+            Frame const *currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals);
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals);
     
-    virtual bool shouldArrive(Guy const& potentialArriver);
-    virtual bool shouldArrive(Box const& potentialArriver);
+    virtual bool shouldArrive(Guy const &potentialArriver);
+    virtual bool shouldArrive(Box const &potentialArriver);
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Guy const& potentialPorter,
+        Guy const &potentialPorter,
         bool porterActionedPortal);
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Box const& potentialPorter,
+        Box const &potentialPorter,
         bool porterActionedPortal);
     
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Guy const& objectToManipulate);
+        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        Guy const &objectToManipulate);
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Box const& objectToManipulate);
+        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        Box const &objectToManipulate);
     
     virtual DepartureInformation getDepartureInformation(
-        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
-        Frame* currentFrame);
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const &departures,
+        Frame *currentFrame);
     virtual ~DirectLuaTriggerFrameState();
 private:
-    LuaState& L_;
+    LuaState &L_;
 
     std::vector<
             std::pair<
                 int,
                 std::vector<int>
             >
-        > const& triggerOffsetsAndDefaults_;
+        > const &triggerOffsetsAndDefaults_;
 
     //Gives the size that arrivalLocations must always be,
     //for script-validation purposes.
@@ -75,8 +75,8 @@ private:
 
     LuaInterruptionHandle interruptionHandle_;
 
-    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState& o);
-    DirectLuaTriggerFrameState& operator=(DirectLuaTriggerFrameState& o);
+    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState &o);
+    DirectLuaTriggerFrameState &operator=(DirectLuaTriggerFrameState &o);
 };
 
 
@@ -95,11 +95,11 @@ public:
     }
     //Notice that these do not actually copy their arguments.
     //The arguments are not even moved. This is deliberate.
-    lazy_ptr(lazy_ptr const&) :
+    lazy_ptr(lazy_ptr const &) :
         ptr_(0)
     {
     }
-    lazy_ptr& operator=(BOOST_COPY_ASSIGN_REF(lazy_ptr))
+    lazy_ptr &operator=(BOOST_COPY_ASSIGN_REF(lazy_ptr))
     {
         //nothing to do.
     	return *this;
@@ -109,7 +109,7 @@ public:
     {
     	boost::swap(ptr_, o.ptr_);
     }
-    lazy_ptr& operator=(BOOST_RV_REF(lazy_ptr) o)
+    lazy_ptr &operator=(BOOST_RV_REF(lazy_ptr) o)
     {
     	boost::swap(ptr_, o.ptr_);
     	return *this;
@@ -118,7 +118,7 @@ public:
     {
         delete ptr_;
     }
-    T& operator*() const
+    T &operator*() const
     {
     	if (!ptr_) ptr_ = new T();
         return *ptr_;
@@ -143,17 +143,17 @@ class DirectLuaTriggerSystem :
 {
 public:
     DirectLuaTriggerSystem(
-        std::vector<char> const& mainChunk,
-        std::vector<LuaModule> const& extraChunks,
+        std::vector<char> const &mainChunk,
+        std::vector<LuaModule> const &extraChunks,
         std::vector<
                 std::pair<
                     int,
                     std::vector<int>
                 >
-        > const& triggerOffsetsAndDefaults,
+        > const &triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
-    virtual TriggerFrameState getFrameState(OperationInterrupter& interrupter) const;
-    virtual TriggerSystemImplementation* clone() const
+    virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const;
+    virtual TriggerSystemImplementation *clone() const
     {
         return new DirectLuaTriggerSystem(*this);
     }
@@ -161,10 +161,11 @@ private:
     //lazy_ptr because TriggerSystemImplementations must
     //be cloneable, but there is no way to copy
     //a LuaState (or by extension a ThreadLocal<LuaState>).
-    //lazy_ptr side-steps this problem by making a fresh
-    //instance of the ThreadLocal<LuaState> at every step.
-    //luaStates_ a cache, so ignoring its contents does not cause
-    //any problems.
+    //lazy_ptr side-steps this problem by making copying a no-op,
+    //and creating a fresh instance of the ThreadLocal<LuaState>,
+    //when it is eventually needed.
+    //luaStates_ a cache, so the act of ignoring its contents
+    //does not cause any problems.
     lazy_ptr<ThreadLocal<LuaState> > luaStates_;
     std::vector<char> compiledMainChunk_;
     std::vector<LuaModule> compiledExtraChunks_;

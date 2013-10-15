@@ -23,7 +23,7 @@ public:
         bool supported,
         int supportedSpeed,
     	
-        mt::std::map<Ability, int>::type const& pickups,
+        mt::std::map<Ability, int>::type const &pickups,
         FacingDirection::FacingDirection facing,
     	
         bool boxCarrying,
@@ -47,7 +47,7 @@ public:
     bool getSupported()       const { return supported_; }
     int getSupportedSpeed()   const { return supportedSpeed_; }
     
-    mt::std::map<Ability, int>::type const& getPickups() const { return pickups_; }
+    mt::std::map<Ability, int>::type const &getPickups() const { return pickups_; }
 
     FacingDirection::FacingDirection getFacing()        const { return facing_; }
 
@@ -61,8 +61,8 @@ public:
 	bool getTimePaused()    const { return timePaused_; }
 
 
-    bool operator==(const Guy& o) const;
-    bool operator<(const Guy& second) const;
+    bool operator==(const Guy &o) const;
+    bool operator<(const Guy &second) const;
     
 private:
     std::size_t index_;
@@ -93,9 +93,9 @@ private:
 class GuyConstPtr : boost::totally_ordered<GuyConstPtr>
 {
 public:
-    GuyConstPtr(Guy const& guy) : guy_(&guy) {}
+    GuyConstPtr(Guy const &guy) : guy_(&guy) {}
     typedef Guy base_type;
-    Guy const& get() const   { return *guy_; }
+    Guy const &get() const   { return *guy_; }
     
     std::size_t getIndex() const { return guy_->getIndex(); }
     int getX()         const { return guy_->getX(); }
@@ -111,7 +111,7 @@ public:
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
     
-    mt::std::map<Ability, int>::type const& getPickups() const { return guy_->getPickups();}
+    mt::std::map<Ability, int>::type const &getPickups() const { return guy_->getPickups();}
 
     FacingDirection::FacingDirection getFacing()        const { return guy_->getFacing();}
 
@@ -124,8 +124,8 @@ public:
         getTimeDirection() const { return guy_->getTimeDirection(); }
 	bool getTimePaused()    const { return guy_->getTimePaused(); }
 
-    bool operator==(GuyConstPtr const& o) const { return *guy_ == *o.guy_; }
-    bool operator<(GuyConstPtr const& o) const { return *guy_ < *o.guy_; }
+    bool operator==(GuyConstPtr const &o) const { return *guy_ == *o.guy_; }
+    bool operator<(GuyConstPtr const &o) const { return *guy_ < *o.guy_; }
 private:
     Guy const *guy_;
 };

@@ -11,9 +11,9 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream> 
 namespace hg {
-inline int panic(lua_State* L) {
+inline int panic(lua_State *L) {
     //Check whether this is a memory allocation error
-    LuaUserData& ud(getUserData(L));
+    LuaUserData &ud(getUserData(L));
     if (ud.is_out_of_memory()) {
         throw std::bad_alloc();
     }
@@ -38,23 +38,23 @@ struct LuaState {
     {
         swap(o);
     }
-    LuaState& operator=(BOOST_RV_REF(LuaState) o)
+    LuaState &operator=(BOOST_RV_REF(LuaState) o)
     {
         swap(o);
         return *this;
     }
-    void swap(LuaState& o) {
+    void swap(LuaState &o) {
         boost::swap(ud, o.ud);
         boost::swap(ptr, o.ptr);
     }
     ~LuaState();
     unique_ptr<LuaUserData> ud;
-    lua_State* ptr;
+    lua_State *ptr;
 private:
     BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)
 };
 
-inline void swap(LuaState& l, LuaState& r) {
+inline void swap(LuaState &l, LuaState &r) {
     return l.swap(r);
 }
 }//namespace hg

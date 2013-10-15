@@ -31,33 +31,33 @@ class TriggerFrameStateImplementation
             Frame const *currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals) = 0;
+                mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals) = 0;
     
-    virtual bool shouldArrive(Guy const& potentialArriver) = 0;
-    virtual bool shouldArrive(Box const& potentialArriver) = 0;
+    virtual bool shouldArrive(Guy const &potentialArriver) = 0;
+    virtual bool shouldArrive(Box const &potentialArriver) = 0;
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Guy const& potentialPorter,
+        Guy const &potentialPorter,
         bool porterActionedPortal) = 0;
     virtual bool shouldPort(
         int responsiblePortalIndex,
-        Box const& potentialPorter,
+        Box const &potentialPorter,
         bool porterActionedPortal) = 0;
     
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Guy const& objectToManipulate) = 0;
+        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        Guy const &objectToManipulate) = 0;
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int>::type const& responsibleMutatorIndices,
-        Box const& objectToManipulate) = 0;
+        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        Box const &objectToManipulate) = 0;
 
     struct DepartureInformation {
         DepartureInformation(
-            mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type const& triggerDepartures,
-            mt::std::vector<Glitz>::type const& forwardsGlitz,
-            mt::std::vector<Glitz>::type const& reverseGlitz,
-            mt::std::vector<ObjectAndTime<Box, Frame *> >::type const& additionalBoxDepartures):
+            mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type const &triggerDepartures,
+            mt::std::vector<Glitz>::type const &forwardsGlitz,
+            mt::std::vector<Glitz>::type const &reverseGlitz,
+            mt::std::vector<ObjectAndTime<Box, Frame *> >::type const &additionalBoxDepartures):
                 triggerDepartures(triggerDepartures),
                 forwardsGlitz(forwardsGlitz),
                 reverseGlitz(reverseGlitz),
@@ -69,7 +69,7 @@ class TriggerFrameStateImplementation
     };
 
     virtual DepartureInformation getDepartureInformation(
-        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
+        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const &departures,
         Frame *currentFrame) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
@@ -84,15 +84,15 @@ class TriggerFrameState
     typedef TriggerFrameStateImplementation::DepartureInformation DepartureInformation;
     PhysicsAffectingStuff
     calculatePhysicsAffectingStuff(
-        Frame const* currentFrame,
+        Frame const *currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const> const& triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals)
     {
         return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
     }
     template<typename ObjectT>
-    bool shouldArrive(ObjectT const& potentialArriver)
+    bool shouldArrive(ObjectT const &potentialArriver)
     {
         return impl_->shouldArrive(potentialArriver);
     }
@@ -100,7 +100,7 @@ class TriggerFrameState
     template<typename ObjectT>
     bool shouldPort(
         int responsiblePortalIndex,
-        ObjectT const& potentialPorter,
+        ObjectT const &potentialPorter,
         bool porterActionedPortal)
     {
         return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
@@ -108,14 +108,14 @@ class TriggerFrameState
     
     template<typename ObjectT>
     boost::optional<ObjectT> mutateObject(
-        mt::std::vector<int>::type const& responsibleMutatorIndices,
-        ObjectT const& objectToManipulate)
+        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        ObjectT const &objectToManipulate)
     {
         return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate);
     }
     
     DepartureInformation getDepartureInformation(
-            mt::boost::container::map<Frame*, ObjectList<Normal> >::type const& departures,
+            mt::boost::container::map<Frame*, ObjectList<Normal> >::type const &departures,
             Frame *currentFrame)
     {
         return impl_->getDepartureInformation(departures, currentFrame);
@@ -132,7 +132,7 @@ class TriggerFrameState
     //  multi_thread_delete(impl_);
     //THIS MEANS THAT impl MUST HAVE BEEN ALLOCATED IN A SPECIAL WAY!!
     //(with multi_thread_new)
-    explicit TriggerFrameState(TriggerFrameStateImplementation* impl) :
+    explicit TriggerFrameState(TriggerFrameStateImplementation *impl) :
         impl_(impl)
     {}
     TriggerFrameState(BOOST_RV_REF(TriggerFrameState) o) :
@@ -140,12 +140,12 @@ class TriggerFrameState
     {
         swap(o);
     }
-    TriggerFrameState& operator=(BOOST_RV_REF(TriggerFrameState) o)
+    TriggerFrameState &operator=(BOOST_RV_REF(TriggerFrameState) o)
     {
         swap(o);
         return *this;
     }
-    void swap(TriggerFrameState& o)
+    void swap(TriggerFrameState &o)
     {
         boost::swap(impl_, o.impl_);
     }
@@ -153,16 +153,16 @@ class TriggerFrameState
         multi_thread_delete(impl_);
     }
     private:
-    TriggerFrameStateImplementation* impl_;
+    TriggerFrameStateImplementation *impl_;
     BOOST_MOVABLE_BUT_NOT_COPYABLE(TriggerFrameState)
 };
-inline void swap(TriggerFrameState& l, TriggerFrameState& r) { l.swap(r); }
+inline void swap(TriggerFrameState &l, TriggerFrameState &r) { l.swap(r); }
 
 class TriggerSystemImplementation
 {
     public:
-    virtual TriggerFrameState getFrameState(OperationInterrupter& interrupter) const = 0;
-    virtual TriggerSystemImplementation* clone() const = 0;
+    virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const = 0;
+    virtual TriggerSystemImplementation *clone() const = 0;
     virtual ~TriggerSystemImplementation(){}
 };
 }

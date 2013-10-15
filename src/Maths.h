@@ -9,7 +9,7 @@ Integral iabs(Integral a) {
 }
 
 //Let ÷ be mathematical division, and / be C++ division.
-//Returns floor(a÷n).
+//Returns floor(a÷b).
 //We know
 //    a÷b = a/b + f (f is the remainder, not all divisions have exact Integral results)
 //and
@@ -19,9 +19,9 @@ Integral iabs(Integral a) {
 //We want the remainder (f) to always be >=0 (by definition of flooredDivision),
 //so when sign(f) < 0, we subtract 1 from a/n to make f > 0.
 template<typename Integral>
-Integral flooredDivision(Integral a, Integral n) {
-    Integral q(a/n);
-    if ((a%n < 0 && n > 0) || (a%n > 0 && n < 0)) --q;
+Integral flooredDivision(Integral a, Integral b) {
+    Integral q(a/b);
+    if ((a%b < 0 && b > 0) || (a%b > 0 && b < 0)) --q;
     return q;
 }
 

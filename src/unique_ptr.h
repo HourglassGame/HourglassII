@@ -17,7 +17,7 @@ namespace unique_ptr_detail {
     namespace has_pointer_type_imp
     {
         template <class T> static long test(...);
-        template <class T> static char test(typename T::pointer* = 0);
+        template <class T> static char test(typename T::pointer * = 0);
     }
 
     template <class T>
@@ -37,7 +37,7 @@ namespace unique_ptr_detail {
         template <class T, class D>
         struct pointer_type<T, D, false>
         {
-            typedef T* type;
+            typedef T *type;
         };
     }
 
@@ -64,7 +64,7 @@ public:
         p(p)
     {
     }
-    unique_ptr(pointer p, const D& d) :
+    unique_ptr(pointer p, const D &d) :
         D(d),
         p(p)
     {
@@ -91,13 +91,13 @@ public:
     {
         if (p) get_deleter()(p);
     }
-    unique_ptr& operator=(BOOST_RV_REF(unique_ptr) u)
+    unique_ptr &operator=(BOOST_RV_REF(unique_ptr) u)
     {
         reset(u.release());
         get_deleter() = boost::move(u.get_deleter());
         return *this;
     }
-    template <class U, class E> unique_ptr& operator=(BOOST_RV_REF_2_TEMPL_ARGS(unique_ptr, U, E) u)
+    template <class U, class E> unique_ptr &operator=(BOOST_RV_REF_2_TEMPL_ARGS(unique_ptr, U, E) u)
     {
         reset(u.release());
         get_deleter() = boost::move(u.get_deleter());
@@ -115,8 +115,8 @@ public:
     {
         return p;
     }
-    deleter_type& get_deleter() { return *this; }
-    deleter_type const& get_deleter() const { return *this; }
+    deleter_type &get_deleter() { return *this; }
+    deleter_type const &get_deleter() const { return *this; }
     pointer release()
     {
         pointer retv(p);
@@ -129,7 +129,7 @@ public:
         this->p = p;
         if (old_p) get_deleter()(old_p);
     }
-    void swap(unique_ptr& u)
+    void swap(unique_ptr &u)
     {
         boost::swap(p, u.p);
         boost::swap(get_deleter(), u.get_deleter());
@@ -146,32 +146,32 @@ template<typename T> void swap(unique_ptr<T>& l, unique_ptr<T>& r)
     l.swap(r);
 }
 template<typename T1, typename T2>
-bool operator==(unique_ptr<T1> const& l, unique_ptr<T2> const& r)
+bool operator==(unique_ptr<T1> const &l, unique_ptr<T2> const &r)
 {
     return l.get() == r.get();
 }
 template<typename T1, typename T2>
-bool operator!=(unique_ptr<T1> const& l, unique_ptr<T2> const& r)
+bool operator!=(unique_ptr<T1> const &l, unique_ptr<T2> const &r)
 {
     return l.get() != r.get();
 }
 template<typename T1, typename T2>
-bool operator<(unique_ptr<T1> const& l, unique_ptr<T2> const& r)
+bool operator<(unique_ptr<T1> const &l, unique_ptr<T2> const &r)
 {
     return l.get() < r.get();
 }
 template<typename T1, typename T2>
-bool operator<=(unique_ptr<T1> const& l, unique_ptr<T2> const& r)
+bool operator<=(unique_ptr<T1> const &l, unique_ptr<T2> const &r)
 {
     return l.get() <= r.get();
 }
 template<typename T1, typename T2>
-bool operator>(unique_ptr<T1> const& l, unique_ptr<T2> const& r)
+bool operator>(unique_ptr<T1> const &l, unique_ptr<T2> const &r)
 {
     return l.get() > r.get();
 }
 template<typename T1, typename T2>
-bool operator>=(unique_ptr<T1> const& l, unique_ptr<T2> const& r)
+bool operator>=(unique_ptr<T1> const &l, unique_ptr<T2> const &r)
 {
     return l.get() >= r.get();
 }

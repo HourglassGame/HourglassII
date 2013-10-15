@@ -24,7 +24,7 @@ public:
     int getHeight() const { return height_; }
     TimeDirection 
         getTimeDirection() const { return timeDirection_; }
-    friend std::ostream& operator<<(std::ostream& os, Collision const& toPrint)
+    friend std::ostream &operator<<(std::ostream &os, Collision const &toPrint)
     {
         #define HG_COLLISION_PRINT(obj) os << #obj << ": " << toPrint.obj << std::endl
         HG_COLLISION_PRINT(x_);

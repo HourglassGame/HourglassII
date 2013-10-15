@@ -16,9 +16,9 @@
 
 namespace hg {
 template <typename ObjectConstPtr>
-struct GetBase : std::unary_function<ObjectConstPtr, typename ObjectConstPtr::base_type const&>
+struct GetBase : std::unary_function<ObjectConstPtr, typename ObjectConstPtr::base_type const &>
 {
-    typename ObjectConstPtr::base_type const&
+    typename ObjectConstPtr::base_type const &
         operator()(ObjectConstPtr ptr) const
     {
         return ptr.get();
@@ -43,12 +43,12 @@ public:
     void add(const ObjectList<ListTypes>& o);
 
     template<typename SinglePassRange>
-    void addRange(SinglePassRange const& toAdd);
+    void addRange(SinglePassRange const &toAdd);
 
     //MUST CALL this to make lists sorted (required for deterministic physics)
     void sort();
 
-    void swap(ObjectPtrList& o);
+    void swap(ObjectPtrList &o);
 
 private:
     typedef typename
@@ -76,7 +76,7 @@ ObjectPtrList<ListTypes>::getList() const
 }
 template<typename ListTypes>
 template<typename SinglePassRange>
-void ObjectPtrList<ListTypes>::addRange(SinglePassRange const& toAdd)
+void ObjectPtrList<ListTypes>::addRange(SinglePassRange const &toAdd)
 {
     boost::push_back(
         boost::fusion::deref(

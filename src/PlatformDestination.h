@@ -34,10 +34,10 @@ public:
     {
     }
 
-    const PlatformDestinationComponent& getXDestination() const {
+    const PlatformDestinationComponent &getXDestination() const {
         return xComponent_;
     }
-    const PlatformDestinationComponent& getYDestination() const {
+    const PlatformDestinationComponent &getYDestination() const {
         return yComponent_;
     }
 private:
@@ -47,8 +47,8 @@ private:
 
 struct PlatformDestinationPair {
     PlatformDestinationPair(
-        const PlatformDestination& newOnDestination,
-        const PlatformDestination& newOffDestination) :
+        const PlatformDestination &newOnDestination,
+        const PlatformDestination &newOffDestination) :
     onDestination(newOnDestination),
     offDestination(newOffDestination) {}
     PlatformDestination onDestination;

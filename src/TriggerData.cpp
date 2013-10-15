@@ -2,7 +2,7 @@
 #include <limits>
 #include <cassert>
 namespace hg {
-TriggerData::TriggerData(std::size_t index, mt::std::vector<int>::type const& value) :
+TriggerData::TriggerData(std::size_t index, mt::std::vector<int>::type const &value) :
 index_(index),
 value_(value)
 {
@@ -10,12 +10,12 @@ value_(value)
             && "the max value is reserved for representing invalid/null indices");
 }
 
-bool TriggerData::operator==(const TriggerData& o) const
+bool TriggerData::operator==(const TriggerData &o) const
 {
     return (index_ == o.index_) && (value_ == o.value_);
 }
 
-bool TriggerData::operator<(const TriggerData& o) const
+bool TriggerData::operator<(const TriggerData &o) const
 {
     return index_ < o.index_;
 }

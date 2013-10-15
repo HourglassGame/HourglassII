@@ -8,16 +8,16 @@ FrameView::FrameView() :
 {
 }
 FrameView::FrameView(
-    mt::std::vector<Glitz>::type const& forwardsGlitz,
-    mt::std::vector<Glitz>::type const& reverseGlitz,
-    mt::std::vector<GuyOutputInfo>::type const& guyInformation) :
+    mt::std::vector<Glitz>::type const &forwardsGlitz,
+    mt::std::vector<Glitz>::type const &reverseGlitz,
+    mt::std::vector<GuyOutputInfo>::type const &guyInformation) :
         forwardsGlitz_(forwardsGlitz),
         reverseGlitz_(reverseGlitz),
         guyInformation_(guyInformation)
 {
 }
 
-void FrameView::swap(FrameView& o)
+void FrameView::swap(FrameView &o)
 {
     boost::swap(forwardsGlitz_, o.forwardsGlitz_);
     boost::swap(reverseGlitz_, o.reverseGlitz_);

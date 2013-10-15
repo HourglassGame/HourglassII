@@ -12,7 +12,7 @@ namespace hg {
 class GlitzPersister : boost::totally_ordered<GlitzPersister>
 {
 public:
-    GlitzPersister(GlitzPersister const& o) :
+    GlitzPersister(GlitzPersister const &o) :
         forwardsGlitz_(o.forwardsGlitz_),
         reverseGlitz_(o.reverseGlitz_),
         framesLeft_(o.framesLeft_),
@@ -24,7 +24,7 @@ public:
         framesLeft_(boost::move(o.framesLeft_)),
         timeDirection_(boost::move(o.timeDirection_))
     {}
-    GlitzPersister& operator=(GlitzPersister const& o)
+    GlitzPersister &operator=(GlitzPersister const &o)
     {
         forwardsGlitz_ = o.forwardsGlitz_;
         reverseGlitz_ = o.reverseGlitz_;
@@ -32,7 +32,7 @@ public:
         timeDirection_ = o.timeDirection_;
         return *this;
     }
-    GlitzPersister& operator=(BOOST_RV_REF(GlitzPersister) o)
+    GlitzPersister &operator=(BOOST_RV_REF(GlitzPersister) o)
     {
         forwardsGlitz_ = boost::move(o.forwardsGlitz_);
         reverseGlitz_ = boost::move(o.reverseGlitz_);
@@ -42,14 +42,14 @@ public:
     }
     
     GlitzPersister(
-        Glitz const& forwardsGlitz, Glitz const& reverseGlitz,
+        Glitz const &forwardsGlitz, Glitz const &reverseGlitz,
         unsigned lifetime, TimeDirection timeDirection);
-    ObjectAndTime<GlitzPersister, Frame*> runStep(Frame* frame) const;
-    Glitz const& getForwardsGlitz() const;
-    Glitz const& getReverseGlitz() const;
+    ObjectAndTime<GlitzPersister, Frame*> runStep(Frame *frame) const;
+    Glitz const &getForwardsGlitz() const;
+    Glitz const &getReverseGlitz() const;
     
-    bool operator==(GlitzPersister const& o) const;
-    bool operator<(GlitzPersister const& second) const;
+    bool operator==(GlitzPersister const &o) const;
+    bool operator<(GlitzPersister const &second) const;
 private:
     Glitz forwardsGlitz_;
     Glitz reverseGlitz_;
@@ -61,16 +61,16 @@ private:
 class GlitzPersisterConstPtr : boost::totally_ordered<GlitzPersisterConstPtr>
 {
 public:
-    GlitzPersisterConstPtr(GlitzPersister const& glitzPersister) : glitzPersister_(&glitzPersister) {}
+    GlitzPersisterConstPtr(GlitzPersister const &glitzPersister) : glitzPersister_(&glitzPersister) {}
     typedef GlitzPersister base_type;
-    GlitzPersister const& get() const   { return *glitzPersister_; }
+    GlitzPersister const &get() const   { return *glitzPersister_; }
     
     ObjectAndTime<GlitzPersister, Frame *> runStep(Frame *frame) const { return glitzPersister_->runStep(frame); }
-    Glitz const& getForwardsGlitz() const { return glitzPersister_->getForwardsGlitz(); }
-    Glitz const& getReverseGlitz() const { return glitzPersister_->getReverseGlitz(); }
+    Glitz const &getForwardsGlitz() const { return glitzPersister_->getForwardsGlitz(); }
+    Glitz const &getReverseGlitz() const { return glitzPersister_->getReverseGlitz(); }
     
-    bool operator==(GlitzPersisterConstPtr const& o) const { return *glitzPersister_ == *o.glitzPersister_; }
-    bool operator<(GlitzPersisterConstPtr const& o) const { return *glitzPersister_ < *o.glitzPersister_; }
+    bool operator==(GlitzPersisterConstPtr const &o) const { return *glitzPersister_ == *o.glitzPersister_; }
+    bool operator<(GlitzPersisterConstPtr const &o) const { return *glitzPersister_ < *o.glitzPersister_; }
 private:
     GlitzPersister const *glitzPersister_;
 };

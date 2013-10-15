@@ -3,7 +3,7 @@
 #include "Box.h"
 namespace hg {
 struct InitialBox {
-    explicit InitialBox(Box const& nbox) : box(nbox) {}
+    explicit InitialBox(Box const &nbox) : box(nbox) {}
     Box box;
 };
 }

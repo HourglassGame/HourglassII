@@ -25,7 +25,7 @@ namespace hg {
 //recursive_setfield(L, indexof(T), "b.c") is equivalent to t.b={c=10}
 
 //As in lua, this may trigger metamethods on tables that exist.
-static void recursive_setfield(lua_State* L, int index, char const* name) {
+static void recursive_setfield(lua_State *L, int index, char const *name) {
     //[..., t, ..., v]
     using boost::algorithm::split_iterator;
     using boost::algorithm::first_finder;
@@ -56,7 +56,7 @@ static void recursive_setfield(lua_State* L, int index, char const* name) {
 
 //As in lua, this may trigger metamethods, and attempts to index into non-tables will cause
 //an error to be raised (not yet implemented).
-static void recursive_getfield(lua_State* L, int index, char const* name) {
+static void recursive_getfield(lua_State *L, int index, char const *name) {
     //[..., t, ...]
     using boost::algorithm::split_iterator;
     using boost::algorithm::first_finder;
@@ -70,7 +70,7 @@ static void recursive_getfield(lua_State* L, int index, char const* name) {
     }
 }
 
-static char const* safe_elements[] = {
+static char const *safe_elements[] = {
 "assert",
 "error",
 "ipairs",
@@ -160,7 +160,7 @@ static char const* safe_elements[] = {
 "math.tanh"
 };
 
-static char const* tables_to_wrap[] = {
+static char const *tables_to_wrap[] = {
 "bit32",
 "coroutine",
 "package",
@@ -172,7 +172,7 @@ static char const* tables_to_wrap[] = {
 char const preloadResetRegistryIndex[] = "preloadReset";
 char const loadedResetRegistryIndex[] = "loadedReset";
 char const packageSearchersResetRegistryIndex[] = "packageSearchersReset";
-static int packageSearchersReset(lua_State* L) {
+static int packageSearchersReset(lua_State *L) {
     //return {upvalues[1]}  -- upvalues[1] should contain the preload searcher
     
     //[]
@@ -183,7 +183,7 @@ static int packageSearchersReset(lua_State* L) {
     return 1;
 }
 
-static int loadedReset(lua_State* L) {
+static int loadedReset(lua_State *L) {
     //return deep_copy(upvalues[1])  -- upvalues[1] should contain the prototype _LOADED table
     
     lua_newtable(L);//[newLoaded]
@@ -200,17 +200,17 @@ static int loadedReset(lua_State* L) {
     return 1;
 }
 
-static int defaultPreloadReset(lua_State* L) {
+static int defaultPreloadReset(lua_State *L) {
     //return {}
     lua_newtable(L);
     return 1;
 }
 
-static void sandboxGlobalTable(lua_State* L) {
+static void sandboxGlobalTable(lua_State *L) {
     //[original_globals]
     lua_newtable(L); //[original_globals, new_globals]
     
-    foreach (char const* name, safe_elements) {
+    foreach (char const *name, safe_elements) {
     //  new_globals.name = original_globals.name
         recursive_getfield(L, -2, name); //[original_globals, new_globals, v]
         recursive_setfield(L, -2, name); //[original_globals, new_globals]
@@ -226,13 +226,13 @@ static void sandboxGlobalTable(lua_State* L) {
     //(The relevant functions are `require` and `package.searchers[1]` (the preload searcher)).
 }
 
-static void touchupPackage(lua_State* L) {
+static void touchupPackage(lua_State *L) {
     //[preload searcher]
     int const preloadidx(lua_absindex(L, -1));
     
     //g = registry.globals.base
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);//[preload searcher,globals]
-    UDPT* globals(static_cast<UDPT*>(lua_touserdata(L, -1)));//[preload searcher,globals]
+    UDPT *globals(static_cast<UDPT *>(lua_touserdata(L, -1)));//[preload searcher,globals]
     lua_pop(L, 1);//[preload searcher]
     get_base_table(L, globals);//[preload searcher,g]
     int const gidx(lua_absindex(L, -1));
@@ -250,7 +250,7 @@ static void touchupPackage(lua_State* L) {
     //loadedPrototype = {}
     lua_newtable(L);//[preload searcher,g,loadedPrototype]
     
-    foreach (char const* name, tables_to_wrap) {
+    foreach (char const *name, tables_to_wrap) {
         //loadedPrototype.name = g.name
         lua_getfield(L, gidx, name);//[preload searcher,g,loadedPrototype,g.name]
         lua_setfield(L, -2, name);//[preload searcher,g,loadedPrototype]
@@ -270,11 +270,11 @@ static void touchupPackage(lua_State* L) {
     lua_setfield(L, LUA_REGISTRYINDEX, packageSearchersResetRegistryIndex);//[]
 }
 
-static void createProxyGlobals(lua_State* L) {
+static void createProxyGlobals(lua_State *L) {
     //[...]
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS); //[..., globals]
 
-    foreach (char const* name, tables_to_wrap) {
+    foreach (char const *name, tables_to_wrap) {
         lua_getfield(L, -1, name); //[..., globals, g.name]
         create_proxy_table(L);     //[..., globals, t]
         lua_setfield(L, -2, name); //[..., globals]
@@ -305,7 +305,7 @@ static void createProxyGlobals(lua_State* L) {
 
 //Now -- each time that you want to run a chunk in a sandbox, follow the following procedure:
 //  load the chunk
-//  call sandboxFunction(lua_State* L, int index), which sets the _ENV upvalue
+//  call sandboxFunction(lua_State *L, int index), which sets the _ENV upvalue
 //        of the given function to contain a global environment that is totally
 //        independent from all other environments.
 //  run the chunk
@@ -313,7 +313,7 @@ static void createProxyGlobals(lua_State* L) {
 //This two stage process is justified for performance reasons.
 //`loadSandboxedLibraries` is an expensive operation, but it
 //does work that should make `sandboxFunction` faster.
-void loadSandboxedLibraries(lua_State* L)
+void loadSandboxedLibraries(lua_State *L)
 {
     //[...]
     //Load all libs
@@ -345,30 +345,30 @@ void loadSandboxedLibraries(lua_State* L)
     touchupPackage(L);//[]
 }
 //[0, -1, m]
-void setPackagePreloadResetFunction(lua_State* L) {
+void setPackagePreloadResetFunction(lua_State *L) {
     //registry.preloadReset = pop(stack)
     lua_setfield(L, LUA_REGISTRYINDEX, preloadResetRegistryIndex);
 }
 
-void restoreGlobals(lua_State* L) {
+void restoreGlobals(lua_State *L) {
     //registry.globals.outer = {}
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);//[globals]
-    UDPT* globals(static_cast<UDPT*>(lua_touserdata(L, -1)));//[globals]
+    UDPT *globals(static_cast<UDPT *>(lua_touserdata(L, -1)));//[globals]
     lua_pop(L, 1);//[]
     lua_newtable(L);//[{}]
     set_outer_table(L, globals);//[]
     get_base_table(L, globals);//[g]
     
-    foreach (char const* name, tables_to_wrap) {//[g]
+    foreach (char const *name, tables_to_wrap) {//[g]
         //g.name.outer = {}
         lua_getfield(L, -1, name);//[g,g.name]
-        UDPT* package_table(static_cast<UDPT*>(lua_touserdata(L, -1)));//[g,g.name]
+        UDPT *package_table(static_cast<UDPT*>(lua_touserdata(L, -1)));//[g,g.name]
         lua_pop(L, 1);//[g]
         lua_newtable(L);//[g, {}]
         set_outer_table(L, package_table);//[g]
     }
     lua_getfield(L, -1, "package");//[g,package]
-    UDPT* package(static_cast<UDPT*>(lua_touserdata(L, -1)));
+    UDPT *package(static_cast<UDPT*>(lua_touserdata(L, -1)));
     lua_pop(L, 2);//[]
     get_base_table(L, package);//[packagebase]
     

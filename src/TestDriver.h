@@ -19,7 +19,7 @@ private:
     std::vector<boost::function<bool()> > tests;
 };
 
-TestDriver& getTestDriver();
+TestDriver &getTestDriver();
 
 }
 #endif //HG_TEST_DRIVER_H

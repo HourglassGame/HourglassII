@@ -3,7 +3,7 @@
 #include "Guy.h"
 namespace hg {
 struct InitialGuyArrival {
-    InitialGuyArrival(int narrivalTime, Guy const& narrival)
+    InitialGuyArrival(int narrivalTime, Guy const &narrival)
         : arrivalTime(narrivalTime), arrival(narrival) {}
     int arrivalTime;
     Guy arrival;

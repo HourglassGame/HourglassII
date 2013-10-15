@@ -24,9 +24,9 @@ struct PositionAndVelocity2D {
 };
 //The stuff needed to create a PortalArea, given trigger arrivals
 struct ProtoPortal {
-    PortalArea calculatePortalArea(mt::std::vector<Collision>::type const&) const;
+    PortalArea calculatePortalArea(mt::std::vector<Collision>::type const &) const;
     ProtoPortal(
-        Attachment const& attachment,
+        Attachment const &attachment,
         int index,
         int width,
         int height,
@@ -90,7 +90,7 @@ struct ProtoPlatform {
         TimeDirection timeDirection,
         int lastStateTriggerID,
         int buttonTriggerID,
-        PlatformDestinationPair const& destinations) :
+        PlatformDestinationPair const &destinations) :
     width_(width),
     height_(height),
     timeDirection_(timeDirection),
@@ -102,7 +102,7 @@ struct ProtoPlatform {
 
     //uses trigger arrivals to generate Collision
     Collision calculateCollision(
-            mt::std::vector<mt::std::vector<int>::type>::type const&) const;
+            mt::std::vector<mt::std::vector<int>::type>::type const &) const;
     int width_;
     int height_;
     TimeDirection timeDirection_;
@@ -118,7 +118,7 @@ struct ProtoPlatform {
 //Used to create the rectangle glitz for the button, as well as the trigger departure for the button.
 struct ProtoButton {
     ProtoButton(
-        Attachment const& attachment,
+        Attachment const &attachment,
         int width,
         int height,
         TimeDirection timeDirection,
@@ -132,7 +132,7 @@ struct ProtoButton {
 
 
     PositionAndVelocity2D calculatePositionAndVelocity2D(
-            mt::std::vector<Collision>::type const& collisions) const;
+            mt::std::vector<Collision>::type const &collisions) const;
     //See comment in ProtoPortal that explains the meaning of attachment_.
     Attachment attachment_;
     int width_;

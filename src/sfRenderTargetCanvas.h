@@ -26,7 +26,7 @@ sf::Vector2f normal(sf::Vector2f vec) {
 class sfRenderTargetCanvas : public Canvas
 {
 public:
-    explicit sfRenderTargetCanvas(sf::RenderTarget& target, LevelResources const& resources) :
+    explicit sfRenderTargetCanvas(sf::RenderTarget &target, LevelResources const &resources) :
     target(&target), resources(&resources)
     {}
     virtual void drawRect(float x, float y, float width, float height, unsigned colour)
@@ -50,7 +50,7 @@ public:
         line.setFillColor(interpretAsColour(colour));
         target->draw(line);
     }
-    virtual void drawText(std::string const& text, float x, float y, float size, unsigned colour)
+    virtual void drawText(std::string const &text, float x, float y, float size, unsigned colour)
     {
         sf::Text glyphs;
         glyphs.setFont(*defaultFont);
@@ -60,7 +60,7 @@ public:
         glyphs.setColor(interpretAsColour(colour));
         target->draw(glyphs);
     }
-    virtual void drawImage(std::string const& key, float x, float y, float width, float height) {
+    virtual void drawImage(std::string const &key, float x, float y, float width, float height) {
         std::map<std::string, sf::Image>::const_iterator it(resources->images.find(key));
         assert(it != resources->images.end());
         sf::Texture tex;
