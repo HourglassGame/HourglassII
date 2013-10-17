@@ -64,7 +64,7 @@ public:
         p(p)
     {
     }
-    unique_ptr(pointer p, const D &d) :
+    unique_ptr(pointer p, D const &d) :
         D(d),
         p(p)
     {

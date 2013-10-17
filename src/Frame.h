@@ -90,8 +90,8 @@ private:
     friend Universe const &getUniverse(Frame const *frame);
     friend int getFrameNumber(Frame const *frame);
     //</Undefined to call with NullFrame>
-    void insertArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type &toInsert);
-    void changeArrival(const tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type &toChange);
+    void insertArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type const &toInsert);
+    void changeArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type const &toChange);
     void clearArrival(Frame const *toClear);
 
     /** Position of frame within universe_ */

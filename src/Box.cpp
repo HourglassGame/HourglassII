@@ -34,7 +34,7 @@ bool Box::operator==(Box const &o) const
     return asTie() == o.asTie();
 }
 
-bool Box::operator<(const Box &o) const
+bool Box::operator<(Box const &o) const
 {
     return asTie() < o.asTie();
 }

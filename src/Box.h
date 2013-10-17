@@ -29,8 +29,8 @@ public:
     TimeDirection 
         getTimeDirection()    const { return timeDirection_; }
 
-    bool operator==(const Box &o) const;
-    bool operator<(const Box &o) const;
+    bool operator==(Box const &o) const;
+    bool operator<(Box const &o) const;
 
 private:
     boost::tuple<

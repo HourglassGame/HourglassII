@@ -28,8 +28,8 @@ public:
     //returns the length of the lowest level of this universe
     int timelineLength() const;
 
-    bool operator==(const UniverseID &o) const;
-    bool operator<(const UniverseID &o) const;
+    bool operator==(UniverseID const &o) const;
+    bool operator <(UniverseID const &o) const;
 private:
     friend class boost::serialization::access;
     template<class Archive>
@@ -54,7 +54,7 @@ private:
     friend int getTimelineLength(UniverseID const &universe);
 
     friend class FrameID;
-    friend std::size_t hash_value(const UniverseID &toHash);
+    friend std::size_t hash_value(UniverseID const &toHash);
     //timelineLength_ -- length of the universe.
     int timelineLength_;
 };

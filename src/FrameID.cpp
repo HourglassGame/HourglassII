@@ -22,7 +22,7 @@ FrameID::FrameID(int frameNumber, UniverseID const &nuniverse) :
     assert(isValidFrame());
 }
 //Creates a FrameID corresponding to the given Frame*
-FrameID::FrameID(const Frame *toConvert) :
+FrameID::FrameID(Frame const *toConvert) :
         frame_(toConvert->frameNumber_),
         universeID_(getTimelineLength(*toConvert->universe_))
 {
