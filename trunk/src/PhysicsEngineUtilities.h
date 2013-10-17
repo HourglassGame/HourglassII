@@ -100,8 +100,8 @@ template <
 void makeBoxAndTimeWithPortalsAndMutators(
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
     mt::std::vector<char>::type &nextBoxNormalDeparture,
-    const RandomAccessPortalRange &portals,
-    const RandomAccessMutatorRange &mutators,
+    RandomAccessPortalRange const &portals,
+    RandomAccessMutatorRange const &mutators,
     int x,
     int y,
     int xspeed,
@@ -155,7 +155,7 @@ void buildDepartures(
     PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame);
 
-//bool wallAtInclusive(const Environment &env, int x, int y, int w, int h);
+//bool wallAtInclusive(Environment const &env, int x, int y, int w, int h);
 bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const &env, int x, int y, int w, int h);
 

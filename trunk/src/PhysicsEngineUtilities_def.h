@@ -35,8 +35,8 @@ template <
 void makeBoxAndTimeWithPortalsAndMutators(
     typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
     mt::std::vector<char>::type &nextBoxNormalDeparture,
-    const RandomAccessPortalRange &portals,
-    const RandomAccessMutatorRange &mutators,
+    RandomAccessPortalRange const &portals,
+    RandomAccessMutatorRange const &mutators,
     int x,
     int y,
     int xspeed,
@@ -997,8 +997,8 @@ void guyStep(
 
         if (guyArrivalList[i].getIndex() < playerInput.size())
         {
-            const std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            const InputList &input = playerInput[relativeIndex];
+            std::size_t const relativeIndex(guyArrivalList[i].getIndex());
+            InputList const &input = playerInput[relativeIndex];
 
             int arrivalBasis = -1;
             illegalPortal[i] = -1;
@@ -1320,8 +1320,8 @@ void guyStep(
 			continue;
 		}
 
-		const std::size_t relativeIndex(guyArrivalList[i].getIndex());
-		const InputList &input = playerInput[relativeIndex];
+		std::size_t const relativeIndex(guyArrivalList[i].getIndex());
+		InputList const &input = playerInput[relativeIndex];
 		
 		mt::std::map<Ability, int>::type::iterator timeGun(newPickups[i].find(TIME_GUN));
 

@@ -35,13 +35,13 @@ struct Swap
 template<typename T>
 struct Equivalent
 {
-    bool operator()(const T &l, const T &r) const {
+    bool operator()(T const &l, T const &r) const {
         return !(l < r) && !(r < l);
     }
 };
 
 template<typename ForwardRange>
-bool containsNoEquivalentElements(const ForwardRange &range)
+bool containsNoEquivalentElements(ForwardRange const &range)
 {
     return boost::adjacent_find<boost::return_found>(
             range,

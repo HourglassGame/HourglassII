@@ -26,7 +26,7 @@ void TimeEngine::swap(TimeEngine &o) {
 }
 
 TimeEngine::RunResult
-TimeEngine::runToNextPlayerFrame(const InputList &newInputData, OperationInterrupter &interrupter)
+TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterrupter &interrupter)
 {
     worldState_.addNewInputData(newInputData);
     FrameListList updatedList;
@@ -45,7 +45,7 @@ std::vector<InputList> const &TimeEngine::getReplayData() const
     return worldState_.getReplayData();
 }
 
-Frame *TimeEngine::getFrame(const FrameID &whichFrame)
+Frame *TimeEngine::getFrame(FrameID const &whichFrame)
 {
     return worldState_.getFrame(whichFrame);
 }

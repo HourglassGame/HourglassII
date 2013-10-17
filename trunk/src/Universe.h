@@ -19,7 +19,7 @@ public:
     //Conversion from FrameID to equivalent Frame * within this universe
     //whichFrame must correspond to a frame that could actually
     //be in the universe.
-    Frame *getFrame(const FrameID &whichFrame);
+    Frame *getFrame(FrameID const &whichFrame);
 
 private:
     friend class Frame;

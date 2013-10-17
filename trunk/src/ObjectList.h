@@ -75,7 +75,7 @@ void ObjectList<ListTypes>::add(ObjectT const &toCopy)
 }
 template<typename ListTypes>
 template<typename ObjectRangeT>
-void ObjectList<ListTypes>::addRange(const ObjectRangeT &toAdd)
+void ObjectList<ListTypes>::addRange(ObjectRangeT const &toAdd)
 {
     boost::push_back(
         boost::fusion::deref(

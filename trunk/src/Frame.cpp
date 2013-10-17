@@ -102,11 +102,11 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &newDeparture)
     filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull<Normal>()));
 
     boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
-    const boost::range_iterator<filtered_range_t>::type nend(boost::end(newDepartureFiltered));
+    boost::range_iterator<filtered_range_t>::type const nend(boost::end(newDepartureFiltered));
 
 
     boost::range_iterator<filtered_range_t>::type oi(boost::begin(oldDepartureFiltered));
-    const boost::range_iterator<filtered_range_t>::type oend(boost::end(oldDepartureFiltered));
+    boost::range_iterator<filtered_range_t>::type const oend(boost::end(oldDepartureFiltered));
 
     while (oi != oend) {
         while (true) {
@@ -183,17 +183,17 @@ ObjectPtrList<Normal> Frame::getPostPhysics() const
 
 void Frame::addArrival(Frame const *source, ObjectList<Normal> const *arrival)
 {
-    insertArrival(tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type(source, arrival));
+    insertArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type(source, arrival));
 }
-void Frame::insertArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type &toInsert)
+void Frame::insertArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type const &toInsert)
 {
     bool didInsert(arrivals_.insert(toInsert));
     (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
-void Frame::changeArrival(const tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::value_type &toChange)
+void Frame::changeArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type const &toChange)
 {
-    tbb::concurrent_hash_map<Frame const*, ObjectList<Normal> const*>::accessor access;
+    tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::accessor access;
     if (arrivals_.find(access, toChange.first))
     {
         access->second = toChange.second;

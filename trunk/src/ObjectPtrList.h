@@ -36,11 +36,10 @@ public:
 
     template<typename ObjectT>
     boost::transformed_range<
-        GetBase<
-            typename ConstPtr_of<ObjectT>::type>,
-        const typename vector_of<typename ConstPtr_of<ObjectT>::type >::type> getList() const;
+        GetBase<typename ConstPtr_of<ObjectT>::type>,
+        typename vector_of<typename ConstPtr_of<ObjectT>::type>::type const> getList() const;
 
-    void add(const ObjectList<ListTypes>& o);
+    void add(ObjectList<ListTypes> const& o);
 
     template<typename SinglePassRange>
     void addRange(SinglePassRange const &toAdd);
@@ -64,7 +63,7 @@ void swap(ObjectPtrList<ListTypes>& l, ObjectPtrList<ListTypes>& r);
 
 template<typename ListTypes>
 template<typename ObjectT>
-boost::transformed_range<GetBase<typename ConstPtr_of<ObjectT>::type>,const typename vector_of<typename ConstPtr_of<ObjectT>::type >::type>
+boost::transformed_range<GetBase<typename ConstPtr_of<ObjectT>::type>, typename vector_of<typename ConstPtr_of<ObjectT>::type>::type const>
 ObjectPtrList<ListTypes>::getList() const
 {
     return 

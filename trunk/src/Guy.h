@@ -61,8 +61,8 @@ public:
 	bool getTimePaused()    const { return timePaused_; }
 
 
-    bool operator==(const Guy &o) const;
-    bool operator<(const Guy &second) const;
+    bool operator==(Guy const &o) const;
+    bool operator<(Guy const &second) const;
     
 private:
     std::size_t index_;
@@ -138,13 +138,13 @@ struct ConstPtr_of<Guy> {
 template<>
 struct sort_weaker_than_equality<Guy>
 {
-    static const bool value = true;
+    static bool const value = true;
 };
 
 template<>
 struct sort_weaker_than_equality<GuyConstPtr>
 {
-    static const bool value = true;
+    static bool const value = true;
 };
 }
 #endif //HG_GUY_H

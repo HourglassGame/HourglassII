@@ -15,8 +15,8 @@ public:
     std::size_t getIndex() const { return index_; }
     mt::std::vector<int>::type const &getValue() const { return value_; }
     
-    bool operator==(const TriggerData &o) const;
-    bool operator<(const TriggerData &second) const;
+    bool operator==(TriggerData const &o) const;
+    bool operator<(TriggerData const &second) const;
     
 private:
     std::size_t index_;
@@ -32,8 +32,8 @@ public:
     std::size_t getIndex() const { return triggerData_->getIndex(); }
     mt::std::vector<int>::type const &getValue() const { return triggerData_->getValue(); }
     
-    bool operator==(const TriggerDataConstPtr &o) const { return *triggerData_ < *o.triggerData_; }
-    bool operator<(const TriggerDataConstPtr &o) const { return *triggerData_ < *o.triggerData_;}
+    bool operator==(TriggerDataConstPtr const &o) const { return *triggerData_ == *o.triggerData_;}
+    bool operator <(TriggerDataConstPtr const &o) const { return *triggerData_  < *o.triggerData_;}
     
 private:
     TriggerData const *triggerData_;
@@ -46,12 +46,12 @@ struct ConstPtr_of<TriggerData> {
 template<>
 struct sort_weaker_than_equality<TriggerData>
 {
-    static const bool value = true;
+    static bool const value = true;
 };
 template<>
 struct sort_weaker_than_equality<TriggerDataConstPtr>
 {
-    static const bool value = true;
+    static bool const value = true;
 };
 }
 #endif //HG_TRIGGER_DATA_H

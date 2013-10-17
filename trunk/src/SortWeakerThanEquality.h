@@ -5,7 +5,7 @@ namespace hg {
 template<typename T>
 struct sort_weaker_than_equality
 {
-    static const bool value = false;
+    static bool const value = false;
 };
 }
 

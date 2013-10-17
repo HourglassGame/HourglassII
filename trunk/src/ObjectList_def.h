@@ -62,14 +62,14 @@ namespace {
 	struct Insert
 	{
 		template<typename Container, typename SinglePassRange>
-		void operator()(Container &toInsertInto, const SinglePassRange &toInsert) const
+		void operator()(Container &toInsertInto, SinglePassRange const &toInsert) const
 		{
 			boost::push_back(toInsertInto, toInsert);
 		}
 	};
 }
 template<typename ListTypes>
-void ObjectList<ListTypes>::add(const ObjectList<ListTypes>& o)
+void ObjectList<ListTypes>::add(ObjectList<ListTypes> const& o)
 {
     using namespace boost::fusion;
     n_ary_for_each(vector_tie(list_, o.list_), Insert());
@@ -97,7 +97,7 @@ void ObjectList<ListTypes>::swap(ObjectList<ListTypes>& o)
     n_ary_for_each(vector_tie(list_, o.list_), Swap());
 }
 template<typename ListTypes>
-bool ObjectList<ListTypes>::operator==(const ObjectList<ListTypes>& o) const
+bool ObjectList<ListTypes>::operator==(ObjectList<ListTypes> const& o) const
 {
 #ifndef NDEBUG
     assert(
@@ -112,7 +112,7 @@ namespace {
 	struct Empty
 	{
 		template<typename T>
-		bool operator()(const T &toCheck)
+		bool operator()(T const &toCheck)
 		{
 			return toCheck.empty();
 		}
