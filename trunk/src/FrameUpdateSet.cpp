@@ -66,22 +66,26 @@ void FrameUpdateSet::make_set() const
 }
 
 FrameUpdateSet::const_iterator
-    FrameUpdateSet::begin() const {
+    FrameUpdateSet::begin() const
+{
     make_set();
     return updateSet_.begin();
 }
 FrameUpdateSet::const_iterator
-    FrameUpdateSet::end() const {
+    FrameUpdateSet::end() const
+{
     make_set();
     return updateSet_.end();
 }
 FrameUpdateSet::iterator
-    FrameUpdateSet::begin() {
+    FrameUpdateSet::begin()
+{
     make_set();
     return updateSet_.begin();
 }
 FrameUpdateSet::iterator
-    FrameUpdateSet::end() {
+    FrameUpdateSet::end()
+{
     make_set();
     return updateSet_.end();
 }

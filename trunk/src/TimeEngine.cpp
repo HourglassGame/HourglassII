@@ -34,10 +34,10 @@ TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterru
     for (unsigned int i(0); i < speedOfTime_; ++i) {
         updatedList.push_back(worldState_.executeWorld(interrupter));
     }
-    return RunResult(
+    return RunResult{
         worldState_.getCurrentPlayerFrame(),
         worldState_.getNextPlayerFrame(),
-        boost::move(updatedList));
+        boost::move(updatedList)};
 }
 
 std::vector<InputList> const &TimeEngine::getReplayData() const
@@ -45,7 +45,7 @@ std::vector<InputList> const &TimeEngine::getReplayData() const
     return worldState_.getReplayData();
 }
 
-Frame *TimeEngine::getFrame(FrameID const &whichFrame)
+Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const
 {
     return worldState_.getFrame(whichFrame);
 }

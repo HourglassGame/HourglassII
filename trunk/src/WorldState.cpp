@@ -7,30 +7,62 @@
 #include "Universe.h"
 
 #include "Foreach.h"
+#include "OperationInterruptedException.h"
 
 #include <utility>
 #include <boost/lexical_cast.hpp>
+#include <tbb/task_group.h>
+#include <thread>
 namespace hg {
-struct ExecuteFrame
+static FrameUpdateSet fixFrameUpdateSet(FramePointerUpdater const& frameUpdater, FrameUpdateSet const& oldFrameUpdateSet)
 {
-    ExecuteFrame(WorldState &worldState, DepartureMap &newDepartures, OperationInterrupter &interrupter) :
-        worldState_(&worldState), newDepartures_(&newDepartures), interrupter_(&interrupter)
-    {}
-    void operator()(Frame *frame) const {
-        newDepartures_->setDeparture(frame, worldState_->getDeparturesFromFrame(frame, *interrupter_));
+    FrameUpdateSet newFrameUpdateSet;
+    for (auto frame: oldFrameUpdateSet) {
+        newFrameUpdateSet.add(frameUpdater.updateFrame(frame));
     }
-private:
-    WorldState *worldState_;
-    DepartureMap *newDepartures_;
-    OperationInterrupter *interrupter_;
-};
+    newFrameUpdateSet.make_set();
+    return newFrameUpdateSet;
+}
+static ConcurrentTimeSet fixConcurrentTimeSet(
+    FramePointerUpdater const& frameUpdater,
+    ConcurrentTimeSet const& oldSet)
+{
+    ConcurrentTimeSet newSet;
+    for (auto frame: oldSet) {
+        newSet.add(frameUpdater.updateFrame(frame));
+    }
+    return newSet;
+}
+WorldState::WorldState(WorldState const& o) :
+        timeline_(o.timeline_),
+        playerInput_(o.playerInput_),
+        frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
+        physics_(o.physics_),
+        nextPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_)),
+        currentPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_)),
+        currentWinFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_))
+{
+    //std::cout << "WorldState " << (void*)this << " copied from " << (void*)&o << "\n";
+}
+WorldState &WorldState::operator=(WorldState const& o)
+{
+    timeline_ = o.timeline_;
+    playerInput_ = o.playerInput_;
+    frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
+    physics_ = o.physics_;
+    nextPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_);
+    currentPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_);
+    currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
+    //std::cout << "WorldState " << (void*)this << " assigned from " << (void*)&o << "\n";
+    return *this;
+}
 
 WorldState::WorldState(
     int timelineLength,
     Guy const &initialGuy,
     FrameID const &guyStartTime,
-    BOOST_RV_REF(PhysicsEngine) physics,
-    BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects,
+    PhysicsEngine&& physics,
+    ObjectList<NonGuyDynamic>&& initialObjects,
     OperationInterrupter &interrupter) :
         timeline_(timelineLength),
         playerInput_(),
@@ -40,6 +72,7 @@ WorldState::WorldState(
         currentPlayerFrames_(),
         currentWinFrames_()
 {
+    //std::cout << "WorldState " << (void*)this << " created\n";
     assert(guyStartTime.isValidFrame());
     assert(timelineLength > 0);
     Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
@@ -64,7 +97,7 @@ WorldState::WorldState(
         frameUpdateSet_.add(getArbitraryFrame(timeline_.getUniverse(), i));
     }
     //Run level for a while
-    for (int i(0); i != timelineLength; ++i) {
+    for (int i(0); i != timelineLength && !interrupter.interrupted(); ++i) {
         executeWorld(interrupter);
     }
 }
@@ -80,7 +113,7 @@ void WorldState::swap(WorldState &o)
     boost::swap(currentWinFrames_, o.currentWinFrames_);
 }
 
-Frame *WorldState::getFrame(FrameID const &whichFrame)
+Frame const *WorldState::getFrame(FrameID const &whichFrame) const
 {
     return timeline_.getFrame(whichFrame);
 }
@@ -120,34 +153,31 @@ PhysicsEngine::FrameDepartureT
     return retv.departures;
 }
 
-struct InterruptTaskGroup {
-public:
-    InterruptTaskGroup(tbb::task_group_context &task_group_context):
-        task_group_context_(&task_group_context) {}
-    void operator()() const {
-        task_group_context_->cancel_group_execution();
-    }
-private:
-    tbb::task_group_context *task_group_context_;
-};
-
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 {
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    tbb::task_group_context group;
-    OperationInterrupter::FunctionHandle task_group_interrupt(
-        interrupter.addInterruptionFunction(move_function<void()>(InterruptTaskGroup(group))));
-    parallel_for_each(returnSet, ExecuteFrame(*this, newDepartures, interrupter), group);
+    //Does not directly call `group.cancel_group_execution()`, as this can lead
+    //to a failure to propagate exceptions from ExecuteFrame, which can lead to
+    //the world continuing to be run while in an invalid state.
+    {
+        tbb::task_group_context group;
+        auto group_interruption_scope =
+            interrupter.addInterruptionFunction([&]{try{throw OperationInterruptedException();}catch (...){group.register_pending_exception();}});
+        parallel_for_each(
+            returnSet,
+            [&](Frame *frame) { newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame, interrupter)); },
+            group);
+    }
     //Can `updateWithNewDepartures` take a long period of time?
     //If so, it needs to be given some way of being interrupted. (it needs to get passed the interrupter)
     frameUpdateSet_ = timeline_.updateWithNewDepartures(newDepartures);
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
             && "How can a consistent reality have a guy win in multiple frames?");
-        throw boost::enable_current_exception(PlayerVictoryException());
+        throw PlayerVictoryException();
     }
     return returnSet;
 }

@@ -40,20 +40,20 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     return apparentTriggers;
 }
 
-inline mt::std::map<Frame *, mt::std::vector<TriggerData>::type >::type calculateActualTriggerDepartures(
+inline mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type calculateActualTriggerDepartures(
     mt::std::vector<TriggerData>::type const &triggers,
     std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
     Frame *currentFrame)
 {
     mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type retv;
     Universe &universe(getUniverse(currentFrame));
-    for (std::size_t i(0), end(boost::distance(triggers)); i != end; ++i)
+    foreach (TriggerData const& trigger, triggers)
     {
         retv[
             getArbitraryFrame(
                 universe, 
-                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[triggers[i].getIndex()].first)].push_back(
-                    triggers[i]);
+                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[trigger.getIndex()].first)].push_back(
+                    trigger);
     }
     return retv;
 }

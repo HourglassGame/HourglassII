@@ -3,6 +3,7 @@
 #include <exception>
 #include <tbb/tbb_exception.h>
 #include <boost/exception_ptr.hpp>
+#include <thread>
 namespace hg {
     //TBBOuterExceptionWrapper and TBBInnerExceptionWrapper work together
     //to allow exceptions to (slightly more) properly be passed through the 
@@ -32,7 +33,7 @@ namespace hg {
                 return f_(a);
             }
             catch (...) {
-                throw tbb::movable_exception<boost::exception_ptr>(boost::current_exception());
+                throw tbb::movable_exception<std::exception_ptr>(std::current_exception());
             }
         }
     private:
@@ -52,8 +53,8 @@ namespace hg {
             try {
                 f_();
             }
-            catch (tbb::movable_exception<boost::exception_ptr> const &e) {
-                boost::rethrow_exception(e.data());
+            catch (tbb::movable_exception<std::exception_ptr> const &e) {
+                std::rethrow_exception(e.data());
             }
             catch (tbb::tbb_exception const &) {
                 //To get here the exception must have originated from outside the InnerExceptionWrapper.

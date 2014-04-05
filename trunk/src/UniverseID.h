@@ -38,7 +38,7 @@ private:
         (void)version;
         ar & timelineLength_;
     }
-        inline friend std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint)
+    inline friend std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint)
     {
         os << toPrint.timelineLength_;
         return os;
@@ -55,7 +55,6 @@ private:
 
     friend class FrameID;
     friend std::size_t hash_value(UniverseID const &toHash);
-    //timelineLength_ -- length of the universe.
     int timelineLength_;
 };
 }

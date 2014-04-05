@@ -96,7 +96,6 @@ Make sure the code still works on windows and linux
 
 *Support different level sizes and window scaling.
 *Save games? (quick save, automatic saving)
-*What were those other menu options, whoops totally slipped my mind
 *Something about it being a horrible hack currently
 *Put in better graphics than the current "coloured-rectangles"
 *Current guy marker (arrow over head or similar)

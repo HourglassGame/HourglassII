@@ -54,10 +54,11 @@ class DirectLuaTriggerFrameState :
         Box const &objectToManipulate);
     
     virtual DepartureInformation getDepartureInformation(
-        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const &departures,
+        mt::std::map<Frame*, ObjectList<Normal> >::type const &departures,
         Frame *currentFrame);
     virtual ~DirectLuaTriggerFrameState();
 private:
+    OperationInterrupter &interrupter_;
     LuaState &L_;
 
     std::vector<

@@ -3,6 +3,7 @@
 #include "lua/lua.h"
 #include "lua/lauxlib.h"
 #include "lua/lualib.h"
+#include "lua/lstate.h"
 
 #include "CommonTriggerCode.h"
 #include "ObjectAndTime.h"
@@ -13,6 +14,7 @@
 #include "TextGlitz.h"
 
 #include <boost/ref.hpp>
+#include <thread>
 
 #include <iostream>
 
@@ -57,7 +59,7 @@ static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const
 TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &interrupter) const
 {
     LuaState &sharedState(luaStates_->get());
-
+    bool const is_new = !sharedState.ptr; (void)is_new;
     if (!sharedState.ptr) {
         LuaState L((LuaState::new_state_t()));
 
@@ -68,6 +70,8 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &in
         
         sharedState = boost::move(L);
     }
+    
+    //assert(!sharedState.ud->is_interrupted());
 
 	return TriggerFrameState(
 		multi_thread_new<DirectLuaTriggerFrameState>(
@@ -87,6 +91,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
     > const &triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize,
     OperationInterrupter &interrupter) :
+        interrupter_(interrupter),
         L_(sharedState),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         arrivalLocationsSize_(arrivalLocationsSize),
@@ -834,7 +839,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
 }
 
 TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState::getDepartureInformation(
-    mt::boost::container::map<Frame *, ObjectList<Normal> >::type const &departures,
+    mt::std::map<Frame *, ObjectList<Normal> >::type const &departures,
     Frame *currentFrame)
 {
     lua_State *L(L_.ptr);
@@ -1018,6 +1023,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
 {
+    //interrupter_.interrupt();
 }
 
 namespace {

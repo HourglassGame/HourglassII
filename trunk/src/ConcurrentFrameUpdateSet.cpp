@@ -9,23 +9,11 @@ void ConcurrentFrameUpdateSet::add(FrameUpdateSet const &toAdd)
 {
     threadLocalMap_.local().add(toAdd);
 }
-struct FrameUpdateSetCombiner
-{
-    FrameUpdateSetCombiner(FrameUpdateSet &taker) :
-            taker_(taker)
-    {
-    }
-    void operator()(FrameUpdateSet const &toAdd) const
-    {
-        taker_.add(toAdd);
-    }
-    FrameUpdateSet &taker_;
-};
 
 FrameUpdateSet ConcurrentFrameUpdateSet::merge()
 {
     FrameUpdateSet retv;
-    threadLocalMap_.combine_each(FrameUpdateSetCombiner(retv));
+    threadLocalMap_.combine_each([&](FrameUpdateSet const &toAdd){retv.add(toAdd);});
     return retv;
 }
 }

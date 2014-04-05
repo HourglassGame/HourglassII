@@ -26,6 +26,30 @@ void Frame::correctUniverse(Universe &newUniverse)
     universe_ = &newUniverse;
 }
 
+void Frame::correctDepartureFramePointers(FramePointerUpdater const &updater) {
+    FrameDeparturesT updatedDepartures;
+    foreach (auto &departurePair, departures_) {
+        updatedDepartures[updater.updateFrame(departurePair.first)] = std::move(departurePair.second);
+    }
+    departures_.swap(updatedDepartures);
+}
+void Frame::correctArrivalFramePointers(FramePointerUpdater const &updater) {
+    FrameArrivalsT updatedArrivals;
+    foreach (auto &arrivalPair, arrivals_) {
+        bool inserted = updatedArrivals.insert(std::make_pair(
+                            updater.updateFrame(arrivalPair.first), arrivalPair.second));
+        assert(inserted);
+    }
+    arrivals_.swap(updatedArrivals);
+}
+void Frame::correctArrivalObjectListPointers() {
+    for (auto &arrivalPair: arrivals_) {
+        if (arrivalPair.first) {
+            arrivalPair.second = &arrivalPair.first->departures_.at(this);
+        }
+    }
+}
+
 Frame const *Frame::nextFrame(TimeDirection direction) const {
     assert(direction != INVALID);
     return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
@@ -82,31 +106,26 @@ bool isNullFrame(Frame const *frame) {
 }
 
 namespace {
-    template<typename ListTypes>
-    struct FrameNotNull : std::unary_function<std::pair<Frame *const, ObjectList<ListTypes> > const &, bool> {
-        bool operator()(Frame::FrameDeparturesT::value_type const &pair) const {
-            return !isNullFrame(pair.first);
-        }
+    auto FrameNotNull = [](Frame::FrameDeparturesT::value_type const &pair) {
+        return !isNullFrame(pair.first);
     };
 }
 
-FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &newDeparture)
+FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &&newDeparture)
 {
     FrameUpdateSet changedTimes;
 
     //filter so that things can safely depart to the null frame
     //such departures do not create arrivals or updated frames, but are saved as departures.
-    typedef boost::filtered_range<FrameNotNull<Normal>, FrameDeparturesT> filtered_range_t;
+    auto newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull));
+    auto oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull));
 
-    filtered_range_t newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull<Normal>()));
-    filtered_range_t oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull<Normal>()));
-
-    boost::range_iterator<filtered_range_t>::type ni(boost::begin(newDepartureFiltered));
-    boost::range_iterator<filtered_range_t>::type const nend(boost::end(newDepartureFiltered));
+    auto ni(boost::begin(newDepartureFiltered));
+    auto const nend(boost::end(newDepartureFiltered));
 
 
-    boost::range_iterator<filtered_range_t>::type oi(boost::begin(oldDepartureFiltered));
-    boost::range_iterator<filtered_range_t>::type const oend(boost::end(oldDepartureFiltered));
+    auto oi(boost::begin(oldDepartureFiltered));
+    auto const oend(boost::end(oldDepartureFiltered));
 
     while (oi != oend) {
         while (true) {
@@ -149,15 +168,16 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &newDeparture)
     }
 end:
     departures_.swap(newDeparture);
-    //attempt to put the deletion of the old departures_
-    //into the parallel region of the program's execution
+    //This code is an attempt to put the deletion of the
+    //old departures_ into the parallel region of the program's
+    //execution.
     FrameDeparturesT().swap(newDeparture);
     return changedTimes;
 }
 
 ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
-    ObjectPtrList<Normal>  retv;
+    ObjectPtrList<Normal> retv;
     foreach (ObjectList<Normal> const &value,
     		arrivals_
             | boost::adaptors::map_values
@@ -181,19 +201,33 @@ ObjectPtrList<Normal> Frame::getPostPhysics() const
     return retv;
 }
 
-void Frame::addArrival(Frame const *source, ObjectList<Normal> const *arrival)
-{
-    insertArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type(source, arrival));
+void Frame::setPermanentArrival(ObjectList<Normal> const *newPermanentArrival) {
+    //tbb::concurrent_hash_map doesn't supply a function that either change
+    //or insert a mapping (like std::map::operator[]), so we implement our own.
+    auto toSet = std::make_pair(nullptr, newPermanentArrival);
+    bool didInsert(arrivals_.insert(toSet));
+    if (!didInsert) {
+        FrameArrivalsT::accessor access;
+        if (arrivals_.find(access, toSet.first))
+        {
+            access->second = toSet.second;
+            return;
+        }
+        assert(false);
+    }
 }
-void Frame::insertArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type const &toInsert)
+
+void Frame::insertArrival(
+    FrameArrivalsT::value_type const &toInsert)
 {
     bool didInsert(arrivals_.insert(toInsert));
     (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
-void Frame::changeArrival(tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::value_type const &toChange)
+void Frame::changeArrival(
+    FrameArrivalsT::value_type const &toChange)
 {
-    tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *>::accessor access;
+    FrameArrivalsT::accessor access;
     if (arrivals_.find(access, toChange.first))
     {
         access->second = toChange.second;

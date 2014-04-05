@@ -3,13 +3,13 @@
 #include "lua/lua.h"
 #include <boost/swap.hpp>
 #include <boost/move/move.hpp>
-#include <boost/exception/enable_current_exception.hpp>
 #include "unique_ptr.h"
 #include "LuaError.h"
 #include "LuaUserData.h"
 #include "OperationInterruptedException.h"
 #include <boost/lexical_cast.hpp>
-#include <iostream> 
+#include <iostream>
+#include <thread>
 namespace hg {
 inline int panic(lua_State *L) {
     //Check whether this is a memory allocation error
@@ -18,10 +18,10 @@ inline int panic(lua_State *L) {
         throw std::bad_alloc();
     }
     else if (ud.is_interrupted()) {
-        throw boost::enable_current_exception(OperationInterruptedException());
+        throw OperationInterruptedException();
     }
     else {
-        throw boost::enable_current_exception(LuaError(L));
+        throw LuaError(L);
     }
     return 0;
 }
@@ -34,7 +34,7 @@ struct LuaState {
     LuaState();
     explicit LuaState(new_state_t);
     LuaState(BOOST_RV_REF(LuaState) o) :
-        ud(0), ptr(0)
+        ud(), ptr()
     {
         swap(o);
     }

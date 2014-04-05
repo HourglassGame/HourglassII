@@ -12,7 +12,7 @@
 #include "OperationInterrupter.h"
 
 #include <vector>
-#include "mt/boost/container/map.hpp"
+#include "mt/std/map"
 #include "mt/std/vector"
 #include <utility>
 #include <boost/move/move.hpp>
@@ -48,7 +48,7 @@ public:
         triggerSystem_ = boost::move(o.triggerSystem_);
         return *this;
     }
-    typedef mt::boost::container::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
+    typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
     
     struct PhysicsReturnT
     {

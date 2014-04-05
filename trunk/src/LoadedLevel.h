@@ -1,0 +1,15 @@
+#ifndef HG_LOADED_LEVEL_H
+#define HG_LOADED_LEVEL_H
+#include "TimeEngine.h"
+#include "ResourceManager.h"
+#include <boost/filesystem/path.hpp>
+#include <SFML/Graphics/Image.hpp>
+namespace hg{
+    struct LoadedLevel {
+        TimeEngine timeEngine;
+        LevelResources resources;
+        sf::Image bakedWall;
+    };
+    LoadedLevel loadLevelAndResourcesFromFile(boost::filesystem::path const &path, OperationInterrupter &interrupter);
+}
+#endif //HG_LOADED_LEVEL_H

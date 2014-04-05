@@ -9,8 +9,8 @@
 
 #include <tbb/task.h>
 
-#include <boost/container/map.hpp>
-#include <boost/move/move.hpp>
+#include <map>
+#include <utility>
 
 #include "FrameID_fwd.h"
 #include "Frame_fwd.h"
@@ -18,25 +18,32 @@
 #include "DepartureMap_fwd.h"
 
 namespace hg {
+
 class TimelineState
 {
+    static std::map<Frame*, ObjectList<Normal>> fixPermanentDepartures(
+        FramePointerUpdater const& framePointerUpdater,
+        std::map<Frame*, ObjectList<Normal>> const& oldPermanentDepartures);
 public:
     /**
      * Constructs a timeline state of length timeLength containing no arrivals or departures.
      */
     explicit TimelineState(std::size_t timelineLength);
     
-    TimelineState(BOOST_RV_REF(TimelineState) o) :
-        universe_(boost::move(o.universe_)),
-        permanentDepartures_(boost::move(o.permanentDepartures_))
+    TimelineState(TimelineState const& o) :
+        universe_(o.universe_),
+        permanentDepartures_(fixPermanentDepartures(FramePointerUpdater(universe_), o.permanentDepartures_))
     {
     }
-    TimelineState &operator=(BOOST_RV_REF(TimelineState) o)
+    TimelineState &operator=(TimelineState const& o)
     {
-        universe_ = boost::move(o.universe_);
-        permanentDepartures_ = boost::move(o.permanentDepartures_);
+        universe_ = o.universe_;
+        permanentDepartures_ = fixPermanentDepartures(FramePointerUpdater(universe_), o.permanentDepartures_);
         return *this;
     }
+    
+    TimelineState(TimelineState&& o) = default;
+    TimelineState &operator=(TimelineState&& o) = default;
 
     void swap(TimelineState &o);
     
@@ -59,19 +66,19 @@ public:
     /**
      * Converts FrameID into Frame*
      */
-    Frame *getFrame(FrameID const &whichFrame);
-    Universe &getUniverse() {
-        return universe_;
+    Frame       *getFrame(FrameID const &whichFrame) {
+        return universe_.getFrame(whichFrame);
+    }
+    Frame const *getFrame(FrameID const &whichFrame) const {
+        return universe_.getFrame(whichFrame);
     }
     
-    Universe const &getUniverse() const {
-        return universe_;
-    }
+    Universe       &getUniverse()       { return universe_; }
+    Universe const &getUniverse() const { return universe_; }
     
 private:
     Universe universe_;
-    boost::container::map<Frame*, ObjectList<Normal> > permanentDepartures_;
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimelineState)
+    std::map<Frame*, ObjectList<Normal>> permanentDepartures_;
 };
 inline void swap(TimelineState &l, TimelineState &r) { l.swap(r); }
 }

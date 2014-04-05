@@ -29,14 +29,6 @@ public:
     typedef boost::container::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
-        RunResult(
-            Frame const *currentPlayerFrame,
-            Frame const *nextPlayerFrame,
-            BOOST_RV_REF(FrameListList) updatedFrames) :
-                currentPlayerFrame_(currentPlayerFrame),
-                nextPlayerFrame_(nextPlayerFrame),
-                updatedFrames_(boost::move(updatedFrames))
-        {}
         Frame const *currentPlayerFrame() const {
             return currentPlayerFrame_;
         }
@@ -49,50 +41,7 @@ public:
         Frame const *currentPlayerFrame_;
         Frame const *nextPlayerFrame_;
         FrameListList updatedFrames_;
-        
-        RunResult(RunResult const &o)
-            : currentPlayerFrame_(o.currentPlayerFrame_),
-              nextPlayerFrame_(o.nextPlayerFrame_),
-              updatedFrames_(o.updatedFrames_)
-        {}
-
-        RunResult &operator=(BOOST_COPY_ASSIGN_REF(RunResult) o)
-        {
-            currentPlayerFrame_ = o.currentPlayerFrame_;
-            nextPlayerFrame_ = o.nextPlayerFrame_;
-            updatedFrames_= o.updatedFrames_;
-            return *this;
-        }
-
-        RunResult(BOOST_RV_REF(RunResult) o)
-            : currentPlayerFrame_(boost::move(o.currentPlayerFrame_)),
-              nextPlayerFrame_(boost::move(o.nextPlayerFrame_)),
-              updatedFrames_(boost::move(o.updatedFrames_))
-        {}
-
-        RunResult &operator=(BOOST_RV_REF(RunResult) o)
-        {
-            currentPlayerFrame_ = boost::move(o.currentPlayerFrame_);
-            nextPlayerFrame_ = boost::move(o.nextPlayerFrame_);
-            updatedFrames_ = boost::move(o.updatedFrames_);
-            return *this;
-        }
-        
-    private:
-        BOOST_COPYABLE_AND_MOVABLE(RunResult)
     };
-    TimeEngine(BOOST_RV_REF(TimeEngine) o) :
-        speedOfTime_(boost::move(o.speedOfTime_)),
-        worldState_(boost::move(o.worldState_)),
-        wall_(boost::move(o.wall_))
-    {}
-    TimeEngine &operator=(BOOST_RV_REF(TimeEngine) o)
-    {
-        speedOfTime_ = boost::move(o.speedOfTime_);
-        worldState_ = boost::move(o.worldState_);
-        wall_ = boost::move(o.wall_);
-        return *this;
-    }
     /**
      * Constructs a new TimeEngine with the given Level
      *
@@ -121,7 +70,7 @@ public:
      * Please investigate this constness further!
      * Exception Safety: No Throw
      */
-    Frame *getFrame(FrameID const &whichFrame);
+    Frame const *getFrame(FrameID const &whichFrame) const;
     // Exception Safety: Strong
     std::vector<InputList> const &getReplayData() const;
     
@@ -136,8 +85,6 @@ private:
     //This may not be ideal, but it simplifies a few things.
     //No, this is probably plain silly. Please fix/justify.
     Wall wall_;
-    
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(TimeEngine)
 };
 }
 #endif //HG_TIME_ENGINE_H

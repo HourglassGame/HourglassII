@@ -1,5 +1,6 @@
 #include "Universe.h"
 #include "FrameID.h"
+#include "Frame.h"
 
 #include <boost/range/irange.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -10,72 +11,149 @@
 
 #include <functional>
 #include <cassert>
+#include <utility>
 
 namespace hg {
-Universe::Universe(BOOST_RV_REF(Universe) o) :
-	frames_(boost::move(o.frames_))
+FramePointerUpdater::FramePointerUpdater(Universe& universe) :
+    startOfUniverse(universe.frames.data())
 {
-	assert(!frames_.empty());
+}
+
+Universe::Universe(int timelineLength) :
+    frames()
+{
+    assert(timelineLength > 0);
+    frames.reserve(timelineLength);
+    foreach (int i, boost::irange<int>(0, timelineLength)) {
+        frames.push_back(Frame(i, *this));
+    }
+	assert(!frames.empty());
+}
+
+Universe::Universe(Universe const& o) :
+    frames(o.frames)
+{
+    fixFramesEverything();
+}
+Universe &Universe::operator=(Universe const& o)
+{
+    frames = o.frames;
+    fixFramesEverything();
+    return *this;
+}
+
+Universe::Universe(Universe &&o) :
+	frames(std::move(o.frames))
+{
+	assert(!frames.empty());
 	fixFramesUniverses();
 }
-Universe &Universe::operator=(BOOST_RV_REF(Universe) o)
+Universe &Universe::operator=(Universe &&o)
 {
-	assert(!o.frames_.empty());
-	frames_ = boost::move(o.frames_);
+	assert(!o.frames.empty());
+	frames = std::move(o.frames);
 	fixFramesUniverses();
 	return *this;
 }
 
-//Updates the universe_ pointers in frames_
+//updates the universe and Frame pointers in `frames`
+void Universe::fixFramesEverything() {
+    fixFramesUniverses();
+    foreach (Frame &frame, frames) {
+        frame.correctDepartureFramePointers(FramePointerUpdater(*this));
+    }
+    foreach (Frame &frame, frames) {
+        frame.correctArrivalFramePointers(FramePointerUpdater(*this));
+    }
+    foreach (Frame &frame, frames) {
+        frame.correctArrivalObjectListPointers();
+    }
+}
+
+//Updates the `universe_` pointers in `frames`
 void Universe::fixFramesUniverses()
 {
-    foreach (Frame &frame, frames_) {
+    foreach (Frame &frame, frames) {
         frame.correctUniverse(*this);
     }
 }
 
-//creates a top level universe
-Universe::Universe(int timelineLength) :
-    frames_()
-{
-    assert(timelineLength > 0);
-    frames_.reserve(timelineLength);
-    foreach (int i, boost::irange<int>(0, timelineLength)) {
-        frames_.push_back(Frame(i, *this));
-    }
-	assert(!frames_.empty());
+
+template<typename UniverseT>
+Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getFrameImpl(UniverseT &universe, FrameID const &whichFrame) {
+    assert(universe.getTimelineLength() == whichFrame.getUniverse().timelineLength());
+    return universe.getArbitraryFrame(whichFrame.getFrameNumber());
 }
-Frame *Universe::getEntryFrame(TimeDirection direction)
+Frame *Universe::getFrame(FrameID const &whichFrame)
 {
-    assert(!frames_.empty());
+    return getFrameImpl(*this, whichFrame);
+}
+Frame const *Universe::getFrame(FrameID const &whichFrame) const
+{
+    return getFrameImpl(*this, whichFrame);
+}
+
+template<typename UniverseT>
+Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getEntryFrameImpl(UniverseT &universe, TimeDirection direction) {
+    assert(!universe.frames.empty());
     switch (direction) {
     case FORWARDS:
-        return &(*frames_.begin());
+        return &(*universe.frames.begin());
     case REVERSE:
-        return &(*frames_.rbegin());
+        return &(*universe.frames.rbegin());
     default:
         assert(false);
     }
     //Never reached
     return 0;
 }
+
+Frame *Universe::getEntryFrame(TimeDirection direction)
+{
+    return getEntryFrameImpl(*this, direction);
+}
+Frame const *Universe::getEntryFrame(TimeDirection direction) const
+{
+    return getEntryFrameImpl(*this, direction);
+}
+
+
+template<typename UniverseT>
+Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getArbitraryFrameImpl(UniverseT &universe, int frameNumber)
+{
+    assert(!universe.frames.empty());
+    return frameNumber >= 0 && frameNumber < universe.getTimelineLength() ? &universe.frames[frameNumber] : 0;
+}
 Frame *Universe::getArbitraryFrame(int frameNumber)
 {
-    assert(!frames_.empty());
-    return frameNumber >= 0 && frameNumber < getTimelineLength() ? &frames_[frameNumber] : 0;
+    return getArbitraryFrameImpl(*this, frameNumber);
+}
+Frame const *Universe::getArbitraryFrame(int frameNumber) const
+{
+    return getArbitraryFrameImpl(*this, frameNumber);
+}
+
+template<typename UniverseT>
+Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getArbitraryFrameClampedImpl(UniverseT &universe, int frameNumber) {
+    assert(!universe.frames.empty());
+    if (frameNumber < 0) return &(*universe.frames.begin());
+    if (frameNumber >= universe.getTimelineLength()) return &(*universe.frames.rbegin());
+    return &universe.frames[frameNumber];
 }
 Frame *Universe::getArbitraryFrameClamped(int frameNumber)
 {
-    assert(!frames_.empty());
-    if (frameNumber < 0) return &(*frames_.begin());
-    if (frameNumber >= getTimelineLength()) return &(*frames_.rbegin());
-    return &frames_[frameNumber];
+    return Universe::getArbitraryFrameClampedImpl(*this, frameNumber);
 }
-//returns the length of this Universe's timeline
+Frame const *Universe::getArbitraryFrameClamped(int frameNumber) const
+{
+    return Universe::getArbitraryFrameClampedImpl(*this, frameNumber);
+}
+
+//Returns the length of this Universe's timeline
 int Universe::getTimelineLength() const
 {
-    assert(!frames_.empty());
-    return static_cast<int>(frames_.size());
+    assert(!frames.empty());
+    return static_cast<int>(frames.size());
 }
 
 //Returns the first frame in the universe for objects travelling
@@ -84,25 +162,36 @@ Frame *getEntryFrame(Universe &universe, TimeDirection direction)
 {
     return universe.getEntryFrame(direction);
 }
+Frame const *getEntryFrame(Universe const &universe, TimeDirection direction)
+{
+    return universe.getEntryFrame(direction);
+}
+
 //Returns the frame with the index frameNumber within the universe,
 //or the NullFrame if no such frame exists
 Frame *getArbitraryFrame(Universe &universe, int frameNumber)
 {
     return universe.getArbitraryFrame(frameNumber);
 }
+Frame const *getArbitraryFrame(Universe const &universe, int frameNumber)
+{
+    return universe.getArbitraryFrame(frameNumber);
+}
+
 //Returns the frame with the index closest to frameNumber within the universe.
 Frame *getArbitraryFrameClamped(Universe &universe, int frameNumber)
 {
     return universe.getArbitraryFrameClamped(frameNumber);
 }
-//returns the length of this Universe's timeline
+Frame const *getArbitraryFrameClamped(Universe const &universe, int frameNumber)
+{
+    return universe.getArbitraryFrameClamped(frameNumber);
+}
+
+//Returns the length of this Universe's timeline
 int getTimelineLength(Universe const &universe)
 {
     return universe.getTimelineLength();
 }
-Frame *Universe::getFrame(FrameID const &whichFrame)
-{
-    assert(getTimelineLength() == whichFrame.getUniverse().timelineLength());
-    return getArbitraryFrame(whichFrame.getFrameNumber());
-}
+
 }//namespace hg

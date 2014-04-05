@@ -6,7 +6,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include "Foreach.h"
 namespace hg {
-sf::Font const *defaultFont;
+
 namespace fs = boost::filesystem;
 namespace {
 inline boost::iterator_range<fs::directory_iterator>

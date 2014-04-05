@@ -6,7 +6,7 @@
 
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
-#include "mt/boost/container/map.hpp"
+#include "mt/std/map"
 #include "mt/boost/unordered_map.hpp"
 
 namespace hg {
@@ -14,7 +14,7 @@ class DepartureMap {
     typedef
     mt::boost::unordered_map<
         Frame *,
-        mt::boost::container::map<Frame *, ObjectList<Normal> >::type
+        mt::std::map<Frame *, ObjectList<Normal> >::type
     >::type MapType;
 public:
     typedef MapType::value_type value_type;

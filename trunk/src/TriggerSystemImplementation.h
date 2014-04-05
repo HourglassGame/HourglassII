@@ -69,7 +69,7 @@ class TriggerFrameStateImplementation
     };
 
     virtual DepartureInformation getDepartureInformation(
-        mt::boost::container::map<Frame*, ObjectList<Normal> >::type const &departures,
+        mt::std::map<Frame*, ObjectList<Normal> >::type const &departures,
         Frame *currentFrame) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
@@ -115,7 +115,7 @@ class TriggerFrameState
     }
     
     DepartureInformation getDepartureInformation(
-            mt::boost::container::map<Frame*, ObjectList<Normal> >::type const &departures,
+            mt::std::map<Frame*, ObjectList<Normal> >::type const &departures,
             Frame *currentFrame)
     {
         return impl_->getDepartureInformation(departures, currentFrame);
