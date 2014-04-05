@@ -1,28 +1,28 @@
 #ifndef HG_SCENE_H
 #define HG_SCENE_H
-#include "unique_ptr.h"
+#include <memory>
+#include <vector>
+#include "SceneImplementation.h"
 namespace hg {
-    enum Continuation {
-        RENDER_SCENE,
-        QUIT_GAME,
-    };
-    struct NextThing {
-        NextThing(Continuation continuation);
-        NextThing(hg::unique_ptr<Scene> nextScene);
-        Continuation continuation;
-        hg::unique_ptr<Scene> nextScene;
-    };
+    struct RunALevel_tag{};
+    struct RunAReplay_tag{};
+    struct Exit_tag{};
+    struct LoadingCanceled_tag{};
+    struct WindowClosed_tag{};
+    struct ReloadLevel_tag{};
+    struct GameWon_tag{};
+    struct GameAborted_tag{};
+    struct SceneAborted_tag{};
     struct Scene {
-        virtual NextThing processInput(Input input) {
-            while (event = input.next()) {
-                //do shit
-            }
-            return NextThing{RenderScene};
+        Scene(std::unique_ptr<SceneImplementation> impl) :
+            impl(std::move(impl))
+        {
         }
-        virtual void renderScene(renderTarget target) {
-        
+        std::vector<Scene> run(hg::RenderWindow &window) {
+            return impl->run(impl, window);
         }
-        virtual ~Scene() {}
+    private:
+        std::unique_ptr<SceneImplementation> impl;
     };
 }
 

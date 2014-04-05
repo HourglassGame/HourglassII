@@ -12,6 +12,20 @@
 #include <algorithm>
 
 namespace hg {
+std::map<Frame*, ObjectList<Normal>>
+TimelineState::fixPermanentDepartures(
+        FramePointerUpdater const& framePointerUpdater,
+        std::map<Frame*, ObjectList<Normal>> const& oldPermanentDepartures)
+{
+    std::map<Frame*, ObjectList<Normal>> newPermanentDepartures;
+    for (auto const& departurePair: oldPermanentDepartures) {
+        Frame *newFrame = framePointerUpdater.updateFrame(departurePair.first);
+        newPermanentDepartures[newFrame] = departurePair.second;
+        newFrame->setPermanentArrival(&newPermanentDepartures[newFrame]);
+    }
+    return newPermanentDepartures;
+}
+
 TimelineState::TimelineState(std::size_t timelineLength) :
         universe_(timelineLength)
 {
@@ -23,39 +37,28 @@ void TimelineState::swap(TimelineState &o)
     boost::swap(permanentDepartures_, o.permanentDepartures_);
 }
 
-struct UpdateDeparturesFromFrame
-{
-    UpdateDeparturesFromFrame(ConcurrentFrameUpdateSet &framesWithChangedArrivals) :
-            framesWithChangedArrivals_(framesWithChangedArrivals)
-    {}
-    void operator()(DepartureMap::value_type &newDeparture) const {
-        framesWithChangedArrivals_.add(newDeparture.first->updateDeparturesFromHere(newDeparture.second));
-    }
-    ConcurrentFrameUpdateSet &framesWithChangedArrivals_;
-};
-
 FrameUpdateSet
 TimelineState::updateWithNewDepartures(
-	DepartureMap &newDepartures/*, tbb::task_group_context &context*/)
+	DepartureMap &newDepartures)
 {
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(
     	newDepartures,
-    	UpdateDeparturesFromFrame(framesWithChangedArrivals));
+    	[&](DepartureMap::value_type &newDeparture)
+        {
+            framesWithChangedArrivals.add(
+                newDeparture.first->updateDeparturesFromHere(std::move(newDeparture.second)));
+        });
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
 		std::map<Frame *, ObjectList<Normal> > const &initialArrivals)
 {
-    typedef std::pair<Frame*, ObjectList<Normal> > ArrivalT;
-    foreach (ArrivalT const &arrival, initialArrivals) {
+    for (auto const &arrival: initialArrivals) {
         permanentDepartures_[arrival.first].add(arrival.second);
         permanentDepartures_[arrival.first].sort();
-        arrival.first->addArrival(0, &(permanentDepartures_[arrival.first]));
+        arrival.first->setPermanentArrival(&permanentDepartures_[arrival.first]);
     }
 }
-Frame *TimelineState::getFrame(FrameID const &whichFrame)
-{
-    return universe_.getFrame(whichFrame);
-}
+
 }//namespace hg

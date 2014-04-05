@@ -1,0 +1,6 @@
+#ifndef HG_REPLAY_SELECTION_SCENE_H
+#define HG_REPLAY_SELECTION_SCENE_H
+
+#include <iostream>
+
+#endif // HG_REPLAY_SELECTION_SCENE_H

@@ -12,6 +12,8 @@
 
 #include "Foreach.h"
 
+#include "lua/lstate.h"
+
 namespace hg {
 
 //Performs the equivalent of t.name = v, where t is the table
@@ -351,9 +353,11 @@ void setPackagePreloadResetFunction(lua_State *L) {
 }
 
 void restoreGlobals(lua_State *L) {
+    assert(L->status == 0);
     //registry.globals.outer = {}
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);//[globals]
     UDPT *globals(static_cast<UDPT *>(lua_touserdata(L, -1)));//[globals]
+    assert(globals);
     lua_pop(L, 1);//[]
     lua_newtable(L);//[{}]
     set_outer_table(L, globals);//[]
@@ -363,12 +367,14 @@ void restoreGlobals(lua_State *L) {
         //g.name.outer = {}
         lua_getfield(L, -1, name);//[g,g.name]
         UDPT *package_table(static_cast<UDPT*>(lua_touserdata(L, -1)));//[g,g.name]
+        assert(package_table);
         lua_pop(L, 1);//[g]
         lua_newtable(L);//[g, {}]
         set_outer_table(L, package_table);//[g]
     }
     lua_getfield(L, -1, "package");//[g,package]
     UDPT *package(static_cast<UDPT*>(lua_touserdata(L, -1)));
+    assert(package);
     lua_pop(L, 2);//[]
     get_base_table(L, package);//[packagebase]
     

@@ -44,7 +44,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
 
     virtual DepartureInformation
     getDepartureInformation(
-        mt::boost::container::map<Frame *, ObjectList<Normal> >::type const &/*departures*/,
+        mt::std::map<Frame *, ObjectList<Normal> >::type const &/*departures*/,
         Frame */*currentFrame*/)
     {
         assert(false && "Not implemented");

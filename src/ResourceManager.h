@@ -8,8 +8,7 @@
 #include "Environment.h"
 
 namespace hg {
-
-extern sf::Font const*defaultFont;
+extern sf::Font const *defaultFont;
 
 struct LevelResources {
     std::map<std::string, sf::Image> images;

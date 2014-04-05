@@ -52,15 +52,15 @@ public:
     ~clone_ptr() {
         CloneManager::delete_clone(obj);
     }
-    Cloneable &get() {
-        assert(obj);
-        return *obj;
+    Cloneable *get() {
+        return obj;
     }
     Cloneable const &get() const {
         assert(obj);
         return *obj;
     }
     Cloneable *operator->() const {
+        assert(obj);
         return obj;
     }
     Cloneable &operator*() const {

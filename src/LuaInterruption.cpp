@@ -1,15 +1,7 @@
 #include "LuaInterruption.h"
 #include "LuaUserData.h"
+#include <thread>
 namespace hg {
-struct InterruptLua {
-    InterruptLua(LuaUserData *ud) :ud_(ud) {}
-    void operator()() const {
-        ud_->set_interrupted(true);
-    }
-private:
-    LuaUserData *ud_;
-};
-
 static void interruption_hook(lua_State *L, lua_Debug *)
 {
     if (getUserData(L).is_interrupted()) {
@@ -18,10 +10,12 @@ static void interruption_hook(lua_State *L, lua_Debug *)
     }
 }
 
-//OperationInterrupter::FunctionHandle
 LuaInterruptionHandle makeInterruptable(lua_State *L, OperationInterrupter &interrupter)
 {
+    auto &userData = getUserData(L);
     lua_sethook(L, interruption_hook, LUA_MASKCOUNT, 1024);
-    return LuaInterruptionHandle(L, interrupter.addInterruptionFunction(move_function<void()>(InterruptLua(&getUserData(L)))));
+    return LuaInterruptionHandle(
+            L,
+            interrupter.addInterruptionFunction([&]{userData.set_interrupted(true);}));
 }
 }

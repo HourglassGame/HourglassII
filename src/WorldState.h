@@ -11,7 +11,7 @@
 #include <tbb/task.h>
 
 #include <vector>
-#include <boost/move/move.hpp>
+#include <utility>
 
 #include "Frame_fwd.h"
 #include "FrameID_fwd.h"
@@ -31,31 +31,37 @@ public:
         int timelineLength,
         Guy const &initialGuy,
         FrameID const &guyStartTime,
-        BOOST_RV_REF(PhysicsEngine) physics,
-        BOOST_RV_REF(ObjectList<NonGuyDynamic>) initialObjects,
+        PhysicsEngine&& physics,
+        ObjectList<NonGuyDynamic>&& initialObjects,
         OperationInterrupter &interrupter);
 
     void swap(WorldState &o);
 
-    WorldState(BOOST_RV_REF(WorldState) o) :
-        timeline_(boost::move(o.timeline_)),
-        playerInput_(boost::move(o.playerInput_)),
-        frameUpdateSet_(boost::move(o.frameUpdateSet_)),
-        physics_(boost::move(o.physics_)),
-        nextPlayerFrames_(boost::move(o.nextPlayerFrames_)),
-        currentPlayerFrames_(boost::move(o.currentPlayerFrames_)),
-        currentWinFrames_(boost::move(o.currentWinFrames_))
-    {}
-     
-    WorldState &operator=(BOOST_RV_REF(WorldState) o)
+    WorldState(WorldState const& o);
+    WorldState &operator=(WorldState const& o);
+
+    WorldState(WorldState&& o) :
+        timeline_(std::move(o.timeline_)),
+        playerInput_(std::move(o.playerInput_)),
+        frameUpdateSet_(std::move(o.frameUpdateSet_)),
+        physics_(std::move(o.physics_)),
+        nextPlayerFrames_(std::move(o.nextPlayerFrames_)),
+        currentPlayerFrames_(std::move(o.currentPlayerFrames_)),
+        currentWinFrames_(std::move(o.currentWinFrames_))
     {
-        timeline_ = boost::move(o.timeline_);
-        playerInput_ = boost::move(o.playerInput_);
-        frameUpdateSet_ = boost::move(o.frameUpdateSet_);
-        physics_ = boost::move(o.physics_);
-        nextPlayerFrames_ = boost::move(o.nextPlayerFrames_);
-        currentPlayerFrames_ = boost::move(o.currentPlayerFrames_);
-        currentWinFrames_ = boost::move(o.currentWinFrames_);
+        //std::cout << "WorldState " << (void*)this << " move copied from " << (void*)&o << "\n";
+    }
+     
+    WorldState &operator=(WorldState&& o)
+    {
+        timeline_ = std::move(o.timeline_);
+        playerInput_ = std::move(o.playerInput_);
+        frameUpdateSet_ = std::move(o.frameUpdateSet_);
+        physics_ = std::move(o.physics_);
+        nextPlayerFrames_ = std::move(o.nextPlayerFrames_);
+        currentPlayerFrames_ = std::move(o.currentPlayerFrames_);
+        currentWinFrames_ = std::move(o.currentWinFrames_);
+        //std::cout << "WorldState " << (void*)this << " move assigned from " << (void*)&o << "\n";
         return *this;
     }
 
@@ -80,7 +86,7 @@ public:
 
     std::vector<InputList> const &getReplayData() const { return playerInput_; }
 
-    Frame *getFrame(FrameID const &whichFrame);
+    Frame const *getFrame(FrameID const &whichFrame) const;
     
     int getTimelineLength() const;
 
@@ -109,8 +115,6 @@ private:
     //(or whatever the win condition is) and not the following frames when the
     //win condition has been met at some previous time.
     ConcurrentTimeSet currentWinFrames_;
-
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(WorldState)
 };
 inline void swap(WorldState &l, WorldState &r) { l.swap(r); }
 }

@@ -40,7 +40,7 @@ public:
     
     template<typename C, typename Args>
     void construct(C *c, BOOST_FWD_REF(Args) args) {
-        ::new(static_cast<void*>(c)) C(boost::forward<Args>(args));
+        ::new(const_cast<void*>(static_cast<void const*>(c))) C(boost::forward<Args>(args));
     }
     template<typename C>
     void destroy(C *c) { c->~C(); }
