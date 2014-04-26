@@ -8,7 +8,7 @@
 #include "LoadedLevel.h"
 #include "Scene.h"
 namespace hg {
-    variant<hg::LoadedLevel, LoadingCanceled_tag, WindowClosed_tag> load_level_scene(
+    variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
         hg::RenderWindow &window,
         hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction);
 }

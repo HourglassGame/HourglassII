@@ -149,7 +149,7 @@ PhysicsEngine::FrameDepartureT
     else {
         currentWinFrames_.remove(frame);
     }
-    frame->setView(retv.view);
+    frame->setView(std::move(retv.view));
     return retv.departures;
 }
 
@@ -177,7 +177,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
     if (frameUpdateSet_.empty() && !currentWinFrames_.empty()) {
         assert(currentWinFrames_.size() == 1 
             && "How can a consistent reality have a guy win in multiple frames?");
-        throw PlayerVictoryException();
+        throw boost::enable_current_exception(PlayerVictoryException());
     }
     return returnSet;
 }
@@ -236,7 +236,7 @@ Frame *WorldState::getCurrentPlayerFrame()
         return currentPlayerFrames_.front();
     }
     else {
-        return 0;
+        return nullptr;
     }
 }
 
@@ -244,10 +244,10 @@ Frame *WorldState::getNextPlayerFrame()
 {
     if (!nextPlayerFrames_.empty()) {
         assert(nextPlayerFrames_.size() == 1);
-        return *nextPlayerFrames_.begin();
+        return nextPlayerFrames_.front();
     }
     else {
-        return 0;
+        return nullptr;
     }
 }
 }//namespace hg

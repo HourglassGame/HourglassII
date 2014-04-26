@@ -22,7 +22,7 @@ static void drawLoadingScreen(hg::RenderWindow &window) {
     window.display();
 }
 
-static hg::variant<hg::LoadedLevel, LoadingCanceled_tag, WindowClosed_tag>
+static hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
 displayLoadingScreen(
         hg::RenderWindow &window,
         boost::future<LoadedLevel> &futureLoadedLevel,
@@ -41,7 +41,7 @@ displayLoadingScreen(
                 case sf::Event::Closed:
                     interrupter.interrupt();
                     futureLoadedLevel.wait();
-                    return WindowClosed_tag{};
+                    throw WindowClosed_exception{};
                 case sf::Event::KeyPressed:
                     if (event.key.code == sf::Keyboard::Escape) {
                         interrupter.interrupt();
@@ -62,7 +62,7 @@ displayLoadingScreen(
     return futureLoadedLevel.get();
 }
 
-hg::variant<hg::LoadedLevel, LoadingCanceled_tag, WindowClosed_tag>
+hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
         hg::RenderWindow &window,
         hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction)

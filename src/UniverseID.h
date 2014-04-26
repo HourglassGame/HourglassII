@@ -25,9 +25,6 @@ public:
     //timelineLength is always length of top-level universe
     explicit UniverseID(int timelineLength);
 
-    //returns the length of the lowest level of this universe
-    int timelineLength() const;
-
     bool operator==(UniverseID const &o) const;
     bool operator <(UniverseID const &o) const;
 private:
@@ -36,18 +33,11 @@ private:
     void serialize(Archive & ar, unsigned int const version)
     {
         (void)version;
-        ar & timelineLength_;
+        ar & timelineLength;
     }
-    inline friend std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint)
-    {
-        os << toPrint.timelineLength_;
-        return os;
-    }
-    inline friend std::istream &operator>>(std::istream &is, UniverseID &toRead)
-    {
-        is >> toRead.timelineLength_;
-        return is;
-    }
+    
+    friend std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint);
+    friend std::istream &operator>>(std::istream &is, UniverseID &toRead);
 
     friend FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction);
     friend FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
@@ -55,7 +45,24 @@ private:
 
     friend class FrameID;
     friend std::size_t hash_value(UniverseID const &toHash);
-    int timelineLength_;
+    int timelineLength;
 };
+
+inline std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint)
+{
+    os << toPrint.timelineLength;
+    return os;
+}
+inline std::istream &operator>>(std::istream &is, UniverseID &toRead)
+{
+    is >> toRead.timelineLength;
+    return is;
+}
+
+FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction);
+FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
+int getTimelineLength(UniverseID const &universe);
+std::size_t hash_value(UniverseID const &toHash);
+
 }
 #endif //HG_UNIVERSE_ID_H

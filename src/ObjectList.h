@@ -13,8 +13,6 @@
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range.hpp>
 
-#include <boost/move/move.hpp>
-
 #include <boost/operators.hpp>
 
 namespace hg {
@@ -24,11 +22,6 @@ class ObjectList : boost::equality_comparable<ObjectList<ListTypes> >
 {
 public:
     ObjectList();
-    ObjectList(ObjectList const &o);
-    ObjectList &operator=(BOOST_COPY_ASSIGN_REF(ObjectList) o);
-    ObjectList(BOOST_RV_REF(ObjectList) o);
-    ObjectList &operator=(BOOST_RV_REF(ObjectList) o);
-    
     template<typename ObjectT>
     typename vector_of<ObjectT>::type const &getList() const;
     
@@ -54,9 +47,8 @@ private:
     typedef typename
     boost::mpl::transform<
         ListTypes,
-        vector_of<boost::mpl::_1> >::type ListType;
-    ListType list_;
-    BOOST_COPYABLE_AND_MOVABLE(ObjectList)
+        vector_of<boost::mpl::_1>>::type ListType;
+    ListType list;
 };
 template<typename ObjectT>
 void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r);
@@ -67,7 +59,7 @@ void ObjectList<ListTypes>::add(ObjectT const &toCopy)
     boost::fusion::deref(
         boost::fusion::find<
             typename vector_of<ObjectT>::type
-        >(list_)
+        >(list)
     ).push_back(toCopy);
 #ifndef NDEBUG
     sorted = false;
@@ -81,7 +73,7 @@ void ObjectList<ListTypes>::addRange(ObjectRangeT const &toAdd)
         boost::fusion::deref(
             boost::fusion::find<
                 typename vector_of<typename boost::range_value<ObjectRangeT>::type >::type
-            >(list_)),
+            >(list)),
         toAdd);
 #ifndef NDEBUG
     sorted = false;
@@ -98,7 +90,7 @@ typename vector_of<ObjectT>::type const &ObjectList<ListTypes>::getList() const
     return boost::fusion::deref(
         boost::fusion::find<
             typename vector_of<ObjectT>::type
-        >(list_));
+        >(list));
 }
 }
 #endif //HG_DEPARTURE_LIST_H

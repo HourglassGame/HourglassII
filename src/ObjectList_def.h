@@ -19,43 +19,8 @@ ObjectList<ListTypes>::ObjectList() :
 #ifndef NDEBUG
         sorted(true),
 #endif //NDEBUG
-        list_()
+        list()
 {
-}
-template<typename ListTypes>
-ObjectList<ListTypes>::ObjectList(ObjectList const &o) :
-#ifndef NDEBUG
-    sorted(o.sorted),
-#endif //NDEBUG
-    list_(o.list_)
-{
-}
-template<typename ListTypes>
-ObjectList<ListTypes>& ObjectList<ListTypes>::operator=(BOOST_COPY_ASSIGN_REF(ObjectList) o)
-{
-#ifndef NDEBUG
-    sorted = o.sorted;
-#endif //NDEBUG
-    list_ = o.list_;
-    return *this;
-}
-
-template<typename ListTypes>
-ObjectList<ListTypes>::ObjectList(BOOST_RV_REF(ObjectList) o) :
-#ifndef NDEBUG
-    sorted(boost::move(o.sorted)),
-#endif //NDEBUG
-    list_(boost::move(o.list_))
-{
-}
-template<typename ListTypes>
-ObjectList<ListTypes>& ObjectList<ListTypes>::operator=(BOOST_RV_REF(ObjectList) o)
-{
-#ifndef NDEBUG
-    sorted = boost::move(o.sorted);
-#endif //NDEBUG
-    list_ = boost::move(o.list_);
-    return *this;
 }
 
 namespace {
@@ -69,10 +34,10 @@ namespace {
 	};
 }
 template<typename ListTypes>
-void ObjectList<ListTypes>::add(ObjectList<ListTypes> const& o)
+void ObjectList<ListTypes>::add(ObjectList<ListTypes> const &o)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(list_, o.list_), Insert());
+    n_ary_for_each(vector_tie(list, o.list), Insert());
 #ifndef NDEBUG
     sorted = false;
 #endif //NDEBUG
@@ -82,22 +47,22 @@ void ObjectList<ListTypes>::add(ObjectList<ListTypes> const& o)
 template<typename ListTypes>
 void ObjectList<ListTypes>::sort()
 {
-    boost::fusion::for_each(list_, Sort());
+    boost::fusion::for_each(list, Sort());
 #ifndef NDEBUG
     sorted = true;
 #endif //NDEBUG
 }
 template<typename ListTypes>
-void ObjectList<ListTypes>::swap(ObjectList<ListTypes>& o)
+void ObjectList<ListTypes>::swap(ObjectList<ListTypes> &o)
 {
 #ifndef NDEBUG
     boost::swap(sorted, o.sorted);
 #endif //NDEBUG
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(list_, o.list_), Swap());
+    n_ary_for_each(vector_tie(list, o.list), Swap());
 }
 template<typename ListTypes>
-bool ObjectList<ListTypes>::operator==(ObjectList<ListTypes> const& o) const
+bool ObjectList<ListTypes>::operator==(ObjectList<ListTypes> const &o) const
 {
 #ifndef NDEBUG
     assert(
@@ -105,7 +70,7 @@ bool ObjectList<ListTypes>::operator==(ObjectList<ListTypes> const& o) const
         && o.sorted 
         && "Unless you are being very careful with the insertion order this function requires sort to have been called.");
 #endif //NDEBUG
-    return list_ == o.list_;
+    return list == o.list;
 }
 
 namespace {
@@ -121,10 +86,10 @@ namespace {
 template<typename ListTypes>
 bool ObjectList<ListTypes>::isEmpty() const
 {
-    return boost::fusion::all(list_, Empty());
+    return boost::fusion::all(list, Empty());
 }
 template<typename ObjectT>
-void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r)
+void swap(ObjectList<ObjectT> &l, ObjectList<ObjectT> &r)
 {
     l.swap(r);
 }

@@ -36,7 +36,7 @@ template<typename T>
 struct Equivalent
 {
     bool operator()(T const &l, T const &r) const {
-        return !(l < r) && !(r < l);
+        return !(l < r || r < l);
     }
 };
 
@@ -55,16 +55,16 @@ struct Sort
     template <typename ListType>
     void operator()(
         ListType &toSort,
-        typename boost::disable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type> >::type * = 0) const
+        typename boost::disable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type>>::type * = nullptr) const
     {
-        boost::sort(toSort, std::less<typename boost::range_value<ListType>::type>());
+        boost::sort(toSort);
     }
     template <typename ListType>
     void operator()(
         ListType &toSort,
-        typename boost::enable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type > >::type * = 0) const
+        typename boost::enable_if<hg::sort_weaker_than_equality<typename boost::range_value<ListType>::type>>::type * = nullptr) const
     {
-        boost::sort(toSort, std::less<typename boost::range_value<ListType>::type>());
+        boost::sort(toSort);
         //These lists are sorted on a criterion that allows equivalent elements to not be equal.
         //This means that they must never have equivalent elements, because that could cause equal
         //ObjectLists to be found to be different because the order in which the lists within the

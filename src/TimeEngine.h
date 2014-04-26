@@ -29,18 +29,9 @@ public:
     typedef boost::container::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
-        Frame const *currentPlayerFrame() const {
-            return currentPlayerFrame_;
-        }
-        Frame const *nextPlayerFrame() const {
-            return nextPlayerFrame_;
-        }
-        FrameListList const &updatedFrames() const {
-            return updatedFrames_;
-        }
-        Frame const *currentPlayerFrame_;
-        Frame const *nextPlayerFrame_;
-        FrameListList updatedFrames_;
+        Frame const *currentPlayerFrame;
+        Frame const *nextPlayerFrame;
+        FrameListList updatedFrames;
     };
     /**
      * Constructs a new TimeEngine with the given Level
@@ -52,9 +43,9 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter &interrupter);
+    explicit TimeEngine(Level &&level, OperationInterrupter &interrupter);
 
-    void swap(TimeEngine &o);
+    void swap(TimeEngine &o) noexcept;
 
     /**
      * Takes the new input data and uses that to update the state of the world and returns the current player frame
@@ -70,21 +61,21 @@ public:
      * Please investigate this constness further!
      * Exception Safety: No Throw
      */
-    Frame const *getFrame(FrameID const &whichFrame) const;
+    Frame const *getFrame(FrameID const &whichFrame) const { return worldState.getFrame(whichFrame); }
     // Exception Safety: Strong
-    std::vector<InputList> const &getReplayData() const;
+    std::vector<InputList> const &getReplayData() const noexcept { return worldState.getReplayData(); }
     
-    Wall const &getWall() const { return wall_; }
+    Wall const &getWall() const noexcept { return wall; }
     
-    int getTimelineLength() const { return worldState_.getTimelineLength(); }
+    int getTimelineLength() const noexcept { return worldState.getTimelineLength(); }
 private:
-    unsigned int speedOfTime_;
+    unsigned int speedOfTime;
     //state of world at end of last executed frame
-    WorldState worldState_;
+    WorldState worldState;
     //Wall duplicated here, it is also in physics.
     //This may not be ideal, but it simplifies a few things.
     //No, this is probably plain silly. Please fix/justify.
-    Wall wall_;
+    Wall wall;
 };
 }
 #endif //HG_TIME_ENGINE_H

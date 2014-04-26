@@ -14,7 +14,7 @@
 #include <utility>
 
 namespace hg {
-FramePointerUpdater::FramePointerUpdater(Universe& universe) :
+FramePointerUpdater::FramePointerUpdater(Universe &universe) :
     startOfUniverse(universe.frames.data())
 {
 }
@@ -30,25 +30,25 @@ Universe::Universe(int timelineLength) :
 	assert(!frames.empty());
 }
 
-Universe::Universe(Universe const& o) :
+Universe::Universe(Universe const &o) :
     frames(o.frames)
 {
     fixFramesEverything();
 }
-Universe &Universe::operator=(Universe const& o)
+Universe &Universe::operator=(Universe const &o)
 {
     frames = o.frames;
     fixFramesEverything();
     return *this;
 }
 
-Universe::Universe(Universe &&o) :
+Universe::Universe(Universe &&o) noexcept :
 	frames(std::move(o.frames))
 {
 	assert(!frames.empty());
 	fixFramesUniverses();
 }
-Universe &Universe::operator=(Universe &&o)
+Universe &Universe::operator=(Universe &&o) noexcept
 {
 	assert(!o.frames.empty());
 	frames = std::move(o.frames);
@@ -70,8 +70,8 @@ void Universe::fixFramesEverything() {
     }
 }
 
-//Updates the `universe_` pointers in `frames`
-void Universe::fixFramesUniverses()
+//Updates the `universe` pointers in `frames`
+void Universe::fixFramesUniverses() noexcept
 {
     foreach (Frame &frame, frames) {
         frame.correctUniverse(*this);
@@ -81,7 +81,7 @@ void Universe::fixFramesUniverses()
 
 template<typename UniverseT>
 Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getFrameImpl(UniverseT &universe, FrameID const &whichFrame) {
-    assert(universe.getTimelineLength() == whichFrame.getUniverse().timelineLength());
+    assert(hg::getTimelineLength(universe) == hg::getTimelineLength(whichFrame.getUniverse()));
     return universe.getArbitraryFrame(whichFrame.getFrameNumber());
 }
 Frame *Universe::getFrame(FrameID const &whichFrame)
@@ -152,7 +152,8 @@ Frame const *Universe::getArbitraryFrameClamped(int frameNumber) const
 //Returns the length of this Universe's timeline
 int Universe::getTimelineLength() const
 {
-    assert(!frames.empty());
+    assert(!frames.empty() &&
+            frames.size() <= static_cast<decltype(frames.size())>(std::numeric_limits<int>::max()));
     return static_cast<int>(frames.size());
 }
 

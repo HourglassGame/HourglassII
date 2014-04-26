@@ -4,11 +4,12 @@
 #include <vector>
 #include "SceneImplementation.h"
 namespace hg {
+    struct WindowClosed_exception{};
     struct RunALevel_tag{};
     struct RunAReplay_tag{};
     struct Exit_tag{};
     struct LoadingCanceled_tag{};
-    struct WindowClosed_tag{};
+    //struct WindowClosed_tag{};
     struct ReloadLevel_tag{};
     struct GameWon_tag{};
     struct GameAborted_tag{};

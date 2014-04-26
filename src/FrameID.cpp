@@ -11,27 +11,27 @@
 
 namespace hg {
 FrameID::FrameID() :
-        frame_(-1),
-        universeID_(-1)
+        frame(-1),
+        universeID(-1)
 {
 }
 FrameID::FrameID(int frameNumber, UniverseID const &nuniverse) :
-        frame_(frameNumber),
-        universeID_(nuniverse)
+        frame(frameNumber),
+        universeID(nuniverse)
 {
     assert(isValidFrame());
 }
 //Creates a FrameID corresponding to the given Frame*
 FrameID::FrameID(Frame const *toConvert) :
-        frame_(toConvert->frameNumber_),
-        universeID_(getTimelineLength(*toConvert->universe_))
+        frame(hg::getFrameNumber(toConvert)),
+        universeID(getTimelineLength(hg::getUniverse(toConvert)))
 {
 }
 FrameID FrameID::nextFrame(TimeDirection direction) const
 {
     return
     isValidFrame() && nextFrameInSameUniverse(direction) ?
-        FrameID(frame_ + direction, universeID_) :
+        FrameID(frame + direction, universeID) :
         FrameID();
 }
 
@@ -39,48 +39,46 @@ bool FrameID::nextFrameInSameUniverse(TimeDirection direction) const
 {
     return
         assert(isValidFrame()),
-        (direction == REVERSE && frame_ != 0)
-     || (direction == FORWARDS && frame_ != universeID_.timelineLength() - 1);
+        (direction == REVERSE && frame != 0)
+     || (direction == FORWARDS && frame != universeID.timelineLength - 1);
 }
 FrameID FrameID::arbitraryFrameInUniverse(int frameNumber) const
 {
-    return frameNumber >= 0 && frameNumber < universeID_.timelineLength() ?
-        FrameID(frameNumber, universeID_) : FrameID();
+    return frameNumber >= 0 && frameNumber < universeID.timelineLength ?
+        FrameID(frameNumber, universeID) : FrameID();
 }
 
 bool FrameID::operator==(FrameID const &o) const {
-    return frame_ == o.frame_ && universeID_ == o.universeID_;
+    return as_tie() == o.as_tie();
 }
 
 bool FrameID::operator<(FrameID const &o) const {
-    return
-    universeID_ == o.universeID_ ?
-        frame_ < o.frame_ :
-        universeID_ < o.universeID_;
+    return as_tie() < o.as_tie();
 }
 bool FrameID::isValidFrame() const {
-    return
-    frame_ >= 0 && frame_ < universeID_.timelineLength() ?
-        true :
-        (assert(frame_ == -1),
-        assert(universeID_.timelineLength() == -1),
-        false);
+    if (frame >= 0 && frame < universeID.timelineLength) {
+        return true;
+    }
+    else {
+        assert(frame == -1);
+        assert(universeID.timelineLength == -1);
+        return false;
+    }
 }
 int FrameID::getFrameNumber() const {
-    assert (isValidFrame());
-    return frame_;
+    assert(isValidFrame());
+    return frame;
 }
 UniverseID const &FrameID::getUniverse() const {
-    return universeID_;
+    return universeID;
 }
 std::size_t hash_value(FrameID const &toHash) {
     std::size_t seed(0);
-    return
-    toHash.isValidFrame() ?
-        seed :
-        (boost::hash_combine(seed, toHash.getFrameNumber()),
-        boost::hash_combine(seed, toHash.getUniverse()),
-        seed);
+    if (toHash.isValidFrame()) {
+        boost::hash_combine(seed, toHash.getFrameNumber());
+        boost::hash_combine(seed, toHash.getUniverse());
+    }
+    return seed;
 }
 
 bool isNullFrame(FrameID const &frame)

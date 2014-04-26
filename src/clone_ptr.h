@@ -1,7 +1,6 @@
 #ifndef HG_CLONE_PTR_H
 #define HG_CLONE_PTR_H
 #include <boost/swap.hpp>
-#include <boost/move/move.hpp>
 #include <cassert>
 #include "default_delete.h"
 #include "default_clone.h"
@@ -27,20 +26,20 @@ public:
     }
     clone_ptr(clone_ptr const &o) :
         CloneManager(),
-        obj(o.obj?CloneManager::new_clone(*o.obj):0)
+        obj(o.obj?CloneManager::new_clone(*o.obj):nullptr)
     {
     }
-    clone_ptr &operator=(BOOST_COPY_ASSIGN_REF(clone_ptr) o)
+    clone_ptr &operator=(clone_ptr const &o)
     {
         //Forward to move assignment operator
         return *this = clone_ptr(o);
     }
-    clone_ptr(BOOST_RV_REF(clone_ptr) o) :
-    	CloneManager(boost::move(static_cast<CloneManager&>(o))), obj(o.obj)
+    clone_ptr(clone_ptr &&o) :
+    	CloneManager(std::move(static_cast<CloneManager &>(o))), obj(o.obj)
     {
-    	o.obj = 0;
+    	o.obj = nullptr;
     }
-    clone_ptr &operator=(BOOST_RV_REF(clone_ptr) o)
+    clone_ptr &operator=(clone_ptr &&o)
 	{
 		swap(o);
 		return *this;
@@ -68,7 +67,6 @@ public:
     }
 private:
     Cloneable *obj;
-    BOOST_COPYABLE_AND_MOVABLE(clone_ptr)
 };
 template <typename Cloneable, typename CloneManager>
 inline void swap(clone_ptr<Cloneable, CloneManager> &l, clone_ptr<Cloneable, CloneManager> &r) { l.swap(r); }

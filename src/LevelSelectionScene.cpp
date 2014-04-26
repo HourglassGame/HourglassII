@@ -1,6 +1,7 @@
 #include "LevelSelectionScene.h"
 #include <boost/range/iterator_range.hpp>
 #include <boost/range/algorithm/sort.hpp>
+#include <boost/range/algorithm/adjacent_find.hpp>
 #include <boost/filesystem.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -25,20 +26,22 @@ static void drawLevelSelection(hg::RenderWindow &window, std::string const& leve
 }
 
 
-variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, WindowClosed_tag, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
+variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
     std::vector<boost::filesystem::path> levelPaths;
     for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             levelPaths.push_back(entry.path());
         }
     }
-    
+
     boost::sort(
         levelPaths,
         [](boost::filesystem::path const& l,boost::filesystem::path const& r)
         {
             return natural_less(l.stem().string(), r.stem().string());
         });
+    
+    assert(!levelPaths.empty() && "BUG: Need to add handing for empty level directory.");
     
     int selectedLevel = 0;
     
@@ -71,7 +74,7 @@ variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, WindowCl
                     }
                     break;
                   case sf::Event::Closed:
-                    return WindowClosed_tag{};
+                    throw WindowClosed_exception{};
                   break;
                   case sf::Event::Resized:
                     menuDrawn = false;
@@ -82,10 +85,5 @@ variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, WindowCl
             } while (window.pollEvent(event));
         }
     }
-    
-    
-
-    
-
 }
 }

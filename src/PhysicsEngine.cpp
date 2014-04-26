@@ -135,7 +135,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
     typedef mt::std::map<
-                Frame*,
+                Frame *,
                 mt::std::vector<TriggerData>::type>::type triggerDepartures_t;
 
     TriggerFrameState::DepartureInformation triggerSystemDepartureInformation(
@@ -166,11 +166,11 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
 
     // add data to departures
-    return PhysicsReturnT(
+    return PhysicsReturnT{
         newDepartures,
         FrameView(forwardsGlitz, reverseGlitz, guyInfo),
         currentPlayerFrame,
         nextPlayerFrame,
-        winFrame);
+        winFrame};
 }
 } //namespace hg

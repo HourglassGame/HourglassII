@@ -8,23 +8,18 @@
 #include "Universe.h"
 namespace hg {
 UniverseID::UniverseID(int timelineLength) :
-    timelineLength_(timelineLength)
+    timelineLength(timelineLength)
 {
-}
-
-int UniverseID::timelineLength() const
-{
-    return timelineLength_;
 }
 
 bool UniverseID::operator==(UniverseID const &o) const
 {
-    return timelineLength_ == o.timelineLength_;
+    return timelineLength == o.timelineLength;
 }
 
 bool UniverseID::operator<(UniverseID const &o) const
 {
-    return timelineLength_ < o.timelineLength_;
+    return timelineLength < o.timelineLength;
 }
 
 FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction)
@@ -48,13 +43,13 @@ FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber)
 }
 int getTimelineLength(UniverseID const &universe)
 {
-    return universe.timelineLength_;
+    return universe.timelineLength;
 }
 
 std::size_t hash_value(UniverseID const &toHash)
 {
     std::size_t seed(0);
-    boost::hash_combine(seed, toHash.timelineLength_);
+    boost::hash_combine(seed, toHash.timelineLength);
     return seed;
 }
 }//namespace hg

@@ -2,7 +2,7 @@
 #define HG_GLITZ_H
 #include "LayeredCanvas.h"
 #include <boost/operators.hpp>
-#include <boost/move/move.hpp>
+#include <tuple>
 #include "clone_ptr.h"
 #include "memory_source_clone.h"
 #include "multi_thread_memory_source.h"
@@ -11,23 +11,6 @@
 namespace hg {
 class Glitz : boost::totally_ordered<Glitz> {
 public:
-    Glitz(Glitz const &o) :
-        impl(o.impl)
-    {}
-
-    Glitz(BOOST_RV_REF(Glitz) o) :
-        impl(boost::move(o.impl))
-    {}
-    
-    Glitz &operator=(BOOST_COPY_ASSIGN_REF(Glitz) o) {
-        impl = o.impl;
-        return *this;
-    }
-    Glitz &operator=(BOOST_RV_REF(Glitz) o) {
-        impl = boost::move(o.impl);
-        return *this;
-    }
-
     explicit Glitz(GlitzImplementation *impl)
       : impl(impl)
     {
@@ -46,20 +29,23 @@ public:
     //LineGlitz = 1
     //TextGlitz = 2
     //ImageGlitz = 3
-    bool operator<(Glitz const &right) const {
-        if (impl->order_ranking() == right.impl->order_ranking()) {
-            return *impl < *right.impl;
-        }
-        return impl->order_ranking() < right.impl->order_ranking();
+    bool operator<(Glitz const &o) const {
+        return comparison_tuple() < o.comparison_tuple();
     }
     bool operator==(Glitz const &o) const {
-        return
-               impl->order_ranking() == o.impl->order_ranking()
-            && *impl == *o.impl;
+        return comparison_tuple() == o.comparison_tuple();
     }
 private:
+    
     clone_ptr<GlitzImplementation, memory_source_clone<GlitzImplementation, multi_thread_memory_source> > impl;
-    BOOST_COPYABLE_AND_MOVABLE(Glitz)
+    typedef
+      std::tuple<
+        decltype(impl->order_ranking()),
+        decltype(*impl) const &>
+      comparison_tuple_type;
+    comparison_tuple_type comparison_tuple() const {
+        return comparison_tuple_type(impl->order_ranking(), *impl);
+    }
 };
 }//namespace hg
 #endif //HG_GLITZ_H

@@ -163,7 +163,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
         }
 		
 		if protoPortal.winner then
-            --retPortal.winner = true
+            retPortal.winner = true
 			retPortal.relativeTime = false
 			retPortal.timeDestination = 1
 			retPortal.relativeDirection = false

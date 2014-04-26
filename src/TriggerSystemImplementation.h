@@ -20,6 +20,9 @@
 #include <boost/tuple/tuple.hpp>
 
 #include <utility>
+
+#include "multi_thread_deleter.h"
+
 #include "Frame_fwd.h"
 namespace hg {
 //Moveable but non-copyable.
@@ -89,12 +92,12 @@ class TriggerFrameState
             GetBase<TriggerDataConstPtr>,
             mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals)
     {
-        return impl_->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
+        return impl->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
     }
     template<typename ObjectT>
     bool shouldArrive(ObjectT const &potentialArriver)
     {
-        return impl_->shouldArrive(potentialArriver);
+        return impl->shouldArrive(potentialArriver);
     }
     
     template<typename ObjectT>
@@ -103,7 +106,7 @@ class TriggerFrameState
         ObjectT const &potentialPorter,
         bool porterActionedPortal)
     {
-        return impl_->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
+        return impl->shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
     }
     
     template<typename ObjectT>
@@ -111,50 +114,50 @@ class TriggerFrameState
         mt::std::vector<int>::type const &responsibleMutatorIndices,
         ObjectT const &objectToManipulate)
     {
-        return impl_->mutateObject(responsibleMutatorIndices, objectToManipulate);
+        return impl->mutateObject(responsibleMutatorIndices, objectToManipulate);
     }
     
     DepartureInformation getDepartureInformation(
-            mt::std::map<Frame*, ObjectList<Normal> >::type const &departures,
+            mt::std::map<Frame *, ObjectList<Normal> >::type const &departures,
             Frame *currentFrame)
     {
-        return impl_->getDepartureInformation(departures, currentFrame);
+        return impl->getDepartureInformation(departures, currentFrame);
     }
 
     //Default constructed TriggerFrameState may not have any functions called on it,
     //but may be swapped with a TriggerFrameState that does.
-    TriggerFrameState() : impl_(0)
+    TriggerFrameState() : impl()
     {}
 
     //Takes ownership of impl.
     //precondition:
     //  The following must release impl:
-    //  multi_thread_delete(impl_);
+    //  multi_thread_delete(impl);
     //THIS MEANS THAT impl MUST HAVE BEEN ALLOCATED IN A SPECIAL WAY!!
     //(with multi_thread_new)
     explicit TriggerFrameState(TriggerFrameStateImplementation *impl) :
-        impl_(impl)
+        impl(impl)
     {}
-    TriggerFrameState(BOOST_RV_REF(TriggerFrameState) o) :
-        impl_(0)
+    TriggerFrameState(TriggerFrameState &&o) :
+        impl()
     {
         swap(o);
     }
-    TriggerFrameState &operator=(BOOST_RV_REF(TriggerFrameState) o)
+    TriggerFrameState &operator=(TriggerFrameState &&o)
     {
         swap(o);
         return *this;
     }
     void swap(TriggerFrameState &o)
     {
-        boost::swap(impl_, o.impl_);
+        boost::swap(impl, o.impl);
     }
     ~TriggerFrameState() {
-        multi_thread_delete(impl_);
     }
     private:
-    TriggerFrameStateImplementation *impl_;
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(TriggerFrameState)
+    std::unique_ptr<
+        TriggerFrameStateImplementation,
+        multi_thread_deleter<TriggerFrameStateImplementation>> impl;
 };
 inline void swap(TriggerFrameState &l, TriggerFrameState &r) { l.swap(r); }
 

@@ -10,7 +10,7 @@ public:
     virtual GlitzImplementation *perform_clone(void *memory) const = 0;
 
     virtual ~GlitzImplementation(){}
-private:
+    
     //Each glitz-implementation must provide a
     //unique return value for order_ranking.
     //This is used to sort glitz for arrival/departure analysis
@@ -18,7 +18,6 @@ private:
     virtual int order_ranking() const = 0;
     virtual bool operator<(GlitzImplementation const &o) const = 0;
     virtual bool operator==(GlitzImplementation const &o) const = 0;
-    friend class Glitz;
 };
 }
 

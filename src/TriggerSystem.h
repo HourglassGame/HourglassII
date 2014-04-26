@@ -11,41 +11,25 @@ public:
     //a TriggerSystem without a TriggerSystemImplementation
     //is only useful for swapping into a TriggerSystem with an implementation
     //as an O(1) operation.
-    TriggerSystem() : impl_() {}
+    TriggerSystem() : impl() {}
     //Takes ownership of impl
     template<typename TriggerSystemImplementation>
     TriggerSystem(unique_ptr<TriggerSystemImplementation> impl) :
-        impl_(impl.release())
+        impl(impl.release())
     {}
-    TriggerSystem(TriggerSystem const &o) : impl_(o.impl_) {}
-    TriggerSystem &operator=(BOOST_COPY_ASSIGN_REF(TriggerSystem) o)
-    {
-        impl_ = o.impl_;
-        return *this;
-    }
-    TriggerSystem(BOOST_RV_REF(TriggerSystem) o) :
-        impl_(boost::move(o.impl_))
-    {
-    }
-    TriggerSystem &operator=(BOOST_RV_REF(TriggerSystem) o)
-    {
-        impl_ = boost::move(o.impl_);
-        return *this;
-    }
 
     void swap(TriggerSystem &o) {
-        impl_.swap(o.impl_);
+        impl.swap(o.impl);
     }
     //In a break from the usual OperationInterrupter semantics,
     //the interrupter which is passed to this function is used for the entire lifetime
     //of the returned TriggerFrameState.
     TriggerFrameState getFrameState(OperationInterrupter &interrupter) const
     {
-        return impl_.get().getFrameState(interrupter);
+        return impl.get().getFrameState(interrupter);
     }
 private:
-    clone_ptr<TriggerSystemImplementation> impl_;
-    BOOST_COPYABLE_AND_MOVABLE(TriggerSystem)
+    clone_ptr<TriggerSystemImplementation> impl;
 };
 inline void swap(TriggerSystem &l, TriggerSystem &r)
 {

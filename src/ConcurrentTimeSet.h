@@ -4,7 +4,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range.hpp>
 #include "BoostHashCompare.h"
-#include <boost/move/move.hpp>
+#include <utility>
 #include "Frame_fwd.h"
 namespace hg {
 /**
@@ -23,24 +23,19 @@ namespace hg {
 class ConcurrentTimeSet {
     struct Empty {};
     //hash map is being used as set, second template argument (Empty) is unused filler.
-    typedef tbb::concurrent_hash_map<Frame *, Empty, BoostHashCompare<Frame*> > SetType;
+    typedef tbb::concurrent_hash_map<Frame *, Empty, BoostHashCompare<Frame *>> SetType;
 public:
-    ConcurrentTimeSet();
-    ConcurrentTimeSet(ConcurrentTimeSet const &o) :
-        set_(o.set_)
-    {}
-    ConcurrentTimeSet &operator=(BOOST_COPY_ASSIGN_REF(ConcurrentTimeSet) o)
+    ConcurrentTimeSet() = default;
+    ConcurrentTimeSet(ConcurrentTimeSet const &o) = default;
+    ConcurrentTimeSet &operator=(ConcurrentTimeSet const &o) = default;
+    ConcurrentTimeSet(ConcurrentTimeSet &&o) :
+    	set()
     {
-        return *this = ConcurrentTimeSet(o);
-    }
-    ConcurrentTimeSet(BOOST_RV_REF(ConcurrentTimeSet) o) :
-    	set_()
-    {
-        set_.swap(o.set_);
+        set.swap(o.set);
    	}
-    ConcurrentTimeSet &operator=(BOOST_RV_REF(ConcurrentTimeSet) o)
+    ConcurrentTimeSet &operator=(ConcurrentTimeSet &&o)
     {
-        set_.swap(o.set_);
+        set.swap(o.set);
         return *this;
     }
     //Must never try to add or remove a particular frame concurrently,
@@ -48,16 +43,16 @@ public:
     void add(Frame *toAdd);
     void remove(Frame *toRemove);
     void swap(ConcurrentTimeSet &o) {
-        set_.swap(o.set_);
+        set.swap(o.set);
     }
     void clear() {
-        set_.clear();
+        set.clear();
     }
     bool empty() const {
-        return set_.empty();
+        return set.empty();
     }
     std::size_t size() const {
-        return set_.size();
+        return set.size();
     }
     typedef boost::range_iterator<boost::select_first_range<SetType> >::type iterator;
     typedef boost::range_iterator<boost::select_first_range<SetType> const>::type const_iterator;
@@ -66,16 +61,16 @@ public:
     typedef boost::range_pointer<boost::select_first_range<SetType> >::type pointer;
     typedef boost::range_pointer<boost::select_first_range<SetType> const>::type const_pointer;
     iterator begin() {
-        return boost::begin(boost::adaptors::keys(set_));
+        return boost::begin(boost::adaptors::keys(set));
     }
     const_iterator begin() const {
-        return boost::begin(boost::adaptors::keys(set_));
+        return boost::begin(boost::adaptors::keys(set));
     }
     iterator end() {
-        return boost::end(boost::adaptors::keys(set_));
+        return boost::end(boost::adaptors::keys(set));
     }
     const_iterator end() const {
-        return boost::end(boost::adaptors::keys(set_));
+        return boost::end(boost::adaptors::keys(set));
     }
     reference front() {
         return *begin();
@@ -90,14 +85,13 @@ public:
         return *end();
     }
 private:
-    SetType set_;
-    BOOST_COPYABLE_AND_MOVABLE(ConcurrentTimeSet)
+    SetType set;
 };
 inline void swap(ConcurrentTimeSet &l, ConcurrentTimeSet &r)
 {
-    ConcurrentTimeSet temp(boost::move(l));
-    l = boost::move(r);
-    r = boost::move(temp);
+    ConcurrentTimeSet temp(std::move(l));
+    l = std::move(r);
+    r = std::move(temp);
 }
 }
 #endif //HG_CONCURRENT_TIME_SET_H

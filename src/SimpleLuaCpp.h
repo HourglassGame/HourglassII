@@ -33,12 +33,12 @@ struct LuaState {
     struct new_state_t {};
     LuaState();
     explicit LuaState(new_state_t);
-    LuaState(BOOST_RV_REF(LuaState) o) :
+    LuaState(LuaState &&o) :
         ud(), ptr()
     {
         swap(o);
     }
-    LuaState &operator=(BOOST_RV_REF(LuaState) o)
+    LuaState &operator=(LuaState &&o)
     {
         swap(o);
         return *this;
@@ -50,8 +50,6 @@ struct LuaState {
     ~LuaState();
     unique_ptr<LuaUserData> ud;
     lua_State *ptr;
-private:
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaState)
 };
 
 inline void swap(LuaState &l, LuaState &r) {

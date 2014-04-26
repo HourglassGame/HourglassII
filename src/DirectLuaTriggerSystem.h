@@ -91,52 +91,51 @@ class lazy_ptr
 {
 public:
     lazy_ptr() :
-        ptr_(0)
+        ptr()
     {
     }
     //Notice that these do not actually copy their arguments.
     //The arguments are not even moved. This is deliberate.
     lazy_ptr(lazy_ptr const &) :
-        ptr_(0)
+        ptr()
     {
     }
-    lazy_ptr &operator=(BOOST_COPY_ASSIGN_REF(lazy_ptr))
+    lazy_ptr &operator=(lazy_ptr const&)
     {
         //nothing to do.
     	return *this;
     }
-    lazy_ptr(BOOST_RV_REF(lazy_ptr) o) :
-    	ptr_(0)
+    lazy_ptr(lazy_ptr &&o) :
+    	ptr()
     {
-    	boost::swap(ptr_, o.ptr_);
+    	boost::swap(ptr, o.ptr);
     }
-    lazy_ptr &operator=(BOOST_RV_REF(lazy_ptr) o)
+    lazy_ptr &operator=(lazy_ptr &&o)
     {
-    	boost::swap(ptr_, o.ptr_);
+    	boost::swap(ptr, o.ptr);
     	return *this;
     }
     ~lazy_ptr()
     {
-        delete ptr_;
+        delete ptr;
     }
     T &operator*() const
     {
-    	if (!ptr_) ptr_ = new T();
-        return *ptr_;
+    	if (!ptr) ptr = new T();
+        return *ptr;
     }
     T *operator->() const
     {
-    	if (!ptr_) ptr_ = new T();
-        return ptr_;
+    	if (!ptr) ptr = new T();
+        return ptr;
     }
     T *get() const
     {
-    	if (!ptr_) ptr_ = new T();
-        return ptr_;
+    	if (!ptr) ptr = new T();
+        return ptr;
     }
 private:
-    mutable T *ptr_;
-    BOOST_COPYABLE_AND_MOVABLE(lazy_ptr)
+    mutable T *ptr;
 };
 
 class DirectLuaTriggerSystem :

@@ -5,33 +5,33 @@
 namespace hg {
 void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor)
 {
-    map_.rehash(toMakeSpaceFor.size());
+    map.rehash(toMakeSpaceFor.size());
     //removes the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
     foreach (Frame *frame, toMakeSpaceFor)
     {
-        map_.insert(value_type(frame, MapType::mapped_type()));
+        map.insert(value_type(frame, MapType::mapped_type()));
     }
 }
-void DepartureMap::setDeparture(Frame *frame, BOOST_RV_REF(MapType::mapped_type) departingObjects)
+void DepartureMap::setDeparture(Frame *frame, MapType::mapped_type &&departingObjects)
 {
-    map_.find(frame)->second = boost::move(departingObjects);
+    map.find(frame)->second = std::move(departingObjects);
 }
 
 DepartureMap::iterator DepartureMap::begin()
 {
-    return map_.begin();
+    return map.begin();
 }
 DepartureMap::iterator DepartureMap::end()
 {
-    return map_.end();
+    return map.end();
 }
 DepartureMap::const_iterator DepartureMap::begin() const
 {
-    return map_.begin();
+    return map.begin();
 }
 DepartureMap::const_iterator DepartureMap::end() const
 {
-    return map_.end();
+    return map.end();
 }
 DepartureMap::const_iterator DepartureMap::cbegin() const
 {

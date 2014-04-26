@@ -17,7 +17,7 @@
 namespace hg {
 template<typename ListType>
 ObjectPtrList<ListType>::ObjectPtrList() :
-        list_()
+        list()
 {
 }
 
@@ -40,22 +40,22 @@ template<typename ListTypes>
 void ObjectPtrList<ListTypes>::add(ObjectList<ListTypes> const &o)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(list_, o.list_), InsertAddresses());
+    n_ary_for_each(vector_tie(list, o.list), InsertAddresses());
 }
 //MUST CALL this before calling operator== on this ObjectPtrList<Normal> 
 template<typename ListTypes>
 void ObjectPtrList<ListTypes>::sort()
 {
-    boost::fusion::for_each(list_, Sort());
+    boost::fusion::for_each(list, Sort());
 }
 template<typename ListTypes>
-void ObjectPtrList<ListTypes>::swap(ObjectPtrList<ListTypes>& o)
+void ObjectPtrList<ListTypes>::swap(ObjectPtrList<ListTypes> &o)
 {
     using namespace boost::fusion;
-    n_ary_for_each(vector_tie(list_, o.list_), Swap());
+    n_ary_for_each(vector_tie(list, o.list), Swap());
 }
 template<typename ListTypes>
-void swap(ObjectPtrList<ListTypes>& l, ObjectPtrList<ListTypes>& r)
+void swap(ObjectPtrList<ListTypes> &l, ObjectPtrList<ListTypes> &r)
 {
     l.swap(r);
 }
