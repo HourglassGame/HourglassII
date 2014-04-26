@@ -12,32 +12,31 @@ class TriggerData : boost::totally_ordered<TriggerData>
 public:
     TriggerData(std::size_t index, mt::std::vector<int>::type const &value);
 
-    std::size_t getIndex() const { return index_; }
-    mt::std::vector<int>::type const &getValue() const { return value_; }
+    std::size_t getIndex() const { return index; }
+    mt::std::vector<int>::type const &getValue() const { return value; }
     
     bool operator==(TriggerData const &o) const;
     bool operator<(TriggerData const &second) const;
     
 private:
-    std::size_t index_;
-    mt::std::vector<int>::type value_;
-
+    std::size_t index;
+    mt::std::vector<int>::type value;
 };
 class TriggerDataConstPtr : boost::totally_ordered<TriggerDataConstPtr>
 {
 public:
-    TriggerDataConstPtr(TriggerData const &triggerData) : triggerData_(&triggerData) {}
     typedef TriggerData base_type;
-    TriggerData const &get() const { return *triggerData_; }
-    std::size_t getIndex() const { return triggerData_->getIndex(); }
-    mt::std::vector<int>::type const &getValue() const { return triggerData_->getValue(); }
     
-    bool operator==(TriggerDataConstPtr const &o) const { return *triggerData_ == *o.triggerData_;}
-    bool operator <(TriggerDataConstPtr const &o) const { return *triggerData_  < *o.triggerData_;}
+    TriggerDataConstPtr(TriggerData const &triggerData) : p(&triggerData) {}
+    TriggerData const &get() const { return *p; }
+    std::size_t getIndex() const { return p->getIndex(); }
+    mt::std::vector<int>::type const &getValue() const { return p->getValue(); }
+    
+    bool operator==(TriggerDataConstPtr const &o) const { return *p == *o.p;}
+    bool operator <(TriggerDataConstPtr const &o) const { return *p  < *o.p;}
     
 private:
-    TriggerData const *triggerData_;
-
+    TriggerData const *p;
 };
 template<>
 struct ConstPtr_of<TriggerData> {

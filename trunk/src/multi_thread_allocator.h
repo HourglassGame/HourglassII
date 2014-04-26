@@ -118,7 +118,7 @@ BOOST_PP_REPEAT(BOOST_PP_INC(HG_MAX_MULTI_THREAD_NEW_PARAMS), HG_MULTI_THREAD_NE
 	//C++11 version
     template<typename T, typename... Args>
     T *multi_thread_new(Args &&...args){
-    	void *p(multi_thread_operator_new(sizeof(T)));
+    	void *p(multi_thread_operator_new(sizeof (T)));
     	try {
     		return new (p) T(hg::forward<Args>(args)...);
     	}

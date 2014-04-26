@@ -5,6 +5,8 @@
 #include "sfColour.h"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shape.hpp>
+#include <SFML/Graphics/ConvexShape.hpp>
+#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/String.hpp>

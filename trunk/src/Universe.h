@@ -20,7 +20,7 @@ struct FramePointerUpdater {
         return frame ? startOfUniverse + getFrameNumber(frame) : frame;
     }
 private:
-    Frame* startOfUniverse;
+    Frame *startOfUniverse;
 };
 
 
@@ -42,11 +42,11 @@ class Universe {
 public:
     explicit Universe(int timelineLength);
 
-    Universe(Universe const& o);
-    Universe &operator=(Universe const& o);
+    Universe(Universe const &o);
+    Universe &operator=(Universe const &o);
 
-    Universe(Universe&& o);
-    Universe &operator=(Universe&& o);
+    Universe(Universe &&o) noexcept;
+    Universe &operator=(Universe &&o) noexcept;
 
     //Conversion from FrameID to equivalent Frame * within this universe
     //whichFrame must correspond to a frame that could actually
@@ -58,7 +58,7 @@ private:
     friend class Frame;
     friend class UniverseID;
     friend struct FramePointerUpdater;
-    void fixFramesUniverses();
+    void fixFramesUniverses() noexcept;
     void fixFramesEverything();
     //UniverseT interface {
     //Returns the first frame in the universe for objects traveling
@@ -77,16 +77,21 @@ private:
     //}
     
     template<typename UniverseT>
-    using FrameMatchingUniverseConstness = typename std::conditional<std::is_const<UniverseT>::value, Frame const, Frame>::type;
+    using FrameMatchingUniverseConstness =
+        typename std::conditional<std::is_const<UniverseT>::value, Frame const, Frame>::type;
     
     template<typename UniverseT>
-    static FrameMatchingUniverseConstness<UniverseT> *getFrameImpl(UniverseT &universe, FrameID const &whichFrame);
+    static FrameMatchingUniverseConstness<UniverseT> *
+        getFrameImpl(UniverseT &universe, FrameID const &whichFrame);
     template<typename UniverseT>
-    static FrameMatchingUniverseConstness<UniverseT> *getEntryFrameImpl(UniverseT &universe, TimeDirection direction);
+    static FrameMatchingUniverseConstness<UniverseT> *
+        getEntryFrameImpl(UniverseT &universe, TimeDirection direction);
     template<typename UniverseT>
-    static FrameMatchingUniverseConstness<UniverseT> *getArbitraryFrameImpl(UniverseT &universe, int frameNumber);
+    static FrameMatchingUniverseConstness<UniverseT> *
+        getArbitraryFrameImpl(UniverseT &universe, int frameNumber);
     template<typename UniverseT>
-    static FrameMatchingUniverseConstness<UniverseT> *getArbitraryFrameClampedImpl(UniverseT &universe, int frameNumber);
+    static FrameMatchingUniverseConstness<UniverseT> *
+        getArbitraryFrameClampedImpl(UniverseT &universe, int frameNumber);
 
     friend Frame *getEntryFrame(Universe &universe, TimeDirection direction);
     friend Frame const *getEntryFrame(Universe const &universe, TimeDirection direction);

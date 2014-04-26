@@ -1,9 +1,29 @@
 #ifndef HG_TEST_DRIVER_H
 #define HG_TEST_DRIVER_H
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/noncopyable.hpp>
 #include <vector>
 namespace hg {
+#if 0
+struct TestMonitor {
+//    void startingSuite
+};
+
+struct BugCounter {
+};
+
+struct signal_caught_tag{};
+template<typename T>
+variant<T, exception_ptr, signal_caught_tag> executeChecked(std::function<T()> f);
+
+
+
+struct Test {
+    virtual void run(BugCounter &bugCount) = 0;
+};
+#endif
+
+
 //Singleton unit test driver.
 //This is a stand-in until we have a build system
 //that is capable of reliably producing and running unit-tests.
@@ -13,10 +33,10 @@ namespace hg {
 //that main does is to run all the tests in the test driver.
 class TestDriver : boost::noncopyable {
 public:
-    void registerUnitTest(boost::function<bool()> test);
-    bool passesAllTests();
+    void registerUnitTest(std::function<bool()> test);
+    bool passesAllTests(/*TestMonitor &*/);
 private:
-    std::vector<boost::function<bool()> > tests;
+    std::vector<std::function<bool()>> tests;
 };
 
 TestDriver &getTestDriver();

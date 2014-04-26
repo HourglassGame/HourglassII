@@ -26,44 +26,11 @@ public:
         Environment const &env,
         TriggerSystem const &newTriggerSystem);
 
-    PhysicsEngine(PhysicsEngine const &o) :
-        env_(o.env_),
-        triggerSystem_(o.triggerSystem_)
-    {
-    }
-    PhysicsEngine &operator=(BOOST_COPY_ASSIGN_REF(PhysicsEngine) o)
-    {
-        env_ = o.env_;
-        triggerSystem_ = o.triggerSystem_;
-        return *this;
-    }
 
-    PhysicsEngine(BOOST_RV_REF(PhysicsEngine) o) :
-        env_(boost::move(o.env_)),
-        triggerSystem_(boost::move(o.triggerSystem_))
-    {}
-    PhysicsEngine &operator=(BOOST_RV_REF(PhysicsEngine) o)
-    {
-        env_ = boost::move(o.env_);
-        triggerSystem_ = boost::move(o.triggerSystem_);
-        return *this;
-    }
     typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
     
     struct PhysicsReturnT
     {
-    	PhysicsReturnT(
-            FrameDepartureT const &Ndepartures,
-            FrameView const &Nview,
-            bool NcurrentPlayerFrame,
-    		bool NnextPlayerFrame,
-    		bool NcurrentWinFrame) :
-                departures(Ndepartures),
-                view(Nview),
-                currentPlayerFrame(NcurrentPlayerFrame),
-                nextPlayerFrame(NnextPlayerFrame),
-                currentWinFrame(NcurrentWinFrame)
-    	{}
     	FrameDepartureT departures;
         FrameView view;
     	bool currentPlayerFrame;
@@ -80,7 +47,6 @@ public:
 private:
     Environment env_;
     TriggerSystem triggerSystem_;
-    BOOST_COPYABLE_AND_MOVABLE(PhysicsEngine)
 };
 inline void swap(PhysicsEngine &l, PhysicsEngine &r)
 {

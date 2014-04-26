@@ -22,7 +22,7 @@ public:
         canvas.drawLine(layer, xa/100.f, ya/100.f, xb/100.f, yb/100.f, width/100.f, colour);
     }
     virtual std::size_t clone_size() const {
-        return sizeof(*this);
+        return sizeof *this;
     }
     virtual LineGlitz *perform_clone(void *memory) const {
         return new (memory) LineGlitz(*this);
@@ -37,9 +37,6 @@ public:
         return asTie() == actual_other.asTie();
     }
 private:
-    boost::tuple<int const &, int const &, int const &, int const &, int const &, int const &, unsigned const &> asTie() const {
-        return boost::tie(layer, xa, ya, xb, yb, width, colour);
-    }
     virtual int order_ranking() const {
         return 1;
     }
@@ -55,6 +52,10 @@ private:
     //Colour packed as |RRRRRRRR|GGGGGGGG|BBBBBBBB|*unused*|
     //Why? -- because lua is all ints, and I can't be bothered with a better interface for such a temporary thing.
     unsigned colour;
+    
+    auto asTie() const -> decltype(boost::tie(layer, xa, ya, xb, yb, width, colour)) {
+        return boost::tie(layer, xa, ya, xb, yb, width, colour);
+    }
 };
 }
 #endif

@@ -12,9 +12,9 @@
 #include "Foreach.h"
 
 namespace hg {
+#define luaassert assert
 using boost::filesystem::path;
 namespace fs = boost::filesystem;
-
 
 namespace {
     path translateToActualPath(std::string const &packageName, path const &levelPath) {
@@ -57,12 +57,11 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelP
     boost::push_back(luaFiles, luaPackageNames | boost::adaptors::transformed(LoadNamedModule(levelPath)));
 
     return
-      unique_ptr<DirectLuaTriggerSystem>(
-        new DirectLuaTriggerSystem(
+      make_unique<DirectLuaTriggerSystem>(
           std::vector<char>(system.begin(), system.end()),
           luaFiles,
-          readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").toad,
-          readField<int>(L, "arrivalLocationsSize")));
+          readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value,
+          readField<int>(L, "arrivalLocationsSize"));
 }
 
 static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path const &levelPath) {
@@ -73,7 +72,7 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path
     }
     else {
         std::cerr << type << std::endl;
-        assert(false && "unrecognised triggerSystem type");
+        luaassert(false && "unrecognised triggerSystem type");
     }
 }
 
@@ -100,13 +99,13 @@ Level loadLevelFromFile(
     FrameID guyStartTime(initialGuy.arrivalTime, UniverseID(timelineLength));
     TriggerSystem triggerSystem(loadTriggerSystem(L, "triggerSystem", levelPath));
     
-    return Level(
-    	boost::move(speedOfTime),
-    	boost::move(timelineLength),
-    	boost::move(environment),
-    	boost::move(initialArrivals),
-    	boost::move(guyArrival),
-    	boost::move(guyStartTime),
-    	boost::move(triggerSystem));
+    return {
+    	std::move(speedOfTime),
+    	std::move(timelineLength),
+    	std::move(environment),
+    	std::move(initialArrivals),
+    	std::move(guyArrival),
+    	std::move(guyStartTime),
+    	std::move(triggerSystem)};
 }
 } //namespace hg

@@ -10,22 +10,22 @@ Box::Box(
     int illegalPortal,
     int arrivalBasis,
     TimeDirection timeDirection):
-        x_(x), y_(y),
-        xspeed_(xspeed), yspeed_(yspeed),
-        size_(size),
-        illegalPortal_(illegalPortal),
-        arrivalBasis_(arrivalBasis),
-        timeDirection_(timeDirection)
+        x(x), y(y),
+        xspeed(xspeed), yspeed(yspeed),
+        size(size),
+        illegalPortal(illegalPortal),
+        arrivalBasis(arrivalBasis),
+        timeDirection(timeDirection)
 {
 }
 
 Box::Box(Box const &o, hg::TimeDirection timeDirection) :
-        x_(o.x_), y_(o.y_),
-        xspeed_(o.xspeed_), yspeed_(o.yspeed_),
-        size_(o.size_),
-        illegalPortal_(o.illegalPortal_),
-        arrivalBasis_(o.arrivalBasis_),
-        timeDirection_(timeDirection)
+        x(o.x), y(o.y),
+        xspeed(o.xspeed), yspeed(o.yspeed),
+        size(o.size),
+        illegalPortal(o.illegalPortal),
+        arrivalBasis(o.arrivalBasis),
+        timeDirection(timeDirection)
 {
 }
 
@@ -39,29 +39,20 @@ bool Box::operator<(Box const &o) const
     return asTie() < o.asTie();
 }
 
-boost::tuple<
-        int const &, int const &, int const &, int const &, int const &,
-        int const &, int const &,
-        TimeDirection const &>
-Box::asTie() const {
-    return boost::tie(
-            x_, y_, xspeed_, yspeed_, size_,
-            illegalPortal_, arrivalBasis_,
-            timeDirection_);
-}
+
 
 std::ostream &operator<<(std::ostream &str, Box const &b)
 {
     return 
       str << "{"
-          <<   "x=" << b.x_
-          << ", y=" << b.y_
-          << ", xspeed=" << b.xspeed_
-          << ", yspeed=" << b.yspeed_
-          << ", size=" << b.size_
-          << ", illegalPortal=" << b.illegalPortal_
-          << ", arrivalBasis=" << b.arrivalBasis_
-          << ", timeDirection=" << b.timeDirection_
+          <<   "x=" << b.x
+          << ", y=" << b.y
+          << ", xspeed=" << b.xspeed
+          << ", yspeed=" << b.yspeed
+          << ", size=" << b.size
+          << ", illegalPortal=" << b.illegalPortal
+          << ", arrivalBasis=" << b.arrivalBasis
+          << ", timeDirection=" << b.timeDirection
           << "}";
 }
 }//namespace hg

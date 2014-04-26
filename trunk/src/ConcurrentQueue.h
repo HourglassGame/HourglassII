@@ -4,56 +4,51 @@
 #include <boost/thread.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/container/deque.hpp>
-#include <boost/move/move.hpp>
-#include <iostream>
+#include <utility>
 
 namespace hg {
 //Single-reader single-writer concurrent queue.
 //(Quite possible can handle multi-reader multi-writer too, check before using)
-template<typename T, typename Alloc = typename multi_thread_allocator<T>::type >
+template<typename T, typename Alloc = typename multi_thread_allocator<T>::type>
 class ConcurrentQueue
 {
 public:
     //Not safe for concurrent execution
-    ConcurrentQueue() :
-        mutex_(),
-        cond_(),
-        queue_()
-    {}
+    ConcurrentQueue() = default;
     ConcurrentQueue(ConcurrentQueue const &o) :
-        mutex_(),
-        cond_(),
-        queue_(o.queue_)
+        mutex(),
+        cond(),
+        queue(o.queue)
     {
     }
-    ConcurrentQueue &operator=(BOOST_COPY_ASSIGN_REF(ConcurrentQueue) o)
+    ConcurrentQueue &operator=(ConcurrentQueue const &o)
     {
-        queue_ = o.queue_;
+        queue = o.queue;
         return *this;
     }
-    ConcurrentQueue(BOOST_RV_REF(ConcurrentQueue) o) :
-        mutex_(),
-        cond_(),
-        queue_(boost::move(o.queue_))
+    ConcurrentQueue(ConcurrentQueue &&o) :
+        mutex(),
+        cond(),
+        queue(std::move(o.queue))
     {
     }
-    ConcurrentQueue &operator=(BOOST_RV_REF(ConcurrentQueue) o)
+    ConcurrentQueue &operator=(ConcurrentQueue &&o)
     {
-        queue_ = boost::move(o.queue_);
+        queue = std::move(o.queue);
         return *this;
     }
     
     //push can be safely executed while pop is executing in a different thread.
-    void push(BOOST_RV_REF(T) toPush)
+    void push(T &&toPush)
     {
         bool shouldNotify;
         {
-            boost::lock_guard<boost::mutex> lock(mutex_);
-            shouldNotify = queue_.empty();
-            queue_.push_back(boost::move(toPush));
+            boost::lock_guard<boost::mutex> lock(mutex);
+            shouldNotify = queue.empty();
+            queue.push_back(std::move(toPush));
         }
         if (shouldNotify) {
-            cond_.notify_one();
+            cond.notify_one();
         }
     }
     //pop can be safely executed while push is executing in a different thread.
@@ -61,19 +56,18 @@ public:
     //until an element is available.
     T pop()
     {
-        boost::unique_lock<boost::mutex> lock(mutex_);
-        while (queue_.empty()) {
-            cond_.wait(lock);
+        boost::unique_lock<boost::mutex> lock(mutex);
+        while (queue.empty()) {
+            cond.wait(lock);
         }
-        T retv(boost::move(queue_.front()));
-        queue_.pop_front();
-        return boost::move(retv);
+        T retv(std::move(queue.front()));
+        queue.pop_front();
+        return std::move(retv);
     }
 private:
-    boost::mutex mutex_;
-    boost::condition_variable cond_;
-    boost::container::deque<T, Alloc> queue_;
-    BOOST_COPYABLE_AND_MOVABLE(ConcurrentQueue)
+    mutable boost::mutex mutex;
+    mutable boost::condition_variable cond;
+    boost::container::deque<T, Alloc> queue;
 };
 }
 #endif //HG_CONCURRENT_QUEUE_H

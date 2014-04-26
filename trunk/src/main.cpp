@@ -9,12 +9,14 @@
 #include <string>
 #include <iostream>
 
+#include <boost/unordered_set.hpp>
+
 namespace hg {
     sf::Font const *defaultFont;
 }
+
 namespace {
     int run_main(std::vector<std::string> const &args);
-    void unsync_iostreams_with_stdio();
     void initialseCurrentPath(std::vector<std::string> const &args);
     
     struct GlobalResourceHolder {
@@ -41,7 +43,8 @@ int main(int argc, char *argv[])
 {
     std::vector<std::string> args(argv, argv+argc);
 
-    unsync_iostreams_with_stdio();
+    std::ios::sync_with_stdio(false);
+
     initialseCurrentPath(args);
     GlobalResourceHolder global_resources;
 
@@ -55,18 +58,6 @@ int main(int argc, char *argv[])
 
 
 namespace  {
-void unsync_iostreams_with_stdio() {
-    std::cin.sync_with_stdio(false);
-    std::cout.sync_with_stdio(false);
-    std::cerr.sync_with_stdio(false);
-    std::clog.sync_with_stdio(false);
-    
-    std::wcin.sync_with_stdio(false);
-    std::wcout.sync_with_stdio(false);
-    std::wcerr.sync_with_stdio(false);
-    std::wclog.sync_with_stdio(false);
-}
-
 
 void initialseCurrentPath(std::vector<std::string> const &args)
 {
@@ -92,9 +83,6 @@ int run_main(std::vector<std::string> const &args) {
     return hg::run_hourglassii();
 }
 }
-
-
-
 
 #if 0
 namespace {
@@ -228,7 +216,9 @@ int new_run_main(std::vector<std::string> const &args) {
         scenes.pop_back();
         auto newScenes = currentScene.run(window);
         scenes.insert(
-            scenes.end(), make_move_iterator(newScenes.begin()), make_move_iterator(newScenes.end()));
+            scenes.end(),
+            make_move_iterator(newScenes.begin()),
+            make_move_iterator(newScenes.end()));
     }
     return EXIT_SUCCESS;
 }

@@ -2,36 +2,35 @@
 #define HG_LUA_INTERRUPTION_H
 #include "lua/lua.h"
 #include "OperationInterrupter.h"
-#include <boost/move/move.hpp>
+#include <utility>
 namespace hg {
 class LuaInterruptionHandle {
 public:
-    LuaInterruptionHandle() : L_(), functionHandle_(){}
+    LuaInterruptionHandle() = default;
     LuaInterruptionHandle(lua_State *L, OperationInterrupter::FunctionHandle functionHandle) :
-        L_(L), functionHandle_(boost::move(functionHandle)) {}
+        L(L), functionHandle(std::move(functionHandle)) {}
     
-    LuaInterruptionHandle(BOOST_RV_REF(LuaInterruptionHandle) o) :
-        L_(o.L_), functionHandle_(boost::move(o.functionHandle_))
+    LuaInterruptionHandle(LuaInterruptionHandle &&o) :
+        L(o.L), functionHandle(std::move(o.functionHandle))
     {
-        o.L_ = 0;
+        o.L = nullptr;
     }
-    LuaInterruptionHandle &operator=(BOOST_RV_REF(LuaInterruptionHandle) o) {
+    LuaInterruptionHandle &operator=(LuaInterruptionHandle &&o) {
         swap(o);
         return *this;
     }
     void swap(LuaInterruptionHandle &o) {
-        boost::swap(L_, o.L_);
-        boost::swap(functionHandle_, o.functionHandle_);
+        boost::swap(L, o.L);
+        boost::swap(functionHandle, o.functionHandle);
     }
     ~LuaInterruptionHandle() {
-        if (L_) {
-            lua_sethook(L_, 0, 0, 0);
+        if (L) {
+            lua_sethook(L, 0, 0, 0);
         }
     }
 private:
-    lua_State *L_;
-    OperationInterrupter::FunctionHandle functionHandle_;
-    BOOST_MOVABLE_BUT_NOT_COPYABLE(LuaInterruptionHandle)
+    lua_State *L;
+    OperationInterrupter::FunctionHandle functionHandle;
 };
 inline void swap(LuaInterruptionHandle &l, LuaInterruptionHandle &r) { l.swap(r); }
 

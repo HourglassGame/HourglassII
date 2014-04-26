@@ -39,7 +39,7 @@ public:
         GetBase<typename ConstPtr_of<ObjectT>::type>,
         typename vector_of<typename ConstPtr_of<ObjectT>::type>::type const> getList() const;
 
-    void add(ObjectList<ListTypes> const& o);
+    void add(ObjectList<ListTypes> const &o);
 
     template<typename SinglePassRange>
     void addRange(SinglePassRange const &toAdd);
@@ -55,11 +55,11 @@ private:
         ListTypes,
         vector_of<
             ConstPtr_of<boost::mpl::_1> > >::type ListType;
-    ListType list_;
+    ListType list;
 };
 
 template<typename ListTypes>
-void swap(ObjectPtrList<ListTypes>& l, ObjectPtrList<ListTypes>& r);
+void swap(ObjectPtrList<ListTypes> &l, ObjectPtrList<ListTypes> &r);
 
 template<typename ListTypes>
 template<typename ObjectT>
@@ -70,7 +70,7 @@ ObjectPtrList<ListTypes>::getList() const
         boost::fusion::deref(
             boost::fusion::find<
                 typename vector_of<typename ConstPtr_of<ObjectT>::type >::type
-            >(list_))
+            >(list))
         | boost::adaptors::transformed(GetBase<typename ConstPtr_of<ObjectT>::type>());
 }
 template<typename ListTypes>
@@ -81,7 +81,7 @@ void ObjectPtrList<ListTypes>::addRange(SinglePassRange const &toAdd)
         boost::fusion::deref(
             boost::fusion::find<
                 typename vector_of<typename ConstPtr_of<typename boost::range_value<SinglePassRange>::type>::type>::type
-            >(list_)),
+            >(list)),
         toAdd);
 }
 

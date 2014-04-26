@@ -22,10 +22,14 @@
 
 #include "Foreach.h"
 namespace hg {
+#define luaassert assert
+
 
 static int preloadReset(lua_State *L) {
+    //preloadReset is equivalent to the lua function:
     //return deepcopy(upvalues[1])
     
+    checkstack(L, 5);
     lua_newtable(L);//[newPreload]
     lua_pushvalue(L, lua_upvalueindex(1)); //[newPreload, proto]
     
@@ -42,6 +46,7 @@ static int preloadReset(lua_State *L) {
 
 static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const &extraChunks) {
     //protoPreload = makeTable(extraChunks.name -> load(extraChunks.chunk))
+    checkstack(L, 2);
     lua_createtable(L, 0, extraChunks.size());//[protoPreload]
     foreach (LuaModule const &mod, extraChunks) {
         pushFunctionFromVector(L, mod.chunk, mod.name);//[protoPreload, chunk]
@@ -55,23 +60,25 @@ static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const
 
 //To identify which asserts are actual asserts, and which are checking results from lua
 //luaassert is checking results from lua, and should eventually be replaced with an exception
-#define luaassert assert
+
 TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &interrupter) const
 {
     LuaState &sharedState(luaStates_->get());
-    bool const is_new = !sharedState.ptr; (void)is_new;
-    if (!sharedState.ptr) {
-        LuaState L((LuaState::new_state_t()));
+    //Load if not already loaded.
+    //Reload if status != LUA_OK to clear possible errors in case of previous TriggerFrameState
+    //execution being exited through exception. (Should never happen currently, but maybe will in future)
+    if (!sharedState.ptr || lua_status(sharedState.ptr) != LUA_OK) {
+        assert(!sharedState.ptr && "if lua_status != LUA_OK, you are doing something unusual; think about what you are doing and perhaps remove this assert");
+        LuaState newLuaState{LuaState::new_state_t()};
+        lua_State *L = newLuaState.ptr;
 
-        loadSandboxedLibraries(L.ptr);
+        loadSandboxedLibraries(L);
         
-        pushFunctionFromVector(L.ptr, compiledMainChunk_, "triggerSystem");
-        setUpPreloadResetFunction(L.ptr, compiledExtraChunks_);
+        pushFunctionFromVector(L, compiledMainChunk_, "triggerSystem");
+        setUpPreloadResetFunction(L, compiledExtraChunks_);
         
-        sharedState = boost::move(L);
+        sharedState = boost::move(newLuaState);
     }
-    
-    //assert(!sharedState.ud->is_interrupted());
 
 	return TriggerFrameState(
 		multi_thread_new<DirectLuaTriggerFrameState>(
@@ -99,7 +106,7 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
 {
     lua_State *L(L_.ptr);
     LuaStackManager stackSaver(L);
-    luaL_checkstack(L, 1, 0);
+    checkstack(L, 1);
     lua_pushvalue(L, -1);
     restoreGlobals(L);
     lua_call(L, 0, 0);
@@ -287,10 +294,10 @@ Glitz toGlitz(lua_State *L)
         int y(readField<int>(L, "y"));
         int size(readField<int>(L, "size"));
         unsigned colour(readColourField(L, "colour"));
-        return Glitz(multi_thread_new<TextGlitz>(layer, text, x, y, size, colour));
+        return Glitz(multi_thread_new<TextGlitz>(layer, std::move(text), x, y, size, colour));
     }
     std::cerr << "Unknown Glitz Type: " << type << "\n";
-    assert("Unknown Glitz Type" && false);
+    luaassert("Unknown Glitz Type" && false);
 }
 
 Box readBoxField(lua_State *L, char const *fieldName, std::size_t arrivalLocationsSize)
@@ -1023,7 +1030,6 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState()
 {
-    //interrupter_.interrupt();
 }
 
 namespace {

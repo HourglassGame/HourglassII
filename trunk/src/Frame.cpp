@@ -13,66 +13,68 @@
 
 namespace hg {
 Frame::Frame(int frameNumber, Universe &universe):
-        frameNumber_(frameNumber),
-        universe_(&universe),
-        departures_(),
-        arrivals_(),
-        view_()
+        frameNumber(frameNumber),
+        universe(&universe),
+        departures(),
+        arrivals(),
+        view()
 {
 }
 
-void Frame::correctUniverse(Universe &newUniverse)
+void Frame::correctUniverse(Universe &newUniverse) noexcept
 {
-    universe_ = &newUniverse;
+    universe = &newUniverse;
 }
 
 void Frame::correctDepartureFramePointers(FramePointerUpdater const &updater) {
     FrameDeparturesT updatedDepartures;
-    foreach (auto &departurePair, departures_) {
+    foreach (auto &departurePair, departures) {
         updatedDepartures[updater.updateFrame(departurePair.first)] = std::move(departurePair.second);
     }
-    departures_.swap(updatedDepartures);
+    departures.swap(updatedDepartures);
 }
 void Frame::correctArrivalFramePointers(FramePointerUpdater const &updater) {
     FrameArrivalsT updatedArrivals;
-    foreach (auto &arrivalPair, arrivals_) {
+    foreach (auto &arrivalPair, arrivals) {
         bool inserted = updatedArrivals.insert(std::make_pair(
                             updater.updateFrame(arrivalPair.first), arrivalPair.second));
         assert(inserted);
     }
-    arrivals_.swap(updatedArrivals);
+    arrivals.swap(updatedArrivals);
 }
 void Frame::correctArrivalObjectListPointers() {
-    for (auto &arrivalPair: arrivals_) {
+    for (auto &arrivalPair: arrivals) {
         if (arrivalPair.first) {
-            arrivalPair.second = &arrivalPair.first->departures_.at(this);
+            auto it = arrivalPair.first->departures.find(this);
+            assert(it != arrivalPair.first->departures.end());
+            arrivalPair.second = &it->second;
         }
     }
 }
 
 Frame const *Frame::nextFrame(TimeDirection direction) const {
     assert(direction != INVALID);
-    return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
+    return nextFrameInSameUniverse(direction) ? universe->getArbitraryFrame(frameNumber + direction) : nullptr;
 }
 
 Frame *Frame::nextFrame(TimeDirection direction) {
     assert(direction != INVALID);
-    return nextFrameInSameUniverse(direction) ? universe_->getArbitraryFrame(frameNumber_ + direction) : 0;
+    return nextFrameInSameUniverse(direction) ? universe->getArbitraryFrame(frameNumber + direction) : nullptr;
 }
 
 bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
-    return (frameNumber_ != 0 && direction == REVERSE)
-            || (frameNumber_ != universe_->getTimelineLength() - 1 && direction == FORWARDS);
+    return (frameNumber != 0 && direction == REVERSE)
+            || (frameNumber != universe->getTimelineLength() - 1 && direction == FORWARDS);
 }
 
 Universe const &Frame::getUniverse() const {
-    return *universe_;
+    return *universe;
 }
 Universe &Frame::getUniverse() {
-    return *universe_;
+    return *universe;
 }
 int Frame::getFrameNumber() const {
-    return frameNumber_;
+    return frameNumber;
 }
 
 Frame const *nextFrame(Frame const *frame, TimeDirection direction)
@@ -118,7 +120,7 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &&newDeparture)
     //filter so that things can safely depart to the null frame
     //such departures do not create arrivals or updated frames, but are saved as departures.
     auto newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull));
-    auto oldDepartureFiltered(departures_ | boost::adaptors::filtered(FrameNotNull));
+    auto oldDepartureFiltered(departures | boost::adaptors::filtered(FrameNotNull));
 
     auto ni(boost::begin(newDepartureFiltered));
     auto const nend(boost::end(newDepartureFiltered));
@@ -167,7 +169,7 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &&newDeparture)
         ++ni;
     }
 end:
-    departures_.swap(newDeparture);
+    departures.swap(newDeparture);
     //This code is an attempt to put the deletion of the
     //old departures_ into the parallel region of the program's
     //execution.
@@ -179,7 +181,7 @@ ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal> retv;
     foreach (ObjectList<Normal> const &value,
-    		arrivals_
+    		arrivals
             | boost::adaptors::map_values
             | boost::adaptors::indirected)
     {
@@ -191,9 +193,9 @@ ObjectPtrList<Normal> Frame::getPrePhysics() const
 
 ObjectPtrList<Normal> Frame::getPostPhysics() const
 {
-    ObjectPtrList<Normal>  retv;
+    ObjectPtrList<Normal> retv;
     foreach (ObjectList<Normal> const &value,
-    		departures_ | boost::adaptors::map_values)
+    		departures | boost::adaptors::map_values)
     {
         retv.add(value);
     }
@@ -202,13 +204,14 @@ ObjectPtrList<Normal> Frame::getPostPhysics() const
 }
 
 void Frame::setPermanentArrival(ObjectList<Normal> const *newPermanentArrival) {
-    //tbb::concurrent_hash_map doesn't supply a function that either change
-    //or insert a mapping (like std::map::operator[]), so we implement our own.
+    //tbb::concurrent_hash_map doesn't supply a function that either changes
+    //or inserts a mapping depending on whether the given key is already in the map
+    //(like std::map::operator[]), so we implement our own.
     auto toSet = std::make_pair(nullptr, newPermanentArrival);
-    bool didInsert(arrivals_.insert(toSet));
+    bool didInsert(arrivals.insert(toSet));
     if (!didInsert) {
         FrameArrivalsT::accessor access;
-        if (arrivals_.find(access, toSet.first))
+        if (arrivals.find(access, toSet.first))
         {
             access->second = toSet.second;
             return;
@@ -220,7 +223,7 @@ void Frame::setPermanentArrival(ObjectList<Normal> const *newPermanentArrival) {
 void Frame::insertArrival(
     FrameArrivalsT::value_type const &toInsert)
 {
-    bool didInsert(arrivals_.insert(toInsert));
+    bool didInsert(arrivals.insert(toInsert));
     (void) didInsert;
     assert(didInsert && "Should only call insert when the element does not exist");
 }
@@ -228,7 +231,7 @@ void Frame::changeArrival(
     FrameArrivalsT::value_type const &toChange)
 {
     FrameArrivalsT::accessor access;
-    if (arrivals_.find(access, toChange.first))
+    if (arrivals.find(access, toChange.first))
     {
         access->second = toChange.second;
         return;
@@ -237,7 +240,7 @@ void Frame::changeArrival(
 }
 void Frame::clearArrival(Frame const *toClear)
 {
-    bool didErase(arrivals_.erase(toClear));
+    bool didErase(arrivals.erase(toClear));
     (void) didErase;
     assert(didErase && "Should only call Erase when the element does exist");
 }

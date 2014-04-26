@@ -29,8 +29,8 @@ public:
     //newDeparture may get its contents pilfered
     FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT &&newDeparture);
 
-    void setView(FrameView &newView) { view_.swap(newView); }
-    FrameView const &getView() const { return view_; }
+    void setView(FrameView &&newView) { view.swap(newView); }
+    FrameView const &getView() const { return view; }
     /**
      * Returns a flattened view of the arrivals to 'time' for passing to the physics engine.
      */
@@ -46,15 +46,13 @@ public:
 
     //Used to initially set the pointer to the permanent arrival, and to change the pointers
     //when the TimeEngine is copied. Note that if the newPermanentArrival is not equivalent
-    //to the old permanent arrival, the frame must be re-executed (by WorldState).
+    //to the permanent arrival already held by the frame, the frame must be re-executed (by WorldState).
     void setPermanentArrival(ObjectList<Normal> const *newPermanentArrival);
 private:
-    friend class FrameID;
     friend class Universe;
-    friend class UniverseID;
 
     //These "correct" functions are for rearranging pointers when universes get copied.
-    void correctUniverse(Universe &newUniverse);
+    void correctUniverse(Universe &newUniverse) noexcept;
     void correctDepartureFramePointers(FramePointerUpdater const &updater);
     void correctArrivalObjectListPointers();
     void correctArrivalFramePointers(FramePointerUpdater const &updater);
@@ -82,16 +80,24 @@ private:
     void clearArrival(Frame const *toClear);
 
     // Position of frame within universe_
-    int frameNumber_;
+    int frameNumber;
     // Back-link to universe which this frame is in
-    Universe *universe_;
+    Universe *universe;
 
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
-    FrameDeparturesT departures_;
-    FrameArrivalsT arrivals_;
+    FrameDeparturesT departures;
+    FrameArrivalsT arrivals;
 
-    FrameView view_;
+    FrameView view;
 };
+
+bool isNullFrame(Frame const *frame);
+Frame const *nextFrame(Frame const *frame, TimeDirection direction);
+Frame *nextFrame(Frame *frame, TimeDirection direction);
+bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction);
+Universe &getUniverse(Frame *frame);
+Universe const &getUniverse(Frame const *frame);
+int getFrameNumber(Frame const *frame);
 
 inline void swap(Frame &l, Frame &r)
 {

@@ -353,7 +353,7 @@ void setPackagePreloadResetFunction(lua_State *L) {
 }
 
 void restoreGlobals(lua_State *L) {
-    assert(L->status == 0);
+    assert(L->status == LUA_OK);
     //registry.globals.outer = {}
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);//[globals]
     UDPT *globals(static_cast<UDPT *>(lua_touserdata(L, -1)));//[globals]

@@ -406,7 +406,7 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
         toad.push_back(std::make_pair(offset, default_));
         lua_pop(L, 1);
     }
-    return TriggerOffsetsAndDefaults(toad);
+    return {toad};
 }
 
 template<>

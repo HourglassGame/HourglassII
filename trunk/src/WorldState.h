@@ -40,31 +40,8 @@ public:
     WorldState(WorldState const& o);
     WorldState &operator=(WorldState const& o);
 
-    WorldState(WorldState&& o) :
-        timeline_(std::move(o.timeline_)),
-        playerInput_(std::move(o.playerInput_)),
-        frameUpdateSet_(std::move(o.frameUpdateSet_)),
-        physics_(std::move(o.physics_)),
-        nextPlayerFrames_(std::move(o.nextPlayerFrames_)),
-        currentPlayerFrames_(std::move(o.currentPlayerFrames_)),
-        currentWinFrames_(std::move(o.currentWinFrames_))
-    {
-        //std::cout << "WorldState " << (void*)this << " move copied from " << (void*)&o << "\n";
-    }
-     
-    WorldState &operator=(WorldState&& o)
-    {
-        timeline_ = std::move(o.timeline_);
-        playerInput_ = std::move(o.playerInput_);
-        frameUpdateSet_ = std::move(o.frameUpdateSet_);
-        physics_ = std::move(o.physics_);
-        nextPlayerFrames_ = std::move(o.nextPlayerFrames_);
-        currentPlayerFrames_ = std::move(o.currentPlayerFrames_);
-        currentWinFrames_ = std::move(o.currentWinFrames_);
-        //std::cout << "WorldState " << (void*)this << " move assigned from " << (void*)&o << "\n";
-        return *this;
-    }
-
+    WorldState(WorldState &&o) = default;
+    WorldState &operator=(WorldState &&o) = default;
     /**
      * Updates the state of the world once.
      * Throws PlayerVictoryException if the player has won

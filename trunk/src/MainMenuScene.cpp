@@ -7,7 +7,7 @@
 namespace hg {
 extern sf::Font const *defaultFont;
 struct MenuItem {
-    variant<WindowClosed_tag, RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
+    variant<RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
     std::string text;
 };
 
@@ -31,7 +31,7 @@ static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &
     window.display();
 }
 
-variant<WindowClosed_tag, RunALevel_tag, RunAReplay_tag, Exit_tag>
+variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
 run_main_menu(hg::RenderWindow &window)
 {
     int currentItem = 0;
@@ -68,7 +68,7 @@ run_main_menu(hg::RenderWindow &window)
                     }
                     break;
                   case sf::Event::Closed:
-                    return WindowClosed_tag{};
+                    throw WindowClosed_exception{};
                   break;
                   case sf::Event::Resized:
                     mainMenuDrawn = false;

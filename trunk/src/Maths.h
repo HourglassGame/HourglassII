@@ -43,7 +43,7 @@ Integral flooredModulo(Integral a, Integral n) {
 
 
 template<typename T>
-T clamp(T lower, T val, T upper) {
+T const& clamp(T const& lower, T const& val, T const& upper) {
     return std::max(lower, std::min(val, upper));
 }
 

@@ -17,38 +17,52 @@ public:
         TimeDirection timeDirection);
     Box(Box const &o, TimeDirection timeDirection);
 
-    int getX()      const { return x_; }
-    int getY()      const { return y_; }
-    int getXspeed() const { return xspeed_; }
-    int getYspeed() const { return yspeed_; }
-    int getSize()   const { return size_; }
-    int getWidth()  const { return size_; }
-    int getHeight() const { return size_; }
-    int getIllegalPortal()    const { return illegalPortal_; }
-	int getArrivalBasis() const { return arrivalBasis_; }
+    int getX()      const { return x; }
+    int getY()      const { return y; }
+    int getXspeed() const { return xspeed; }
+    int getYspeed() const { return yspeed; }
+    int getSize()   const { return size; }
+    int getWidth()  const { return size; }
+    int getHeight() const { return size; }
+    int getIllegalPortal()    const { return illegalPortal; }
+	int getArrivalBasis() const { return arrivalBasis; }
     TimeDirection 
-        getTimeDirection()    const { return timeDirection_; }
+        getTimeDirection()    const { return timeDirection; }
 
     bool operator==(Box const &o) const;
     bool operator<(Box const &o) const;
 
 private:
+/*
     boost::tuple<
         int const &, int const &, int const &, int const &, int const &,
         int const &, int const &,
         TimeDirection const &>
     asTie() const;
+*/
+    int x;
+    int y;
+    int xspeed;
+    int yspeed;
+    int size;
 
-    int x_;
-    int y_;
-    int xspeed_;
-    int yspeed_;
-    int size_;
+    int illegalPortal;
+    int arrivalBasis;
 
-    int illegalPortal_;
-    int arrivalBasis_;
-
-    TimeDirection timeDirection_;
+    TimeDirection timeDirection;
+    
+    auto asTie() const -> decltype(
+            boost::tie(
+                x, y, xspeed, yspeed, size,
+                illegalPortal, arrivalBasis,
+                timeDirection))
+    {
+        return boost::tie(
+                x, y, xspeed, yspeed, size,
+                illegalPortal, arrivalBasis,
+                timeDirection);
+    }
+    
     //For debugging
     friend std::ostream &operator<<(std::ostream &str, Box const &b);
 };

@@ -6,40 +6,24 @@ namespace hg {
 GlitzPersister::GlitzPersister(
     Glitz const &forwardsGlitz, Glitz const &reverseGlitz,
     unsigned lifetime, TimeDirection timeDirection) :
-        forwardsGlitz_(forwardsGlitz), reverseGlitz_(reverseGlitz),
-        framesLeft_(lifetime), timeDirection_(timeDirection)
+        forwardsGlitz(forwardsGlitz), reverseGlitz(reverseGlitz),
+        framesLeft(lifetime), timeDirection(timeDirection)
 {
 }
 ObjectAndTime<GlitzPersister, Frame *> GlitzPersister::runStep(Frame *frame) const
 {
     return ObjectAndTime<GlitzPersister, Frame*>(
         GlitzPersister(
-            forwardsGlitz_, reverseGlitz_,
-            framesLeft_ - 1, timeDirection_),
-        framesLeft_ ? nextFrame(frame, timeDirection_) : 0);
+            forwardsGlitz, reverseGlitz,
+            framesLeft - 1, timeDirection),
+        framesLeft ? nextFrame(frame, timeDirection) : nullptr);
 }
-Glitz const &GlitzPersister::getForwardsGlitz() const{ return forwardsGlitz_; }
-Glitz const &GlitzPersister::getReverseGlitz() const { return reverseGlitz_; }
 bool GlitzPersister::operator==(GlitzPersister const &o) const
 {
-    return
-        boost::tie(
-            forwardsGlitz_, reverseGlitz_,
-            framesLeft_,timeDirection_)
-        ==
-        boost::tie(
-            o.forwardsGlitz_, o.reverseGlitz_,
-            o.framesLeft_, o.timeDirection_);
+    return as_tie() == o.as_tie();
 }
 bool GlitzPersister::operator<(GlitzPersister const &o) const
 {
-    return
-        boost::tie(
-            forwardsGlitz_, reverseGlitz_,
-            framesLeft_,timeDirection_)
-        <
-        boost::tie(
-            o.forwardsGlitz_, o.reverseGlitz_,
-            o.framesLeft_, o.timeDirection_);
+    return as_tie() < o.as_tie();
 }
 }

@@ -11,7 +11,7 @@ public:
     BoxGlitzAdder(
         mt::std::vector<Glitz>::type &forwardsGlitz,
         mt::std::vector<Glitz>::type &reverseGlitz) :
-    forwardsGlitz_(&forwardsGlitz), reverseGlitz_(&reverseGlitz)
+    forwardsGlitz(&forwardsGlitz), reverseGlitz(&reverseGlitz)
     {}
     //Adds the glitz that would be appropriate for a box
     //with the given characteristics
@@ -32,15 +32,15 @@ public:
                 position.x, position.y,
                 size, size));
         
-        forwardsGlitz_->push_back(
+        forwardsGlitz->push_back(
             timeDirection == FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);
         
-        reverseGlitz_->push_back(
+        reverseGlitz->push_back(
             timeDirection == REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
     }
 private:
-    mt::std::vector<Glitz>::type *forwardsGlitz_;
-    mt::std::vector<Glitz>::type *reverseGlitz_;
+    mt::std::vector<Glitz>::type *forwardsGlitz;
+    mt::std::vector<Glitz>::type *reverseGlitz;
 };
 }
 #endif //HG_BOX_GLITZ_ADDER_H

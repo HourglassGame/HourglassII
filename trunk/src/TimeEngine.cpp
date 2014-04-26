@@ -6,47 +6,38 @@
 #include <boost/swap.hpp>
 
 namespace hg {
-TimeEngine::TimeEngine(BOOST_RV_REF(Level) level, OperationInterrupter &interrupter) :
-        speedOfTime_(level.speedOfTime),
-        worldState_(
+TimeEngine::TimeEngine(Level &&level, OperationInterrupter &interrupter) :
+        speedOfTime(level.speedOfTime),
+        worldState(
             level.timelineLength,
-            boost::move(level.initialGuy),
-            boost::move(level.guyStartTime),
-            PhysicsEngine(Environment(level.environment), boost::move(level.triggerSystem)),
-            boost::move(level.initialObjects),
+            std::move(level.initialGuy),
+            std::move(level.guyStartTime),
+            PhysicsEngine(Environment(level.environment), std::move(level.triggerSystem)),
+            std::move(level.initialObjects),
             interrupter),
-        wall_(level.environment.wall)
+        wall(level.environment.wall)
 {
 }
 
-void TimeEngine::swap(TimeEngine &o) {
-    boost::swap(speedOfTime_, o.speedOfTime_);
-    boost::swap(worldState_, o.worldState_);
-    boost::swap(wall_, o.wall_);
+void TimeEngine::swap(TimeEngine &o) noexcept {
+    boost::swap(speedOfTime, o.speedOfTime);
+    boost::swap(worldState, o.worldState);
+    boost::swap(wall, o.wall);
 }
 
 TimeEngine::RunResult
 TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterrupter &interrupter)
 {
-    worldState_.addNewInputData(newInputData);
+    worldState.addNewInputData(newInputData);
     FrameListList updatedList;
-    updatedList.reserve(speedOfTime_);
-    for (unsigned int i(0); i < speedOfTime_; ++i) {
-        updatedList.push_back(worldState_.executeWorld(interrupter));
+    updatedList.reserve(speedOfTime);
+    for (unsigned int i(0); i < speedOfTime; ++i) {
+        updatedList.push_back(worldState.executeWorld(interrupter));
     }
     return RunResult{
-        worldState_.getCurrentPlayerFrame(),
-        worldState_.getNextPlayerFrame(),
-        boost::move(updatedList)};
+        worldState.getCurrentPlayerFrame(),
+        worldState.getNextPlayerFrame(),
+        std::move(updatedList)};
 }
 
-std::vector<InputList> const &TimeEngine::getReplayData() const
-{
-    return worldState_.getReplayData();
-}
-
-Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const
-{
-    return worldState_.getFrame(whichFrame);
-}
 }//namespace hg
