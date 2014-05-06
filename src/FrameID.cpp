@@ -10,7 +10,7 @@
 #include <cassert>
 
 namespace hg {
-FrameID::FrameID() :
+FrameID::FrameID() noexcept :
         frame(-1),
         universeID(-1)
 {

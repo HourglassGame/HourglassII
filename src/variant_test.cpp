@@ -35,6 +35,7 @@ namespace {
 
     bool test_apply_visitor() {
         bool worked = true;
+
         variant<int, double> test_variantA(10);
         apply_visitor(test_Visitor{worked}, test_variantA);
         

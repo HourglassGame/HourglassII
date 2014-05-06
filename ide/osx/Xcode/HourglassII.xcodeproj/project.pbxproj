@@ -225,7 +225,7 @@
 		200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = DirectLuaTriggerSystem.h; path = ../../../src/DirectLuaTriggerSystem.h; sourceTree = SOURCE_ROOT; };
 		200E805614B4792500D054F4 /* Environment.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Environment.cpp; path = ../../../src/Environment.cpp; sourceTree = SOURCE_ROOT; };
 		200E805714B4792500D054F4 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Environment.h; path = ../../../src/Environment.h; sourceTree = SOURCE_ROOT; };
-		200E805814B4792500D054F4 /* Foreach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Foreach.h; path = ../../../src/Foreach.h; sourceTree = SOURCE_ROOT; };
+		200E805814B4792500D054F4 /* Foreach.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Foreach.h; path = ../../../src/Foreach.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E805914B4792500D054F4 /* forward.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = forward.h; path = ../../../src/forward.h; sourceTree = SOURCE_ROOT; };
 		200E805A14B4792500D054F4 /* Frame_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Frame_fwd.h; path = ../../../src/Frame_fwd.h; sourceTree = SOURCE_ROOT; };
 		200E805B14B4792500D054F4 /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Frame.cpp; path = ../../../src/Frame.cpp; sourceTree = SOURCE_ROOT; };
@@ -293,7 +293,7 @@
 		200E80D414B4792500D054F4 /* PhysicsEngine_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsEngine_test.cpp; path = ../../../src/PhysicsEngine_test.cpp; sourceTree = SOURCE_ROOT; };
 		200E80D514B4792500D054F4 /* PhysicsEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = PhysicsEngine.cpp; path = ../../../src/PhysicsEngine.cpp; sourceTree = SOURCE_ROOT; };
 		200E80D614B4792500D054F4 /* PhysicsEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PhysicsEngine.h; path = ../../../src/PhysicsEngine.h; sourceTree = SOURCE_ROOT; };
-		200E80D714B4792500D054F4 /* PhysicsEngineUtilities_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PhysicsEngineUtilities_def.h; path = ../../../src/PhysicsEngineUtilities_def.h; sourceTree = SOURCE_ROOT; };
+		200E80D714B4792500D054F4 /* PhysicsEngineUtilities_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PhysicsEngineUtilities_def.h; path = ../../../src/PhysicsEngineUtilities_def.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E80D814B4792500D054F4 /* PhysicsEngineUtilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = PhysicsEngineUtilities.cpp; path = ../../../src/PhysicsEngineUtilities.cpp; sourceTree = SOURCE_ROOT; };
 		200E80D914B4792500D054F4 /* PhysicsEngineUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = PhysicsEngineUtilities.h; path = ../../../src/PhysicsEngineUtilities.h; sourceTree = SOURCE_ROOT; };
 		200E80DA14B4792500D054F4 /* PlatformDestination.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformDestination.cpp; path = ../../../src/PlatformDestination.cpp; sourceTree = SOURCE_ROOT; };
@@ -329,13 +329,13 @@
 		200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = TriggerSystemImplementation.h; path = ../../../src/TriggerSystemImplementation.h; sourceTree = SOURCE_ROOT; };
 		200E80FC14B4792500D054F4 /* unique_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = unique_ptr.h; path = ../../../src/unique_ptr.h; sourceTree = SOURCE_ROOT; };
 		200E80FD14B4792500D054F4 /* Universe_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Universe_fwd.h; path = ../../../src/Universe_fwd.h; sourceTree = SOURCE_ROOT; };
-		200E80FE14B4792500D054F4 /* Universe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Universe.cpp; path = ../../../src/Universe.cpp; sourceTree = SOURCE_ROOT; };
+		200E80FE14B4792500D054F4 /* Universe.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Universe.cpp; path = ../../../src/Universe.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E80FF14B4792500D054F4 /* Universe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Universe.h; path = ../../../src/Universe.h; sourceTree = SOURCE_ROOT; };
 		200E810014B4792500D054F4 /* UniverseID_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UniverseID_fwd.h; path = ../../../src/UniverseID_fwd.h; sourceTree = SOURCE_ROOT; };
 		200E810114B4792500D054F4 /* UniverseID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = UniverseID.cpp; path = ../../../src/UniverseID.cpp; sourceTree = SOURCE_ROOT; };
 		200E810214B4792500D054F4 /* UniverseID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = UniverseID.h; path = ../../../src/UniverseID.h; sourceTree = SOURCE_ROOT; };
 		200E810314B4792500D054F4 /* VectorOf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VectorOf.h; path = ../../../src/VectorOf.h; sourceTree = SOURCE_ROOT; };
-		200E810414B4792500D054F4 /* WorldState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = WorldState.cpp; path = ../../../src/WorldState.cpp; sourceTree = SOURCE_ROOT; };
+		200E810414B4792500D054F4 /* WorldState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = WorldState.cpp; path = ../../../src/WorldState.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E810514B4792500D054F4 /* WorldState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = WorldState.h; path = ../../../src/WorldState.h; sourceTree = SOURCE_ROOT; };
 		201345E815E3694000E73DA5 /* LineGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = LineGlitz.h; path = ../../../src/LineGlitz.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		201345EA15E4543400E73DA5 /* LayeredCanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = LayeredCanvas.cpp; path = ../../../src/LayeredCanvas.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
@@ -450,7 +450,7 @@
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		209EA32319027B7300037E03 /* GameDisplayHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GameDisplayHelpers.cpp; path = ../../../src/GameDisplayHelpers.cpp; sourceTree = "<group>"; };
+		209EA32319027B7300037E03 /* GameDisplayHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = GameDisplayHelpers.cpp; path = ../../../src/GameDisplayHelpers.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		209EA32419027B7300037E03 /* GameDisplayHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameDisplayHelpers.h; path = ../../../src/GameDisplayHelpers.h; sourceTree = "<group>"; };
 		20A1C4D218E2940A005F2EA3 /* PostLevelScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PostLevelScene.cpp; path = ../../../src/PostLevelScene.cpp; sourceTree = "<group>"; };
 		20A1C4D318E2940A005F2EA3 /* PostLevelScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PostLevelScene.h; path = ../../../src/PostLevelScene.h; sourceTree = "<group>"; };
@@ -466,6 +466,7 @@
 		20C296D312F13D40006F90AB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		20C296D512F13D4A006F90AB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		20CCB2C415B6681800176180 /* UserDataProxyTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UserDataProxyTable.h; path = ../../../src/UserDataProxyTable.h; sourceTree = "<group>"; };
+		20D4020F1910EA24007635FD /* multi_array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = multi_array.h; path = ../../../src/multi_array.h; sourceTree = "<group>"; };
 		20D4319818C6B755006BBCBB /* LoadingLevelScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadingLevelScene.cpp; path = ../../../src/LoadingLevelScene.cpp; sourceTree = "<group>"; };
 		20D4319918C6B755006BBCBB /* LoadingLevelScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadingLevelScene.h; path = ../../../src/LoadingLevelScene.h; sourceTree = "<group>"; };
 		20D4319B18C83AAD006BBCBB /* InitialScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InitialScene.cpp; path = ../../../src/InitialScene.cpp; sourceTree = "<group>"; };
@@ -962,6 +963,7 @@
 				200E80DF14B4792500D054F4 /* prettyprint98.hpp */,
 				20D431A118CC4AD3006BBCBB /* variant.h */,
 				2001AA04190BB080006AD666 /* variant_test.cpp */,
+				20D4020F1910EA24007635FD /* multi_array.h */,
 			);
 			name = "C++";
 			sourceTree = "<group>";
@@ -1899,6 +1901,7 @@
 					"BOOST_THREAD_VERSION=4",
 					LUA_USE_APICHECK,
 					LUA_USE_POSIX,
+					TBB_USE_DEBUG,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;

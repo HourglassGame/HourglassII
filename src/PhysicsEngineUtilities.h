@@ -17,7 +17,6 @@
 #include "mt/boost/container/map.hpp"
 #include "mt/std/vector"
 #include <utility>
-#include <boost/move/move.hpp>
 
 #include "Frame_fwd.h"
 #include "Frame.h"
@@ -35,8 +34,6 @@
 
 #include "mt/std/map"
 #include "mt/std/vector"
-
-#include "Foreach.h"
 
 #include "PhysicsEngine.h"
 

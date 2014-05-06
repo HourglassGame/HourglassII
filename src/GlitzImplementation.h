@@ -9,7 +9,7 @@ public:
     virtual std::size_t clone_size() const = 0;
     virtual GlitzImplementation *perform_clone(void *memory) const = 0;
 
-    virtual ~GlitzImplementation(){}
+    virtual ~GlitzImplementation() noexcept {}
     
     //Each glitz-implementation must provide a
     //unique return value for order_ranking.

@@ -14,7 +14,7 @@ namespace hg {
                 throw;
             }
         }
-        void delete_clone(T *toDelete) const {
+        void delete_clone(T *toDelete) const noexcept {
             if (toDelete) {
                 toDelete->~T();
                 MemorySource::free(toDelete);

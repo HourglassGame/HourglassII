@@ -7,7 +7,7 @@ namespace hg {
     struct RenderWindow;
     struct SceneImplementation {
         virtual std::vector<Scene> run(std::unique_ptr<SceneImplementation> &me, hg::RenderWindow &window) = 0;
-        virtual ~SceneImplementation(){}
+        virtual ~SceneImplementation() noexcept {}
     };
 }
 

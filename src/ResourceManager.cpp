@@ -4,7 +4,6 @@
 #include <boost/range/iterator_range.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include "Foreach.h"
 namespace hg {
 
 namespace fs = boost::filesystem;
@@ -38,7 +37,7 @@ inline sf::Texture loadTexture(fs::path const &file) {
 inline void loadPackage(LevelResources &resourceStore, std::string const &prefix, std::string const &directory) {
     fs::path package_directory(directory);
     assert(fs::is_directory(package_directory));
-    foreach (fs::directory_entry const &entry, directory_range(package_directory)) {
+    for (fs::directory_entry const &entry: directory_range(package_directory)) {
         fs::path const &file(entry);
         if (isImageFile(file)) {
             resourceStore.images[prefix + file.stem().string()] = loadImage(file);

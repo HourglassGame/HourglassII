@@ -6,7 +6,6 @@
 #include "Frame.h"
 #include "Universe.h"
 
-#include "Foreach.h"
 #include "OperationInterruptedException.h"
 
 #include <utility>
@@ -42,7 +41,6 @@ WorldState::WorldState(WorldState const& o) :
         currentPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_)),
         currentWinFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_))
 {
-    //std::cout << "WorldState " << (void*)this << " copied from " << (void*)&o << "\n";
 }
 WorldState &WorldState::operator=(WorldState const& o)
 {
@@ -53,7 +51,6 @@ WorldState &WorldState::operator=(WorldState const& o)
     nextPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_);
     currentPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_);
     currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
-    //std::cout << "WorldState " << (void*)this << " assigned from " << (void*)&o << "\n";
     return *this;
 }
 
@@ -61,18 +58,17 @@ WorldState::WorldState(
     int timelineLength,
     Guy const &initialGuy,
     FrameID const &guyStartTime,
-    PhysicsEngine&& physics,
-    ObjectList<NonGuyDynamic>&& initialObjects,
+    PhysicsEngine &&physics,
+    ObjectList<NonGuyDynamic> &&initialObjects,
     OperationInterrupter &interrupter) :
         timeline_(timelineLength),
         playerInput_(),
         frameUpdateSet_(),
-        physics_(boost::move(physics)),
+        physics_(std::move(physics)),
         nextPlayerFrames_(),
         currentPlayerFrames_(),
         currentWinFrames_()
 {
-    //std::cout << "WorldState " << (void*)this << " created\n";
     assert(guyStartTime.isValidFrame());
     assert(timelineLength > 0);
     Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
@@ -81,7 +77,7 @@ WorldState::WorldState(
         std::map<Frame *, ObjectList<Normal> > initialArrivals;
 
         // boxes
-        foreach (Box const &box, initialObjects.getList<Box>())
+        for (Box const &box: initialObjects.getList<Box>())
         {
             initialArrivals[getEntryFrame(timeline_.getUniverse(), box.getTimeDirection())].add(box);
         }
@@ -150,7 +146,7 @@ PhysicsEngine::FrameDepartureT
         currentWinFrames_.remove(frame);
     }
     frame->setView(std::move(retv.view));
-    return retv.departures;
+    return std::move(retv.departures);
 }
 
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
@@ -204,10 +200,10 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 void WorldState::addNewInputData(InputList const &newInputData)
 {
     playerInput_.push_back(newInputData);
-    foreach (Frame *frame, currentPlayerFrames_) {
+    for (Frame *frame: currentPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }
-    foreach (Frame *frame, nextPlayerFrames_) {
+    for (Frame *frame: nextPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)

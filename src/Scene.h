@@ -5,9 +5,18 @@
 #include "SceneImplementation.h"
 namespace hg {
     struct WindowClosed_exception{};
-    struct RunALevel_tag{};
-    struct RunAReplay_tag{};
-    struct Exit_tag{};
+    struct RunALevel_tag{
+        RunALevel_tag(RunALevel_tag const&) = default;
+        RunALevel_tag(RunALevel_tag &&) noexcept = default;
+    };
+    struct RunAReplay_tag{
+        RunAReplay_tag(RunAReplay_tag const&) = default;
+        RunAReplay_tag(RunAReplay_tag &&) noexcept = default;
+    };
+    struct Exit_tag{
+        Exit_tag(Exit_tag const&) = default;
+        Exit_tag(Exit_tag &&) noexcept = default;
+    };
     struct LoadingCanceled_tag{};
     //struct WindowClosed_tag{};
     struct ReloadLevel_tag{};

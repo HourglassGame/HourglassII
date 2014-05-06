@@ -31,12 +31,12 @@ Box::Box(Box const &o, hg::TimeDirection timeDirection) :
 
 bool Box::operator==(Box const &o) const
 {
-    return asTie() == o.asTie();
+    return as_tie() == o.as_tie();
 }
 
 bool Box::operator<(Box const &o) const
 {
-    return asTie() < o.asTie();
+    return as_tie() < o.as_tie();
 }
 
 

@@ -1,7 +1,6 @@
 #ifndef HG_TBB_ALLOCATOR_H
 #define HG_TBB_ALLOCATOR_H
 #include <tbb/scalable_allocator.h>
-#include <boost/move/move.hpp>
 #include <utility>
 namespace hg {
 //Adapts tbb::scalable_allocator to meet C++11 allocator requirements
@@ -38,9 +37,9 @@ public:
     tbb_scalable_allocator(tbb_scalable_allocator<U> const &)
         : alloc() {}
     
-    template<typename C, typename Args>
-    void construct(C *c, BOOST_FWD_REF(Args) args) {
-        ::new(const_cast<void*>(static_cast<void const*>(c))) C(boost::forward<Args>(args));
+    template<typename C, typename ...Args>
+    void construct(C *c, Args &&...args) {
+        ::new(const_cast<void*>(static_cast<void const*>(c))) C(std::forward<Args>(args)...);
     }
     template<typename C>
     void destroy(C *c) { c->~C(); }

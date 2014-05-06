@@ -22,53 +22,35 @@ Guy::Guy(
 
     TimeDirection timeDirection,
 	bool timePaused) :
-        index_(index),
-        x_(x), y_(y),
-        xspeed_(xspeed), yspeed_(yspeed),
-        width_(width), height_(height),
-        jumpSpeed_(jumpSpeed),
+        index(index),
+        x(x), y(y),
+        xspeed(xspeed), yspeed(yspeed),
+        width(width), height(height),
+        jumpSpeed(jumpSpeed),
 
-        illegalPortal_(illegalPortal),
-        arrivalBasis_(arrivalBasis),
-        supported_(supported),
-        supportedSpeed_(supportedSpeed),
+        illegalPortal(illegalPortal),
+        arrivalBasis(arrivalBasis),
+        supported(supported),
+        supportedSpeed(supportedSpeed),
 
-        pickups_(pickups),
-        facing_(facing),
+        pickups(pickups),
+        facing(facing),
 
-        boxCarrying_(boxCarrying),
-        boxCarrySize_(boxCarrySize),
-        boxCarryDirection_(boxCarryDirection),
+        boxCarrying(boxCarrying),
+        boxCarrySize(boxCarrySize),
+        boxCarryDirection(boxCarryDirection),
 
-        timeDirection_(timeDirection),
-		timePaused_(timePaused)
+        timeDirection(timeDirection),
+		timePaused(timePaused)
 {
 }
 
 bool Guy::operator==(Guy const &o) const
 {
-    return index_ == o.index_
-        && x_ == o.x_
-        && y_ == o.y_
-        && xspeed_ == o.xspeed_
-        && yspeed_ == o.yspeed_
-        && width_ == o.width_
-        && height_ == o.height_
-        && jumpSpeed_ == o.jumpSpeed_
-        && illegalPortal_ == o.illegalPortal_
-        && arrivalBasis_ == o.arrivalBasis_
-        && supported_ == o.supported_
-        && supportedSpeed_ == o.supportedSpeed_
-        && pickups_ == o.pickups_
-        && facing_ == o.facing_
-        && boxCarrying_ == o.boxCarrying_
-        && boxCarrySize_ == o.boxCarrySize_
-        && boxCarryDirection_ == o.boxCarryDirection_
-        && timeDirection_ == o.timeDirection_
-		&& timePaused_ == o.timePaused_;
+    return equality_tuple() == o.equality_tuple();
 }
 bool Guy::operator<(Guy const &o) const
 {
-    return index_ < o.index_;
+    return index < o.index;
 }
 }//namespace hg

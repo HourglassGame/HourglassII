@@ -2,7 +2,6 @@
 #define HG_SIMPLE_LUA_CPP_H
 #include "lua/lua.h"
 #include <boost/swap.hpp>
-#include <boost/move/move.hpp>
 #include "unique_ptr.h"
 #include "LuaError.h"
 #include "LuaUserData.h"
@@ -33,12 +32,12 @@ struct LuaState {
     struct new_state_t {};
     LuaState();
     explicit LuaState(new_state_t);
-    LuaState(LuaState &&o) :
+    LuaState(LuaState &&o) noexcept :
         ud(), ptr()
     {
         swap(o);
     }
-    LuaState &operator=(LuaState &&o)
+    LuaState &operator=(LuaState &&o) noexcept
     {
         swap(o);
         return *this;
@@ -47,8 +46,8 @@ struct LuaState {
         boost::swap(ud, o.ud);
         boost::swap(ptr, o.ptr);
     }
-    ~LuaState();
-    unique_ptr<LuaUserData> ud;
+    ~LuaState() noexcept;
+    std::unique_ptr<LuaUserData> ud;
     lua_State *ptr;
 };
 

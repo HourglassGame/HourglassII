@@ -31,11 +31,11 @@ namespace {
     }
 }
 LuaState::LuaState()
-    : ud(), ptr(0)
+    : ud(), ptr(nullptr)
 {
 }
 LuaState::LuaState(new_state_t)
-    : ud(new LuaUserData()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
+    : ud(hg::make_unique<LuaUserData>()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
 {
     if (ptr) {
         lua_atpanic(ptr, &panic);
@@ -44,7 +44,7 @@ LuaState::LuaState(new_state_t)
         throw std::bad_alloc();
     }
 }
-LuaState::~LuaState()
+LuaState::~LuaState() noexcept
 {
     if (ptr) {
         lua_close(ptr);

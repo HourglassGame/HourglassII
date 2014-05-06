@@ -14,28 +14,6 @@ FrameUpdateSet::FrameUpdateSet() :
         updateSet_()
 {
 }
-FrameUpdateSet::FrameUpdateSet(FrameUpdateSet const &o) :
-        isSet_(o.isSet_),
-        updateSet_(o.updateSet_)
-{
-}
-FrameUpdateSet &FrameUpdateSet::operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o)
-{
-    isSet_ = o.isSet_;
-    updateSet_ = o.updateSet_;
-    return *this;
-}
-FrameUpdateSet::FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) o) :
-    isSet_(boost::move(o.isSet_)),
-    updateSet_(boost::move(o.updateSet_))   
-{
-}
-FrameUpdateSet &FrameUpdateSet::operator=(BOOST_RV_REF(FrameUpdateSet) o)
-{
-    isSet_ = boost::move(o.isSet_);
-    updateSet_ = boost::move(o.updateSet_);
-    return *this;
-}
 void FrameUpdateSet::add(Frame *frame)
 {
     assert(frame);

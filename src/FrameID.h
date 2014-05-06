@@ -19,13 +19,21 @@ namespace boost {
 }
 
 namespace hg {
+bool isNullFrame(FrameID const &frame);
+FrameID nextFrame(FrameID const &frame, TimeDirection direction);
+bool nextFrameInSameUniverse(FrameID const &frame, TimeDirection direction);
+UniverseID getUniverse(FrameID const &frame);
+int getFrameNumber(FrameID const &frame);
+
+std::ostream &operator<<(std::ostream &os, FrameID const &toPrint);
+std::istream &operator>>(std::istream &is, FrameID &toRead);
 //Class following original intention of FrameID. May be too slow for back-end use,
 //Compliments Frame * by not requiring a central authority (ie the base universe) to be used
 class FrameID : boost::totally_ordered<FrameID>
 {
 public:
     //Creates a nullframe
-    FrameID();
+    FrameID() noexcept;
 
     //Creates a FrameID referring to the given position in the given universe
     FrameID(int frameNumber, UniverseID const &universe);
@@ -70,12 +78,6 @@ private:
         return std::tie(frame, universeID);
     }
 };
-
-bool isNullFrame(FrameID const &frame);
-FrameID nextFrame(FrameID const &frame, TimeDirection direction);
-bool nextFrameInSameUniverse(FrameID const &frame, TimeDirection direction);
-UniverseID getUniverse(FrameID const &frame);
-int getFrameNumber(FrameID const &frame);
 
 inline std::ostream &operator<<(std::ostream &os, FrameID const &toPrint)
 {

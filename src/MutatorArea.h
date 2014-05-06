@@ -3,6 +3,8 @@
 #include "TimeDirection.h"
 #include <ostream>
 namespace hg {
+class MutatorArea;
+std::ostream &operator<<(std::ostream &os, MutatorArea const &toPrint);
 class MutatorArea {
 public:
     MutatorArea(

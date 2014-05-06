@@ -10,7 +10,7 @@
 namespace hg {
     variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
         hg::RenderWindow &window,
-        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction);
+        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const &levelLoadingFunction);
 }
 
 #endif // HG_LOADING_LEVEL_SCENE_H

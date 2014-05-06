@@ -10,29 +10,29 @@ public:
     LuaInterruptionHandle(lua_State *L, OperationInterrupter::FunctionHandle functionHandle) :
         L(L), functionHandle(std::move(functionHandle)) {}
     
-    LuaInterruptionHandle(LuaInterruptionHandle &&o) :
+    LuaInterruptionHandle(LuaInterruptionHandle &&o) noexcept :
         L(o.L), functionHandle(std::move(o.functionHandle))
     {
         o.L = nullptr;
     }
-    LuaInterruptionHandle &operator=(LuaInterruptionHandle &&o) {
+    LuaInterruptionHandle &operator=(LuaInterruptionHandle &&o) noexcept {
         swap(o);
         return *this;
     }
-    void swap(LuaInterruptionHandle &o) {
+    void swap(LuaInterruptionHandle &o) noexcept {
         boost::swap(L, o.L);
         boost::swap(functionHandle, o.functionHandle);
     }
-    ~LuaInterruptionHandle() {
+    ~LuaInterruptionHandle() noexcept {
         if (L) {
-            lua_sethook(L, 0, 0, 0);
+            lua_sethook(L, nullptr, 0, 0);
         }
     }
 private:
     lua_State *L;
     OperationInterrupter::FunctionHandle functionHandle;
 };
-inline void swap(LuaInterruptionHandle &l, LuaInterruptionHandle &r) { l.swap(r); }
+inline void swap(LuaInterruptionHandle &l, LuaInterruptionHandle &r) noexcept { l.swap(r); }
 
 //Registers a interruptionFunction with interruper.
 //Also puts a debug hook into L, which checks an interruption flag and raises an error if it is set.

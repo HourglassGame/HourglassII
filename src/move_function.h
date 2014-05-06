@@ -24,7 +24,7 @@ struct function_obj;
 template<typename F, typename R, typename... ArgTypes>
 struct function_obj<F, R(ArgTypes...)> : function_base<R(ArgTypes...)>
 {
-    function_obj(F &&f) :
+    function_obj(F &&f) noexcept :
     	f(std::move(f))
     {
     }

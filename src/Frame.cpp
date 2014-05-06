@@ -2,7 +2,6 @@
 #include "FrameUpdateSet.h"
 #include "UniverseID.h"
 #include "Universe.h"
-#include "Foreach.h"
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -28,14 +27,14 @@ void Frame::correctUniverse(Universe &newUniverse) noexcept
 
 void Frame::correctDepartureFramePointers(FramePointerUpdater const &updater) {
     FrameDeparturesT updatedDepartures;
-    foreach (auto &departurePair, departures) {
+    for (auto &departurePair: departures) {
         updatedDepartures[updater.updateFrame(departurePair.first)] = std::move(departurePair.second);
     }
     departures.swap(updatedDepartures);
 }
 void Frame::correctArrivalFramePointers(FramePointerUpdater const &updater) {
     FrameArrivalsT updatedArrivals;
-    foreach (auto &arrivalPair, arrivals) {
+    for (auto &arrivalPair: arrivals) {
         bool inserted = updatedArrivals.insert(std::make_pair(
                             updater.updateFrame(arrivalPair.first), arrivalPair.second));
         assert(inserted);
@@ -180,7 +179,7 @@ end:
 ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal> retv;
-    foreach (ObjectList<Normal> const &value,
+    for (ObjectList<Normal> const &value:
     		arrivals
             | boost::adaptors::map_values
             | boost::adaptors::indirected)
@@ -194,7 +193,7 @@ ObjectPtrList<Normal> Frame::getPrePhysics() const
 ObjectPtrList<Normal> Frame::getPostPhysics() const
 {
     ObjectPtrList<Normal> retv;
-    foreach (ObjectList<Normal> const &value,
+    for (ObjectList<Normal> const &value:
     		departures | boost::adaptors::map_values)
     {
         retv.add(value);

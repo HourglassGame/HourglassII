@@ -10,6 +10,7 @@
 #include "TimeDirection.h"
 
 #include "FrameID_fwd.h"
+#include "UniverseID_fwd.h"
 
 namespace boost {
     namespace serialization {
@@ -18,6 +19,13 @@ namespace boost {
 }
 
 namespace hg {
+std::ostream &operator<<(std::ostream &os, UniverseID const &toPrint);
+std::istream &operator>>(std::istream &is, UniverseID &toRead);
+
+FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction);
+FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
+int getTimelineLength(UniverseID const &universe);
+std::size_t hash_value(UniverseID const &toHash);
 //Uniquely identifies a particular universe.
 class UniverseID {
 public:
@@ -58,11 +66,6 @@ inline std::istream &operator>>(std::istream &is, UniverseID &toRead)
     is >> toRead.timelineLength;
     return is;
 }
-
-FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction);
-FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
-int getTimelineLength(UniverseID const &universe);
-std::size_t hash_value(UniverseID const &toHash);
 
 }
 #endif //HG_UNIVERSE_ID_H

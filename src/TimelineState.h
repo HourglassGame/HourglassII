@@ -42,8 +42,8 @@ public:
         return *this;
     }
     
-    TimelineState(TimelineState&& o) = default;
-    TimelineState &operator=(TimelineState&& o) = default;
+    TimelineState(TimelineState&& o) noexcept = default;
+    TimelineState &operator=(TimelineState&& o) noexcept = default;
 
     void swap(TimelineState &o);
     

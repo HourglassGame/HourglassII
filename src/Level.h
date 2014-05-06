@@ -6,7 +6,6 @@
 #include "AttachmentMap.h"
 #include "TriggerSystem.h"
 #include "Environment.h"
-#include <boost/move/move.hpp>
 namespace hg {
 class Level {
 //Probably will make these private when the level editor gets implemented

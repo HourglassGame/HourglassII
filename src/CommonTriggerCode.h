@@ -7,8 +7,6 @@
 #include "Universe.h"
 #include "multi_thread_allocator.h"
 
-#include "Foreach.h"
-
 #include <utility>
 
 namespace hg {
@@ -27,14 +25,14 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
     apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
-    foreach (TriggerOffsetAndDefault const &offsetAndDefault, triggerOffsetsAndDefaults) {
+    for (TriggerOffsetAndDefault const &offsetAndDefault: triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
             mt::std::vector<int>::type(
                     offsetAndDefault.second.begin(),
                     offsetAndDefault.second.end()));
     }
     
-    foreach (TriggerData const &arrival, triggerArrivals) {
+    for (TriggerData const &arrival: triggerArrivals) {
         apparentTriggers[arrival.getIndex()] = arrival.getValue();
     }
     return apparentTriggers;
@@ -47,7 +45,7 @@ inline mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type calculate
 {
     mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type retv;
     Universe &universe(getUniverse(currentFrame));
-    foreach (TriggerData const& trigger, triggers)
+    for (TriggerData const& trigger: triggers)
     {
         retv[
             getArbitraryFrame(
