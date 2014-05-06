@@ -17,8 +17,6 @@
 #include "mt/std/map"
 #include "mt/std/vector"
 
-#include "Foreach.h"
-
 #include <cassert>
 
 namespace hg {
@@ -143,7 +141,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
             newDepartures,
             frame));
     typedef triggerDepartures_t::value_type triggerDeparture_t;
-    foreach (triggerDeparture_t const &triggerDeparture, triggerSystemDepartureInformation.triggerDepartures) {
+    for (triggerDeparture_t const &triggerDeparture: triggerSystemDepartureInformation.triggerDepartures) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
@@ -151,7 +149,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add extra boxes to newDepartures
     buildDeparturesForComplexEntities(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
 
-    foreach (GlitzPersister const &persister, persistentGlitz) {
+    for (GlitzPersister const &persister: persistentGlitz) {
         forwardsGlitz.push_back(persister.getForwardsGlitz());
         reverseGlitz.push_back(persister.getReverseGlitz());
     }

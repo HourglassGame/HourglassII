@@ -4,6 +4,8 @@
 #include <ostream>
 namespace hg
 {
+class Collision;
+std::ostream &operator<<(std::ostream &os, Collision const &toPrint);
 class Collision
 {
 public:

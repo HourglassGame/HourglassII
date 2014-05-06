@@ -6,6 +6,8 @@
 #include "ConstPtr_of_fwd.h"
 #include <ostream>
 namespace hg {
+class Box;
+std::ostream &operator<<(std::ostream &str, Box const &b);
 class Box : boost::totally_ordered<Box>
 {
 public:
@@ -33,13 +35,6 @@ public:
     bool operator<(Box const &o) const;
 
 private:
-/*
-    boost::tuple<
-        int const &, int const &, int const &, int const &, int const &,
-        int const &, int const &,
-        TimeDirection const &>
-    asTie() const;
-*/
     int x;
     int y;
     int xspeed;
@@ -51,7 +46,7 @@ private:
 
     TimeDirection timeDirection;
     
-    auto asTie() const -> decltype(
+    auto as_tie() const -> decltype(
             boost::tie(
                 x, y, xspeed, yspeed, size,
                 illegalPortal, arrivalBasis,

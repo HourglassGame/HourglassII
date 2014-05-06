@@ -51,7 +51,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
 		throw std::runtime_error("Not Implemented Exception");
     }
 
-    virtual ~MockTriggerFrameStateImplementation(){}
+    virtual ~MockTriggerFrameStateImplementation() noexcept {}
 };
 
 
@@ -79,8 +79,9 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; D
         #undef E
         #undef D
-        boost::array<boost::multi_array_types::index, 2> shape = {{ 20, 15 }};
-        boost::multi_array<bool, 2> wallmap(shape);
+        std::array<hg::multi_array<bool, 2>::index, 2> shape = {{ 20, 15 }};
+        hg::multi_array<bool, 2> wallmap;
+        wallmap.resize(shape);
 
         for (std::size_t i(0), iend(shape[0]); i != iend; ++i) {
             for (std::size_t j(0), jend(shape[1]); j != jend; ++j) {
@@ -89,7 +90,7 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
         }
 
         Wall actualWall(3200, wallmap, "HourglassI");
-        Environment env(actualWall, 30);
+        Environment env{actualWall, 30};
         std::vector<Box> boxArrivalList;
         boxArrivalList +=
             Box(19200, 34800, 1380, 3800, 3200, -1, -1, FORWARDS),

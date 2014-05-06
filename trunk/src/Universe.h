@@ -106,12 +106,5 @@ private:
 
     boost::container::vector<Frame> frames;
 };
-
-inline void swap(Universe &l, Universe &r)
-{
-    Universe temp(std::move(l));
-    l = std::move(r);
-    r = std::move(temp);
-}
 }
 #endif //HG_UNIVERSE_H

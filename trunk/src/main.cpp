@@ -9,8 +9,6 @@
 #include <string>
 #include <iostream>
 
-#include <boost/unordered_set.hpp>
-
 namespace hg {
     sf::Font const *defaultFont;
 }
@@ -71,15 +69,42 @@ void initialseCurrentPath(std::vector<std::string> const &args)
 }
 
 int run_main(std::vector<std::string> const &args) {
-    //Insert argument handling here...
+    //Insert argument handling here... (also possible to load from config file)
     //Arguments controlling initial state
     //  (to save developers time navigating menus and unlocking specific amounts of progress)
+    //  Run a particular scene then exit (printing its output)
+    //  -run,scene_name,args...
+    //  Initially run a particular scene, then continue normally
+    //  +run,scene_name,args...
     //Arguments controlling global parameters
-    //  (enabling debug mode, developer mode (eg, unlocking all levels), logging, forcing particular resolutions, etc)
+    //  (enabling debug mode, developer mode (eg, unlocking all levels), logging, forcing particular resolutions, disable saving of progress,  etc)
     //Arguments for batch runs
-    //  (running self-tests, testing levels, testing replays, rendering frames, etc, in non-interactive, commandline mode)
+    //  (running self-tests, testing levels, testing replays, rendering frames, getting version info, etc, in non-interactive, commandline mode)
+    //  -run
+    //  -testall
+    //  -test,testname  (could be scoped test name, for test suites)
     
     
+    
+    //Top level options:
+    //  Any Global Options:
+    //   -mute (no sound)
+    //   -silent (no printing)
+    //   -resolution
+    //   -force_resolution
+    //   -fullscreen
+    //   -display_test_results
+    //   -do_expensive_tests
+    //   -unlockall
+    //   -dontsave
+    //  One of:
+    //   --help -h
+    //   --version -v
+    //   -run
+    //   +run
+    //   -testall
+    //   -test
+    //   Nothing
     return hg::run_hourglassii();
 }
 }
@@ -195,7 +220,7 @@ Screens communicate via signal/slot mechanism
   Save Replay
   Restart Level
   Continue
- Lua Error Screem
+ Lua (and other) Error Screem
   Copy Error to Clipboard
   Reload Level (and replay inputs?)
   Save Replay

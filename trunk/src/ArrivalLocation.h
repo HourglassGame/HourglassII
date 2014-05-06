@@ -3,6 +3,8 @@
 #include "TimeDirection.h"
 #include <ostream>
 namespace hg {
+class ArrivalLocation;
+std::ostream &operator<<(std::ostream &os, ArrivalLocation const &toPrint);
 class ArrivalLocation {
 public:
     ArrivalLocation(

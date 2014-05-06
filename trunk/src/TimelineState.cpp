@@ -6,7 +6,6 @@
 #include "Frame.h"
 #include "FrameID.h"
 #include "ConcurrentFrameUpdateSet.h"
-#include "Foreach.h"
 #include <boost/swap.hpp>
 #include <cassert>
 #include <algorithm>

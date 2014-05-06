@@ -8,7 +8,7 @@
 
 namespace hg {
 //Single-reader single-writer concurrent queue.
-//(Quite possible can handle multi-reader multi-writer too, check before using)
+//(Quite possibly can handle multi-reader multi-writer too, check before using)
 template<typename T, typename Alloc = typename multi_thread_allocator<T>::type>
 class ConcurrentQueue
 {
@@ -62,6 +62,7 @@ public:
         }
         T retv(std::move(queue.front()));
         queue.pop_front();
+        static_assert(noexcept(T{std::declval<T>()}),"Objects popped from ConcurrentQueue must have no-throw move ctors");
         return std::move(retv);
     }
 private:

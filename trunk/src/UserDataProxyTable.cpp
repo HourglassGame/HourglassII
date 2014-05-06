@@ -158,7 +158,7 @@ int create_proxy_table(lua_State *L) {
     
     //Create refs to the base table and the outer table
     unique_ptr<int, LuaRefDeleter> outerRef(luaL_ref(L, LUA_REGISTRYINDEX), LuaRefDeleter(L));
-    unique_ptr<int, LuaRefDeleter> baseRef(luaL_ref(L, LUA_REGISTRYINDEX), LuaRefDeleter(L));
+    unique_ptr<int, LuaRefDeleter>  baseRef(luaL_ref(L, LUA_REGISTRYINDEX), LuaRefDeleter(L));
 
     //Create the proxy table -- give it sufficient size to carry two "references"
     UDPT *rawProxyTable(static_cast<UDPT *>(lua_newuserdata(L, sizeof (UDPT))));

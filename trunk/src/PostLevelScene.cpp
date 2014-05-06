@@ -6,7 +6,9 @@
 #include "Scene.h"
 #include "GameDisplayHelpers.h"
 #include "Maths.h"
+#include "ReplayIO.h"
 #include <SFML/Graphics/Text.hpp>
+
 
 namespace hg {
 namespace {
@@ -59,14 +61,14 @@ void run_post_level_scene(
                       case sf::Keyboard::Escape:
                         return;
                       //Save Replay
-                    
+                      case sf::Keyboard::K:
+                        saveReplay("replay", finalTimeEngine.timeEngine.getReplayData());
+                      break;
                       //Restart Replay
                     
                       //Pause Relative Replay
                     
                       //Resume Relative Replay
-                    
-                      //Inertia Forwards/Backwards
                     
                       default:
                         break;
@@ -78,7 +80,7 @@ void run_post_level_scene(
                     break;
                 }
             }
-            
+            //Inertia Forwards/Backwards
             if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
                 inertia.save(mousePosToFrameID(window, timeEngine), hg::FORWARDS);
             }
@@ -205,8 +207,8 @@ void runStep(
         std::stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
-            foreach (
-                int num,
+            for (
+                int num:
                 framesExecutedList
                 | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
             {

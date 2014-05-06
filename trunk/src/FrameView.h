@@ -45,6 +45,5 @@ private:
     //This can store the relevant space part.
     mt::std::vector<GuyOutputInfo>::type guyInformation_;
 };
-inline void swap(FrameView &a, FrameView &b) { a.swap(b); }
 }//namespace hg
 #endif //HG_FRAME_VIEW_H

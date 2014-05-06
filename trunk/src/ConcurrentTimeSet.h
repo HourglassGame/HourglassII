@@ -28,12 +28,12 @@ public:
     ConcurrentTimeSet() = default;
     ConcurrentTimeSet(ConcurrentTimeSet const &o) = default;
     ConcurrentTimeSet &operator=(ConcurrentTimeSet const &o) = default;
-    ConcurrentTimeSet(ConcurrentTimeSet &&o) :
+    ConcurrentTimeSet(ConcurrentTimeSet &&o) noexcept :
     	set()
     {
         set.swap(o.set);
    	}
-    ConcurrentTimeSet &operator=(ConcurrentTimeSet &&o)
+    ConcurrentTimeSet &operator=(ConcurrentTimeSet &&o) noexcept
     {
         set.swap(o.set);
         return *this;
@@ -87,11 +87,5 @@ public:
 private:
     SetType set;
 };
-inline void swap(ConcurrentTimeSet &l, ConcurrentTimeSet &r)
-{
-    ConcurrentTimeSet temp(std::move(l));
-    l = std::move(r);
-    r = std::move(temp);
-}
 }
 #endif //HG_CONCURRENT_TIME_SET_H

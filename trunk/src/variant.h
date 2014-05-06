@@ -22,7 +22,6 @@ namespace hg {
 template <typename T>
 struct tag {};
 
-
 namespace variant_detail {
 template <typename... T>
 struct max_align;
@@ -97,6 +96,7 @@ struct DtorVisitor;
 template<typename Head> struct DtorVisitor<Head>{
     typedef void result_type;
     void operator()(Head &h) const {
+        static_assert(noexcept(h.~Head()), "Types used in Variant must have no-throw dtor");
         h.~Head();
     }
 };
@@ -104,6 +104,7 @@ template<typename Head, typename... Types>
 struct DtorVisitor<Head, Types...> : DtorVisitor<Types...> {
     using DtorVisitor<Types...>::operator();
     void operator()(Head &h) const {
+        static_assert(noexcept(h.~Head()), "Types used in Variant must have no-throw dtor");
         h.~Head();
     }
 };
@@ -137,6 +138,8 @@ template<typename Variant, typename Head> struct MoveVisitor<Variant, Head> {
     Variant *o;
     MoveVisitor(Variant &&o) : o(&o) {}
     void operator()(Head &h) const {
+        static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
+                      "Types used in Variant must have no-throw move constructor");
         new ((void*)&h) Head(std::move(o->template get<Head>()));
     }
 };
@@ -146,6 +149,8 @@ struct MoveVisitor<Variant, Head, Types...> : MoveVisitor<Variant, Types...> {
     using MoveVisitor<Variant, Types...>::operator();
     using MoveVisitor<Variant, Types...>::o;
     void operator()(Head& h) const {
+        static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
+                      "Types used in Variant must have no-throw move constructor");
         new ((void*)&h) Head(std::move(o->template get<Head>()));
     }
 };
@@ -171,26 +176,32 @@ struct UnionTagType {
 }//namespace variant_detail
 
 template <typename... Types>
-class variant {
+class variant final {
     //static_assert(all_unique<T...>);
     typename std::aligned_storage<variant_detail::max_size<Types...>::value, variant_detail::max_align<Types...>::value>::type storage;
     typename variant_detail::UnionTagType<sizeof... (Types)>::type currentMember; //Index in T... of current member
+#ifndef NDEBUG
     void scrub_storage() {
         std::memset(this, 0xDE, sizeof (variant));
     }
+#endif
 public:
 //Mutators:
     //Move+Copy Constructors
     variant(variant const &o) {
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = o.which();
         //TODO: use of visit here probably
         //violates strict aliasing (we are visiting an object that
         //has not yet been constructed).
         visit(variant_detail::CopyVisitor<variant, Types...>{o});
     }
-    variant(variant &&o) {
+    variant(variant &&o) noexcept {
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = o.which();
         //TODO: use of visit here probably
         //violates strict aliasing (we are visiting an object that
@@ -204,7 +215,9 @@ public:
     variant &operator=(variant const &o) {
         variant temp(o);
         visit(variant_detail::DtorVisitor<Types...>());
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = o.which();
         //TODO: use of visit here probably
         //violates strict aliasing (we are visiting an object that
@@ -213,10 +226,12 @@ public:
         catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
         return *this;
     }
-    variant &operator=(variant &&o) {
+    variant &operator=(variant &&o) noexcept {
         variant temp(std::move(o));
         visit(variant_detail::DtorVisitor<Types...>());
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = o.which();
         //TODO: use of visit here probably
         //violates strict aliasing (we are visiting an object that
@@ -233,7 +248,9 @@ public:
                 !variant_detail::is_tag<typename std::remove_reference<T>::type>::value && !std::is_same<T, variant>::value>::type>
     variant(T &&val) {
         typedef typename std::remove_const<typename std::remove_reference<T>::type>::type ActualT;
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = variant_detail::IndexOf<ActualT, Types...>::value;
         new (&storage) (typename std::remove_reference<T>::type)(std::forward<T>(val));
     }
@@ -241,7 +258,9 @@ public:
     //Construct object of type T, with `values` forwarded to the constructor.
     template<typename T, typename... V>
     explicit variant(tag<T>, V &&...values) {
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = variant_detail::IndexOf<T, Types...>::value;
         new (&storage) T(std::forward<V>(values)...);
     }
@@ -254,13 +273,15 @@ public:
         T temp(std::forward<V>(values)...);
 
         visit(variant_detail::DtorVisitor<Types...>());
+#ifndef NDEBUG
         scrub_storage();
+#endif
         currentMember = variant_detail::IndexOf<T, Types...>::value;
         try { new (&storage) T(std::move(temp)); }
         catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
     }
     
-    ~variant() {
+    ~variant() noexcept {
         visit(variant_detail::DtorVisitor<Types...>());
     }
 
@@ -307,28 +328,28 @@ private:
 public:
 
     template<typename... ToLookFor>
-    bool active() const {
+    bool active() const noexcept {
         return active_struct<dummy, ToLookFor...>{}(currentMember);
     }
 
     template<typename T>
-    T &get() & {
+    T &get() & noexcept {
         assert((variant_detail::IndexOf<T, Types...>::value == currentMember));
         return reinterpret_cast<T &>(storage);
     }
     template<typename T>
-    T const &get() const & {
+    T const &get() const & noexcept {
         assert((variant_detail::IndexOf<T, Types...>::value == currentMember));
         return reinterpret_cast<T const &>(storage);
     }
 
     template<typename T>
-    T &&get() && {
+    T &&get() && noexcept {
         assert((variant_detail::IndexOf<T, Types...>::value == currentMember));
         return reinterpret_cast<T &&>(storage);
     }
     template<typename T>
-    T const &&get() const && {
+    T const &&get() const && noexcept {
         assert((variant_detail::IndexOf<T, Types...>::value == currentMember));
         return reinterpret_cast<T const &&>(storage);
     }
@@ -480,17 +501,20 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVari
 
     Visitor visitor;
     MatchedValueTuple matchedValues;
-    std::tuple<CurrentVariant&&, TailVariants&&...> tailVariants;
+    std::tuple<CurrentVariant &&, TailVariants &&...> tailVariants;
 
     template<typename A>
     result_type operator()(A &&a) {
-        auto expandedMatchedValueTuple = std::tuple_cat(matchedValues, std::forward_as_tuple(std::forward<A>(a)));
         return std::get<0>(tailVariants)
             .visit(
-                NAryVisitorFlattener<Visitor, decltype(expandedMatchedValueTuple), TailVariants...>{
+                NAryVisitorFlattener<
+                    Visitor, decltype(std::tuple_cat(matchedValues, std::forward_as_tuple(std::forward<A>(a)))), TailVariants...
+                >
+                {
                     std::forward<Visitor>(visitor),
-                    std::move(expandedMatchedValueTuple),
-                    tuple_tail(tailVariants)});
+                    std::tuple_cat(matchedValues, std::forward_as_tuple(std::forward<A>(a))),
+                    tuple_tail(tailVariants)
+                });
     }
 };
 

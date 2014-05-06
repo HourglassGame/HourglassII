@@ -15,7 +15,6 @@
 #include "mt/std/map"
 #include "mt/std/vector"
 #include <utility>
-#include <boost/move/move.hpp>
 
 #include "Frame_fwd.h"
 namespace hg {

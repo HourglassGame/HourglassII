@@ -11,7 +11,6 @@
 #include "Level.h"
 #include "Frame.h"
 
-#include <boost/move/move.hpp>
 #include <boost/swap.hpp>
 #include <utility>
 namespace hg {

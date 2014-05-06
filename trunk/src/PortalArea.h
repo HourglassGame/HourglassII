@@ -3,6 +3,8 @@
 #include "TimeDirection.h"
 #include <ostream>
 namespace hg {
+class PortalArea;
+std::ostream &operator<<(std::ostream &os, PortalArea const &toPrint);
 class PortalArea {
 public:
     PortalArea(

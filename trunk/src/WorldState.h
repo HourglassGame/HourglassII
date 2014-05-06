@@ -16,7 +16,6 @@
 #include "Frame_fwd.h"
 #include "FrameID_fwd.h"
 namespace hg {
-struct ExecuteFrame;
 struct NewExecuteFrame;
 struct EditDepartures;
 
@@ -40,8 +39,8 @@ public:
     WorldState(WorldState const& o);
     WorldState &operator=(WorldState const& o);
 
-    WorldState(WorldState &&o) = default;
-    WorldState &operator=(WorldState &&o) = default;
+    WorldState(WorldState &&o) noexcept = default;
+    WorldState &operator=(WorldState &&o) noexcept = default;
     /**
      * Updates the state of the world once.
      * Throws PlayerVictoryException if the player has won
@@ -68,7 +67,6 @@ public:
     int getTimelineLength() const;
 
 private:
-    friend struct ExecuteFrame;
     PhysicsEngine::FrameDepartureT
         getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter);
     

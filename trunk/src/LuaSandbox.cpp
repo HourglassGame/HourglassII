@@ -10,8 +10,6 @@
 #include <boost/algorithm/string/finder.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 
-#include "Foreach.h"
-
 #include "lua/lstate.h"
 
 namespace hg {
@@ -212,7 +210,7 @@ static void sandboxGlobalTable(lua_State *L) {
     //[original_globals]
     lua_newtable(L); //[original_globals, new_globals]
     
-    foreach (char const *name, safe_elements) {
+    for (char const *name: safe_elements) {
     //  new_globals.name = original_globals.name
         recursive_getfield(L, -2, name); //[original_globals, new_globals, v]
         recursive_setfield(L, -2, name); //[original_globals, new_globals]
@@ -252,7 +250,7 @@ static void touchupPackage(lua_State *L) {
     //loadedPrototype = {}
     lua_newtable(L);//[preload searcher,g,loadedPrototype]
     
-    foreach (char const *name, tables_to_wrap) {
+    for (char const *name: tables_to_wrap) {
         //loadedPrototype.name = g.name
         lua_getfield(L, gidx, name);//[preload searcher,g,loadedPrototype,g.name]
         lua_setfield(L, -2, name);//[preload searcher,g,loadedPrototype]
@@ -276,7 +274,7 @@ static void createProxyGlobals(lua_State *L) {
     //[...]
     lua_rawgeti(L, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS); //[..., globals]
 
-    foreach (char const *name, tables_to_wrap) {
+    for (char const *name: tables_to_wrap) {
         lua_getfield(L, -1, name); //[..., globals, g.name]
         create_proxy_table(L);     //[..., globals, t]
         lua_setfield(L, -2, name); //[..., globals]
@@ -363,7 +361,7 @@ void restoreGlobals(lua_State *L) {
     set_outer_table(L, globals);//[]
     get_base_table(L, globals);//[g]
     
-    foreach (char const *name, tables_to_wrap) {//[g]
+    for (char const *name: tables_to_wrap) {//[g]
         //g.name.outer = {}
         lua_getfield(L, -1, name);//[g,g.name]
         UDPT *package_table(static_cast<UDPT*>(lua_touserdata(L, -1)));//[g,g.name]

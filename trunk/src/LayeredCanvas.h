@@ -34,7 +34,7 @@ namespace hg {
         void drawImage(int layer, std::string const &key, float x, float y, float width, float height);
         Flusher getFlusher();
         
-        ~LayeredCanvas();
+        ~LayeredCanvas() noexcept;
     private:
         friend class Flusher;
         Canvas *canvas;

@@ -9,8 +9,6 @@
 #include <boost/algorithm/string/find_iterator.hpp>
 #include <boost/algorithm/string/finder.hpp>
 
-#include "Foreach.h"
-
 namespace hg {
 #define luaassert assert
 using boost::filesystem::path;

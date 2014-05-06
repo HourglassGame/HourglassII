@@ -1,6 +1,6 @@
 #include "InputList.h"
 namespace hg {
-InputList::InputList() :
+InputList::InputList() noexcept :
     left(),
     right(),
     up(),
@@ -23,7 +23,7 @@ InputList::InputList(
     Ability abilityCursor,
     FrameID timeCursor,
     int xCursor,
-    int yCursor) :
+    int yCursor) noexcept :
         left(left),
         right(right),
         up(up),

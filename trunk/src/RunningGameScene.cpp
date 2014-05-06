@@ -18,7 +18,6 @@
 #include "Inertia.h"
 #include "Frame.h"
 #include "TestDriver.h"
-#include "Foreach.h"
 #include "ReplayIO.h"
 #include "LayeredCanvas.h"
 #include "ResourceManager.h"
@@ -35,15 +34,12 @@
 #include "Inertia.h"
 #include "Frame.h"
 #include "TestDriver.h"
-#include "Foreach.h"
 #include "ReplayIO.h"
 #include "LayeredCanvas.h"
 #include "ResourceManager.h"
 #include "RenderWindow.h"
 #include <SFML/Graphics.hpp>
 
-#include <boost/multi_array.hpp>
-#include <boost/assign.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -75,7 +71,6 @@
 
 #include "DirectLuaTriggerSystem.h"
 #include "LevelLoader.h"
-#include "ConcurrentQueue.h"
 #include "move_function.h"
 #include "unique_ptr.h"
 #include "sfRenderTargetCanvas.h"
@@ -169,7 +164,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 
     tbb::task_group task_group;
 
-    hg::unique_ptr<hg::OperationInterrupter> interrupter(new hg::OperationInterrupter());
+    auto interrupter = hg::make_unique<hg::OperationInterrupter>();
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
     hg::LevelResources &levelResources = loadedLevel.resources;
     sf::Image &wallImage = loadedLevel.bakedWall;
@@ -242,7 +237,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                             return GameAborted_tag{};
 						//Restart
 						case sf::Keyboard::R:
-                            //interrupter->interrupt();
+                            interrupter->interrupt();
                             futureRunResult.wait();
                             timeEngine = initialLevel.timeEngine;
                             levelResources = initialLevel.resources;
@@ -267,6 +262,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 						//Load replay
                         
 						case sf::Keyboard::L:
+                            interrupter->interrupt();
+                            futureRunResult.wait();
                             return move_function<std::vector<InputList>()>([]{return loadReplay("replay");});
                         #if 0
 							replay = hg::loadReplay("replay");
@@ -418,8 +415,8 @@ void runStep(
     hg::FrameID drawnFrame;
 
     framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames));
-    foreach (
-        hg::FrameUpdateSet const &updateSet,
+    for (
+        hg::FrameUpdateSet const &updateSet:
         waveInfo.updatedFrames)
     {
         framesExecutedList.push_back(static_cast<int>(boost::distance(updateSet)));
@@ -514,8 +511,8 @@ void runStep(
         std::stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
-            foreach (
-                int num,
+            for (
+                int num:
                 framesExecutedList
                 | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
             {

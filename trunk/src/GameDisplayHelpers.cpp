@@ -4,7 +4,6 @@
 #include <SFML/Graphics/Texture.hpp>
 
 #include "Maths.h"
-#include "Foreach.h"
 namespace hg {
 
 
@@ -27,13 +26,14 @@ void DrawGlitzAndWall(
     target.setView(scaledView);
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), resources);
     hg::LayeredCanvas layeredCanvas(canvas);
-	foreach (hg::Glitz const &particularGlitz, glitz) particularGlitz.display(layeredCanvas);
+	for (hg::Glitz const &particularGlitz: glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
     flusher.partialFlush(1000);
+    
     sf::Texture wallTex;
     wallTex.loadFromImage(wallImage);
     target.draw(sf::Sprite(wallTex));
-    //DrawWall(target, wall);
+    
     flusher.partialFlush(std::numeric_limits<int>::max());
     if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) DrawColors(target, wall.roomWidth(), wall.roomHeight());
     target.setView(oldView);
@@ -137,7 +137,7 @@ void DrawTimelineContents(
     
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
-        foreach (hg::GuyOutputInfo const &guy, frame->getView().getGuyInformation()) {
+        for (hg::GuyOutputInfo const &guy: frame->getView().getGuyInformation()) {
             double left = frameNumber*target.getView().getSize().x/timelineLength;
             double top = (height-4)*guy.getIndex()/numberOfGuys;
             
@@ -176,8 +176,8 @@ void DrawWaves(
     double height)
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.getView().getSize().x);
-    foreach (hg::FrameUpdateSet const &wave, waves) {
-    	foreach (hg::Frame *frame, wave) {
+    for (hg::FrameUpdateSet const &wave: waves) {
+    	for (hg::Frame *frame: wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
                     static_cast<int>(

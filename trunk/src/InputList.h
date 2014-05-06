@@ -17,10 +17,13 @@ namespace boost {
 }
 
 namespace hg {
+class InputList;
+std::ostream &operator<<(std::ostream &os, InputList const &toPrint);
+std::istream &operator>>(std::istream &is, InputList &toRead);
 class InputList : boost::equality_comparable<InputList>
 {
 public:
-    InputList();
+    InputList() noexcept;
     InputList(
         bool left,
         bool right,
@@ -31,7 +34,7 @@ public:
         Ability abilityCursor,
         FrameID timeCursor,
         int xCursor,
-        int yCursor);
+        int yCursor) noexcept;
 
     bool operator==(InputList const &o) const;
 

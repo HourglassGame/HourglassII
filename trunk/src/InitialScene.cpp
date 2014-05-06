@@ -28,7 +28,7 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
         hg::move_function<std::vector<InputList>()> &replayLoadingFunction;
         typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
         variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-        operator()(LoadedLevel& level) const
+        operator()(LoadedLevel &level) const
         {
             if (replayLoadingFunction) {
                 return run_game_scene(window, std::move(level), replayLoadingFunction()).visit(RunGameResultVisitor{});
@@ -94,7 +94,8 @@ int run_hourglassii() {
             
             variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
                 game_scene_result = ReloadLevel_tag{};
-            while (game_scene_result.active<ReloadLevel_tag>() || game_scene_result.active<move_function<std::vector<InputList>()>>()) {
+            while (game_scene_result.active<ReloadLevel_tag>()
+                || game_scene_result.active<move_function<std::vector<InputList>()>>()) {
                 try {
                     auto& levelLoadFunction = selected_level.get<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>>();
                     if (game_scene_result.active<move_function<std::vector<InputList>()>>())

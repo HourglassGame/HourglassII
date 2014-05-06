@@ -65,7 +65,7 @@ displayLoadingScreen(
 hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
         hg::RenderWindow &window,
-        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction)
+        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const &levelLoadingFunction)
 {
     hg::OperationInterrupter interruptor;
     tbb::structured_task_group group;

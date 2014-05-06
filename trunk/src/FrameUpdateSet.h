@@ -2,8 +2,7 @@
 #define HG_FRAME_UPDATE_SET_H
 
 #include <boost/operators.hpp>
-#include <boost/move/move.hpp>
-#include <boost/container/vector.hpp>
+#include <vector>
 
 namespace hg {
 class Frame;
@@ -32,17 +31,15 @@ class Frame;
 //(I have not done conclusive tests by any means).
 class FrameUpdateSet : boost::equality_comparable<FrameUpdateSet> {
 public:
+    typedef std::vector<Frame *> SetType;
+
     FrameUpdateSet();
 
-    FrameUpdateSet(FrameUpdateSet const &o);
-    FrameUpdateSet &operator=(BOOST_COPY_ASSIGN_REF(FrameUpdateSet) o);
-    FrameUpdateSet(BOOST_RV_REF(FrameUpdateSet) o);
-    FrameUpdateSet &operator=(BOOST_RV_REF(FrameUpdateSet) o);
     void add(Frame *frame);
     void add(FrameUpdateSet const &o);
     void swap(FrameUpdateSet &o);
 
-    typedef boost::container::vector<Frame *> SetType;
+
 
     //Privacy leak here, it is an error to use the iterators as anything more than a BidirectionalIterator
     //I should define my own iterator class, but I can't be bothered right now
@@ -74,9 +71,7 @@ public:
 private:
     mutable bool isSet_;
     mutable SetType updateSet_;
-    BOOST_COPYABLE_AND_MOVABLE(FrameUpdateSet)
 };
-inline void swap(FrameUpdateSet &l, FrameUpdateSet &r) { l.swap(r); }
 
 }
 #endif //HG_FRAME_UPDATE_SET_H

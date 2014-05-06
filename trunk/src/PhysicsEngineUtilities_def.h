@@ -4,7 +4,7 @@ void buildDeparturesForComplexEntities(
     RandomAccessObjectAndTypeRange const &next,
     PhysicsEngine::FrameDepartureT &newDepartures)
 {
-	foreach (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime, next)
+	for (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime: next)
     {
         newDepartures[thingAndTime.frame].add(thingAndTime.object);
     }
@@ -269,7 +269,7 @@ void guyStep(
 			/*
 			if (guyArrivalList[i].getArrivalBasis() != -1)
 			{
-				foreach (Collision const &platform, nextPlatform)
+				for (Collision const &platform: nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());
@@ -285,7 +285,7 @@ void guyStep(
 			}
 			*/
 			
-			foreach (Collision const &platform, nextPlatform)
+			for (Collision const &platform: nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -389,7 +389,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            foreach (Collision const &platform, nextPlatform)
+            for (Collision const &platform: nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -461,7 +461,7 @@ void guyStep(
             }
 
             // platform collision
-            foreach (Collision const &platform, nextPlatform)
+            for (Collision const &platform: nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -543,7 +543,7 @@ void guyStep(
             int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
             // chonofrag with platforms
-			foreach (Collision const &platform, nextPlatform)
+			for (Collision const &platform: nextPlatform)
 			{
 				int pX(platform.getX());
 				int pY(platform.getY());
@@ -604,7 +604,7 @@ void guyStep(
 			}
 
             // check platform collision in Y direction
-            foreach (Collision const &platform, nextPlatform)
+            for (Collision const &platform: nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -673,7 +673,7 @@ void guyStep(
             }
 
             // platform collision
-            foreach (Collision const &platform, nextPlatform)
+            for (Collision const &platform: nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -1108,7 +1108,7 @@ void guyStep(
 							if (nextPortal[j].getWinner())
 							{
 								winFrame = true;
-								nextTime = 0;
+								nextTime = nullptr;
 								normalDeparture = false;
 								break;
 							}
@@ -1130,7 +1130,7 @@ void guyStep(
 								nextTimeDirection = nextPortal[j].getDestinationDirection();
 							}
 							
-							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
+							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();
 							arrivalBasis = nextPortal[j].getDestinationIndex();
@@ -1212,7 +1212,7 @@ void guyStep(
 							if (nextPortal[j].getWinner())
 							{
 								winFrame = true;
-								nextTime = 0;
+								nextTime = nullptr;
 								normalDeparture = false;
 								break;
 							}
@@ -1234,7 +1234,7 @@ void guyStep(
 								nextTimeDirection = nextPortal[j].getDestinationDirection();
 							}
 							
-							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : 0;
+							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
 							normalDeparture = false;
 							illegalPortal[i] = nextPortal[j].getIllegalDestination();
 							arrivalBasis = nextPortal[j].getDestinationIndex();
@@ -1468,7 +1468,7 @@ void boxCollisionAlogorithm(
 
 	//std::cerr << "*** New Step ***\n";
 	/*
-	foreach (Collision const &platform, nextPlatform)
+	for (Collision const &platform: nextPlatform)
 	{
 		int pX(platform.getX());
 		int pY(platform.getY());
@@ -1535,7 +1535,7 @@ void boxCollisionAlogorithm(
 				continue;
 			}
 
-			foreach (Collision const &platform, nextPlatform) {
+			for (Collision const &platform: nextPlatform) {
 				int pX(platform.getX());
 				int pY(platform.getY());
 				int pWidth(platform.getWidth());
@@ -1848,7 +1848,7 @@ void boxCollisionAlogorithm(
 				}
 
 				// Check inside a platform
-				foreach (Collision const &platform, nextPlatform)
+				for (Collision const &platform: nextPlatform)
 				{
 					int pX(platform.getX());
 					int pY(platform.getY());

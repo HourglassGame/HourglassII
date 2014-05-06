@@ -18,6 +18,13 @@
 #include "FrameUpdateSet_fwd.h"
 #include "FrameID_fwd.h"
 namespace hg {
+bool isNullFrame(Frame const *frame);
+Frame const *nextFrame(Frame const *frame, TimeDirection direction);
+Frame *nextFrame(Frame *frame, TimeDirection direction);
+bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction);
+Universe &getUniverse(Frame *frame);
+Universe const &getUniverse(Frame const *frame);
+int getFrameNumber(Frame const *frame);
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
 public:
@@ -90,20 +97,5 @@ private:
 
     FrameView view;
 };
-
-bool isNullFrame(Frame const *frame);
-Frame const *nextFrame(Frame const *frame, TimeDirection direction);
-Frame *nextFrame(Frame *frame, TimeDirection direction);
-bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction);
-Universe &getUniverse(Frame *frame);
-Universe const &getUniverse(Frame const *frame);
-int getFrameNumber(Frame const *frame);
-
-inline void swap(Frame &l, Frame &r)
-{
-    Frame temp(boost::move(l));
-    l = boost::move(r);
-    r = boost::move(temp);
-}
 }
 #endif //HG_FRAME_H

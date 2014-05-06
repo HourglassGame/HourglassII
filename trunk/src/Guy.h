@@ -33,61 +33,75 @@ public:
         TimeDirection timeDirection,
 		bool timePaused);
     
-    std::size_t getIndex() const { return index_; }
-    int getX()         const { return x_; }
-    int getY()         const { return y_; }
-    int getXspeed()    const { return xspeed_; }
-    int getYspeed()    const { return yspeed_; }
-    int getWidth()     const { return width_; }
-    int getHeight()    const { return height_; }
-    int getJumpSpeed() const { return jumpSpeed_; }
+    std::size_t getIndex() const { return index; }
+    int getX()         const { return x; }
+    int getY()         const { return y; }
+    int getXspeed()    const { return xspeed; }
+    int getYspeed()    const { return yspeed; }
+    int getWidth()     const { return width; }
+    int getHeight()    const { return height; }
+    int getJumpSpeed() const { return jumpSpeed; }
     
-    int getIllegalPortal()    const { return illegalPortal_; }
-    int getArrivalBasis() const { return arrivalBasis_; }
-    bool getSupported()       const { return supported_; }
-    int getSupportedSpeed()   const { return supportedSpeed_; }
+    int getIllegalPortal()    const { return illegalPortal; }
+    int getArrivalBasis() const { return arrivalBasis; }
+    bool getSupported()       const { return supported; }
+    int getSupportedSpeed()   const { return supportedSpeed; }
     
-    mt::std::map<Ability, int>::type const &getPickups() const { return pickups_; }
+    mt::std::map<Ability, int>::type const &getPickups() const { return pickups; }
 
-    FacingDirection::FacingDirection getFacing()        const { return facing_; }
+    FacingDirection::FacingDirection getFacing()        const { return facing; }
 
-    bool getBoxCarrying()  const { return boxCarrying_; }
-    int getBoxCarrySize()  const { return boxCarrySize_; }
+    bool getBoxCarrying()  const { return boxCarrying; }
+    int getBoxCarrySize()  const { return boxCarrySize; }
     TimeDirection 
-        getBoxCarryDirection() const { return boxCarryDirection_; }
+        getBoxCarryDirection() const { return boxCarryDirection; }
 
     TimeDirection
-        getTimeDirection() const { return timeDirection_; }
-	bool getTimePaused()    const { return timePaused_; }
+        getTimeDirection() const { return timeDirection; }
+	bool getTimePaused()    const { return timePaused; }
 
 
     bool operator==(Guy const &o) const;
     bool operator<(Guy const &second) const;
     
 private:
-    std::size_t index_;
-    int x_;
-    int y_;
-    int xspeed_;
-    int yspeed_;
-    int width_;
-    int height_;
-    int jumpSpeed_;
+    std::size_t index;
+    int x;
+    int y;
+    int xspeed;
+    int yspeed;
+    int width;
+    int height;
+    int jumpSpeed;
 
-    int illegalPortal_;
-    int arrivalBasis_;
-    bool supported_;
-    int supportedSpeed_;
+    int illegalPortal;
+    int arrivalBasis;
+    bool supported;
+    int supportedSpeed;
 
-    mt::std::map<Ability, int>::type pickups_;
-    FacingDirection::FacingDirection facing_; // <- false, -> true
+    mt::std::map<Ability, int>::type pickups;
+    FacingDirection::FacingDirection facing; // <- 0, -> 1
 
-    bool boxCarrying_;
-    int boxCarrySize_;
-    TimeDirection boxCarryDirection_;
+    bool boxCarrying;
+    int boxCarrySize;
+    TimeDirection boxCarryDirection;
 
-    TimeDirection timeDirection_;
-	bool timePaused_;
+    TimeDirection timeDirection;
+	bool timePaused;
+    
+    #define HG_EQ_TIE_DEF std::tie(\
+                index,\
+                x,y,xspeed,yspeed,width,height,jumpSpeed,\
+                illegalPortal,arrivalBasis,supported,supportedSpeed,\
+                pickups,facing,\
+                boxCarrying,boxCarrySize,boxCarryDirection,\
+                timeDirection,timePaused)
+    
+    auto equality_tuple() const -> decltype(HG_EQ_TIE_DEF)
+    {
+        return HG_EQ_TIE_DEF;
+    }
+    #undef HG_EQ_TIE_DEF
 };
 
 class GuyConstPtr : boost::totally_ordered<GuyConstPtr>

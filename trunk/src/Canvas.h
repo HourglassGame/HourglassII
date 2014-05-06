@@ -9,7 +9,7 @@ namespace hg {
         virtual void drawText(std::string const &text, float x, float y, float size, unsigned colour) = 0;
         virtual void drawImage(std::string const &key, float x, float y, float width, float height) = 0;
     protected:
-        ~Canvas() {}
+        ~Canvas() noexcept {}
     };
 }//namespace hg
 #endif //HG_CANVAS_H

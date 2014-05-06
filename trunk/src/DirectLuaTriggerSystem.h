@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 #include <boost/tuple/tuple.hpp>
-#include <boost/move/move.hpp>
 namespace hg {
 class OperationInterrupter;
 class DirectLuaTriggerFrameState :
@@ -54,9 +53,9 @@ class DirectLuaTriggerFrameState :
         Box const &objectToManipulate);
     
     virtual DepartureInformation getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal> >::type const &departures,
+        mt::std::map<Frame*, ObjectList<Normal>>::type const &departures,
         Frame *currentFrame);
-    virtual ~DirectLuaTriggerFrameState();
+    virtual ~DirectLuaTriggerFrameState() noexcept;
 private:
     OperationInterrupter &interrupter_;
     LuaState &L_;
@@ -76,8 +75,10 @@ private:
 
     LuaInterruptionHandle interruptionHandle_;
 
-    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState &o);
-    DirectLuaTriggerFrameState &operator=(DirectLuaTriggerFrameState &o);
+    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState &o) = delete;
+    DirectLuaTriggerFrameState &operator=(DirectLuaTriggerFrameState &o) = delete;
+    DirectLuaTriggerFrameState(DirectLuaTriggerFrameState &&o) = delete;
+    DirectLuaTriggerFrameState &operator=(DirectLuaTriggerFrameState &&o) = delete;
 };
 
 
@@ -105,17 +106,17 @@ public:
         //nothing to do.
     	return *this;
     }
-    lazy_ptr(lazy_ptr &&o) :
+    lazy_ptr(lazy_ptr &&o) noexcept :
     	ptr()
     {
     	boost::swap(ptr, o.ptr);
     }
-    lazy_ptr &operator=(lazy_ptr &&o)
+    lazy_ptr &operator=(lazy_ptr &&o) noexcept
     {
     	boost::swap(ptr, o.ptr);
     	return *this;
     }
-    ~lazy_ptr()
+    ~lazy_ptr() noexcept
     {
         delete ptr;
     }
@@ -166,7 +167,7 @@ private:
     //when it is eventually needed.
     //luaStates_ a cache, so the act of ignoring its contents
     //does not cause any problems.
-    lazy_ptr<ThreadLocal<LuaState> > luaStates_;
+    lazy_ptr<ThreadLocal<LuaState>> luaStates_;
     std::vector<char> compiledMainChunk_;
     std::vector<LuaModule> compiledExtraChunks_;
     std::vector<

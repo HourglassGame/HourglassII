@@ -7,8 +7,6 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/swap.hpp>
 
-#include "Foreach.h"
-
 #include <functional>
 #include <cassert>
 #include <utility>
@@ -24,7 +22,7 @@ Universe::Universe(int timelineLength) :
 {
     assert(timelineLength > 0);
     frames.reserve(timelineLength);
-    foreach (int i, boost::irange<int>(0, timelineLength)) {
+    for (int i: boost::irange<int>(0, timelineLength)) {
         frames.push_back(Frame(i, *this));
     }
 	assert(!frames.empty());
@@ -59,13 +57,13 @@ Universe &Universe::operator=(Universe &&o) noexcept
 //updates the universe and Frame pointers in `frames`
 void Universe::fixFramesEverything() {
     fixFramesUniverses();
-    foreach (Frame &frame, frames) {
+    for (Frame &frame: frames) {
         frame.correctDepartureFramePointers(FramePointerUpdater(*this));
     }
-    foreach (Frame &frame, frames) {
+    for (Frame &frame: frames) {
         frame.correctArrivalFramePointers(FramePointerUpdater(*this));
     }
-    foreach (Frame &frame, frames) {
+    for (Frame &frame: frames) {
         frame.correctArrivalObjectListPointers();
     }
 }
@@ -73,7 +71,7 @@ void Universe::fixFramesEverything() {
 //Updates the `universe` pointers in `frames`
 void Universe::fixFramesUniverses() noexcept
 {
-    foreach (Frame &frame, frames) {
+    for (Frame &frame: frames) {
         frame.correctUniverse(*this);
     }
 }

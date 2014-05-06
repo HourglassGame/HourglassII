@@ -5,6 +5,9 @@
 #include <boost/exception_ptr.hpp>
 #include <thread>
 namespace hg {
+#if !defined(TBB_USE_CAPTURED_EXCEPTION) || TBB_USE_CAPTURED_EXCEPTION != 0
+#error
+#endif
     //TBBOuterExceptionWrapper and TBBInnerExceptionWrapper work together
     //to allow exceptions to (slightly more) properly be passed through the 
     //Threading Building Blocks scheduler (in C++03 mode).
@@ -17,6 +20,10 @@ namespace hg {
     //This means that it works for all types supported by boost::exception.
     //Use `boost::enable_current_exception` when throwing exceptions to enable this support.
     //See the boost::exception documentation for more details.
+    
+    //!!! RIGHT NOW TBBExceptionWrapper IS ENTIRELY POINTLESS, SINCE WE'VE DROPPED SUPPORT FOR C++03,  !!!
+    //!!! and changed TBBExceptionWrapper to use std::exception_ptr.                                   !!!
+    //                 TBBExceptionWrapper SHOULD BE REMOVED                                           !!!
     
     //The copy constructor of A must not throw.
     template<typename F, typename R, typename A>
