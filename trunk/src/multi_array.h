@@ -10,6 +10,11 @@ template<typename T, std::size_t N_dims, typename Allocator = std::allocator<T>>
 class multi_array {
 private:
     struct dummy {};
+private:
+    //something storage_order
+    std::array<std::size_t, N_dims> size;
+    std::array<std::size_t, N_dims> capacity;
+    boost::container::vector<T, Allocator> data;
 public:
     typedef std::size_t index;
     template<std::size_t remaining_dims, typename unused = dummy>
@@ -20,9 +25,15 @@ public:
         friend class multi_array;
         T *array_start;
         multi_array const *this_;
+        static std::size_t const current_axis = N_dims - remaining_dims;
     //public:
         op_index_proxy<remaining_dims-1> operator[](std::size_t i) {
-            return op_index_proxy<remaining_dims-1>{array_start + this_->capacity[N_dims - remaining_dims]*i, this_};
+            assert(i < this_->size[current_axis]);
+            auto current_block_length =
+                std::accumulate(&this_->capacity[current_axis+1], this_->capacity.end(), std::size_t(1), std::multiplies<std::size_t>());
+            
+            //std::cout << "remaining_dims: " << remaining_dims << " current_block_length: " <<current_block_length << "\n";
+            return op_index_proxy<remaining_dims-1>{array_start + current_block_length*i, this_};
         }
     };
     template<typename unused>
@@ -31,8 +42,11 @@ public:
         friend class multi_array;
         T *array_start;
         multi_array const *this_;
+        static std::size_t const current_axis = N_dims - 1;
     //public:
         T &operator[](std::size_t i) {
+            assert(i < this_->size[current_axis]);
+            assert(array_start+i >= this_->data.data() && array_start+i < &this_->data[this_->data.size()]);
             return array_start[i];
         }
     };
@@ -45,9 +59,14 @@ public:
         friend class multi_array;
         T const *array_start;
         multi_array const *this_;
+        static std::size_t const current_axis = N_dims - remaining_dims;
     //public:
         const_op_index_proxy<remaining_dims-1> operator[](std::size_t i) const {
-            return op_index_proxy<remaining_dims-1>{array_start + this_->capacity[N_dims - remaining_dims]*i, this_};
+            assert(i < this_->size[current_axis]);
+            auto current_block_length =
+                std::accumulate(&this_->capacity[N_dims - (remaining_dims-1)], this_->capacity.end(), std::size_t(1), std::multiplies<std::size_t>());
+            
+            return const_op_index_proxy<remaining_dims-1>{array_start + current_block_length*i, this_};
         }
     };
     template<typename unused>
@@ -56,8 +75,11 @@ public:
         friend class multi_array;
         T const *array_start;
         multi_array const *this_;
+        static std::size_t const current_axis = N_dims - 1;
     //public:
         T const &operator[](std::size_t i) const {
+            assert(i < this_->size[current_axis]);
+            assert(array_start+i >= this_->data.data() && array_start+i < &this_->data[this_->data.size()]);
             return array_start[i];
         }
     };
@@ -79,15 +101,18 @@ public:
         data.resize(newStorageSpace);
         size = newSize;
         capacity = newSize;
+        //std::cout << (void*)this << "newSize: " << newSize << "\n";
     }
     void insert(std::size_t axis, std::size_t position/*=end,array_with_compatible_size newValues=array_of_default_T*/);
     
-    op_index_proxy<N_dims-1> operator[](std::size_t i) {
-        return op_index_proxy<N_dims-1>{data.data() + capacity[0]*i, this};
+    auto operator[](std::size_t i) -> decltype(op_index_proxy<N_dims>{data.data(), this}[i]) {
+        //std::cout << "calling operator[] with: " << i << "\n";
+        return op_index_proxy<N_dims>{data.data(), this}[i];
     }
     
-    const_op_index_proxy<N_dims-1> operator[](std::size_t i) const {
-        return const_op_index_proxy<N_dims-1>{data.data() + capacity[0]*i, this};
+    auto operator[](std::size_t i) const -> decltype(const_op_index_proxy<N_dims>{data.data(), this}[i]) {
+        //std::cout << "calling operator[] with: " << i << "\n";
+        return const_op_index_proxy<N_dims>{data.data(), this}[i];
     }
     //TODO - T& operator[] for 1 dimensional case
     
@@ -102,11 +127,6 @@ public:
     //...
     //Standard Container Acessors on per-dimension basis:
     //... (provided by free functions? -- see below)
-private:
-    //something storage_order
-    std::array<std::size_t, N_dims> size;
-    std::array<std::size_t, N_dims> capacity;
-    boost::container::vector<T, Allocator> data;
 };
 
 //Rotation Proxies
