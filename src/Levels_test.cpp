@@ -3,9 +3,17 @@
 //game is playable.
 
 //The way it works currently is make sure that every `.lua` file in the levels folder,
-//has a corresponding `.replay` file, and that the corresponding `.replay` file
+//has a corresponding `win.replay` file, and that the corresponding `win.replay` file
 //results in the level being won.
 #include "TestDriver.h"
+#include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
+#include "OperationInterrupter.h"
+#include "Level.h"
+#include "LevelLoader.h"
+#include "ReplayIO.h"
+#include "TimeEngine.h"
+#include "PlayerVictoryException.h"
 namespace hg {
 namespace levels_test {
 namespace {
@@ -16,7 +24,36 @@ bool testLevels() {
     //load the level and run the given replay to exhaustion.
     //For the test to pass, every replay must result in
     //a win in the corresponding level.
-    //TODO
+
+    //TODO -- make this test only run in an "expensive tests" run
+    //TODO -- get rid of hard-coded progress display.
+    //TODO -- allow test to continue after failure
+    for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
+                                                      boost::filesystem::directory_iterator()))
+    {
+        if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
+            if (exists(entry.path()/"DoNotTest")) continue;
+            std::cout << "Testing " << entry.path() << " ...";
+            if (!exists(entry.path()/"win.replay")) {
+                std::cerr << " Did not have win.replay\n";
+                return false;
+            }
+            OperationInterrupter interrupter;
+            TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path(), interrupter),interrupter);
+            auto const replay = loadReplay((entry.path()/"win.replay").string());
+            try {
+                for (auto const& input: replay) {
+                    timeEngine.runToNextPlayerFrame(input, interrupter);
+                }
+            }
+            catch(PlayerVictoryException const&) {
+                std::cout << " OK\n";
+                continue;
+            }
+            std::cerr << " Did not win\n";
+            return false;
+        }
+    }
     return true;
 }
 
