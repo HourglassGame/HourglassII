@@ -11,7 +11,7 @@
 #include <boost/tuple/tuple.hpp>
 namespace hg {
 class OperationInterrupter;
-class DirectLuaTriggerFrameState :
+class DirectLuaTriggerFrameState final :
     public TriggerFrameStateImplementation
 {
     public:
@@ -139,7 +139,7 @@ private:
     mutable T *ptr;
 };
 
-class DirectLuaTriggerSystem :
+class DirectLuaTriggerSystem final :
     public TriggerSystemImplementation
 {
 public:

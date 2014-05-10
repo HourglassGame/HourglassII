@@ -532,10 +532,17 @@ end
 
 
 local pickupNameMap = {
-	timeJump = "J", 
+	timeJump = "J",
 	timeReverse = "R", 
 	timeGun = "G", 
 	timePause = "P"
+}
+
+local pickupGlitzNameMap = {
+	timeJump = "global.time_jump",
+	timeReverse = "global.time_reverse",
+	timeGun = "global.time_gun",
+	timePause = "global.time_pause"
 }
 
 local function pickup(p)
@@ -579,21 +586,27 @@ local function pickup(p)
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
             if active then
-                local forGlitz, revGlitz =
-                    calculateBidirectionalGlitz(430, constructDynamicArea(proto, PnV), {r = 210, g = 10, b = 210}, {r = 210, g = 10, b = 210})
-				local textGlitz = {
-					type = "text",
-					x = PnV.x+350,
-					y = PnV.y-50,
-					text = pickupNameMap[p.pickupType],
-					size = 1400,
-					layer = 440,
-					colour = {r = 0, g = 0, b = 0},
-				}
-                table.insert(forwardsGlitz, forGlitz)
-                table.insert(reverseGlitz, revGlitz)
-				table.insert(forwardsGlitz, textGlitz)
-                table.insert(reverseGlitz, textGlitz)
+                local forwardsImageGlitz = {
+                    type = "image",
+                    layer = 430,
+                    key = pickupGlitzNameMap[p.pickupType],
+                    x = PnV.x,
+                    y = PnV.y,
+                    width = proto.height,
+                    height = proto.width
+                }
+
+                local reverseImageGlitz = {
+                    type = "image",
+                    layer = 430,
+                    key = pickupGlitzNameMap[p.pickupType],
+                    x = PnV.x,
+                    y = PnV.y,
+                    width = proto.height,
+                    height = proto.width
+                }
+                table.insert(forwardsGlitz, forwardsImageGlitz)
+                table.insert(reverseGlitz, reverseImageGlitz)
             end
         end,
         fillTrigger = function(self, outputTriggers)
@@ -906,4 +919,3 @@ return {
     calculateBidirectionalGlitz = calculateBidirectionalGlitz,
     timeDirectionToInt = timeDirectionToInt,
 }
-
