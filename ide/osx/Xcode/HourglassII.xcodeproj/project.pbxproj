@@ -92,6 +92,7 @@
 		20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
 		2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2064466C15D9FBF5009EF465 /* Levels_test.cpp */; };
 		2085B19E18CE6A77003703DB /* MainMenuScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2085B19C18CE6A77003703DB /* MainMenuScene.cpp */; };
+		2085F0E1191A2B1A00316D2D /* ParallelForEach_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2085F0DF191A2B1A00316D2D /* ParallelForEach_test.cpp */; };
 		20945A01160BF702005A94EE /* lapi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459C6160BF702005A94EE /* lapi.cpp */; };
 		20945A02160BF702005A94EE /* lauxlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459C8160BF702005A94EE /* lauxlib.cpp */; };
 		20945A03160BF702005A94EE /* lbaselib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459CA160BF702005A94EE /* lbaselib.cpp */; };
@@ -124,6 +125,8 @@
 		20945A22160BF702005A94EE /* lzio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459FF160BF702005A94EE /* lzio.cpp */; };
 		20945A24160BF751005A94EE /* lctype.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20945A23160BF751005A94EE /* lctype.cpp */; };
 		20945A26160BF7AB005A94EE /* lobject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20945A25160BF7AB005A94EE /* lobject.cpp */; };
+		209463BF191994FB003E1F62 /* IngameMenuScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209463BD191994FB003E1F62 /* IngameMenuScene.cpp */; };
+		209463C2191999EF003E1F62 /* GlobalOptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209463C0191999EF003E1F62 /* GlobalOptions.cpp */; };
 		2097500217E8330500EF15B2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2097500117E8330500EF15B2 /* IOKit.framework */; };
 		2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2097500317E8337900EF15B2 /* Carbon.framework */; };
 		2097501217E84CD700EF15B2 /* glew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2097501117E84CD700EF15B2 /* glew.cpp */; };
@@ -312,7 +315,6 @@
 		200E80EA14B4792500D054F4 /* SimpleLuaCpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = SimpleLuaCpp.h; path = ../../../src/SimpleLuaCpp.h; sourceTree = SOURCE_ROOT; };
 		200E80EB14B4792500D054F4 /* SortWeakerThanEquality_fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SortWeakerThanEquality_fwd.h; path = ../../../src/SortWeakerThanEquality_fwd.h; sourceTree = SOURCE_ROOT; };
 		200E80EC14B4792500D054F4 /* SortWeakerThanEquality.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SortWeakerThanEquality.h; path = ../../../src/SortWeakerThanEquality.h; sourceTree = SOURCE_ROOT; };
-		200E80ED14B4792500D054F4 /* TBBExceptionWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TBBExceptionWrapper.h; path = ../../../src/TBBExceptionWrapper.h; sourceTree = SOURCE_ROOT; };
 		200E80EE14B4792500D054F4 /* TestDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestDriver.cpp; path = ../../../src/TestDriver.cpp; sourceTree = SOURCE_ROOT; };
 		200E80EF14B4792500D054F4 /* TestDriver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestDriver.h; path = ../../../src/TestDriver.h; sourceTree = SOURCE_ROOT; };
 		200E80F014B4792500D054F4 /* ThreadLocal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ThreadLocal.h; path = ../../../src/ThreadLocal.h; sourceTree = SOURCE_ROOT; };
@@ -378,6 +380,7 @@
 		207C0DA916B50770005D4110 /* RunningGameScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RunningGameScene.h; path = ../../../src/RunningGameScene.h; sourceTree = "<group>"; };
 		2085B19C18CE6A77003703DB /* MainMenuScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenuScene.cpp; path = ../../../src/MainMenuScene.cpp; sourceTree = "<group>"; };
 		2085B19D18CE6A77003703DB /* MainMenuScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainMenuScene.h; path = ../../../src/MainMenuScene.h; sourceTree = "<group>"; };
+		2085F0DF191A2B1A00316D2D /* ParallelForEach_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParallelForEach_test.cpp; path = ../../../src/ParallelForEach_test.cpp; sourceTree = "<group>"; };
 		208FD88E14D163140089BC25 /* GlitzImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzImplementation.h; path = ../../../src/GlitzImplementation.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		208FD88F14D16A180089BC25 /* RectangleGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = RectangleGlitz.h; path = ../../../src/RectangleGlitz.h; sourceTree = "<group>"; };
 		208FD89014D16E600089BC25 /* default_delete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = default_delete.h; path = ../../../src/default_delete.h; sourceTree = "<group>"; };
@@ -439,6 +442,10 @@
 		20945A00160BF702005A94EE /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lzio.h; sourceTree = "<group>"; };
 		20945A23160BF751005A94EE /* lctype.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lctype.cpp; sourceTree = "<group>"; };
 		20945A25160BF7AB005A94EE /* lobject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lobject.cpp; sourceTree = "<group>"; };
+		209463BD191994FB003E1F62 /* IngameMenuScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IngameMenuScene.cpp; path = ../../../src/IngameMenuScene.cpp; sourceTree = "<group>"; };
+		209463BE191994FB003E1F62 /* IngameMenuScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IngameMenuScene.h; path = ../../../src/IngameMenuScene.h; sourceTree = "<group>"; };
+		209463C0191999EF003E1F62 /* GlobalOptions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlobalOptions.cpp; path = ../../../src/GlobalOptions.cpp; sourceTree = "<group>"; };
+		209463C1191999EF003E1F62 /* GlobalOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlobalOptions.h; path = ../../../src/GlobalOptions.h; sourceTree = "<group>"; };
 		2096CCA214D6EEB400C0A32C /* LuaError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaError.h; path = ../../../src/LuaError.h; sourceTree = "<group>"; };
 		2097500117E8330500EF15B2 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		2097500317E8337900EF15B2 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -767,6 +774,8 @@
 		2068CCDE125F156F00028D2A /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				209463C1191999EF003E1F62 /* GlobalOptions.h */,
+				209463C0191999EF003E1F62 /* GlobalOptions.cpp */,
 				209EA32419027B7300037E03 /* GameDisplayHelpers.h */,
 				209EA32319027B7300037E03 /* GameDisplayHelpers.cpp */,
 				20A2886018C56FCD00B748B3 /* Scenes */,
@@ -830,6 +839,7 @@
 				200E80D014B4792500D054F4 /* OperationInterrupter.cpp */,
 				2015393714E0B14A00AE8B14 /* OperationInterruptedException.h */,
 				200E80D214B4792500D054F4 /* ParallelForEach.h */,
+				2085F0DF191A2B1A00316D2D /* ParallelForEach_test.cpp */,
 				200E80DB14B4792500D054F4 /* PlatformDestination.h */,
 				200E80DA14B4792500D054F4 /* PlatformDestination.cpp */,
 				200E80DC14B4792500D054F4 /* PlayerVictoryException.h */,
@@ -840,7 +850,6 @@
 				200E80E614B4792500D054F4 /* ReplayIO.cpp */,
 				200E80E514B4792500D054F4 /* ReplayIO_test.cpp */,
 				200E80E814B4792500D054F4 /* scalable_allocator.h */,
-				200E80ED14B4792500D054F4 /* TBBExceptionWrapper.h */,
 				20029FF012F0FD95000E2DBC /* TimeEngine */,
 				2097501117E84CD700EF15B2 /* glew.cpp */,
 			);
@@ -882,6 +891,8 @@
 				202EB18D18D3F2E5006CE7AD /* ReplaySelectionScene.cpp */,
 				20A1C4D318E2940A005F2EA3 /* PostLevelScene.h */,
 				20A1C4D218E2940A005F2EA3 /* PostLevelScene.cpp */,
+				209463BE191994FB003E1F62 /* IngameMenuScene.h */,
+				209463BD191994FB003E1F62 /* IngameMenuScene.cpp */,
 			);
 			name = Scenes;
 			sourceTree = "<group>";
@@ -1137,6 +1148,7 @@
 				200E810F14B4792500D054F4 /* Frame.cpp in Sources */,
 				200E811014B4792500D054F4 /* FrameID.cpp in Sources */,
 				200E811114B4792500D054F4 /* FrameUpdateSet.cpp in Sources */,
+				2085F0E1191A2B1A00316D2D /* ParallelForEach_test.cpp in Sources */,
 				200E811214B4792500D054F4 /* FrameView.cpp in Sources */,
 				200E811314B4792500D054F4 /* Glitz.cpp in Sources */,
 				200E811414B4792500D054F4 /* Guy.cpp in Sources */,
@@ -1148,10 +1160,12 @@
 				200E813914B4792500D054F4 /* LuaUtilities.cpp in Sources */,
 				200E813A14B4792500D054F4 /* main.cpp in Sources */,
 				200E813E14B4792500D054F4 /* ObjectList_inst_NonGuyDynamic.cpp in Sources */,
+				209463C2191999EF003E1F62 /* GlobalOptions.cpp in Sources */,
 				200E813F14B4792500D054F4 /* ObjectList_inst_Normal.cpp in Sources */,
 				20A2886718C573F400B748B3 /* RunningGameScene.cpp in Sources */,
 				200E814014B4792500D054F4 /* ObjectPtrList_inst_Normal.cpp in Sources */,
 				200E814114B4792500D054F4 /* OperationInterrupter.cpp in Sources */,
+				209463BF191994FB003E1F62 /* IngameMenuScene.cpp in Sources */,
 				2085B19E18CE6A77003703DB /* MainMenuScene.cpp in Sources */,
 				200E814214B4792500D054F4 /* PhysicsEngine_test.cpp in Sources */,
 				200E814314B4792500D054F4 /* PhysicsEngine.cpp in Sources */,
@@ -1228,7 +1242,7 @@
 		20C29B9412F3077B006F90AB /* SingleTargetRelease */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
@@ -1302,7 +1316,7 @@
 		20C29BDE12F314A0006F90AB /* Profile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
@@ -1377,7 +1391,7 @@
 		20EEC68C12F39B5700AA7C75 /* SingleTargetProfile */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
@@ -1889,7 +1903,7 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
@@ -1927,7 +1941,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;

@@ -12,6 +12,7 @@
 #include "LuaSandbox.h"
 #include "RectangleGlitz.h"
 #include "TextGlitz.h"
+#include "ImageGlitz.h"
 
 #include <boost/ref.hpp>
 #include <thread>
@@ -276,24 +277,34 @@ unsigned readColourField(lua_State *L, char const *fieldName)
 
 Glitz toGlitz(lua_State *L)
 {
-    std::string type(readField<std::string>(L, "type"));
+    std::string const type(readField<std::string>(L, "type"));
     if (type == "rectangle") {
-        int layer(readField<int>(L, "layer"));
-        int x(readField<int>(L, "x"));
-        int y(readField<int>(L, "y"));
-        int width(readField<int>(L, "width"));
-        int height(readField<int>(L, "height"));
+        int const layer(readField<int>(L, "layer"));
+        int const x(readField<int>(L, "x"));
+        int const y(readField<int>(L, "y"));
+        int const width(readField<int>(L, "width"));
+        int const height(readField<int>(L, "height"));
         unsigned colour(readColourField(L, "colour"));
         return Glitz(multi_thread_new<RectangleGlitz>(layer, x, y, width, height, colour));
     }
-    if (type == "text") {
-        int layer(readField<int>(L, "layer"));
+    else if (type == "text") {
+        int const layer(readField<int>(L, "layer"));
         std::string text(readField<std::string>(L, "text"));
-        int x(readField<int>(L, "x"));
-        int y(readField<int>(L, "y"));
-        int size(readField<int>(L, "size"));
+        int const x(readField<int>(L, "x"));
+        int const y(readField<int>(L, "y"));
+        int const size(readField<int>(L, "size"));
         unsigned colour(readColourField(L, "colour"));
         return Glitz(multi_thread_new<TextGlitz>(layer, std::move(text), x, y, size, colour));
+    }
+    else if (type == "image") {
+        int const layer(readField<int>(L, "layer"));
+        std::string key(readField<std::string>(L, "key"));
+        int const x(readField<int>(L, "x"));
+        int const y(readField<int>(L, "y"));
+        int const width(readField<int>(L, "width"));
+        int const height(readField<int>(L, "height"));
+        
+        return Glitz(multi_thread_new<ImageGlitz>(layer, std::move(key), x, y, width, height));
     }
     std::cerr << "Unknown Glitz Type: " << type << "\n";
     luaassert("Unknown Glitz Type" && false);
@@ -346,7 +357,7 @@ PhysicsAffectingStuff
             yspeed = <number>,
             size = <number>,
             illegalPortal = <nil or positive number>,
-            arrivalBasis = <nil or number in the range [1, arrivalLocationsSize]>
+            arrivalBasis = <nil or number in the range [1, arrivalLocationsSize]>,
             timeDirection = <'forwards' or 'reverse'>
         }
     */
@@ -371,7 +382,7 @@ PhysicsAffectingStuff
             --determining which portals are illegal
             --(in this context `illegal` means that an object may not fall through
             --the portal)
-            index = <positive number>
+            index = <positive number>,
             x = <number>,
             y = <number>,
             width = <positive number or 0>,
@@ -399,13 +410,13 @@ PhysicsAffectingStuff
     //An array-table called "mutators", containing
     //tables with the following format
         {
-            x = <number>
-            y = <number>
-            width = <positive number or 0>
-            height = <positive number or 0>
-            xspeed = <number>
-            yspeed = <number>
-            collisionOverlap = <number in range [0, 100]>
+            x = <number>,
+            y = <number>,
+            width = <positive number or 0>,
+            height = <positive number or 0>,
+            xspeed = <number>,
+            yspeed = <number>,
+            collisionOverlap = <number in range [0, 100]>,
             timeDirection = <'forwards' or 'reverse'>
         }
     */
@@ -936,17 +947,29 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     /*
     {
         {
-            layer = <number>
-            x = <number>,
-            y = <number>,
-            width = <positive number or 0>,
-            height = <positive number or 0>,
-            --these colour numbers are in the range [0, 255]
-            --TODO:
-            --seriously consider making them be in the range [0, 1]!!
-            --This would also warrant a change to the rest of the
-            --glitz system throughout the engine.
-            colour = {r = <number>, g = <number>, b = <number>},
+            type = <'rectangle' or 'text'>
+            if type == 'rectangle'
+              layer = <number>,
+              x = <number>,
+              y = <number>,
+              width = <number>
+              height = <number>,
+              colour = {r = <number>, g = <number>, b = <number>},
+            elseif type == 'text'
+              layer = <number>,
+              text = <string>,
+              x = <number>,
+              y = <number>,
+              size = <number>,
+              colour = {r = <number>, g = <number>, b = <number>},
+            elseif type == 'image'
+              layer = <number>,
+              key = <string>,
+              x = <number>
+              y = <number>,
+              width = <number>,
+              height = <number>
+            end
         },
         {
             <as above>
@@ -1039,7 +1062,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const &sourceChunk, char con
         source_iterators.second = &sourceChunk.front() + sourceChunk.size();
     }
     std::vector<char> compiledChunk;
-    LuaState L((LuaState::new_state_t()));
+    LuaState L{LuaState::new_state_t{}};
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, name, nullptr)) {
         std::cerr << lua_tostring(L.ptr, -1) << std::endl;
     	luaassert(false);
