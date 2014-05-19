@@ -10,17 +10,17 @@ namespace hg
 class TriggerData : boost::totally_ordered<TriggerData>
 {
 public:
-    TriggerData(std::size_t index, mt::std::vector<int>::type const &value);
+    TriggerData(std::size_t index, mt::std::vector<int> const &value);
 
     std::size_t getIndex() const { return index; }
-    mt::std::vector<int>::type const &getValue() const { return value; }
+    mt::std::vector<int> const &getValue() const { return value; }
     
     bool operator==(TriggerData const &o) const;
     bool operator<(TriggerData const &second) const;
     
 private:
     std::size_t index;
-    mt::std::vector<int>::type value;
+    mt::std::vector<int> value;
 };
 class TriggerDataConstPtr : boost::totally_ordered<TriggerDataConstPtr>
 {
@@ -30,7 +30,7 @@ public:
     TriggerDataConstPtr(TriggerData const &triggerData) : p(&triggerData) {}
     TriggerData const &get() const { return *p; }
     std::size_t getIndex() const { return p->getIndex(); }
-    mt::std::vector<int>::type const &getValue() const { return p->getValue(); }
+    mt::std::vector<int> const &getValue() const { return p->getValue(); }
     
     bool operator==(TriggerDataConstPtr const &o) const { return *p == *o.p;}
     bool operator <(TriggerDataConstPtr const &o) const { return *p  < *o.p;}

@@ -4,14 +4,15 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Event.hpp>
+#include <boost/container/vector.hpp>
 #include <cassert>
 namespace hg {
 //Wraps sf::RenderWindow and adds some additional features.
 struct RenderWindow {
     struct InputState {
         InputState(
-            std::vector<bool> const &pressedKeys,
-            std::vector<bool> const &pressedMouseButtons,
+            boost::container::vector<bool> const &pressedKeys,
+            boost::container::vector<bool> const &pressedMouseButtons,
             sf::Vector2i mousePosition):
                 pressedKeys(pressedKeys),
                 pressedMouseButtons(pressedMouseButtons),
@@ -30,8 +31,10 @@ struct RenderWindow {
             return mousePosition;
         }
     private:
-        std::vector<bool> pressedKeys;
-        std::vector<bool> pressedMouseButtons;
+        //Perhaps use a bit-vector
+        //Purposefully avoiding std::vector<bool> as it is confusing, compared to something more explicit
+        boost::container::vector<bool> pressedKeys;
+        boost::container::vector<bool> pressedMouseButtons;
         sf::Vector2i mousePosition;
     };
     struct InputStateTracker {
@@ -93,8 +96,8 @@ struct RenderWindow {
                 break;
             }
         }
-        std::vector<bool> pressedKeys;
-        std::vector<bool> pressedMouseButtons;
+        boost::container::vector<bool> pressedKeys;
+        boost::container::vector<bool> pressedMouseButtons;
         sf::Vector2i mousePos;
         InputState getInputState() const {
             return InputState(pressedKeys, pressedMouseButtons, mousePos);

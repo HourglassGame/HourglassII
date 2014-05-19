@@ -174,7 +174,7 @@ Wall to<Wall>(lua_State *L, int index)
         }
         lua_pop(L, 1);
     }
-    return Wall(segmentSize, wall, "HourglassI");
+    return Wall(segmentSize, std::move(wall), "HourglassI");
 }
 
 template<>
@@ -267,11 +267,11 @@ FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State 
 }
 
 template<>
-mt::std::map<Ability, int>::type
-    to<mt::std::map<Ability, int>::type>(lua_State *L, int index)
+mt::std::map<Ability, int>
+    to<mt::std::map<Ability, int>>(lua_State *L, int index)
 {
     assert(lua_istable(L, index) && "pickups must be a table");
-    mt::std::map<Ability, int>::type retv;
+    mt::std::map<Ability, int> retv;
     lua_pushnil(L);
     while (lua_next(L, index - 1) != 0) {
         lua_Integer abilityQuantity(lua_tointeger(L, -1));
@@ -312,7 +312,7 @@ Guy to<Guy>(lua_State* L, int index)
     if (supported) {
         supportedSpeed = readField<int>(L, "supportedSpeed", index);
     }
-    mt::std::map<Ability, int>::type pickups(readField<mt::std::map<Ability, int>::type>(L, "pickups", index));
+    mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
     FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
     bool boxCarrying(readField<bool>(L, "boxCarrying", index));
     int boxCarrySize(0);
@@ -353,7 +353,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
     int width(readFieldWithDefault<int>(L, "width",index,1600));
     int height(readFieldWithDefault<int>(L, "height",index,3200));
 	int jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
-    mt::std::map<Ability, int>::type pickups(readField<mt::std::map<Ability, int>::type>(L, "pickups", index));
+    mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
     FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
     bool boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
     int boxCarrySize(0);

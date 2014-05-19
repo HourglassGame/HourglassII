@@ -22,10 +22,10 @@ namespace lc_internal {
             x(x), y(y), width(width), height(height), colour(colour)
         {
         }
-        void drawTo(Canvas &canvas) const {
+        void drawTo(Canvas &canvas) const override {
             canvas.drawRect(x, y, width, height, colour);
         }
-        RectDrawer *clone() const {
+        RectDrawer *clone() const override {
             return new RectDrawer(*this);
         }
     private:
@@ -40,10 +40,10 @@ namespace lc_internal {
         LineDrawer(float xa, float ya, float xb, float yb, float width, unsigned colour) :
             xa(xa), ya(ya), xb(xb), yb(yb), width(width), colour(colour)
         {}
-        void drawTo(Canvas &canvas) const {
+        void drawTo(Canvas &canvas) const override {
             canvas.drawLine(xa, ya, xb, yb, width, colour);
         }
-        LineDrawer *clone() const {
+        LineDrawer *clone() const override {
             return new LineDrawer(*this);
         }
     private:
@@ -59,10 +59,10 @@ namespace lc_internal {
         TextDrawer(std::string const &text, float x, float y, float size, unsigned colour) :
             text(text), x(x), y(y), size(size), colour(colour)
         {}
-        void drawTo(Canvas &canvas) const {
+        void drawTo(Canvas &canvas) const override {
             canvas.drawText(text, x, y, size, colour);
         }
-        TextDrawer *clone() const {
+        TextDrawer *clone() const override {
             return new TextDrawer(*this);
         }
     private:
@@ -78,10 +78,10 @@ namespace lc_internal {
             key(key), x(x), y(y), width(width), height(height)
         {
         }
-        void drawTo(Canvas &canvas) const {
+        void drawTo(Canvas &canvas) const override {
             canvas.drawImage(key, x, y, width, height);
         }
-        ImageDrawer *clone() const {
+        ImageDrawer *clone() const override {
             return new ImageDrawer(*this);
         }
     private:

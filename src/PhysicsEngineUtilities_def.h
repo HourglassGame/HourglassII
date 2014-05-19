@@ -33,8 +33,8 @@ template <
     typename RandomAccessMutatorRange,
     typename FrameT>
 void makeBoxAndTimeWithPortalsAndMutators(
-    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
-    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
+    mt::std::vector<char> &nextBoxNormalDeparture,
     RandomAccessPortalRange const &portals,
     RandomAccessMutatorRange const &mutators,
     int x,
@@ -54,7 +54,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
 
 
 	// Mutator check
-	mt::std::vector<int>::type mutatorCollisions;
+	mt::std::vector<int> mutatorCollisions;
 
 	for (unsigned i = 0; i < mutators.size(); ++i)
 	{
@@ -174,26 +174,26 @@ void guyStep(
     RandomAccessGuyRange const &guyArrivalList,
     Frame *frame,
     std::vector<InputList> const &playerInput,
-    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type &nextGuy,
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type &nextBox,
-    mt::std::vector<char>::type &nextBoxNormalDeparture,
-    mt::std::vector<Collision>::type const &nextPlatform,
-    mt::std::vector<PortalArea>::type const &nextPortal,
-    mt::std::vector<ArrivalLocation>::type const &arrivalLocations,
-    mt::std::vector<MutatorArea>::type const &mutators,
+    mt::std::vector<ObjectAndTime<Guy, Frame *> > &nextGuy,
+    mt::std::vector<ObjectAndTime<Box, Frame *> > &nextBox,
+    mt::std::vector<char> &nextBoxNormalDeparture,
+    mt::std::vector<Collision> const &nextPlatform,
+    mt::std::vector<PortalArea> const &nextPortal,
+    mt::std::vector<ArrivalLocation> const &arrivalLocations,
+    mt::std::vector<MutatorArea> const &mutators,
     TriggerFrameState &triggerFrameState,
     GuyGlitzAdder const &guyGlitzAdder,
     bool &nextPlayerFrame,
     bool &winFrame)
 {
-    mt::std::vector<int>::type x;
-    mt::std::vector<int>::type y;
-    mt::std::vector<int>::type xspeed;
-    mt::std::vector<int>::type yspeed;
-    mt::std::vector<char>::type supported;
-    mt::std::vector<int>::type supportedSpeed;
-    mt::std::vector<char>::type finishedWith;
-    mt::std::vector<FacingDirection::FacingDirection>::type facing;
+    mt::std::vector<int> x;
+    mt::std::vector<int> y;
+    mt::std::vector<int> xspeed;
+    mt::std::vector<int> yspeed;
+    mt::std::vector<char> supported;
+    mt::std::vector<int> supportedSpeed;
+    mt::std::vector<char> finishedWith;
+    mt::std::vector<FacingDirection::FacingDirection> facing;
 
     x.reserve(boost::distance(guyArrivalList));
     y.reserve(boost::distance(guyArrivalList));
@@ -525,9 +525,9 @@ void guyStep(
     assert(boost::distance(finishedWith) == boost::distance(guyArrivalList));
     assert(boost::distance(facing) == boost::distance(guyArrivalList));
 
-    mt::std::vector<char>::type carry(guyArrivalList.size());
-    mt::std::vector<int>::type carrySize(guyArrivalList.size());
-    mt::std::vector<TimeDirection>::type carryDirection(guyArrivalList.size());
+    mt::std::vector<char> carry(guyArrivalList.size());
+    mt::std::vector<int> carrySize(guyArrivalList.size());
+    mt::std::vector<TimeDirection> carryDirection(guyArrivalList.size());
     
 	// Do movement for pause guys. Do box manipulation for all guys.
 	// This is to make pause guys not affect their past selves with box manipulation.
@@ -940,8 +940,8 @@ void guyStep(
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
                     //CAREFUL - loop modifies nextBox
-                    mt::std::vector<ObjectAndTime<Box, Frame *> >::type::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
-					mt::std::vector<char>::type::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
+                    mt::std::vector<ObjectAndTime<Box, Frame *> >::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
+					mt::std::vector<char>::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
                     for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
                     {
                     	if (*nextBoxNormalDepartureIt)
@@ -976,12 +976,12 @@ void guyStep(
     assert(boost::distance(carrySize) == boost::distance(guyArrivalList));
     assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
 
-    mt::std::vector<int>::type newWidth(guyArrivalList.size());
-    mt::std::vector<int>::type newHeight(guyArrivalList.size());
-    mt::std::vector<int>::type newJumpSpeed(guyArrivalList.size());
-    mt::std::vector<mt::std::map<Ability, int>::type >::type newPickups(guyArrivalList.size());
-    mt::std::vector<int>::type illegalPortal(guyArrivalList.size());
-	mt::std::vector<int>::type newTimePaused(guyArrivalList.size());
+    mt::std::vector<int> newWidth(guyArrivalList.size());
+    mt::std::vector<int> newHeight(guyArrivalList.size());
+    mt::std::vector<int> newJumpSpeed(guyArrivalList.size());
+    mt::std::vector<mt::std::map<Ability, int> > newPickups(guyArrivalList.size());
+    mt::std::vector<int> illegalPortal(guyArrivalList.size());
+	mt::std::vector<int> newTimePaused(guyArrivalList.size());
     // arrivalBasis is always -1 for normalDeparture
 
     // time travel, mutator and portal collision, item use
@@ -1006,7 +1006,7 @@ void guyStep(
             newWidth[i] = guyArrivalList[i].getWidth();
             newHeight[i] = guyArrivalList[i].getHeight();
             newJumpSpeed[i] = guyArrivalList[i].getJumpSpeed();
-            newPickups[i] = mt::std::map<Ability, int>::type(guyArrivalList[i].getPickups());
+            newPickups[i] = mt::std::map<Ability, int>(guyArrivalList[i].getPickups());
 			newTimePaused[i] = guyArrivalList[i].getTimePaused();
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();
@@ -1015,7 +1015,7 @@ void guyStep(
 
             // Mutators
             // Mutator and falling must occur first due to exact frame effects.
-            mt::std::vector<int>::type mutatorCollisions;
+            mt::std::vector<int> mutatorCollisions;
 			for (unsigned j = 0; j < mutators.size(); ++j)
 			{
 				if (IntersectingRectanglesInclusiveCollisionOverlap(
@@ -1156,9 +1156,9 @@ void guyStep(
 			// "forced" departures occur before those due to input
 			if (normalDeparture)
 			{
-				mt::std::map<Ability, int>::type::iterator timeJump(newPickups[i].find(TIME_JUMP));
-				mt::std::map<Ability, int>::type::iterator timeReverse(newPickups[i].find(TIME_REVERSE));
-				mt::std::map<Ability, int>::type::iterator timePause(newPickups[i].find(TIME_PAUSE));
+				mt::std::map<Ability, int>::iterator timeJump(newPickups[i].find(TIME_JUMP));
+				mt::std::map<Ability, int>::iterator timeReverse(newPickups[i].find(TIME_REVERSE));
+				mt::std::map<Ability, int>::iterator timePause(newPickups[i].find(TIME_PAUSE));
 
                 if (input.getAbilityUsed()) {
                     Ability abilityCursor = input.getAbilityCursor();
@@ -1323,12 +1323,12 @@ void guyStep(
 		std::size_t const relativeIndex(guyArrivalList[i].getIndex());
 		InputList const &input = playerInput[relativeIndex];
 		
-		mt::std::map<Ability, int>::type::iterator timeGun(newPickups[i].find(TIME_GUN));
+		mt::std::map<Ability, int>::iterator timeGun(newPickups[i].find(TIME_GUN));
 
 		if (input.getAbilityUsed() && input.getAbilityCursor() == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
 		{
 			// Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
-			mt::std::vector<char>::type shootable;
+			mt::std::vector<char> shootable;
 			shootable.reserve(boost::distance(guyArrivalList));
 			
 			for (std::size_t j(0), size(guyArrivalList.size()); j != size; ++j)
@@ -1448,9 +1448,9 @@ template <
 void boxCollisionAlogorithm(
     Environment const &env,
     RandomAccessBoxRange const &boxArrivalList,
-    mt::std::vector<Box>::type const &additionalBox,
-    typename mt::std::vector<ObjectAndTime<Box, FrameT> >::type &nextBox,
-    mt::std::vector<char>::type &nextBoxNormalDeparture,
+    mt::std::vector<Box> const &additionalBox,
+    mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
+    mt::std::vector<char> &nextBoxNormalDeparture,
     RandomAccessPlatformRange const &nextPlatform,
     RandomAccessPortalRange const &nextPortal,
     RandomAccessArrivalLocationRange const &arrivalLocations,
@@ -1458,7 +1458,7 @@ void boxCollisionAlogorithm(
     TriggerFrameState &triggerFrameState,
     FrameT const &frame)
 {
-	mt::std::vector<Box>::type oldBoxList;
+	mt::std::vector<Box> oldBoxList;
 
 	boost::push_back(oldBoxList, boxArrivalList);
 	boost::push_back(oldBoxList, additionalBox);
@@ -1478,14 +1478,14 @@ void boxCollisionAlogorithm(
 	}
 	*/
 
-	mt::std::vector<int>::type x(oldBoxList.size());
-	mt::std::vector<int>::type y(oldBoxList.size());
-	mt::std::vector<int>::type xTemp(oldBoxList.size());
-	mt::std::vector<int>::type yTemp(oldBoxList.size());
-	mt::std::vector<int>::type xPreBox(oldBoxList.size());
-	mt::std::vector<int>::type yPreBox(oldBoxList.size());
-	mt::std::vector<int>::type size(oldBoxList.size());
-	mt::std::vector<char>::type squished(oldBoxList.size());
+	mt::std::vector<int> x(oldBoxList.size());
+	mt::std::vector<int> y(oldBoxList.size());
+	mt::std::vector<int> xTemp(oldBoxList.size());
+	mt::std::vector<int> yTemp(oldBoxList.size());
+	mt::std::vector<int> xPreBox(oldBoxList.size());
+	mt::std::vector<int> yPreBox(oldBoxList.size());
+	mt::std::vector<int> size(oldBoxList.size());
+	mt::std::vector<char> squished(oldBoxList.size());
 
 	// Check with triggers if the box should arrive at all
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
@@ -1570,7 +1570,7 @@ void boxCollisionAlogorithm(
 	}
 
 	// Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-	mt::std::vector<char>::type toBeSquished(oldBoxList.size());
+	mt::std::vector<char> toBeSquished(oldBoxList.size());
 
 	for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
 		if (!squished[i]) {
@@ -1611,15 +1611,15 @@ void boxCollisionAlogorithm(
 		}
 		*/
 
-		mt::std::vector<std::pair<bool,int> >::type top(oldBoxList.size());
-		mt::std::vector<std::pair<bool,int> >::type bottom(oldBoxList.size());
-		mt::std::vector<std::pair<bool,int> >::type left(oldBoxList.size());
-		mt::std::vector<std::pair<bool,int> >::type right(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> > top(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> > bottom(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> > left(oldBoxList.size());
+		mt::std::vector<std::pair<bool,int> > right(oldBoxList.size());
 
-		mt::std::vector<mt::std::vector<std::size_t>::type >::type topLinks(oldBoxList.size());
-		mt::std::vector<mt::std::vector<std::size_t>::type >::type bottomLinks(oldBoxList.size());
-		mt::std::vector<mt::std::vector<std::size_t>::type >::type rightLinks(oldBoxList.size());
-		mt::std::vector<mt::std::vector<std::size_t>::type >::type leftLinks(oldBoxList.size());
+		mt::std::vector<mt::std::vector<std::size_t> > topLinks(oldBoxList.size());
+		mt::std::vector<mt::std::vector<std::size_t>> bottomLinks(oldBoxList.size());
+		mt::std::vector<mt::std::vector<std::size_t>> rightLinks(oldBoxList.size());
+		mt::std::vector<mt::std::vector<std::size_t>> leftLinks(oldBoxList.size());
 
 		thereAreStillThingsToDo = false;
 
@@ -1937,7 +1937,7 @@ void boxCollisionAlogorithm(
 		}
 
 		// propagate through vertical collision links to reposition and explode
-		mt::std::vector<char>::type toBeSquished(oldBoxList.size());
+		mt::std::vector<char> toBeSquished(oldBoxList.size());
 
 		for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
 		{
@@ -2028,7 +2028,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-			    mt::std::vector<std::size_t>::type pass;
+			    mt::std::vector<std::size_t> pass;
 				recursiveBoxCollision(y, x, size, squished, pass, i, 0);
 			}
 		}
@@ -2038,7 +2038,7 @@ void boxCollisionAlogorithm(
 		{
 			if (!squished[i])
 			{
-			    mt::std::vector<std::size_t>::type pass;
+			    mt::std::vector<std::size_t> pass;
 				recursiveBoxCollision(x, y, size, squished, pass, i, 1);
 			}
 		}

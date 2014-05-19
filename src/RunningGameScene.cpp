@@ -52,6 +52,7 @@
 #include <boost/thread.hpp>
 #include <boost/thread/future.hpp>
 #include <boost/utility/result_of.hpp>
+#include <chrono>
 
 #include <boost/function.hpp>
 
@@ -102,46 +103,13 @@ void runStep(
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
-    sf::Image const &wallImage);
+    sf::Image const &wallImage,
+    std::chrono::steady_clock::time_point &frameStartTime);
 
 
 void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend);
 void generateReplay();
-
-struct RunToNextPlayerFrame
-{
-    RunToNextPlayerFrame(hg::TimeEngine &timeEngine, hg::InputList const &inputList, hg::OperationInterrupter &interrupter) :
-        timeEngine_(&timeEngine),
-        inputList_(inputList),
-        interrupter_(&interrupter)
-    {}
-    typedef hg::TimeEngine::RunResult result_type;
-    hg::TimeEngine::RunResult operator()()
-    {
-        return timeEngine_->runToNextPlayerFrame(boost::move(inputList_), *interrupter_);
-    }
-private:
-    hg::TimeEngine *timeEngine_;
-    hg::InputList inputList_;
-    hg::OperationInterrupter *interrupter_;
-};
-
-
-struct CreateTimeEngine {
-    //boost::result_of support
-    typedef hg::TimeEngine result_type;
-
-    CreateTimeEngine(std::string const &filename, hg::OperationInterrupter &interrupter)
-        : filename(filename), interrupter(&interrupter) {}
-
-    hg::TimeEngine operator()() const {
-        return hg::TimeEngine(hg::loadLevelFromFile(filename, *interrupter), *interrupter);
-    }
-private:
-    std::string filename;
-    hg::OperationInterrupter *interrupter;
-};
-    
+ 
 template<typename F>
 boost::future<typename boost::result_of<F()>::type> enqueue_task(tbb::task_group& queue, F f)
 {
@@ -152,6 +120,14 @@ boost::future<typename boost::result_of<F()>::type> enqueue_task(tbb::task_group
     return boost::move(future);
 }
 
+struct AwaitingInputState {
+    
+};
+
+struct RunningLevelState {
+    
+};
+
 variant<
     GameAborted_tag,
     GameWon_tag,
@@ -160,11 +136,12 @@ variant<
 >
 run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
 {
+    std::vector<InputList> receivedInputs;
+
+    auto frameStartTime = std::chrono::steady_clock().now();
     LoadedLevel const initialLevel(loadedLevel);
 
-    tbb::task_group task_group;
-
-    auto interrupter = hg::make_unique<hg::OperationInterrupter>();
+    
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
     hg::LevelResources &levelResources = loadedLevel.resources;
     sf::Image &wallImage = loadedLevel.bakedWall;
@@ -174,40 +151,62 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
     hg::Inertia inertia;
-    
-    //std::vector<hg::InputList> replay;
+
     std::vector<hg::InputList>::const_iterator currentReplayIt(replay.begin());
     std::vector<hg::InputList>::const_iterator currentReplayEnd(replay.end());
     //Saves a replay continuously, but in a less nice format.
     //Gets rewritten whenever the level is reset.
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
+    tbb::task_group task_group;
+    struct task_group_waiter {
+        tbb::task_group &tg;
+        ~task_group_waiter() {
+            tg.wait();
+        }
+    } task_group_waiter_obj{task_group};
+    
+    auto interrupter = hg::make_unique<hg::OperationInterrupter>();
     boost::future<hg::TimeEngine::RunResult> futureRunResult;
+    
+    struct TimeEngineCleanupEnforcer {
+        decltype(interrupter) &interrupter_;
+        decltype(futureRunResult) &futureRunResult_;
+        ~TimeEngineCleanupEnforcer() {
+            if (interrupter_) interrupter_->interrupt();
+            if (futureRunResult_.valid()) futureRunResult_.wait();
+        }
+    } TimeEngineCleanupEnforcer_obj{interrupter, futureRunResult};
+    
     bool runningFromReplay(false);
-    while (window.isOpen()) {
+
+    while (true) {
     	switch (state) {
 			case AWAITING_INPUT:
 			{
 				hg::InputList inputList;
-				if (currentReplayIt != currentReplayEnd) {
-					inputList = *currentReplayIt;
-					++currentReplayIt;
-					runningFromReplay = true;
-				}
-				else {
+                if (currentReplayIt != currentReplayEnd) {
+                    inputList = *currentReplayIt;
+                    ++currentReplayIt;
+                    runningFromReplay = true;
+                }
+                else {
                     hg::Wall const &wall(timeEngine.getWall());
                     double scalingFactor(std::max(wall.roomWidth()*1./window.getSize().x, wall.roomHeight()*1./window.getSize().y));
-					input.updateState(window.getInputState(), window.getSize().x, scalingFactor);
-					inputList = input.AsInputList();
-					runningFromReplay = false;
-				}
-				saveReplayLog(replayLogOut, inputList);
+                    input.updateState(window.getInputState(), window.getSize().x, scalingFactor);
+                    inputList = input.AsInputList();
+                    runningFromReplay = false;
+                }
+                saveReplayLog(replayLogOut, inputList);
+                receivedInputs.push_back(inputList);
                 interrupter = make_unique<hg::OperationInterrupter>();
+                
                 futureRunResult =
                     enqueue_task(
                         task_group,
-                        RunToNextPlayerFrame(timeEngine, inputList, *interrupter));
-				state = RUNNING_LEVEL;
+                        [inputList,&timeEngine,&interrupter]{
+                            return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter);});
+                state = RUNNING_LEVEL;
 				break;
 			}
 			case RUNNING_LEVEL:
@@ -225,62 +224,26 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 					//playing replay -> playing game                        Keybinding: C or <get to end of replay>
 					switch (event.type) {
 					case sf::Event::Closed:
-                        interrupter->interrupt();
-                        futureRunResult.wait();
 						window.close();
 						throw WindowClosed_exception{};
 					case sf::Event::KeyPressed:
 						switch(event.key.code) {
                         case sf::Keyboard::Escape:
-                            interrupter->interrupt();
-                            futureRunResult.wait();
                             return GameAborted_tag{};
 						//Restart
 						case sf::Keyboard::R:
                             interrupter->interrupt();
                             futureRunResult.wait();
+                            receivedInputs.clear();
                             timeEngine = initialLevel.timeEngine;
                             levelResources = initialLevel.resources;
                             wallImage = initialLevel.bakedWall;
                             state = AWAITING_INPUT;
                             goto continuemainloop;
                             //return ReloadLevel_tag{};
-                            /*
-							currentReplayIt = replay.end();
-							currentReplayEnd = replay.end();
-							replayLogOut.close();
-							replayLogOut.open("replayLogOut");
-                            interrupter->interrupt();
-							futureRunResult.wait();
-                            interrupter = hg::unique_ptr<hg::OperationInterrupter>(new hg::OperationInterrupter());
-						    futureTimeEngine =
-						    	enqueue_task(
-						    		task_group,
-						    		CreateTimeEngine(levelPath, *interrupter));
-							state = LOADING_LEVEL;
-							goto continuemainloop;*/
 						//Load replay
-                        
 						case sf::Keyboard::L:
-                            interrupter->interrupt();
-                            futureRunResult.wait();
                             return move_function<std::vector<InputList>()>([]{return loadReplay("replay");});
-                        #if 0
-							replay = hg::loadReplay("replay");
-							currentReplayIt = replay.begin();
-							currentReplayEnd = replay.end();
-							replayLogOut.close();
-							replayLogOut.open("replayLogOut");
-                            interrupter->interrupt();
-							futureRunResult.wait();
-                            interrupter = hg::unique_ptr<hg::OperationInterrupter>(new hg::OperationInterrupter());
-						    futureTimeEngine =
-						    	enqueue_task(
-						    		task_group,
-						    		CreateTimeEngine(levelPath, *interrupter));
-							state = LOADING_LEVEL;
-							goto continuemainloop;
-                        #endif
 						//Interrupt replay and begin Playing
 						case sf::Keyboard::C:
 							currentReplayIt = replay.end();
@@ -288,14 +251,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                         break;
 						//Save replay
 						case sf::Keyboard::K:
-							//TODO - possibly allow finer-grained access
-							//to replay data, even when the step has not
-							//yet completely finished. (ie allow access as soon as
-							//the new input is pushed into the vector, rather than
-							//waiting until the execution is totally finished as
-							//we do now).
-							futureRunResult.wait();
-							saveReplay("replay", timeEngine.getReplayData());
+							saveReplay("replay", receivedInputs);
                         break;
 						//Generate a replay from replayLogIn
 						case sf::Keyboard::G:
@@ -314,7 +270,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 						break;
 					}
 				}
-				if (futureRunResult.is_ready()) {
+				if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f/(60.f))) == boost::future_status::ready) {
                     if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
                         inertia.save(mousePosToFrameID(window, timeEngine), hg::FORWARDS);
                     }
@@ -325,13 +281,13 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                         inertia.reset();
                     }
 					try {
-						runStep(timeEngine, window, inertia, futureRunResult.get(), levelResources, wallImage);
+                        assert(futureRunResult.get_state() != boost::future_state::uninitialized);
+						runStep(timeEngine, window, inertia, futureRunResult.get(), levelResources, wallImage, frameStartTime);
                         interrupter.reset();
 					}
 					catch (hg::PlayerVictoryException const &) {
                         run_post_level_scene(window, initialLevel, loadedLevel);
-                        //TODO -- Check run_post_level_scene return values
-                        // e.g. WindowClosed, etc
+                        //TODO -- Check run_post_level_scene return values (once it gets return values)
 						return GameWon_tag{};
 					}
 					if (runningFromReplay) {
@@ -354,28 +310,23 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 					window.display();
 					state = AWAITING_INPUT;
 				}
-                else {
-                    sf::sleep(sf::seconds(1.f/(60.f*3.f)));
-                }
 				break;
 			}
             case PAUSED:
             {
                 {
                     sf::Event event;
-                    while (window.pollEvent(event))
+                    while (window.waitEvent(event))
                     {
                         switch(event.type) {
                         case sf::Event::Closed:
-                            interrupter->interrupt();
-                            futureRunResult.wait();
                             window.close();
-                            goto breakmainloop;
+                            throw WindowClosed_exception{};
                         case sf::Event::KeyPressed:
 						    switch(event.key.code) {
                             case sf::Keyboard::P:
                                 state = RUNNING_LEVEL;
-                                break;
+                                goto continuemainloop;
                             default: break;
                             }
                         default: break;
@@ -387,16 +338,11 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     	}
     	continuemainloop:;
     }
-    breakmainloop:;
-    //timeEngineThread.interrupt();
-    //timeEngineThread.join();
-
-    //return EXIT_SUCCESS;
-    throw WindowClosed_exception{};
+    assert(false && "should be unreachable");
 }
 
 
-hg::mt::std::vector<hg::Glitz>::type const &getGlitzForDirection(
+hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
     hg::FrameView const &view, hg::TimeDirection timeDirection)
 {
     return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
@@ -409,7 +355,8 @@ void runStep(
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
-    sf::Image const &wallImage)
+    sf::Image const &wallImage,
+    std::chrono::steady_clock::time_point &frameStartTime)
 {
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
@@ -452,7 +399,10 @@ void runStep(
             resources,
             wallImage);
         
-        drawInventory(app, findCurrentGuy(view.getGuyInformation()).getPickups(), timeEngine.getReplayData().back().getAbilityCursor());
+        drawInventory(
+            app,
+            findCurrentGuy(view.getGuyInformation()).getPickups(),
+            timeEngine.getReplayData().back().getAbilityCursor());
     }
     else {
         inertia.run();
@@ -469,22 +419,32 @@ void runStep(
         else {
             drawnFrame =
               hg::FrameID(
-                abs(
-                  static_cast<int>(
-                    hg::flooredModulo(static_cast<long>((sf::Mouse::getPosition(app.getWindow()).x
-                     * static_cast<long>(timeEngine.getTimelineLength())
-                     / app.getSize().x))
-                    , static_cast<long>(timeEngine.getTimelineLength())))),
+                static_cast<int>(
+                  hg::flooredModulo(
+                    static_cast<long>(
+                      sf::Mouse::getPosition(app.getWindow()).x *
+                      static_cast<long>(timeEngine.getTimelineLength())/app.getSize().x),
+                    static_cast<long>(timeEngine.getTimelineLength()))),
                 hg::UniverseID(timeEngine.getTimelineLength()));
+            
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-            DrawGlitzAndWall(app,
-                 getGlitzForDirection(frame->getView(), hg::FORWARDS),
-                 timeEngine.getWall(),
-                 resources,
-                 wallImage);
+            DrawGlitzAndWall(
+                app,
+                getGlitzForDirection(frame->getView(), hg::FORWARDS),
+                timeEngine.getWall(),
+                resources,
+                wallImage);
         }
     }
-    DrawTimeline(app.getRenderTarget(), timeEngine, waveInfo.updatedFrames, drawnFrame, timeEngine.getReplayData().back().getTimeCursor(), timeEngine.getTimelineLength());
+    
+    DrawTimeline(
+        app.getRenderTarget(),
+        timeEngine,
+        waveInfo.updatedFrames,
+        drawnFrame,
+        timeEngine.getReplayData().back().getTimeCursor(),
+        timeEngine.getTimelineLength());
+    
     {
         std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
@@ -527,9 +487,11 @@ void runStep(
         numberOfFramesExecutedGlyph.setColor(uiTextColor);
         app.draw(numberOfFramesExecutedGlyph);
     }
-    /*{
+    {
+        auto newFrameStartTime = std::chrono::steady_clock().now();
         std::stringstream fpsstring;
-        fpsstring << (1./app.GetFrameTime());
+        fpsstring << (1./std::chrono::duration<double>(newFrameStartTime-frameStartTime).count());
+        frameStartTime = newFrameStartTime;
         sf::Text fpsglyph;
         fpsglyph.setFont(*hg::defaultFont);
         fpsglyph.setString(fpsstring.str());
@@ -537,7 +499,7 @@ void runStep(
         fpsglyph.setCharacterSize(8.f);
         fpsglyph.setColor(uiTextColor);
         app.draw(fpsglyph);
-    }*/
+    }
 }
 
 

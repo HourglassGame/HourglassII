@@ -36,4 +36,12 @@ OperationInterrupter::FunctionHandle OperationInterrupter::addInterruptionFuncti
     interruptionFunctions.push_back(boost::move(interruptionFunction));
     return FunctionHandle(*this, interruptionFunctions.end() - 1);
 }
+
+OperationInterrupter::FunctionHandle NullOperationInterrupter::addInterruptionFunction(move_function<void()> interruptionFunction) {
+    assert(interruptionFunction
+        && "There is no good reason to ever add an Interruption Function that can't be called");
+    
+    return FunctionHandle();
+}
+
 }//namespace hg

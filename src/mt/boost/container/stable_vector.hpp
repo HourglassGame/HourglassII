@@ -7,13 +7,10 @@ namespace mt {
 namespace boost{
 namespace container {
 template<typename T>
-struct stable_vector {
-	typedef
+using stable_vector =
 		::boost::container::stable_vector<
 			T,
-			typename multi_thread_allocator<T>::type
-		> type;
-};
+			multi_thread_allocator_t<T>>;
 }
 }
 }

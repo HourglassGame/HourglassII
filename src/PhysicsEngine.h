@@ -26,7 +26,7 @@ public:
         TriggerSystem const &newTriggerSystem);
 
 
-    typedef mt::std::map<Frame*, ObjectList<Normal> >::type FrameDepartureT;
+    typedef mt::std::map<Frame*, ObjectList<Normal> > FrameDepartureT;
     
     struct PhysicsReturnT
     {

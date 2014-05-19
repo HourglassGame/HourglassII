@@ -7,7 +7,7 @@
 
 #include "Universe_fwd.h"
 #include "FrameID_fwd.h"
-#include "Frame_fwd.h"
+#include "Frame.h"
 
 #include <boost/container/vector.hpp>
 #include <type_traits>

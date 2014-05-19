@@ -28,7 +28,7 @@ PhysicsEngine::PhysicsEngine(
 {
 }
 struct ConstructGuyOutputInfo : std::unary_function<Guy const &, GuyOutputInfo>{
-    ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation>::type const &arrivalLocations) :
+    ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation> const &arrivalLocations) :
         arrivalLocations(&arrivalLocations) {}
     GuyOutputInfo operator()(Guy const &guy) const {
         int x = guy.getX();
@@ -41,7 +41,7 @@ struct ConstructGuyOutputInfo : std::unary_function<Guy const &, GuyOutputInfo>{
             guy.getIndex(), guy.getTimeDirection(), guy.getPickups(),
             guy.getBoxCarrying(), guy.getBoxCarryDirection(), x, y);
     }
-    mt::std::vector<ArrivalLocation>::type const *arrivalLocations;
+    mt::std::vector<ArrivalLocation> const *arrivalLocations;
 };
 struct NextPersister : std::unary_function<GlitzPersister const &, ObjectAndTime<GlitzPersister, Frame *> >
 {
@@ -65,11 +65,11 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     PhysicsAffectingStuff const physicsTriggerStuff(
         triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>()));
 
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type nextBox;
-    mt::std::vector<char>::type nextBoxNormalDeparture;
+    mt::std::vector<ObjectAndTime<Box, Frame *> > nextBox;
+    mt::std::vector<char> nextBoxNormalDeparture;
 
-    mt::std::vector<Glitz>::type forwardsGlitz;
-    mt::std::vector<Glitz>::type reverseGlitz;
+    mt::std::vector<Glitz> forwardsGlitz;
+    mt::std::vector<Glitz> reverseGlitz;
 
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
@@ -89,14 +89,14 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     bool nextPlayerFrame(false);
     bool winFrame(false);
 
-    mt::std::vector<GuyOutputInfo>::type guyInfo;
+    mt::std::vector<GuyOutputInfo> guyInfo;
     boost::push_back(
         guyInfo,
         arrivals.getList<Guy>()
             | boost::adaptors::transformed(ConstructGuyOutputInfo(physicsTriggerStuff.arrivalLocations)));
 
-    mt::std::vector<ObjectAndTime<Guy, Frame*> >::type nextGuy;
-    mt::std::vector<GlitzPersister>::type persistentGlitz;
+    mt::std::vector<ObjectAndTime<Guy, Frame*> > nextGuy;
+    mt::std::vector<GlitzPersister> persistentGlitz;
     boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
 
     FrameDepartureT newDepartures;
@@ -134,7 +134,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
     typedef mt::std::map<
                 Frame *,
-                mt::std::vector<TriggerData>::type>::type triggerDepartures_t;
+                mt::std::vector<TriggerData>> triggerDepartures_t;
 
     TriggerFrameState::DepartureInformation triggerSystemDepartureInformation(
         triggerFrameState.getDepartureInformation(

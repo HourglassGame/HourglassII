@@ -11,11 +11,11 @@ namespace hg {
     public:
         Wall(
             int segmentSize,
-            hg::multi_array<bool, 2> const &wallmap,
-            std::string const &tilesetName) :
+            hg::multi_array<bool, 2> wallmap,
+            std::string tilesetName) :
                 segmentSize_(segmentSize),
-                wallmap_(wallmap),
-                tilesetName_(tilesetName)
+                wallmap_(std::move(wallmap)),
+                tilesetName_(std::move(tilesetName))
         {
         }
 

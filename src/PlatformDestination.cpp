@@ -37,7 +37,7 @@ namespace hg {
         deceleration_(deceleration)
     {
     }
-    PositionAndVelocity PlatformDestinationComponent::solvePDEquation(
+    PositionAndVelocity PlatformDestinationComponent::solvePlatformDestinationEquation(
         PositionAndVelocity pnv) const
     {
         if (desiredPosition_ != pnv.position)

@@ -13,7 +13,7 @@ Guy::Guy(
     bool supported,
     int supportedSpeed,
 
-    mt::std::map<Ability, int>::type const &pickups,
+    mt::std::map<Ability, int> const &pickups,
     FacingDirection::FacingDirection facing,
 
     bool boxCarrying,

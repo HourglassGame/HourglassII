@@ -34,7 +34,7 @@ class TriggerFrameStateImplementation
             Frame const *currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals) = 0;
+                mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) = 0;
     
     virtual bool shouldArrive(Guy const &potentialArriver) = 0;
     virtual bool shouldArrive(Box const &potentialArriver) = 0;
@@ -49,30 +49,30 @@ class TriggerFrameStateImplementation
         bool porterActionedPortal) = 0;
     
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        mt::std::vector<int> const &responsibleMutatorIndices,
         Guy const &objectToManipulate) = 0;
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        mt::std::vector<int> const &responsibleMutatorIndices,
         Box const &objectToManipulate) = 0;
 
     struct DepartureInformation {
         DepartureInformation(
-            mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type const &triggerDepartures,
-            mt::std::vector<Glitz>::type const &forwardsGlitz,
-            mt::std::vector<Glitz>::type const &reverseGlitz,
-            mt::std::vector<ObjectAndTime<Box, Frame *> >::type const &additionalBoxDepartures):
+            mt::std::map<Frame *, mt::std::vector<TriggerData>> const &triggerDepartures,
+            mt::std::vector<Glitz> const &forwardsGlitz,
+            mt::std::vector<Glitz> const &reverseGlitz,
+            mt::std::vector<ObjectAndTime<Box, Frame *> > const &additionalBoxDepartures):
                 triggerDepartures(triggerDepartures),
                 forwardsGlitz(forwardsGlitz),
                 reverseGlitz(reverseGlitz),
                 additionalBoxDepartures(additionalBoxDepartures) {}
-        mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type triggerDepartures;
-		mt::std::vector<Glitz>::type forwardsGlitz;
-        mt::std::vector<Glitz>::type reverseGlitz;
-		mt::std::vector<ObjectAndTime<Box, Frame*> >::type additionalBoxDepartures;
+        mt::std::map<Frame *, mt::std::vector<TriggerData>> triggerDepartures;
+		mt::std::vector<Glitz> forwardsGlitz;
+        mt::std::vector<Glitz> reverseGlitz;
+		mt::std::vector<ObjectAndTime<Box, Frame*> > additionalBoxDepartures;
     };
 
     virtual DepartureInformation getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal> >::type const &departures,
+        mt::std::map<Frame*, ObjectList<Normal> > const &departures,
         Frame *currentFrame) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
@@ -90,7 +90,7 @@ class TriggerFrameState
         Frame const *currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
     {
         return impl->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
     }
@@ -111,14 +111,14 @@ class TriggerFrameState
     
     template<typename ObjectT>
     boost::optional<ObjectT> mutateObject(
-        mt::std::vector<int>::type const &responsibleMutatorIndices,
+        mt::std::vector<int> const &responsibleMutatorIndices,
         ObjectT const &objectToManipulate)
     {
         return impl->mutateObject(responsibleMutatorIndices, objectToManipulate);
     }
     
     DepartureInformation getDepartureInformation(
-            mt::std::map<Frame *, ObjectList<Normal> >::type const &departures,
+            mt::std::map<Frame *, ObjectList<Normal> > const &departures,
             Frame *currentFrame)
     {
         return impl->getDepartureInformation(departures, currentFrame);

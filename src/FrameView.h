@@ -16,24 +16,21 @@ class FrameView {
 public:
     FrameView();
     FrameView(
-        mt::std::vector<Glitz>::type const &forwardsGlitz,
-        mt::std::vector<Glitz>::type const &reverseGlitz,
-        mt::std::vector<GuyOutputInfo>::type const &guyInformation);
+        mt::std::vector<Glitz> const &forwardsGlitz,
+        mt::std::vector<Glitz> const &reverseGlitz,
+        mt::std::vector<GuyOutputInfo> const &guyInformation);
     
     void swap(FrameView &o);
     
-    mt::std::vector<Glitz>::type const &getForwardsGlitz() const { return forwardsGlitz_; }
-    mt::std::vector<Glitz>::type const &getReverseGlitz() const { return reverseGlitz_; }
-    mt::std::vector<GuyOutputInfo>::type const &getGuyInformation() const { return guyInformation_; }
+    mt::std::vector<Glitz> const &getForwardsGlitz() const { return forwardsGlitz_; }
+    mt::std::vector<Glitz> const &getReverseGlitz() const { return reverseGlitz_; }
+    mt::std::vector<GuyOutputInfo> const &getGuyInformation() const { return guyInformation_; }
 private:
-    //Eventually `Glitz` will be evolve into a general purpose type
-    //which is able to do everything glitz related
-    //(rather than just store information for drawing rectangles).
     //The draw order (where relevant) is determined by the order in the list
     //(note-- on a LayeredCanvas, the actual order is also determined
     //by the layer of the Glitz).
-    mt::std::vector<Glitz>::type forwardsGlitz_;
-    mt::std::vector<Glitz>::type reverseGlitz_;
+    mt::std::vector<Glitz> forwardsGlitz_;
+    mt::std::vector<Glitz> reverseGlitz_;
     
     //Filled with player positions, inventories, time-directions, indices etc
     //Could also have information about "pseudo-guys" who are
@@ -43,7 +40,7 @@ private:
     //On arrival he is killed by spikes
     //It is desireable for the camera to follow the guy through both space and time.
     //This can store the relevant space part.
-    mt::std::vector<GuyOutputInfo>::type guyInformation_;
+    mt::std::vector<GuyOutputInfo> guyInformation_;
 };
 }//namespace hg
 #endif //HG_FRAME_VIEW_H

@@ -6,13 +6,10 @@ namespace hg {
 namespace mt {
 namespace std{
 template<typename T>
-struct vector {
-	typedef
+using vector =
 		::std::vector<
 			T,
-			typename multi_thread_allocator<T>::type
-		> type;
-};
+			multi_thread_allocator_t<T>>;
 }
 }
 }

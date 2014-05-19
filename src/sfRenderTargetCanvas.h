@@ -31,14 +31,14 @@ public:
     explicit sfRenderTargetCanvas(sf::RenderTarget &target, LevelResources const &resources) :
     target(&target), resources(&resources)
     {}
-    virtual void drawRect(float x, float y, float width, float height, unsigned colour)
+    virtual void drawRect(float x, float y, float width, float height, unsigned colour) override
     {
         sf::RectangleShape rect(sf::Vector2f(width, height));
         rect.setPosition(x, y);
         rect.setFillColor(interpretAsColour(colour));
         target->draw(rect);
     }
-    virtual void drawLine(float xa, float ya, float xb, float yb, float width, unsigned colour)
+    virtual void drawLine(float xa, float ya, float xb, float yb, float width, unsigned colour) override
     {
         sf::Vector2f const pa(xa, ya);
         sf::Vector2f const pb(xb, yb);
@@ -52,7 +52,7 @@ public:
         line.setFillColor(interpretAsColour(colour));
         target->draw(line);
     }
-    virtual void drawText(std::string const &text, float x, float y, float size, unsigned colour)
+    virtual void drawText(std::string const &text, float x, float y, float size, unsigned colour) override
     {
         sf::Text glyphs;
         glyphs.setFont(*defaultFont);
@@ -62,9 +62,13 @@ public:
         glyphs.setColor(interpretAsColour(colour));
         target->draw(glyphs);
     }
-    virtual void drawImage(std::string const &key, float x, float y, float width, float height) {
+    virtual void drawImage(std::string const &key, float x, float y, float width, float height) override
+    {
         std::map<std::string, sf::Image>::const_iterator it(resources->images.find(key));
-        assert(it != resources->images.end());
+        if (it == resources->images.end()) {
+            std::cout << "Key: " << key << " not found\n";
+            assert(it != resources->images.end());
+        }
         sf::Texture tex;
         tex.loadFromImage(it->second);
         sf::Sprite sprite(tex);

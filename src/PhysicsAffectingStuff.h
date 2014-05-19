@@ -8,13 +8,13 @@
 #include "ArrivalLocation.h"
 namespace hg {
 struct PhysicsAffectingStuff {
-    mt::std::vector<Box>::type additionalBoxes;
-    mt::std::vector<PortalArea>::type portals;
-    mt::std::vector<Collision>::type collisions;
-    mt::std::vector<MutatorArea>::type mutators;
+    mt::std::vector<Box> additionalBoxes;
+    mt::std::vector<PortalArea> portals;
+    mt::std::vector<Collision> collisions;
+    mt::std::vector<MutatorArea> mutators;
     //guaranteed to always contain elements at each index that could possibly be indexed
     //ie- arrivalLocations will always be the same length for a particular TriggerSystem
-    mt::std::vector<ArrivalLocation>::type arrivalLocations;
+    mt::std::vector<ArrivalLocation> arrivalLocations;
 };
 }
 #endif //HG_PHYSICS_AFFECTING_STUFF_H

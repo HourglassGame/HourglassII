@@ -13,9 +13,10 @@ namespace hg {
 template<typename Cloneable, typename CloneManager = default_clone<Cloneable>>
 class clone_ptr : CloneManager
 {
-    template<typename, typename>
-    friend class clone_ptr;
+    template<typename, typename> friend class clone_ptr;
 public:
+    typedef Cloneable *pointer;
+
     clone_ptr() :
         CloneManager(),
         obj()
@@ -32,14 +33,14 @@ public:
     //TODO -- a constructor allowing initiaisation of CloneManager
     
     clone_ptr(clone_ptr const &o) :
-        CloneManager(),
-        obj(o.obj?CloneManager::new_clone(*o.obj):nullptr)
+        CloneManager(o.get_cloner()),
+        obj(o.obj?CloneManager::new_clone(*o.obj):pointer())
     {
     }
-    template<typename U>
-    clone_ptr(clone_ptr<U> const &o) :
-        CloneManager(),
-        obj(o.obj?CloneManager::new_clone(*o.obj):nullptr)  //TODO -- sensible CloneManager behaviour when moving/copying from subtype
+    template<typename U, typename E>
+    clone_ptr(clone_ptr<U,E> const &o) :
+        CloneManager(std::forward<E>(o.get_cloner())),
+        obj(o.obj?CloneManager::new_clone(*o.obj):pointer())
     {
     }
     
@@ -48,23 +49,23 @@ public:
         //Forward to move assignment operator
         return *this = clone_ptr(o);
     }
-    template<typename U>
-    clone_ptr &operator=(clone_ptr<U> const &o)
+    template<typename U, typename E>
+    clone_ptr &operator=(clone_ptr<U, E> const &o)
     {
         //Forward to move assignment operator
         return *this = clone_ptr(o);
     }
     
     clone_ptr(clone_ptr &&o) noexcept :
-    	CloneManager(std::move(static_cast<CloneManager &>(o))), obj(o.obj)
+    	CloneManager(std::move(o.get_cloner())), obj(o.obj)
     {
-    	o.obj = nullptr;
+    	o.obj = pointer();
     }
-    template<typename U>
-    clone_ptr(clone_ptr<U> &&o) noexcept :
-    	CloneManager(), obj(o.obj) //TODO -- sensible CloneManager behaviour when moving/copying from subtype
+    template<typename U, typename E>
+    clone_ptr(clone_ptr<U,E> &&o) noexcept :
+    	CloneManager(std::forward<E>(o.get_cloner())), obj(o.obj)
     {
-    	o.obj = nullptr;
+    	o.obj = typename clone_ptr<U,E>::pointer();
     }
     
     clone_ptr &operator=(clone_ptr &&o) noexcept
@@ -72,36 +73,51 @@ public:
 		swap(o);
 		return *this;
 	}
-    template<typename U>
-    clone_ptr &operator=(clone_ptr<U> &&o) noexcept
+    template<typename U, typename E>
+    clone_ptr &operator=(clone_ptr<U, E> &&o) noexcept
 	{
-        //TODO -- sensible CloneManager behaviour when moving/copying from subtype
-        CloneManager::delete_clone(obj);
-        obj = o.obj;
-        o.obj = nullptr;
+        static_assert(
+            std::is_nothrow_move_assignable<CloneManager>::value,
+            "CloneManager must be no-throw move assignable to call operator=");
+        
+        reset(o.release());
+        get_cloner() = std::forward<E>(o.get_cloner());
 		return *this;
 	}
     
     void swap(clone_ptr &o) noexcept {
         boost::swap(obj, o.obj);
-        boost::swap(static_cast<CloneManager &>(*this), static_cast<CloneManager &>(o));
+        boost::swap(get_cloner(), o.get_cloner());
     }
     ~clone_ptr() noexcept {
         CloneManager::delete_clone(obj);
     }
-    Cloneable *get() {
+    
+    void reset(pointer ptr = pointer()) noexcept {
+        pointer old_ptr = obj;
+        obj = ptr;
+        if (old_ptr) get_cloner().delete_clone(old_ptr);
+    }
+    
+    Cloneable *get() noexcept {
         return obj;
     }
-    Cloneable const &get() const {
+    Cloneable const &get() const noexcept {
         assert(obj);
         return *obj;
     }
-    Cloneable *operator->() const {
+    Cloneable *operator->() const noexcept {
         assert(obj);
         return obj;
     }
-    Cloneable &operator*() const {
+    Cloneable &operator*() const noexcept {
         return *obj;
+    }
+    CloneManager &get_cloner() noexcept {
+        return *this;
+    }
+    CloneManager const &get_cloner() const noexcept {
+        return *this;
     }
 private:
     Cloneable *obj;

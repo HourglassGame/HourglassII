@@ -13,21 +13,21 @@ namespace hg {
 
 typedef boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const> TriggerDataRange;
+            mt::boost::container::vector<TriggerDataConstPtr> const> TriggerDataRange;
             
-inline mt::std::vector<mt::std::vector<int>::type>::type
+inline mt::std::vector<mt::std::vector<int>>
     calculateApparentTriggers(
         std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
         TriggerDataRange const &triggerArrivals)
 {
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
-    mt::std::vector<mt::std::vector<int>::type>::type apparentTriggers;
+    mt::std::vector<mt::std::vector<int>> apparentTriggers;
     apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
     for (TriggerOffsetAndDefault const &offsetAndDefault: triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
-            mt::std::vector<int>::type(
+            mt::std::vector<int>(
                     offsetAndDefault.second.begin(),
                     offsetAndDefault.second.end()));
     }
@@ -38,12 +38,13 @@ inline mt::std::vector<mt::std::vector<int>::type>::type
     return apparentTriggers;
 }
 
-inline mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type calculateActualTriggerDepartures(
-    mt::std::vector<TriggerData>::type const &triggers,
+inline mt::std::map<Frame *, mt::std::vector<TriggerData>>
+calculateActualTriggerDepartures(
+    mt::std::vector<TriggerData> const &triggers,
     std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
     Frame *currentFrame)
 {
-    mt::std::map<Frame *, mt::std::vector<TriggerData>::type>::type retv;
+    mt::std::map<Frame *, mt::std::vector<TriggerData>> retv;
     Universe &universe(getUniverse(currentFrame));
     for (TriggerData const& trigger: triggers)
     {

@@ -15,8 +15,8 @@ class DepartureMap {
     typedef
     mt::boost::unordered_map<
         Frame *,
-        mt::std::map<Frame *, ObjectList<Normal>>::type
-    >::type MapType;
+        mt::std::map<Frame *, ObjectList<Normal>>
+    > MapType;
 public:
     typedef MapType::value_type value_type;
     typedef MapType::iterator iterator;

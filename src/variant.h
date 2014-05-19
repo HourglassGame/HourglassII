@@ -56,9 +56,7 @@ struct max_size<T, Tail...>
 };
 
 template<size_t N, typename... Types>
-struct NthType {
-    typedef typename std::tuple_element<N, std::tuple<Types...>>::type type;
-};
+using NthType = typename std::tuple_element<N, std::tuple<Types...>>::type;
 
 template<std::size_t Index, typename T, typename... Types>
 struct IndexOfAux;
@@ -81,7 +79,7 @@ struct IndexOfAux<Index, T, Head, Types...> :
         IndexOfAux<Index+1, T, Types...>>::type {};
 
 template<typename T, typename... Types>
-struct IndexOf : IndexOfAux<0, T, Types...> {};
+using IndexOf = typename IndexOfAux<0, T, Types...>::type;
 
 template <typename T>
 struct is_tag;
@@ -93,9 +91,9 @@ struct is_tag : std::false_type {};
 
 template<typename... Types>
 struct DtorVisitor;
-template<typename Head> struct DtorVisitor<Head>{
+template<typename Head> struct DtorVisitor<Head> {
     typedef void result_type;
-    void operator()(Head &h) const {
+    void operator()(Head &h) const noexcept {
         static_assert(noexcept(h.~Head()), "Types used in Variant must have no-throw dtor");
         h.~Head();
     }
@@ -103,7 +101,7 @@ template<typename Head> struct DtorVisitor<Head>{
 template<typename Head, typename... Types>
 struct DtorVisitor<Head, Types...> : DtorVisitor<Types...> {
     using DtorVisitor<Types...>::operator();
-    void operator()(Head &h) const {
+    void operator()(Head &h) const noexcept {
         static_assert(noexcept(h.~Head()), "Types used in Variant must have no-throw dtor");
         h.~Head();
     }
@@ -137,7 +135,7 @@ template<typename Variant, typename Head> struct MoveVisitor<Variant, Head> {
     typedef void result_type;
     Variant *o;
     MoveVisitor(Variant &&o) : o(&o) {}
-    void operator()(Head &h) const {
+    void operator()(Head &h) const noexcept {
         static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
                       "Types used in Variant must have no-throw move constructor");
         new ((void*)&h) Head(std::move(o->template get<Head>()));
@@ -148,7 +146,7 @@ struct MoveVisitor<Variant, Head, Types...> : MoveVisitor<Variant, Types...> {
     MoveVisitor(Variant&& o) : MoveVisitor<Variant, Types...>(std::move(o)) {}
     using MoveVisitor<Variant, Types...>::operator();
     using MoveVisitor<Variant, Types...>::o;
-    void operator()(Head& h) const {
+    void operator()(Head& h) const noexcept {
         static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
                       "Types used in Variant must have no-throw move constructor");
         new ((void*)&h) Head(std::move(o->template get<Head>()));
@@ -160,26 +158,29 @@ struct UnionTagType_aux;
 
 template<std::size_t N, typename Head>
 struct UnionTagType_aux<N, Head> {
-    static_assert((std::numeric_limits<Head>::max() >= N), "Head must be able to fit N");
+    static_assert(std::numeric_limits<Head>::max() >= N, "Head must be able to fit N");
     typedef Head type;
 };
 
 template<std::size_t N, typename Head, typename... Types>
 struct UnionTagType_aux<N, Head, Types...> {
-    typedef typename std::conditional<(std::numeric_limits<Head>::max() >= N), Head, typename UnionTagType_aux<N, Types...>::type>::type type;
+    typedef typename
+        std::conditional<
+            std::numeric_limits<Head>::max() >= N,
+            Head,
+            typename UnionTagType_aux<N, Types...>::type>::type type;
 };
 
 template<std::size_t N>
-struct UnionTagType {
-    typedef typename UnionTagType_aux<N, unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long>::type type;
-};
+using UnionTagType =
+    typename UnionTagType_aux<N, unsigned char, unsigned short, unsigned int, unsigned long, unsigned long long>::type;
 }//namespace variant_detail
 
 template <typename... Types>
 class variant final {
     //static_assert(all_unique<T...>);
     typename std::aligned_storage<variant_detail::max_size<Types...>::value, variant_detail::max_align<Types...>::value>::type storage;
-    typename variant_detail::UnionTagType<sizeof... (Types)>::type currentMember; //Index in T... of current member
+    typename variant_detail::UnionTagType<sizeof... (Types)> currentMember; //Index in T... of current member
 #ifndef NDEBUG
     void scrub_storage() {
         std::memset(this, 0xDE, sizeof (variant));
@@ -236,7 +237,7 @@ public:
         //TODO: use of visit here probably
         //violates strict aliasing (we are visiting an object that
         //has not yet been constructed).
-        try { visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)});  }
+        try { visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)}); }
         catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
         return *this;
     }
@@ -277,7 +278,10 @@ public:
         scrub_storage();
 #endif
         currentMember = variant_detail::IndexOf<T, Types...>::value;
-        try { new (&storage) T(std::move(temp)); }
+        try {
+            static_assert(noexcept(new (&storage) T(std::move(temp))), "All types in variant must have no-throw move ctor");
+            new (&storage) T(std::move(temp));
+        }
         catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
     }
     
@@ -286,25 +290,47 @@ public:
     }
 
 //Accessors:
-
+private:
+    struct lvalue_ref_converter {
+        template<typename T> struct apply {
+            typedef T &type;
+        };
+    };
+    struct lvalue_const_ref_converter {
+        template<typename T> struct apply {
+            typedef T const &type;
+        };
+    };
+    
+    struct rvalue_ref_converter {
+        template<typename T> struct apply {
+            typedef T &&type;
+        };
+    };
+    struct rvalue_const_ref_converter {
+        template<typename T> struct apply {
+            typedef T const &&type;
+        };
+    };
+public:
     template<typename Visitor>
     typename std::remove_reference<Visitor>::type::result_type visit(Visitor &&v) & {
-        return visit_aux<sizeof... (Types) - 1>(v);
+        return visit_aux<sizeof... (Types) - 1, lvalue_ref_converter>(std::forward<Visitor>(v));
     }
     
     template<typename Visitor>
     typename std::remove_reference<Visitor>::type::result_type visit(Visitor &&v) const & {
-        return visit_aux_const<sizeof... (Types) - 1>(v);
+        return visit_aux<sizeof... (Types) - 1, lvalue_const_ref_converter>(std::forward<Visitor>(v));
     }
     
     template<typename Visitor>
     typename std::remove_reference<Visitor>::type::result_type visit(Visitor &&v) && {
-        return visit_aux_rvalue<sizeof... (Types) - 1>(v);
+        return visit_aux<sizeof... (Types) - 1, rvalue_ref_converter>(std::forward<Visitor>(v));
     }
     
     template<typename Visitor>
     typename std::remove_reference<Visitor>::type::result_type visit(Visitor &&v) const && {
-        return visit_aux_const_rvalue<sizeof... (Types) - 1>(v);
+        return visit_aux<sizeof... (Types) - 1, rvalue_const_ref_converter>(std::forward<Visitor>(v));
     }
 
     std::size_t which() const {
@@ -316,11 +342,11 @@ private:
     //Dummy parameter since templates cannot be fully specialised in class scope.
     template<typename, typename... ToLookFor> struct active_struct;
     template<typename unused> struct active_struct<unused> {
-        bool operator()(typename variant_detail::UnionTagType<sizeof... (Types)>::type currentMember) const {return false;}
+        bool operator()(typename variant_detail::UnionTagType<sizeof... (Types)> currentMember) const {return false;}
     };
     template<typename unused, typename Head, typename... ToLookFor>
     struct active_struct<unused, Head, ToLookFor...> {
-        bool operator()(typename variant_detail::UnionTagType<sizeof... (Types)>::type currentMember) const {
+        bool operator()(typename variant_detail::UnionTagType<sizeof... (Types)> currentMember) const {
             return variant_detail::IndexOf<Head, Types...>::value == currentMember
                 || active_struct<unused, ToLookFor...>{}(currentMember);
         }
@@ -356,116 +382,42 @@ public:
 
 private:
     //visit_aux
-    template<std::size_t N, typename Visitor> friend struct visit_aux_struct;
-    template<std::size_t N, typename Visitor> struct visit_aux_struct;
-    template<typename Visitor>
-    struct visit_aux_struct<0, Visitor> {
+    template<std::size_t N, typename RefConverter> friend struct visit_aux_struct;
+    template<std::size_t N, typename RefConverter> struct visit_aux_struct;
+    template<typename RefConverter>
+    struct visit_aux_struct<0,RefConverter> {
         variant *this_;
         visit_aux_struct(variant *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
+        template<typename Visitor>
+        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor &&v) {
             assert(0 == this_->which());
-            return v(reinterpret_cast<typename variant_detail::NthType<0, Types...>::type &>(this_->storage));
+            return
+                std::forward<Visitor>(v)(
+                    reinterpret_cast
+                    <
+                        typename RefConverter::template apply<typename variant_detail::NthType<0, Types...>>::type
+                    >(this_->storage));
         }
     };
-    template<std::size_t N, typename Visitor>
+    template<std::size_t N, typename RefConverter>
     struct visit_aux_struct {
         variant *this_;
         visit_aux_struct(variant *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
+        template<typename Visitor>
+        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor &&v) {
             return (N == this_->which()) ?
-                v(reinterpret_cast<typename variant_detail::NthType<N, Types...>::type &>(this_->storage))
-              : visit_aux_struct<N-1, Visitor>(this_)(v);
+                std::forward<Visitor>(v)(
+                    reinterpret_cast
+                    <
+                        typename RefConverter::template apply<typename variant_detail::NthType<N, Types...>>::type
+                    >(this_->storage))
+              : visit_aux_struct<N-1,RefConverter>(this_)(std::forward<Visitor>(v));
         }
     };
     
-    template<std::size_t N, typename Visitor>
+    template<std::size_t N, typename RefConverter, typename Visitor>
     typename std::remove_reference<Visitor>::type::result_type visit_aux(Visitor&& v) {
-        return visit_aux_struct<N, Visitor>(this)(v);
-    }
-    
-    //visit_aux_const
-    template<std::size_t N, typename Visitor> friend struct visit_aux_const_struct;
-    template<std::size_t N, typename Visitor> struct visit_aux_const_struct;
-    template<typename Visitor>
-    struct visit_aux_const_struct<0, Visitor> {
-        variant const *this_;
-        visit_aux_const_struct(variant const *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
-            assert(0 == this_->which());
-            return v(reinterpret_cast<typename variant_detail::NthType<0, Types...>::type const&>(this_->storage));
-        }
-    };
-    template<std::size_t N, typename Visitor>
-    struct visit_aux_const_struct {
-        variant const *this_;
-        visit_aux_const_struct(variant const *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
-            return (N == this_->which()) ?
-                v(reinterpret_cast<typename variant_detail::NthType<N, Types...>::type const &>(this_->storage))
-              : visit_aux_const_struct<N-1, Visitor>(this_)(v);
-        }
-    };
-    
-    template<std::size_t N, typename Visitor>
-    typename std::remove_reference<Visitor>::type::result_type visit_aux_const(Visitor &&v) const {
-        return visit_aux_const_struct<N, Visitor>(this)(v);
-    }
-    
-    
-    //visit_aux_rvalue
-    template<std::size_t N, typename Visitor> friend struct visit_aux_rvalue_struct;
-    template<std::size_t N, typename Visitor> struct visit_aux_rvalue_struct;
-    template<typename Visitor>
-    struct visit_aux_rvalue_struct<0, Visitor> {
-        variant *this_;
-        visit_aux_rvalue_struct(variant *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
-            assert(0 == this_->which());
-            return v(reinterpret_cast<typename variant_detail::NthType<0, Types...>::type &&>(this_->storage));
-        }
-    };
-    template<std::size_t N, typename Visitor>
-    struct visit_aux_rvalue_struct {
-        variant *this_;
-        visit_aux_rvalue_struct(variant *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
-            return (N == this_->which()) ?
-                v(reinterpret_cast<typename variant_detail::NthType<N, Types...>::type &&>(this_->storage))
-              : visit_aux_struct<N-1, Visitor>(this_)(v);
-        }
-    };
-    
-    template<std::size_t N, typename Visitor>
-    typename std::remove_reference<Visitor>::type::result_type visit_aux_rvalue(Visitor&& v) {
-        return visit_aux_rvalue_struct<N, Visitor>(this)(v);
-    }
-    
-    //visit_aux_const_rvalue
-    template<std::size_t N, typename Visitor> friend struct visit_aux_const_rvalue_struct;
-    template<std::size_t N, typename Visitor> struct visit_aux_const_rvalue_struct;
-    template<typename Visitor>
-    struct visit_aux_const_rvalue_struct<0, Visitor> {
-        variant const *this_;
-        visit_aux_const_rvalue_struct(variant const *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
-            assert(0 == this_->which());
-            return v(reinterpret_cast<typename variant_detail::NthType<0, Types...>::type const&&>(this_->storage));
-        }
-    };
-    template<std::size_t N, typename Visitor>
-    struct visit_aux_const_rvalue_struct {
-        variant const *this_;
-        visit_aux_const_rvalue_struct(variant const *this_) : this_(this_) {}
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor v) {
-            return (N == this_->which()) ?
-                v(reinterpret_cast<typename variant_detail::NthType<N, Types...>::type const &&>(this_->storage))
-              : visit_aux_const_struct<N-1, Visitor>(this_)(v);
-        }
-    };
-    
-    template<std::size_t N, typename Visitor>
-    typename std::remove_reference<Visitor>::type::result_type visit_aux_const_rvalue(Visitor &&v) const {
-        return visit_aux_const_rvalue_struct<N, Visitor>(this)(v);
+        return visit_aux_struct<N,RefConverter>(this)(std::forward<Visitor>(v));
     }
 };
 
@@ -508,8 +460,9 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVari
         return std::get<0>(tailVariants)
             .visit(
                 NAryVisitorFlattener<
-                    Visitor, decltype(std::tuple_cat(matchedValues, std::forward_as_tuple(std::forward<A>(a)))), TailVariants...
-                >
+                    Visitor,
+                    decltype(std::tuple_cat(matchedValues, std::forward_as_tuple(std::forward<A>(a)))),
+                    TailVariants...>
                 {
                     std::forward<Visitor>(visitor),
                     std::tuple_cat(matchedValues, std::forward_as_tuple(std::forward<A>(a))),

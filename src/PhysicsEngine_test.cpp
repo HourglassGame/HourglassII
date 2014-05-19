@@ -9,7 +9,7 @@ namespace hg {
 namespace physics_engine_test {
 namespace {
 
-class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementation
+class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplementation
 {
     public:
     virtual PhysicsAffectingStuff
@@ -17,41 +17,41 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             Frame const */*currentFrame*/,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const &/*triggerArrivals*/)
+                mt::boost::container::vector<TriggerDataConstPtr> const> const &/*triggerArrivals*/) override
     {
         assert(false && "Not Implemented!");
 		throw std::runtime_error("Not Implemented Exception");
     }
 
-    virtual bool shouldArrive(Guy const &/*potentialArriver*/) { return true; }
-    virtual bool shouldArrive(Box const &/*potentialArriver*/) { return true; }
+    virtual bool shouldArrive(Guy const &/*potentialArriver*/) override { return true; }
+    virtual bool shouldArrive(Box const &/*potentialArriver*/) override { return true; }
 
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Guy const &/*potentialPorter*/,
-        bool /*porterActionedPortal*/) { return true; }
+        bool /*porterActionedPortal*/) override { return true; }
     virtual bool shouldPort(
         int /*responsiblePortalIndex*/,
         Box const &/*potentialPorter*/,
-        bool /*porterActionedPortal*/) { return true; }
+        bool /*porterActionedPortal*/) override { return true; }
 
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int>::type const &/*responsibleMutatorIndices*/,
-        Guy const &objectToManipulate) { return objectToManipulate; }
+        mt::std::vector<int> const &/*responsibleMutatorIndices*/,
+        Guy const &objectToManipulate) override { return objectToManipulate; }
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int>::type const &/*responsibleMutatorIndices*/,
-        Box const &objectToManipulate) { return objectToManipulate; }
+        mt::std::vector<int> const &/*responsibleMutatorIndices*/,
+        Box const &objectToManipulate) override { return objectToManipulate; }
 
     virtual DepartureInformation
     getDepartureInformation(
-        mt::std::map<Frame *, ObjectList<Normal> >::type const &/*departures*/,
-        Frame */*currentFrame*/)
+        mt::std::map<Frame *, ObjectList<Normal> > const &/*departures*/,
+        Frame */*currentFrame*/) override
     {
         assert(false && "Not implemented");
 		throw std::runtime_error("Not Implemented Exception");
     }
 
-    virtual ~MockTriggerFrameStateImplementation() noexcept {}
+    virtual ~MockTriggerFrameStateImplementation() noexcept override {}
 };
 
 
@@ -102,11 +102,11 @@ class MockTriggerFrameStateImplementation : public TriggerFrameStateImplementati
             Box(38400, 38400, 0, 0, 3200, -1, -1, FORWARDS),
             Box(41600, 38400, 0, 0, 3200, -1, -1, FORWARDS);
         
-        mt::std::vector<Box>::type additionalBoxes;
-        mt::std::vector<ObjectAndTime<Box, FrameID> >::type nextBox;
-        mt::std::vector<char>::type nextBoxNormalDeparture;
-        mt::std::vector<Glitz>::type forwardsGlitz;
-        mt::std::vector<Glitz>::type reverseGlitz;
+        mt::std::vector<Box> additionalBoxes;
+        mt::std::vector<ObjectAndTime<Box, FrameID>> nextBox;
+        mt::std::vector<char> nextBoxNormalDeparture;
+        mt::std::vector<Glitz> forwardsGlitz;
+        mt::std::vector<Glitz> reverseGlitz;
         std::vector<Collision> nextPlatform;
         nextPlatform += Collision(22400, 43800, 0, 0, 6400, 1600, FORWARDS);
         std::vector<PortalArea> nextPortal;

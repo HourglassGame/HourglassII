@@ -28,7 +28,7 @@ struct function_obj<F, R(ArgTypes...)> : function_base<R(ArgTypes...)>
     	f(std::move(f))
     {
     }
-    virtual R operator()(ArgTypes &&...args)
+    virtual R operator()(ArgTypes &&...args) override
     {
         return f(std::forward<ArgTypes>(args)...);
     }
@@ -42,7 +42,7 @@ struct function_obj<F, void(ArgTypes...)> : function_base<void(ArgTypes...)>
     	f(std::move(f))
     {
     }
-    virtual void operator()(ArgTypes &&...args)
+    virtual void operator()(ArgTypes &&...args) override
     {
         f(std::forward<ArgTypes>(args)...);
     }

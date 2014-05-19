@@ -5,7 +5,7 @@
 #include <boost/range.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
-#include  <cctype>
+#include <cctype>
 namespace hg {
 template<typename T>
 bool chunkwise_less(T const &l, T const &r) {
@@ -31,7 +31,7 @@ bool chunkwise_less(T const &l, T const &r) {
 }
 
 template<typename Iterator>
-Iterator advance_to_end_of_chunk(Iterator begin, Iterator const& end) {
+Iterator advance_to_end_of_chunk(Iterator begin, Iterator const &end) {
     if (begin != end) {
         bool numeric = std::isdigit(*begin);
         do ++begin; while (begin != end && std::isdigit(*begin) == numeric);
