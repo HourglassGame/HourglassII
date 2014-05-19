@@ -13,17 +13,17 @@ namespace {
         size_t osize,
         size_t nsize)
     {
-        LuaUserData &user_data(*static_cast<LuaUserData*>(ud));
+        LuaUserData &user_data(*static_cast<LuaUserData *>(ud));
         if (nsize == 0) {
             multi_thread_free(ptr);
-            return 0;
+            return nullptr;
         }
         else {
             if (osize >= nsize) {
                 void *p(multi_thread_realloc(ptr, nsize));
                 return p ? p : ptr;
             }
-            if (user_data.is_out_of_memory()) return 0;
+            if (user_data.is_out_of_memory()) return nullptr;
             void *p(multi_thread_realloc(ptr, nsize));
             user_data.set_out_of_memory(!p);
             return p;

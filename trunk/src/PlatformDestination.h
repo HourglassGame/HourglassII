@@ -16,7 +16,7 @@ public:
         int maxSpeed,
         int acceleration,
         int deceleration);   
-    PositionAndVelocity solvePDEquation(PositionAndVelocity currentPositionAndVelocity) const;
+    PositionAndVelocity solvePlatformDestinationEquation(PositionAndVelocity currentPositionAndVelocity) const;
 private:
     int desiredPosition_;
     int maxSpeed_;
@@ -46,11 +46,6 @@ private:
 };
 
 struct PlatformDestinationPair {
-    PlatformDestinationPair(
-        PlatformDestination const &newOnDestination,
-        PlatformDestination const &newOffDestination) :
-    onDestination(newOnDestination),
-    offDestination(newOffDestination) {}
     PlatformDestination onDestination;
     PlatformDestination offDestination;
 };

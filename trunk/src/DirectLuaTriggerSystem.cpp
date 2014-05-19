@@ -334,7 +334,7 @@ PhysicsAffectingStuff
         Frame const *currentFrame,
         boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals)
+            mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
 {
     //All indicies viewed or written by lua count starting from 1, and are adjusted
     //before geing used in c++.
@@ -439,7 +439,7 @@ PhysicsAffectingStuff
     
     lua_State *L(L_.ptr);
     
-    mt::std::vector<mt::std::vector<int>::type>::type
+    mt::std::vector<mt::std::vector<int>>
         apparentTriggers(calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals));
         
     PhysicsAffectingStuff retv;
@@ -457,7 +457,7 @@ PhysicsAffectingStuff
     lua_createtable(L, static_cast<int>(boost::distance(triggerArrivals)), 0);
     //create index and table for each trigger
     int i(0);
-    for (mt::std::vector<int>::type const &apparentTrigger: apparentTriggers) {
+    for (mt::std::vector<int> const &apparentTrigger: apparentTriggers) {
         ++i;
         luaL_checkstack(L, 1, nullptr);
         lua_createtable(L, static_cast<int>(apparentTrigger.size()), 0);
@@ -779,7 +779,7 @@ bool DirectLuaTriggerFrameState::shouldPort(
 //Unfortunately the current implementation allows lua to return all sorts of nonsensical things
 //for Guys (eg, change relative index, change illegalPortal, supportedSpeed etc.. none of these make much sense)
 boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
-    mt::std::vector<int>::type const &responsibleMutatorIndices,
+    mt::std::vector<int> const &responsibleMutatorIndices,
     Guy const &objectToManipulate)
 {
     lua_State *L(L_.ptr);
@@ -817,7 +817,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     return retv;
 }
 boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
-    mt::std::vector<int>::type const &responsibleMutatorIndices,
+    mt::std::vector<int> const &responsibleMutatorIndices,
     Box const &objectToManipulate)
 {
     lua_State *L(L_.ptr);
@@ -856,7 +856,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
 }
 
 TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState::getDepartureInformation(
-    mt::std::map<Frame *, ObjectList<Normal>>::type const &departures,
+    mt::std::map<Frame *, ObjectList<Normal>> const &departures,
     Frame *currentFrame)
 {
     lua_State *L(L_.ptr);
@@ -919,14 +919,14 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         ...
     }
     */
-    mt::std::vector<TriggerData>::type triggers;
+    mt::std::vector<TriggerData> triggers;
     luaassert(lua_istable(L, -4));
     luaL_checkstack(L, 2, nullptr);
     lua_pushnil(L);
     while (lua_next(L, -5) != 0) {
         luaassert(lua_isnumber(L, -2));
         int index(static_cast<int>(lua_tonumber(L, -2)) - 1);
-        mt::std::vector<int>::type value;
+        mt::std::vector<int> value;
         assert(lua_istable(L, -1) && "trigger value must be a table");
         
         for (std::size_t k(1), end(lua_rawlen(L, -1)); k <= end; ++k) {
@@ -978,7 +978,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }*/
 
     // get forwards glitz departure
-    mt::std::vector<Glitz>::type forwardsGlitz;
+    mt::std::vector<Glitz> forwardsGlitz;
     if (!lua_isnil(L, -3)) {
         luaassert(lua_istable(L, -3) && "forwards glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -3)); i <= end; ++i) {
@@ -991,7 +991,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     
     // get reverse glitz departure
-    mt::std::vector<Glitz>::type reverseGlitz;
+    mt::std::vector<Glitz> reverseGlitz;
     if (!lua_isnil(L, -2)) {
         luaassert(lua_istable(L, -2) && "background glitz list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -2)); i <= end; ++i) {
@@ -1029,7 +1029,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         ...
     }
     */
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type newBox;
+    mt::std::vector<ObjectAndTime<Box, Frame *>> newBox;
     if (!lua_isnil(L, -1)) {
         luaassert(lua_istable(L, -1) && "extra boxes list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {

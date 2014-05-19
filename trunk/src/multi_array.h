@@ -9,75 +9,43 @@ namespace hg {
 template<typename T, std::size_t N_dims, typename Allocator = std::allocator<T>>
 class multi_array {
 private:
-    struct dummy {};
-private:
-    //something storage_order
+    //something storage_order; //maybe?
+    boost::container::vector<T, Allocator> data;
     std::array<std::size_t, N_dims> size;
     std::array<std::size_t, N_dims> capacity;
-    boost::container::vector<T, Allocator> data;
 public:
     typedef std::size_t index;
-    template<std::size_t remaining_dims, typename unused = dummy>
+    template<std::size_t remaining_dims, typename U>
     friend struct op_index_proxy;
-    template<std::size_t remaining_dims, typename unused = dummy>
+    template<std::size_t remaining_dims, typename U>
     struct op_index_proxy {
     //private:
-        friend class multi_array;
-        T *array_start;
-        multi_array const *this_;
+        U *const array_start;
+        multi_array const *const this_;
         static std::size_t const current_axis = N_dims - remaining_dims;
     //public:
-        op_index_proxy<remaining_dims-1> operator[](std::size_t i) {
+        op_index_proxy<remaining_dims-1,U> operator[](std::size_t i) const {
+            assert(current_axis < this_->size.size());
             assert(i < this_->size[current_axis]);
             auto current_block_length =
-                std::accumulate(&this_->capacity[current_axis+1], this_->capacity.end(), std::size_t(1), std::multiplies<std::size_t>());
-            
-            //std::cout << "remaining_dims: " << remaining_dims << " current_block_length: " <<current_block_length << "\n";
-            return op_index_proxy<remaining_dims-1>{array_start + current_block_length*i, this_};
+                std::accumulate(
+                    &this_->capacity[current_axis+1],
+                    this_->capacity.end(),
+                    std::size_t(1),
+                    std::multiplies<std::size_t>());
+
+            return {array_start + current_block_length*i, this_};
         }
     };
-    template<typename unused>
-    struct op_index_proxy<1,unused> {
+    template<typename U>
+    struct op_index_proxy<1,U> {
     //private:
-        friend class multi_array;
-        T *array_start;
-        multi_array const *this_;
+        U *const array_start;
+        multi_array const *const this_;
         static std::size_t const current_axis = N_dims - 1;
     //public:
-        T &operator[](std::size_t i) {
-            assert(i < this_->size[current_axis]);
-            assert(array_start+i >= this_->data.data() && array_start+i < &this_->data[this_->data.size()]);
-            return array_start[i];
-        }
-    };
-    
-    template<std::size_t remaining_dims, typename unused = dummy>
-    friend struct const_op_index_proxy;
-    template<std::size_t remaining_dims, typename unused = dummy>
-    struct const_op_index_proxy {
-    //private:
-        friend class multi_array;
-        T const *array_start;
-        multi_array const *this_;
-        static std::size_t const current_axis = N_dims - remaining_dims;
-    //public:
-        const_op_index_proxy<remaining_dims-1> operator[](std::size_t i) const {
-            assert(i < this_->size[current_axis]);
-            auto current_block_length =
-                std::accumulate(&this_->capacity[N_dims - (remaining_dims-1)], this_->capacity.end(), std::size_t(1), std::multiplies<std::size_t>());
-            
-            return const_op_index_proxy<remaining_dims-1>{array_start + current_block_length*i, this_};
-        }
-    };
-    template<typename unused>
-    struct const_op_index_proxy<1,unused> {
-    //private:
-        friend class multi_array;
-        T const *array_start;
-        multi_array const *this_;
-        static std::size_t const current_axis = N_dims - 1;
-    //public:
-        T const &operator[](std::size_t i) const {
+        U &operator[](std::size_t i) const {
+            assert(current_axis < this_->size.size());
             assert(i < this_->size[current_axis]);
             assert(array_start+i >= this_->data.data() && array_start+i < &this_->data[this_->data.size()]);
             return array_start[i];
@@ -90,7 +58,7 @@ public:
     
     //template<typename NDimArray>
     //multi_array(NDimArray const& toCopy); TODO
-    //Default Copy/assignment/move/dtor:
+    //Copy/assignment/move/dtor: //(Is default good enough, or do we want better exception safety?)
     //...
     
     //Giving size and inserting values
@@ -105,16 +73,17 @@ public:
     }
     void insert(std::size_t axis, std::size_t position/*=end,array_with_compatible_size newValues=array_of_default_T*/);
     
-    auto operator[](std::size_t i) -> decltype(op_index_proxy<N_dims>{data.data(), this}[i]) {
-        //std::cout << "calling operator[] with: " << i << "\n";
-        return op_index_proxy<N_dims>{data.data(), this}[i];
+    auto operator[](std::size_t i)
+   -> decltype(op_index_proxy<N_dims,T>{data.data(), this}[i])
+    {
+        return op_index_proxy<N_dims,T>{data.data(), this}[i];
     }
     
-    auto operator[](std::size_t i) const -> decltype(const_op_index_proxy<N_dims>{data.data(), this}[i]) {
-        //std::cout << "calling operator[] with: " << i << "\n";
-        return const_op_index_proxy<N_dims>{data.data(), this}[i];
+    auto operator[](std::size_t i) const
+   -> decltype(op_index_proxy<N_dims,T const>{data.data(), this}[i])
+    {
+        return op_index_proxy<N_dims,T const>{data.data(), this}[i];
     }
-    //TODO - T& operator[] for 1 dimensional case
     
     //Rename to "size" or "shape" maybe?
     std::array<std::size_t, N_dims> const &extents() const {

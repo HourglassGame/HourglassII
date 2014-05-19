@@ -28,7 +28,7 @@ int getFrameNumber(Frame const *frame);
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame {
 public:
-    typedef mt::std::map<Frame *, ObjectList<Normal>>::type FrameDeparturesT;
+    typedef mt::std::map<Frame *, ObjectList<Normal>> FrameDeparturesT;
     typedef tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *> FrameArrivalsT;
     Frame(int frameNumber, Universe &universe);
 

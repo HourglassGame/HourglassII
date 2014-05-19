@@ -206,6 +206,10 @@ Screens communicate via signal/slot mechanism
   //Notes:
       Pauses game
       Gives timeline viewer
+  Timeline Viewer:
+    Scrub-scroll, step, and normal-speed run through absolute timeline.
+    Step forward through relative timeline
+    Specify input (if running from replay, requires that the replay be "unlocked" with a "padlock" button)
   Resume
   Restart
   Take control (when in replay mode)
@@ -218,6 +222,7 @@ Screens communicate via signal/slot mechanism
       Timeline Viewer available
   Watch Replay (absolute, relative)
   Save Replay
+  Revise Replay
   Restart Level
   Continue
  Lua (and other) Error Screem

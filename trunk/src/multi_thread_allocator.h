@@ -24,6 +24,9 @@ namespace hg {
     template<typename T> struct multi_thread_allocator {
         typedef tbb_scalable_allocator<T> type;
     };
+    
+    template<typename T>
+    using multi_thread_allocator_t = tbb_scalable_allocator<T>;
 
     //Versions of the C library functions to use
     //when multiple threads may be performing allocations/deallocations

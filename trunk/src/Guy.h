@@ -23,7 +23,7 @@ public:
         bool supported,
         int supportedSpeed,
     	
-        mt::std::map<Ability, int>::type const &pickups,
+        mt::std::map<Ability, int> const &pickups,
         FacingDirection::FacingDirection facing,
     	
         bool boxCarrying,
@@ -47,7 +47,7 @@ public:
     bool getSupported()       const { return supported; }
     int getSupportedSpeed()   const { return supportedSpeed; }
     
-    mt::std::map<Ability, int>::type const &getPickups() const { return pickups; }
+    mt::std::map<Ability, int> const &getPickups() const { return pickups; }
 
     FacingDirection::FacingDirection getFacing()        const { return facing; }
 
@@ -79,7 +79,7 @@ private:
     bool supported;
     int supportedSpeed;
 
-    mt::std::map<Ability, int>::type pickups;
+    mt::std::map<Ability, int> pickups;
     FacingDirection::FacingDirection facing; // <- 0, -> 1
 
     bool boxCarrying;
@@ -125,7 +125,7 @@ public:
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
     
-    mt::std::map<Ability, int>::type const &getPickups() const { return guy_->getPickups();}
+    mt::std::map<Ability, int> const &getPickups() const { return guy_->getPickups();}
 
     FacingDirection::FacingDirection getFacing()        const { return guy_->getFacing();}
 

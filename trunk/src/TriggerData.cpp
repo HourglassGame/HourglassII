@@ -2,7 +2,7 @@
 #include <limits>
 #include <cassert>
 namespace hg {
-TriggerData::TriggerData(std::size_t index, mt::std::vector<int>::type const &value) :
+TriggerData::TriggerData(std::size_t index, mt::std::vector<int> const &value) :
 index(index),
 value(value)
 {

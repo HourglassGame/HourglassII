@@ -14,7 +14,7 @@ public:
         FunctionHandle() : interrupter(), iterator() {}
         FunctionHandle(
             OperationInterrupter &interrupter,
-            mt::boost::container::stable_vector<move_function<void()>>::type::iterator iterator)
+            mt::boost::container::stable_vector<move_function<void()>>::iterator iterator)
                 : interrupter(&interrupter), iterator(iterator) {}
         
         FunctionHandle(FunctionHandle &&o) noexcept :
@@ -43,7 +43,7 @@ public:
         }
     private:
         OperationInterrupter *interrupter;
-        mt::boost::container::stable_vector<move_function<void()>>::type::iterator iterator;
+        mt::boost::container::stable_vector<move_function<void()>>::iterator iterator;
     };
     OperationInterrupter() :
         interrupted_(false),
@@ -62,17 +62,23 @@ public:
     //The returned FunctionHandle must not outlive the OperationInterrupter.
     //If `interrupt` is called prior to `addInterruptionFunction`, a call to `addInterruptionFunction`
     //will immediately execute `interruptionFunction` on the thread calling `addInterruptionFunction`.
-	FunctionHandle addInterruptionFunction(move_function<void()> interruptionFunction);
+	virtual FunctionHandle addInterruptionFunction(move_function<void()> interruptionFunction);
 
 private:
 	bool interrupted_;
-	mt::boost::container::stable_vector<move_function<void()>>::type interruptionFunctions;
+	mt::boost::container::stable_vector<move_function<void()>> interruptionFunctions;
     //Using tbb::spin_mutex because it is able to be locked without the possibility of failing and throwing an exception.
     //This is needed, because FunctionHandle must be able to lock on the mutex within its destructor.
     //(In theory, the other mutexes could probably be reimplemented with that guarantee added, but working from
     //the specified interface, it is not safe to just use them for this).
     mutable tbb::spin_mutex mutex;
 };
+
+struct NullOperationInterrupter : OperationInterrupter {
+    virtual FunctionHandle addInterruptionFunction(move_function<void()> interruptionFunction) override;
+};
 inline void swap(OperationInterrupter::FunctionHandle &l, OperationInterrupter::FunctionHandle &r) { l.swap(r); }
+
+
 }//namespace hg
 #endif //HG_OPERATION_interrupter_H

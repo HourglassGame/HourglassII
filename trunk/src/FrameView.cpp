@@ -8,9 +8,9 @@ FrameView::FrameView() :
 {
 }
 FrameView::FrameView(
-    mt::std::vector<Glitz>::type const &forwardsGlitz,
-    mt::std::vector<Glitz>::type const &reverseGlitz,
-    mt::std::vector<GuyOutputInfo>::type const &guyInformation) :
+    mt::std::vector<Glitz> const &forwardsGlitz,
+    mt::std::vector<Glitz> const &reverseGlitz,
+    mt::std::vector<GuyOutputInfo> const &guyInformation) :
         forwardsGlitz_(forwardsGlitz),
         reverseGlitz_(reverseGlitz),
         guyInformation_(guyInformation)

@@ -9,7 +9,7 @@
 namespace hg {
 
 inline void addCurrentGuyArrow(
-    mt::std::vector<Glitz>::type &glitzList, int hmid, int top, int halfwidth, vector2<int> size)
+    mt::std::vector<Glitz> &glitzList, int hmid, int top, int halfwidth, vector2<int> size)
 {
     int tipx = hmid;
     int tipy = top - 400;
@@ -51,9 +51,9 @@ inline void addCurrentGuyArrow(
 class GuyGlitzAdder {
 public:
     GuyGlitzAdder(
-        mt::std::vector<Glitz>::type &forwardsGlitz,
-        mt::std::vector<Glitz>::type &reverseGlitz,
-		mt::std::vector<GlitzPersister>::type &persistentGlitz) :
+        mt::std::vector<Glitz> &forwardsGlitz,
+        mt::std::vector<Glitz> &reverseGlitz,
+		mt::std::vector<GlitzPersister> &persistentGlitz) :
     forwardsGlitz(&forwardsGlitz),
 	reverseGlitz(&reverseGlitz),
 	persistentGlitz(&persistentGlitz)
@@ -234,9 +234,9 @@ public:
 	}
 	
 private:
-    mt::std::vector<Glitz>::type *forwardsGlitz;
-    mt::std::vector<Glitz>::type *reverseGlitz;
-	mt::std::vector<GlitzPersister>::type *persistentGlitz;
+    mt::std::vector<Glitz> *forwardsGlitz;
+    mt::std::vector<Glitz> *reverseGlitz;
+	mt::std::vector<GlitzPersister> *persistentGlitz;
 };
 }
 #endif //HG_GUY_GLITZ_ADDER_H

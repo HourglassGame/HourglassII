@@ -1,27 +1,25 @@
 #include "ProtoStuff.h"
 namespace hg {
 Collision ProtoPlatform::calculateCollision(
-        mt::std::vector<
-            mt::std::vector<int>::type
-        >::type const &triggers) const
+        mt::std::vector<mt::std::vector<int>> const &triggers) const
 {
         PlatformDestination const &destination(
             triggers[buttonTriggerID_].front() ?
             destinations_.onDestination :
             destinations_.offDestination);
         
-        mt::std::vector<int>::type const &lastStateTrigger(triggers[lastStateTriggerID_]);
+        mt::std::vector<int> const &lastStateTrigger(triggers[lastStateTriggerID_]);
         
         PositionAndVelocity horizontal(
             destination.
                 getXDestination().
-                    solvePDEquation(
+                    solvePlatformDestinationEquation(
                         PositionAndVelocity(lastStateTrigger[0], lastStateTrigger[2])));
 
         PositionAndVelocity vertical(
             destination.
                 getYDestination().
-                    solvePDEquation(
+                    solvePlatformDestinationEquation(
                         PositionAndVelocity(lastStateTrigger[1], lastStateTrigger[3])));
         
         return
@@ -35,7 +33,7 @@ namespace {
 PositionAndVelocity2D snapAttachment(
     TimeDirection timeDirection,
     Attachment const &attachment,
-    mt::std::vector<Collision>::type const &collisions)
+    mt::std::vector<Collision> const &collisions)
 {
     int x;
     int y;
@@ -83,7 +81,7 @@ PositionAndVelocity2D snapAttachment(
 }
 }
 PortalArea ProtoPortal::calculatePortalArea(
-        mt::std::vector<Collision>::type const &collisions) const
+        mt::std::vector<Collision> const &collisions) const
 {
     PositionAndVelocity2D pnv2D(snapAttachment(timeDirection_, attachment_, collisions));
     return PortalArea(
@@ -109,7 +107,7 @@ PortalArea ProtoPortal::calculatePortalArea(
 }
 
 PositionAndVelocity2D ProtoButton::calculatePositionAndVelocity2D(
-        mt::std::vector<Collision>::type const &collisions) const
+        mt::std::vector<Collision> const &collisions) const
 {
     return snapAttachment(timeDirection_, attachment_, collisions);
 }

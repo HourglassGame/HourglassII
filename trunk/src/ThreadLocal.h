@@ -12,7 +12,7 @@ class ThreadLocal : private tbb::task_scheduler_observer
     //so a (lightweight) spin_mutex is preferable.
     //This has not actually been tested though.
     typedef tbb::spin_rw_mutex Mutex;
-    typedef typename mt::boost::container::map<boost::thread::id, T>::type Map;
+    typedef mt::boost::container::map<boost::thread::id, T> Map;
 public:
     ThreadLocal() :
         threadLocalData(),
@@ -33,10 +33,10 @@ public:
         }
     }
 private:
-    ThreadLocal(ThreadLocal const &)/*= delete*/;
-    ThreadLocal &operator=(ThreadLocal const &)/*= delete*/;
+    ThreadLocal(ThreadLocal const &) = delete;
+    ThreadLocal &operator=(ThreadLocal const &) = delete;
     
-    virtual void on_scheduler_exit(bool /*is_worker*/) {
+    virtual void on_scheduler_exit(bool /*is_worker*/) override {
         //Note that this clears the element even for non-worker threads.
         //This means that the cache may sometimes be spuriously be cleared if
         //this class is used with non-tbb-task threads.

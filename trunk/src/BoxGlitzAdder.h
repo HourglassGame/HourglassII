@@ -9,8 +9,8 @@ namespace hg {
 class BoxGlitzAdder {
 public:
     BoxGlitzAdder(
-        mt::std::vector<Glitz>::type &forwardsGlitz,
-        mt::std::vector<Glitz>::type &reverseGlitz) :
+        mt::std::vector<Glitz> &forwardsGlitz,
+        mt::std::vector<Glitz> &reverseGlitz) :
     forwardsGlitz(&forwardsGlitz), reverseGlitz(&reverseGlitz)
     {}
     //Adds the glitz that would be appropriate for a box
@@ -39,8 +39,8 @@ public:
             timeDirection == REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
     }
 private:
-    mt::std::vector<Glitz>::type *forwardsGlitz;
-    mt::std::vector<Glitz>::type *reverseGlitz;
+    mt::std::vector<Glitz> *forwardsGlitz;
+    mt::std::vector<Glitz> *reverseGlitz;
 };
 }
 #endif //HG_BOX_GLITZ_ADDER_H

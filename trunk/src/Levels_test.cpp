@@ -27,34 +27,37 @@ bool testLevels() {
 
     //TODO -- make this test only run in an "expensive tests" run
     //TODO -- get rid of hard-coded progress display.
-    //TODO -- allow test to continue after failure
+    bool testPassed = true;
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
+#if 0 //commented out as these tests are too expensive for normal usage
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             if (exists(entry.path()/"DoNotTest")) continue;
             std::cout << "Testing " << entry.path() << " ...";
             if (!exists(entry.path()/"win.replay")) {
                 std::cerr << " Did not have win.replay\n";
-                return false;
+                testPassed = false;
+                continue;
             }
-            OperationInterrupter interrupter;
-            TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path(), interrupter),interrupter);
+            TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
             auto const replay = loadReplay((entry.path()/"win.replay").string());
             try {
                 for (auto const& input: replay) {
-                    timeEngine.runToNextPlayerFrame(input, interrupter);
+                    timeEngine.runToNextPlayerFrame(input);
                 }
             }
-            catch(PlayerVictoryException const&) {
+            catch (PlayerVictoryException const&) {
                 std::cout << " OK\n";
                 continue;
             }
             std::cerr << " Did not win\n";
-            return false;
+            testPassed = false;
+            continue;
         }
+#endif
     }
-    return true;
+    return testPassed;
 }
 
 struct tester {

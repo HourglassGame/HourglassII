@@ -11,7 +11,7 @@ sf::Color const uiTextColor(100,100,200);
 
 void DrawGlitzAndWall(
     hg::RenderWindow &target,
-    hg::mt::std::vector<hg::Glitz>::type const &glitz,
+    hg::mt::std::vector<hg::Glitz> const &glitz,
     hg::Wall const &wall,
     hg::LevelResources const &resources,
     sf::Image const &wallImage)
@@ -39,8 +39,12 @@ void DrawGlitzAndWall(
     target.setView(oldView);
 }
 
-void drawInventory(hg::RenderWindow &app, hg::mt::std::map<hg::Ability, int>::type const &pickups, hg::Ability abilityCursor) {
-    hg::mt::std::map<hg::Ability, int>::type mpickups(pickups);
+void drawInventory(
+    hg::RenderWindow &app,
+    hg::mt::std::map<hg::Ability, int> const &pickups,
+    hg::Ability abilityCursor)
+{
+    hg::mt::std::map<hg::Ability, int> mpickups(pickups);
     {
         std::stringstream timeJump;
         timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << "timeJumps: " << mpickups[hg::TIME_JUMP];

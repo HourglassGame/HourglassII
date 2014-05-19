@@ -31,31 +31,31 @@ class DirectLuaTriggerFrameState final :
             Frame const *currentFrame,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr>::type const> const &triggerArrivals);
+                mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) override;
     
-    virtual bool shouldArrive(Guy const &potentialArriver);
-    virtual bool shouldArrive(Box const &potentialArriver);
+    virtual bool shouldArrive(Guy const &potentialArriver) override;
+    virtual bool shouldArrive(Box const &potentialArriver) override;
     
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const &potentialPorter,
-        bool porterActionedPortal);
+        bool porterActionedPortal) override;
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Box const &potentialPorter,
-        bool porterActionedPortal);
+        bool porterActionedPortal) override;
     
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int>::type const &responsibleMutatorIndices,
-        Guy const &objectToManipulate);
+        mt::std::vector<int> const &responsibleMutatorIndices,
+        Guy const &objectToManipulate) override;
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int>::type const &responsibleMutatorIndices,
-        Box const &objectToManipulate);
+        mt::std::vector<int> const &responsibleMutatorIndices,
+        Box const &objectToManipulate) override;
     
     virtual DepartureInformation getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal>>::type const &departures,
-        Frame *currentFrame);
-    virtual ~DirectLuaTriggerFrameState() noexcept;
+        mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+        Frame *currentFrame) override;
+    virtual ~DirectLuaTriggerFrameState() noexcept override;
 private:
     OperationInterrupter &interrupter_;
     LuaState &L_;

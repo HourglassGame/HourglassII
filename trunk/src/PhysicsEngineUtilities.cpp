@@ -5,8 +5,8 @@
 namespace hg {
 
 void buildDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const &nextBox,
-    mt::std::vector<ObjectAndTime<Guy, Frame *> >::type const &nextGuy,
+    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mt::std::vector<ObjectAndTime<Guy, Frame *>> const &nextGuy,
     PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame)
 {
@@ -16,8 +16,8 @@ void buildDepartures(
 }
 
 void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const &nextBox,
-	mt::std::vector<char>::type &nextBoxNormalDeparture,
+    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+	mt::std::vector<char> &nextBoxNormalDeparture,
 	BoxGlitzAdder const &boxGlitzAdder)	
 {
 	for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
@@ -34,21 +34,21 @@ struct Collidables
 {
     Collidables(
         Wall const *nwalls,
-        mt::std::vector<Collision>::type const *nplatforms,
-        mt::std::vector<ObjectAndTime<Box, Frame *> >::type const *nboxes) :
+        mt::std::vector<Collision> const *nplatforms,
+        mt::std::vector<ObjectAndTime<Box, Frame *>> const *nboxes) :
         walls(nwalls), platforms(nplatforms), boxes(nboxes) {}
 
     Wall const *walls;
-    mt::std::vector<Collision>::type const *platforms;
-    mt::std::vector<ObjectAndTime<Box, Frame *> >::type const *boxes;
+    mt::std::vector<Collision> const *platforms;
+    mt::std::vector<ObjectAndTime<Box, Frame *>> const *boxes;
 };
 
 bool explodeBoxes(
-    mt::std::vector<int>::type &pos,
-    mt::std::vector<int>::type const &size,
-    mt::std::vector<mt::std::vector<std::size_t>::type >::type const &links,
-    mt::std::vector<char>::type &toBeSquished,
-    mt::std::vector<std::pair<bool, int> >::type const &bound,
+    mt::std::vector<int> &pos,
+    mt::std::vector<int> const &size,
+    mt::std::vector<mt::std::vector<std::size_t>> const &links,
+    mt::std::vector<char> &toBeSquished,
+    mt::std::vector<std::pair<bool, int>> const &bound,
     std::size_t index,
     int boundSoFar,
     int sign)
@@ -85,14 +85,14 @@ bool explodeBoxes(
 }
 
 bool explodeBoxesUpwards(
-    mt::std::vector<int>::type &x,
-    mt::std::vector<int>::type const &xTemp,
-    mt::std::vector<int>::type &y,
-    mt::std::vector<int>::type const &size,
-    mt::std::vector<mt::std::vector<std::size_t>::type >::type const &links,
+    mt::std::vector<int> &x,
+    mt::std::vector<int> const &xTemp,
+    mt::std::vector<int> &y,
+    mt::std::vector<int> const &size,
+    mt::std::vector<mt::std::vector<std::size_t>> const &links,
     bool firstTime,
-    mt::std::vector<char>::type &toBeSquished,
-    mt::std::vector<std::pair<bool, int> >::type const &bound,
+    mt::std::vector<char> &toBeSquished,
+    mt::std::vector<std::pair<bool, int>> const &bound,
     std::size_t index,
     int boundSoFar)
 {
@@ -131,11 +131,11 @@ bool explodeBoxesUpwards(
 	return false;
 }
 void recursiveBoxCollision(
-    mt::std::vector<int>::type &majorAxis,
-    mt::std::vector<int>::type const &minorAxis,
-    mt::std::vector<int>::type const &size,
-    mt::std::vector<char>::type const &squished,
-    mt::std::vector<std::size_t>::type &boxesSoFar,
+    mt::std::vector<int> &majorAxis,
+    mt::std::vector<int> const &minorAxis,
+    mt::std::vector<int> const &size,
+    mt::std::vector<char> const &squished,
+    mt::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
     int subtractionNumber) // horizontal wins a tie
 {
@@ -448,14 +448,14 @@ void doGunRaytrace(
 		int &targetId,
 		Environment const &env,
 		int &sx, int &sy, int &px, int &py,
-		mt::std::vector<Collision>::type const &nextPlatform,
-		mt::std::vector<ObjectAndTime<Box, Frame *> >::type nextBox,
-		mt::std::vector<char>::type &nextBoxNormalDeparture,
-		mt::std::vector<int>::type gx, // other guy things
-		mt::std::vector<int>::type gy,
-		mt::std::vector<int>::type gw,
-		mt::std::vector<int>::type gh,
-		mt::std::vector<char>::type shootable)
+		mt::std::vector<Collision> const &nextPlatform,
+		mt::std::vector<ObjectAndTime<Box, Frame *>> nextBox,
+		mt::std::vector<char> &nextBoxNormalDeparture,
+		mt::std::vector<int> gx, // other guy things
+		mt::std::vector<int> gy,
+		mt::std::vector<int> gw,
+		mt::std::vector<int> gh,
+		mt::std::vector<char> shootable)
 {
 	// source x,y
 	// point  x,y

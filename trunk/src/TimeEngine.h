@@ -10,6 +10,7 @@
 #include "InputList_fwd.h"
 #include "Level.h"
 #include "Frame.h"
+#include "as_lvalue.h"
 
 #include <boost/swap.hpp>
 #include <utility>
@@ -22,6 +23,9 @@ namespace hg {
 
 //If the capability to copy time engines becomes important then
 //copying operations can be added.
+class Frame;
+class Level;
+class TimeEngineImpl;
 class TimeEngine
 {
 public:
@@ -42,8 +46,15 @@ public:
      * A correct level has exactly one guy.
      * Exception Safety: Strong
      */
-    explicit TimeEngine(Level &&level, OperationInterrupter &interrupter);
+    explicit TimeEngine(
+        Level &&level,
+        OperationInterrupter &interrupter = as_lvalue(NullOperationInterrupter()));
 
+    TimeEngine(TimeEngine const &);
+    TimeEngine(TimeEngine &&) noexcept;
+    TimeEngine &operator=(TimeEngine const&);
+    TimeEngine &operator=(TimeEngine &&) noexcept;
+    ~TimeEngine() noexcept;
     void swap(TimeEngine &o) noexcept;
 
     /**
@@ -52,29 +63,19 @@ public:
      * in which the player had input.
      * Exception Safety: Weak
      */
-    RunResult runToNextPlayerFrame(InputList const &newInputData, OperationInterrupter &interrupter);
+    RunResult runToNextPlayerFrame(
+        InputList const &newInputData,
+        OperationInterrupter &interrupter = as_lvalue(NullOperationInterrupter()));
 
     /**
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
-     * Non-const only so a non-const Frame* can be returned.
-     * Please investigate this constness further!
-     * Exception Safety: No Throw
      */
-    Frame const *getFrame(FrameID const &whichFrame) const { return worldState.getFrame(whichFrame); }
-    // Exception Safety: Strong
-    std::vector<InputList> const &getReplayData() const noexcept { return worldState.getReplayData(); }
-    
-    Wall const &getWall() const noexcept { return wall; }
-    
-    int getTimelineLength() const noexcept { return worldState.getTimelineLength(); }
+    Frame const *getFrame(FrameID const &whichFrame) const noexcept;// { return worldState.getFrame(whichFrame); }
+    std::vector<InputList> const &getReplayData() const noexcept;// { return worldState.getReplayData(); }
+    Wall const &getWall() const noexcept;// { return wall; }
+    int getTimelineLength() const noexcept;// { return worldState.getTimelineLength(); }
 private:
-    unsigned int speedOfTime;
-    //state of world at end of last executed frame
-    WorldState worldState;
-    //Wall duplicated here, it is also in physics.
-    //This may not be ideal, but it simplifies a few things.
-    //No, this is probably plain silly. Please fix/justify.
-    Wall wall;
+    clone_ptr<TimeEngineImpl> impl;
 };
 }
 #endif //HG_TIME_ENGINE_H

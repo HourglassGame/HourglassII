@@ -4,7 +4,7 @@
 namespace hg {
 template<typename T>
 struct vector_of {
-    typedef typename mt::boost::container::vector<T>::type type;
+    typedef mt::boost::container::vector<T> type;
 };
 }
 #endif //HG_VECTOR_OF_H

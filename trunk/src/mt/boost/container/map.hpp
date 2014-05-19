@@ -9,18 +9,13 @@ namespace container {
 template<
 	typename Key,
 	typename T,
-	typename Compare = ::std::less<Key> >
-struct map {
-	typedef
-		::boost::container::map<
-			Key,
-			T,
-			Compare,
-			typename multi_thread_allocator<
-				::std::pair<Key const, T>
-			>::type
-		> type;
-};
+	typename Compare = ::std::less<Key>>
+using map =
+    ::boost::container::map<
+        Key,
+		T,
+		Compare,
+		multi_thread_allocator_t< ::std::pair<Key const, T>>>;
 }
 }
 }

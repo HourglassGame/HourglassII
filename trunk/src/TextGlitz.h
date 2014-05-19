@@ -6,7 +6,7 @@
 #include "LayeredCanvas.h"
 #include <string>
 namespace hg {
-class TextGlitz: public GlitzImplementation {
+class TextGlitz final : public GlitzImplementation {
 public:
     TextGlitz(
         int layer,
@@ -19,21 +19,21 @@ public:
             x(x), y(y),
             size(size),
             colour(colour) {}
-    virtual void display(LayeredCanvas &canvas) const {
+    virtual void display(LayeredCanvas &canvas) const override {
         canvas.drawText(layer, text, x/100.f, y/100.f, size/100.f, colour);
     }
-    virtual std::size_t clone_size() const {
+    virtual std::size_t clone_size() const override {
         return sizeof *this;
     }
-    virtual TextGlitz *perform_clone(void *memory) const {
+    virtual TextGlitz *perform_clone(void *memory) const override {
         return new (memory) TextGlitz(*this);
     }
     
-    virtual bool operator<(GlitzImplementation const &right) const {
+    virtual bool operator<(GlitzImplementation const &right) const override {
         TextGlitz const &actual_right(*boost::polymorphic_downcast<TextGlitz const *>(&right));
         return asTie() < actual_right.asTie();
     }
-    virtual bool operator==(GlitzImplementation const &o) const {
+    virtual bool operator==(GlitzImplementation const &o) const override {
         TextGlitz const &actual_other(*boost::polymorphic_downcast<TextGlitz const *>(&o));
         return asTie() == actual_other.asTie();
     }
@@ -41,7 +41,7 @@ private:
     boost::tuple<int const &, std::string const &, int const &, int const &, int const &, unsigned const &> asTie() const {
         return boost::tie(layer, text, x, y, size, colour);
     }
-    virtual int order_ranking() const {
+    virtual int order_ranking() const override {
         return 2;
     }
     int layer;

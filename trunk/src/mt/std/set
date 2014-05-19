@@ -8,14 +8,11 @@ namespace std{
 template<
 	typename Key,
 	typename Compare = ::std::less<Key> >
-struct set {
-	typedef
+using set =
 		::std::set<
 			Key,
 			Compare,
-			typename multi_thread_allocator<Key>::type
-		> type;
-};
+			multi_thread_allocator_t<Key>>;
 }
 }
 }

@@ -9,17 +9,12 @@ template<
 	typename Key,
 	typename T,
 	typename Compare = ::std::less<Key> >
-struct map {
-	typedef
+using map =
 		::std::map<
 			Key,
 			T,
 			Compare,
-			typename multi_thread_allocator<
-				::std::pair<Key const, T>
-			>::type
-		> type;
-};
+			multi_thread_allocator_t< ::std::pair<Key const, T>>>;
 }
 }
 }

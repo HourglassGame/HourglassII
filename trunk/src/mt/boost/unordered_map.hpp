@@ -11,18 +11,13 @@ template<
 	typename Hash = ::boost::hash<Key>,
 	typename Pred = ::std::equal_to<Key>
 >
-struct unordered_map {
-	typedef
+using unordered_map =
 		::boost::unordered_map<
 			Key,
 			Mapped,
 			Hash,
 			Pred,
-			typename multi_thread_allocator<
-				::std::pair<Key const, Mapped>
-			>::type
-		> type;
-};
+			multi_thread_allocator_t< ::std::pair<Key const, Mapped>>>;
 }
 }
 }

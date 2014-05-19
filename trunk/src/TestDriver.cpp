@@ -22,7 +22,7 @@ TestDriver &getTestDriver() {
 bool testExpression = true;
 
 struct TestDriverTest: Test {
-    virtual bool run(Outputter &o) {
+    virtual bool run(Outputter &o) override {
         switch (runMonitored([&]{return testExpression;})) {
             case OK: break;
             case BAD_VALUE: reportBadValue(); break;

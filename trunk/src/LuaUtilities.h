@@ -114,8 +114,8 @@ FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State 
 //For pickups
 //I should probably make a Pickup class to make this less ambiguous.
 template<>
-mt::std::map<Ability, int>::type
-    to<mt::std::map<Ability, int>::type>(lua_State *L, int index);
+mt::std::map<Ability, int>
+    to<mt::std::map<Ability, int>>(lua_State *L, int index);
 
 template<>
 Guy to<Guy>(lua_State *L, int index);

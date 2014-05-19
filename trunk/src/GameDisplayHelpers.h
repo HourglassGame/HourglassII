@@ -14,7 +14,7 @@ namespace hg {
     extern sf::Color const uiTextColor;
     void DrawGlitzAndWall(
         hg::RenderWindow &target,
-        hg::mt::std::vector<hg::Glitz>::type const &glitz,
+        hg::mt::std::vector<hg::Glitz> const &glitz,
         hg::Wall const &wall,
         hg::LevelResources const &resources,
         sf::Image const &wallImage);
@@ -44,8 +44,8 @@ namespace hg {
 
     sf::Color guyPositionToColor(double xFrac, double yFrac);
     sf::Color asColor(sf::Vector3<double>const &vec);
-    void drawInventory(hg::RenderWindow &app, hg::mt::std::map<hg::Ability, int>::type const &pickups, hg::Ability abilityCursor);
-    hg::mt::std::vector<hg::Glitz>::type const &getGlitzForDirection(
+    void drawInventory(hg::RenderWindow &app, hg::mt::std::map<hg::Ability, int> const &pickups, hg::Ability abilityCursor);
+    hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
         hg::FrameView const &view, hg::TimeDirection timeDirection);
     hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);
 }

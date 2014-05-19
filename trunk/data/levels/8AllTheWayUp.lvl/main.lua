@@ -1,3 +1,5 @@
+-- THIS LEVEL HAS NOT YET BEEN WRITTEN (IT SHOULD NOT HAVE BEEN COMMITTED)
+
 name = "All The Way Up"
 speedOfTime = 3
 timelineLength = 10800
@@ -35,8 +37,8 @@ initialGuy =
     arrivalTime = 0,
     arrival =
     {
-        x = 7 * 1600,
-        y = 11 * 3200,
+        x = 19 * 3200,
+        y = 17 * 3200,
         width = 1600,
         height = 3200,
         facing = "right",

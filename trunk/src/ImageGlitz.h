@@ -6,7 +6,7 @@
 #include <string>
 #include "LayeredCanvas.h"
 namespace hg {
-class ImageGlitz: public GlitzImplementation {
+class ImageGlitz final : public GlitzImplementation {
 public:
     ImageGlitz(
         int layer,
@@ -17,20 +17,20 @@ public:
             x(x), y(y),
             width(width), height(height)
     {}
-    virtual void display(LayeredCanvas &canvas) const {
+    virtual void display(LayeredCanvas &canvas) const override {
         canvas.drawImage(layer, key, x/100.f, y/100.f, width/100.f, height/100.f);
     }
-    virtual std::size_t clone_size() const {
+    virtual std::size_t clone_size() const override {
         return sizeof *this;
     }
-    virtual ImageGlitz *perform_clone(void *memory) const {
+    virtual ImageGlitz *perform_clone(void *memory) const override {
         return new (memory) ImageGlitz(*this);
     }
-    virtual bool operator<(GlitzImplementation const &right) const {
+    virtual bool operator<(GlitzImplementation const &right) const override {
         ImageGlitz const &actual_right(*boost::polymorphic_downcast<ImageGlitz const*>(&right));
         return asTie() < actual_right.asTie();
     }
-    virtual bool operator==(GlitzImplementation const &o) const {
+    virtual bool operator==(GlitzImplementation const &o) const override {
         ImageGlitz const &actual_other(*boost::polymorphic_downcast<ImageGlitz const*>(&o));
         return asTie() == actual_other.asTie();
     }
