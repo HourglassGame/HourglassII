@@ -455,6 +455,7 @@
 		2097501517E92CEB00EF15B2 /* RenderWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderWindow.cpp; path = ../../../src/RenderWindow.cpp; sourceTree = "<group>"; };
 		2097501617E92CEB00EF15B2 /* RenderWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RenderWindow.h; path = ../../../src/RenderWindow.h; sourceTree = "<group>"; };
 		209B3C85169BDFEC003C554D /* TextGlitz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TextGlitz.h; path = ../../../src/TextGlitz.h; sourceTree = "<group>"; };
+		209CBAA9192A8DC80094F4E2 /* integer_sequence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = integer_sequence.h; path = ../../../src/integer_sequence.h; sourceTree = "<group>"; };
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -977,6 +978,7 @@
 				2001AA04190BB080006AD666 /* variant_test.cpp */,
 				20D4020F1910EA24007635FD /* multi_array.h */,
 				20062A531922919E0004C94C /* as_lvalue.h */,
+				209CBAA9192A8DC80094F4E2 /* integer_sequence.h */,
 			);
 			name = "C++";
 			sourceTree = "<group>";

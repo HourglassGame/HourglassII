@@ -17,6 +17,7 @@
 #include <utility>
 #include <cstring>
 #include <limits>
+#include "integer_sequence.h"
 namespace hg {
 
 template <typename T>
@@ -423,25 +424,14 @@ private:
 
 namespace variant_detail {
 
-template<int ...>
-struct seq { };
-
-template<int N, int ...S>
-struct gens : gens<N-1, N-1, S...> { };
-
-template<int ...S>
-struct gens<0, S...> {
-  typedef seq<S...> type;
-};
-
-template<int ...S, typename Head, typename ...Tail>
-std::tuple<Tail...> tuple_tail_impl(seq<S...>, std::tuple<Head, Tail...> const&in_tuple) {
+template<std::size_t ...S, typename Head, typename ...Tail>
+std::tuple<Tail...> tuple_tail_impl(index_sequence<S...>, std::tuple<Head, Tail...> const&in_tuple) {
     return std::tuple<Tail...>(std::get<S+1>(in_tuple)...);
 }
 
 template<typename Head, typename ...Tail>
 std::tuple<Tail...> tuple_tail(std::tuple<Head, Tail...> const& in_tuple) {
-    return tuple_tail_impl(typename gens<std::tuple_size<std::tuple<Tail...>>::value>::type(), in_tuple);
+    return tuple_tail_impl(make_index_sequence<std::tuple_size<std::tuple<Tail...>>::value>(), in_tuple);
 }
 
 template<typename Visitor, typename MatchedValueTuple, typename... TailVariants>
@@ -482,11 +472,11 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple> {
     
     template<typename A>
     result_type operator()(A &&a) {
-        return callFunc(typename gens<std::tuple_size<MatchedValueTuple>::value>::type(), std::forward<A>(a));
+        return callFunc(make_index_sequence<std::tuple_size<MatchedValueTuple>::value>(), std::forward<A>(a));
     }
     
-    template<int ...S, typename A>
-    result_type callFunc(seq<S...>, A &&a) {
+    template<std::size_t ...S, typename A>
+    result_type callFunc(index_sequence<S...>, A &&a) {
         return std::forward<Visitor>(visitor)(std::get<S>(matchedValues)..., std::forward<A>(a));
     }
 };
