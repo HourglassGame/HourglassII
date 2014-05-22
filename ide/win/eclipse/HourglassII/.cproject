@@ -34,11 +34,10 @@
 								<option id="gnu.cpp.compiler.option.other.other.471312586" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.other.pic.60291309" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.927014582" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="TBB_USE_CAPTURED_EXCEPTION"/>
-									<listOptionValue builtIn="false" value="LUA_ANSI"/>
-									<listOptionValue builtIn="false" value="BOOST_MULTI_ARRAY_NO_GENERATORS"/>
-									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
 									<listOptionValue builtIn="false" value="LUA_USE_APICHECK"/>
+									<listOptionValue builtIn="false" value="LUA_ANSI"/>
+									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
+									<listOptionValue builtIn="false" value="BOOST_THREAD_VERSION=4"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.flags.328122668" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.197151755" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -63,11 +62,11 @@
 									<listOptionValue builtIn="false" value="sfml-graphics-2"/>
 									<listOptionValue builtIn="false" value="sfml-window-2"/>
 									<listOptionValue builtIn="false" value="sfml-system-2"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw48-mt-1_55"/>
 									<listOptionValue builtIn="false" value="opengl32"/>
 									<listOptionValue builtIn="false" value="glu32"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
@@ -119,11 +118,9 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/HourglassII/src/lua/}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.2093967871" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
-									<listOptionValue builtIn="false" value="TBB_USE_CAPTURED_EXCEPTION"/>
-									<listOptionValue builtIn="false" value="BOOST_THREAD_USES_MOVE"/>
 									<listOptionValue builtIn="false" value="LUA_ANSI"/>
-									<listOptionValue builtIn="false" value="BOOST_MULTI_ARRAY_NO_GENERATORS"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
+									<listOptionValue builtIn="false" value="BOOST_THREAD_VERSION=4"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1175809425" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
@@ -151,11 +148,11 @@
 									<listOptionValue builtIn="false" value="sfml-graphics-2"/>
 									<listOptionValue builtIn="false" value="sfml-window-2"/>
 									<listOptionValue builtIn="false" value="sfml-system-2"/>
-									<listOptionValue builtIn="false" value="boost_thread-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_filesystem-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_system-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_serialization-mgw47-mt-1_54"/>
-									<listOptionValue builtIn="false" value="boost_chrono-mgw47-mt-1_54"/>
+									<listOptionValue builtIn="false" value="boost_thread-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_filesystem-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_system-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_serialization-mgw48-mt-1_55"/>
+									<listOptionValue builtIn="false" value="boost_chrono-mgw48-mt-1_55"/>
 									<listOptionValue builtIn="false" value="opengl32"/>
 									<listOptionValue builtIn="false" value="glu32"/>
 									<listOptionValue builtIn="false" value="gdi32"/>
