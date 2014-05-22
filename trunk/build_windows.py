@@ -24,7 +24,7 @@ class basic_gxx_compiler:
             [self.cxx]
             + list(map(lambda d: "-D" + d, defines))
             + list(map(lambda i: "-I" + i, include_directories))
-            + ["-ftemplate-depth=128"]
+            + ["-ftemplate-depth=1024"]
             + ["-O3"]
             + ["-march=i486"]
             + ["-std=c++0x"]
@@ -106,7 +106,7 @@ compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_USES_MOVE", "NDEBUG"]
+defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_VERSION=4", "NDEBUG"]
 
 includes = ["ext/boost/include/", "ext/SFML/include/","ext/tbb/include/"]
 
@@ -115,7 +115,7 @@ library_directories = ["ext/boost/lib/", "ext/SFML/lib/", "ext/tbb/lib/"]
 libraries = [
     "tbb", "tbbmalloc",
     "sfml-graphics-2", "sfml-window-2", "sfml-system-2", "opengl32", "glu32", "gdi32", "winmm",
-    "boost_serialization-mgw47-mt-1_54", "boost_filesystem-mgw47-mt-1_54", "boost_system-mgw47-mt-1_54", "boost_thread-mgw47-mt-1_54", "boost_chrono-mgw47-mt-1_54"]
+    "boost_serialization-mgw48-mt-1_55", "boost_filesystem-mgw48-mt-1_55", "boost_system-mgw48-mt-1_55", "boost_thread-mgw48-mt-1_55", "boost_chrono-mgw48-mt-1_55"]
 
 dlls = [
     "ext/tbb/lib/tbb.dll", "ext/tbb/lib/tbbmalloc.dll",

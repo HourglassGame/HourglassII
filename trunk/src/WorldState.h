@@ -39,8 +39,26 @@ public:
     WorldState(WorldState const& o);
     WorldState &operator=(WorldState const& o);
 
-    WorldState(WorldState &&o) noexcept = default;
-    WorldState &operator=(WorldState &&o) noexcept = default;
+    WorldState(WorldState &&o) noexcept :
+	    timeline_(std::move(o.timeline_)),
+		playerInput_(std::move(o.playerInput_)),
+		frameUpdateSet_(std::move(o.frameUpdateSet_)),
+		physics_(std::move(o.physics_)),
+		nextPlayerFrames_(std::move(o.nextPlayerFrames_)),
+		currentPlayerFrames_(std::move(o.currentPlayerFrames_)),
+		currentWinFrames_(std::move(o.currentWinFrames_))
+	{
+	}
+    WorldState &operator=(WorldState &&o) noexcept {
+		timeline_= std::move(o.timeline_);
+		playerInput_ = std::move(o.playerInput_);
+		frameUpdateSet_ = std::move(o.frameUpdateSet_);
+		physics_ = std::move(o.physics_);
+		nextPlayerFrames_ = std::move(o.nextPlayerFrames_);
+		currentPlayerFrames_ = std::move(o.currentPlayerFrames_);
+		currentWinFrames_ = std::move(o.currentWinFrames_);
+		return *this;
+	}
     /**
      * Updates the state of the world once.
      * Throws PlayerVictoryException if the player has won
