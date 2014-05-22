@@ -41,7 +41,7 @@ private:
     typedef
       std::tuple<
         decltype(impl->order_ranking()),
-        decltype(*impl) const &>
+        GlitzImplementation const &>
       comparison_tuple_type;
     comparison_tuple_type comparison_tuple() const {
         return comparison_tuple_type(impl->order_ranking(), *impl);

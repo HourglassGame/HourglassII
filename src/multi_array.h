@@ -52,7 +52,10 @@ public:
         }
     };
 
-    multi_array() noexcept = default;
+    multi_array() noexcept :
+	  data(), size(), capacity()
+	{
+	}
     template<typename RandomAccessRange>
     multi_array(std::array<std::size_t, N_dims> const &size, RandomAccessRange const &data);
     

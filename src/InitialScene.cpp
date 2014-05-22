@@ -9,11 +9,12 @@
 #include "ReplayIO.h"
 #include "LevelSelectionScene.h"
 #include <functional>
+#include <iostream>
 namespace hg {
 struct RunGameResultVisitor {
     typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>result_type;
     template<typename Tag>
-    variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>  operator()(Tag t) const {
+    variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(Tag t) const {
         return std::move(t);
     }
 };

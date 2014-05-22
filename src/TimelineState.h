@@ -42,8 +42,15 @@ public:
         return *this;
     }
     
-    TimelineState(TimelineState&& o) noexcept = default;
-    TimelineState &operator=(TimelineState&& o) noexcept = default;
+    TimelineState(TimelineState&& o) noexcept :
+		universe_(std::move(o.universe_)),
+		permanentDepartures_(std::move(o.permanentDepartures_))
+	{}
+    TimelineState &operator=(TimelineState&& o) noexcept {
+		universe_ = std::move(o.universe_);
+		permanentDepartures_ = std::move(o.permanentDepartures_);
+		return *this;
+	}
 
     void swap(TimelineState &o);
     

@@ -1,6 +1,7 @@
 #include "TriggerData.h"
 #include <limits>
 #include <cassert>
+#include <tuple>
 namespace hg {
 TriggerData::TriggerData(std::size_t index, mt::std::vector<int> const &value) :
 index(index),
