@@ -60,7 +60,6 @@ LevelResources loadLevelResources(std::string const &levelPath, std::string cons
     return resources;
 }
 
-
 sf::Image loadAndBakeWallImage(Wall const &wall) {
     int const segmentSize = wall.segmentSize()/100;
     int const roomWidth = wall.roomWidth()/100;
@@ -95,17 +94,31 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
         }
     }
     
-    for(int x(0), xend(roomIndexWidth); x != xend; ++x) {
-        for(int y(0), yend(roomIndexHeight); y != yend; ++y) {
+    for (int x(0), xend(roomIndexWidth); x != xend; ++x) {
+        for (int y(0), yend(roomIndexHeight); y != yend; ++y) {
             if (wall.atIndex(x, y)) {
-                foregroundTexture.draw(spriteForBlock(blockTextures[wall.atIndex(x+1, y)][wall.atIndex(x, y-1)][wall.atIndex(x-1, y)][wall.atIndex(x, y+1)], x*segmentSize, y*segmentSize, segmentSize));
-                foregroundTexture.draw(spriteForBlock(blockTextures[wall.atIndex(x+1, y)][wall.atIndex(x, y-1)][wall.atIndex(x-1, y)][wall.atIndex(x, y+1)], x*segmentSize, y*segmentSize, segmentSize));
+                foregroundTexture.draw(
+                    spriteForBlock(
+                        blockTextures
+                            [wall.atIndex(x+1, y)]
+                            [wall.atIndex(x, y-1)]
+                            [wall.atIndex(x-1, y)]
+                            [wall.atIndex(x, y+1)],
+                        x*segmentSize,
+                        y*segmentSize,
+                        segmentSize));
+
                 for (int vpos(-1); vpos <= 1; vpos+=2) {
-                    for(int hpos(-1); hpos <= 1; hpos+=2) {
-                        if(wall.atIndex(x+hpos, y) && wall.atIndex(x, y+vpos) && !wall.atIndex(x+hpos, y+vpos)) {
+                    for (int hpos(-1); hpos <= 1; hpos+=2) {
+                        if (wall.atIndex(x+hpos, y) && wall.atIndex(x, y+vpos) && !wall.atIndex(x+hpos, y+vpos)) {
                             int const bottom((vpos+1)/2);
                             int const right((hpos+1)/2);
-                            foregroundTexture.draw(spriteForBlock(cornerTextures[bottom][right], x*segmentSize+right*segmentSize/2., y*segmentSize+bottom*segmentSize/2., segmentSize/2.));
+                            foregroundTexture.draw(
+                                spriteForBlock(
+                                    cornerTextures[bottom][right],
+                                    x*segmentSize + right*segmentSize/2.,
+                                    y*segmentSize + bottom*segmentSize/2.,
+                                    segmentSize/2.));
                         }
                     }
                 }
