@@ -106,7 +106,7 @@ compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "TBB_USE_CAPTURED_EXCEPTION", "BOOST_THREAD_VERSION=4", "NDEBUG"]
+defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "BOOST_THREAD_VERSION=4", "NDEBUG"]
 
 includes = ["ext/boost/include/", "ext/SFML/include/","ext/tbb/include/"]
 
