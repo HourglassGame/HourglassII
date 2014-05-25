@@ -4,6 +4,7 @@
 #include <boost/range/iterator_range.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include "multi_array.h"
 namespace hg {
 
 namespace fs = boost::filesystem;
@@ -68,31 +69,37 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
     int const roomIndexWidth = roomWidth/segmentSize;
     int const roomIndexHeight = roomHeight/segmentSize;
     
-    sf::RenderTexture foregroundTexture;
-    foregroundTexture.create(roomWidth, roomHeight);
-    foregroundTexture.clear(sf::Color(0,0,0,0));
-    sf::Texture blockTextures[2][2][2][2];
-    sf::Texture cornerTextures[2][2];
-    
-    for (int right(0); right <= 1; ++right) {
-        for(int top(0); top <= 1; ++top) {
-            for (int left(0); left <= 1; ++left) {
-                for (int bottom(0); bottom <= 1; ++bottom) {
-                    std::stringstream filename;
-                    filename << "Tilesets/" << wall.tilesetName() << right << top << left << bottom << ".png";
-                    blockTextures[right][top][left][bottom] = loadTexture(filename.str());
+   auto const blockTextures = [&wall] {
+        multi_array<sf::Texture, 2, 2, 2, 2> blockTextures;
+        for (int right(0); right <= 1; ++right) {
+            for(int top(0); top <= 1; ++top) {
+                for (int left(0); left <= 1; ++left) {
+                    for (int bottom(0); bottom <= 1; ++bottom) {
+                        std::stringstream filename;
+                        filename << "Tilesets/" << wall.tilesetName() << right << top << left << bottom << ".png";
+                        blockTextures[right][top][left][bottom] = loadTexture(filename.str());
+                    }
                 }
             }
         }
-    }
-    
-    for (int bottom(0); bottom <= 1; ++bottom) {
-        for (int right(0); right <= 1; ++right) {
-            std::stringstream filename;
-            filename << "Tilesets/" << wall.tilesetName() << (bottom ? "B":"T") << (right ? "R":"L") << ".png";
-            cornerTextures[bottom][right] = loadTexture(filename.str());
+        return blockTextures;
+    }();
+
+    auto const cornerTextures = [&wall] {
+        multi_array<sf::Texture, 2, 2> cornerTextures;
+        for (int bottom(0); bottom <= 1; ++bottom) {
+            for (int right(0); right <= 1; ++right) {
+                std::stringstream filename;
+                filename << "Tilesets/" << wall.tilesetName() << (bottom ? "B":"T") << (right ? "R":"L") << ".png";
+                cornerTextures[bottom][right] = loadTexture(filename.str());
+            }
         }
-    }
+        return cornerTextures;
+    }();
+    
+    sf::RenderTexture foregroundTexture;
+    foregroundTexture.create(roomWidth, roomHeight);
+    foregroundTexture.clear(sf::Color(0,0,0,0));
     
     for (int x(0), xend(roomIndexWidth); x != xend; ++x) {
         for (int y(0), yend(roomIndexHeight); y != yend; ++y) {
@@ -108,8 +115,8 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
                         y*segmentSize,
                         segmentSize));
 
-                for (int vpos(-1); vpos <= 1; vpos+=2) {
-                    for (int hpos(-1); hpos <= 1; hpos+=2) {
+                for (int vpos(-1); vpos <= 1; vpos += 2) {
+                    for (int hpos(-1); hpos <= 1; hpos += 2) {
                         if (wall.atIndex(x+hpos, y) && wall.atIndex(x, y+vpos) && !wall.atIndex(x+hpos, y+vpos)) {
                             int const bottom((vpos+1)/2);
                             int const right((hpos+1)/2);
@@ -125,6 +132,7 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
             }
         }
     }
+
     sf::Image foregroundImage(foregroundTexture.getTexture().copyToImage());
     foregroundImage.flipVertically();
     return foregroundImage;

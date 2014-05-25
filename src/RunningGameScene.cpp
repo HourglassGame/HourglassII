@@ -143,8 +143,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 
     
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
-    hg::LevelResources &levelResources = loadedLevel.resources;
-    sf::Image &wallImage = loadedLevel.bakedWall;
+    hg::LevelResources const &levelResources = loadedLevel.resources;
+    sf::Image const &wallImage = loadedLevel.bakedWall;
 
     enum {AWAITING_INPUT, RUNNING_LEVEL, PAUSED} state(AWAITING_INPUT);
 
@@ -236,8 +236,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                             futureRunResult.wait();
                             receivedInputs.clear();
                             timeEngine = initialLevel.timeEngine;
-                            levelResources = initialLevel.resources;
-                            wallImage = initialLevel.bakedWall;
+                            loadedLevel.resources = initialLevel.resources;
+                            loadedLevel.bakedWall = initialLevel.bakedWall;
                             state = AWAITING_INPUT;
                             goto continuemainloop;
                             //return ReloadLevel_tag{};

@@ -2,10 +2,8 @@
 #define HG_VARIANT_H
 
 //TODO:
-// Strict aliasing compatibility
 // Better compile-time checks (eg, ensure types are unique)
 // Recursive variant
-// Visitor return value
 // Optimisation for no-throw ctors
 // Reference members (?)
 // Better namespace safety (mostly done now)
@@ -195,9 +193,6 @@ public:
         scrub_storage();
 #endif
         currentMember = o.which();
-        //TODO: use of visit here probably
-        //violates strict aliasing (we are visiting an object that
-        //has not yet been constructed).
         visit(variant_detail::CopyVisitor<variant, Types...>{o});
     }
     variant(variant &&o) noexcept {
@@ -205,9 +200,6 @@ public:
         scrub_storage();
 #endif
         currentMember = o.which();
-        //TODO: use of visit here probably
-        //violates strict aliasing (we are visiting an object that
-        //has not yet been constructed).
         visit(variant_detail::MoveVisitor<variant, Types...>{std::move(o)});
     }
 
@@ -215,29 +207,25 @@ public:
     //(Wipes out existing object, makes new object in its place.
     // For assignment to contained object, use a visitor.)
     variant &operator=(variant const &o) {
+        //TODO - temp can be eliminated if construction from the current value of `o` is noexcept
         variant temp(o);
         visit(variant_detail::DtorVisitor<Types...>());
 #ifndef NDEBUG
         scrub_storage();
 #endif
         currentMember = o.which();
-        //TODO: use of visit here probably
-        //violates strict aliasing (we are visiting an object that
-        //has not yet been constructed).
         try { visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)}); }
         catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
         return *this;
     }
     variant &operator=(variant &&o) noexcept {
+        //TODO - temp can be eliminated if construction from the current value of `o` is noexcept
         variant temp(std::move(o));
         visit(variant_detail::DtorVisitor<Types...>());
 #ifndef NDEBUG
         scrub_storage();
 #endif
         currentMember = o.which();
-        //TODO: use of visit here probably
-        //violates strict aliasing (we are visiting an object that
-        //has not yet been constructed).
         try { visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)}); }
         catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
         return *this;
@@ -254,7 +242,7 @@ public:
         scrub_storage();
 #endif
         currentMember = variant_detail::IndexOf<ActualT, Types...>::value;
-        new (&storage) (typename std::remove_reference<T>::type)(std::forward<T>(val));
+        new (&storage) ActualT(std::forward<T>(val));
     }
 
     //Construct object of type T, with `values` forwarded to the constructor.
@@ -382,7 +370,6 @@ public:
     }
 
 private:
-    //visit_aux
     template<std::size_t N, typename RefConverter> friend struct visit_aux_struct;
     template<std::size_t N, typename RefConverter> struct visit_aux_struct;
     template<typename RefConverter>
@@ -390,13 +377,13 @@ private:
         variant *this_;
         visit_aux_struct(variant *this_) : this_(this_) {}
         template<typename Visitor>
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor &&v) {
+        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor &&v) const {
             assert(0 == this_->which());
             return
                 std::forward<Visitor>(v)(
                     reinterpret_cast
                     <
-                        typename RefConverter::template apply<typename variant_detail::NthType<0, Types...>>::type
+                        typename RefConverter::template apply<variant_detail::NthType<0, Types...>>::type
                     >(this_->storage));
         }
     };
@@ -405,12 +392,12 @@ private:
         variant *this_;
         visit_aux_struct(variant *this_) : this_(this_) {}
         template<typename Visitor>
-        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor &&v) {
+        typename std::remove_reference<Visitor>::type::result_type operator()(Visitor &&v) const {
             return (N == this_->which()) ?
                 std::forward<Visitor>(v)(
                     reinterpret_cast
                     <
-                        typename RefConverter::template apply<typename variant_detail::NthType<N, Types...>>::type
+                        typename RefConverter::template apply<variant_detail::NthType<N, Types...>>::type
                     >(this_->storage))
               : visit_aux_struct<N-1,RefConverter>(this_)(std::forward<Visitor>(v));
         }
@@ -425,8 +412,8 @@ private:
 namespace variant_detail {
 
 template<std::size_t ...S, typename Head, typename ...Tail>
-std::tuple<Tail...> tuple_tail_impl(index_sequence<S...>, std::tuple<Head, Tail...> const&in_tuple) {
-    return std::tuple<Tail...>(std::get<S+1>(in_tuple)...);
+std::tuple<Tail...> tuple_tail_impl(index_sequence<S...>, std::tuple<Head, Tail...> const &in_tuple) {
+    return std::tuple<Tail...>(std::forward<typename std::tuple_element<S+1, std::tuple<Head, Tail...>>::type>(std::get<S+1>(in_tuple))...);
 }
 
 template<typename Head, typename ...Tail>
@@ -443,11 +430,13 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVari
 
     Visitor visitor;
     MatchedValueTuple matchedValues;
-    std::tuple<CurrentVariant &&, TailVariants &&...> tailVariants;
+    std::tuple<CurrentVariant, TailVariants...> tailVariants;
 
     template<typename A>
     result_type operator()(A &&a) {
-        return std::get<0>(tailVariants)
+        //TODO -- proper forwarding of rvalue-ness for `tailVariants` (and other things maybe)
+        // (might already be implemented, need to double-check and add tests)
+        return std::forward<CurrentVariant>(std::get<0>(tailVariants))
             .visit(
                 NAryVisitorFlattener<
                     Visitor,
@@ -477,7 +466,9 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple> {
     
     template<std::size_t ...S, typename A>
     result_type callFunc(index_sequence<S...>, A &&a) {
-        return std::forward<Visitor>(visitor)(std::get<S>(matchedValues)..., std::forward<A>(a));
+        return std::forward<Visitor>(visitor)(
+            std::forward<typename std::tuple_element<S,MatchedValueTuple>::type>(std::get<S>(matchedValues))...,
+            std::forward<A>(a));
     }
 };
 }//namespace variant_detail
@@ -488,7 +479,7 @@ apply_visitor(Visitor &&visitor, VariantA &&variantA, Variants &&...variants) {
     return
         std::forward<VariantA>(variantA)
         .visit(
-            variant_detail::NAryVisitorFlattener<Visitor, std::tuple<>, Variants&&...>{
+            variant_detail::NAryVisitorFlattener<Visitor&&, std::tuple<>, Variants &&...>{
                 std::forward<Visitor>(visitor),
                 std::tuple<>{},
                 std::forward_as_tuple(std::forward<Variants>(variants)...)});

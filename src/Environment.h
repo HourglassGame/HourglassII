@@ -3,7 +3,7 @@
 
 #include "Geometry.h"
 #include <utility>
-#include "multi_array.h"
+#include "multi_vector.h"
 #include <string>
 namespace hg {
     //stores the wall (the static environment over which the game is played)
@@ -11,7 +11,7 @@ namespace hg {
     public:
         Wall(
             int segmentSize,
-            hg::multi_array<bool, 2> wallmap,
+            hg::multi_vector<bool, 2> wallmap,
             std::string tilesetName) :
                 segmentSize_(segmentSize),
                 wallmap_(std::move(wallmap)),
@@ -78,7 +78,7 @@ namespace hg {
         }
     private:
         int segmentSize_;
-        hg::multi_array<bool, 2> wallmap_;
+        hg::multi_vector<bool, 2> wallmap_;
         std::string tilesetName_;
     };
     //Stores the physical attributes of the world
