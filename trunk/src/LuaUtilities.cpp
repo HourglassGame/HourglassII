@@ -4,7 +4,7 @@
 #include <iostream>
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
-#include "multi_array.h"
+#include "multi_vector.h"
 
 //TODO everywhere:
 //* fix usage of lua_checkstack
@@ -155,10 +155,10 @@ Wall to<Wall>(lua_State *L, int index)
     int height(readField<int>(L, "height", index));
     assert(height >= 0);
     
-    std::array<hg::multi_array<bool, 2>::index, 2> const wallShape = {{
-        static_cast<hg::multi_array<bool, 2>::index>(width),
-        static_cast<hg::multi_array<bool, 2>::index>(height)}};
-    hg::multi_array<bool, 2> wall;
+    std::array<hg::multi_vector<bool, 2>::index, 2> const wallShape = {{
+        static_cast<hg::multi_vector<bool, 2>::index>(width),
+        static_cast<hg::multi_vector<bool, 2>::index>(height)}};
+    hg::multi_vector<bool, 2> wall;
     wall.resize(wallShape);
     
     assert(lua_rawlen(L, index) == static_cast<unsigned>(height));

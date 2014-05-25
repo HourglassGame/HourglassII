@@ -141,16 +141,16 @@
 		20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
 		20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
+		20C35CA71930E79F00708E24 /* libtbb_debug.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA51930E79F00708E24 /* libtbb_debug.dylib */; };
+		20C35CA81930E79F00708E24 /* libtbbmalloc_debug.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA61930E79F00708E24 /* libtbbmalloc_debug.dylib */; };
+		20C35CA91930E7DA00708E24 /* libtbb_debug.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA51930E79F00708E24 /* libtbb_debug.dylib */; };
+		20C35CAA1930E7DA00708E24 /* libtbbmalloc_debug.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA61930E79F00708E24 /* libtbbmalloc_debug.dylib */; };
 		20D4319A18C6B755006BBCBB /* LoadingLevelScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319818C6B755006BBCBB /* LoadingLevelScene.cpp */; };
 		20D4319D18C83AAD006BBCBB /* InitialScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319B18C83AAD006BBCBB /* InitialScene.cpp */; };
 		20D431A018C84608006BBCBB /* LoadedLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319E18C84608006BBCBB /* LoadedLevel.cpp */; };
 		20EF61E613C5BA55003DDBA7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20EF61E713C5BA55003DDBA7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
 		20EF61E813C5BA55003DDBA7 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
-		20F06FC11474B3E00019ADB4 /* libtbb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
-		20F06FC31474B3E00019ADB4 /* libtbbmalloc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */; };
-		20F06FC41474B3E90019ADB4 /* libtbb.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
-		20F06FC51474B3E90019ADB4 /* libtbbmalloc.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */; };
 		20F6B42718F6C30E00C1E9E3 /* natural_sort_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20F6B42518F6C30E00C1E9E3 /* natural_sort_test.cpp */; };
 		20FEFC631658BFFB009FE3AB /* basicTriggerSystem.lua in Resources */ = {isa = PBXBuildFile; fileRef = 20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */; };
 /* End PBXBuildFile section */
@@ -162,8 +162,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				20F06FC41474B3E90019ADB4 /* libtbb.dylib in Copy Frameworks */,
-				20F06FC51474B3E90019ADB4 /* libtbbmalloc.dylib in Copy Frameworks */,
+				20C35CA91930E7DA00708E24 /* libtbb_debug.dylib in Copy Frameworks */,
+				20C35CAA1930E7DA00708E24 /* libtbbmalloc_debug.dylib in Copy Frameworks */,
 				2001EA7818BD9190007F6AAE /* sfml-audio.framework in Copy Frameworks */,
 				2001EA7918BD9190007F6AAE /* sfml-graphics.framework in Copy Frameworks */,
 				2001EA7A18BD9190007F6AAE /* sfml-network.framework in Copy Frameworks */,
@@ -474,8 +474,11 @@
 		20C296D112F13D3A006F90AB /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		20C296D312F13D40006F90AB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		20C296D512F13D4A006F90AB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		20C35CA41930AEF500708E24 /* multi_array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = multi_array.h; path = ../../../src/multi_array.h; sourceTree = "<group>"; };
+		20C35CA51930E79F00708E24 /* libtbb_debug.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbb_debug.dylib; path = ../../../../../../../ExternalLibraries/tbb/library/lib/libtbb_debug.dylib; sourceTree = "<group>"; };
+		20C35CA61930E79F00708E24 /* libtbbmalloc_debug.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbbmalloc_debug.dylib; path = ../../../../../../../ExternalLibraries/tbb/library/lib/libtbbmalloc_debug.dylib; sourceTree = "<group>"; };
 		20CCB2C415B6681800176180 /* UserDataProxyTable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UserDataProxyTable.h; path = ../../../src/UserDataProxyTable.h; sourceTree = "<group>"; };
-		20D4020F1910EA24007635FD /* multi_array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = multi_array.h; path = ../../../src/multi_array.h; sourceTree = "<group>"; };
+		20D4020F1910EA24007635FD /* multi_vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = multi_vector.h; path = ../../../src/multi_vector.h; sourceTree = "<group>"; };
 		20D4319818C6B755006BBCBB /* LoadingLevelScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LoadingLevelScene.cpp; path = ../../../src/LoadingLevelScene.cpp; sourceTree = "<group>"; };
 		20D4319918C6B755006BBCBB /* LoadingLevelScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadingLevelScene.h; path = ../../../src/LoadingLevelScene.h; sourceTree = "<group>"; };
 		20D4319B18C83AAD006BBCBB /* InitialScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InitialScene.cpp; path = ../../../src/InitialScene.cpp; sourceTree = "<group>"; };
@@ -527,8 +530,8 @@
 				2001EA7218BD9130007F6AAE /* sfml-system.framework in Frameworks */,
 				2001EA8018BD9318007F6AAE /* freetype.framework in Frameworks */,
 				2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */,
-				20F06FC11474B3E00019ADB4 /* libtbb.dylib in Frameworks */,
-				20F06FC31474B3E00019ADB4 /* libtbbmalloc.dylib in Frameworks */,
+				20C35CA71930E79F00708E24 /* libtbb_debug.dylib in Frameworks */,
+				20C35CA81930E79F00708E24 /* libtbbmalloc_debug.dylib in Frameworks */,
 				20469DFE14B47D9E00FF6A02 /* libboost_chrono.a in Frameworks */,
 				20469DFF14B47D9E00FF6A02 /* libboost_filesystem.a in Frameworks */,
 				20469E0014B47D9E00FF6A02 /* libboost_serialization.a in Frameworks */,
@@ -976,9 +979,10 @@
 				200E80DF14B4792500D054F4 /* prettyprint98.hpp */,
 				20D431A118CC4AD3006BBCBB /* variant.h */,
 				2001AA04190BB080006AD666 /* variant_test.cpp */,
-				20D4020F1910EA24007635FD /* multi_array.h */,
+				20D4020F1910EA24007635FD /* multi_vector.h */,
 				20062A531922919E0004C94C /* as_lvalue.h */,
 				209CBAA9192A8DC80094F4E2 /* integer_sequence.h */,
+				20C35CA41930AEF500708E24 /* multi_array.h */,
 			);
 			name = "C++";
 			sourceTree = "<group>";
@@ -1010,6 +1014,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				20C35CA51930E79F00708E24 /* libtbb_debug.dylib */,
+				20C35CA61930E79F00708E24 /* libtbbmalloc_debug.dylib */,
 				2001EA6618BD9130007F6AAE /* sfml-audio.framework */,
 				2001EA6718BD9130007F6AAE /* sfml-graphics.framework */,
 				2001EA6818BD9130007F6AAE /* sfml-network.framework */,
@@ -1274,7 +1280,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Wno-long-long";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-funsigned-char",
+				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
 			};
@@ -1309,6 +1318,7 @@
 					../../../ext/boost/lib,
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1348,7 +1358,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Wno-long-long";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-funsigned-char",
+				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
 			};
@@ -1383,6 +1396,7 @@
 					../../../ext/boost/lib,
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1423,7 +1437,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Wno-long-long";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-funsigned-char",
+				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
 			};
@@ -1458,6 +1475,7 @@
 					../../../ext/boost/lib,
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1856,6 +1874,7 @@
 					../../../ext/boost/lib,
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1895,6 +1914,7 @@
 					../../../ext/boost/lib,
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1920,6 +1940,7 @@
 					LUA_USE_APICHECK,
 					LUA_USE_POSIX,
 					TBB_USE_DEBUG,
+					"_LIBCPP_DEBUG=0",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -1936,7 +1957,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Wno-long-long";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-funsigned-char",
+				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
 			};
@@ -1973,7 +1997,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-Wno-long-long";
-				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-funsigned-char",
+				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
 			};

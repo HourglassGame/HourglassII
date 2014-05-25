@@ -79,8 +79,8 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; D
         #undef E
         #undef D
-        std::array<hg::multi_array<bool, 2>::index, 2> shape = {{ 20, 15 }};
-        hg::multi_array<bool, 2> wallmap;
+        std::array<hg::multi_vector<bool, 2>::index, 2> shape = {{ 20, 15 }};
+        hg::multi_vector<bool, 2> wallmap;
         wallmap.resize(shape);
 
         for (std::size_t i(0), iend(shape[0]); i != iend; ++i) {

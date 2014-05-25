@@ -47,7 +47,7 @@ void drawInventory(
     hg::mt::std::map<hg::Ability, int> mpickups(pickups);
     {
         std::stringstream timeJump;
-        timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << "timeJumps: " << mpickups[hg::TIME_JUMP];
+        timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << "1) timeJumps: " << mpickups[hg::TIME_JUMP];
         sf::Text timeJumpGlyph;
         timeJumpGlyph.setFont(*hg::defaultFont);
         timeJumpGlyph.setString(timeJump.str());
@@ -58,7 +58,7 @@ void drawInventory(
     }
     {
         std::stringstream timeReverses;
-        timeReverses << (abilityCursor == hg::TIME_REVERSE ? "-->" : "   ") << "timeReverses: " << mpickups[hg::TIME_REVERSE];
+        timeReverses << (abilityCursor == hg::TIME_REVERSE ? "-->" : "   ") << "2) timeReverses: " << mpickups[hg::TIME_REVERSE];
         sf::Text timeReversesGlyph;
         timeReversesGlyph.setFont(*hg::defaultFont);
         timeReversesGlyph.setString(timeReverses.str());
@@ -69,7 +69,7 @@ void drawInventory(
     }
     {
         std::stringstream timeGuns;
-        timeGuns << (abilityCursor == hg::TIME_GUN ? "-->" : "   ") << "timeGuns: " << mpickups[hg::TIME_GUN];
+        timeGuns << (abilityCursor == hg::TIME_GUN ? "-->" : "   ") << "3) timeGuns: " << mpickups[hg::TIME_GUN];
         sf::Text timeGunsGlyph;
         timeGunsGlyph.setFont(*hg::defaultFont);
         timeGunsGlyph.setString(timeGuns.str());
@@ -80,7 +80,7 @@ void drawInventory(
     }
 	{
         std::stringstream timeGuns;
-        timeGuns << (abilityCursor == hg::TIME_PAUSE ? "-->" : "   ") << "timePauses: " << mpickups[hg::TIME_PAUSE];
+        timeGuns << (abilityCursor == hg::TIME_PAUSE ? "-->" : "   ") << "4) timePauses: " << mpickups[hg::TIME_PAUSE];
         sf::Text timePausesGlyph;
         timePausesGlyph.setFont(*hg::defaultFont);
         timePausesGlyph.setString(timeGuns.str());
