@@ -117,7 +117,7 @@ struct CopyVisitor : CopyVisitorImpl<CopyVisitor<Variant, Types...>, Types>... {
 
 template<typename MoveVisitor, typename Type>
 struct MoveVisitorImpl {
-    void operator()(Type &v) const {
+    void operator()(Type &v) const noexcept {
        static_assert(
         noexcept(
         new ((void*)&v) Type(std::move(static_cast<MoveVisitor const*>(this)->o->template get<Type>()))),
@@ -194,8 +194,7 @@ public:
         scrub_storage();
 #endif
         currentMember = o.which();
-        try { visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)}); }
-        catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
+        visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)});
         return *this;
     }
     variant &operator=(variant &&o) noexcept {
@@ -206,8 +205,7 @@ public:
         scrub_storage();
 #endif
         currentMember = o.which();
-        try { visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)}); }
-        catch (...) { assert(false && "All types in variant must have no-throw move ctor"); }
+        visit(variant_detail::MoveVisitor<variant, Types...>{std::move(temp)});
         return *this;
     }
 
