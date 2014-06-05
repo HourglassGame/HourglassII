@@ -119,55 +119,66 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &&newDeparture)
     //filter so that things can safely depart to the null frame
     //such departures do not create arrivals or updated frames, but are saved as departures.
     auto newDepartureFiltered(newDeparture | boost::adaptors::filtered(FrameNotNull));
-    auto oldDepartureFiltered(departures | boost::adaptors::filtered(FrameNotNull));
+    auto oldDepartureFiltered(departures   | boost::adaptors::filtered(FrameNotNull));
 
-    auto ni(boost::begin(newDepartureFiltered));
-    auto const nend(boost::end(newDepartureFiltered));
+    auto       ni  (boost::begin(newDepartureFiltered));
+    auto const nend(boost::  end(newDepartureFiltered));
 
-
-    auto oi(boost::begin(oldDepartureFiltered));
-    auto const oend(boost::end(oldDepartureFiltered));
-
-    while (oi != oend) {
-        while (true) {
-            if (ni != nend) {
-                if (ni->first < oi->first) {
-                    ni->first->insertArrival(std::make_pair(this, &ni->second));
-                    changedTimes.add(ni->first);
-                    ++ni;
-                }
-                else if (ni->first == oi->first) {
-                    if (ni->second != oi->second) {
-                        changedTimes.add(ni->first);
-                    }
-                    //Always change because old pointer will become invalid
-                    ni->first->changeArrival(std::make_pair(this, &ni->second));
-                    ++ni;
-                    break;
-                }
-                else {
-                    oi->first->clearArrival(this);
-                    changedTimes.add(oi->first);
-                    break;
-                }
-            }
-            else {
-                while (oi != oend) {
-                    oi->first->clearArrival(this);
-                    changedTimes.add(oi->first);
-                    ++oi;
-                }
-                goto end;
-            }
-        }
+    auto       oi  (boost::begin(oldDepartureFiltered));
+    auto const oend(boost::  end(oldDepartureFiltered));
+    
+    auto removeOldArrival = [&] {
+        oi->first->clearArrival(this);
+        changedTimes.add(oi->first);
         ++oi;
-    }
-    while (ni != nend) {
+    };
+    auto addNewArrival = [&] {
         ni->first->insertArrival(std::make_pair(this, &ni->second));
         changedTimes.add(ni->first);
         ++ni;
+    };
+    auto modifyArrival = [&] {
+        //Change even if arrivals are identical,
+        //because old arrival pointer will become invalid
+        ni->first->changeArrival(std::make_pair(this, &ni->second));
+        if (ni->second != oi->second) changedTimes.add(ni->first);
+        ++oi;
+        ++ni;
+    };
+
+    auto checkOICompletion = [&] {
+        if (oi == oend) {
+            while (ni != nend) addNewArrival();
+            return true;
+        }
+        return false;
+    };
+    auto checkNICompletion = [&] {
+        if (ni == nend) {
+            while (oi != oend) removeOldArrival();
+            return true;
+        }
+        return false;
+    };
+
+    if (!(checkOICompletion() || checkNICompletion())) {
+        while (true) {
+            if (oi->first < ni->first) {
+                removeOldArrival();
+                if (checkOICompletion()) break;
+            }
+            else if (ni->first < oi->first) {
+                addNewArrival();
+                if (checkNICompletion()) break;
+            }
+            else {
+                assert(oi->first == ni->first);
+                modifyArrival();
+                if (checkOICompletion() || checkNICompletion()) break;
+            }
+        }
     }
-end:
+
     departures.swap(newDeparture);
     //This code is an attempt to put the deletion of the
     //old departures_ into the parallel region of the program's
