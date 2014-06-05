@@ -88,68 +88,48 @@ struct is_tag<tag<T>> : std::true_type {};
 template <typename T>
 struct is_tag : std::false_type {};
 
+template<typename Type>
+struct DtorVisitorImpl {
+    void operator()(Type &v) const noexcept {
+        static_assert(noexcept(v.~Type()), "Types used in Variant must have no-throw dtor");
+        v.~Type();
+    }
+};
 template<typename... Types>
-struct DtorVisitor;
-template<typename Head> struct DtorVisitor<Head> {
+struct DtorVisitor : DtorVisitorImpl<Types>... {
     typedef void result_type;
-    void operator()(Head &h) const noexcept {
-        static_assert(noexcept(h.~Head()), "Types used in Variant must have no-throw dtor");
-        h.~Head();
-    }
-};
-template<typename Head, typename... Types>
-struct DtorVisitor<Head, Types...> : DtorVisitor<Types...> {
-    using DtorVisitor<Types...>::operator();
-    void operator()(Head &h) const noexcept {
-        static_assert(noexcept(h.~Head()), "Types used in Variant must have no-throw dtor");
-        h.~Head();
-    }
 };
 
-template<typename... Types>
-struct CopyVisitor;
 
-template<typename Variant, typename Head> struct CopyVisitor<Variant, Head> {
+template<typename CopyVisitor, typename Type>
+struct CopyVisitorImpl {
+    void operator()(Type &v) const {
+        new ((void*)&v) Type(static_cast<CopyVisitor const*>(this)->o->template get<Type>());
+    }
+};
+template<typename Variant, typename... Types>
+struct CopyVisitor : CopyVisitorImpl<CopyVisitor<Variant, Types...>, Types>... {
+    CopyVisitor(Variant const &o) : o(&o) {}
     typedef void result_type;
     Variant const *o;
-    CopyVisitor(Variant const &o) : o(&o) {}
-    void operator()(Head const &h) const {
-        new ((void*)&h) Head(o->template get<Head>());
-    }
-};
-template<typename Variant, typename Head, typename... Types>
-struct CopyVisitor<Variant, Head, Types...> : CopyVisitor<Variant, Types...> {
-    CopyVisitor(Variant const &o) : CopyVisitor<Variant, Types...>(o) {}
-    using CopyVisitor<Variant, Types...>::operator();
-    using CopyVisitor<Variant, Types...>::o;
-    void operator()(Head const &h) const {
-        new ((void*)&h) Head(o->template get<Head>());
-    }
 };
 
-template<typename... Types>
-struct MoveVisitor;
 
-template<typename Variant, typename Head> struct MoveVisitor<Variant, Head> {
+template<typename MoveVisitor, typename Type>
+struct MoveVisitorImpl {
+    void operator()(Type &v) const {
+       static_assert(
+        noexcept(
+        new ((void*)&v) Type(std::move(static_cast<MoveVisitor const*>(this)->o->template get<Type>()))),
+        "Types used in Variant must have no-throw move constructor");
+        new ((void*)&v) Type(std::move(static_cast<MoveVisitor const*>(this)->o->template get<Type>()));
+    }
+};
+template<typename Variant, typename... Types>
+struct MoveVisitor : MoveVisitorImpl<MoveVisitor<Variant, Types...>, Types>... {
+    MoveVisitor(Variant &&o) : o(&o) {}
     typedef void result_type;
     Variant *o;
-    MoveVisitor(Variant &&o) : o(&o) {}
-    void operator()(Head &h) const noexcept {
-        static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
-                      "Types used in Variant must have no-throw move constructor");
-        new ((void*)&h) Head(std::move(o->template get<Head>()));
-    }
-};
-template<typename Variant, typename Head, typename... Types>
-struct MoveVisitor<Variant, Head, Types...> : MoveVisitor<Variant, Types...> {
-    MoveVisitor(Variant&& o) : MoveVisitor<Variant, Types...>(std::move(o)) {}
-    using MoveVisitor<Variant, Types...>::operator();
-    using MoveVisitor<Variant, Types...>::o;
-    void operator()(Head& h) const noexcept {
-        static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
-                      "Types used in Variant must have no-throw move constructor");
-        new ((void*)&h) Head(std::move(o->template get<Head>()));
-    }
 };
 
 template<std::size_t N, typename... Types>
