@@ -41,7 +41,7 @@ PositionAndVelocity2D snapAttachment(
     int ySpeed;
     if (attachment.platformIndex != std::numeric_limits<std::size_t>::max()) {
         Collision const &collision(collisions[attachment.platformIndex]);
-        if (collision.getTimeDirection() * timeDirection == FORWARDS) {
+        if (collision.getTimeDirection() * timeDirection == TimeDirection::FORWARDS) {
             x = collision.getX() + attachment.xOffset;
             y = collision.getY() + attachment.yOffset;
             xSpeed = collision.getXspeed();

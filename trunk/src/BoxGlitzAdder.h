@@ -33,10 +33,10 @@ public:
                 size, size));
         
         forwardsGlitz->push_back(
-            timeDirection == FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);
+            timeDirection == TimeDirection::FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);
         
         reverseGlitz->push_back(
-            timeDirection == REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
+            timeDirection == TimeDirection::REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
     }
 private:
     mt::std::vector<Glitz> *forwardsGlitz;

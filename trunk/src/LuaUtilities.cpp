@@ -132,12 +132,12 @@ TimeDirection to<TimeDirection>(lua_State *L, int index)
 {
     assert(lua_isstring(L, index));
     char const *timeDirectionString(lua_tostring(L, index));
-    TimeDirection retv(INVALID);
+    TimeDirection retv{TimeDirection::INVALID};
     if (strcmp(timeDirectionString, "forwards") == 0) {
-        retv = FORWARDS;
+        retv = TimeDirection::FORWARDS;
     }
     else if (strcmp(timeDirectionString, "reverse") == 0) {
-        retv = REVERSE;
+        retv = TimeDirection::REVERSE;
     }
     else {
     	std::cerr << timeDirectionString << std::endl;
@@ -232,26 +232,26 @@ Ability to<Ability>(lua_State *L, int index)
 {
     std::string abilityString(lua_tostring(L, index));
     if (abilityString == "timeJump") {
-        return TIME_JUMP;
+        return Ability::TIME_JUMP;
     }
     else if (abilityString == "timeReverse") {
-        return TIME_REVERSE;
+        return Ability::TIME_REVERSE;
     }
     else if (abilityString == "timeGun") {
-        return TIME_GUN;
+        return Ability::TIME_GUN;
     }
 	else if (abilityString == "timePause") {
-        return TIME_PAUSE;
+        return Ability::TIME_PAUSE;
     }
     else {
         std::cerr << abilityString << std::endl;
         assert(false && "invalid ability string");
-        return NO_ABILITY;
+        return Ability::NO_ABILITY;
     }
 }
 
 template<>
-FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State *L, int index)
+FacingDirection to<FacingDirection>(lua_State *L, int index)
 {
     std::string facingString(lua_tostring(L, index));
     if (facingString == "left") {
@@ -313,10 +313,10 @@ Guy to<Guy>(lua_State* L, int index)
         supportedSpeed = readField<int>(L, "supportedSpeed", index);
     }
     mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
-    FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
+    FacingDirection facing(readField<FacingDirection>(L, "facing", index));
     bool boxCarrying(readField<bool>(L, "boxCarrying", index));
     int boxCarrySize(0);
-    TimeDirection boxCarryDirection(INVALID);
+    TimeDirection boxCarryDirection{TimeDirection::INVALID};
     if (boxCarrying) {
         boxCarrySize = readField<int>(L, "boxCarrySize", index);
         boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
@@ -354,10 +354,10 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
     int height(readFieldWithDefault<int>(L, "height",index,3200));
 	int jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
     mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
-    FacingDirection::FacingDirection facing(readField<FacingDirection::FacingDirection>(L, "facing", index));
+    FacingDirection facing(readField<FacingDirection>(L, "facing", index));
     bool boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
     int boxCarrySize(0);
-    TimeDirection boxCarryDirection(INVALID);
+    TimeDirection boxCarryDirection{TimeDirection::INVALID};
     if (boxCarrying) {
         boxCarrySize = readField<int>(L, "boxCarrySize", index);
         boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);

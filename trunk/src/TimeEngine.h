@@ -25,7 +25,7 @@ namespace hg {
 //copying operations can be added.
 class Frame;
 class Level;
-class TimeEngineImpl;
+struct TimeEngineImpl;
 class TimeEngine
 {
 public:

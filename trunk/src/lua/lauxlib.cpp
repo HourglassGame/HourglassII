@@ -3,7 +3,11 @@
 ** Auxiliary functions for building Lua libraries
 ** See Copyright Notice in lua.h
 */
-
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#pragma GCC diagnostic ignored "-Wunused-macros"
+#endif
 
 #include <errno.h>
 #include <stdarg.h>
@@ -956,4 +960,8 @@ LUALIB_API void luaL_checkversion_ (lua_State *L, lua_Number ver) {
                   " must recompile Lua with proper settings");
   lua_pop(L, 1);
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 

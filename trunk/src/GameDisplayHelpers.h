@@ -9,6 +9,7 @@
 #include <SFML/System/Vector3.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <boost/range/adaptor/reversed.hpp>
+#include "AudioGlitzManager.h"
 
 namespace hg {
     extern sf::Color const uiTextColor;
@@ -17,6 +18,8 @@ namespace hg {
         hg::mt::std::vector<hg::Glitz> const &glitz,
         hg::Wall const &wall,
         hg::LevelResources const &resources,
+        AudioPlayingState &audioPlayingState,
+        AudioGlitzManager &audioGlitzManager,
         sf::Image const &wallImage);
     void DrawWaves(
         sf::RenderTarget &target,

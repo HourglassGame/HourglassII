@@ -19,7 +19,10 @@ struct RunGameResultVisitor {
     }
 };
 static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-       loadAndRunLevel(hg::RenderWindow &window, hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction, hg::move_function<std::vector<InputList>()>&& replayLoadingFunction = {})
+    loadAndRunLevel(
+        hg::RenderWindow &window,
+        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction,
+        hg::move_function<std::vector<InputList>()>&& replayLoadingFunction = {})
 {
     hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
               loading_outcome = load_level_scene(window, levelLoadingFunction);

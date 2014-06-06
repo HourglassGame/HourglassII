@@ -1,11 +1,3 @@
-//
-//  GlobalOptions.h
-//  HourglassII
-//
-//  Created by Evan Wallace on 7/05/2014.
-//  Copyright (c) 2014 Team Causality. All rights reserved.
-//
-
 #ifndef HG_GLOBAL_OPTIONS_H
 #define HG_GLOBAL_OPTIONS_H
 
@@ -15,7 +7,7 @@
 #include <type_traits>
 #include <SFML/Window/Keyboard.hpp>
 namespace hg {
-enum class Operation : int{
+enum class Operation : int {
     PauseGame,
     GuyLeft,
     GuyRight

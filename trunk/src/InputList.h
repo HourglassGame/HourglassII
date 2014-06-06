@@ -65,7 +65,7 @@ private:
         if (version < 2) {
             //Loading only, as version < current version.
             ar & abilityCursor;
-            abilityUsed = abilityCursor != NO_ABILITY;
+            abilityUsed = abilityCursor != Ability::NO_ABILITY;
             ar & timeCursor;
             if (version == 0) {
                 int frameIdParamCount;
@@ -105,7 +105,7 @@ private:
         os << toPrint.down << " ";
         os << toPrint.portalUsed << " ";
         os << toPrint.abilityUsed << " ";
-        os << toPrint.abilityCursor << " ";
+        os << static_cast<int>(toPrint.abilityCursor) << " ";
         os << toPrint.timeCursor << " ";
         os << toPrint.xCursor << " ";
         os << toPrint.yCursor;

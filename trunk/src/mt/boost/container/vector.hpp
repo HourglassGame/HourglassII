@@ -4,7 +4,7 @@
 #include <boost/container/vector.hpp>
 namespace hg {
 namespace mt {
-namespace boost{
+namespace boost {
 namespace container {
 template<typename T>
 using vector =

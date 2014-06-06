@@ -1,7 +1,7 @@
 #ifndef HG_CONCURRENT_TIME_MAP_H
 #define HG_CONCURRENT_TIME_MAP_H
 #include <tbb/concurrent_hash_map.h>
-#include "BoostHashCompare.h"
+#include "StdHashCompare.h"
 #include "Frame.h"
 #include "TimeDirection.h"
 namespace hg {
@@ -11,7 +11,7 @@ class ConcurrentTimeMap {
     <
         Frame *,
         TimeDirection,
-        BoostHashCompare<Frame *>
+        StdHashCompare<Frame *>
     > MapType;
 public:
     typedef MapType::iterator iterator;

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <thread>
 namespace hg {
-inline int panic(lua_State *L) {
+[[noreturn]] inline int panic(lua_State *L) {
     //Check whether this is a memory allocation error
     LuaUserData &ud(getUserData(L));
     if (ud.is_out_of_memory()) {
@@ -22,7 +22,7 @@ inline int panic(lua_State *L) {
     else {
         throw LuaError(L);
     }
-    return 0;
+    //return 0;
 }
 
 //RAII class for lua_State.

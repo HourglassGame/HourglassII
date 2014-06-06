@@ -3,7 +3,7 @@
 #include <tbb/concurrent_hash_map.h>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/range.hpp>
-#include "BoostHashCompare.h"
+#include "StdHashCompare.h"
 #include <utility>
 #include "Frame_fwd.h"
 namespace hg {
@@ -23,7 +23,7 @@ namespace hg {
 class ConcurrentTimeSet {
     struct Empty {};
     //hash map is being used as set, second template argument (Empty) is unused filler.
-    typedef tbb::concurrent_hash_map<Frame *, Empty, BoostHashCompare<Frame *>> SetType;
+    typedef tbb::concurrent_hash_map<Frame *, Empty, StdHashCompare<Frame *>> SetType;
 public:
     ConcurrentTimeSet() = default;
     ConcurrentTimeSet(ConcurrentTimeSet const &o) = default;

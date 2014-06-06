@@ -52,18 +52,18 @@ void Frame::correctArrivalObjectListPointers() {
 }
 
 Frame const *Frame::nextFrame(TimeDirection direction) const {
-    assert(direction != INVALID);
+    assert(direction != TimeDirection::INVALID);
     return nextFrameInSameUniverse(direction) ? universe->getArbitraryFrame(frameNumber + direction) : nullptr;
 }
 
 Frame *Frame::nextFrame(TimeDirection direction) {
-    assert(direction != INVALID);
+    assert(direction != TimeDirection::INVALID);
     return nextFrameInSameUniverse(direction) ? universe->getArbitraryFrame(frameNumber + direction) : nullptr;
 }
 
 bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
-    return (frameNumber != 0 && direction == REVERSE)
-            || (frameNumber != universe->getTimelineLength() - 1 && direction == FORWARDS);
+    return (frameNumber != 0 && direction == TimeDirection::REVERSE)
+            || (frameNumber != universe->getTimelineLength() - 1 && direction == TimeDirection::FORWARDS);
 }
 
 Universe const &Frame::getUniverse() const {

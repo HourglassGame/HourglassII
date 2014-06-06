@@ -1,7 +1,6 @@
 #ifndef HG_RUNNING_GAME_SCENE_H
 #define HG_RUNNING_GAME_SCENE_H
 
-#include "SceneImplementation.h"
 #include "Scene.h"
 #include "RenderWindow.h"
 #include "variant.h"

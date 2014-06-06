@@ -3,7 +3,11 @@
 ** Lua API
 ** See Copyright Notice in lua.h
 */
-
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma GCC diagnostic ignored "-Wunreachable-code"
+#pragma GCC diagnostic ignored "-Wunused-macros"
+#endif
 
 #include <stdarg.h>
 #include <string.h>
@@ -1282,3 +1286,6 @@ LUA_API void lua_upvaluejoin (lua_State *L, int fidx1, int n1,
   luaC_objbarrier(L, f1, *up2);
 }
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif

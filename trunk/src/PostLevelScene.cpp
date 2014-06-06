@@ -8,13 +8,15 @@
 #include "Maths.h"
 #include "ReplayIO.h"
 #include <SFML/Graphics/Text.hpp>
-
+#include "LoadedLevel.h"
 
 namespace hg {
 namespace {
     void runStep(
         hg::TimeEngine const &timeEngine,
         hg::RenderWindow &app,
+        AudioPlayingState &audioPlayingState,
+        AudioGlitzManager &audioGlitzManager,
         hg::Inertia &inertia,
         hg::LevelResources const &resources,
         sf::Image const &wallImage);
@@ -34,7 +36,10 @@ void run_post_level_scene(
     //hg::Input input;
     //input.setTimelineLength(timeEngine.getTimelineLength());
     hg::Inertia inertia;
-    inertia.save(FrameID(0, UniverseID(timeEngine.getTimelineLength())), hg::FORWARDS);
+    inertia.save(FrameID(0, UniverseID(timeEngine.getTimelineLength())), TimeDirection::FORWARDS);
+    
+    auto audioPlayingState = AudioPlayingState(initialTimeEngine.resources.sounds);
+    auto audioGlitzManager = AudioGlitzManager();
     
     //std::vector<hg::InputList> replay;
     //std::vector<hg::InputList>::const_iterator currentReplayIt(replay.begin());
@@ -82,15 +87,15 @@ void run_post_level_scene(
             }
             //Inertia Forwards/Backwards
             if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
-                inertia.save(mousePosToFrameID(window, timeEngine), hg::FORWARDS);
+                inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
             }
             if (window.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
-                inertia.save(mousePosToFrameID(window, timeEngine), hg::REVERSE);
+                inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::REVERSE);
             }
             if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
                 inertia.reset();
             }
-            runStep(timeEngine, window, inertia, levelResources, wallImage);
+            runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage);
             {
                 sf::Text replayGlyph;
                 replayGlyph.setFont(*hg::defaultFont);
@@ -127,6 +132,8 @@ namespace {
 void runStep(
     hg::TimeEngine const &timeEngine,
     hg::RenderWindow &app,
+    AudioPlayingState &audioPlayingState,
+    AudioGlitzManager &audioGlitzManager,
     hg::Inertia &inertia,
     hg::LevelResources const &resources,
     sf::Image const &wallImage)
@@ -145,9 +152,11 @@ void runStep(
                 hg::UniverseID(timeEngine.getTimelineLength()));
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
-             getGlitzForDirection(frame->getView(), hg::FORWARDS),
+             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
              timeEngine.getWall(),
              resources,
+            audioPlayingState,
+             audioGlitzManager,
              wallImage);
     }
     else {
@@ -160,6 +169,8 @@ void runStep(
                  getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                  timeEngine.getWall(),
                  resources,
+                 audioPlayingState,
+                 audioGlitzManager,
                  wallImage);
         }
         else {
@@ -174,9 +185,11 @@ void runStep(
                 hg::UniverseID(timeEngine.getTimelineLength()));
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
             DrawGlitzAndWall(app,
-                 getGlitzForDirection(frame->getView(), hg::FORWARDS),
+                 getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
                  timeEngine.getWall(),
                  resources,
+                 audioPlayingState,
+                 audioGlitzManager,
                  wallImage);
         }
     }

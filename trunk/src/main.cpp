@@ -2,6 +2,7 @@
 #include "TestDriver.h"
 
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Audio.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -10,7 +11,8 @@
 #include <iostream>
 
 namespace hg {
-    sf::Font const *defaultFont;
+    extern sf::Font const *defaultFont;
+           sf::Font const *defaultFont;
 }
 
 namespace {
@@ -105,10 +107,21 @@ int run_main(std::vector<std::string> const &args) {
     //   -testall
     //   -test
     //   Nothing
+    #if 0
+    sf::SoundBuffer rhino_land;
+    rhino_land.loadFromFile("GlitzData/laser_shoot.wav");
+    //while (true) {
+        sf::Sound player(rhino_land);
+        player.setPlayingOffset(sf::seconds(0.f));
+        player.play();
+    //}
+    while (true) {
+    }
+    #endif
+    
     return hg::run_hourglassii();
 }
 }
-
 #if 0
 namespace {
 struct AsyncWindow {

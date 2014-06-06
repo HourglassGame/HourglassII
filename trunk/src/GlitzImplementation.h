@@ -15,6 +15,11 @@ public:
     //unique return value for order_ranking.
     //This is used to sort glitz for arrival/departure analysis
     //(for persistent glitz).
+    //AudioGlitz: -1
+    //RectangleGlitz: 0
+    //LineGlitz: 1
+    //TextGlitz: 2
+    //ImageGlitz: 3
     virtual int order_ranking() const = 0;
     virtual bool operator<(GlitzImplementation const &o) const = 0;
     virtual bool operator==(GlitzImplementation const &o) const = 0;

@@ -39,8 +39,8 @@ bool FrameID::nextFrameInSameUniverse(TimeDirection direction) const
 {
     return
         assert(isValidFrame()),
-        (direction == REVERSE && frame != 0)
-     || (direction == FORWARDS && frame != universeID.timelineLength - 1);
+        (direction == TimeDirection::REVERSE && frame != 0)
+     || (direction == TimeDirection::FORWARDS && frame != universeID.timelineLength - 1);
 }
 FrameID FrameID::arbitraryFrameInUniverse(int frameNumber) const
 {

@@ -2,7 +2,7 @@
 #define HG_INGAME_MENU_SCENE_H
 
 namespace hg {
-class RenderWindow;
+struct RenderWindow;
 struct LoadedLevel;
 /*
 //Notes:

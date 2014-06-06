@@ -1,26 +1,26 @@
 #ifndef HG_GEOMETRY_H
 #define HG_GEOMETRY_H
-
+#include <utility>
 namespace hg {
 template<typename T>
-struct Vector2{
+struct Vector2 {
     Vector2() :
         x(), y() {}
     
     Vector2(T nx, T ny) :
-        x(nx), y(ny) {}
+        x(std::move(nx)), y(std::move(ny)) {}
     T x;
     T y;
 };
 
 template<typename T>
-struct Rect{
+struct Rect {
     
     Rect() :
         x(), y(), w(), h() {}
     
     Rect(T nx, T ny, T nw, T nh) :
-        x(nx), y(ny), w(nw), h(nh) {}
+        x(std::move(nx)), y(std::move(ny)), w(std::move(nw)), h(std::move(nh)) {}
     T x;
     T y;
     T w;
