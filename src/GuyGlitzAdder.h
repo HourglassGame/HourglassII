@@ -64,7 +64,7 @@ public:
         vector2<int> const &position,
         vector2<int> const &size,
         TimeDirection timeDirection,
-        bool facing,
+        FacingDirection facing,
         bool boxCarrying,
         int boxCarrySize,
         TimeDirection boxCarryDirection,
@@ -77,7 +77,7 @@ public:
                     x(nx), y(ny), colour(ncolour) {}
                 int x; int y; unsigned colour;
             } const pnc = 
-                timeDirection == FORWARDS ?
+                timeDirection == TimeDirection::FORWARDS ?
                     PNC(position.x, position.y, 0x96960000u) :
                     PNC(position.x, position.y, 0x00009600u);
             
@@ -89,9 +89,9 @@ public:
             
             forwardsGlitz->push_back(Glitz(multi_thread_new<ImageGlitz>(
                 600,
-                facing ?
-                    (timeDirection == FORWARDS ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
-                    (timeDirection == FORWARDS ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
+                facing == FacingDirection::RIGHT ?
+                    (timeDirection == TimeDirection::FORWARDS ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
+                    (timeDirection == TimeDirection::FORWARDS ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
                 left, top, size.x, size.y)));
             
             if (boxCarrying)
@@ -100,7 +100,7 @@ public:
                     Glitz(
                         multi_thread_new<ImageGlitz>(
                             600,
-                            boxCarryDirection == FORWARDS ? 
+                            boxCarryDirection == TimeDirection::FORWARDS ?
                               "global.box" : "global.box_r",
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
@@ -117,7 +117,7 @@ public:
                     x(nx), y(ny), colour(ncolour) {}
                 int x; int y; unsigned colour;
             } const pnc = 
-                timeDirection == REVERSE ?
+                timeDirection == TimeDirection::REVERSE ?
                     PNC(position.x, position.y, 0x96960000u) :
                     PNC(position.x, position.y, 0x00009600u);
 
@@ -129,9 +129,9 @@ public:
 
             reverseGlitz->push_back(Glitz(multi_thread_new<ImageGlitz>(
                 600,
-                facing ?
-                    (timeDirection == REVERSE ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
-                    (timeDirection == REVERSE ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
+                facing == FacingDirection::RIGHT ?
+                    (timeDirection == TimeDirection::REVERSE ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
+                    (timeDirection == TimeDirection::REVERSE ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
                 left, top, size.x, size.y)));
             if (boxCarrying)
             {
@@ -139,7 +139,7 @@ public:
                     Glitz(
                         multi_thread_new<ImageGlitz>(
                             600,
-                            boxCarryDirection == REVERSE ? 
+                            boxCarryDirection == TimeDirection::REVERSE ?
                               "global.box" : "global.box_r",
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
@@ -162,46 +162,56 @@ public:
 		int width = 100;
 		persistentGlitz->push_back(
 			GlitzPersister(
-				Glitz(
-					multi_thread_new<LineGlitz>(
-						1500,
-						x1,
-						y1,
-						x2,
-						y2,
-						width,
-						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
-				Glitz(
-					multi_thread_new<LineGlitz>(
-						1500,
-						x1,
-						y1,
-						x2,
-						y2,
-						width,
-						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-				60,
-				timeDirection));
+                multi_thread_new<StaticGlitzPersister>(
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            1500,
+                            x1,
+                            y1,
+                            x2,
+                            y2,
+                            width,
+                            timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+                    Glitz(
+                        multi_thread_new<LineGlitz>(
+                            1500,
+                            x1,
+                            y1,
+                            x2,
+                            y2,
+                            width,
+                            timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+                    60,
+                    timeDirection)));
 		persistentGlitz->push_back(
 			GlitzPersister(
-				Glitz(
-					multi_thread_new<RectangleGlitz>(
-						1500, 
-						xAim-200,
-						yAim-200,
-						400, 
-						400,
-						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
-				Glitz(
-					multi_thread_new<RectangleGlitz>(
-						1500, 
-						xAim-200,
-						yAim-200,
-						400, 
-						400,
-						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-				60,
-				timeDirection));
+                multi_thread_new<StaticGlitzPersister>(
+                    Glitz(
+                        multi_thread_new<RectangleGlitz>(
+                            1500, 
+                            xAim-200,
+                            yAim-200,
+                            400, 
+                            400,
+                            timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+                    Glitz(
+                        multi_thread_new<RectangleGlitz>(
+                            1500, 
+                            xAim-200,
+                            yAim-200,
+                            400, 
+                            400,
+                            timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+                    60,
+                    timeDirection)));
+        
+        persistentGlitz->push_back(
+            GlitzPersister(
+                multi_thread_new<AudioGlitzPersister>(
+                    "global.laser_shoot",
+                    24,
+                    0,
+                    timeDirection)));
 	}
 	
 	void addDeathGlitz(
@@ -213,24 +223,25 @@ public:
 	{
 		persistentGlitz->push_back(
 			GlitzPersister(
-				Glitz(
-					multi_thread_new<RectangleGlitz>(
-						1500,
-						x,
-						y,
-						width,
-						height,
-						timeDirection == FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
-				Glitz(
-					multi_thread_new<RectangleGlitz>(
-						1500,
-						x,
-						y,
-						width,
-						height,
-						timeDirection == REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-				60,
-				timeDirection));
+                multi_thread_new<StaticGlitzPersister>(
+                    Glitz(
+                        multi_thread_new<RectangleGlitz>(
+                            1500,
+                            x,
+                            y,
+                            width,
+                            height,
+                            timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+                    Glitz(
+                        multi_thread_new<RectangleGlitz>(
+                            1500,
+                            x,
+                            y,
+                            width,
+                            height,
+                            timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+                    60,
+                    timeDirection)));
 	}
 	
 private:

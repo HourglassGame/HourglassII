@@ -107,6 +107,9 @@ using namespace lc_internal;
 LayeredCanvas::LayeredCanvas(Canvas &canvas) : canvas(&canvas), drawCalls()
 {
 }
+void LayeredCanvas::playSound(std::string const &key, int n) {
+    canvas->playSound(key, n);
+}
 void LayeredCanvas::drawRect(int layer, float x, float y, float width, float height, unsigned colour) {
     drawCalls.push_back(DrawCall{layer, make_clone_ptr<RectDrawer>(x, y, width, height, colour)});
 }

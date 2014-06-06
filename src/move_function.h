@@ -10,7 +10,7 @@ namespace hg {
 
 namespace function {
 namespace detail {
-template<typename> class function_base;
+template<typename> struct function_base;
 
 template<typename R, typename... ArgTypes>
 struct function_base<R(ArgTypes...)>

@@ -1,11 +1,10 @@
-#ifndef HG_BOOST_HASH_COMPARE
-#define HG_BOOST_HASH_COMPARE
-#include <boost/functional/hash.hpp>
+#ifndef HG_STD_HASH_COMPARE
+#define HG_STD_HASH_COMPARE
 #include <functional>
 #include <cstddef>
 namespace hg {
 template <typename T>
-struct BoostHashCompare
+struct StdHashCompare
 {
     bool equal(T const &j, T const &k) const
     {
@@ -13,8 +12,8 @@ struct BoostHashCompare
     }
     std::size_t hash(T const &k) const
     {
-        return boost::hash<T>()(k);
+        return std::hash<T>()(k);
     }
 };
 }
-#endif //HG_BOOST_HASH_COMPARE
+#endif //HG_STD_HASH_COMPARE

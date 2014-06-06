@@ -26,9 +26,9 @@ FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction)
 {
     assert(getTimelineLength(universe) >= 0);
     switch (direction) {
-    case FORWARDS:
+    case TimeDirection::FORWARDS:
         return FrameID(0, universe);
-    case REVERSE:
+    case TimeDirection::REVERSE:
         return FrameID(getTimelineLength(universe) - 1, universe);
     default:
         assert(false);

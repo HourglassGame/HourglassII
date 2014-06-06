@@ -55,7 +55,7 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelP
     boost::push_back(luaFiles, luaPackageNames | boost::adaptors::transformed(LoadNamedModule(levelPath)));
 
     return
-      make_unique<DirectLuaTriggerSystem>(
+      hg::make_unique<DirectLuaTriggerSystem>(
           std::vector<char>(system.begin(), system.end()),
           luaFiles,
           readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value,

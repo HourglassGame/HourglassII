@@ -31,7 +31,7 @@ bool testLevels() {
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
-#if 0 //commented out as these tests are too expensive for normal usage
+#if 0 //commented out as these tests take too long to run to be run at the start of every execution
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             if (exists(entry.path()/"DoNotTest")) continue;
             std::cout << "Testing " << entry.path() << " ...";

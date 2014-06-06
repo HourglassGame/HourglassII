@@ -2,8 +2,8 @@
 #define HG_HOURGLASS_I_TRIGGER_SYSTEM
 #include "TriggerSystemImplementation.h"
 namespace hg {
-class HourglassITriggerSystem final : public TriggerSystemImplementation{
-
+class HourglassITriggerSystem final : public TriggerSystemImplementation
+{
 };
 }
 

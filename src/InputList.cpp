@@ -7,7 +7,7 @@ InputList::InputList() noexcept :
     down(),
     portalUsed(),
     abilityUsed(),
-    abilityCursor(NO_ABILITY),
+    abilityCursor(Ability::NO_ABILITY),
     timeCursor(),
     xCursor(),
     yCursor()

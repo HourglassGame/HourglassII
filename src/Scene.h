@@ -2,7 +2,6 @@
 #define HG_SCENE_H
 #include <memory>
 #include <vector>
-#include "SceneImplementation.h"
 namespace hg {
     struct WindowClosed_exception{};
     struct RunALevel_tag{
@@ -23,17 +22,6 @@ namespace hg {
     struct GameWon_tag{};
     struct GameAborted_tag{};
     struct SceneAborted_tag{};
-    struct Scene {
-        Scene(std::unique_ptr<SceneImplementation> impl) :
-            impl(std::move(impl))
-        {
-        }
-        std::vector<Scene> run(hg::RenderWindow &window) {
-            return impl->run(impl, window);
-        }
-    private:
-        std::unique_ptr<SceneImplementation> impl;
-    };
 }
 
 #endif //HG_SCENE_H

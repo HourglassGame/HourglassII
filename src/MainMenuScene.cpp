@@ -52,7 +52,6 @@ run_main_menu(hg::RenderWindow &window)
                     switch (event.key.code) {
                       case sf::Keyboard::Return:
                         return menu[currentItem].tag;
-                        break;
                       case sf::Keyboard::Up:
                       case sf::Keyboard::W:
                         currentItem = flooredModulo(currentItem-1, static_cast<int>(menu.size()));
@@ -69,7 +68,6 @@ run_main_menu(hg::RenderWindow &window)
                     break;
                   case sf::Event::Closed:
                     throw WindowClosed_exception{};
-                  break;
                   case sf::Event::Resized:
                     mainMenuDrawn = false;
                   break;

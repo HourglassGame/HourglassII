@@ -1,1 +1,1 @@
-namespace hg{ class FrameUpdateSet; }
+namespace hg { class FrameUpdateSet; }

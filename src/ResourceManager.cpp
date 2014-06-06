@@ -21,11 +21,22 @@ inline bool isImageFile(fs::path const &file) {
     return file.extension() == ".png";
 }
 
+inline bool isSoundFile(fs::path const &file) {
+    return file.extension() == ".wav";
+}
+
 inline sf::Image loadImage(fs::path const &file) {
     sf::Image img;
 	bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
     return img;
+}
+
+inline sf::SoundBuffer loadSoundBuffer(fs::path const &file) {
+    sf::SoundBuffer sound;
+	bool loaded(sound.loadFromFile(file.string()));
+    assert(loaded);
+    return sound;
 }
 
 inline sf::Texture loadTexture(fs::path const &file) {
@@ -42,6 +53,9 @@ inline void loadPackage(LevelResources &resourceStore, std::string const &prefix
         fs::path const &file(entry);
         if (isImageFile(file)) {
             resourceStore.images[prefix + file.stem().string()] = loadImage(file);
+        }
+        if (isSoundFile(file)) {
+            resourceStore.sounds[prefix + file.stem().string()] = loadSoundBuffer(file);
         }
     }
 }

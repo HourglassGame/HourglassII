@@ -109,7 +109,7 @@ template<>
 Ability to<Ability>(lua_State *L, int index);
 
 template<>
-FacingDirection::FacingDirection to<FacingDirection::FacingDirection>(lua_State *L, int index);
+FacingDirection to<FacingDirection>(lua_State *L, int index);
 
 //For pickups
 //I should probably make a Pickup class to make this less ambiguous.

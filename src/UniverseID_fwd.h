@@ -1,3 +1,3 @@
 namespace hg {
-struct UniverseID;
+class UniverseID;
 }

@@ -95,9 +95,9 @@ template<typename UniverseT>
 Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getEntryFrameImpl(UniverseT &universe, TimeDirection direction) {
     assert(!universe.frames.empty());
     switch (direction) {
-    case FORWARDS:
+    case TimeDirection::FORWARDS:
         return &(*universe.frames.begin());
-    case REVERSE:
+    case TimeDirection::REVERSE:
         return &(*universe.frames.rbegin());
     default:
         assert(false);

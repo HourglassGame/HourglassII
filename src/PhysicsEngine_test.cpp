@@ -93,14 +93,14 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         Environment env{actualWall, 30};
         std::vector<Box> boxArrivalList;
         boxArrivalList +=
-            Box(19200, 34800, 1380, 3800, 3200, -1, -1, FORWARDS),
-            Box(22400, 40600, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(25600, 40600, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(28800, 38400, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(32000, 38400, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(35200, 38400, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(38400, 38400, 0, 0, 3200, -1, -1, FORWARDS),
-            Box(41600, 38400, 0, 0, 3200, -1, -1, FORWARDS);
+            Box(19200, 34800, 1380, 3800, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(22400, 40600, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(25600, 40600, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(28800, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(32000, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(35200, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(38400, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
+            Box(41600, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS);
         
         mt::std::vector<Box> additionalBoxes;
         mt::std::vector<ObjectAndTime<Box, FrameID>> nextBox;
@@ -108,10 +108,10 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         mt::std::vector<Glitz> forwardsGlitz;
         mt::std::vector<Glitz> reverseGlitz;
         std::vector<Collision> nextPlatform;
-        nextPlatform += Collision(22400, 43800, 0, 0, 6400, 1600, FORWARDS);
+        nextPlatform += Collision(22400, 43800, 0, 0, 6400, 1600, TimeDirection::FORWARDS);
         std::vector<PortalArea> nextPortal;
         std::vector<ArrivalLocation> arrivalLocations;
-        arrivalLocations += ArrivalLocation(18200, 4060, 0, 0, FORWARDS);
+        arrivalLocations += ArrivalLocation(18200, 4060, 0, 0, TimeDirection::FORWARDS);
         std::vector<MutatorArea> mutators;
         TriggerFrameState triggerFrameState(multi_thread_new<MockTriggerFrameStateImplementation>());
         FrameID frame(9654, UniverseID(10800));
@@ -137,7 +137,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         tester() {
             ::hg::getTestDriver().registerUnitTest(testTester);
         }
-    } ;//tester;
+    } tester;
 }
 }
 }

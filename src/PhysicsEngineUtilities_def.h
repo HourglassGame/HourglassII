@@ -132,7 +132,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
                 arrivalBasis = portals[i].getDestinationIndex();
                 x = x - portals[i].getX() + portals[i].getXdestination();
                 y = y - portals[i].getY() + portals[i].getYdestination();
-				if (portals[i].getTimeDirection() * timeDirection == hg::FORWARDS)
+				if (portals[i].getTimeDirection() * timeDirection == TimeDirection::FORWARDS)
                 {
                 	xspeed = xspeed - portals[i].getXspeed();
 					yspeed = yspeed - portals[i].getYspeed();
@@ -193,7 +193,7 @@ void guyStep(
     mt::std::vector<char> supported;
     mt::std::vector<int> supportedSpeed;
     mt::std::vector<char> finishedWith;
-    mt::std::vector<FacingDirection::FacingDirection> facing;
+    mt::std::vector<FacingDirection> facing;
 
     x.reserve(boost::distance(guyArrivalList));
     y.reserve(boost::distance(guyArrivalList));
@@ -229,7 +229,7 @@ void guyStep(
 			else
 			{
 				//std::cerr << "Arrival Loc Speed " << getFrameNumber(frame) << ": " << relativePortal.getYspeed() << "\n";
-				if (relativePortal.getTimeDirection() * guyArrivalList[i].getTimeDirection() == hg::FORWARDS)
+				if (relativePortal.getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
 				{
 					yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed() + env.gravity);
 					y[i] = y[i] - relativePortal.getYspeed();
@@ -292,7 +292,7 @@ void guyStep(
 				int pWidth(platform.getWidth());
 				int pHeight(platform.getHeight());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * guyArrivalList[i].getTimeDirection() == hg::FORWARDS) 
+				if (pDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -357,7 +357,7 @@ void guyStep(
 					TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
 					if (x[i] < boxX+boxSize && x[i]+width > boxX)
 					{
-						if (boxDirection * guyArrivalList[i].getTimeDirection() == hg::REVERSE)
+						if (boxDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
 						{
 							//std::cerr << "Box Col " << getFrameNumber(frame) << ": " << newY + height << ", " << yspeed[i] << ",     " << boxY << ", " << boxYspeed << "\n";
 							// -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
@@ -405,10 +405,10 @@ void guyStep(
                     if (colDir == 1)
                     {
                         newY = pY-height;
-                        xspeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getXspeed();
+                        xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
                         supported[i] = true;
                         bottom = true;
-                        supportedSpeed[i] = pDirection * guyArrivalList[i].getTimeDirection() * platform.getYspeed();
+                        supportedSpeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getYspeed();
                     }
                     else if (colDir == 3)
                     {
@@ -731,7 +731,7 @@ void guyStep(
         {
         	carry[i] = guyArrivalList[i].getBoxCarrying();
 			carrySize[i] = 0;
-			carryDirection[i] = hg::INVALID;
+			carryDirection[i] = TimeDirection::INVALID;
 
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
             InputList const &input(playerInput[relativeIndex]);
@@ -922,7 +922,7 @@ void guyStep(
 
 						carry[i] = false;
 						carrySize[i] = 0;
-						carryDirection[i] = hg::INVALID;
+						carryDirection[i] = TimeDirection::INVALID;
 					}
                 }
 
@@ -966,7 +966,7 @@ void guyStep(
                 else
                 {
                     carrySize[i] = 0;
-                    carryDirection[i] = hg::INVALID;
+                    carryDirection[i] = TimeDirection::INVALID;
                 }
             }
         }	
@@ -1136,7 +1136,7 @@ void guyStep(
 							arrivalBasis = nextPortal[j].getDestinationIndex();
 							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
 							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-							if (nextPortal[i].getTimeDirection() * nextTimeDirection == hg::FORWARDS)
+							if (nextPortal[i].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
 							{
 								xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
 								yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
@@ -1156,22 +1156,22 @@ void guyStep(
 			// "forced" departures occur before those due to input
 			if (normalDeparture)
 			{
-				mt::std::map<Ability, int>::iterator timeJump(newPickups[i].find(TIME_JUMP));
-				mt::std::map<Ability, int>::iterator timeReverse(newPickups[i].find(TIME_REVERSE));
-				mt::std::map<Ability, int>::iterator timePause(newPickups[i].find(TIME_PAUSE));
+				mt::std::map<Ability, int>::iterator timeJump(newPickups[i].find(Ability::TIME_JUMP));
+				mt::std::map<Ability, int>::iterator timeReverse(newPickups[i].find(Ability::TIME_REVERSE));
+				mt::std::map<Ability, int>::iterator timePause(newPickups[i].find(Ability::TIME_PAUSE));
 
                 if (input.getAbilityUsed()) {
                     Ability abilityCursor = input.getAbilityCursor();
-                    if (abilityCursor == hg::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
+                    if (abilityCursor == Ability::TIME_JUMP && timeJump != newPickups[i].end() && timeJump->second != 0)
                     {
                         nextTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
                         normalDeparture = false;
                         if (timeJump->second > 0)
                         {
-                            newPickups[i][hg::TIME_JUMP] = timeJump->second - 1;
+                            newPickups[i][Ability::TIME_JUMP] = timeJump->second - 1;
                         }
                     }
-                    else if (abilityCursor == hg::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
+                    else if (abilityCursor == Ability::TIME_REVERSE && timeReverse != newPickups[i].end() && timeReverse->second != 0)
                     {
                         normalDeparture = false;
                         nextTimeDirection *= -1;
@@ -1179,17 +1179,17 @@ void guyStep(
                         carryDirection[i] *= -1;
                         if (timeReverse->second > 0)
                         {
-                            newPickups[i][hg::TIME_REVERSE] = timeReverse->second - 1;
+                            newPickups[i][Ability::TIME_REVERSE] = timeReverse->second - 1;
                         }
                     }
-                    else if (abilityCursor == hg::TIME_PAUSE && timePause != newPickups[i].end() && timePause->second != 0)
+                    else if (abilityCursor == Ability::TIME_PAUSE && timePause != newPickups[i].end() && timePause->second != 0)
                     {
                         nextTime = frame;
                         newTimePaused[i] = !newTimePaused[i];
                         normalDeparture = false;
                         if (timePause->second > 0)
                         {
-                            newPickups[i][hg::TIME_PAUSE] = timePause->second - 1;
+                            newPickups[i][Ability::TIME_PAUSE] = timePause->second - 1;
                         }
                     }
                 }
@@ -1240,7 +1240,7 @@ void guyStep(
 							arrivalBasis = nextPortal[j].getDestinationIndex();
 							x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
 							y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-							if (nextPortal[j].getTimeDirection() * nextTimeDirection == hg::FORWARDS)
+							if (nextPortal[j].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
 							{
 								xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
 								yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
@@ -1323,9 +1323,12 @@ void guyStep(
 		std::size_t const relativeIndex(guyArrivalList[i].getIndex());
 		InputList const &input = playerInput[relativeIndex];
 		
-		mt::std::map<Ability, int>::iterator timeGun(newPickups[i].find(TIME_GUN));
+		mt::std::map<Ability, int>::iterator timeGun(newPickups[i].find(Ability::TIME_GUN));
 
-		if (input.getAbilityUsed() && input.getAbilityCursor() == hg::TIME_GUN && timeGun != newPickups[i].end() && timeGun->second != 0)
+		if (input.getAbilityUsed()
+        && input.getAbilityCursor() == Ability::TIME_GUN
+        && timeGun != newPickups[i].end()
+        && timeGun->second != 0)
 		{
 			// Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
 			mt::std::vector<char> shootable;
@@ -1396,7 +1399,7 @@ void guyStep(
 			
 			if (timeGun->second > 0)
 			{
-				newPickups[i][hg::TIME_GUN] = timeGun->second - 1;
+				newPickups[i][Ability::TIME_GUN] = timeGun->second - 1;
 			}
 		}
 	}
@@ -1507,7 +1510,7 @@ void boxCollisionAlogorithm(
             ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 			int relx = relativePortal.getX() + oldBoxList[i].getX();
 			int rely = relativePortal.getY() + oldBoxList[i].getY();
-			if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == hg::FORWARDS)
+			if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
 			{
 				xTemp[i] = relx - relativePortal.getXspeed();
 				yTemp[i] = rely - relativePortal.getYspeed();
@@ -1541,7 +1544,7 @@ void boxCollisionAlogorithm(
 				int pWidth(platform.getWidth());
 				int pHeight(platform.getHeight());
 				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * oldBoxList[i].getTimeDirection() == hg::FORWARDS) 
+				if (pDirection * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
 				{
 					pX -= platform.getXspeed();
 					pY -= platform.getYspeed();
@@ -1866,7 +1869,7 @@ void boxCollisionAlogorithm(
 								bottom[i] = std::make_pair(true, y[i]);
 								if (firstTimeThrough)
 								{
-									x[i] = xTemp[i] + pDirection * oldBoxList[i].getTimeDirection() * platform.getXspeed();
+									x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
 								}
 							}
 							else
@@ -2086,7 +2089,7 @@ void boxCollisionAlogorithm(
 				ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 				int relx = relativePortal.getX() + oldBoxList[i].getX();
 				int rely = relativePortal.getY() + oldBoxList[i].getY();
-				if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == hg::FORWARDS)
+				if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
 				{
 					relx = relx - relativePortal.getXspeed();
 					rely = rely - relativePortal.getYspeed();

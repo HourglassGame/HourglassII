@@ -29,9 +29,20 @@ sf::Vector2f normal(sf::Vector2f vec) {
 class sfRenderTargetCanvas : public Canvas
 {
 public:
-    explicit sfRenderTargetCanvas(sf::RenderTarget &target, LevelResources const &resources) :
-    target(&target), resources(&resources)
+    explicit sfRenderTargetCanvas(
+        sf::RenderTarget &target,
+        AudioPlayingState &audioPlayingState,
+        AudioGlitzManager &audioGlitzManager,
+        LevelResources const &resources) :
+    target(&target),
+    audioPlayingState(&audioPlayingState),
+    audioGlitzManager(&audioGlitzManager),
+    resources(&resources),
+    soundsToPlay()
     {}
+    virtual void playSound(std::string const &key, int n) override {
+        soundsToPlay.push_back(AudioGlitzObject(key,n));
+    }
     virtual void drawRect(float x, float y, float width, float height, unsigned colour) override
     {
         sf::RectangleShape rect(sf::Vector2f(width, height));
@@ -43,15 +54,17 @@ public:
     {
         sf::Vector2f const pa(xa, ya);
         sf::Vector2f const pb(xb, yb);
-        sf::Vector2f d(normal(pa-pb)*(width/2.f));
-        sf::ConvexShape line;
-        line.setPointCount(4);
-        line.setPoint(0, pa - d);
-        line.setPoint(1, pb - d);
-        line.setPoint(2, pb + d);
-        line.setPoint(3, pa + d);
-        line.setFillColor(interpretAsColour(colour));
-        target->draw(line);
+        if (pa != pb) {
+            sf::Vector2f d(normal(pa-pb)*(width/2.f));
+            sf::ConvexShape line;
+            line.setPointCount(4);
+            line.setPoint(0, pa - d);
+            line.setPoint(1, pb - d);
+            line.setPoint(2, pb + d);
+            line.setPoint(3, pa + d);
+            line.setFillColor(interpretAsColour(colour));
+            target->draw(line);
+        }
     }
     virtual void drawText(std::string const &text, float x, float y, float size, unsigned colour) override
     {
@@ -77,9 +90,15 @@ public:
         sprite.setScale(sf::Vector2f(width*1.f/tex.getSize().x, height*1.f/tex.getSize().y));
         target->draw(sprite);
     }
+    virtual void flushFrame() {
+        audioPlayingState->runStep(audioGlitzManager->updatePlayingState(soundsToPlay));
+    }
 private:
     sf::RenderTarget *target;
+    AudioPlayingState *audioPlayingState;
+    AudioGlitzManager *audioGlitzManager;
     LevelResources const *resources;
+    std::vector<AudioGlitzObject> soundsToPlay;
 };
 }
 #endif //HG_SF_RENDER_TARGET_CANVAS_H

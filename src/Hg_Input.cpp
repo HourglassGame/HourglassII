@@ -36,16 +36,16 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXOfE
     updatePress(mouseLeft, input.isMouseButtonPressed(sf::Mouse::Left));
 
     if (input.isKeyPressed(sf::Keyboard::Num1)) {
-        abilityCursor = TIME_JUMP;
+        abilityCursor = Ability::TIME_JUMP;
     }
     if (input.isKeyPressed(sf::Keyboard::Num2)) {
-        abilityCursor = TIME_REVERSE;
+        abilityCursor = Ability::TIME_REVERSE;
     }
     if (input.isKeyPressed(sf::Keyboard::Num3)) {
-        abilityCursor = TIME_GUN;
+        abilityCursor = Ability::TIME_GUN;
     }
     if (input.isKeyPressed(sf::Keyboard::Num4)) {
-        abilityCursor = TIME_PAUSE;
+        abilityCursor = Ability::TIME_PAUSE;
     }
     if (input.isMouseButtonPressed(sf::Mouse::Right)) {
         mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);

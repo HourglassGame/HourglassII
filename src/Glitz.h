@@ -37,7 +37,7 @@ public:
     }
 private:
     
-    clone_ptr<GlitzImplementation, memory_source_clone<GlitzImplementation, multi_thread_memory_source> > impl;
+    clone_ptr<GlitzImplementation, memory_source_clone<GlitzImplementation, multi_thread_memory_source>> impl;
     typedef
       std::tuple<
         decltype(impl->order_ranking()),

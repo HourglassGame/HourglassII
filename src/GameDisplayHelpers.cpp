@@ -14,6 +14,8 @@ void DrawGlitzAndWall(
     hg::mt::std::vector<hg::Glitz> const &glitz,
     hg::Wall const &wall,
     hg::LevelResources const &resources,
+    AudioPlayingState &audioPlayingState,
+    AudioGlitzManager &audioGlitzManager,
     sf::Image const &wallImage)
 {
     target.clear(sf::Color(255,255,255));
@@ -24,7 +26,7 @@ void DrawGlitzAndWall(
     sf::View oldView(target.getView());
     sf::View scaledView(sf::FloatRect(0.f, 0.f, target.getSize().x/scalingFactor, target.getSize().y/scalingFactor));
     target.setView(scaledView);
-    hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), resources);
+    hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
 	for (hg::Glitz const &particularGlitz: glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
@@ -35,8 +37,12 @@ void DrawGlitzAndWall(
     target.draw(sf::Sprite(wallTex));
     
     flusher.partialFlush(std::numeric_limits<int>::max());
-    if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) DrawColors(target, wall.roomWidth(), wall.roomHeight());
+    if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) {
+        DrawColors(target, wall.roomWidth(), wall.roomHeight());
+    }
     target.setView(oldView);
+    
+    canvas.flushFrame();
 }
 
 void drawInventory(
@@ -47,7 +53,7 @@ void drawInventory(
     hg::mt::std::map<hg::Ability, int> mpickups(pickups);
     {
         std::stringstream timeJump;
-        timeJump << (abilityCursor == hg::TIME_JUMP ? "-->" : "   ") << "1) timeJumps: " << mpickups[hg::TIME_JUMP];
+        timeJump << (abilityCursor == Ability::TIME_JUMP ? "-->" : "   ") << "1) timeJumps: " << mpickups[Ability::TIME_JUMP];
         sf::Text timeJumpGlyph;
         timeJumpGlyph.setFont(*hg::defaultFont);
         timeJumpGlyph.setString(timeJump.str());
@@ -58,7 +64,7 @@ void drawInventory(
     }
     {
         std::stringstream timeReverses;
-        timeReverses << (abilityCursor == hg::TIME_REVERSE ? "-->" : "   ") << "2) timeReverses: " << mpickups[hg::TIME_REVERSE];
+        timeReverses << (abilityCursor == Ability::TIME_REVERSE ? "-->" : "   ") << "2) timeReverses: " << mpickups[Ability::TIME_REVERSE];
         sf::Text timeReversesGlyph;
         timeReversesGlyph.setFont(*hg::defaultFont);
         timeReversesGlyph.setString(timeReverses.str());
@@ -69,7 +75,7 @@ void drawInventory(
     }
     {
         std::stringstream timeGuns;
-        timeGuns << (abilityCursor == hg::TIME_GUN ? "-->" : "   ") << "3) timeGuns: " << mpickups[hg::TIME_GUN];
+        timeGuns << (abilityCursor == Ability::TIME_GUN ? "-->" : "   ") << "3) timeGuns: " << mpickups[Ability::TIME_GUN];
         sf::Text timeGunsGlyph;
         timeGunsGlyph.setFont(*hg::defaultFont);
         timeGunsGlyph.setString(timeGuns.str());
@@ -80,7 +86,7 @@ void drawInventory(
     }
 	{
         std::stringstream timeGuns;
-        timeGuns << (abilityCursor == hg::TIME_PAUSE ? "-->" : "   ") << "4) timePauses: " << mpickups[hg::TIME_PAUSE];
+        timeGuns << (abilityCursor == Ability::TIME_PAUSE ? "-->" : "   ") << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
         sf::Text timePausesGlyph;
         timePausesGlyph.setFont(*hg::defaultFont);
         timePausesGlyph.setString(timeGuns.str());

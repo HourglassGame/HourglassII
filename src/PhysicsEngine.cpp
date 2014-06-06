@@ -19,6 +19,8 @@
 
 #include <cassert>
 
+#include "AudioGlitz.h"
+
 namespace hg {
 PhysicsEngine::PhysicsEngine(
     Environment const &env,

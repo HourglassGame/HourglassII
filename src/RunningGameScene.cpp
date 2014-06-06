@@ -25,6 +25,7 @@
 #include "Maths.h"
 #include <SFML/Graphics.hpp>
 
+#include "AudioGlitzManager.h"
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
 #include "TimeEngine.h"
@@ -100,6 +101,8 @@ namespace hg {
 void runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
+    AudioPlayingState &audioPlayingState,
+    AudioGlitzManager &audioGlitzManager,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
@@ -141,7 +144,9 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     auto frameStartTime = std::chrono::steady_clock().now();
     LoadedLevel const initialLevel(loadedLevel);
 
-    
+    auto audioPlayingState = AudioPlayingState(loadedLevel.resources.sounds);
+    auto audioGlitzManager = AudioGlitzManager();
+
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
     hg::LevelResources const &levelResources = loadedLevel.resources;
     sf::Image const &wallImage = loadedLevel.bakedWall;
@@ -238,6 +243,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                             timeEngine = initialLevel.timeEngine;
                             loadedLevel.resources = initialLevel.resources;
                             loadedLevel.bakedWall = initialLevel.bakedWall;
+                            audioPlayingState = AudioPlayingState(initialLevel.resources.sounds);
+                            audioGlitzManager = AudioGlitzManager();
                             state = AWAITING_INPUT;
                             goto continuemainloop;
                             //return ReloadLevel_tag{};
@@ -260,7 +267,6 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                         case sf::Keyboard::P:
                             state = PAUSED;
                             goto continuemainloop;
-                        break;
                         
 						default:
 							break;
@@ -272,17 +278,17 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 				}
 				if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f/(60.f))) == boost::future_status::ready) {
                     if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
-                        inertia.save(mousePosToFrameID(window, timeEngine), hg::FORWARDS);
+                        inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
                     }
                     if (window.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
-                        inertia.save(mousePosToFrameID(window, timeEngine), hg::REVERSE);
+                        inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::REVERSE);
                     }
                     if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
                         inertia.reset();
                     }
 					try {
                         assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-						runStep(timeEngine, window, inertia, futureRunResult.get(), levelResources, wallImage, frameStartTime);
+						runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, frameStartTime);
                         interrupter.reset();
 					}
 					catch (hg::PlayerVictoryException const &) {
@@ -329,6 +335,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                                 goto continuemainloop;
                             default: break;
                             }
+                        break;
                         default: break;
                         }
                     }
@@ -345,13 +352,15 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
     hg::FrameView const &view, hg::TimeDirection timeDirection)
 {
-    return timeDirection == hg::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
+    return timeDirection == TimeDirection::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
 
 
 void runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
+    AudioPlayingState &audioPlayingState,
+    AudioGlitzManager &audioGlitzManager,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
@@ -381,9 +390,11 @@ void runStep(
                 hg::UniverseID(timeEngine.getTimelineLength()));
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
-             getGlitzForDirection(frame->getView(), hg::FORWARDS),
+             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
              timeEngine.getWall(),
              resources,
+             audioPlayingState,
+             audioGlitzManager,
              wallImage);
     }
     else if (waveInfo.currentPlayerFrame) {
@@ -397,6 +408,8 @@ void runStep(
             getGlitzForDirection(view, currentGuyDirection),
             timeEngine.getWall(),
             resources,
+            audioPlayingState,
+            audioGlitzManager,
             wallImage);
         
         drawInventory(
@@ -414,6 +427,8 @@ void runStep(
                  getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                  timeEngine.getWall(),
                  resources,
+                 audioPlayingState,
+                 audioGlitzManager,
                  wallImage);
         }
         else {
@@ -430,9 +445,11 @@ void runStep(
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
             DrawGlitzAndWall(
                 app,
-                getGlitzForDirection(frame->getView(), hg::FORWARDS),
+                getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
                 timeEngine.getWall(),
                 resources,
+                audioPlayingState,
+                audioGlitzManager,
                 wallImage);
         }
     }

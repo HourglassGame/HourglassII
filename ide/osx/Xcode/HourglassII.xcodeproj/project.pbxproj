@@ -148,6 +148,7 @@
 		20D4319A18C6B755006BBCBB /* LoadingLevelScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319818C6B755006BBCBB /* LoadingLevelScene.cpp */; };
 		20D4319D18C83AAD006BBCBB /* InitialScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319B18C83AAD006BBCBB /* InitialScene.cpp */; };
 		20D431A018C84608006BBCBB /* LoadedLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319E18C84608006BBCBB /* LoadedLevel.cpp */; };
+		20E6D1C51937F32400CCAE8E /* AudioGlitzManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20E6D1C31937F32400CCAE8E /* AudioGlitzManager.cpp */; };
 		20EF61E613C5BA55003DDBA7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20EF61E713C5BA55003DDBA7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
 		20EF61E813C5BA55003DDBA7 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
@@ -206,7 +207,7 @@
 		200E803C14B4792500D054F4 /* Ability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ability.h; path = ../../../src/Ability.h; sourceTree = SOURCE_ROOT; };
 		200E803D14B4792500D054F4 /* ArrivalLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ArrivalLocation.h; path = ../../../src/ArrivalLocation.h; sourceTree = SOURCE_ROOT; };
 		200E803E14B4792500D054F4 /* AttachmentMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AttachmentMap.h; path = ../../../src/AttachmentMap.h; sourceTree = SOURCE_ROOT; };
-		200E804114B4792500D054F4 /* BoostHashCompare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoostHashCompare.h; path = ../../../src/BoostHashCompare.h; sourceTree = SOURCE_ROOT; };
+		200E804114B4792500D054F4 /* StdHashCompare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StdHashCompare.h; path = ../../../src/StdHashCompare.h; sourceTree = SOURCE_ROOT; };
 		200E804214B4792500D054F4 /* Box.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = Box.cpp; path = ../../../src/Box.cpp; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		200E804314B4792500D054F4 /* Box.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Box.h; path = ../../../src/Box.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		200E804414B4792500D054F4 /* clone_ptr_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = clone_ptr_test.cpp; path = ../../../src/clone_ptr_test.cpp; sourceTree = SOURCE_ROOT; };
@@ -362,6 +363,7 @@
 		203066C814C598B1005881F4 /* Canvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Canvas.h; path = ../../../src/Canvas.h; sourceTree = "<group>"; };
 		203508B217E68A4800ABF21A /* ResourceManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ResourceManager.cpp; path = ../../../src/ResourceManager.cpp; sourceTree = "<group>"; };
 		203508B317E68A4800ABF21A /* ResourceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ResourceManager.h; path = ../../../src/ResourceManager.h; sourceTree = "<group>"; };
+		20368B80193CDF7B0037B975 /* AudioGlitz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioGlitz.h; path = ../../../src/AudioGlitz.h; sourceTree = "<group>"; };
 		2039E7B3165929FA0075481C /* LuaSandbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaSandbox.cpp; path = ../../../src/LuaSandbox.cpp; sourceTree = "<group>"; };
 		2039E7B4165929FA0075481C /* LuaSandbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaSandbox.h; path = ../../../src/LuaSandbox.h; sourceTree = "<group>"; };
 		20469DF914B47D9E00FF6A02 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = ../../../ext/boost/lib/libboost_chrono.a; sourceTree = SOURCE_ROOT; };
@@ -464,7 +466,6 @@
 		20A1C4D218E2940A005F2EA3 /* PostLevelScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PostLevelScene.cpp; path = ../../../src/PostLevelScene.cpp; sourceTree = "<group>"; };
 		20A1C4D318E2940A005F2EA3 /* PostLevelScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PostLevelScene.h; path = ../../../src/PostLevelScene.h; sourceTree = "<group>"; };
 		20A2886118C5703800B748B3 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Scene.cpp; path = ../../../src/Scene.cpp; sourceTree = "<group>"; };
-		20A2886418C5711000B748B3 /* SceneImplementation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SceneImplementation.h; path = ../../../src/SceneImplementation.h; sourceTree = "<group>"; };
 		20A2886618C573F400B748B3 /* RunningGameScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = RunningGameScene.cpp; path = ../../../src/RunningGameScene.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		20ADB1CA17E7F90100B6FB1F /* Tilesets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Tilesets; path = ../../../data/Tilesets; sourceTree = "<group>"; };
 		20B5C4A515D65E710074582F /* Maths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Maths.h; path = ../../../src/Maths.h; sourceTree = "<group>"; };
@@ -487,6 +488,8 @@
 		20D4319F18C84608006BBCBB /* LoadedLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadedLevel.h; path = ../../../src/LoadedLevel.h; sourceTree = "<group>"; };
 		20D431A118CC4AD3006BBCBB /* variant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = variant.h; path = ../../../src/variant.h; sourceTree = "<group>"; };
 		20E672DA14DDF79E0037C7DF /* stable_vector.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stable_vector.hpp; sourceTree = "<group>"; };
+		20E6D1C31937F32400CCAE8E /* AudioGlitzManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioGlitzManager.cpp; path = ../../../src/AudioGlitzManager.cpp; sourceTree = "<group>"; };
+		20E6D1C41937F32400CCAE8E /* AudioGlitzManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioGlitzManager.h; path = ../../../src/AudioGlitzManager.h; sourceTree = "<group>"; };
 		20EF61F213C5BA55003DDBA7 /* HourglassII.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HourglassII.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		20F06FC01474B3E00019ADB4 /* libtbb.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbb.dylib; path = ../../../ext/tbb/lib/libtbb.dylib; sourceTree = SOURCE_ROOT; };
 		20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtbbmalloc.dylib; path = ../../../ext/tbb/lib/libtbbmalloc.dylib; sourceTree = SOURCE_ROOT; };
@@ -781,6 +784,8 @@
 			children = (
 				209463C1191999EF003E1F62 /* GlobalOptions.h */,
 				209463C0191999EF003E1F62 /* GlobalOptions.cpp */,
+				20E6D1C41937F32400CCAE8E /* AudioGlitzManager.h */,
+				20E6D1C31937F32400CCAE8E /* AudioGlitzManager.cpp */,
 				209EA32419027B7300037E03 /* GameDisplayHelpers.h */,
 				209EA32319027B7300037E03 /* GameDisplayHelpers.cpp */,
 				20A2886018C56FCD00B748B3 /* Scenes */,
@@ -794,7 +799,6 @@
 				20B9B32514C6DF1D00E65866 /* sfColour.h */,
 				205E5A8F18FFA5B50075AF36 /* TestDriver */,
 				202E857714BF31E5008F05EB /* Utility */,
-				200E804114B4792500D054F4 /* BoostHashCompare.h */,
 				203066C814C598B1005881F4 /* Canvas.h */,
 				20B9B32414C6CFB500E65866 /* sfRenderTargetCanvas.h */,
 				20F68E9D15E47113006B68AC /* LayeredCanvas.h */,
@@ -811,6 +815,7 @@
 				200E806714B4792500D054F4 /* Glitz.h */,
 				200E806614B4792500D054F4 /* Glitz.cpp */,
 				208FD88E14D163140089BC25 /* GlitzImplementation.h */,
+				20368B80193CDF7B0037B975 /* AudioGlitz.h */,
 				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
 				201345E815E3694000E73DA5 /* LineGlitz.h */,
 				209B3C85169BDFEC003C554D /* TextGlitz.h */,
@@ -881,7 +886,6 @@
 			children = (
 				2004AB8F16B4C8DB00C307E1 /* Scene.h */,
 				20A2886118C5703800B748B3 /* Scene.cpp */,
-				20A2886418C5711000B748B3 /* SceneImplementation.h */,
 				207C0DA916B50770005D4110 /* RunningGameScene.h */,
 				20A2886618C573F400B748B3 /* RunningGameScene.cpp */,
 				20D4319918C6B755006BBCBB /* LoadingLevelScene.h */,
@@ -960,6 +964,7 @@
 		20B9B32814C7127800E65866 /* C++ */ = {
 			isa = PBXGroup;
 			children = (
+				200E804114B4792500D054F4 /* StdHashCompare.h */,
 				208FD89014D16E600089BC25 /* default_delete.h */,
 				202910D714E3B77100D90C07 /* multi_thread_deleter.h */,
 				208FD89114D1810A0089BC25 /* default_clone.h */,
@@ -1161,6 +1166,7 @@
 				2085F0E1191A2B1A00316D2D /* ParallelForEach_test.cpp in Sources */,
 				200E811214B4792500D054F4 /* FrameView.cpp in Sources */,
 				200E811314B4792500D054F4 /* Glitz.cpp in Sources */,
+				20E6D1C51937F32400CCAE8E /* AudioGlitzManager.cpp in Sources */,
 				200E811414B4792500D054F4 /* Guy.cpp in Sources */,
 				200E811514B4792500D054F4 /* GuyOutputInfo.cpp in Sources */,
 				200E811614B4792500D054F4 /* Hg_Input.cpp in Sources */,
@@ -1253,7 +1259,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1286,6 +1292,32 @@
 				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				WARNING_CFLAGS = (
+					"-pedantic",
+					"-Weverything",
+					"-Wno-unused",
+					"-Wno-unused-parameter",
+					"-Wno-c++98-compat",
+					"-Wno-c++98-compat-pedantic",
+					"-Wno-global-constructors",
+					"-Wno-undef",
+					"-Wno-deprecated",
+					"-Wno-documentation",
+					"-Wno-documentation-unknown-command",
+					"-Wno-extra-semi",
+					"-Wno-missing-noreturn",
+					"-Wno-weak-vtables",
+					"-Wno-padded",
+					"-Wno-disabled-macro-expansion",
+					"-Wno-cast-align",
+					"-Wno-switch-enum",
+					"-Wno-unused-macros",
+					"-Wno-float-equal",
+					"-Wno-implicit-fallthrough",
+					"-Wno-unreachable-code",
+					"-Wno-format-nonliteral",
+					"-Werror",
+				);
 			};
 			name = SingleTargetRelease;
 		};
@@ -1323,7 +1355,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				WARNING_CFLAGS = "-Wstrict-overflow";
 			};
 			name = SingleTargetRelease;
 		};
@@ -1331,7 +1362,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1364,6 +1395,32 @@
 				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				WARNING_CFLAGS = (
+					"-pedantic",
+					"-Weverything",
+					"-Wno-unused",
+					"-Wno-unused-parameter",
+					"-Wno-c++98-compat",
+					"-Wno-c++98-compat-pedantic",
+					"-Wno-global-constructors",
+					"-Wno-undef",
+					"-Wno-deprecated",
+					"-Wno-documentation",
+					"-Wno-documentation-unknown-command",
+					"-Wno-extra-semi",
+					"-Wno-missing-noreturn",
+					"-Wno-weak-vtables",
+					"-Wno-padded",
+					"-Wno-disabled-macro-expansion",
+					"-Wno-cast-align",
+					"-Wno-switch-enum",
+					"-Wno-unused-macros",
+					"-Wno-float-equal",
+					"-Wno-implicit-fallthrough",
+					"-Wno-unreachable-code",
+					"-Wno-format-nonliteral",
+					"-Werror",
+				);
 			};
 			name = Profile;
 		};
@@ -1402,7 +1459,6 @@
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = "-Wstrict-overflow";
 			};
 			name = Profile;
 		};
@@ -1410,7 +1466,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1443,6 +1499,32 @@
 				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				WARNING_CFLAGS = (
+					"-pedantic",
+					"-Weverything",
+					"-Wno-unused",
+					"-Wno-unused-parameter",
+					"-Wno-c++98-compat",
+					"-Wno-c++98-compat-pedantic",
+					"-Wno-global-constructors",
+					"-Wno-undef",
+					"-Wno-deprecated",
+					"-Wno-documentation",
+					"-Wno-documentation-unknown-command",
+					"-Wno-extra-semi",
+					"-Wno-missing-noreturn",
+					"-Wno-weak-vtables",
+					"-Wno-padded",
+					"-Wno-disabled-macro-expansion",
+					"-Wno-cast-align",
+					"-Wno-switch-enum",
+					"-Wno-unused-macros",
+					"-Wno-float-equal",
+					"-Wno-implicit-fallthrough",
+					"-Wno-unreachable-code",
+					"-Wno-format-nonliteral",
+					"-Werror",
+				);
 			};
 			name = SingleTargetProfile;
 		};
@@ -1481,7 +1563,6 @@
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				STRIP_INSTALLED_PRODUCT = NO;
-				WARNING_CFLAGS = "-Wstrict-overflow";
 			};
 			name = SingleTargetProfile;
 		};
@@ -1879,7 +1960,6 @@
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
-				WARNING_CFLAGS = "-Wstrict-overflow";
 			};
 			name = Debug;
 		};
@@ -1920,7 +2000,6 @@
 				PRODUCT_NAME = HourglassII;
 				PUBLIC_HEADERS_FOLDER_PATH = "";
 				STRIP_INSTALLED_PRODUCT = YES;
-				WARNING_CFLAGS = "-Wstrict-overflow";
 			};
 			name = Release;
 		};
@@ -1928,7 +2007,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1963,6 +2042,32 @@
 				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				WARNING_CFLAGS = (
+					"-pedantic",
+					"-Weverything",
+					"-Wno-unused",
+					"-Wno-unused-parameter",
+					"-Wno-c++98-compat",
+					"-Wno-c++98-compat-pedantic",
+					"-Wno-global-constructors",
+					"-Wno-undef",
+					"-Wno-deprecated",
+					"-Wno-documentation",
+					"-Wno-documentation-unknown-command",
+					"-Wno-extra-semi",
+					"-Wno-missing-noreturn",
+					"-Wno-weak-vtables",
+					"-Wno-padded",
+					"-Wno-disabled-macro-expansion",
+					"-Wno-cast-align",
+					"-Wno-switch-enum",
+					"-Wno-unused-macros",
+					"-Wno-float-equal",
+					"-Wno-implicit-fallthrough",
+					"-Wno-unreachable-code",
+					"-Wno-format-nonliteral",
+					"-Werror",
+				);
 			};
 			name = Debug;
 		};
@@ -1970,7 +2075,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_CXX0X_EXTENSIONS = YES;
 				COPY_PHASE_STRIP = NO;
@@ -2003,6 +2108,32 @@
 				);
 				SDKROOT = macosx;
 				STRINGS_FILE_OUTPUT_ENCODING = "UTF-8";
+				WARNING_CFLAGS = (
+					"-pedantic",
+					"-Weverything",
+					"-Wno-unused",
+					"-Wno-unused-parameter",
+					"-Wno-c++98-compat",
+					"-Wno-c++98-compat-pedantic",
+					"-Wno-global-constructors",
+					"-Wno-undef",
+					"-Wno-deprecated",
+					"-Wno-documentation",
+					"-Wno-documentation-unknown-command",
+					"-Wno-extra-semi",
+					"-Wno-missing-noreturn",
+					"-Wno-weak-vtables",
+					"-Wno-padded",
+					"-Wno-disabled-macro-expansion",
+					"-Wno-cast-align",
+					"-Wno-switch-enum",
+					"-Wno-unused-macros",
+					"-Wno-float-equal",
+					"-Wno-implicit-fallthrough",
+					"-Wno-unreachable-code",
+					"-Wno-format-nonliteral",
+					"-Werror",
+				);
 			};
 			name = Release;
 		};

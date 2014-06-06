@@ -4,7 +4,7 @@
 #include <vector>
 namespace hg {
 namespace mt {
-namespace std{
+namespace std {
 template<typename T>
 using vector =
 		::std::vector<

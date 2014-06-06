@@ -16,6 +16,7 @@
 
 #include <boost/ref.hpp>
 #include <thread>
+#include <future>
 
 #include <iostream>
 
@@ -147,20 +148,17 @@ Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
 std::string abilityToString(Ability ability)
 {
     switch (ability) {
-    case NO_ABILITY:
+    case Ability::NO_ABILITY:
         assert(false);
         return std::string("noAbility");
-    case TIME_JUMP:
+    case Ability::TIME_JUMP:
         return std::string("timeJump");
-    case TIME_REVERSE:
+    case Ability::TIME_REVERSE:
         return std::string("timeReverse");
-    case TIME_GUN:
+    case Ability::TIME_GUN:
         return std::string("timeGun");
-	case TIME_PAUSE:
+	case Ability::TIME_PAUSE:
         return std::string("timePause");
-    default:
-        assert(false);
-        return std::string("fix abilityToString(Ability ability) !!");
     }
 }
 
@@ -615,10 +613,10 @@ void pushGuy(lua_State *L, Guy const &guy)
     if (guy.getBoxCarrying()) {
         lua_pushinteger(L, guy.getBoxCarrySize());
         lua_setfield(L, -2, "boxCarrySize");
-        lua_pushstring(L, guy.getBoxCarryDirection() == FORWARDS ? "forwards" : "reverse");
+        lua_pushstring(L, guy.getBoxCarryDirection() == TimeDirection::FORWARDS ? "forwards" : "reverse");
         lua_setfield(L, -2, "boxCarryDirection");
     }
-    lua_pushstring(L, guy.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
+    lua_pushstring(L, guy.getTimeDirection() == TimeDirection::FORWARDS ? "forwards" : "reverse");
     lua_setfield(L, -2, "timeDirection");
 	lua_pushboolean(L, guy.getTimePaused());
     lua_setfield(L, -2, "timePaused");
@@ -656,7 +654,7 @@ void pushBox(lua_State *L, Box const &box)
         lua_pushinteger(L, box.getArrivalBasis() + 1);
         lua_setfield(L, -2, "arrivalBasis");
     }
-    lua_pushstring(L, box.getTimeDirection() == FORWARDS ? "forwards" : "reverse");
+    lua_pushstring(L, box.getTimeDirection() == TimeDirection::FORWARDS ? "forwards" : "reverse");
     lua_setfield(L, -2, "timeDirection");
 }
 }

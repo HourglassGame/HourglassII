@@ -11,13 +11,13 @@
 #include <algorithm>
 
 namespace hg {
-std::map<Frame*, ObjectList<Normal>>
+std::map<Frame *, ObjectList<Normal>>
 TimelineState::fixPermanentDepartures(
-        FramePointerUpdater const& framePointerUpdater,
-        std::map<Frame*, ObjectList<Normal>> const& oldPermanentDepartures)
+        FramePointerUpdater const &framePointerUpdater,
+        std::map<Frame *, ObjectList<Normal>> const &oldPermanentDepartures)
 {
-    std::map<Frame*, ObjectList<Normal>> newPermanentDepartures;
-    for (auto const& departurePair: oldPermanentDepartures) {
+    std::map<Frame *, ObjectList<Normal>> newPermanentDepartures;
+    for (auto const &departurePair: oldPermanentDepartures) {
         Frame *newFrame = framePointerUpdater.updateFrame(departurePair.first);
         newPermanentDepartures[newFrame] = departurePair.second;
         newFrame->setPermanentArrival(&newPermanentDepartures[newFrame]);
@@ -51,7 +51,7 @@ TimelineState::updateWithNewDepartures(
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
-		std::map<Frame *, ObjectList<Normal> > const &initialArrivals)
+		std::map<Frame *, ObjectList<Normal>> const &initialArrivals)
 {
     for (auto const &arrival: initialArrivals) {
         permanentDepartures_[arrival.first].add(arrival.second);
