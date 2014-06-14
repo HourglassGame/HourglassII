@@ -888,7 +888,12 @@ local function getDepartureInformation(tempStore)
 			end
 		end
 
-        return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
+        return
+            tempStore.outputTriggers,
+            tempStore.forwardsGlitz,
+            tempStore.reverseGlitz,
+            {}, --TODO persistentGlitz
+            tempStore.additionalEndBoxes
     end
 end
 

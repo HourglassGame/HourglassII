@@ -51,7 +51,6 @@ private:
     friend FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
     friend int getTimelineLength(UniverseID const &universe);
 
-    friend class FrameID;
     friend std::size_t hash_value(UniverseID const &toHash);
     int timelineLength;
 };

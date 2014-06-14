@@ -70,13 +70,14 @@ public:
     move_function<R(ArgTypes...)> &operator=(move_function &&o) noexcept = default;
     template<typename F>
     move_function(F &&f) :
-        f(multi_thread_new<function::detail::function_obj<F, R(ArgTypes...)>>(std::move(f)))
+        f(new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::move(f)))
     {
     }
     template<typename F>
     move_function<R(ArgTypes...)> &operator=(F &&f)
     {
-        this->f = function_obj_ptr_t(multi_thread_new<function::detail::function_obj<F, R(ArgTypes...)>>(std::move(f)));
+        this->f = function_obj_ptr_t(
+            new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::move(f)));
         return *this;
     }
     R operator()(ArgTypes &&...args) const {

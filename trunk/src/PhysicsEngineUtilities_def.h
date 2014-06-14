@@ -524,10 +524,12 @@ void guyStep(
     assert(boost::distance(supportedSpeed) == boost::distance(guyArrivalList));
     assert(boost::distance(finishedWith) == boost::distance(guyArrivalList));
     assert(boost::distance(facing) == boost::distance(guyArrivalList));
+    
 
     mt::std::vector<char> carry(guyArrivalList.size());
     mt::std::vector<int> carrySize(guyArrivalList.size());
     mt::std::vector<TimeDirection> carryDirection(guyArrivalList.size());
+    mt::std::vector<char> justPickedUpBox(guyArrivalList.size());
     
 	// Do movement for pause guys. Do box manipulation for all guys.
 	// This is to make pause guys not affect their past selves with box manipulation.
@@ -958,6 +960,8 @@ void guyStep(
 								nextBoxIt = nextBox.erase(nextBoxIt);
 								nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
 								nextBoxEnd = nextBox.end();
+                                
+                                justPickedUpBox[i] = true;
 								break;
 							}
 						}
@@ -1266,7 +1270,8 @@ void guyStep(
 					carry[i],
 					carrySize[i],
 					carryDirection[i],
-                    guyArrivalList[i].getIndex() == playerInput.size()-1);
+                    guyArrivalList[i].getIndex() == playerInput.size()-1,
+                    justPickedUpBox[i]);
 			}
 			
             if (!normalDeparture)

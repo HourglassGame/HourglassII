@@ -113,7 +113,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         std::vector<ArrivalLocation> arrivalLocations;
         arrivalLocations += ArrivalLocation(18200, 4060, 0, 0, TimeDirection::FORWARDS);
         std::vector<MutatorArea> mutators;
-        TriggerFrameState triggerFrameState(multi_thread_new<MockTriggerFrameStateImplementation>());
+        TriggerFrameState triggerFrameState(new (multi_thread_tag{}) MockTriggerFrameStateImplementation());
         FrameID frame(9654, UniverseID(10800));
         
         //This is testing a case which caused a crash. If this line does not cause a crash,

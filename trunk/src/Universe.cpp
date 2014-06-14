@@ -12,11 +12,6 @@
 #include <utility>
 
 namespace hg {
-FramePointerUpdater::FramePointerUpdater(Universe &universe) :
-    startOfUniverse(universe.frames.data())
-{
-}
-
 Universe::Universe(int timelineLength) :
     frames()
 {
@@ -58,13 +53,13 @@ Universe &Universe::operator=(Universe &&o) noexcept
 void Universe::fixFramesEverything() {
     fixFramesUniverses();
     for (Frame &frame: frames) {
-        frame.correctDepartureFramePointers(FramePointerUpdater(*this));
+        frame.correctDepartureFramePointers(Universe_Frame_access{}, FramePointerUpdater(*this));
     }
     for (Frame &frame: frames) {
-        frame.correctArrivalFramePointers(FramePointerUpdater(*this));
+        frame.correctArrivalFramePointers(Universe_Frame_access{}, FramePointerUpdater(*this));
     }
     for (Frame &frame: frames) {
-        frame.correctArrivalObjectListPointers();
+        frame.correctArrivalObjectListPointers(Universe_Frame_access{});
     }
 }
 
@@ -72,7 +67,7 @@ void Universe::fixFramesEverything() {
 void Universe::fixFramesUniverses() noexcept
 {
     for (Frame &frame: frames) {
-        frame.correctUniverse(*this);
+        frame.correctUniverse(Universe_Frame_access{},*this);
     }
 }
 
@@ -120,7 +115,7 @@ template<typename UniverseT>
 Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getArbitraryFrameImpl(UniverseT &universe, int frameNumber)
 {
     assert(!universe.frames.empty());
-    return frameNumber >= 0 && frameNumber < universe.getTimelineLength() ? &universe.frames[frameNumber] : 0;
+    return frameNumber >= 0 && frameNumber < universe.getTimelineLength() ? &universe.frames[frameNumber] : nullptr;
 }
 Frame *Universe::getArbitraryFrame(int frameNumber)
 {

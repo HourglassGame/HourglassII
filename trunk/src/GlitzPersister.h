@@ -71,7 +71,7 @@ public:
     Glitz getReverseGlitz() const { return glitzPersister->getReverseGlitz(); }
     
     bool operator==(GlitzPersisterConstPtr const &o) const { return *glitzPersister == *o.glitzPersister; }
-    bool operator<(GlitzPersisterConstPtr const &o) const { return *glitzPersister < *o.glitzPersister; }
+    bool operator< (GlitzPersisterConstPtr const &o) const { return *glitzPersister <  *o.glitzPersister; }
 private:
     GlitzPersister const *glitzPersister;
 };
@@ -125,7 +125,6 @@ public:
     AudioGlitzPersister(
         std::string key,
         unsigned duration,
-        unsigned currentFrame,
         TimeDirection timeDirection);
 
     ObjectAndTime<GlitzPersister, Frame *> runStep(Frame *frame) const override;
@@ -145,6 +144,11 @@ public:
     bool operator==(GlitzPersisterImpl const &o) const override;
     bool operator<(GlitzPersisterImpl const &o) const override;
 private:
+    AudioGlitzPersister(
+        std::string key,
+        unsigned duration,
+        unsigned currentFrame,
+        TimeDirection timeDirection);
     std::string key;
     unsigned duration;
     unsigned currentFrame;

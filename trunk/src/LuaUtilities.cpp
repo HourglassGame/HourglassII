@@ -6,6 +6,14 @@
 #include "lua/lauxlib.h"
 #include "multi_vector.h"
 
+#include "ImageGlitz.h"
+#include "TextGlitz.h"
+#include "LineGlitz.h"
+#include "RectangleGlitz.h"
+
+#include "LuaStackManager.h"
+#include <cassert>
+#define luaassert assert
 //TODO everywhere:
 //* fix usage of lua_checkstack
 //* make code correct in the face of errors and incorrect input
@@ -428,5 +436,53 @@ Collision to<Collision>(lua_State *L, int index)
     
     return Collision(x, y, xspeed, yspeed, width, height, timeDirection);
 }
+
+template<>
+Glitz to<Glitz>(lua_State *L, int index)
+{
+    std::string const type(readField<std::string>(L, "type", index));
+    if (type == "rectangle") {
+        int const layer(readField<int>(L, "layer", index));
+        int const x(readField<int>(L, "x", index));
+        int const y(readField<int>(L, "y", index));
+        int const width(readField<int>(L, "width", index));
+        int const height(readField<int>(L, "height", index));
+        unsigned colour(readColourField(L, "colour"));
+        return Glitz(new (multi_thread_tag{}) RectangleGlitz(layer, x, y, width, height, colour));
+    }
+    else if (type == "text") {
+        int const layer(readField<int>(L, "layer", index));
+        std::string text(readField<std::string>(L, "text", index));
+        int const x(readField<int>(L, "x", index));
+        int const y(readField<int>(L, "y", index));
+        int const size(readField<int>(L, "size", index));
+        unsigned colour(readColourField(L, "colour"));
+        return Glitz(new (multi_thread_tag{}) TextGlitz(layer, std::move(text), x, y, size, colour));
+    }
+    else if (type == "image") {
+        int const layer(readField<int>(L, "layer"));
+        std::string key(readField<std::string>(L, "key"));
+        int const x(readField<int>(L, "x"));
+        int const y(readField<int>(L, "y"));
+        int const width(readField<int>(L, "width"));
+        int const height(readField<int>(L, "height"));
+        
+        return Glitz(new (multi_thread_tag{}) ImageGlitz(layer, std::move(key), x, y, width, height));
+    }
+    std::cerr << "Unknown Glitz Type: " << type << "\n";
+    luaassert("Unknown Glitz Type" && false);
+}
+
+unsigned readColourField(lua_State *L, char const *fieldName)
+{
+    LuaStackManager stack_manager(L);
+    lua_getfield(L, -1, fieldName);
+    unsigned r(readField<int>(L, "r"));
+    unsigned g(readField<int>(L, "g"));
+    unsigned b(readField<int>(L, "b"));
+    lua_pop(L, 1);
+    return r << 24 | g << 16 | b << 8;
+}
+
 
 } //namespace hg

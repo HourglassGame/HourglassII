@@ -46,6 +46,8 @@ namespace {
         variant<A, B> test_variantB(B{});
         apply_visitor(test_MultiVisitor{worked}, test_variantA, test_variantB);
         
+        test_variantB = test_variantA;
+        
         return worked;
     }
 #ifdef __clang__
