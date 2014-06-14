@@ -93,6 +93,10 @@
 		2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2064466C15D9FBF5009EF465 /* Levels_test.cpp */; };
 		2085B19E18CE6A77003703DB /* MainMenuScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2085B19C18CE6A77003703DB /* MainMenuScene.cpp */; };
 		2085F0E1191A2B1A00316D2D /* ParallelForEach_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2085F0DF191A2B1A00316D2D /* ParallelForEach_test.cpp */; };
+		208CF52F194AEBEA00363F16 /* libtbb.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
+		208CF530194AEBEA00363F16 /* libtbbmalloc.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */; };
+		208CF531194AEBF100363F16 /* libtbb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
+		208CF532194AEBF100363F16 /* libtbbmalloc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */; };
 		20945A01160BF702005A94EE /* lapi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459C6160BF702005A94EE /* lapi.cpp */; };
 		20945A02160BF702005A94EE /* lauxlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459C8160BF702005A94EE /* lauxlib.cpp */; };
 		20945A03160BF702005A94EE /* lbaselib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209459CA160BF702005A94EE /* lbaselib.cpp */; };
@@ -141,10 +145,6 @@
 		20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
 		20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
 		20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
-		20C35CA71930E79F00708E24 /* libtbb_debug.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA51930E79F00708E24 /* libtbb_debug.dylib */; };
-		20C35CA81930E79F00708E24 /* libtbbmalloc_debug.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA61930E79F00708E24 /* libtbbmalloc_debug.dylib */; };
-		20C35CA91930E7DA00708E24 /* libtbb_debug.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA51930E79F00708E24 /* libtbb_debug.dylib */; };
-		20C35CAA1930E7DA00708E24 /* libtbbmalloc_debug.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20C35CA61930E79F00708E24 /* libtbbmalloc_debug.dylib */; };
 		20D4319A18C6B755006BBCBB /* LoadingLevelScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319818C6B755006BBCBB /* LoadingLevelScene.cpp */; };
 		20D4319D18C83AAD006BBCBB /* InitialScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319B18C83AAD006BBCBB /* InitialScene.cpp */; };
 		20D431A018C84608006BBCBB /* LoadedLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319E18C84608006BBCBB /* LoadedLevel.cpp */; };
@@ -163,8 +163,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				20C35CA91930E7DA00708E24 /* libtbb_debug.dylib in Copy Frameworks */,
-				20C35CAA1930E7DA00708E24 /* libtbbmalloc_debug.dylib in Copy Frameworks */,
+				208CF52F194AEBEA00363F16 /* libtbb.dylib in Copy Frameworks */,
+				208CF530194AEBEA00363F16 /* libtbbmalloc.dylib in Copy Frameworks */,
 				2001EA7818BD9190007F6AAE /* sfml-audio.framework in Copy Frameworks */,
 				2001EA7918BD9190007F6AAE /* sfml-graphics.framework in Copy Frameworks */,
 				2001EA7A18BD9190007F6AAE /* sfml-network.framework in Copy Frameworks */,
@@ -533,8 +533,8 @@
 				2001EA7218BD9130007F6AAE /* sfml-system.framework in Frameworks */,
 				2001EA8018BD9318007F6AAE /* freetype.framework in Frameworks */,
 				2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */,
-				20C35CA71930E79F00708E24 /* libtbb_debug.dylib in Frameworks */,
-				20C35CA81930E79F00708E24 /* libtbbmalloc_debug.dylib in Frameworks */,
+				208CF531194AEBF100363F16 /* libtbb.dylib in Frameworks */,
+				208CF532194AEBF100363F16 /* libtbbmalloc.dylib in Frameworks */,
 				20469DFE14B47D9E00FF6A02 /* libboost_chrono.a in Frameworks */,
 				20469DFF14B47D9E00FF6A02 /* libboost_filesystem.a in Frameworks */,
 				20469E0014B47D9E00FF6A02 /* libboost_serialization.a in Frameworks */,
@@ -591,18 +591,18 @@
 		20029FF112F0FDA3000E2DBC /* Frame */ = {
 			isa = PBXGroup;
 			children = (
-				200E80FD14B4792500D054F4 /* Universe_fwd.h */,
-				200E80FF14B4792500D054F4 /* Universe.h */,
-				200E80FE14B4792500D054F4 /* Universe.cpp */,
 				200E810014B4792500D054F4 /* UniverseID_fwd.h */,
 				200E810214B4792500D054F4 /* UniverseID.h */,
 				200E810114B4792500D054F4 /* UniverseID.cpp */,
-				200E805A14B4792500D054F4 /* Frame_fwd.h */,
-				200E805C14B4792500D054F4 /* Frame.h */,
-				200E805B14B4792500D054F4 /* Frame.cpp */,
 				200E805D14B4792500D054F4 /* FrameID_fwd.h */,
 				200E805F14B4792500D054F4 /* FrameID.h */,
 				200E805E14B4792500D054F4 /* FrameID.cpp */,
+				200E80FD14B4792500D054F4 /* Universe_fwd.h */,
+				200E80FF14B4792500D054F4 /* Universe.h */,
+				200E80FE14B4792500D054F4 /* Universe.cpp */,
+				200E805A14B4792500D054F4 /* Frame_fwd.h */,
+				200E805C14B4792500D054F4 /* Frame.h */,
+				200E805B14B4792500D054F4 /* Frame.cpp */,
 			);
 			name = Frame;
 			sourceTree = "<group>";
@@ -812,14 +812,7 @@
 				200E806314B4792500D054F4 /* FrameView.cpp */,
 				200E806514B4792500D054F4 /* Geometry.h */,
 				200E805114B4792500D054F4 /* DepartureMap_fwd.h */,
-				200E806714B4792500D054F4 /* Glitz.h */,
-				200E806614B4792500D054F4 /* Glitz.cpp */,
-				208FD88E14D163140089BC25 /* GlitzImplementation.h */,
-				20368B80193CDF7B0037B975 /* AudioGlitz.h */,
-				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
-				201345E815E3694000E73DA5 /* LineGlitz.h */,
-				209B3C85169BDFEC003C554D /* TextGlitz.h */,
-				2014155F17E7526B00109D7B /* ImageGlitz.h */,
+				208CF533194AF01700363F16 /* Glitz */,
 				200E806B14B4792500D054F4 /* GuyOutputInfo.h */,
 				200E806A14B4792500D054F4 /* GuyOutputInfo.cpp */,
 				200E806D14B4792500D054F4 /* Hg_Input.h */,
@@ -879,6 +872,21 @@
 				20469E0714B47E4300FF6A02 /* PkgInfo */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		208CF533194AF01700363F16 /* Glitz */ = {
+			isa = PBXGroup;
+			children = (
+				200E806714B4792500D054F4 /* Glitz.h */,
+				200E806614B4792500D054F4 /* Glitz.cpp */,
+				208FD88E14D163140089BC25 /* GlitzImplementation.h */,
+				20368B80193CDF7B0037B975 /* AudioGlitz.h */,
+				208FD88F14D16A180089BC25 /* RectangleGlitz.h */,
+				201345E815E3694000E73DA5 /* LineGlitz.h */,
+				209B3C85169BDFEC003C554D /* TextGlitz.h */,
+				2014155F17E7526B00109D7B /* ImageGlitz.h */,
+			);
+			name = Glitz;
 			sourceTree = "<group>";
 		};
 		20A2886018C56FCD00B748B3 /* Scenes */ = {
@@ -1351,6 +1359,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1454,6 +1463,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1558,6 +1568,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1956,6 +1967,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1995,6 +2007,7 @@
 					../../../ext/SFML/lib,
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;

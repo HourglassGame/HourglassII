@@ -40,11 +40,11 @@ bool FrameID::nextFrameInSameUniverse(TimeDirection direction) const
     return
         assert(isValidFrame()),
         (direction == TimeDirection::REVERSE && frame != 0)
-     || (direction == TimeDirection::FORWARDS && frame != universeID.timelineLength - 1);
+     || (direction == TimeDirection::FORWARDS && frame != getTimelineLength(universeID) - 1);
 }
 FrameID FrameID::arbitraryFrameInUniverse(int frameNumber) const
 {
-    return frameNumber >= 0 && frameNumber < universeID.timelineLength ?
+    return frameNumber >= 0 && frameNumber < getTimelineLength(universeID) ?
         FrameID(frameNumber, universeID) : FrameID();
 }
 
@@ -56,12 +56,12 @@ bool FrameID::operator<(FrameID const &o) const {
     return as_tie() < o.as_tie();
 }
 bool FrameID::isValidFrame() const {
-    if (frame >= 0 && frame < universeID.timelineLength) {
+    if (frame >= 0 && frame < getTimelineLength(universeID)) {
         return true;
     }
     else {
         assert(frame == -1);
-        assert(universeID.timelineLength == -1);
+        assert(getTimelineLength(universeID) == -1);
         return false;
     }
 }

@@ -56,23 +56,15 @@ class TriggerFrameStateImplementation
         Box const &objectToManipulate) = 0;
 
     struct DepartureInformation {
-        DepartureInformation(
-            mt::std::map<Frame *, mt::std::vector<TriggerData>> const &triggerDepartures,
-            mt::std::vector<Glitz> const &forwardsGlitz,
-            mt::std::vector<Glitz> const &reverseGlitz,
-            mt::std::vector<ObjectAndTime<Box, Frame *> > const &additionalBoxDepartures):
-                triggerDepartures(triggerDepartures),
-                forwardsGlitz(forwardsGlitz),
-                reverseGlitz(reverseGlitz),
-                additionalBoxDepartures(additionalBoxDepartures) {}
         mt::std::map<Frame *, mt::std::vector<TriggerData>> triggerDepartures;
 		mt::std::vector<Glitz> forwardsGlitz;
         mt::std::vector<Glitz> reverseGlitz;
-		mt::std::vector<ObjectAndTime<Box, Frame*> > additionalBoxDepartures;
+        mt::std::vector<GlitzPersister> additionalGlitzPersisters;
+		mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
     };
 
     virtual DepartureInformation getDepartureInformation(
-        mt::std::map<Frame*, ObjectList<Normal> > const &departures,
+        mt::std::map<Frame *, ObjectList<Normal>> const &departures,
         Frame *currentFrame) = 0;
 
     virtual ~TriggerFrameStateImplementation(){}
@@ -118,8 +110,8 @@ class TriggerFrameState
     }
     
     DepartureInformation getDepartureInformation(
-            mt::std::map<Frame *, ObjectList<Normal> > const &departures,
-            Frame *currentFrame)
+        mt::std::map<Frame *, ObjectList<Normal>> const &departures,
+        Frame *currentFrame)
     {
         return impl->getDepartureInformation(departures, currentFrame);
     }
@@ -134,7 +126,7 @@ class TriggerFrameState
     //  The following must release impl:
     //  multi_thread_delete(impl);
     //THIS MEANS THAT impl MUST HAVE BEEN ALLOCATED IN A SPECIAL WAY!!
-    //(with multi_thread_new)
+    //(with new (multi_thread_tag{}) FrameStateImpl())
     explicit TriggerFrameState(TriggerFrameStateImplementation *impl) :
         impl(impl)
     {}

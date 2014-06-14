@@ -138,18 +138,17 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
                 Frame *,
                 mt::std::vector<TriggerData>> triggerDepartures_t;
 
-    TriggerFrameState::DepartureInformation triggerSystemDepartureInformation(
+    TriggerFrameState::DepartureInformation const triggerSystemDepartureInformation(
         triggerFrameState.getDepartureInformation(
             newDepartures,
             frame));
-    typedef triggerDepartures_t::value_type triggerDeparture_t;
-    for (triggerDeparture_t const &triggerDeparture: triggerSystemDepartureInformation.triggerDepartures) {
+
+    for (auto const &triggerDeparture: triggerSystemDepartureInformation.triggerDepartures) {
         //Should probably move triggerDeparture.second into newDepartures, rather than copy it.
         newDepartures[triggerDeparture.first].addRange(triggerDeparture.second);
     }
-
-    // add extra boxes to newDepartures
     buildDeparturesForComplexEntities(triggerSystemDepartureInformation.additionalBoxDepartures, newDepartures);
+    boost::push_back(persistentGlitz, triggerSystemDepartureInformation.additionalGlitzPersisters);
 
     for (GlitzPersister const &persister: persistentGlitz) {
         forwardsGlitz.push_back(persister.getForwardsGlitz());

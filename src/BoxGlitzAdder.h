@@ -21,13 +21,13 @@ public:
         TimeDirection timeDirection) const
     {
         Glitz sameDirectionGlitz(
-            multi_thread_new<ImageGlitz>(
+            new (multi_thread_tag{}) ImageGlitz(
                 500, std::string("global.box"),
                 position.x, position.y,
                 size, size));
     
         Glitz oppositeDirectionGlitz(
-            multi_thread_new<ImageGlitz>(
+            new (multi_thread_tag{}) ImageGlitz(
                 500, std::string("global.box_r"),
                 position.x, position.y,
                 size, size));

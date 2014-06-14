@@ -131,5 +131,10 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
 
 template<>
 Collision to<Collision>(lua_State *L, int index);
+
+template<>
+Glitz to<Glitz>(lua_State *L, int index);
+
+unsigned readColourField(lua_State *L, char const *fieldName);
 }
 #endif //HG_LUA_UTILITIES_H

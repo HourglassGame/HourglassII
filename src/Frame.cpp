@@ -20,19 +20,19 @@ Frame::Frame(int frameNumber, Universe &universe):
 {
 }
 
-void Frame::correctUniverse(Universe &newUniverse) noexcept
+void Frame::correctUniverse(Universe_Frame_access, Universe &newUniverse) noexcept
 {
     universe = &newUniverse;
 }
 
-void Frame::correctDepartureFramePointers(FramePointerUpdater const &updater) {
+void Frame::correctDepartureFramePointers(Universe_Frame_access, FramePointerUpdater const &updater) {
     FrameDeparturesT updatedDepartures;
     for (auto &departurePair: departures) {
         updatedDepartures[updater.updateFrame(departurePair.first)] = std::move(departurePair.second);
     }
     departures.swap(updatedDepartures);
 }
-void Frame::correctArrivalFramePointers(FramePointerUpdater const &updater) {
+void Frame::correctArrivalFramePointers(Universe_Frame_access, FramePointerUpdater const &updater) {
     FrameArrivalsT updatedArrivals;
     for (auto &arrivalPair: arrivals) {
         bool inserted = updatedArrivals.insert(std::make_pair(
@@ -41,7 +41,7 @@ void Frame::correctArrivalFramePointers(FramePointerUpdater const &updater) {
     }
     arrivals.swap(updatedArrivals);
 }
-void Frame::correctArrivalObjectListPointers() {
+void Frame::correctArrivalObjectListPointers(Universe_Frame_access) {
     for (auto &arrivalPair: arrivals) {
         if (arrivalPair.first) {
             auto it = arrivalPair.first->departures.find(this);
@@ -53,17 +53,17 @@ void Frame::correctArrivalObjectListPointers() {
 
 Frame const *Frame::nextFrame(TimeDirection direction) const {
     assert(direction != TimeDirection::INVALID);
-    return nextFrameInSameUniverse(direction) ? universe->getArbitraryFrame(frameNumber + direction) : nullptr;
+    return nextFrameInSameUniverse(direction) ? getArbitraryFrame(*universe, frameNumber + direction) : nullptr;
 }
 
 Frame *Frame::nextFrame(TimeDirection direction) {
     assert(direction != TimeDirection::INVALID);
-    return nextFrameInSameUniverse(direction) ? universe->getArbitraryFrame(frameNumber + direction) : nullptr;
+    return nextFrameInSameUniverse(direction) ? getArbitraryFrame(*universe, frameNumber + direction) : nullptr;
 }
 
 bool Frame::nextFrameInSameUniverse(TimeDirection direction) const {
     return (frameNumber != 0 && direction == TimeDirection::REVERSE)
-            || (frameNumber != universe->getTimelineLength() - 1 && direction == TimeDirection::FORWARDS);
+            || (frameNumber != getTimelineLength(*universe) - 1 && direction == TimeDirection::FORWARDS);
 }
 
 Universe const &Frame::getUniverse() const {
@@ -221,8 +221,7 @@ void Frame::setPermanentArrival(ObjectList<Normal> const *newPermanentArrival) {
     bool didInsert(arrivals.insert(toSet));
     if (!didInsert) {
         FrameArrivalsT::accessor access;
-        if (arrivals.find(access, toSet.first))
-        {
+        if (arrivals.find(access, toSet.first)) {
             access->second = toSet.second;
             return;
         }
@@ -241,8 +240,7 @@ void Frame::changeArrival(
     FrameArrivalsT::value_type const &toChange)
 {
     FrameArrivalsT::accessor access;
-    if (arrivals.find(access, toChange.first))
-    {
+    if (arrivals.find(access, toChange.first)) {
         access->second = toChange.second;
         return;
     }

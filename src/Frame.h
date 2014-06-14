@@ -17,7 +17,14 @@
 #include "Universe_fwd.h"
 #include "FrameUpdateSet_fwd.h"
 #include "FrameID_fwd.h"
+
 namespace hg {
+struct Universe_Frame_access{
+    friend class Universe;
+private:
+    Universe_Frame_access(){}
+};
+
 bool isNullFrame(Frame const *frame);
 Frame const *nextFrame(Frame const *frame, TimeDirection direction);
 Frame *nextFrame(Frame *frame, TimeDirection direction);
@@ -56,14 +63,13 @@ public:
     //to the permanent arrival already held by the frame, the frame must be re-executed (by WorldState).
     void setPermanentArrival(ObjectList<Normal> const *newPermanentArrival);
 private:
-    friend class Universe;
-
+public: //Pseudo-private, only accessible from Universe:
     //These "correct" functions are for rearranging pointers when universes get copied.
-    void correctUniverse(Universe &newUniverse) noexcept;
-    void correctDepartureFramePointers(FramePointerUpdater const &updater);
-    void correctArrivalObjectListPointers();
-    void correctArrivalFramePointers(FramePointerUpdater const &updater);
-    
+    void correctUniverse(Universe_Frame_access, Universe &newUniverse) noexcept;
+    void correctDepartureFramePointers(Universe_Frame_access, FramePointerUpdater const &updater);
+    void correctArrivalObjectListPointers(Universe_Frame_access);
+    void correctArrivalFramePointers(Universe_Frame_access, FramePointerUpdater const &updater);
+private:
     //Private to enforce use of non-member variants.
     Frame const *nextFrame(TimeDirection direction) const;
     Frame *nextFrame(TimeDirection direction);

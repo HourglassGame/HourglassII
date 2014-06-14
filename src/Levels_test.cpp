@@ -14,6 +14,7 @@
 #include "ReplayIO.h"
 #include "TimeEngine.h"
 #include "PlayerVictoryException.h"
+#include <chrono>
 namespace hg {
 namespace levels_test {
 namespace {
@@ -31,7 +32,7 @@ bool testLevels() {
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
-#if 0 //commented out as these tests take too long to run to be run at the start of every execution
+#if 0 //commented out as these tests take far too long to run to be run at the start of every execution
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             if (exists(entry.path()/"DoNotTest")) continue;
             std::cout << "Testing " << entry.path() << " ...";
@@ -40,6 +41,7 @@ bool testLevels() {
                 testPassed = false;
                 continue;
             }
+            auto start = std::chrono::high_resolution_clock::now();
             TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
             auto const replay = loadReplay((entry.path()/"win.replay").string());
             try {
@@ -48,7 +50,10 @@ bool testLevels() {
                 }
             }
             catch (PlayerVictoryException const&) {
-                std::cout << " OK\n";
+                auto timeTaken =
+                    std::chrono::duration_cast<std::chrono::duration<double>>(
+                        std::chrono::high_resolution_clock::now()-start);
+                std::cout << " OK, in: " << timeTaken.count() << "s\n";
                 continue;
             }
             std::cerr << " Did not win\n";

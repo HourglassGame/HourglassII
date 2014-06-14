@@ -16,7 +16,7 @@ inline void addCurrentGuyArrow(
     int width = 200;
     glitzList.push_back(
         Glitz(
-            multi_thread_new<LineGlitz>(
+            new (multi_thread_tag{}) LineGlitz(
                 650,
                 tipx,
                 top - size.y/2 - 400,
@@ -27,7 +27,7 @@ inline void addCurrentGuyArrow(
     
     glitzList.push_back(
         Glitz(
-            multi_thread_new<LineGlitz>(
+            new (multi_thread_tag{}) LineGlitz(
                 650,
                 tipx+halfwidth/2,
                 top - size.y/4 - 400,
@@ -38,7 +38,7 @@ inline void addCurrentGuyArrow(
     
     glitzList.push_back(
         Glitz(
-            multi_thread_new<LineGlitz>(
+            new (multi_thread_tag{}) LineGlitz(
                 650,
                 tipx-halfwidth/2,
                 top - size.y/4 - 400,
@@ -68,7 +68,8 @@ public:
         bool boxCarrying,
         int boxCarrySize,
         TimeDirection boxCarryDirection,
-        bool currentGuy) const
+        bool currentGuy,
+        bool justPickedUpBox) const
     {
         //Forwards View
         {
@@ -87,7 +88,7 @@ public:
             //int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
             
-            forwardsGlitz->push_back(Glitz(multi_thread_new<ImageGlitz>(
+            forwardsGlitz->push_back(Glitz(new (multi_thread_tag{}) ImageGlitz(
                 600,
                 facing == FacingDirection::RIGHT ?
                     (timeDirection == TimeDirection::FORWARDS ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
@@ -98,7 +99,7 @@ public:
             {
                 forwardsGlitz->push_back(
                     Glitz(
-                        multi_thread_new<ImageGlitz>(
+                        new (multi_thread_tag{}) ImageGlitz(
                             600,
                             boxCarryDirection == TimeDirection::FORWARDS ?
                               "global.box" : "global.box_r",
@@ -127,7 +128,7 @@ public:
             //int const halfheight(size.y/2);
             int const hmid(pnc.x+halfwidth);
 
-            reverseGlitz->push_back(Glitz(multi_thread_new<ImageGlitz>(
+            reverseGlitz->push_back(Glitz(new (multi_thread_tag{}) ImageGlitz(
                 600,
                 facing == FacingDirection::RIGHT ?
                     (timeDirection == TimeDirection::REVERSE ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
@@ -137,7 +138,7 @@ public:
             {
                 reverseGlitz->push_back(
                     Glitz(
-                        multi_thread_new<ImageGlitz>(
+                        new (multi_thread_tag{}) ImageGlitz(
                             600,
                             boxCarryDirection == TimeDirection::REVERSE ?
                               "global.box" : "global.box_r",
@@ -147,6 +148,15 @@ public:
                             boxCarrySize)));
             }
             if (currentGuy) addCurrentGuyArrow(*reverseGlitz, hmid, top, halfwidth, size);
+        }
+        
+        if (justPickedUpBox) {
+            persistentGlitz->push_back(
+                GlitzPersister(
+                    new (multi_thread_tag{}) AudioGlitzPersister(
+                        "global.box_pickup",
+                        16,
+                        timeDirection)));
         }
     }
 	
@@ -162,9 +172,9 @@ public:
 		int width = 100;
 		persistentGlitz->push_back(
 			GlitzPersister(
-                multi_thread_new<StaticGlitzPersister>(
+                new (multi_thread_tag{}) StaticGlitzPersister(
                     Glitz(
-                        multi_thread_new<LineGlitz>(
+                        new (multi_thread_tag{}) LineGlitz(
                             1500,
                             x1,
                             y1,
@@ -173,7 +183,7 @@ public:
                             width,
                             timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
                     Glitz(
-                        multi_thread_new<LineGlitz>(
+                        new (multi_thread_tag{}) LineGlitz(
                             1500,
                             x1,
                             y1,
@@ -181,13 +191,13 @@ public:
                             y2,
                             width,
                             timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-                    60,
+                    24,
                     timeDirection)));
 		persistentGlitz->push_back(
 			GlitzPersister(
-                multi_thread_new<StaticGlitzPersister>(
+                new (multi_thread_tag{}) StaticGlitzPersister(
                     Glitz(
-                        multi_thread_new<RectangleGlitz>(
+                        new (multi_thread_tag{}) RectangleGlitz(
                             1500, 
                             xAim-200,
                             yAim-200,
@@ -195,22 +205,21 @@ public:
                             400,
                             timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
                     Glitz(
-                        multi_thread_new<RectangleGlitz>(
+                        new (multi_thread_tag{}) RectangleGlitz(
                             1500, 
                             xAim-200,
                             yAim-200,
                             400, 
                             400,
                             timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-                    60,
+                    24,
                     timeDirection)));
         
         persistentGlitz->push_back(
             GlitzPersister(
-                multi_thread_new<AudioGlitzPersister>(
+                new (multi_thread_tag{}) AudioGlitzPersister(
                     "global.laser_shoot",
                     24,
-                    0,
                     timeDirection)));
 	}
 	
@@ -223,9 +232,9 @@ public:
 	{
 		persistentGlitz->push_back(
 			GlitzPersister(
-                multi_thread_new<StaticGlitzPersister>(
+                new (multi_thread_tag{}) StaticGlitzPersister(
                     Glitz(
-                        multi_thread_new<RectangleGlitz>(
+                        new (multi_thread_tag{}) RectangleGlitz(
                             1500,
                             x,
                             y,
@@ -233,7 +242,7 @@ public:
                             height,
                             timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
                     Glitz(
-                        multi_thread_new<RectangleGlitz>(
+                        new (multi_thread_tag{}) RectangleGlitz(
                             1500,
                             x,
                             y,

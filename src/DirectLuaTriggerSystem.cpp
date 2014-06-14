@@ -82,7 +82,7 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &in
     }
 
 	return TriggerFrameState(
-		multi_thread_new<DirectLuaTriggerFrameState>(
+		new (multi_thread_tag{}) DirectLuaTriggerFrameState(
 			boost::ref(sharedState),
 			boost::cref(triggerOffsetsAndDefaults_),
 			arrivalLocationsSize_,
@@ -262,50 +262,27 @@ ArrivalLocation toArrivalLocation(lua_State *L)
     return ArrivalLocation(x, y, xspeed, yspeed, timeDirection);
 }
 
-unsigned readColourField(lua_State *L, char const *fieldName)
-{
-    LuaStackManager stack_manager(L);
-    lua_getfield(L, -1, fieldName);
-    unsigned r(readField<int>(L, "r"));
-    unsigned g(readField<int>(L, "g"));
-    unsigned b(readField<int>(L, "b"));
-    lua_pop(L, 1);
-    return r << 24 | g << 16 | b << 8;
-}
-
-Glitz toGlitz(lua_State *L)
-{
+GlitzPersister toGlitzPersister(lua_State *L) {
     std::string const type(readField<std::string>(L, "type"));
-    if (type == "rectangle") {
-        int const layer(readField<int>(L, "layer"));
-        int const x(readField<int>(L, "x"));
-        int const y(readField<int>(L, "y"));
-        int const width(readField<int>(L, "width"));
-        int const height(readField<int>(L, "height"));
-        unsigned colour(readColourField(L, "colour"));
-        return Glitz(multi_thread_new<RectangleGlitz>(layer, x, y, width, height, colour));
+    if (type == "static") {
+        Glitz forwardsGlitz = readField<Glitz>(L, "forwardsGlitz");
+        Glitz reverseGlitz = readField<Glitz>(L, "reverseGlitz");
+        int lifetime = readField<int>(L, "lifetime");
+        luaassert(lifetime >= 0 && "Glitz lifetimes must be positive");
+        TimeDirection timeDirection = readField<TimeDirection>(L, "timeDirection");
+        return GlitzPersister(
+            new (multi_thread_tag{}) StaticGlitzPersister(
+                std::move(forwardsGlitz), std::move(reverseGlitz), lifetime, timeDirection));
     }
-    else if (type == "text") {
-        int const layer(readField<int>(L, "layer"));
-        std::string text(readField<std::string>(L, "text"));
-        int const x(readField<int>(L, "x"));
-        int const y(readField<int>(L, "y"));
-        int const size(readField<int>(L, "size"));
-        unsigned colour(readColourField(L, "colour"));
-        return Glitz(multi_thread_new<TextGlitz>(layer, std::move(text), x, y, size, colour));
+    else if (type == "audio") {
+        std::string key = readField<std::string>(L, "key");
+        int duration = readField<int>(L, "duration");
+        TimeDirection timeDirection = readField<TimeDirection>(L, "timeDirection");
+        return GlitzPersister(
+            new (multi_thread_tag{}) AudioGlitzPersister(std::move(key), duration, timeDirection));
     }
-    else if (type == "image") {
-        int const layer(readField<int>(L, "layer"));
-        std::string key(readField<std::string>(L, "key"));
-        int const x(readField<int>(L, "x"));
-        int const y(readField<int>(L, "y"));
-        int const width(readField<int>(L, "width"));
-        int const height(readField<int>(L, "height"));
-        
-        return Glitz(multi_thread_new<ImageGlitz>(layer, std::move(key), x, y, width, height));
-    }
-    std::cerr << "Unknown Glitz Type: " << type << "\n";
-    luaassert("Unknown Glitz Type" && false);
+    std::cerr << "Unknown Glitz Persister Type: " << type << "\n";
+    luaassert("Unknown Glitz Persister Type" && false);
 }
 
 Box readBoxField(lua_State *L, char const *fieldName, std::size_t arrivalLocationsSize)
@@ -902,8 +879,10 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     //]
     //call function
-    //return values are: triggers, forwardsGlitz, reverseGlitz, extraBoxes
-    lua_call(L, 1, 4);
+    //return values are: triggers, forwardsGlitz, reverseGlitz, glitzPersisters, extraBoxes
+    lua_call(L, 1, 5);
+    
+    //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes]
 
     //read triggers return value
     //Trigger return value looks like:
@@ -918,20 +897,21 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     */
     mt::std::vector<TriggerData> triggers;
-    luaassert(lua_istable(L, -4));
+    luaassert(lua_istable(L, -5));
     luaL_checkstack(L, 2, nullptr);
-    lua_pushnil(L);
-    while (lua_next(L, -5) != 0) {
+    lua_pushnil(L); //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes,nil]
+    while (lua_next(L, -6) != 0) {
+        //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes,triggerIndex,triggerValue]
         luaassert(lua_isnumber(L, -2));
         int index(static_cast<int>(lua_tonumber(L, -2)) - 1);
         mt::std::vector<int> value;
-        assert(lua_istable(L, -1) && "trigger value must be a table");
+        luaassert(lua_istable(L, -1) && "trigger value must be a table");
         
         for (std::size_t k(1), end(lua_rawlen(L, -1)); k <= end; ++k) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, k);
             lua_gettable(L, -2);
-            assert(lua_isnumber(L, -1));
+            luaassert(lua_isnumber(L, -1));
             value.push_back(lua_tointeger(L, -1));
             lua_pop(L, 1);
         }
@@ -977,26 +957,59 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
 
     // get forwards glitz departure
     mt::std::vector<Glitz> forwardsGlitz;
-    if (!lua_isnil(L, -3)) {
-        luaassert(lua_istable(L, -3) && "forwards glitz list must be a table");
-        for (std::size_t i(1), end(lua_rawlen(L, -3)); i <= end; ++i) {
+    if (!lua_isnil(L, -4)) {
+        luaassert(lua_istable(L, -4) && "forwards glitz list must be a table");
+        for (std::size_t i(1), end(lua_rawlen(L, -4)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
-            lua_gettable(L, -4);
-            forwardsGlitz.push_back(toGlitz(L));
+            lua_gettable(L, -5);
+            forwardsGlitz.push_back(to<Glitz>(L));
             lua_pop(L, 1);
         }
     }
     
     // get reverse glitz departure
     mt::std::vector<Glitz> reverseGlitz;
+    if (!lua_isnil(L, -3)) {
+        luaassert(lua_istable(L, -3) && "background glitz list must be a table");
+        for (std::size_t i(1), end(lua_rawlen(L, -3)); i <= end; ++i) {
+            luaL_checkstack(L, 1, nullptr);
+            lua_pushinteger(L, i);
+            lua_gettable(L, -4);
+            reverseGlitz.push_back(to<Glitz>(L));
+            lua_pop(L, 1);
+        }
+    }
+
+    
+    //Get GlitzPersisters departure
+    //glitz persister return value looks like:
+    /*
+    {
+        {
+            type = <'static' or 'audio'>,
+            if type == 'static' then
+                forwardsGlitz = <Glitz (as above)>,
+                reverseGlitz = <Glitz (as above)>,
+                lifetime = <natural number>,
+                timeDirection = <'forwards' or 'reverse'>
+            elseif type == 'audio' then
+                key = <string>,
+                duration = <natural number>,
+                timeDirection = <'forwards' or 'reverse'>
+            end
+        },
+        ...
+    }
+    */
+    mt::std::vector<GlitzPersister> glitzPersisters;
     if (!lua_isnil(L, -2)) {
-        luaassert(lua_istable(L, -2) && "background glitz list must be a table");
+        luaassert(lua_istable(L, -2) && "glitz persisters list must be a table");
         for (std::size_t i(1), end(lua_rawlen(L, -2)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
             lua_gettable(L, -3);
-            reverseGlitz.push_back(toGlitz(L));
+            glitzPersisters.push_back(toGlitzPersister(L));
             lua_pop(L, 1);
         }
     }
@@ -1040,12 +1053,13 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     
     //pop return values
-    lua_pop(L, 4);
-    return DepartureInformation(
+    lua_pop(L, 5);
+    return {
         calculateActualTriggerDepartures(triggers, triggerOffsetsAndDefaults_, currentFrame),
         forwardsGlitz,
         reverseGlitz,
-        newBox);
+        glitzPersisters,
+        newBox};
 }
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState() noexcept

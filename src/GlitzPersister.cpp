@@ -16,7 +16,7 @@ ObjectAndTime<GlitzPersister, Frame *> StaticGlitzPersister::runStep(Frame *fram
 {
     return ObjectAndTime<GlitzPersister, Frame*>(
         GlitzPersister(
-            multi_thread_new<StaticGlitzPersister>(
+            new (multi_thread_tag{}) StaticGlitzPersister(
                 forwardsGlitz, reverseGlitz,
                 framesLeft - 1, timeDirection)),
         framesLeft ? nextFrame(frame, timeDirection) : nullptr);
@@ -35,6 +35,16 @@ bool StaticGlitzPersister::operator<(GlitzPersisterImpl const &o) const
 AudioGlitzPersister::AudioGlitzPersister(
         std::string key,
         unsigned duration,
+        TimeDirection timeDirection) :
+    key(std::move(key)),
+    duration(duration),
+    currentFrame(0),
+    timeDirection(timeDirection)
+{}
+
+AudioGlitzPersister::AudioGlitzPersister(
+        std::string key,
+        unsigned duration,
         unsigned currentFrame,
         TimeDirection timeDirection) :
     key(std::move(key)),
@@ -46,14 +56,14 @@ AudioGlitzPersister::AudioGlitzPersister(
 Glitz AudioGlitzPersister::getForwardsGlitz() const  {
     std::string suffix = timeDirection == TimeDirection::FORWARDS ? "" : "_r";
     return Glitz(
-        multi_thread_new<AudioGlitz>(
+        new (multi_thread_tag{}) AudioGlitz(
             key+suffix,
             timeDirection == TimeDirection::FORWARDS ? currentFrame : duration-currentFrame));
 }
 Glitz AudioGlitzPersister::getReverseGlitz() const  {
     std::string suffix = timeDirection == TimeDirection::REVERSE ? "" : "_r";
     return Glitz(
-        multi_thread_new<AudioGlitz>(
+        new (multi_thread_tag{}) AudioGlitz(
             key+suffix,
             timeDirection == TimeDirection::REVERSE ? currentFrame : duration-currentFrame));
 }
@@ -62,7 +72,7 @@ ObjectAndTime<GlitzPersister, Frame *> AudioGlitzPersister::runStep(Frame *frame
 {
     return ObjectAndTime<GlitzPersister, Frame*>(
         GlitzPersister(
-            multi_thread_new<AudioGlitzPersister>(
+            new (multi_thread_tag{}) AudioGlitzPersister(
                 key,
                 duration,
                 currentFrame + 1,

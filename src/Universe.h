@@ -13,14 +13,25 @@
 #include <type_traits>
 namespace hg {
 class Universe;
+
+struct FramePointerUpdater_Universe_access {
+    private:
+    friend struct FramePointerUpdater;
+    FramePointerUpdater_Universe_access(){}
+};
+
+//TODO - performance optimisation of FramePointerUpdater,
+// it just hasn't been the same since it stopped using direct access to the `frames` array.
 struct FramePointerUpdater {
-    FramePointerUpdater(Universe& universe);
+    FramePointerUpdater(Universe& universe)
+        : newUniverse(&universe)
+    {}
     template<typename FrameT>
     FrameT updateFrame(FrameT frame) const {
-        return frame ? startOfUniverse + getFrameNumber(frame) : frame;
+        return !isNullFrame(frame) ? getArbitraryFrame(*newUniverse, getFrameNumber(frame)) : FrameT();
     }
 private:
-    Frame *startOfUniverse;
+    Universe *newUniverse;
 };
 
 
@@ -55,9 +66,6 @@ public:
     Frame const *getFrame(FrameID const &whichFrame) const;
 
 private:
-    friend class Frame;
-    friend class UniverseID;
-    friend struct FramePointerUpdater;
     void fixFramesUniverses() noexcept;
     void fixFramesEverything();
     //UniverseT interface {
