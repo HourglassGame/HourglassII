@@ -137,20 +137,23 @@ void load_UDPT_lib(lua_State *L) {
     lua_pop(L, 1);
 }
 
-template<typename T>
-struct PointerProxy {
+
+struct LuaRef {
 	operator void const*() const {
-		return val == T() ? nullptr : &val;
+		return val == LUA_NOREF ? nullptr : &val;
 	}
-	T val;
+    
+    LuaRef(int val = LUA_NOREF) : val(val) {}
+
+    int val;
 };
 
 struct LuaRefDeleter {
     explicit LuaRefDeleter(lua_State *L) : L(L) {}
-    void operator()(PointerProxy<int> ref) {
+    void operator()(LuaRef ref) {
         luaL_unref(L, LUA_REGISTRYINDEX, ref.val);
     }
-    typedef PointerProxy<int> pointer;
+    typedef LuaRef pointer;
 private:
     lua_State *L;
 };
@@ -165,8 +168,8 @@ int create_proxy_table(lua_State *L) {
     lua_newtable(L);
     
     //Create refs to the base table and the outer table
-    unique_ptr<PointerProxy<int>, LuaRefDeleter> outerRef(PointerProxy<int>{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
-    unique_ptr<PointerProxy<int>, LuaRefDeleter>  baseRef(PointerProxy<int>{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
+    unique_ptr<LuaRef, LuaRefDeleter> outerRef(LuaRef{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
+    unique_ptr<LuaRef, LuaRefDeleter>  baseRef(LuaRef{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
 
     //Create the proxy table -- give it sufficient size to carry two "references"
     UDPT *rawProxyTable(static_cast<UDPT *>(lua_newuserdata(L, sizeof (UDPT))));
