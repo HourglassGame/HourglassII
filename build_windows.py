@@ -3,6 +3,9 @@ import shutil
 import os
 import os.path
 import subprocess
+import errno
+import stat
+from time import sleep
 
 def runsubprocess(command_and_args):
     try:
@@ -94,7 +97,7 @@ def create_bundle(
         library_directories, libraries)
     executable += ".exe"
     if os.path.exists("build/HourglassII"):
-        shutil.rmtree("build/HourglassII")
+        shutil.rmtree("build/HourglassII", ignore_errors=False, onerror=handleRemoveReadonly)
     os.mkdir("build/HourglassII")
     shutil.copy(executable, "build/HourglassII/HourglassII.exe")
     for dll in dlls:
@@ -106,7 +109,7 @@ compiler = basic_gxx_compiler("C:/MinGW/bin/g++")
 rc_compiler = windres("C:/MinGW/bin/windres.exe")
 seven_zip_binary = "C:/Program Files/7-Zip/7z.exe"
 
-defines = ["BOOST_MULTI_ARRAY_NO_GENERATORS", "LUA_ANSI", "BOOST_THREAD_USE_LIB", "BOOST_THREAD_VERSION=4", "NDEBUG"]
+defines = ["LUA_ANSI", "BOOST_THREAD_USE_LIB", "BOOST_THREAD_VERSION=4", "NDEBUG", "TBB_USE_CAPTRUED_EXCEPTION=0"]
 
 includes = ["ext/boost/include/", "ext/SFML/include/","ext/tbb/include/"]
 
@@ -114,15 +117,23 @@ library_directories = ["ext/boost/lib/", "ext/SFML/lib/", "ext/tbb/lib/"]
 
 libraries = [
     "tbb", "tbbmalloc",
-    "sfml-graphics-2", "sfml-window-2", "sfml-system-2", "opengl32", "glu32", "gdi32", "winmm",
+    "sfml-graphics-2", "sfml-window-2", "sfml-system-2", "sfml-audio-2", "opengl32", "glu32", "gdi32", "winmm",
     "boost_serialization-mgw48-mt-1_55", "boost_filesystem-mgw48-mt-1_55", "boost_system-mgw48-mt-1_55", "boost_thread-mgw48-mt-1_55", "boost_chrono-mgw48-mt-1_55"]
 
 dlls = [
     "ext/tbb/lib/tbb.dll", "ext/tbb/lib/tbbmalloc.dll",
     "C:/MinGW/bin/libgcc_s_dw2-1.dll", "C:/MinGW/bin/libstdc++-6.dll",
-    "ext/sfml/lib/sfml-graphics-2.dll", "ext/sfml/lib/sfml-window-2.dll", "ext/sfml/lib/sfml-system-2.dll"]
+    "ext/sfml/lib/sfml-graphics-2.dll", "ext/sfml/lib/sfml-window-2.dll", "ext/sfml/lib/sfml-system-2.dll", "ext/sfml/lib/sfml-audio-2.dll", "ext/sfml/lib/libsndfile-1.dll",  "ext/sfml/lib/openal32.dll"]
 
 rc_file = "src/windows/resource.rc"
+
+def handleRemoveReadonly(func, path, exc):
+  excvalue = exc[1]
+  if func in (os.rmdir, os.remove):
+      os.chmod(path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
+      func(path)
+  else:
+      raise
 
 def main():
     files_to_compile = glob.glob("src/*.cpp") + glob.glob("src/lua/*.cpp")
@@ -135,8 +146,15 @@ def main():
     filenamegenerator = ("build/intermediate/" + str(num) for num in iota())
 
     if os.path.exists("build"):
-        shutil.rmtree("build")
-    os.mkdir("build")
+        shutil.rmtree("build", ignore_errors=False, onerror=handleRemoveReadonly)
+
+    while True:
+       try:
+           os.mkdir("build")
+           break
+       except PermissionError:
+           sleep(0.1) #Wait and Loop, as windows may delay actually deleting the file.
+                      #See http://stackoverflow.com/questions/16373747/permission-denied-doing-os-mkdird-after-running-shutil-rmtreed-in-python
     os.mkdir("build/intermediate")
 
     create_bundle(
@@ -150,7 +168,7 @@ def main():
         libraries,
         dlls)
 
-    shutil.rmtree("build/intermediate")
+    shutil.rmtree("build/intermediate", ignore_errors=False, onerror=handleRemoveReadonly)
     
     #build release package
     os.chdir("build")
