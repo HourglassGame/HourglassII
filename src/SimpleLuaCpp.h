@@ -9,6 +9,7 @@
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <thread>
+#include <boost/throw_exception.hpp>
 namespace hg {
 [[noreturn]] inline int panic(lua_State *L) {
     //Check whether this is a memory allocation error
@@ -17,12 +18,11 @@ namespace hg {
         throw std::bad_alloc();
     }
     else if (ud.is_interrupted()) {
-        throw OperationInterruptedException();
+        boost::throw_exception(OperationInterruptedException());
     }
     else {
-        throw LuaError(L);
+        boost::throw_exception(LuaError(L));
     }
-    //return 0;
 }
 
 //RAII class for lua_State.
