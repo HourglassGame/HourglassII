@@ -149,6 +149,7 @@ def main():
         try:
             if os.path.exists("build"):
                 shutil.rmtree("build", ignore_errors=False, onerror=handleRemoveReadonly)
+            break
         except OSError:
            sleep(0.1) #Wait and Loop, there may be a delay deleting the files contained in the tree,
                       #leading to "OSError: [WinError 145] The directory is not empty: build"
