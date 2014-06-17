@@ -155,6 +155,7 @@ def main():
        except PermissionError:
            sleep(0.1) #Wait and Loop, as windows may delay actually deleting the file.
                       #See http://stackoverflow.com/questions/16373747/permission-denied-doing-os-mkdird-after-running-shutil-rmtreed-in-python
+
     os.mkdir("build/intermediate")
 
     create_bundle(
