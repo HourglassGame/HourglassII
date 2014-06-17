@@ -59,6 +59,7 @@
 								<option id="gnu.cpp.link.option.libs.1439587619" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="tbb"/>
 									<listOptionValue builtIn="false" value="tbbmalloc"/>
+									<listOptionValue builtIn="false" value="sfml-audio-2"/>
 									<listOptionValue builtIn="false" value="sfml-graphics-2"/>
 									<listOptionValue builtIn="false" value="sfml-window-2"/>
 									<listOptionValue builtIn="false" value="sfml-system-2"/>
@@ -145,6 +146,7 @@
 								<option id="gnu.cpp.link.option.libs.298530116" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="tbb"/>
 									<listOptionValue builtIn="false" value="tbbmalloc"/>
+									<listOptionValue builtIn="false" value="sfml-audio-2"/>
 									<listOptionValue builtIn="false" value="sfml-graphics-2"/>
 									<listOptionValue builtIn="false" value="sfml-window-2"/>
 									<listOptionValue builtIn="false" value="sfml-system-2"/>
