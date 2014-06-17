@@ -498,11 +498,7 @@ namespace variant_detail {
 
 template<std::size_t ...S, typename Head, typename ...Tail>
 std::tuple<Tail...> tuple_tail_impl(index_sequence<S...>, std::tuple<Head, Tail...> const &in_tuple) {
-    struct In {
-        template<std::size_t N>
-        using ElementType = typename std::tuple_element<N, std::tuple<Head, Tail...>>::type;
-    };
-    return std::tuple<Tail...>(std::forward<In::ElementType<S+1>>(std::get<S+1>(in_tuple))...);
+    return std::tuple<Tail...>(typename std::tuple_element<S+1, std::tuple<Head, Tail...>>::type(std::get<S+1>(in_tuple))...);
 }
 
 template<typename Head, typename ...Tail>
