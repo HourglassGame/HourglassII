@@ -27,7 +27,7 @@ namespace {
         struct MyException{};
         std::vector<int> const values{0,1,2,3,4};
         try {
-            parallel_for_each(values, [](int a) { if (a == 3) throw MyException{}; });
+            parallel_for_each(values, [](int a) {if (a == 3) throw MyException{};});
         }
         catch (MyException const &) {
             return true;

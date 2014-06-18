@@ -2,6 +2,9 @@
 #define HG_SCENE_H
 #include <memory>
 #include <vector>
+#include "TimeEngine.h"
+#include "OperationInterrupter.h"
+#include "LoadedLevel.h"
 namespace hg {
     struct WindowClosed_exception{};
     struct RunALevel_tag{
@@ -22,6 +25,11 @@ namespace hg {
     struct GameWon_tag{};
     struct GameAborted_tag{};
     struct SceneAborted_tag{};
+    
+    struct LoadLevelFunction {
+        hg::move_function<hg::TimeEngine(hg::OperationInterrupter &)> timeEngineLoadFun;
+        hg::move_function<hg::LoadedLevel(hg::TimeEngine &&)> glitzLoadFun;
+    };
 }
 
 #endif //HG_SCENE_H

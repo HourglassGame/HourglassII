@@ -21,11 +21,11 @@ struct RunGameResultVisitor {
 static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
     loadAndRunLevel(
         hg::RenderWindow &window,
-        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const& levelLoadingFunction,
+        LoadLevelFunction &&levelLoadingFunction,
         hg::move_function<std::vector<InputList>()>&& replayLoadingFunction = {})
 {
     hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
-              loading_outcome = load_level_scene(window, levelLoadingFunction);
+              loading_outcome = load_level_scene(window, std::move(levelLoadingFunction));
     
     struct {
         hg::RenderWindow &window;
@@ -86,14 +86,14 @@ int run_hourglassii() {
                 assert(main_menu_result.active<RunALevel_tag>());
             }
             
-            variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, SceneAborted_tag> selected_level
+            variant<LoadLevelFunction, SceneAborted_tag> selected_level
                 = run_level_selection_scene(window);
             
             if (selected_level.active<SceneAborted_tag>()) {
                 continue;
             }
             else {
-                assert(selected_level.active<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>>());
+                assert(selected_level.active<LoadLevelFunction>());
             }
             
             variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
@@ -101,7 +101,7 @@ int run_hourglassii() {
             while (game_scene_result.active<ReloadLevel_tag>()
                 || game_scene_result.active<move_function<std::vector<InputList>()>>()) {
                 try {
-                    auto& levelLoadFunction = selected_level.get<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>>();
+                    auto& levelLoadFunction = selected_level.get<LoadLevelFunction>();
                     if (game_scene_result.active<move_function<std::vector<InputList>()>>())
                     {
                         game_scene_result = loadAndRunLevel(

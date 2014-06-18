@@ -9,6 +9,7 @@
 #include <SFML/System/Sleep.hpp>
 #include "Maths.h"
 #include "natural_sort.h"
+#include "LevelLoader.h"
 namespace hg {
 
 static void drawLevelSelection(hg::RenderWindow &window, std::string const& levelName) {
@@ -26,7 +27,7 @@ static void drawLevelSelection(hg::RenderWindow &window, std::string const& leve
 }
 
 
-variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
+variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
     std::vector<boost::filesystem::path> levelPaths;
     for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
@@ -55,8 +56,27 @@ variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, SceneAbo
                   case sf::Event::KeyPressed:
                     switch (event.key.code) {
                       case sf::Keyboard::Return:
-                        return move_function<LoadedLevel(hg::OperationInterrupter &)>(
-                            std::bind(loadLevelAndResourcesFromFile, levelPaths[selectedLevel], std::placeholders::_1));
+                      {
+                        auto levelPathString = levelPaths[selectedLevel].string();
+                        return LoadLevelFunction{
+                            move_function<TimeEngine(hg::OperationInterrupter &)>(
+                                [levelPathString](hg::OperationInterrupter &interrupter) {
+                                    return TimeEngine(
+                                        loadLevelFromFile(
+                                            levelPathString,
+                                            interrupter),
+                                        interrupter);
+                                }),
+                            move_function<LoadedLevel(TimeEngine &&)>([levelPathString](TimeEngine &&timeEngine) -> LoadedLevel {
+                                auto wall = loadAndBakeWallImage(timeEngine.getWall());
+                                return {
+                                    std::move(timeEngine),
+                                    loadLevelResources(levelPathString, "GlitzData"),
+                                    wall
+                                };
+                            })
+                        };
+                      }
                       case sf::Keyboard::Up:
                       case sf::Keyboard::W:
                         selectedLevel = flooredModulo(selectedLevel-1, static_cast<int>(levelPaths.size()));
