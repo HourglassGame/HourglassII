@@ -2,7 +2,7 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
-#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include "multi_array.h"
 namespace hg {
@@ -83,73 +83,76 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
     int const roomIndexWidth = roomWidth/segmentSize;
     int const roomIndexHeight = roomHeight/segmentSize;
     
-   auto const blockTextures = [&wall] {
-        multi_array<sf::Texture, 2, 2, 2, 2> blockTextures;
+   auto const blockImages = [&wall,segmentSize] {
+        multi_array<sf::Image, 2, 2, 2, 2> blockImages;
         for (int right(0); right <= 1; ++right) {
             for(int top(0); top <= 1; ++top) {
                 for (int left(0); left <= 1; ++left) {
                     for (int bottom(0); bottom <= 1; ++bottom) {
                         std::stringstream filename;
                         filename << "Tilesets/" << wall.tilesetName() << right << top << left << bottom << ".png";
-                        blockTextures[right][top][left][bottom] = loadTexture(filename.str());
+                        blockImages[right][top][left][bottom] = loadImage(filename.str());
+                        assert((blockImages[right][top][left][bottom].getSize() == sf::Vector2u(segmentSize,segmentSize)));
                     }
                 }
             }
         }
-        return blockTextures;
+        return blockImages;
     }();
 
-    auto const cornerTextures = [&wall] {
-        multi_array<sf::Texture, 2, 2> cornerTextures;
+    auto const cornerImages = [&wall,segmentSize] {
+        multi_array<sf::Image, 2, 2> cornerImages;
         for (int bottom(0); bottom <= 1; ++bottom) {
             for (int right(0); right <= 1; ++right) {
                 std::stringstream filename;
                 filename << "Tilesets/" << wall.tilesetName() << (bottom ? "B":"T") << (right ? "R":"L") << ".png";
-                cornerTextures[bottom][right] = loadTexture(filename.str());
+                cornerImages[bottom][right] = loadImage(filename.str());
+                assert((cornerImages[bottom][right].getSize() == sf::Vector2u(segmentSize/2,segmentSize/2)));
             }
         }
-        return cornerTextures;
+        return cornerImages;
     }();
     
-    sf::RenderTexture foregroundTexture;
-    foregroundTexture.create(roomWidth, roomHeight);
-    foregroundTexture.clear(sf::Color(0,0,0,0));
+    //This should be done using a RenderTexture, but RenderTexture is
+    //buggy on some platforms (in particular, the MASS3 smartboard).
+    //The current implementation requires that the tileset be the same size in pixels as the level's
+    //segment size (divided by 100).
+    sf::Image foregroundImageBuf;
+    foregroundImageBuf.create(roomWidth, roomHeight, sf::Color(0,0,0,0));
     
     for (int x(0), xend(roomIndexWidth); x != xend; ++x) {
         for (int y(0), yend(roomIndexHeight); y != yend; ++y) {
             if (wall.atIndex(x, y)) {
-                foregroundTexture.draw(
-                    spriteForBlock(
-                        blockTextures
-                            [wall.atIndex(x+1, y)]
-                            [wall.atIndex(x, y-1)]
-                            [wall.atIndex(x-1, y)]
-                            [wall.atIndex(x, y+1)],
+
+                foregroundImageBuf.copy(
+                    blockImages
+                        [wall.atIndex(x+1, y)]
+                        [wall.atIndex(x, y-1)]
+                        [wall.atIndex(x-1, y)]
+                        [wall.atIndex(x, y+1)],
                         x*segmentSize,
-                        y*segmentSize,
-                        segmentSize));
+                        y*segmentSize);
 
                 for (int vpos(-1); vpos <= 1; vpos += 2) {
                     for (int hpos(-1); hpos <= 1; hpos += 2) {
-                        if (wall.atIndex(x+hpos, y) && wall.atIndex(x, y+vpos) && !wall.atIndex(x+hpos, y+vpos)) {
+                        if (wall.atIndex(x+hpos, y)
+                         && wall.atIndex(x, y+vpos)
+                        && !wall.atIndex(x+hpos, y+vpos))
+                        {
                             int const bottom((vpos+1)/2);
                             int const right((hpos+1)/2);
-                            foregroundTexture.draw(
-                                spriteForBlock(
-                                    cornerTextures[bottom][right],
-                                    x*segmentSize + right*segmentSize/2.,
-                                    y*segmentSize + bottom*segmentSize/2.,
-                                    segmentSize/2.));
+                            foregroundImageBuf.copy(
+                                cornerImages[bottom][right],
+                                x*segmentSize + right*segmentSize/2.,
+                                y*segmentSize + bottom*segmentSize/2.);
                         }
                     }
                 }
             }
         }
     }
-
-    sf::Image foregroundImage(foregroundTexture.getTexture().copyToImage());
-    foregroundImage.flipVertically();
-    return foregroundImage;
+    
+    return foregroundImageBuf;
 }
 
 } //namespace hg
