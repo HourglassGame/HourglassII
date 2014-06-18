@@ -25,8 +25,9 @@ static void drawLoadingScreen(hg::RenderWindow &window) {
 static hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
 displayLoadingScreen(
         hg::RenderWindow &window,
-        boost::future<LoadedLevel> &futureLoadedLevel,
-        OperationInterrupter &interrupter)
+        boost::future<TimeEngine> &futureLoadedLevel,
+        OperationInterrupter &interrupter,
+        hg::move_function<LoadedLevel(TimeEngine &&)> resourceLoadFun)
 {
     bool sceneDrawn = false;
     while (!futureLoadedLevel.is_ready()) {
@@ -58,22 +59,23 @@ displayLoadingScreen(
         }
         sf::sleep(sf::seconds(.1f));
     }
+    auto loadedLevel = resourceLoadFun(futureLoadedLevel.get());
     if (interrupter.interrupted()) { return LoadingCanceled_tag{}; }
-    return futureLoadedLevel.get();
+    return loadedLevel;
 }
 
 hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
         hg::RenderWindow &window,
-        hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)> const &levelLoadingFunction)
+        LoadLevelFunction &&levelLoadingFunction)
 {
     hg::OperationInterrupter interruptor;
     tbb::structured_task_group group;
-    boost::packaged_task<hg::LoadedLevel()> levelLoadingTask([&](){return levelLoadingFunction(interruptor);});
+    boost::packaged_task<hg::TimeEngine()> levelLoadingTask([&](){return levelLoadingFunction.timeEngineLoadFun(interruptor);});
     auto futureLoadedLevel = levelLoadingTask.get_future();
     tbb::task_handle<decltype(std::ref(levelLoadingTask))> loadingLevel_task_handle{std::ref(levelLoadingTask)};
     group.run(loadingLevel_task_handle);
     
-    return displayLoadingScreen(window, futureLoadedLevel, interruptor);
+    return displayLoadingScreen(window, futureLoadedLevel, interruptor, std::move(levelLoadingFunction.glitzLoadFun));
 }
 }

@@ -7,7 +7,7 @@
 #include "OperationInterrupter.h"
 #include "RenderWindow.h"
 namespace hg {
-    variant<hg::move_function<hg::LoadedLevel(hg::OperationInterrupter &)>, SceneAborted_tag>
+    variant<LoadLevelFunction, SceneAborted_tag>
     run_level_selection_scene(hg::RenderWindow &window);
 }
 #endif //HG_LEVEL_SELECTION_SCENE_H
