@@ -24,7 +24,7 @@ local tempStore =
 	protoCollisions = {},
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 12.25 * 3200, yOffset =9.25 * 3200},
+            attachment = {platform = nil, xOffset = 11.25 * 3200, yOffset =9.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
