@@ -155,10 +155,6 @@ public:
             return false;
         };
 
-        auto soundAfter = [](AudioGlitzObject const &audio) {
-            return AudioGlitzObject{audio.key, audio.index+1};
-        };
-
         if (!(checkOICompletion() || checkNICompletion())) {
             while (true) {
                 if (*oi < *ni) {
