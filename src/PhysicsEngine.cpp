@@ -132,7 +132,10 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         newDepartures,
         frame);
 
-    //Sort all object lists before returning to other code. They must be sorted for comparisons to work correctly.
+    //Sort all object lists before returning to other code.
+    //Object Lists are required to be sorted,
+    //since they must be in a canonical form
+    //for comparisons to work correctly (when updating departures).
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
     typedef mt::std::map<
                 Frame *,
@@ -165,7 +168,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
 
     // add data to departures
-    return PhysicsReturnT{
+    return {
         newDepartures,
         FrameView(forwardsGlitz, reverseGlitz, guyInfo),
         currentPlayerFrame,

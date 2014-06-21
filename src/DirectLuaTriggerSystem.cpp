@@ -1079,7 +1079,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const &sourceChunk, char con
         std::cerr << lua_tostring(L.ptr, -1) << std::endl;
     	luaassert(false);
     }
-    if(lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
+    if (lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
         luaassert(false);
     }
     return compiledChunk;

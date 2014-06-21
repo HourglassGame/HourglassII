@@ -66,6 +66,7 @@ local tempStore =
     protoButtons = {
         bts.momentarySwitch{
             triggerID = 1,
+            stateTriggerID = 3,
             timeDirection = 'forwards',
             attachment = {platform = 1, xOffset = 3*3200 - 800, yOffset = -1 * 3200 },
             width = 800,

@@ -105,6 +105,15 @@ void run_post_level_scene(
                 replayGlyph.setCharacterSize(16.f);
                 window.draw(replayGlyph);
             }
+            {
+                sf::Text replayGlyph;
+                replayGlyph.setFont(*hg::defaultFont);
+                replayGlyph.setString(", . / keys control the displayed time");
+                replayGlyph.setColor(sf::Color(255,0,0));
+                replayGlyph.setPosition(380, 64);
+                replayGlyph.setCharacterSize(16.f);
+                window.draw(replayGlyph);
+            }
             //Fast-Forward
             if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
                 window.setFramerateLimit(0);

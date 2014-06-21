@@ -43,16 +43,16 @@ namespace hg {
         Rect<int> transformBounds(Rect<int> const &input) noexcept
         {
             int minx(input.x/segmentSize_);
-            if(input.x < 0) minx -= 1;
+            if (input.x < 0) minx -= 1;
             
             int maxx((input.x + input.w) / segmentSize_);
-            if(input.x + input.w < 0) maxx -= 1;
+            if (input.x + input.w < 0) maxx -= 1;
             
             int miny(input.y/segmentSize_);
-            if(input.y < 0) miny -= 1;
+            if (input.y < 0) miny -= 1;
             
             int maxy((input.y + input.h) / segmentSize_);
-            if(input.y + input.h < 0) maxy -= 1;
+            if (input.y + input.h < 0) maxy -= 1;
             
             return Rect<int>(minx, miny, maxx - minx, maxy - miny);
         }
