@@ -98,7 +98,8 @@ local tempStore =
 				},
 			},
             timeDirection = 'forwards',
-            triggerID = 1
+            triggerID = 1,
+            stateTriggerID = 3
         },
     },
 	protoGlitz = {
