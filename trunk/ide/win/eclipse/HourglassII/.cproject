@@ -38,6 +38,7 @@
 									<listOptionValue builtIn="false" value="LUA_ANSI"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_VERSION=4"/>
+									<listOptionValue builtIn="false" value="TBB_USE_CAPTRUED_EXCEPTION=0"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.flags.328122668" name="Other optimization flags" superClass="gnu.cpp.compiler.option.optimization.flags" value="-march=i486" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.197151755" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -123,6 +124,7 @@
 									<listOptionValue builtIn="false" value="BOOST_THREAD_USE_LIB"/>
 									<listOptionValue builtIn="false" value="BOOST_THREAD_VERSION=4"/>
 									<listOptionValue builtIn="false" value="NDEBUG"/>
+									<listOptionValue builtIn="false" value="TBB_USE_CAPTRUED_EXCEPTION=0"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1175809425" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.other.pic.469435028" name="Position Independent Code (-fPIC)" superClass="gnu.cpp.compiler.option.other.pic" value="false" valueType="boolean"/>
