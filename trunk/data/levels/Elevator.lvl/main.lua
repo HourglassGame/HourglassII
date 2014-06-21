@@ -53,14 +53,18 @@ triggerSystem =
 
     -- C++ still manages offsets and defaults.
     triggerOffsetsAndDefaults = {
-        {
+        {   --Switch Trigger
             offset = -600,
             default = {0}
         },
-        {
+        {   --Platform Trigger
             offset = 1,
             default = {10 * 3200, 12 * 3200, 0, 0}
         },
+        {   --Switch State Trigger
+            offset = 1,
+            default = {0}
+        }
     },
     arrivalLocationsSize = 1
 }

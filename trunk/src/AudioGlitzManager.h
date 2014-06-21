@@ -48,7 +48,7 @@ struct AudioStateChange {
 struct AudioPlayingState {
 public:
     void runStep(std::vector<AudioStateChange> const &diff) {
-        for(auto const &change: diff) {
+        for (auto const &change: diff) {
             switch(change.action) {
             case AudioAction::Start:{
                 currentAudio.insert(
@@ -183,7 +183,7 @@ public:
 private:
 
     void incrementCurrentAudio() {
-        for(auto & audio: currentAudio) ++audio.index;
+        for (auto & audio: currentAudio) ++audio.index;
     }
     std::vector<AudioGlitzObject> currentAudio;
 };

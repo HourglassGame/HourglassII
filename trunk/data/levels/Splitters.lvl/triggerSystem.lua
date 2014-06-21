@@ -200,7 +200,8 @@ local tempStore =
 				},
 			},
             timeDirection = 'forwards',
-            triggerID = 9
+            triggerID = 9,
+            stateTriggerID = 10
         },
     },
 	protoGlitz = {
@@ -417,6 +418,6 @@ function getDepartureInformation(departures)
 	
 	tempStore.outputTriggers[6] = {tempStore.outputTriggers[1][1]*(1 - tempStore.outputTriggers[2][1])}
 	
-	return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.additionalEndBoxes
+	return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz, tempStore.additionalEndBoxes
 end
 

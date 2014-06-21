@@ -126,7 +126,7 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &&newDeparture)
 
     auto       oi  (boost::begin(oldDepartureFiltered));
     auto const oend(boost::  end(oldDepartureFiltered));
-    
+
     auto removeOldArrival = [&] {
         oi->first->clearArrival(this);
         changedTimes.add(oi->first);

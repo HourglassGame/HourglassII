@@ -367,6 +367,8 @@ local function momentarySwitch(p)
     local state = nil
     
     local triggerID = p.triggerID
+    local stateTriggerID = p.stateTriggerID or p.triggerID
+
     local proto = {
         timeDirection = p.timeDirection,
         attachment = cloneAttachment(p.attachment),
@@ -380,8 +382,8 @@ local function momentarySwitch(p)
         end,
         updateState = function(self, departures, triggerArrivals)
             state = checkPressed(constructDynamicArea(proto, PnV), departures)
-            justPressed = triggerArrivals[triggerID][1] == 0 and state == true
-            justReleased = triggerArrivals[triggerID][1] == 1 and state == false
+            justPressed = triggerArrivals[stateTriggerID][1] == 0 and state == true
+            justReleased = triggerArrivals[stateTriggerID][1] == 1 and state == false
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state)
@@ -400,6 +402,7 @@ local function momentarySwitch(p)
         end,
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
+            outputTriggers[stateTriggerID] = {state and 1 or 0}
         end,
     }
 end
@@ -411,6 +414,7 @@ local function stickySwitch(p)
     local justPressed = nil
 
     local triggerID = p.triggerID
+    local stateTriggerID = p.stateTriggerID or p.triggerID
     local proto = {
         timeDirection = p.timeDirection,
         attachment = cloneAttachment(p.attachment),
@@ -423,8 +427,8 @@ local function stickySwitch(p)
             PnV = calculateButtonPositionAndVelocity(proto, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-            state = triggerArrivals[triggerID][1] == 1 or checkPressed(constructDynamicArea(proto, PnV), departures)
-            justPressed = triggerArrivals[triggerID][1] == 0 and state
+            state = triggerArrivals[stateTriggerID][1] == 1 or checkPressed(constructDynamicArea(proto, PnV), departures)
+            justPressed = triggerArrivals[stateTriggerID][1] == 0 and state
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state)
@@ -438,6 +442,7 @@ local function stickySwitch(p)
         end,
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
+            outputTriggers[stateTriggerID] = {state and 1 or 0}
         end,
     }
 end
@@ -451,6 +456,11 @@ local function multiStickySwitch(p)
 	local proto = {}
     
     local triggerID = p.triggerID
+    local stateTriggerID = p.stateTriggerID
+
+    local justPressed = {}
+    local justReleased = {}
+
 	for i = 1, bCount do
 		proto[i] = {
 			timeDirection = p.timeDirection,
@@ -467,7 +477,14 @@ local function multiStickySwitch(p)
 			end
         end,
         updateState = function(self, departures, triggerArrivals)
-            state = triggerArrivals[triggerID][1] == 1
+            state = true
+            for i = 1, bCount do
+                if triggerArrivals[stateTriggerID][i] == 0 then
+                    state = false
+                    break
+                end
+            end
+
 			if not state then
 				state = true
 				for i = 1, bCount do
@@ -475,18 +492,36 @@ local function multiStickySwitch(p)
 					if not individualState[i] then 
 						state = false
 					end
+                    justPressed[i] = triggerArrivals[stateTriggerID][i] == 0 and individualState[i]
+                    justReleased[i] = triggerArrivals[stateTriggerID][i] == 1 and not individualState[i]
 				end
-			end	
+			else
+                for i = 1, bCount do
+                    justPressed[i] = false
+                    justReleased[i] = false
+                end
+            end
         end,
-        calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz) --TODO sound Glitz
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             for i = 1, bCount do
 				local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], state or individualState[i])
 				table.insert(forwardsGlitz, forGlitz)
 				table.insert(reverseGlitz, revGlitz)
+                if justPressed[i] then
+                    table.insert(
+                        persistentGlitz,
+                        {type = "audio", key = "global.switch_push_down", duration = 10, timeDirection = proto[i].timeDirection})
+                end
+                if justReleased[i] then
+                    table.insert(
+                        persistentGlitz,
+                        {type = "audio", key = "global.switch_push_up", duration = 10, timeDirection = proto[i].timeDirection})
+                end
 			end
         end,
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
+            outputTriggers[stateTriggerID] = map(function(val) return val and 1 or 0 end, individualState)
         end,
     }
 end
@@ -503,6 +538,10 @@ local function toggleSwitch(p)
     local firstPnV = nil
     local secondPnV = nil
     local switchState = nil
+    local triggerID = p.triggerID
+    local stateTriggerID = p.stateTriggerID or p.triggerID
+    local timeDirection = p.timeDirection
+
     local function constructCompleteProto(timeDirection, segment)
         return {
             timeDirection = timeDirection,
@@ -513,57 +552,50 @@ local function toggleSwitch(p)
     return
     {
         calcPnV = function(self, collisions)
-            firstPnV = calculateButtonPositionAndVelocity(constructCompleteProto(self.timeDirection, self.first), collisions)
-            secondPnV = calculateButtonPositionAndVelocity(constructCompleteProto(self.timeDirection, self.second), collisions)
+            firstPnV = calculateButtonPositionAndVelocity(constructCompleteProto(timeDirection, self.first), collisions)
+            secondPnV = calculateButtonPositionAndVelocity(constructCompleteProto(timeDirection, self.second), collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-            local firstPressed = checkPressed(constructDynamicArea(constructCompleteProto(self.timeDirection, self.first), firstPnV), departures)
-            local secondPressed = checkPressed(constructDynamicArea(constructCompleteProto(self.timeDirection, self.second), secondPnV), departures)
+            local firstPressed = checkPressed(constructDynamicArea(constructCompleteProto(timeDirection, self.first), firstPnV), departures)
+            local secondPressed = checkPressed(constructDynamicArea(constructCompleteProto(timeDirection, self.second), secondPnV), departures)
             
             if firstPressed and secondPressed then
-                switchState = triggerArrivals[self.triggerID][1]
-            elseif triggerArrivals[self.triggerID][1] == 0 then
+                switchState = triggerArrivals[stateTriggerID][1]
+            elseif triggerArrivals[stateTriggerID][1] == 0 then
                 if firstPressed then switchState = 1 else switchState = 0 end
             else
                 if secondPressed then switchState = 0 else switchState = 1 end
             end
-            justPressed = switchState ~= triggerArrivals[self.triggerID][1]
+            justPressed = switchState ~= triggerArrivals[stateTriggerID][1]
             
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             do
-                local forGlitz, revGlitz = calculateButtonGlitz(constructCompleteProto(self.timeDirection, self.first), firstPnV, switchState == 1)
+                local forGlitz, revGlitz =
+                    calculateButtonGlitz(constructCompleteProto(timeDirection, self.first), firstPnV, switchState == 1)
                 table.insert(forwardsGlitz, forGlitz)
                 table.insert(reverseGlitz, revGlitz)
             end
             do
-                local forGlitz, revGlitz = calculateButtonGlitz(constructCompleteProto(self.timeDirection, self.second), secondPnV, switchState == 0)
+                local forGlitz, revGlitz =
+                    calculateButtonGlitz(constructCompleteProto(timeDirection, self.second), secondPnV, switchState == 0)
                 table.insert(forwardsGlitz, forGlitz)
                 table.insert(reverseGlitz, revGlitz)
             end
             if justPressed then
                 table.insert(
                     persistentGlitz,
-                    {type = "audio", key = "global.switch_toggle", duration = 6, timeDirection = self.timeDirection})
+                    {type = "audio", key = "global.switch_toggle", duration = 6, timeDirection = timeDirection})
             end
         end,
         fillTrigger = function(self, outputTriggers)
-            outputTriggers[self.triggerID] = {switchState}
+            outputTriggers[triggerID] = {switchState}
+            outputTriggers[stateTriggerID] = {switchState}
         end,
-        triggerID = p.triggerID,
-        timeDirection = p.timeDirection,
         first = cloneButtonSegment(p.first),
         second = cloneButtonSegment(p.second)
     }  
 end
-
-
-local pickupNameMap = {
-	timeJump = "J",
-	timeReverse = "R", 
-	timeGun = "G", 
-	timePause = "P"
-}
 
 local pickupGlitzNameMap = {
 	timeJump = "global.time_jump",

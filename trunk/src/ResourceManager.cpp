@@ -86,7 +86,7 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
    auto const blockImages = [&wall,segmentSize] {
         multi_array<sf::Image, 2, 2, 2, 2> blockImages;
         for (int right(0); right <= 1; ++right) {
-            for(int top(0); top <= 1; ++top) {
+            for (int top(0); top <= 1; ++top) {
                 for (int left(0); left <= 1; ++left) {
                     for (int bottom(0); bottom <= 1; ++bottom) {
                         std::stringstream filename;
