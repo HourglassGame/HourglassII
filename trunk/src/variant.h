@@ -226,7 +226,7 @@ using UnionTagType =
 
 template <typename... Types>
 class variant final {
-    //static_assert(all_unique<Types...>);
+    //static_assert(all_unique<Types...>); //TODO -- Implement all_unique
 
     typedef typename std::aligned_storage<
         variant_detail::max_size<Types...>::value,
@@ -526,7 +526,7 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVari
 
     template<typename A>
     result_type operator()(A &&a) {
-        //TODO -- proper forwarding of rvalue-ness for `tailVariants` (and other things maybe)
+        //TODO -- proper forwarding of value category for `tailVariants` (and other things maybe)
         // (might already be implemented, need to double-check and add tests)
         return std::forward<CurrentVariant>(std::get<0>(tailVariants)).visit(
             make_NAryVisitorFlattener(

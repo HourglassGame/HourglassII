@@ -3,7 +3,8 @@
 #include <utility>
 #include <memory>
 #include "multi_thread_deleter.h"
-
+#include <cassert>
+#include <type_traits>
 #include <functional>
 
 namespace hg {
@@ -25,29 +26,29 @@ template<typename F, typename R, typename... ArgTypes>
 struct function_obj<F, R(ArgTypes...)> : function_base<R(ArgTypes...)>
 {
     function_obj(F &&f) noexcept :
-    	f(std::move(f))
+    	f(std::forward<F>(f))
     {
     }
     virtual R operator()(ArgTypes &&...args) override
     {
-        return f(std::forward<ArgTypes>(args)...);
+        return std::forward<F>(f)(std::forward<ArgTypes>(args)...);
     }
 private:
-    F f;
+    typename std::decay<F>::type f;
 };
 template<typename F, typename... ArgTypes>
 struct function_obj<F, void(ArgTypes...)> : function_base<void(ArgTypes...)>
 {
     function_obj(F &&f) noexcept :
-    	f(std::move(f))
+    	f(std::forward<F>(f))
     {
     }
     virtual void operator()(ArgTypes &&...args) override
     {
-        f(std::forward<ArgTypes>(args)...);
+        std::forward<F>(f)(std::forward<ArgTypes>(args)...);
     }
 private:
-    F f;
+    typename std::decay<F>::type f;
 };
 }
 }
@@ -70,24 +71,26 @@ public:
     move_function<R(ArgTypes...)> &operator=(move_function &&o) noexcept = default;
     template<typename F>
     move_function(F &&f) :
-        f(new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::move(f)))
+        f(new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::forward<F>(f)))
     {
     }
     template<typename F>
     move_function<R(ArgTypes...)> &operator=(F &&f)
     {
         this->f = function_obj_ptr_t(
-            new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::move(f)));
+            new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::forward<F>(f)));
         return *this;
     }
     R operator()(ArgTypes &&...args) const {
+        assert(f);
         return (*f)(std::forward<ArgTypes>(args)...);
     }
     explicit operator bool() noexcept { return f.get(); }
+
 private:
     typedef std::unique_ptr<
         function::detail::function_base<R(ArgTypes...)>,
-        multi_thread_deleter<function::detail::function_base<R(ArgTypes...)> > > function_obj_ptr_t;
+        multi_thread_deleter<function::detail::function_base<R(ArgTypes...)>>> function_obj_ptr_t;
     function_obj_ptr_t f;
 };
 
