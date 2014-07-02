@@ -374,7 +374,6 @@
 		20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HourglassSwirl.icns; path = ../../../src/osx/HourglassSwirl.icns; sourceTree = SOURCE_ROOT; };
 		20469E0614B47E4300FF6A02 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../../src/osx/Info.plist; sourceTree = SOURCE_ROOT; };
 		20469E0714B47E4300FF6A02 /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = PkgInfo; path = ../../../src/osx/PkgInfo; sourceTree = SOURCE_ROOT; };
-		20556DB314C90D2700F71CFC /* HourglassITriggerSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HourglassITriggerSystem.h; path = ../../../src/HourglassITriggerSystem.h; sourceTree = "<group>"; };
 		20556DB414C90DF700F71CFC /* FacingDirection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FacingDirection.h; path = ../../../src/FacingDirection.h; sourceTree = "<group>"; };
 		205BD56117FA9A940051E8F5 /* hourglass1levels.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = hourglass1levels.txt; path = ../../../../hourglass1levels.txt; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -958,7 +957,6 @@
 				200E80FA14B4792500D054F4 /* TriggerSystem.h */,
 				200E80FB14B4792500D054F4 /* TriggerSystemImplementation.h */,
 				200E803D14B4792500D054F4 /* ArrivalLocation.h */,
-				20556DB314C90D2700F71CFC /* HourglassITriggerSystem.h */,
 				200E805514B4792500D054F4 /* DirectLuaTriggerSystem.h */,
 				200E805414B4792500D054F4 /* DirectLuaTriggerSystem.cpp */,
 				200E80F814B4792500D054F4 /* TriggerData.h */,

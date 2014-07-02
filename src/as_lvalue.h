@@ -3,7 +3,7 @@
 
 namespace hg {
     template<typename T>
-    constexpr T &as_lvalue(T && val) noexcept {
+    constexpr T &as_lvalue(T &&val) noexcept {
         return val;
     }
 }

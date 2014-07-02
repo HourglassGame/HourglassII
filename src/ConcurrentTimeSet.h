@@ -54,11 +54,11 @@ public:
     std::size_t size() const {
         return set.size();
     }
-    typedef boost::range_iterator<boost::select_first_range<SetType> >::type iterator;
+    typedef boost::range_iterator<boost::select_first_range<SetType>>::type iterator;
     typedef boost::range_iterator<boost::select_first_range<SetType> const>::type const_iterator;
-    typedef boost::range_reference<boost::select_first_range<SetType> >::type reference;
+    typedef boost::range_reference<boost::select_first_range<SetType>>::type reference;
     typedef boost::range_reference<boost::select_first_range<SetType> const>::type const_reference;
-    typedef boost::range_pointer<boost::select_first_range<SetType> >::type pointer;
+    typedef boost::range_pointer<boost::select_first_range<SetType>>::type pointer;
     typedef boost::range_pointer<boost::select_first_range<SetType> const>::type const_pointer;
     iterator begin() {
         return boost::begin(boost::adaptors::keys(set));

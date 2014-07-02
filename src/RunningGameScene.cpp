@@ -300,7 +300,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 						sf::Text replayGlyph;
                         replayGlyph.setFont(*hg::defaultFont);
                         replayGlyph.setString("R");
-						replayGlyph.setColor(sf::Color(255,0,0));
+						replayGlyph.setColor(sf::Color(255,25,50));
 						replayGlyph.setPosition(580, 32);
 						replayGlyph.setCharacterSize(32.f);
 						window.draw(replayGlyph);

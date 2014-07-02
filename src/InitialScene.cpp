@@ -21,11 +21,11 @@ struct RunGameResultVisitor {
 static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
     loadAndRunLevel(
         hg::RenderWindow &window,
-        LoadLevelFunction &&levelLoadingFunction,
+        LoadLevelFunction const &levelLoadingFunction,
         hg::move_function<std::vector<InputList>()>&& replayLoadingFunction = {})
 {
     hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
-              loading_outcome = load_level_scene(window, std::move(levelLoadingFunction));
+              loading_outcome = load_level_scene(window, levelLoadingFunction);
     
     struct {
         hg::RenderWindow &window;
@@ -106,11 +106,11 @@ int run_hourglassii() {
                     {
                         game_scene_result = loadAndRunLevel(
                             window,
-                            std::move(levelLoadFunction),
+                            levelLoadFunction,
                             std::move(game_scene_result.get<move_function<std::vector<InputList>()>>()));
                     }
                     else {
-                        game_scene_result = loadAndRunLevel(window, std::move(levelLoadFunction), [&](){return replay;});
+                        game_scene_result = loadAndRunLevel(window, levelLoadFunction, [&](){return replay;});
                     }
                     assert( game_scene_result.active<GameAborted_tag>()
                          || game_scene_result.active<GameWon_tag>()

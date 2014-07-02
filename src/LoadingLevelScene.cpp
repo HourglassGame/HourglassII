@@ -27,7 +27,7 @@ displayLoadingScreen(
         hg::RenderWindow &window,
         boost::future<TimeEngine> &futureLoadedLevel,
         OperationInterrupter &interrupter,
-        hg::move_function<LoadedLevel(TimeEngine &&)> resourceLoadFun)
+        hg::move_function<LoadedLevel(TimeEngine &&)> const &resourceLoadFun)
 {
     bool sceneDrawn = false;
     while (!futureLoadedLevel.is_ready()) {
@@ -67,7 +67,7 @@ displayLoadingScreen(
 hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
         hg::RenderWindow &window,
-        LoadLevelFunction &&levelLoadingFunction)
+        LoadLevelFunction const &levelLoadingFunction)
 {
     hg::OperationInterrupter interruptor;
     tbb::structured_task_group group;
@@ -76,6 +76,6 @@ load_level_scene(
     tbb::task_handle<decltype(std::ref(levelLoadingTask))> loadingLevel_task_handle{std::ref(levelLoadingTask)};
     group.run(loadingLevel_task_handle);
     
-    return displayLoadingScreen(window, futureLoadedLevel, interruptor, std::move(levelLoadingFunction.glitzLoadFun));
+    return displayLoadingScreen(window, futureLoadedLevel, interruptor, levelLoadingFunction.glitzLoadFun);
 }
 }
