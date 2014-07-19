@@ -9,17 +9,11 @@
 /* Begin PBXBuildFile section */
 		2001AA06190BB080006AD666 /* variant_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2001AA04190BB080006AD666 /* variant_test.cpp */; };
 		2001EA6C18BD9130007F6AAE /* sfml-audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6618BD9130007F6AAE /* sfml-audio.framework */; };
-		2001EA6D18BD9130007F6AAE /* sfml-audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6618BD9130007F6AAE /* sfml-audio.framework */; };
 		2001EA6E18BD9130007F6AAE /* sfml-graphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6718BD9130007F6AAE /* sfml-graphics.framework */; };
-		2001EA6F18BD9130007F6AAE /* sfml-graphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6718BD9130007F6AAE /* sfml-graphics.framework */; };
 		2001EA7018BD9130007F6AAE /* sfml-network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6818BD9130007F6AAE /* sfml-network.framework */; };
-		2001EA7118BD9130007F6AAE /* sfml-network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6818BD9130007F6AAE /* sfml-network.framework */; };
 		2001EA7218BD9130007F6AAE /* sfml-system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6918BD9130007F6AAE /* sfml-system.framework */; };
-		2001EA7318BD9130007F6AAE /* sfml-system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6918BD9130007F6AAE /* sfml-system.framework */; };
 		2001EA7418BD9130007F6AAE /* sfml-window.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6A18BD9130007F6AAE /* sfml-window.framework */; };
-		2001EA7518BD9130007F6AAE /* sfml-window.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6A18BD9130007F6AAE /* sfml-window.framework */; };
 		2001EA7618BD9130007F6AAE /* SFML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6B18BD9130007F6AAE /* SFML.framework */; };
-		2001EA7718BD9130007F6AAE /* SFML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6B18BD9130007F6AAE /* SFML.framework */; };
 		2001EA7818BD9190007F6AAE /* sfml-audio.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6618BD9130007F6AAE /* sfml-audio.framework */; };
 		2001EA7918BD9190007F6AAE /* sfml-graphics.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6718BD9130007F6AAE /* sfml-graphics.framework */; };
 		2001EA7A18BD9190007F6AAE /* sfml-network.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6818BD9130007F6AAE /* sfml-network.framework */; };
@@ -27,9 +21,7 @@
 		2001EA7C18BD9190007F6AAE /* sfml-window.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6A18BD9130007F6AAE /* sfml-window.framework */; };
 		2001EA7D18BD9190007F6AAE /* SFML.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6B18BD9130007F6AAE /* SFML.framework */; };
 		2001EA8018BD9318007F6AAE /* freetype.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7E18BD9318007F6AAE /* freetype.framework */; };
-		2001EA8118BD9318007F6AAE /* freetype.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7E18BD9318007F6AAE /* freetype.framework */; };
 		2001EA8218BD9318007F6AAE /* sndfile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7F18BD9318007F6AAE /* sndfile.framework */; };
-		2001EA8318BD9318007F6AAE /* sndfile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7F18BD9318007F6AAE /* sndfile.framework */; };
 		2001EA8418BD9326007F6AAE /* freetype.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7E18BD9318007F6AAE /* freetype.framework */; };
 		2001EA8518BD9326007F6AAE /* sndfile.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7F18BD9318007F6AAE /* sndfile.framework */; };
 		200AC21614F9128200B1E17F /* move_function_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 200AC21514F9128200B1E17F /* move_function_test.cpp */; };
@@ -91,6 +83,10 @@
 		20469E0214B47D9E00FF6A02 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFD14B47D9E00FF6A02 /* libboost_thread.a */; };
 		20469E0814B47E4300FF6A02 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
 		2064466E15D9FBF5009EF465 /* Levels_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2064466C15D9FBF5009EF465 /* Levels_test.cpp */; };
+		2071A8CB19793805004EEDC8 /* FrontEnd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2071A8C919793805004EEDC8 /* FrontEnd.cpp */; };
+		2071A8CC19793812004EEDC8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2071A8C0197936E0004EEDC8 /* main.cpp */; };
+		2071A8CD19793814004EEDC8 /* TimeEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2071A8C319793703004EEDC8 /* TimeEngine.cpp */; };
+		2071A8CE19793817004EEDC8 /* glew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2071A8C6197937BD004EEDC8 /* glew.cpp */; };
 		2085B19E18CE6A77003703DB /* MainMenuScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2085B19C18CE6A77003703DB /* MainMenuScene.cpp */; };
 		2085F0E1191A2B1A00316D2D /* ParallelForEach_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2085F0DF191A2B1A00316D2D /* ParallelForEach_test.cpp */; };
 		208CF52F194AEBEA00363F16 /* libtbb.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
@@ -136,6 +132,42 @@
 		2097501217E84CD700EF15B2 /* glew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2097501117E84CD700EF15B2 /* glew.cpp */; };
 		2097501417E866B300EF15B2 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2097501317E866B300EF15B2 /* Arial.ttf */; };
 		2097501717E92CEB00EF15B2 /* RenderWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2097501517E92CEB00EF15B2 /* RenderWindow.cpp */; };
+		209D84FB19792C9500704561 /* levels in Resources */ = {isa = PBXBuildFile; fileRef = 202FEF841598B62000F47F6C /* levels */; };
+		209D84FC19792C9500704561 /* Arial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2097501317E866B300EF15B2 /* Arial.ttf */; };
+		209D84FD19792C9500704561 /* Tilesets in Resources */ = {isa = PBXBuildFile; fileRef = 20ADB1CA17E7F90100B6FB1F /* Tilesets */; };
+		209D84FE19792C9500704561 /* GlitzData in Resources */ = {isa = PBXBuildFile; fileRef = 2014155D17E74CEE00109D7B /* GlitzData */; };
+		209D84FF19792C9500704561 /* basicTriggerSystem.lua in Resources */ = {isa = PBXBuildFile; fileRef = 20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */; };
+		209D850019792C9500704561 /* HourglassSwirl.icns in Resources */ = {isa = PBXBuildFile; fileRef = 20469E0514B47E4300FF6A02 /* HourglassSwirl.icns */; };
+		209D850119792CB100704561 /* sfml-audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6618BD9130007F6AAE /* sfml-audio.framework */; };
+		209D850219792CB100704561 /* sfml-graphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6718BD9130007F6AAE /* sfml-graphics.framework */; };
+		209D850319792CB100704561 /* sfml-network.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6818BD9130007F6AAE /* sfml-network.framework */; };
+		209D850419792CB100704561 /* sfml-system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6918BD9130007F6AAE /* sfml-system.framework */; };
+		209D850519792CB100704561 /* sfml-window.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6A18BD9130007F6AAE /* sfml-window.framework */; };
+		209D850619792CB100704561 /* SFML.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6B18BD9130007F6AAE /* SFML.framework */; };
+		209D850719792CB100704561 /* sndfile.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7F18BD9318007F6AAE /* sndfile.framework */; };
+		209D850819792CB100704561 /* freetype.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7E18BD9318007F6AAE /* freetype.framework */; };
+		209D850919792CB100704561 /* libtbb.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
+		209D850A19792CB100704561 /* libtbbmalloc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */; };
+		209D850B19792CB100704561 /* libboost_chrono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DF914B47D9E00FF6A02 /* libboost_chrono.a */; };
+		209D850C19792CB100704561 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */; };
+		209D850D19792CB100704561 /* libboost_serialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */; };
+		209D850E19792CB100704561 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFC14B47D9E00FF6A02 /* libboost_system.a */; };
+		209D850F19792CB100704561 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 20469DFD14B47D9E00FF6A02 /* libboost_thread.a */; };
+		209D851019792CB100704561 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
+		209D851119792CB100704561 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
+		209D851219792CB100704561 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
+		209D851319792CE700704561 /* sfml-audio.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6618BD9130007F6AAE /* sfml-audio.framework */; };
+		209D851419792CE700704561 /* sfml-graphics.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6718BD9130007F6AAE /* sfml-graphics.framework */; };
+		209D851519792CE700704561 /* sfml-network.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6818BD9130007F6AAE /* sfml-network.framework */; };
+		209D851619792CE700704561 /* sfml-system.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6918BD9130007F6AAE /* sfml-system.framework */; };
+		209D851719792CE700704561 /* sfml-window.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6A18BD9130007F6AAE /* sfml-window.framework */; };
+		209D851819792CE700704561 /* SFML.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA6B18BD9130007F6AAE /* SFML.framework */; };
+		209D851919792CE700704561 /* sndfile.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7F18BD9318007F6AAE /* sndfile.framework */; };
+		209D851A19792CE700704561 /* freetype.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 2001EA7E18BD9318007F6AAE /* freetype.framework */; };
+		209D851B19792CE700704561 /* libtbb.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC01474B3E00019ADB4 /* libtbb.dylib */; };
+		209D851C19792CE700704561 /* libtbbmalloc.dylib in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */; };
+		209D852019792D5E00704561 /* lua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209D851E19792D5E00704561 /* lua.cpp */; };
+		209D85231979311800704561 /* PhysicsEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209D85211979311800704561 /* PhysicsEngine.cpp */; };
 		209EA32519027B7300037E03 /* GameDisplayHelpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 209EA32319027B7300037E03 /* GameDisplayHelpers.cpp */; };
 		20A1C4D418E2940A005F2EA3 /* PostLevelScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20A1C4D218E2940A005F2EA3 /* PostLevelScene.cpp */; };
 		20A2886218C5703800B748B3 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20A2886118C5703800B748B3 /* Scene.cpp */; };
@@ -149,9 +181,6 @@
 		20D4319D18C83AAD006BBCBB /* InitialScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319B18C83AAD006BBCBB /* InitialScene.cpp */; };
 		20D431A018C84608006BBCBB /* LoadedLevel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20D4319E18C84608006BBCBB /* LoadedLevel.cpp */; };
 		20E6D1C51937F32400CCAE8E /* AudioGlitzManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20E6D1C31937F32400CCAE8E /* AudioGlitzManager.cpp */; };
-		20EF61E613C5BA55003DDBA7 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D112F13D3A006F90AB /* CoreFoundation.framework */; };
-		20EF61E713C5BA55003DDBA7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D312F13D40006F90AB /* Cocoa.framework */; };
-		20EF61E813C5BA55003DDBA7 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 20C296D512F13D4A006F90AB /* OpenGL.framework */; };
 		20F6B42718F6C30E00C1E9E3 /* natural_sort_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 20F6B42518F6C30E00C1E9E3 /* natural_sort_test.cpp */; };
 		20FEFC631658BFFB009FE3AB /* basicTriggerSystem.lua in Resources */ = {isa = PBXBuildFile; fileRef = 20FEFC621658BFFB009FE3AB /* basicTriggerSystem.lua */; };
 /* End PBXBuildFile section */
@@ -183,6 +212,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				209D851319792CE700704561 /* sfml-audio.framework in Copy Frameworks */,
+				209D851419792CE700704561 /* sfml-graphics.framework in Copy Frameworks */,
+				209D851519792CE700704561 /* sfml-network.framework in Copy Frameworks */,
+				209D851619792CE700704561 /* sfml-system.framework in Copy Frameworks */,
+				209D851719792CE700704561 /* sfml-window.framework in Copy Frameworks */,
+				209D851819792CE700704561 /* SFML.framework in Copy Frameworks */,
+				209D851919792CE700704561 /* sndfile.framework in Copy Frameworks */,
+				209D851A19792CE700704561 /* freetype.framework in Copy Frameworks */,
+				209D851B19792CE700704561 /* libtbb.dylib in Copy Frameworks */,
+				209D851C19792CE700704561 /* libtbbmalloc.dylib in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -378,6 +417,10 @@
 		205BD56117FA9A940051E8F5 /* hourglass1levels.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = hourglass1levels.txt; path = ../../../../hourglass1levels.txt; sourceTree = "<group>"; };
 		2062890B14BD572600444210 /* GlitzPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GlitzPersister.h; path = ../../../src/GlitzPersister.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		2064466C15D9FBF5009EF465 /* Levels_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Levels_test.cpp; path = ../../../src/Levels_test.cpp; sourceTree = "<group>"; };
+		2071A8C0197936E0004EEDC8 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../unitysrc/main.cpp; sourceTree = "<group>"; };
+		2071A8C319793703004EEDC8 /* TimeEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TimeEngine.cpp; path = ../../../unitysrc/TimeEngine.cpp; sourceTree = "<group>"; };
+		2071A8C6197937BD004EEDC8 /* glew.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = glew.cpp; path = ../../../unitysrc/glew.cpp; sourceTree = "<group>"; };
+		2071A8C919793805004EEDC8 /* FrontEnd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FrontEnd.cpp; path = ../../../unitysrc/FrontEnd.cpp; sourceTree = "<group>"; };
 		20723E6D15E895CB00B5FDEA /* LuaModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaModule.h; path = ../../../src/LuaModule.h; sourceTree = "<group>"; };
 		207C0DA916B50770005D4110 /* RunningGameScene.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RunningGameScene.h; path = ../../../src/RunningGameScene.h; sourceTree = "<group>"; };
 		2085B19C18CE6A77003703DB /* MainMenuScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainMenuScene.cpp; path = ../../../src/MainMenuScene.cpp; sourceTree = "<group>"; };
@@ -460,6 +503,8 @@
 		209D16C314BB3B8600F225DA /* BoxGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoxGlitzAdder.h; path = ../../../src/BoxGlitzAdder.h; sourceTree = "<group>"; };
 		209D16C414BB3EEA00F225DA /* vector2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vector2.h; path = ../../../src/vector2.h; sourceTree = "<group>"; };
 		209D16C514BB4B6A00F225DA /* GuyGlitzAdder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = GuyGlitzAdder.h; path = ../../../src/GuyGlitzAdder.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		209D851E19792D5E00704561 /* lua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua.cpp; path = ../../../unitysrc/lua.cpp; sourceTree = "<group>"; };
+		209D85211979311800704561 /* PhysicsEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhysicsEngine.cpp; path = ../../../unitysrc/PhysicsEngine.cpp; sourceTree = "<group>"; };
 		209EA32319027B7300037E03 /* GameDisplayHelpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = GameDisplayHelpers.cpp; path = ../../../src/GameDisplayHelpers.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		209EA32419027B7300037E03 /* GameDisplayHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameDisplayHelpers.h; path = ../../../src/GameDisplayHelpers.h; sourceTree = "<group>"; };
 		20A1C4D218E2940A005F2EA3 /* PostLevelScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PostLevelScene.cpp; path = ../../../src/PostLevelScene.cpp; sourceTree = "<group>"; };
@@ -503,17 +548,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2001EA7518BD9130007F6AAE /* sfml-window.framework in Frameworks */,
-				20EF61E613C5BA55003DDBA7 /* CoreFoundation.framework in Frameworks */,
-				2001EA7118BD9130007F6AAE /* sfml-network.framework in Frameworks */,
-				2001EA6D18BD9130007F6AAE /* sfml-audio.framework in Frameworks */,
-				20EF61E713C5BA55003DDBA7 /* Cocoa.framework in Frameworks */,
-				2001EA6F18BD9130007F6AAE /* sfml-graphics.framework in Frameworks */,
-				2001EA8118BD9318007F6AAE /* freetype.framework in Frameworks */,
-				2001EA7718BD9130007F6AAE /* SFML.framework in Frameworks */,
-				2001EA7318BD9130007F6AAE /* sfml-system.framework in Frameworks */,
-				20EF61E813C5BA55003DDBA7 /* OpenGL.framework in Frameworks */,
-				2001EA8318BD9318007F6AAE /* sndfile.framework in Frameworks */,
+				209D850119792CB100704561 /* sfml-audio.framework in Frameworks */,
+				209D850219792CB100704561 /* sfml-graphics.framework in Frameworks */,
+				209D850319792CB100704561 /* sfml-network.framework in Frameworks */,
+				209D850419792CB100704561 /* sfml-system.framework in Frameworks */,
+				209D850519792CB100704561 /* sfml-window.framework in Frameworks */,
+				209D850619792CB100704561 /* SFML.framework in Frameworks */,
+				209D850719792CB100704561 /* sndfile.framework in Frameworks */,
+				209D850819792CB100704561 /* freetype.framework in Frameworks */,
+				209D850919792CB100704561 /* libtbb.dylib in Frameworks */,
+				209D850A19792CB100704561 /* libtbbmalloc.dylib in Frameworks */,
+				209D850B19792CB100704561 /* libboost_chrono.a in Frameworks */,
+				209D850C19792CB100704561 /* libboost_filesystem.a in Frameworks */,
+				209D850D19792CB100704561 /* libboost_serialization.a in Frameworks */,
+				209D850E19792CB100704561 /* libboost_system.a in Frameworks */,
+				209D850F19792CB100704561 /* libboost_thread.a in Frameworks */,
+				209D851019792CB100704561 /* CoreFoundation.framework in Frameworks */,
+				209D851119792CB100704561 /* Cocoa.framework in Frameworks */,
+				209D851219792CB100704561 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -521,17 +573,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */,
-				20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */,
 				2001EA6C18BD9130007F6AAE /* sfml-audio.framework in Frameworks */,
-				20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */,
-				2097500217E8330500EF15B2 /* IOKit.framework in Frameworks */,
+				2001EA7018BD9130007F6AAE /* sfml-network.framework in Frameworks */,
+				2001EA6E18BD9130007F6AAE /* sfml-graphics.framework in Frameworks */,
 				2001EA7418BD9130007F6AAE /* sfml-window.framework in Frameworks */,
-				2001EA8218BD9318007F6AAE /* sndfile.framework in Frameworks */,
-				2001EA7618BD9130007F6AAE /* SFML.framework in Frameworks */,
 				2001EA7218BD9130007F6AAE /* sfml-system.framework in Frameworks */,
+				2001EA7618BD9130007F6AAE /* SFML.framework in Frameworks */,
+				2001EA8218BD9318007F6AAE /* sndfile.framework in Frameworks */,
 				2001EA8018BD9318007F6AAE /* freetype.framework in Frameworks */,
-				2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */,
 				208CF531194AEBF100363F16 /* libtbb.dylib in Frameworks */,
 				208CF532194AEBF100363F16 /* libtbbmalloc.dylib in Frameworks */,
 				20469DFE14B47D9E00FF6A02 /* libboost_chrono.a in Frameworks */,
@@ -539,8 +588,11 @@
 				20469E0014B47D9E00FF6A02 /* libboost_serialization.a in Frameworks */,
 				20469E0114B47D9E00FF6A02 /* libboost_system.a in Frameworks */,
 				20469E0214B47D9E00FF6A02 /* libboost_thread.a in Frameworks */,
-				2001EA7018BD9130007F6AAE /* sfml-network.framework in Frameworks */,
-				2001EA6E18BD9130007F6AAE /* sfml-graphics.framework in Frameworks */,
+				20C296D212F13D3A006F90AB /* CoreFoundation.framework in Frameworks */,
+				20C296D412F13D40006F90AB /* Cocoa.framework in Frameworks */,
+				20C296D612F13D4A006F90AB /* OpenGL.framework in Frameworks */,
+				2097500217E8330500EF15B2 /* IOKit.framework in Frameworks */,
+				2097500417E8337900EF15B2 /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -569,8 +621,8 @@
 				200E804B14B4792500D054F4 /* ConcurrentTimeMap.cpp */,
 				200E804E14B4792500D054F4 /* ConcurrentTimeSet.h */,
 				200E804D14B4792500D054F4 /* ConcurrentTimeSet.cpp */,
-				200E805214B4792500D054F4 /* DepartureMap.cpp */,
 				200E805314B4792500D054F4 /* DepartureMap.h */,
+				200E805214B4792500D054F4 /* DepartureMap.cpp */,
 				20556DB414C90DF700F71CFC /* FacingDirection.h */,
 				200E80F214B4792500D054F4 /* TimeDirection.h */,
 				200E80F114B4792500D054F4 /* TimeDirection.cpp */,
@@ -888,6 +940,19 @@
 			name = Glitz;
 			sourceTree = "<group>";
 		};
+		209D851D19792D3500704561 /* UnitySourceFiles */ = {
+			isa = PBXGroup;
+			children = (
+				209D851E19792D5E00704561 /* lua.cpp */,
+				209D85211979311800704561 /* PhysicsEngine.cpp */,
+				2071A8C0197936E0004EEDC8 /* main.cpp */,
+				2071A8C319793703004EEDC8 /* TimeEngine.cpp */,
+				2071A8C6197937BD004EEDC8 /* glew.cpp */,
+				2071A8C919793805004EEDC8 /* FrontEnd.cpp */,
+			);
+			name = UnitySourceFiles;
+			sourceTree = "<group>";
+		};
 		20A2886018C56FCD00B748B3 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1015,6 +1080,7 @@
 				202E857514BE84DB008F05EB /* todo.txt */,
 				205BD56117FA9A940051E8F5 /* hourglass1levels.txt */,
 				2068CD3C125F158300028D2A /* Resources */,
+				209D851D19792D3500704561 /* UnitySourceFiles */,
 				2068CCDE125F156F00028D2A /* Sources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -1033,6 +1099,10 @@
 				2001EA6918BD9130007F6AAE /* sfml-system.framework */,
 				2001EA6A18BD9130007F6AAE /* sfml-window.framework */,
 				2001EA6B18BD9130007F6AAE /* SFML.framework */,
+				2001EA7F18BD9318007F6AAE /* sndfile.framework */,
+				2001EA7E18BD9318007F6AAE /* freetype.framework */,
+				20F06FC01474B3E00019ADB4 /* libtbb.dylib */,
+				20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */,
 				20469DF914B47D9E00FF6A02 /* libboost_chrono.a */,
 				20469DFA14B47D9E00FF6A02 /* libboost_filesystem.a */,
 				20469DFB14B47D9E00FF6A02 /* libboost_serialization.a */,
@@ -1041,10 +1111,6 @@
 				20C296D112F13D3A006F90AB /* CoreFoundation.framework */,
 				20C296D312F13D40006F90AB /* Cocoa.framework */,
 				20C296D512F13D4A006F90AB /* OpenGL.framework */,
-				20F06FC01474B3E00019ADB4 /* libtbb.dylib */,
-				20F06FC21474B3E00019ADB4 /* libtbbmalloc.dylib */,
-				2001EA7E18BD9318007F6AAE /* freetype.framework */,
-				2001EA7F18BD9318007F6AAE /* sndfile.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1056,9 +1122,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 20EF61EC13C5BA55003DDBA7 /* Build configuration list for PBXNativeTarget "HourglassIIUnityBuild" */;
 			buildPhases = (
-				20EF61C113C5BA55003DDBA7 /* Resources */,
 				20EF61C313C5BA55003DDBA7 /* Sources */,
 				20EF61E213C5BA55003DDBA7 /* Frameworks */,
+				20EF61C113C5BA55003DDBA7 /* Resources */,
 				20EF61EA13C5BA55003DDBA7 /* Copy Frameworks */,
 			);
 			buildRules = (
@@ -1125,6 +1191,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				209D84FB19792C9500704561 /* levels in Resources */,
+				209D84FC19792C9500704561 /* Arial.ttf in Resources */,
+				209D84FD19792C9500704561 /* Tilesets in Resources */,
+				209D84FE19792C9500704561 /* GlitzData in Resources */,
+				209D84FF19792C9500704561 /* basicTriggerSystem.lua in Resources */,
+				209D850019792C9500704561 /* HourglassSwirl.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1148,6 +1220,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				209D852019792D5E00704561 /* lua.cpp in Sources */,
+				209D85231979311800704561 /* PhysicsEngine.cpp in Sources */,
+				2071A8CE19793817004EEDC8 /* glew.cpp in Sources */,
+				2071A8CC19793812004EEDC8 /* main.cpp in Sources */,
+				2071A8CD19793814004EEDC8 /* TimeEngine.cpp in Sources */,
+				2071A8CB19793805004EEDC8 /* FrontEnd.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1359,6 +1437,7 @@
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1464,6 +1543,7 @@
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1570,6 +1650,7 @@
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -1583,69 +1664,38 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml/lib,
 				);
 				GCC_CW_ASM_SYNTAX = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					BOOST_THREAD_USES_MOVE,
-					BOOST_MULTI_ARRAY_NO_GENERATORS,
-					HG_COMPILE_TESTS,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
-				GCC_WARN_PEDANTIC = NO;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/evan/Programming/tbb/tbb/include/,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/include/",
-					/Users/evan/Programming/boost/library/include/,
-					/Users/evan/Programming/boost/move/,
+					"\"../../../ext/tbb/include/\"",
+					"\"../../../ext/SFML/include/\"",
+					"\"../../../ext/boost/include/\"",
 				);
 				INFOPLIST_FILE = ../../../src/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/evan/Programming/boost/library/lib,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64",
-					/usr/X11/lib,
-					/Users/evan/Programming/tbb/tbb/lib,
+					../../../ext/boost/lib,
+					../../../ext/SFML/lib,
+					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = HourglassII;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -1657,72 +1707,37 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml/lib,
 				);
 				GCC_CW_ASM_SYNTAX = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				GCC_ENABLE_SSE3_EXTENSIONS = YES;
-				GCC_ENABLE_SSE41_EXTENSIONS = YES;
-				GCC_ENABLE_SSE42_EXTENSIONS = YES;
-				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
-				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					NDEBUG,
-					BOOST_THREAD_USES_MOVE,
-					BOOST_MULTI_ARRAY_NO_GENERATORS,
-				);
 				GCC_STRICT_ALIASING = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
-				GCC_WARN_PEDANTIC = NO;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/evan/Programming/tbb/tbb/include/,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/include/",
-					/Users/evan/Programming/boost/library/include/,
-					/Users/evan/Programming/boost/move/,
+					"\"../../../ext/tbb/include/\"",
+					"\"../../../ext/SFML/include/\"",
+					"\"../../../ext/boost/include/\"",
 				);
 				INFOPLIST_FILE = ../../../src/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/evan/Programming/boost/library/lib,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64",
-					/usr/X11/lib,
-					/Users/evan/Programming/tbb/tbb/lib,
+					../../../ext/boost/lib,
+					../../../ext/SFML/lib,
+					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = HourglassII;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				STRIP_INSTALLED_PRODUCT = YES;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};
@@ -1733,67 +1748,36 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml/lib,
 				);
 				GCC_CW_ASM_SYNTAX = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					BOOST_THREAD_USES_MOVE,
-					BOOST_MULTI_ARRAY_NO_GENERATORS,
-					HG_COMPILE_TESTS,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
-				GCC_WARN_PEDANTIC = NO;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/evan/Programming/tbb/tbb/include/,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/include/",
-					/Users/evan/Programming/boost/library/include/,
-					/Users/evan/Programming/boost/move/,
+					"\"../../../ext/tbb/include/\"",
+					"\"../../../ext/SFML/include/\"",
+					"\"../../../ext/boost/include/\"",
 				);
 				INFOPLIST_FILE = ../../../src/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/evan/Programming/boost/library/lib,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64",
-					/usr/X11/lib,
-					/Users/evan/Programming/tbb/tbb/lib,
+					../../../ext/boost/lib,
+					../../../ext/SFML/lib,
+					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = HourglassII;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Profile;
 		};
@@ -1804,67 +1788,36 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml/lib,
 				);
 				GCC_CW_ASM_SYNTAX = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					BOOST_THREAD_USES_MOVE,
-					BOOST_MULTI_ARRAY_NO_GENERATORS,
-					HG_COMPILE_TESTS,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
-				GCC_WARN_PEDANTIC = NO;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/evan/Programming/tbb/tbb/include/,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/include/",
-					/Users/evan/Programming/boost/library/include/,
-					/Users/evan/Programming/boost/move/,
+					"\"../../../ext/tbb/include/\"",
+					"\"../../../ext/SFML/include/\"",
+					"\"../../../ext/boost/include/\"",
 				);
 				INFOPLIST_FILE = ../../../src/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/evan/Programming/boost/library/lib,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64",
-					/usr/X11/lib,
-					/Users/evan/Programming/tbb/tbb/lib,
+					../../../ext/boost/lib,
+					../../../ext/SFML/lib,
+					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = HourglassII;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				STRIP_INSTALLED_PRODUCT = NO;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = SingleTargetProfile;
 		};
@@ -1875,66 +1828,35 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/sfml/lib,
 				);
 				GCC_CW_ASM_SYNTAX = NO;
-				GCC_C_LANGUAGE_STANDARD = "compiler-default";
-				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = NO;
-				GCC_PREFIX_HEADER = "";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					BOOST_THREAD_USES_MOVE,
-					BOOST_MULTI_ARRAY_NO_GENERATORS,
-					HG_COMPILE_TESTS,
-				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
 				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INHIBIT_ALL_WARNINGS = NO;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
-				GCC_WARN_PEDANTIC = NO;
-				GCC_WARN_SHADOW = NO;
-				GCC_WARN_SIGN_COMPARE = YES;
 				GCC_WARN_STRICT_SELECTOR_MATCH = NO;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_PARAMETER = YES;
-				GCC_WARN_UNUSED_VALUE = YES;
 				HEADER_SEARCH_PATHS = (
-					/Users/evan/Programming/tbb/tbb/include/,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/include/",
-					/Users/evan/Programming/boost/library/include/,
-					/Users/evan/Programming/boost/move/,
+					"\"../../../ext/tbb/include/\"",
+					"\"../../../ext/SFML/include/\"",
+					"\"../../../ext/boost/include/\"",
 				);
 				INFOPLIST_FILE = ../../../src/osx/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_RUNPATH_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = (
-					/Users/evan/Programming/boost/library/lib,
-					"/Users/evan/Programming/SFML/SFML-1.6-sdk-macosx-ub32+64/lib64",
-					/usr/X11/lib,
-					/Users/evan/Programming/tbb/tbb/lib,
+					../../../ext/boost/lib,
+					../../../ext/SFML/lib,
+					../../../ext/tbb/lib,
+					/Users/evan/ExternalLibraries/tbb/library/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = HourglassII;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = SingleTargetRelease;
 		};
@@ -1969,6 +1891,7 @@
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
@@ -2009,6 +1932,7 @@
 					../../../ext/tbb/lib,
 					/Users/evan/ExternalLibraries/tbb/library/lib,
 					/Users/evan/Development/Projects/HourglassII/trunk/ext/tbb/lib,
+					/Users/evan/Development/Projects/HourglassII/trunk/ext/boost/lib,
 				);
 				PRIVATE_HEADERS_FOLDER_PATH = "";
 				PRODUCT_NAME = HourglassII;
