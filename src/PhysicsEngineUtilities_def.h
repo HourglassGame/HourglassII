@@ -1102,12 +1102,14 @@ void guyStep(
 						{
 							illegalPortal[i] = j;
 						}
-						else if (triggerFrameState.shouldPort(j,
+						else if (triggerFrameState.shouldPort(
+                                j,
 								Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
-						        newJumpSpeed[i],
-								illegalPortal[i],-1,
-								supported[i],supportedSpeed[i], newPickups[i], facing[i],
-								carry[i],carrySize[i], carryDirection[i],nextTimeDirection,newTimePaused[i]),false))
+						            newJumpSpeed[i],
+								    illegalPortal[i],-1,
+								    supported[i],supportedSpeed[i], newPickups[i], facing[i],
+								    carry[i],carrySize[i], carryDirection[i],nextTimeDirection,newTimePaused[i]),
+                                false))
 						{
 							if (nextPortal[j].getWinner())
 							{

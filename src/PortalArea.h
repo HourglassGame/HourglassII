@@ -109,6 +109,20 @@ public:
     }
     
 private:
+    //The Illegal-Portal system explained:
+    //The motivation for Illegal-Portal is that we sometimes want fallable
+    //portals where the guy/box will not immediately fall through a new portal when they arrive.
+    //That is --- we sometimes want to make it so guys/boxes cannot immediately fall through portals
+    //upon arriving, but must experience at least one frame of 'not intersecting with the portal' before
+    //'intersecting with the portal' will once again trigger porting.
+    
+    //This behaviour is mediated by three properties:
+    //Portal.index_: A positive integer identifier (not necessecarily unique) given to each portal
+    //Portal.illegalDestination_: The "index_" of the portal that the arriving guy shouldn't fall through
+    //(Guy/Box).illegalPortal: The "index_" of the portal that the guy/box mustn't fall through until it has 'walked off' the portal.
+    //                         `-1` indicates that the guy/box may fall through any portal.
+
+    //This behaviour is implemented by hg::PhysicsEngine (at time of writing: PhysicsEngineUtilities_def.h).
     int index_;
     int x_;
     int y_;

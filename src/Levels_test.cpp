@@ -33,9 +33,10 @@ bool testLevels() {
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
-//#define HG_TEST_LEVELS
+#define HG_TEST_LEVELS
 //#define HG_REWRITE_REPLAY
-#if HG_TEST_LEVELS //usually #if'd out as these tests take far too long to run to be run at the start of every execution
+//usually #if'd out as these tests take far too long to run to be run at the start of every execution
+#ifdef HG_TEST_LEVELS
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             if (exists(entry.path()/"DoNotTest")) continue;
             std::cout << "Testing " << entry.path() << " ...";
@@ -46,18 +47,20 @@ bool testLevels() {
             }
             auto const start = std::chrono::high_resolution_clock::now();
             TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
-#if HG_REWRITE_REPLAY
+
             auto const replay = loadReplay((entry.path()/"win.replay").string());
-#endif
+#ifdef HG_REWRITE_REPLAY
             std::vector<InputList> outReplay;
+#endif
+            
             try {
                 for (auto const& input: replay) {
-#if HG_REWRITE_REPLAY
+#ifdef HG_REWRITE_REPLAY
                     outReplay.push_back(input);
 #endif
                     timeEngine.runToNextPlayerFrame(input);
                 }
-#if HG_REWRITE_REPLAY
+#ifdef HG_REWRITE_REPLAY
                 std::cout << " Extending replay ...";
                 while (true) {
                     outReplay.push_back(InputList());
@@ -66,8 +69,8 @@ bool testLevels() {
 #endif
             }
             catch (PlayerVictoryException const&) {
-#if HG_REWRITE_REPLAY
-                if (replay.size() != outReplay.size()) {
+#ifdef HG_REWRITE_REPLAY
+                if (replay.size() > outReplay.size()) {
                     std::cout << " Truncating replay ...";
                 }
 #endif
@@ -75,7 +78,7 @@ bool testLevels() {
                     std::chrono::duration_cast<std::chrono::duration<double>>(
                         std::chrono::high_resolution_clock::now()-start);
                 std::cout << " OK, in: " << timeTaken.count() << "s\n";
-#if HG_REWRITE_REPLAY
+#ifdef HG_REWRITE_REPLAY
                 saveReplay((entry.path()/"win.replay").string(), outReplay);
 #endif
                 continue;
