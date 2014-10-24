@@ -33,7 +33,7 @@ bool testLevels() {
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
-#define HG_TEST_LEVELS
+//#define HG_TEST_LEVELS
 //#define HG_REWRITE_REPLAY
 //usually #if'd out as these tests take far too long to run to be run at the start of every execution
 #ifdef HG_TEST_LEVELS

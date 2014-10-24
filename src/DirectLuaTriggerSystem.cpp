@@ -1093,11 +1093,11 @@ DirectLuaTriggerSystem::DirectLuaTriggerSystem(
                 int,
                 std::vector<int>
             >
-    > const &triggerOffsetsAndDefaults,
+    > triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize) :
         compiledMainChunk_(compileLuaChunk(mainChunk, "Main Chunk")),
         compiledExtraChunks_(extraChunks),
-        triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
+        triggerOffsetsAndDefaults_(std::move(triggerOffsetsAndDefaults)),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
     for (LuaModule &module: compiledExtraChunks_) {

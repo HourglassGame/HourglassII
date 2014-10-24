@@ -58,7 +58,7 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelP
       hg::make_unique<DirectLuaTriggerSystem>(
           std::vector<char>(system.begin(), system.end()),
           luaFiles,
-          readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value,
+          std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
           readField<int>(L, "arrivalLocationsSize"));
 }
 
