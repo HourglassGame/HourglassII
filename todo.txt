@@ -16,7 +16,7 @@ Better error reporting for level-file-not-found errors (and related errors).
 Implement variable box/guy/segment sizes - partially done, boxes can be different sized squares.
 
 Implement drawing of post-physics additional box departures. (Or should this be done by the triggersystem?)
-    * For things with a relative arrival location, need some way of knnowing the absolute location to draw them at.
+    * For things with a relative arrival location, need some way of knowing the absolute location to draw them at.
 Tim: Why should they draw? I think they should not always draw.
 
 Investigate the following inconsistency:
@@ -39,16 +39,6 @@ Add trigger-only data to Guys and Boxes.
 
 Think about removing illegal portal? With the above 2 things implemented it is possible.
 Tim: Bad idea to remove, again speed related.
-
-Allow trigger system to create persistent Glitz? (this is for lazy "now I want explosion gfx")
-
-Solve glitz ordering (maybe this is already done, idk. The current way seems a bit bad.)
-    * Ordering for the purposes of sorthing departures/arrivals
-      (is this necessary? just choose an arbitrary ordering?)
-    * Ordering for the purposes of layered drawing.
-
-Unify the forwards and reverse glitz lists into a single "bidirectional glitz" list?
-    (I'm not sure that this is worth doing, hold off on this one.)
 
 Time Guns
  * Physics: Finish raytrace algo
@@ -85,8 +75,6 @@ Finish and Submit Boost patch(es).
     * Variant (move-enable)
     * Optional (move-enable)
     * Thread (incompete type bug)
-
-Allow boxes to be dropped somewhere other than at the feet of the guy.
 
 Get automated builds working again
 

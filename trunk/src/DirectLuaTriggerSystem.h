@@ -151,7 +151,7 @@ public:
                     int,
                     std::vector<int>
                 >
-        > const &triggerOffsetsAndDefaults,
+        > triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
     virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const;
     virtual TriggerSystemImplementation *clone() const
