@@ -403,6 +403,12 @@ local function momentarySwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
             outputTriggers[stateTriggerID] = {state and 1 or 0}
+			if p.extraTriggerIDs then
+				local extraTriggerIDs = p.extraTriggerIDs
+				for i = 1, #extraTriggerIDs do
+					outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+				end
+			end
         end,
     }
 end
@@ -443,6 +449,12 @@ local function stickySwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
             outputTriggers[stateTriggerID] = {state and 1 or 0}
+			if p.extraTriggerIDs then
+				local extraTriggerIDs = p.extraTriggerIDs
+				for i = 1, #extraTriggerIDs do
+					outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+				end
+			end
         end,
     }
 end
@@ -522,6 +534,12 @@ local function multiStickySwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
             outputTriggers[stateTriggerID] = map(function(val) return val and 1 or 0 end, individualState)
+			if p.extraTriggerIDs then
+				local extraTriggerIDs = p.extraTriggerIDs
+				for i = 1, #extraTriggerIDs do
+					outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+				end
+			end
         end,
     }
 end
@@ -591,6 +609,12 @@ local function toggleSwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {switchState}
             outputTriggers[stateTriggerID] = {switchState}
+			if p.extraTriggerIDs then
+				local extraTriggerIDs = p.extraTriggerIDs
+				for i = 1, #extraTriggerIDs do
+					outputTriggers[extraTriggerIDs[i]] = {switchState}
+				end
+			end
         end,
         first = cloneButtonSegment(p.first),
         second = cloneButtonSegment(p.second)
@@ -833,6 +857,20 @@ local function wireGlitz(p)
 	}
 end
 
+local function easyWireGlitz(p)
+	if p.x then
+		p.x1 = {platform = p.x.platform, pos = p.x.pos - 0.05 * 3200}
+		p.x2 = {platform = p.x.platform, pos = p.x.pos + 0.05 * 3200}
+		p.x = nil
+	end
+	if p.y then
+		p.y1 = {platform = p.y.platform, pos = p.y.pos - 0.05 * 3200}
+		p.y2 = {platform = p.y.platform, pos = p.y.pos + 0.05 * 3200}
+		p.y = nil
+	end
+	return wireGlitz(p)
+end
+
 local function basicRectangleGlitz(p)
 	local colour = p.colour
 	local layer = p.layer
@@ -989,6 +1027,7 @@ return {
 	spikes = spikes,
 	boxOMatic = boxOMatic,
 	wireGlitz = wireGlitz,
+	easyWireGlitz = easyWireGlitz,
 	basicRectangleGlitz = basicRectangleGlitz,
 	basicTextGlitz = basicTextGlitz,
     mutateObject = mutateObject,
