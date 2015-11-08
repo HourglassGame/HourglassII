@@ -22,8 +22,8 @@ namespace {
     }
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(testAssignment);
-            ::hg::getTestDriver().registerUnitTest(testSwap);
+            ::hg::getTestDriver().registerUnitTest("clone_ptr_testAssignment", testAssignment);
+            ::hg::getTestDriver().registerUnitTest("clone_ptr_testSwap", testSwap);
         }
     } tester;
 }

@@ -98,12 +98,12 @@ Level loadLevelFromFile(
     TriggerSystem triggerSystem(loadTriggerSystem(L, "triggerSystem", levelPath));
     
     return {
-    	std::move(speedOfTime),
-    	std::move(timelineLength),
-    	std::move(environment),
-    	std::move(initialArrivals),
-    	std::move(guyArrival),
-    	std::move(guyStartTime),
-    	std::move(triggerSystem)};
+        std::move(speedOfTime),
+        std::move(timelineLength),
+        std::move(environment),
+        std::move(initialArrivals),
+        std::move(guyArrival),
+        std::move(guyStartTime),
+        std::move(triggerSystem)};
 }
 } //namespace hg

@@ -22,16 +22,16 @@ public:
         int arrivalBasis,
         bool supported,
         int supportedSpeed,
-    	
+        
         mt::std::map<Ability, int> const &pickups,
         FacingDirection facing,
-    	
+        
         bool boxCarrying,
-    	int boxCarrySize,
-    	TimeDirection boxCarryDirection,
+        int boxCarrySize,
+        TimeDirection boxCarryDirection,
         
         TimeDirection timeDirection,
-		bool timePaused);
+        bool timePaused);
     
     std::size_t getIndex() const { return index; }
     int getX()         const { return x; }
@@ -58,7 +58,7 @@ public:
 
     TimeDirection
         getTimeDirection() const { return timeDirection; }
-	bool getTimePaused()    const { return timePaused; }
+    bool getTimePaused()    const { return timePaused; }
 
 
     bool operator==(Guy const &o) const;
@@ -87,7 +87,7 @@ private:
     TimeDirection boxCarryDirection;
 
     TimeDirection timeDirection;
-	bool timePaused;
+    bool timePaused;
     
     #define HG_EQ_TIE_DEF std::tie(\
                 index,\
@@ -136,7 +136,7 @@ public:
 
     TimeDirection
         getTimeDirection() const { return guy_->getTimeDirection(); }
-	bool getTimePaused()    const { return guy_->getTimePaused(); }
+    bool getTimePaused()    const { return guy_->getTimePaused(); }
 
     bool operator==(GuyConstPtr const &o) const { return *guy_ == *o.guy_; }
     bool operator<(GuyConstPtr const &o) const { return *guy_ < *o.guy_; }

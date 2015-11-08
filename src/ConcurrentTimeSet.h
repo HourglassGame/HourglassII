@@ -29,10 +29,10 @@ public:
     ConcurrentTimeSet(ConcurrentTimeSet const &o) = default;
     ConcurrentTimeSet &operator=(ConcurrentTimeSet const &o) = default;
     ConcurrentTimeSet(ConcurrentTimeSet &&o) noexcept :
-    	set()
+        set()
     {
         set.swap(o.set);
-   	}
+    }
     ConcurrentTimeSet &operator=(ConcurrentTimeSet &&o) noexcept
     {
         set.swap(o.set);

@@ -40,5 +40,6 @@
 #include "../src/lua/ltablib.cpp"
 #include "../src/lua/ltm.cpp"
 #include "../src/lua/lundump.cpp"
+#include "../src/lua/lutf8lib.cpp"
 #include "../src/lua/lvm.cpp"
 #include "../src/lua/lzio.cpp"

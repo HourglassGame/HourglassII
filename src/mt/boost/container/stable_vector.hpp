@@ -8,9 +8,9 @@ namespace boost{
 namespace container {
 template<typename T>
 using stable_vector =
-		::boost::container::stable_vector<
-			T,
-			multi_thread_allocator_t<T>>;
+        ::boost::container::stable_vector<
+            T,
+            multi_thread_allocator_t<T>>;
 }
 }
 }

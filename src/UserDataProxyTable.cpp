@@ -139,9 +139,9 @@ void load_UDPT_lib(lua_State *L) {
 
 
 struct LuaRef {
-	operator void const*() const {
-		return val == LUA_NOREF ? nullptr : &val;
-	}
+    operator void const*() const {
+        return val == LUA_NOREF ? nullptr : &val;
+    }
     
     LuaRef(int val = LUA_NOREF) : val(val) {}
 

@@ -44,7 +44,7 @@ TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterru
     impl->worldState.addNewInputData(newInputData);
     FrameListList updatedList;
     updatedList.reserve(impl->speedOfTime);
-    for (unsigned int i(0); i < impl->speedOfTime; ++i) {
+    for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
         updatedList.push_back(impl->worldState.executeWorld(interrupter));
     }
     return RunResult{

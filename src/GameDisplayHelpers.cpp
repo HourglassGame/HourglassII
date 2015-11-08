@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
+#include <sstream>
 #include "Maths.h"
 namespace hg {
 
@@ -28,7 +29,7 @@ void DrawGlitzAndWall(
     target.setView(scaledView);
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
-	for (hg::Glitz const &particularGlitz: glitz) particularGlitz.display(layeredCanvas);
+    for (hg::Glitz const &particularGlitz: glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
     flusher.partialFlush(1000);
     
@@ -84,7 +85,7 @@ void drawInventory(
         timeGunsGlyph.setColor(uiTextColor);
         app.draw(timeGunsGlyph);
     }
-	{
+    {
         std::stringstream timeGuns;
         timeGuns << (abilityCursor == Ability::TIME_PAUSE ? "-->" : "   ") << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
         sf::Text timePausesGlyph;
@@ -187,7 +188,7 @@ void DrawWaves(
 {
     std::vector<char> pixelsWhichHaveBeenDrawnIn(target.getView().getSize().x);
     for (hg::FrameUpdateSet const &wave: waves) {
-    	for (hg::Frame *frame: wave) {
+        for (hg::Frame *frame: wave) {
             if (frame) {
                 pixelsWhichHaveBeenDrawnIn[
                     static_cast<int>(

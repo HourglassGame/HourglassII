@@ -21,7 +21,7 @@ Guy::Guy(
     TimeDirection boxCarryDirection,
 
     TimeDirection timeDirection,
-	bool timePaused) :
+    bool timePaused) :
         index(index),
         x(x), y(y),
         xspeed(xspeed), yspeed(yspeed),
@@ -41,7 +41,7 @@ Guy::Guy(
         boxCarryDirection(boxCarryDirection),
 
         timeDirection(timeDirection),
-		timePaused(timePaused)
+        timePaused(timePaused)
 {
 }
 

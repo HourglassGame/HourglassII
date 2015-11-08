@@ -10,6 +10,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include "LoadedLevel.h"
 
+#include <sstream>
+
 namespace hg {
 namespace {
     void runStep(
@@ -58,8 +60,8 @@ void run_post_level_scene(
                 switch (event.type) {
                     //Window Closed
                     case sf::Event::Closed:
-						window.close();
-						throw WindowClosed_exception{};
+                        window.close();
+                        throw WindowClosed_exception{};
                     case sf::Event::KeyPressed:
                     switch (event.key.code) {
                       //Esc Pressed
@@ -126,7 +128,7 @@ void run_post_level_scene(
             window.display();
             //break;
         }
-    	//continuemainloop:;
+        //continuemainloop:;
     }
     //breakmainloop:;
     //timeEngineThread.interrupt();

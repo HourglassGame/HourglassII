@@ -22,7 +22,7 @@ public:
         int yDestination,
         bool relativeTime,
         int timeDestination,
-		bool relativeDirection,
+        bool relativeDirection,
         TimeDirection destinationDirection,
         int illegalDestination,
         bool fallable,
@@ -42,7 +42,7 @@ public:
             yDestination_(yDestination),
             relativeTime_(relativeTime),
             timeDestination_(timeDestination),
-			relativeDirection_(relativeDirection),
+            relativeDirection_(relativeDirection),
             destinationDirection_(destinationDirection),
             illegalDestination_(illegalDestination),
             fallable_(fallable),
@@ -73,9 +73,9 @@ public:
     int getYdestination() const { return yDestination_; }
     bool getRelativeTime() const { return relativeTime_; }
     int getTimeDestination() const { return timeDestination_; }
-	bool getRelativeDirection() const { return relativeDirection_; }
+    bool getRelativeDirection() const { return relativeDirection_; }
     TimeDirection getDestinationDirection() const { return destinationDirection_; }
-	
+    
     int getIllegalDestination() const { return illegalDestination_; }
     bool getFallable() const { return fallable_; }
     bool getWinner() const { return winner_; }
@@ -98,7 +98,7 @@ public:
         HG_PORTAL_AREA_PRINT(yDestination_) << ',';
         HG_PORTAL_AREA_PRINT(relativeTime_) << ',';
         HG_PORTAL_AREA_PRINT(timeDestination_) << ',';
-		HG_PORTAL_AREA_PRINT(relativeDirection_) << ',';
+        HG_PORTAL_AREA_PRINT(relativeDirection_) << ',';
         HG_PORTAL_AREA_PRINT(destinationDirection_) << ',';
         HG_PORTAL_AREA_PRINT(illegalDestination_) << ',';
         HG_PORTAL_AREA_PRINT(fallable_) << ',';
@@ -137,7 +137,7 @@ private:
     int yDestination_;
     bool relativeTime_;
     int timeDestination_;
-	bool relativeDirection_;
+    bool relativeDirection_;
     TimeDirection destinationDirection_;
     int illegalDestination_;
     bool fallable_;

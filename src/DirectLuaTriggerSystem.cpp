@@ -81,11 +81,11 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &in
         sharedState = boost::move(newLuaState);
     }
 
-	return TriggerFrameState(
-		new (multi_thread_tag{}) DirectLuaTriggerFrameState(
-			boost::ref(sharedState),
-			boost::cref(triggerOffsetsAndDefaults_),
-			arrivalLocationsSize_,
+    return TriggerFrameState(
+        new (multi_thread_tag{}) DirectLuaTriggerFrameState(
+            boost::ref(sharedState),
+            boost::cref(triggerOffsetsAndDefaults_),
+            arrivalLocationsSize_,
             boost::ref(interrupter)));
 }
 
@@ -157,7 +157,7 @@ std::string abilityToString(Ability ability)
         return std::string("timeReverse");
     case Ability::TIME_GUN:
         return std::string("timeGun");
-	case Ability::TIME_PAUSE:
+    case Ability::TIME_PAUSE:
         return std::string("timePause");
     }
 }
@@ -193,8 +193,8 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     int yDestination(readField<int>(L, "yDestination"));
     bool relativeTime(readField<bool>(L, "relativeTime"));
     int timeDestination(readField<int>(L, "timeDestination"));
-	bool relativeDirection(readField<bool>(L, "relativeDirection"));
-	TimeDirection destinationDirection(readField<TimeDirection>(L, "destinationDirection"));
+    bool relativeDirection(readField<bool>(L, "relativeDirection"));
+    TimeDirection destinationDirection(readField<TimeDirection>(L, "destinationDirection"));
     
     lua_getfield(L, -1, "illegalDestination");
     int illegalDestination;
@@ -222,8 +222,8 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
             xDestination, yDestination,
             relativeTime,
             timeDestination,
-			relativeDirection,
-			destinationDirection,
+            relativeDirection,
+            destinationDirection,
             illegalDestination,
             fallable,
             winner);
@@ -371,7 +371,7 @@ PhysicsAffectingStuff
             yDestination = <number>,
             relativeTime = <boolean>,
             timeDestination = <number>,
-			relativeDirection = <boolean>,
+            relativeDirection = <boolean>,
             destinationDirection = <'forwards' or 'reverse'>,
             --nil indicates that no portals should be illegal 
             --for an object upon the arrival of that object
@@ -555,7 +555,7 @@ void pushGuy(lua_State *L, Guy const &guy)
     lua_setfield(L, -2, "width");
     lua_pushinteger(L, guy.getHeight());
     lua_setfield(L, -2, "height");
-	lua_pushinteger(L, guy.getJumpSpeed());
+    lua_pushinteger(L, guy.getJumpSpeed());
     lua_setfield(L, -2, "jumpSpeed");
     if (guy.getIllegalPortal() != -1) {
         lua_pushinteger(L, guy.getIllegalPortal() + 1);
@@ -595,7 +595,7 @@ void pushGuy(lua_State *L, Guy const &guy)
     }
     lua_pushstring(L, guy.getTimeDirection() == TimeDirection::FORWARDS ? "forwards" : "reverse");
     lua_setfield(L, -2, "timeDirection");
-	lua_pushboolean(L, guy.getTimePaused());
+    lua_pushboolean(L, guy.getTimePaused());
     lua_setfield(L, -2, "timePaused");
 }
 
@@ -1077,9 +1077,9 @@ std::vector<char> compileLuaChunk(std::vector<char> const &sourceChunk, char con
     LuaState L{LuaState::new_state_t{}};
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, name, nullptr)) {
         std::cerr << lua_tostring(L.ptr, -1) << std::endl;
-    	luaassert(false);
+        luaassert(false);
     }
-    if (lua_dump(L.ptr, lua_VectorWriter, &compiledChunk)) {
+    if (lua_dump(L.ptr, lua_VectorWriter, &compiledChunk, true)) {
         luaassert(false);
     }
     return compiledChunk;

@@ -40,9 +40,9 @@ namespace {
 
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(testMutatingFunctor);
-            ::hg::getTestDriver().registerUnitTest(testConstRange);
-            ::hg::getTestDriver().registerUnitTest(testExceptionForwarding);
+            ::hg::getTestDriver().registerUnitTest("ParallelForEach_testMutatingFunctor", testMutatingFunctor);
+            ::hg::getTestDriver().registerUnitTest("ParallelForEach_testConstRange", testConstRange);
+            ::hg::getTestDriver().registerUnitTest("ParallelForEach_testExceptionForwarding", testExceptionForwarding);
         }
     } tester;
 }

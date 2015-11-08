@@ -17,7 +17,7 @@ namespace {
     }
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(test_natural_less);
+            ::hg::getTestDriver().registerUnitTest("natural_sort_test_natural_less", test_natural_less);
         }
     } tester;
 }

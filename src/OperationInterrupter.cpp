@@ -9,8 +9,8 @@ namespace hg {
 //*important* invariant to hold: "An interruption function will not be called after
 //its associated FunctionHandle has been released.")
 void OperationInterrupter::interrupt() {
-	tbb::spin_mutex::scoped_lock lock(mutex);
-	interrupted_ = true;
+    tbb::spin_mutex::scoped_lock lock(mutex);
+    interrupted_ = true;
     for (auto& f: interruptionFunctions) {
         if (f) f();
         f = move_function<void()>();

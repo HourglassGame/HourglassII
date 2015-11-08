@@ -1,7 +1,7 @@
 #ifndef HG_OBJECT_AND_TIME
 #define HG_OBJECT_AND_TIME
 namespace hg {
-	template<typename Object, typename FrameT>
+    template<typename Object, typename FrameT>
     struct ObjectAndTime
     {
         ObjectAndTime(

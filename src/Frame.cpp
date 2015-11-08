@@ -191,7 +191,7 @@ ObjectPtrList<Normal> Frame::getPrePhysics() const
 {
     ObjectPtrList<Normal> retv;
     for (ObjectList<Normal> const &value:
-    		arrivals
+            arrivals
             | boost::adaptors::map_values
             | boost::adaptors::indirected)
     {
@@ -205,7 +205,7 @@ ObjectPtrList<Normal> Frame::getPostPhysics() const
 {
     ObjectPtrList<Normal> retv;
     for (ObjectList<Normal> const &value:
-    		departures | boost::adaptors::map_values)
+            departures | boost::adaptors::map_values)
     {
         retv.add(value);
     }

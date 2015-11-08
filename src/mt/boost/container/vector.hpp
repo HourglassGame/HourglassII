@@ -8,9 +8,9 @@ namespace boost {
 namespace container {
 template<typename T>
 using vector =
-		::boost::container::vector<
-			T,
-			multi_thread_allocator_t<T>>;
+        ::boost::container::vector<
+            T,
+            multi_thread_allocator_t<T>>;
 }
 }
 }

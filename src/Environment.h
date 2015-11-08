@@ -22,12 +22,12 @@ namespace hg {
 
         bool at(int x, int y) const noexcept
         {
-        	if (x < 0 || y < 0) return true;
+            if (x < 0 || y < 0) return true;
 
-        	unsigned const aX(x/segmentSize_);
-			unsigned const aY(y/segmentSize_);
+            unsigned const aX(x/segmentSize_);
+            unsigned const aY(y/segmentSize_);
 
-			return aX >= wallmap_.extents()[0] || aY >= wallmap_.extents()[1] || wallmap_[aX][aY];
+            return aX >= wallmap_.extents()[0] || aY >= wallmap_.extents()[1] || wallmap_[aX][aY];
         }
         
         bool atIndex(int x, int y) const noexcept
@@ -35,12 +35,12 @@ namespace hg {
             if (x < 0 || y < 0) return true;
 
             unsigned const aX(x);
-			unsigned const aY(y);
+            unsigned const aY(y);
 
-			return aX >= wallmap_.extents()[0] || aY >= wallmap_.extents()[1] || wallmap_[aX][aY];
+            return aX >= wallmap_.extents()[0] || aY >= wallmap_.extents()[1] || wallmap_[aX][aY];
         }
 
-        Rect<int> transformBounds(Rect<int> const &input) noexcept
+        Rect<int> transformBounds(Rect<int> const &input) const noexcept
         {
             int minx(input.x/segmentSize_);
             if (input.x < 0) minx -= 1;
@@ -59,23 +59,23 @@ namespace hg {
 
         bool inTopLeftTriangle(int x, int y) const noexcept
         {
-        	return flooredModulo(x, segmentSize_) + flooredModulo(y, segmentSize_) < segmentSize_;
+            return flooredModulo(x, segmentSize_) + flooredModulo(y, segmentSize_) < segmentSize_;
         }
 
         bool inTopRightTriangle(int x, int y) const noexcept
         {
-        	return flooredModulo(x, segmentSize_) > flooredModulo(y, segmentSize_);
+            return flooredModulo(x, segmentSize_) > flooredModulo(y, segmentSize_);
         }
 
         int segmentSize() const noexcept {
             return segmentSize_;
         }
         int roomWidth() const noexcept {
-        	return static_cast<int>(wallmap_.extents()[0] * segmentSize_);
-		}
-		int roomHeight() const noexcept {
-			return static_cast<int>(wallmap_.extents()[1] * segmentSize_);
-		}
+            return static_cast<int>(wallmap_.extents()[0] * segmentSize_);
+        }
+        int roomHeight() const noexcept {
+            return static_cast<int>(wallmap_.extents()[1] * segmentSize_);
+        }
         std::string const &tilesetName() const noexcept {
             return tilesetName_;
         }

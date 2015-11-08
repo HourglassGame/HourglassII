@@ -57,10 +57,10 @@ class TriggerFrameStateImplementation
 
     struct DepartureInformation {
         mt::std::map<Frame *, mt::std::vector<TriggerData>> triggerDepartures;
-		mt::std::vector<Glitz> forwardsGlitz;
+        mt::std::vector<Glitz> forwardsGlitz;
         mt::std::vector<Glitz> reverseGlitz;
         mt::std::vector<GlitzPersister> additionalGlitzPersisters;
-		mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
+        mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
     };
 
     virtual DepartureInformation getDepartureInformation(

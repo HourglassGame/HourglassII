@@ -6,15 +6,15 @@ namespace hg {
 namespace mt {
 namespace std{
 template<
-	typename Key,
-	typename T,
-	typename Compare = ::std::less<Key> >
+    typename Key,
+    typename T,
+    typename Compare = ::std::less<Key> >
 using map =
-		::std::map<
-			Key,
-			T,
-			Compare,
-			multi_thread_allocator_t< ::std::pair<Key const, T>>>;
+        ::std::map<
+            Key,
+            T,
+            Compare,
+            multi_thread_allocator_t< ::std::pair<Key const, T>>>;
 }
 }
 }

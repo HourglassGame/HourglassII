@@ -38,7 +38,7 @@ private:
     boost::tuple<int const &, std::string const &, int const &, int const &, int const &, int const &> asTie() const {
         return boost::tie(layer, key, x, y, width, height);
     }
-    virtual int order_ranking() const {
+    virtual int order_ranking() const override {
         return 3;
     }
     int layer;

@@ -5,6 +5,7 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include "multi_array.h"
+#include <sstream>
 namespace hg {
 
 namespace fs = boost::filesystem;
@@ -27,21 +28,21 @@ inline bool isSoundFile(fs::path const &file) {
 
 inline sf::Image loadImage(fs::path const &file) {
     sf::Image img;
-	bool loaded(img.loadFromFile(file.string()));
+    bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
     return img;
 }
 
 inline sf::SoundBuffer loadSoundBuffer(fs::path const &file) {
     sf::SoundBuffer sound;
-	bool loaded(sound.loadFromFile(file.string()));
+    bool loaded(sound.loadFromFile(file.string()));
     assert(loaded);
     return sound;
 }
 
 inline sf::Texture loadTexture(fs::path const &file) {
     sf::Texture img;
-	bool loaded(img.loadFromFile(file.string()));
+    bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
     return img;
 }

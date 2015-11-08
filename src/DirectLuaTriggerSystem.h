@@ -104,17 +104,17 @@ public:
     lazy_ptr &operator=(lazy_ptr const&)
     {
         //nothing to do.
-    	return *this;
+        return *this;
     }
     lazy_ptr(lazy_ptr &&o) noexcept :
-    	ptr()
+        ptr()
     {
-    	boost::swap(ptr, o.ptr);
+        boost::swap(ptr, o.ptr);
     }
     lazy_ptr &operator=(lazy_ptr &&o) noexcept
     {
-    	boost::swap(ptr, o.ptr);
-    	return *this;
+        boost::swap(ptr, o.ptr);
+        return *this;
     }
     ~lazy_ptr() noexcept
     {
@@ -122,17 +122,17 @@ public:
     }
     T &operator*() const
     {
-    	if (!ptr) ptr = new T();
+        if (!ptr) ptr = new T();
         return *ptr;
     }
     T *operator->() const
     {
-    	if (!ptr) ptr = new T();
+        if (!ptr) ptr = new T();
         return ptr;
     }
     T *get() const
     {
-    	if (!ptr) ptr = new T();
+        if (!ptr) ptr = new T();
         return ptr;
     }
 private:

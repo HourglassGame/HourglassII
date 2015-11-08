@@ -7,15 +7,15 @@ namespace mt {
 namespace boost {
 namespace container {
 template<
-	typename Key,
-	typename T,
-	typename Compare = ::std::less<Key>>
+    typename Key,
+    typename T,
+    typename Compare = ::std::less<Key>>
 using map =
     ::boost::container::map<
         Key,
-		T,
-		Compare,
-		multi_thread_allocator_t< ::std::pair<Key const, T>>>;
+        T,
+        Compare,
+        multi_thread_allocator_t< ::std::pair<Key const, T>>>;
 }
 }
 }

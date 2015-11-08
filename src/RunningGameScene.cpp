@@ -23,6 +23,7 @@
 #include "ResourceManager.h"
 #include "RenderWindow.h"
 #include "Maths.h"
+#include "enqueue_task.h"
 #include <SFML/Graphics.hpp>
 
 #include "AudioGlitzManager.h"
@@ -112,17 +113,6 @@ void runStep(
 
 void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend);
 void generateReplay();
- 
-template<typename F>
-boost::future<typename boost::result_of<F()>::type> enqueue_task(tbb::task_group& queue, F f)
-{
-    auto task = std::make_shared<boost::packaged_task<typename boost::result_of<F()>::type()>>(f);
-    auto copyable_task = [=]{return (*task)();};
-    boost::future<typename boost::result_of<F()>::type> future(task->get_future());
-    queue.run(copyable_task);
-    return boost::move(future);
-}
-
 struct AwaitingInputState {
     
 };
@@ -151,7 +141,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     hg::LevelResources const &levelResources = loadedLevel.resources;
     sf::Image const &wallImage = loadedLevel.bakedWall;
 
-    enum {AWAITING_INPUT, RUNNING_LEVEL, PAUSED} state(AWAITING_INPUT);
+    enum RunState { AWAITING_INPUT, RUNNING_LEVEL, PAUSED };
+    RunState state(AWAITING_INPUT);
 
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
@@ -182,168 +173,169 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
             if (futureRunResult_.valid()) futureRunResult_.wait();
         }
     } TimeEngineCleanupEnforcer_obj{interrupter, futureRunResult};
-    
     bool runningFromReplay(false);
 
     while (true) {
-    	switch (state) {
-			case AWAITING_INPUT:
-			{
-				hg::InputList inputList;
-                if (currentReplayIt != currentReplayEnd) {
-                    inputList = *currentReplayIt;
-                    ++currentReplayIt;
-                    runningFromReplay = true;
+        switch (state) {
+        case AWAITING_INPUT:
+        {
+            hg::InputList inputList;
+            if (currentReplayIt != currentReplayEnd) {
+                inputList = *currentReplayIt;
+                ++currentReplayIt;
+                runningFromReplay = true;
+            }
+            else {
+                hg::Wall const &wall(timeEngine.getWall());
+                double scalingFactor(std::max(wall.roomWidth()*1. / window.getSize().x, wall.roomHeight()*1. / window.getSize().y));
+                input.updateState(window.getInputState(), window.getSize().x, scalingFactor);
+                inputList = input.AsInputList();
+                runningFromReplay = false;
+            }
+            saveReplayLog(replayLogOut, inputList);
+            receivedInputs.push_back(inputList);
+            interrupter = make_unique<hg::OperationInterrupter>();
+            
+            futureRunResult =
+                enqueue_task(
+                    task_group,
+                    [inputList, &timeEngine, &interrupter] {
+                return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter);});
+            state = RUNNING_LEVEL;
+            break;
+        }
+
+        case RUNNING_LEVEL:
+        {
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                //States + transitions:
+                //Not really a state machine!
+                //Playing game -> new game + playing game               Keybinding: R
+                //playing game -> new game + playing replay             Keybinding: L
+
+                //playing replay -> new game + playing game             Keybinding: R
+                //playing replay -> new game + playing replay           Keybinding: L
+                //playing replay -> playing game                        Keybinding: C or <get to end of replay>
+                switch (event.type) {
+                case sf::Event::Closed:
+                    window.close();
+                    throw WindowClosed_exception{};
+                case sf::Event::KeyPressed:
+                    switch (event.key.code) {
+                    case sf::Keyboard::Escape:
+                        std::cout << "Returning GameAborted\n";
+                        return GameAborted_tag{};
+                        //Restart
+                    case sf::Keyboard::R:
+                        interrupter->interrupt();
+                        futureRunResult.wait();
+                        receivedInputs.clear();
+                        timeEngine = initialLevel.timeEngine;
+                        loadedLevel.resources = initialLevel.resources;
+                        loadedLevel.bakedWall = initialLevel.bakedWall;
+                        audioPlayingState = AudioPlayingState(initialLevel.resources.sounds);
+                        audioGlitzManager = AudioGlitzManager();
+                        state = AWAITING_INPUT;
+                        goto continuemainloop;
+                        //return ReloadLevel_tag{};
+                    //Load replay
+                    case sf::Keyboard::L:
+                        return move_function<std::vector<InputList>()>([] {return loadReplay("replay");});
+                        //Interrupt replay and begin Playing
+                    case sf::Keyboard::C:
+                        currentReplayIt = replay.end();
+                        currentReplayEnd = replay.end();
+                        break;
+                        //Save replay
+                    case sf::Keyboard::K:
+                        saveReplay("replay", receivedInputs);
+                        break;
+                        //Generate a replay from replayLogIn
+                    case sf::Keyboard::G:
+                        generateReplay();
+                        break;
+                    case sf::Keyboard::P:
+                        state = PAUSED;
+                        goto continuemainloop;
+
+                    default:
+                        break;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+            if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (60.f))) == boost::future_status::ready) {
+                if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
+                    inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
+                }
+                if (window.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
+                    inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::REVERSE);
+                }
+                if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
+                    inertia.reset();
+                }
+                try {
+                    assert(futureRunResult.get_state() != boost::future_state::uninitialized);
+                    runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, frameStartTime);
+                    interrupter.reset();
+                }
+                catch (hg::PlayerVictoryException const &) {
+                    run_post_level_scene(window, initialLevel, loadedLevel);
+                    //TODO -- Check run_post_level_scene return values (once it gets return values)
+                    return GameWon_tag{};
+                }
+                if (runningFromReplay) {
+                    sf::Text replayGlyph;
+                    replayGlyph.setFont(*hg::defaultFont);
+                    replayGlyph.setString("R");
+                    replayGlyph.setColor(sf::Color(255, 25, 50));
+                    replayGlyph.setPosition(580, 32);
+                    replayGlyph.setCharacterSize(32);
+                    window.draw(replayGlyph);
+                }
+                if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
+                    window.setFramerateLimit(0);
+                    window.setVerticalSyncEnabled(false);
                 }
                 else {
-                    hg::Wall const &wall(timeEngine.getWall());
-                    double scalingFactor(std::max(wall.roomWidth()*1./window.getSize().x, wall.roomHeight()*1./window.getSize().y));
-                    input.updateState(window.getInputState(), window.getSize().x, scalingFactor);
-                    inputList = input.AsInputList();
-                    runningFromReplay = false;
+                    window.setFramerateLimit(60);
+                    window.setVerticalSyncEnabled(true);
                 }
-                saveReplayLog(replayLogOut, inputList);
-                receivedInputs.push_back(inputList);
-                interrupter = make_unique<hg::OperationInterrupter>();
-                
-                futureRunResult =
-                    enqueue_task(
-                        task_group,
-                        [inputList,&timeEngine,&interrupter]{
-                            return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter);});
-                state = RUNNING_LEVEL;
-				break;
-			}
-			case RUNNING_LEVEL:
-			{
-				sf::Event event;
-				while (window.pollEvent(event))
-				{
-					//States + transitions:
-					//Not really a state machine!
-					//Playing game -> new game + playing game               Keybinding: R
-					//playing game -> new game + playing replay             Keybinding: L
-
-					//playing replay -> new game + playing game             Keybinding: R
-					//playing replay -> new game + playing replay           Keybinding: L
-					//playing replay -> playing game                        Keybinding: C or <get to end of replay>
-					switch (event.type) {
-					case sf::Event::Closed:
-						window.close();
-						throw WindowClosed_exception{};
-					case sf::Event::KeyPressed:
-						switch(event.key.code) {
-                        case sf::Keyboard::Escape:
-                            return GameAborted_tag{};
-						//Restart
-						case sf::Keyboard::R:
-                            interrupter->interrupt();
-                            futureRunResult.wait();
-                            receivedInputs.clear();
-                            timeEngine = initialLevel.timeEngine;
-                            loadedLevel.resources = initialLevel.resources;
-                            loadedLevel.bakedWall = initialLevel.bakedWall;
-                            audioPlayingState = AudioPlayingState(initialLevel.resources.sounds);
-                            audioGlitzManager = AudioGlitzManager();
-                            state = AWAITING_INPUT;
-                            goto continuemainloop;
-                            //return ReloadLevel_tag{};
-						//Load replay
-						case sf::Keyboard::L:
-                            return move_function<std::vector<InputList>()>([]{return loadReplay("replay");});
-						//Interrupt replay and begin Playing
-						case sf::Keyboard::C:
-							currentReplayIt = replay.end();
-							currentReplayEnd = replay.end();
-                        break;
-						//Save replay
-						case sf::Keyboard::K:
-							saveReplay("replay", receivedInputs);
-                        break;
-						//Generate a replay from replayLogIn
-						case sf::Keyboard::G:
-							generateReplay();
-                        break;
-                        case sf::Keyboard::P:
-                            state = PAUSED;
-                            goto continuemainloop;
-                        
-						default:
-							break;
-						}
-						break;
-					default:
-						break;
-					}
-				}
-				if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f/(60.f))) == boost::future_status::ready) {
-                    if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
-                        inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
-                    }
-                    if (window.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
-                        inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::REVERSE);
-                    }
-                    if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
-                        inertia.reset();
-                    }
-					try {
-                        assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-						runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, frameStartTime);
-                        interrupter.reset();
-					}
-					catch (hg::PlayerVictoryException const &) {
-                        run_post_level_scene(window, initialLevel, loadedLevel);
-                        //TODO -- Check run_post_level_scene return values (once it gets return values)
-						return GameWon_tag{};
-					}
-					if (runningFromReplay) {
-						sf::Text replayGlyph;
-                        replayGlyph.setFont(*hg::defaultFont);
-                        replayGlyph.setString("R");
-						replayGlyph.setColor(sf::Color(255,25,50));
-						replayGlyph.setPosition(580, 32);
-						replayGlyph.setCharacterSize(32.f);
-						window.draw(replayGlyph);
-					}
-                    if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
-                        window.setFramerateLimit(0);
-                        window.setVerticalSyncEnabled(false);
-                    }
-                    else {
-                        window.setFramerateLimit(60);
-                        window.setVerticalSyncEnabled(true);
-                    }
-					window.display();
-					state = AWAITING_INPUT;
-				}
-				break;
-			}
-            case PAUSED:
+                window.display();
+                state = AWAITING_INPUT;
+            }
+            break;
+        }
+        case PAUSED:
+        {
             {
+                sf::Event event;
+                while (window.waitEvent(event))
                 {
-                    sf::Event event;
-                    while (window.waitEvent(event))
-                    {
-                        switch(event.type) {
-                        case sf::Event::Closed:
-                            window.close();
-                            throw WindowClosed_exception{};
-                        case sf::Event::KeyPressed:
-						    switch(event.key.code) {
-                            case sf::Keyboard::P:
-                                state = RUNNING_LEVEL;
-                                goto continuemainloop;
-                            default: break;
-                            }
-                        break;
+                    switch (event.type) {
+                    case sf::Event::Closed:
+                        window.close();
+                        throw WindowClosed_exception{};
+                    case sf::Event::KeyPressed:
+                        switch (event.key.code) {
+                        case sf::Keyboard::P:
+                            state = RUNNING_LEVEL;
+                            goto continuemainloop;
                         default: break;
                         }
+                        break;
+                    default: break;
                     }
                 }
-                sf::sleep(sf::seconds(.1f));
             }
-    	}
-    	continuemainloop:;
+            sf::sleep(sf::seconds(.1f));
+        }
+        }
+    continuemainloop:;
     }
     assert(false && "should be unreachable");
 }

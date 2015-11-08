@@ -20,7 +20,7 @@ Universe::Universe(int timelineLength) :
     for (int i: boost::irange<int>(0, timelineLength)) {
         frames.push_back(Frame(i, *this));
     }
-	assert(!frames.empty());
+    assert(!frames.empty());
 }
 
 Universe::Universe(Universe const &o) :
@@ -36,17 +36,17 @@ Universe &Universe::operator=(Universe const &o)
 }
 
 Universe::Universe(Universe &&o) noexcept :
-	frames(std::move(o.frames))
+    frames(std::move(o.frames))
 {
-	assert(!frames.empty());
-	fixFramesUniverses();
+    assert(!frames.empty());
+    fixFramesUniverses();
 }
 Universe &Universe::operator=(Universe &&o) noexcept
 {
-	assert(!o.frames.empty());
-	frames = std::move(o.frames);
-	fixFramesUniverses();
-	return *this;
+    assert(!o.frames.empty());
+    frames = std::move(o.frames);
+    fixFramesUniverses();
+    return *this;
 }
 
 //updates the universe and Frame pointers in `frames`

@@ -26,7 +26,7 @@ template<typename F, typename R, typename... ArgTypes>
 struct function_obj<F, R(ArgTypes...)> : function_base<R(ArgTypes...)>
 {
     function_obj(F &&f) noexcept :
-    	f(std::forward<F>(f))
+        f(std::forward<F>(f))
     {
     }
     virtual R operator()(ArgTypes &&...args) override
@@ -40,7 +40,7 @@ template<typename F, typename... ArgTypes>
 struct function_obj<F, void(ArgTypes...)> : function_base<void(ArgTypes...)>
 {
     function_obj(F &&f) noexcept :
-    	f(std::forward<F>(f))
+        f(std::forward<F>(f))
     {
     }
     virtual void operator()(ArgTypes &&...args) override
@@ -66,8 +66,8 @@ template<typename R, typename... ArgTypes>
 class move_function<R(ArgTypes...)>
 {
 public:
-	move_function() noexcept = default;
-	move_function(move_function &&o) noexcept = default;
+    move_function() noexcept = default;
+    move_function(move_function &&o) noexcept = default;
     move_function<R(ArgTypes...)> &operator=(move_function &&o) noexcept = default;
     template<typename F>
     move_function(F &&f) :

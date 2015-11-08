@@ -259,14 +259,14 @@ public:
 #ifndef NDEBUG
         scrub_storage();
 #endif
-        currentMember = o.which();
+        currentMember = static_cast<tag_t>(o.which());
         visit(variant_detail::CopyVisitor<variant, Types...>{o});
     }
     variant(variant &&o) noexcept {
 #ifndef NDEBUG
         scrub_storage();
 #endif
-        currentMember = o.which();
+        currentMember = static_cast<tag_t>(o.which());
         visit(variant_detail::MoveVisitor<variant, Types...>{std::move(o)});
     }
 
@@ -274,7 +274,7 @@ public:
     //(Wipes out existing object, makes new object in its place.
     // For assignment to contained object, use a visitor.)
     variant &operator=(variant const &o) {
-        o.visit(CopyAssignVisitor_t(*this, o.which()));
+        o.visit(CopyAssignVisitor_t(*this, static_cast<tag_t>(o.which())));
         return *this;
     }
     variant &operator=(variant &&o) noexcept {
@@ -282,7 +282,7 @@ public:
 #ifndef NDEBUG
         scrub_storage();
 #endif
-        currentMember = o.which();
+        currentMember = static_cast<tag_t>(o.which());
         visit(variant_detail::MoveVisitor<variant, Types...>{std::move(o)});
         return *this;
     }

@@ -6,13 +6,13 @@ namespace hg {
 namespace mt {
 namespace std{
 template<
-	typename Key,
-	typename Compare = ::std::less<Key> >
+    typename Key,
+    typename Compare = ::std::less<Key> >
 using set =
-		::std::set<
-			Key,
-			Compare,
-			multi_thread_allocator_t<Key>>;
+        ::std::set<
+            Key,
+            Compare,
+            multi_thread_allocator_t<Key>>;
 }
 }
 }

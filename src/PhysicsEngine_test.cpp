@@ -14,13 +14,13 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
     public:
     virtual PhysicsAffectingStuff
         calculatePhysicsAffectingStuff(
-            Frame const */*currentFrame*/,
+            Frame const * /*currentFrame*/,
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::boost::container::vector<TriggerDataConstPtr> const> const &/*triggerArrivals*/) override
     {
         assert(false && "Not Implemented!");
-		throw std::runtime_error("Not Implemented Exception");
+        throw std::runtime_error("Not Implemented Exception");
     }
 
     virtual bool shouldArrive(Guy const &/*potentialArriver*/) override { return true; }
@@ -45,10 +45,10 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
     virtual DepartureInformation
     getDepartureInformation(
         mt::std::map<Frame *, ObjectList<Normal> > const &/*departures*/,
-        Frame */*currentFrame*/) override
+        Frame * /*currentFrame*/) override
     {
         assert(false && "Not implemented");
-		throw std::runtime_error("Not Implemented Exception");
+        throw std::runtime_error("Not Implemented Exception");
     }
 
     virtual ~MockTriggerFrameStateImplementation() noexcept override {}
@@ -135,7 +135,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
     }
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(testTester);
+            ::hg::getTestDriver().registerUnitTest("PhysicsEngine_testTester", testTester);
         }
     } tester;
 }

@@ -33,8 +33,8 @@ bool chunkwise_less(T const &l, T const &r) {
 template<typename Iterator>
 Iterator advance_to_end_of_chunk(Iterator begin, Iterator const &end) {
     if (begin != end) {
-        bool numeric = std::isdigit(*begin);
-        do ++begin; while (begin != end && std::isdigit(*begin) == numeric);
+        bool const numeric = std::isdigit(*begin);
+        do { ++begin; } while (begin != end && !!std::isdigit(*begin) == numeric);
     }
     return begin;
 }

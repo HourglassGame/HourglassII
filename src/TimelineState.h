@@ -43,14 +43,14 @@ public:
     }
     
     TimelineState(TimelineState&& o) noexcept :
-		universe_(std::move(o.universe_)),
-		permanentDepartures_(std::move(o.permanentDepartures_))
-	{}
+        universe_(std::move(o.universe_)),
+        permanentDepartures_(std::move(o.permanentDepartures_))
+    {}
     TimelineState &operator=(TimelineState&& o) noexcept {
-		universe_ = std::move(o.universe_);
-		permanentDepartures_ = std::move(o.permanentDepartures_);
-		return *this;
-	}
+        universe_ = std::move(o.universe_);
+        permanentDepartures_ = std::move(o.permanentDepartures_);
+        return *this;
+    }
 
     void swap(TimelineState &o);
     
@@ -59,7 +59,7 @@ public:
      * whose arrivals have changed.
      */
     FrameUpdateSet updateWithNewDepartures(
-    	DepartureMap &newDepartures/*, tbb::task_group_context &context*/);
+        DepartureMap &newDepartures/*, tbb::task_group_context &context*/);
 
     /**
      * Creates the arrivals for those objects initially in the level.
@@ -68,7 +68,7 @@ public:
      */
     //Consider moving this into constructor
     void addArrivalsFromPermanentDepartureFrame(
-    	std::map<Frame *, ObjectList<Normal> > const &initialArrivals);
+        std::map<Frame *, ObjectList<Normal> > const &initialArrivals);
 
     /**
      * Converts FrameID into Frame*
