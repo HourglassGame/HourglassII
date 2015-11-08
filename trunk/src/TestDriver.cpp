@@ -1,15 +1,20 @@
 #include "TestDriver.h"
 #include <boost/range/algorithm/for_each.hpp>
+#include <iostream>
+#include <string>
 namespace hg {
-void TestDriver::registerUnitTest(std::function<bool()> test)
+void TestDriver::registerUnitTest(std::string testName, std::function<bool()> test)
 {
-    tests.push_back(test);
+    tests.emplace_back(std::move(testName), std::move(test));
 }
 
 bool TestDriver::passesAllTests() {
     bool allTestsPassed = true;
     for (auto const& test: tests) {
-        if (!test()) allTestsPassed = false;
+        if (!std::get<1>(test)()) {
+            allTestsPassed = false;
+            std::cerr << "Failed: " << std::get<0>(test) << "\n";
+        }
     }
     return allTestsPassed;
 }

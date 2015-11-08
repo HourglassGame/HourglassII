@@ -9,6 +9,17 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <ostream>
+#include <sstream>
+#include <iosfwd>
+#include <memory>
+#include <mutex>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
+
+
 
 namespace hg {
     extern sf::Font const *defaultFont;
@@ -18,12 +29,13 @@ namespace hg {
 namespace {
     int run_main(std::vector<std::string> const &args);
     void initialseCurrentPath(std::vector<std::string> const &args);
-    
+    void initialiseStdIO();
     struct GlobalResourceHolder {
         GlobalResourceHolder() :
             defaultFontHolder()
         {
-            bool const fontLoaded(defaultFontHolder.loadFromFile("Arial.ttf"));
+            std::string const filename("Arial.ttf");
+            bool const fontLoaded(defaultFontHolder.loadFromFile(filename));
             assert(fontLoaded);
             hg::defaultFont = &defaultFontHolder;
         }
@@ -43,7 +55,7 @@ int main(int argc, char *argv[])
 {
     std::vector<std::string> args(argv, argv+argc);
 
-    std::ios::sync_with_stdio(false);
+    initialiseStdIO();
 
     initialseCurrentPath(args);
     GlobalResourceHolder global_resources;
@@ -57,6 +69,67 @@ int main(int argc, char *argv[])
 }
 
 
+
+#ifdef _WIN32
+/// \brief This class is a derivate of basic_stringbuf which will output all the written data using the OutputDebugString function
+template<typename TChar, typename TTraits = std::char_traits<TChar>>
+class OutputDebugStringBuf : public std::basic_stringbuf<TChar, TTraits, std::allocator<TChar>> {
+public:
+    explicit OutputDebugStringBuf() : _buffer(256) {
+        setg(nullptr, nullptr, nullptr);
+        setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
+    }
+
+    static_assert(std::is_same<TChar, char>::value || std::is_same<TChar, wchar_t>::value, "OutputDebugStringBuf only supports char and wchar_t types");
+
+    int sync() try {
+        std::lock_guard<std::mutex> lock(_mutex);
+        MessageOutputer<TChar, TTraits>()(pbase(), pptr());
+        setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
+        return 0;
+    }
+    catch (...) {
+        return -1;
+    }
+
+    int_type overflow(int_type c = TTraits::eof()) {
+        std::lock_guard<std::mutex> lock(_mutex);
+        auto syncRet = sync();
+        if (c != TTraits::eof()) {
+            _buffer[0] = c;
+            setp(_buffer.data(), _buffer.data() + 1, _buffer.data() + _buffer.size());
+        }
+        return syncRet == -1 ? TTraits::eof() : 0;
+    }
+
+
+private:
+    std::mutex              _mutex;
+    std::vector<TChar>      _buffer;
+
+    template<typename TChar, typename TTraits>
+    struct MessageOutputer;
+
+    template<>
+    struct MessageOutputer<char, std::char_traits<char>> {
+        template<typename TIterator>
+        void operator()(TIterator begin, TIterator end) const {
+            std::string s(begin, end);
+            OutputDebugStringA(s.c_str());
+        }
+    };
+
+    template<>
+    struct MessageOutputer<wchar_t, std::char_traits<wchar_t>> {
+        template<typename TIterator>
+        void operator()(TIterator begin, TIterator end) const {
+            std::wstring s(begin, end);
+            OutputDebugStringW(s.c_str());
+        }
+    };
+};
+#endif
+
 namespace  {
 
 void initialseCurrentPath(std::vector<std::string> const &args)
@@ -65,9 +138,28 @@ void initialseCurrentPath(std::vector<std::string> const &args)
     assert(args.size() >= 1);
     current_path(boost::filesystem::path(args[0]).remove_filename()/"../Resources/");
 #elif defined(_WIN32)
-	assert(args.size() >= 1);
+    assert(args.size() >= 1);
     current_path(boost::filesystem::path(args[0]).remove_filename()/"data/");
+#else
+#error "Configure resource path for your platform"
 #endif
+}
+
+
+void initialiseStdIO()
+{
+#ifdef _WIN32
+    static OutputDebugStringBuf<char> charDebugOutput;
+    std::cout.rdbuf(&charDebugOutput);
+    std::cerr.rdbuf(&charDebugOutput);
+    std::clog.rdbuf(&charDebugOutput);
+
+    static OutputDebugStringBuf<wchar_t> wcharDebugOutput;
+    std::wcout.rdbuf(&wcharDebugOutput);
+    std::wcerr.rdbuf(&wcharDebugOutput);
+    std::wclog.rdbuf(&wcharDebugOutput);
+#endif
+    std::ios::sync_with_stdio(false);
 }
 
 int run_main(std::vector<std::string> const &args) {

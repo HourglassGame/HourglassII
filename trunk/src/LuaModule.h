@@ -4,7 +4,8 @@
 #include <string>
 namespace hg {
 struct LuaModule {
-    LuaModule(std::string const &name, std::vector<char> const &chunk) : name(name), chunk(chunk){}
+    LuaModule(std::string name, std::vector<char> chunk)
+        : name(std::move(name)), chunk(std::move(chunk)){}
     std::string name;
     std::vector<char> chunk;
 };

@@ -42,7 +42,7 @@ namespace hg {
             if (void *pointer = multi_thread_malloc(size)) {
                 return pointer;
             }
-            if (std::new_handler handler = std::set_new_handler(0)) {
+            if (std::new_handler handler = std::set_new_handler(nullptr)) {
                 std::set_new_handler(handler);
                 (*handler)();
             }

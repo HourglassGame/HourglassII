@@ -163,8 +163,8 @@ namespace {
 
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(test_apply_visitor);
-            ::hg::getTestDriver().registerUnitTest(test_apply_visitor_forwarding);
+            ::hg::getTestDriver().registerUnitTest("variant_test_apply_visitor", test_apply_visitor);
+            ::hg::getTestDriver().registerUnitTest("variant_test_apply_visitor_forwarding", test_apply_visitor_forwarding);
         }
     } tester;
 }

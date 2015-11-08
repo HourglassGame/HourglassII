@@ -32,5 +32,7 @@ std::ostream &operator<<(std::ostream &o, TimeDirection timeDirection)
         case TimeDirection::REVERSE:
             return o << "reverse";
     }
+    assert(false);
+    return o;
 }
 }

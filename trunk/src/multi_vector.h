@@ -29,7 +29,7 @@ public:
             assert(i < this_->size[current_axis]);
             auto current_block_length =
                 std::accumulate(
-                    &this_->capacity[current_axis+1],
+                    this_->capacity.begin()+current_axis+1,
                     this_->capacity.end(),
                     std::size_t(1),
                     std::multiplies<std::size_t>());
@@ -53,9 +53,9 @@ public:
     };
 
     multi_vector() noexcept :
-	  data(), size(), capacity()
-	{
-	}
+        data(), size(), capacity()
+    {
+    }
     template<typename RandomAccessRange>
     multi_vector(std::array<std::size_t, N_dims> const &size, RandomAccessRange const &data);
     

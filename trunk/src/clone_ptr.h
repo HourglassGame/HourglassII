@@ -57,33 +57,33 @@ public:
     }
     
     clone_ptr(clone_ptr &&o) noexcept :
-    	CloneManager(std::move(o.get_cloner())), obj(o.obj)
+        CloneManager(std::move(o.get_cloner())), obj(o.obj)
     {
-    	o.obj = pointer();
+        o.obj = pointer();
     }
     template<typename U, typename E>
     clone_ptr(clone_ptr<U,E> &&o) noexcept :
-    	CloneManager(std::forward<E>(o.get_cloner())), obj(o.obj)
+        CloneManager(std::forward<E>(o.get_cloner())), obj(o.obj)
     {
-    	o.obj = typename clone_ptr<U,E>::pointer();
+        o.obj = typename clone_ptr<U,E>::pointer();
     }
     
     clone_ptr &operator=(clone_ptr &&o) noexcept
-	{
-		swap(o);
-		return *this;
-	}
+    {
+        swap(o);
+        return *this;
+    }
     template<typename U, typename E>
     clone_ptr &operator=(clone_ptr<U, E> &&o) noexcept
-	{
+    {
         static_assert(
             std::is_nothrow_move_assignable<CloneManager>::value,
             "CloneManager must be no-throw move assignable to call operator=");
         
         reset(o.release());
         get_cloner() = std::forward<E>(o.get_cloner());
-		return *this;
-	}
+        return *this;
+    }
     
     void swap(clone_ptr &o) noexcept {
         boost::swap(obj, o.obj);

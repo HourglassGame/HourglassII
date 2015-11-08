@@ -30,11 +30,11 @@ public:
     
     struct PhysicsReturnT
     {
-    	FrameDepartureT departures;
+        FrameDepartureT departures;
         FrameView view;
-    	bool currentPlayerFrame;
-    	bool nextPlayerFrame;
-    	bool currentWinFrame;
+        bool currentPlayerFrame;
+        bool nextPlayerFrame;
+        bool currentWinFrame;
     };
 
     // executes frame and returns departures

@@ -12,6 +12,7 @@
 #include <boost/lexical_cast.hpp>
 #include <tbb/task_group.h>
 #include <thread>
+
 namespace hg {
 static FrameUpdateSet fixFrameUpdateSet(FramePointerUpdater const& frameUpdater, FrameUpdateSet const& oldFrameUpdateSet)
 {
@@ -148,20 +149,31 @@ PhysicsEngine::FrameDepartureT
     frame->setView(std::move(retv.view));
     return std::move(retv.departures);
 }
-
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 {
     DepartureMap newDepartures;
     newDepartures.makeSpaceFor(frameUpdateSet_);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
-    //Does not directly call `group.cancel_group_execution()`, as this can lead
-    //to a failure to propagate exceptions from ExecuteFrame, which can lead to
-    //the world continuing to be run while in an invalid state.
     {
         tbb::task_group_context group;
         auto group_interruption_scope =
-            interrupter.addInterruptionFunction([&]{try{throw OperationInterruptedException();}catch (...){group.register_pending_exception();}});
+            interrupter.addInterruptionFunction(
+                [&]{
+                    //This was previously implemented via group.register_pending_exception()
+                    //Previously there was a comment here warning:
+                    //'''
+                    //Do not directly call `group.cancel_group_execution()`, as this can lead
+                    //to a failure to propagate exceptions from ExecuteFrame, which can lead to
+                    //the world continuing to be run while in an invalid state.
+                    //'''
+                    //I was unable to figure out why this was considered a problem; but maybe this comment can be a clue
+                    //if the problem reapppears. (If no problem reappears, or you prove the non-existence of any problem,
+                    //remove this comment.
+                    //Note that `group.register_pending_exception()` seems to be buggy in MSVC++, and will sometimes
+                    //just throw the pending exception, rather than capturing it. (It is also an undocumented feature).
+                    group.cancel_group_execution();
+                  });
         parallel_for_each(
             returnSet,
             [&](Frame *frame) { newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame, interrupter)); },
@@ -183,9 +195,9 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 //than it was before. This situation breaks the wave assumption that departures == apply_physics(arrivals).
 
 //this is ok because a new arrival with maxGuyIndex >= playerInput_.size() is either:
-//			run, in which case nextPlayerFrames_ will be set and the frame will be run again when new input becomes available
-//		or
-//			not run, in which case it will be still sitting in frameUpdateSet_ and will be run in the next executeWorld
+//            run, in which case nextPlayerFrames_ will be set and the frame will be run again when new input becomes available
+//        or
+//            not run, in which case it will be still sitting in frameUpdateSet_ and will be run in the next executeWorld
 //The second case depends on the new arrival triggering placement in frameUpdateSet_,
 // which would not happen if that arrival was replacing an earlier equivalent arrival
 //However, in this case it would be ok because the earlier equivalent arrival must already run
@@ -210,17 +222,17 @@ void WorldState::addNewInputData(InputList const &newInputData)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one
     // of four categories prior to this being called:
     // maxGuyIndex == undefined, no guys:
-    //					in this case the frame cannot contain a guy unless a guy arrives (which would trigger an update)
+    //                    in this case the frame cannot contain a guy unless a guy arrives (which would trigger an update)
     // maxGuyIndex < playerInput_.size():
-    //					in this case maxGuyIndex is guaranteed to be < playerInput.size() - 1 after this is called
-    //					(as this increases size by 1) and so the maxGuyIndex guy is neither a currentPlayer nor nextPlayer)
+    //                    in this case maxGuyIndex is guaranteed to be < playerInput.size() - 1 after this is called
+    //                    (as this increases size by 1) and so the maxGuyIndex guy is neither a currentPlayer nor nextPlayer)
     // maxGuyIndex == playerInput_.size():
-    //					in this case maxGuyIndex == playerInput_.size() - 1 and so (barring new arrivals)
-    //					it contains a currentPlayer. However, in this case physics would have added this frame to nextPlayerFrames_
-    //					and so it was added to be executed just above
+    //                    in this case maxGuyIndex == playerInput_.size() - 1 and so (barring new arrivals)
+    //                    it contains a currentPlayer. However, in this case physics would have added this frame to nextPlayerFrames_
+    //                    and so it was added to be executed just above
     // maxGuyIndex > playerInput_.size():
-    //					this can never happen, as physics cannot create a guy departure without having input for the guy
-    //					and input does not exist unless maxGuyIndex < playerInput_.size()
+    //                    this can never happen, as physics cannot create a guy departure without having input for the guy
+    //                    and input does not exist unless maxGuyIndex < playerInput_.size()
     currentPlayerFrames_.clear();
     nextPlayerFrames_.clear();
 }

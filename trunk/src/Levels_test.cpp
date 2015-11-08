@@ -19,6 +19,38 @@
 namespace hg {
 namespace levels_test {
 namespace {
+bool testLevelsLoad() {
+    //Iterate the `levels` folder.
+    //For every *.lvl that does not
+    //contain a file called "DoNotTest",
+    //load the level and continue.
+//#define HG_TEST_LEVELS_LOAD
+
+    //TODO -- make this test only run in an "expensive tests" run
+    //TODO -- get rid of hard-coded progress display.
+    bool testPassed = true;
+#ifdef HG_TEST_LEVELS_LOAD
+    for (auto const entry : boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
+        boost::filesystem::directory_iterator()))
+    {
+        if (is_directory(entry.status())
+         && entry.path().extension() == ".lvl"
+         && !exists(entry.path() / "DoNotTest"))
+        {
+            std::cout << "Test-loading " << entry.path() << " ..." << std::flush;
+            auto const start = std::chrono::high_resolution_clock::now();
+            TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
+
+            auto timeTaken =
+                std::chrono::duration_cast<std::chrono::duration<double>>(
+                    std::chrono::high_resolution_clock::now() - start);
+            std::cout << " Loaded OK, in: " << timeTaken.count() << "s\n" << std::flush;
+        }
+    }
+#endif
+    return testPassed;
+}
+
 bool testLevels() {
     //Iterate the `levels` folder.
     //For every *.lvl that does not
@@ -39,9 +71,9 @@ bool testLevels() {
 #ifdef HG_TEST_LEVELS
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             if (exists(entry.path()/"DoNotTest")) continue;
-            std::cout << "Testing " << entry.path() << " ...";
+            std::cout << "Testing " << entry.path() << " ..." << std::flush;
             if (!exists(entry.path()/"win.replay")) {
-                std::cerr << " Did not have win.replay\n";
+                std::cerr << " Did not have win.replay\n" << std::flush;
                 testPassed = false;
                 continue;
             }
@@ -61,7 +93,7 @@ bool testLevels() {
                     timeEngine.runToNextPlayerFrame(input);
                 }
 #ifdef HG_REWRITE_REPLAY
-                std::cout << " Extending replay ...";
+                std::cout << " Extending replay ..." << std::flush;
                 while (true) {
                     outReplay.push_back(InputList());
                     timeEngine.runToNextPlayerFrame(outReplay.back());
@@ -71,19 +103,19 @@ bool testLevels() {
             catch (PlayerVictoryException const&) {
 #ifdef HG_REWRITE_REPLAY
                 if (replay.size() > outReplay.size()) {
-                    std::cout << " Truncating replay ...";
+                    std::cout << " Truncating replay ..." << std::flush;
                 }
 #endif
                 auto timeTaken =
                     std::chrono::duration_cast<std::chrono::duration<double>>(
                         std::chrono::high_resolution_clock::now()-start);
-                std::cout << " OK, in: " << timeTaken.count() << "s\n";
+                std::cout << " OK, in: " << timeTaken.count() << "s\n" << std::flush;
 #ifdef HG_REWRITE_REPLAY
                 saveReplay((entry.path()/"win.replay").string(), outReplay);
 #endif
                 continue;
             }
-            std::cerr << " Did not win\n";
+            std::cerr << " Did not win\n" << std::flush;
             testPassed = false;
             continue;
         }
@@ -94,7 +126,8 @@ bool testLevels() {
 
 struct tester {
     tester() {
-        ::hg::getTestDriver().registerUnitTest(testLevels);
+        ::hg::getTestDriver().registerUnitTest("Levels_testLevelsLoad", testLevelsLoad);
+        ::hg::getTestDriver().registerUnitTest("Levels_testLevels", testLevels);
     }
 } tester;
 }

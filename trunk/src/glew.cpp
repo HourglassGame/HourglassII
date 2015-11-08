@@ -29,8 +29,10 @@ extern "C" {
 ** ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 ** THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
+#endif
 #include "GL/glew.h"
 
 #if defined(_WIN32)
@@ -18124,4 +18126,6 @@ GLboolean glxewIsSupported (const char* name)
 
 #endif /* _WIN32 */
 }
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif

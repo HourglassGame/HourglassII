@@ -29,7 +29,7 @@ struct InsertAddresses
         typedef typename boost::range_value<ForwardRange>::type ObjType;
         for (ObjType const &obj: toInsert) {
             toInsertInto.push_back(
-            		typename ConstPtr_of<ObjType>::type(obj));
+                    typename ConstPtr_of<ObjType>::type(obj));
         }
     }
 };

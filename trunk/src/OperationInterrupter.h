@@ -54,7 +54,7 @@ public:
     //Calls all currently active interruptionFunctions
     //Causes attempts to add new interruptionFunctions to immediately call
     //the passed interruptionFunction.
-	void interrupt();
+    void interrupt();
     bool interrupted() const;
     
     //While the returned FunctionHandle (or a FunctionHandle moved from the returned FunctionHandle) is alive,
@@ -62,11 +62,11 @@ public:
     //The returned FunctionHandle must not outlive the OperationInterrupter.
     //If `interrupt` is called prior to `addInterruptionFunction`, a call to `addInterruptionFunction`
     //will immediately execute `interruptionFunction` on the thread calling `addInterruptionFunction`.
-	virtual FunctionHandle addInterruptionFunction(move_function<void()> interruptionFunction);
+    virtual FunctionHandle addInterruptionFunction(move_function<void()> interruptionFunction);
 
 private:
-	bool interrupted_;
-	mt::boost::container::stable_vector<move_function<void()>> interruptionFunctions;
+    bool interrupted_;
+    mt::boost::container::stable_vector<move_function<void()>> interruptionFunctions;
     //Using tbb::spin_mutex because it is able to be locked without the possibility of failing and throwing an exception.
     //This is needed, because FunctionHandle must be able to lock on the mutex within its destructor.
     //(In theory, the other mutexes could probably be reimplemented with that guarantee added, but working from

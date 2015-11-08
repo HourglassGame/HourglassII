@@ -24,14 +24,14 @@ ObjectList<ListTypes>::ObjectList() :
 }
 
 namespace {
-	struct Insert
-	{
-		template<typename Container, typename SinglePassRange>
-		void operator()(Container &toInsertInto, SinglePassRange const &toInsert) const
-		{
-			boost::push_back(toInsertInto, toInsert);
-		}
-	};
+    struct Insert
+    {
+        template<typename Container, typename SinglePassRange>
+        void operator()(Container &toInsertInto, SinglePassRange const &toInsert) const
+        {
+            boost::push_back(toInsertInto, toInsert);
+        }
+    };
 }
 template<typename ListTypes>
 void ObjectList<ListTypes>::add(ObjectList<ListTypes> const &o)
@@ -74,14 +74,14 @@ bool ObjectList<ListTypes>::operator==(ObjectList<ListTypes> const &o) const
 }
 
 namespace {
-	struct Empty
-	{
-		template<typename T>
-		bool operator()(T const &toCheck)
-		{
-			return toCheck.empty();
-		}
-	};
+    struct Empty
+    {
+        template<typename T>
+        bool operator()(T const &toCheck)
+        {
+            return toCheck.empty();
+        }
+    };
 }
 template<typename ListTypes>
 bool ObjectList<ListTypes>::isEmpty() const

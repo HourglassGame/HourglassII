@@ -84,12 +84,12 @@ void boxCollisionAlogorithm(
     RandomAccessMutatorRange const &mutators,
     TriggerFrameState &triggerFrameState,
     FrameT const &frame);
-	
+    
 void makeBoxGlitzListForNormalDepartures(
     mt::std::vector<ObjectAndTime<Box, Frame*> > const &nextBox,
-	mt::std::vector<char> &nextBoxNormalDeparture,
-	BoxGlitzAdder const &boxGlitzAdder);	
-	
+    mt::std::vector<char> &nextBoxNormalDeparture,
+    BoxGlitzAdder const &boxGlitzAdder);
+    
 template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
@@ -157,27 +157,27 @@ bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const &env, int x, int y, int w, int h);
 
 bool getRaytraceRectangleCollision(
-	int sx, int sy, 
-	int &px, int &py,
-	int left, int top,
-	int width, int height,
-	int dx, int dy,
-	bool mostlySideways);
+    int sx, int sy, 
+    int &px, int &py,
+    int left, int top,
+    int width, int height,
+    int dx, int dy,
+    bool mostlySideways);
 
 void doGunRaytrace(
-	PhysicsObjectType &targetType,
-	int &targetId,
-	Environment const &env,
-	int &sx, int &sy, int &px, int &py,
-	mt::std::vector<Collision> const &nextPlatform,
-	mt::std::vector<ObjectAndTime<Box, Frame*> > box,
-	mt::std::vector<char> &nextBoxNormalDeparture,
-	mt::std::vector<int> gx, // other guy things
-	mt::std::vector<int> gy,
-	mt::std::vector<int> gw,
-	mt::std::vector<int> gh,
-	mt::std::vector<char> shootable);
-	
+    PhysicsObjectType &targetType,
+    int &targetId,
+    Environment const &env,
+    int &sx, int &sy, int &px, int &py,
+    mt::std::vector<Collision> const &nextPlatform,
+    mt::std::vector<ObjectAndTime<Box, Frame*> > box,
+    mt::std::vector<char> &nextBoxNormalDeparture,
+    mt::std::vector<int> gx, // other guy things
+    mt::std::vector<int> gy,
+    mt::std::vector<int> gw,
+    mt::std::vector<int> gh,
+    mt::std::vector<char> shootable);
+    
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
@@ -190,9 +190,9 @@ bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, in
 template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_t playerInputSize);
 enum {
-	COLLISION_BUFFER_RANGE = 100,
-	HALF_COLLISION_BUFFER_RANGE = 50,
-	REVERSE_PLATFORM_CHRONOFRAG_FUDGE = 250
+    COLLISION_BUFFER_RANGE = 100,
+    HALF_COLLISION_BUFFER_RANGE = 50,
+    REVERSE_PLATFORM_CHRONOFRAG_FUDGE = 250
 };
 }
 #include "PhysicsEngineUtilities_def.h"

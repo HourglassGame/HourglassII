@@ -16,7 +16,7 @@ namespace {
     }
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(testReplaySavingAndLoading);
+            ::hg::getTestDriver().registerUnitTest("ReplayIO_testReplaySavingAndLoading", testReplaySavingAndLoading);
         }
     } tester;
 }

@@ -121,7 +121,6 @@ struct RenderWindow {
     
     
     RenderWindow() : renderWindow(), inputStateTracker(renderWindow) {}
-
     RenderWindow(
         sf::VideoMode mode,
         const sf::String &title,

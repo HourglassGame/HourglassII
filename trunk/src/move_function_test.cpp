@@ -24,7 +24,7 @@ namespace {
 
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(testOperatorBool);
+            ::hg::getTestDriver().registerUnitTest("move_function_testOperatorBool", testOperatorBool);
         }
     } tester;
 }

@@ -27,7 +27,7 @@ public:
     int getWidth()  const { return size; }
     int getHeight() const { return size; }
     int getIllegalPortal()    const { return illegalPortal; }
-	int getArrivalBasis() const { return arrivalBasis; }
+    int getArrivalBasis() const { return arrivalBasis; }
     TimeDirection 
         getTimeDirection()    const { return timeDirection; }
 
@@ -75,7 +75,7 @@ public:
     int getWidth()  const { return box_->getWidth(); }
     int getHeight() const { return box_->getHeight(); }
     int getIllegalPortal()const { return box_->getIllegalPortal(); }
-	int getArrivalBasis() const { return box_->getArrivalBasis(); }
+    int getArrivalBasis() const { return box_->getArrivalBasis(); }
     TimeDirection 
         getTimeDirection()const { return box_->getTimeDirection(); }
 

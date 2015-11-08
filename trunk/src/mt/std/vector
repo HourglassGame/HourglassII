@@ -7,9 +7,9 @@ namespace mt {
 namespace std {
 template<typename T>
 using vector =
-		::std::vector<
-			T,
-			multi_thread_allocator_t<T>>;
+        ::std::vector<
+            T,
+            multi_thread_allocator_t<T>>;
 }
 }
 }

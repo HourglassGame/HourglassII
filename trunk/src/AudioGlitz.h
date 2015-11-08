@@ -19,7 +19,7 @@ public:
     {}
 
     virtual void display(LayeredCanvas &canvas) const override {
-        canvas.playSound(key, n);
+        canvas.playSound(key, static_cast<int>(n));
     }
     virtual std::size_t clone_size() const override {
         return sizeof *this;

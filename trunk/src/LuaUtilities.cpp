@@ -43,7 +43,7 @@ int lua_VectorWriter(
     void *ud)
 {
     (void)L;
-    std::vector<char>& vec(*static_cast<std::vector<char> *>(ud));
+    std::vector<char> &vec(*static_cast<std::vector<char> *>(ud));
     vec.insert(vec.end(), static_cast<char const *>(p), static_cast<char const *>(p) + sz);
     return 0;
 }
@@ -62,7 +62,7 @@ const char *lua_VectorReader (
         return retv;
     }
     else {
-        return 0;
+        return nullptr;
     }
 }
 
@@ -148,8 +148,8 @@ TimeDirection to<TimeDirection>(lua_State *L, int index)
         retv = TimeDirection::REVERSE;
     }
     else {
-    	std::cerr << timeDirectionString << std::endl;
-    	assert(false && "invalid string given as timeDirection");
+        std::cerr << timeDirectionString << std::endl;
+        assert(false && "invalid string given as timeDirection");
     }
     return retv;
 }
@@ -216,7 +216,7 @@ InitialObjects to<InitialObjects>(lua_State *L, int index)
         lua_gettable(L, index - 1);
         std::string type(readField<std::string>(L, "type"));
         if (type == "box") {
-            retv.add(to<InitialBox>(L).box);            
+            retv.add(to<InitialBox>(L).box);
         }
         else {
             std::cerr << type << std::endl;
@@ -248,7 +248,7 @@ Ability to<Ability>(lua_State *L, int index)
     else if (abilityString == "timeGun") {
         return Ability::TIME_GUN;
     }
-	else if (abilityString == "timePause") {
+    else if (abilityString == "timePause") {
         return Ability::TIME_PAUSE;
     }
     else {
@@ -301,7 +301,7 @@ Guy to<Guy>(lua_State* L, int index)
     int yspeed(readField<int>(L, "yspeed",index));
     int width(readField<int>(L, "width",index));
     int height(readField<int>(L, "height",index));
-	int jumpSpeed(readField<int>(L, "jumpSpeed",index));
+    int jumpSpeed(readField<int>(L, "jumpSpeed",index));
     int illegalPortal(-1);
     lua_getfield(L, index, "illegalPortal");
     if (!lua_isnil(L, -1)) {
@@ -330,13 +330,13 @@ Guy to<Guy>(lua_State* L, int index)
         boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
     }
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
-	bool timePaused(readField<bool>(L, "timePaused", index));
+    bool timePaused(readField<bool>(L, "timePaused", index));
     return Guy(
         relativeIndex,
         x, y,
         xspeed, yspeed,
         width, height,
-		jumpSpeed,
+        jumpSpeed,
         illegalPortal,
         arrivalBasis,
         supported,
@@ -347,7 +347,7 @@ Guy to<Guy>(lua_State* L, int index)
         boxCarrySize,
         boxCarryDirection,
         timeDirection,
-		timePaused);
+        timePaused);
 }
 
 template<>
@@ -360,7 +360,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
     int yspeed(readFieldWithDefault<int>(L, "yspeed",index,0));
     int width(readFieldWithDefault<int>(L, "width",index,1600));
     int height(readFieldWithDefault<int>(L, "height",index,3200));
-	int jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
+    int jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
     mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
     FacingDirection facing(readField<FacingDirection>(L, "facing", index));
     bool boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
@@ -371,7 +371,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
         boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
     }
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
-	bool timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
+    bool timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
     return
     InitialGuy(
       Guy(
@@ -379,7 +379,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
         x, y,
         xspeed, yspeed,
         width, height,
-		jumpSpeed,
+        jumpSpeed,
         -1,
         -1,
         false,
@@ -390,7 +390,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
         boxCarrySize,
         boxCarryDirection,
         timeDirection,
-		timePaused));
+        timePaused));
 }
 
 template<>

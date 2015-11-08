@@ -37,7 +37,5 @@
 #include "../src/LoadedLevel.cpp"
 #include "../src/OperationInterrupter.cpp"
 #include "../src/ParallelForEach_test.cpp"
-#include "../src/PlatformDestination.cpp"
-#include "../src/ProtoStuff.cpp"
 #include "../src/ReplayIO.cpp"
 #include "../src/ReplayIO_test.cpp"

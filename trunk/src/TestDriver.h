@@ -3,6 +3,7 @@
 #include <functional>
 #include <boost/noncopyable.hpp>
 #include <vector>
+#include <tuple>
 namespace hg {
 #if 0
 struct TestMonitor {
@@ -33,10 +34,10 @@ struct Test {
 //that main does is to run all the tests in the test driver.
 class TestDriver : boost::noncopyable {
 public:
-    void registerUnitTest(std::function<bool()> test);
+    void registerUnitTest(std::string testName, std::function<bool()> test);
     bool passesAllTests(/*TestMonitor &*/);
 private:
-    std::vector<std::function<bool()>> tests;
+    std::vector<std::tuple<std::string,std::function<bool()>>> tests;
 };
 
 TestDriver &getTestDriver();

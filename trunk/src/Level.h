@@ -3,7 +3,6 @@
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
 #include "FrameID.h"
-#include "AttachmentMap.h"
 #include "TriggerSystem.h"
 #include "Environment.h"
 namespace hg {

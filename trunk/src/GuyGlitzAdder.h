@@ -53,10 +53,10 @@ public:
     GuyGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,
         mt::std::vector<Glitz> &reverseGlitz,
-		mt::std::vector<GlitzPersister> &persistentGlitz) :
+        mt::std::vector<GlitzPersister> &persistentGlitz) :
     forwardsGlitz(&forwardsGlitz),
-	reverseGlitz(&reverseGlitz),
-	persistentGlitz(&persistentGlitz)
+    reverseGlitz(&reverseGlitz),
+    persistentGlitz(&persistentGlitz)
     {}
     //Adds the glitz that would be appropriate for a guy
     //with the given characteristics
@@ -159,19 +159,19 @@ public:
                         timeDirection)));
         }
     }
-	
-	void addLaserGlitz(
+    
+    void addLaserGlitz(
         int x1,
-		int y1,
-		int x2,
-		int y2,
+        int y1,
+        int x2,
+        int y2,
         int xAim,
         int yAim,
-		TimeDirection timeDirection) const
-	{
-		int width = 100;
-		persistentGlitz->push_back(
-			GlitzPersister(
+        TimeDirection timeDirection) const
+    {
+        int width = 100;
+        persistentGlitz->push_back(
+            GlitzPersister(
                 new (multi_thread_tag{}) StaticGlitzPersister(
                     Glitz(
                         new (multi_thread_tag{}) LineGlitz(
@@ -193,8 +193,8 @@ public:
                             timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
                     24,
                     timeDirection)));
-		persistentGlitz->push_back(
-			GlitzPersister(
+        persistentGlitz->push_back(
+            GlitzPersister(
                 new (multi_thread_tag{}) StaticGlitzPersister(
                     Glitz(
                         new (multi_thread_tag{}) RectangleGlitz(
@@ -221,17 +221,17 @@ public:
                     "global.laser_shoot",
                     24,
                     timeDirection)));
-	}
-	
-	void addDeathGlitz(
-		int x,
-		int y,
-		int width,
-		int height,
-		TimeDirection timeDirection) const
-	{
-		persistentGlitz->push_back(
-			GlitzPersister(
+    }
+    
+    void addDeathGlitz(
+        int x,
+        int y,
+        int width,
+        int height,
+        TimeDirection timeDirection) const
+    {
+        persistentGlitz->push_back(
+            GlitzPersister(
                 new (multi_thread_tag{}) StaticGlitzPersister(
                     Glitz(
                         new (multi_thread_tag{}) RectangleGlitz(
@@ -251,12 +251,12 @@ public:
                             timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
                     60,
                     timeDirection)));
-	}
-	
+    }
+    
 private:
     mt::std::vector<Glitz> *forwardsGlitz;
     mt::std::vector<Glitz> *reverseGlitz;
-	mt::std::vector<GlitzPersister> *persistentGlitz;
+    mt::std::vector<GlitzPersister> *persistentGlitz;
 };
 }
 #endif //HG_GUY_GLITZ_ADDER_H

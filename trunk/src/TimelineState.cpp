@@ -26,7 +26,7 @@ TimelineState::fixPermanentDepartures(
 }
 
 TimelineState::TimelineState(std::size_t timelineLength) :
-        universe_(timelineLength)
+        universe_(static_cast<int>(timelineLength))
 {
 }
 
@@ -38,12 +38,12 @@ void TimelineState::swap(TimelineState &o)
 
 FrameUpdateSet
 TimelineState::updateWithNewDepartures(
-	DepartureMap &newDepartures)
+    DepartureMap &newDepartures)
 {
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(
-    	newDepartures,
-    	[&](DepartureMap::value_type &newDeparture)
+        newDepartures,
+        [&](DepartureMap::value_type &newDeparture)
         {
             framesWithChangedArrivals.add(
                 newDeparture.first->updateDeparturesFromHere(std::move(newDeparture.second)));
@@ -51,7 +51,7 @@ TimelineState::updateWithNewDepartures(
     return framesWithChangedArrivals.merge();
 }
 void TimelineState::addArrivalsFromPermanentDepartureFrame(
-		std::map<Frame *, ObjectList<Normal>> const &initialArrivals)
+        std::map<Frame *, ObjectList<Normal>> const &initialArrivals)
 {
     for (auto const &arrival: initialArrivals) {
         permanentDepartures_[arrival.first].add(arrival.second);

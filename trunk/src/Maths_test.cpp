@@ -50,8 +50,8 @@ namespace {
     }
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest(testFlooredDivision);
-            ::hg::getTestDriver().registerUnitTest(testFlooredModulo);
+            ::hg::getTestDriver().registerUnitTest("Maths_testFlooredDivision", testFlooredDivision);
+            ::hg::getTestDriver().registerUnitTest("Maths_testFlooredModulo", testFlooredModulo);
         }
     } tester;
 }
