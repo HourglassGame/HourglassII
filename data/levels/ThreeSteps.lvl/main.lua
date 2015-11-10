@@ -6,7 +6,7 @@ environment =
     gravity = 22,
     wall =
     {
-		width = 27,
+        width = 27,
         height = 14,
         segmentSize = 3200,
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -59,7 +59,7 @@ triggerSystem =
             offset = 1,
             default = {0}
         },
-		{
+        {
             offset=1,
             default={1}
         },
@@ -67,7 +67,7 @@ triggerSystem =
             offset = 1,
             default = {1}
         },
-		{
+        {
             offset = 1,
             default = {21 * 3200, 12.5 * 3200, 0, 0}
         },

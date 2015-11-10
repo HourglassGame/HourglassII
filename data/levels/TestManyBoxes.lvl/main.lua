@@ -18,7 +18,7 @@ environment =
         {1,0,0,0,0,0,0,0,0,0,0,1},
         {1,0,0,0,0,0,0,0,0,0,0,1},
         {1,0,0,0,0,0,0,0,0,0,0,1},
-		{1,0,0,0,0,0,0,0,0,0,0,1},
+        {1,0,0,0,0,0,0,0,0,0,0,1},
         {1,0,0,0,0,0,0,0,0,0,0,1},
         {1,1,1,1,1,1,1,1,1,1,1,1},
     }
@@ -41,9 +41,9 @@ initialArrivals =
 {
 }
 for x = 1, 9 do
-	for y = 2, 10 do
-		initialArrivals[#initialArrivals+1] = {type = "box", x = x * 3200, y = y * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"}
-	end
+    for y = 2, 10 do
+        initialArrivals[#initialArrivals+1] = {type = "box", x = x * 3200, y = y * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"}
+    end
 end
 triggerSystem = 
 {

@@ -28,8 +28,8 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 4,
             triggerFunction = function(triggers)
-				return triggers[1][1] == 1 or triggers[2][1] == 1
-			end,
+                return triggers[1][1] == 1 or triggers[2][1] == 1
+            end,
             destinations =
             {
                 onDestination = {
@@ -63,14 +63,14 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
+    protoMutators = {
         bts.pickup{
             attachment = {xOffset = 10.75 * 3200, yOffset = 7.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 5,
-			pickupType = 'timeGun'
+            pickupType = 'timeGun'
         },
         bts.pickup{
             attachment = {xOffset = 11.75 * 3200, yOffset = 7.25 * 3200},
@@ -78,103 +78,103 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 6,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
-	},
+    },
     protoButtons = {
-		bts.stickySwitch{
+        bts.stickySwitch{
             attachment = {xOffset = 4.25 * 3200, yOffset = 9.75 * 3200},
             width = 1600,
             height = 800,
             timeDirection = 'forwards',
             triggerID = 3,
-			extraTriggerIDs = {1,2}
+            extraTriggerIDs = {1,2}
         },
     },
-	protoGlitz = {
-		bts.easyWireGlitz{
-			x = {pos = 4.5 * 3200},
-			y1 = {pos = 10 * 3200},
-			y2 = {pos = 11.55 * 3200},
-			triggerID = 3,
-			useTriggerArrival = false
-		},
-		bts.easyWireGlitz{
-			x1 = {pos = 4.5 * 3200},
-			x2 = {pos = 8.5 * 3200},
-			y = {pos = 11.5 * 3200},
-			triggerID = 3,
-			useTriggerArrival = false
-		},
-		bts.easyWireGlitz{
-			x = {pos = 6.5 * 3200},
-			y1 = {pos = 10.5 * 3200},
-			y2 = {pos = 11.55 * 3200},
-			triggerID = 3,
-			useTriggerArrival = false
-		},
-		bts.easyWireGlitz{
-			x = {pos = 8.5 * 3200},
-			y1 = {pos = 10.5 * 3200},
-			y2 = {pos = 11.55 * 3200},
-			triggerID = 3,
-			useTriggerArrival = false
-		},
-		bts.easyWireGlitz{
-			x1 = {pos = 6.5 * 3200},
-			x2 = {pos = 7.5 * 3200},
-			y = {pos = 10.5 * 3200},
-			triggerID = 1,
-			useTriggerArrival = true
-		},
-		bts.easyWireGlitz{
-			x1 = {pos = 7.5 * 3200},
-			x2 = {pos = 8.5 * 3200},
-			y = {pos = 10.5 * 3200},
-			triggerID = 2,
-			useTriggerArrival = true
-		},
-		bts.easyWireGlitz{
-			x = {pos = 7.5 * 3200},
-			y1 = {pos = 5.45 * 3200},
-			y2 = {pos = 10.55 * 3200},
-			triggerFunction = function (triggerArrivals, outputTriggers)
-				return triggerArrivals[1][1] == 1 or triggerArrivals[2][1] == 1
-			end,
-		},
-		bts.basicRectangleGlitz{
-			x = 6.2 * 3200,
-			y = 10.3 * 3200,
-			width = 0.6 * 3200,
-			height = 0.6 * 3200,
-			layer = 1600,
-			colour = {r = 120, g = 120, b = 120},
-		},
-		bts.basicTextGlitz{
-			x = 6.1 * 3200,
-			y = 9.8 * 3200,
-			text = "-10",
-			size = 1400,
-			layer = 1600,
-			colour = {r = 255, g = 255, b = 255},
-		},
-		bts.basicRectangleGlitz{
-			x = 8.2 * 3200,
-			y = 10.3 * 3200,
-			width = 0.6 * 3200,
-			height = 0.6 * 3200,
-			layer = 1600,
-			colour = {r = 120, g = 120, b = 120},
-		},
-		bts.basicTextGlitz{
-			x = 8.1 * 3200,
-			y = 9.8 * 3200,
-			text = "-15",
-			size = 1400,
-			layer = 1600,
-			colour = {r = 255, g = 255, b = 255},
-		},
-	},
+    protoGlitz = {
+        bts.easyWireGlitz{
+            x = {pos = 4.5 * 3200},
+            y1 = {pos = 10 * 3200},
+            y2 = {pos = 11.55 * 3200},
+            triggerID = 3,
+            useTriggerArrival = false
+        },
+        bts.easyWireGlitz{
+            x1 = {pos = 4.5 * 3200},
+            x2 = {pos = 8.5 * 3200},
+            y = {pos = 11.5 * 3200},
+            triggerID = 3,
+            useTriggerArrival = false
+        },
+        bts.easyWireGlitz{
+            x = {pos = 6.5 * 3200},
+            y1 = {pos = 10.5 * 3200},
+            y2 = {pos = 11.55 * 3200},
+            triggerID = 3,
+            useTriggerArrival = false
+        },
+        bts.easyWireGlitz{
+            x = {pos = 8.5 * 3200},
+            y1 = {pos = 10.5 * 3200},
+            y2 = {pos = 11.55 * 3200},
+            triggerID = 3,
+            useTriggerArrival = false
+        },
+        bts.easyWireGlitz{
+            x1 = {pos = 6.5 * 3200},
+            x2 = {pos = 7.5 * 3200},
+            y = {pos = 10.5 * 3200},
+            triggerID = 1,
+            useTriggerArrival = true
+        },
+        bts.easyWireGlitz{
+            x1 = {pos = 7.5 * 3200},
+            x2 = {pos = 8.5 * 3200},
+            y = {pos = 10.5 * 3200},
+            triggerID = 2,
+            useTriggerArrival = true
+        },
+        bts.easyWireGlitz{
+            x = {pos = 7.5 * 3200},
+            y1 = {pos = 5.45 * 3200},
+            y2 = {pos = 10.55 * 3200},
+            triggerFunction = function (triggerArrivals, outputTriggers)
+                return triggerArrivals[1][1] == 1 or triggerArrivals[2][1] == 1
+            end,
+        },
+        bts.basicRectangleGlitz{
+            x = 6.2 * 3200,
+            y = 10.3 * 3200,
+            width = 0.6 * 3200,
+            height = 0.6 * 3200,
+            layer = 1600,
+            colour = {r = 120, g = 120, b = 120},
+        },
+        bts.basicTextGlitz{
+            x = 6.1 * 3200,
+            y = 9.8 * 3200,
+            text = "-10",
+            size = 1400,
+            layer = 1600,
+            colour = {r = 255, g = 255, b = 255},
+        },
+        bts.basicRectangleGlitz{
+            x = 8.2 * 3200,
+            y = 10.3 * 3200,
+            width = 0.6 * 3200,
+            height = 0.6 * 3200,
+            layer = 1600,
+            colour = {r = 120, g = 120, b = 120},
+        },
+        bts.basicTextGlitz{
+            x = 8.1 * 3200,
+            y = 9.8 * 3200,
+            text = "-15",
+            size = 1400,
+            layer = 1600,
+            colour = {r = 255, g = 255, b = 255},
+        },
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

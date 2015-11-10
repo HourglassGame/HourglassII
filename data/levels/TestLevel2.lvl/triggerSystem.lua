@@ -169,60 +169,60 @@ else ----- IF TRUE/FALSE ----
 --for trigger indices that did not arrive by the time this is called
 function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
 
-	local retv = {
-		additionalBoxes = {},
-		collisions = {
-			{
-				x = 5*3200,
-				y = 17*3200,
-				xspeed = 0,
-				yspeed = 0,
-				width = 5*3200,
-				height = 3200,
-				timeDirection = 'forwards'
-			}
-		},
-		portals = {
-			{
-				index = 1,
-				x = 7*3200,
-				y = 15*3200,
-				width = 2 * 3200,
-				height = 2 * 3200,
-				xspeed = 0,
-				yspeed = 500,
-				collisionOverlap = 50,
-				timeDirection = 'forwards',
-				destinationIndex = 1,
-				xDestination = 0,
-				yDestination = 0,
-				relativeTime = true,
-				timeDestination = 0,
-				illegalDestination = 2,
-				fallable = true,
-				winner = false
-			}
-		},
-		mutators = {},
-		arrivalLocations = {
-			{
-				x = 7*3200,
-				y = 7*3200,
-				xspeed = 0,
-				yspeed = 500,
-				timeDirection = 'forwards'
-			},
-			{
-				x = 7*3200,
-				y = 7*3200,
-				xspeed = 0,
-				yspeed = -3000,
-				timeDirection = 'forwards'
-			}
-		},
-	}
-	
-	return retv
+    local retv = {
+        additionalBoxes = {},
+        collisions = {
+            {
+                x = 5*3200,
+                y = 17*3200,
+                xspeed = 0,
+                yspeed = 0,
+                width = 5*3200,
+                height = 3200,
+                timeDirection = 'forwards'
+            }
+        },
+        portals = {
+            {
+                index = 1,
+                x = 7*3200,
+                y = 15*3200,
+                width = 2 * 3200,
+                height = 2 * 3200,
+                xspeed = 0,
+                yspeed = 500,
+                collisionOverlap = 50,
+                timeDirection = 'forwards',
+                destinationIndex = 1,
+                xDestination = 0,
+                yDestination = 0,
+                relativeTime = true,
+                timeDestination = 0,
+                illegalDestination = 2,
+                fallable = true,
+                winner = false
+            }
+        },
+        mutators = {},
+        arrivalLocations = {
+            {
+                x = 7*3200,
+                y = 7*3200,
+                xspeed = 0,
+                yspeed = 500,
+                timeDirection = 'forwards'
+            },
+            {
+                x = 7*3200,
+                y = 7*3200,
+                xspeed = 0,
+                yspeed = -3000,
+                timeDirection = 'forwards'
+            }
+        },
+    }
+    
+    return retv
 end
 
 --responsible*Index gives the position in the list of the thing that
@@ -242,29 +242,29 @@ function mutateObject(responsibleManipulatorIndices, dynamicObject)
 end
 
 function getDepartureInformation()
-	return 
-	{{},{},{},{}}, 
-	{
-		{
-			layer = 500,
-			x = 7*3200,
-			y = 15*3200,
-			width = 2 * 3200,
-			height = 2 * 3200,
-			colour = {r = 50, g = 0, b = 0}
-		}
-	},
+    return 
+    {{},{},{},{}}, 
     {
-		{
-			layer = 500,
-			x = 7*3200,
-			y = 15*3200,
-			width = 2 * 3200,
-			height = 2 * 3200,
-			colour = {r = 0, g = 0, b = 50}
-		}
-	},
-	{}
+        {
+            layer = 500,
+            x = 7*3200,
+            y = 15*3200,
+            width = 2 * 3200,
+            height = 2 * 3200,
+            colour = {r = 50, g = 0, b = 0}
+        }
+    },
+    {
+        {
+            layer = 500,
+            x = 7*3200,
+            y = 15*3200,
+            width = 2 * 3200,
+            height = 2 * 3200,
+            colour = {r = 0, g = 0, b = 50}
+        }
+    },
+    {}
 end
 
 end

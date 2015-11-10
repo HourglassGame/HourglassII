@@ -52,6 +52,12 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
 int run_hourglassii() {
     //Create window
     hg::RenderWindow window(sf::VideoMode(640, 480), "Hourglass II");
+    {
+        sf::Image window_icon_image;
+        if (window_icon_image.loadFromFile("images/HourglassSwirl_64x64.png")) {
+            window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
+        }
+    }
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(60);
     //Do stuff!

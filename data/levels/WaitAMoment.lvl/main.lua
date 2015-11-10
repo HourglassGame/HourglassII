@@ -6,7 +6,7 @@ environment =
     gravity = 22,
     wall =
     {
-		width = 16,
+        width = 16,
         height = 9,
         segmentSize = 3200,
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},

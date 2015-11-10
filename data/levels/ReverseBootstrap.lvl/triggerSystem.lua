@@ -4,7 +4,7 @@ local tempStore =
 {
     protoPortals =
     {
-		{
+        {
             attachment = {platform = nil, xOffset = 9 * 3200, yOffset = 6 * 3200},
             index = 1,
             width = 2 * 3200,
@@ -39,44 +39,44 @@ local tempStore =
     },
     protoCollisions = {
     },
-	protoMutators = {
+    protoMutators = {
         bts.pickup{
             attachment = {platform = nil, xOffset = 4.75 * 3200, yOffset = 12.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timeReverse'
+            pickupType = 'timeReverse'
         },
-		bts.spikes{
-			attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 12.5 * 3200},
+        bts.spikes{
+            attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 12.5 * 3200},
             width = 0.5 * 3200,
             height = 1.5 * 3200,
             timeDirection = 'forwards',
-		},
-		bts.spikes{
-			attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 13.5 * 3200},
+        },
+        bts.spikes{
+            attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 13.5 * 3200},
             width = 1.5 * 3200,
             height = 0.5 * 3200,
             timeDirection = 'forwards',
-		},
-		bts.spikes{
-			attachment = {platform = nil, xOffset = 12.5 * 3200, yOffset = 1 * 3200},
+        },
+        bts.spikes{
+            attachment = {platform = nil, xOffset = 12.5 * 3200, yOffset = 1 * 3200},
             width = 1.5 * 3200,
             height = 0.5 * 3200,
             timeDirection = 'forwards',
-		},
-		bts.spikes{
-			attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 1 * 3200},
+        },
+        bts.spikes{
+            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 1 * 3200},
             width = 0.5 * 3200,
             height = 1.5 * 3200,
             timeDirection = 'forwards',
-		},
-	},
+        },
+    },
     protoButtons = {
     },
-	protoGlitz = {
-	}
+    protoGlitz = {
+    }
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

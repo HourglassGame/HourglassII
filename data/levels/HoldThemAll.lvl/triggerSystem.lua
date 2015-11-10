@@ -66,92 +66,92 @@ local tempStore =
     protoButtons = {
         bts.multiStickySwitch{
             buttons = {
-				{
-					attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 6.75 * 3200},
-					width = 1600,
-					height = 800,
-				},
-				{
-					attachment = {platform = nil, xOffset = 5.25 * 3200, yOffset = 6.75 * 3200},
-					width = 1600,
-					height = 800,
-				},
-				{
-					attachment = {platform = nil, xOffset = 7.25 * 3200, yOffset = 6.75 * 3200},
-					width = 1600,
-					height = 800,
-				},
-				{
-					attachment = {platform = nil, xOffset = 9.25 * 3200, yOffset = 6.75 * 3200},
-					width = 1600,
-					height = 800,
-				},
-				{
-					attachment = {platform = nil, xOffset = 11.25 * 3200, yOffset = 6.75 * 3200},
-					width = 1600,
-					height = 800,
-				},
-				{
-					attachment = {platform = nil, xOffset = 13.25 * 3200, yOffset = 6.75 * 3200},
-					width = 1600,
-					height = 800,
-				},
-			},
+                {
+                    attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 6.75 * 3200},
+                    width = 1600,
+                    height = 800,
+                },
+                {
+                    attachment = {platform = nil, xOffset = 5.25 * 3200, yOffset = 6.75 * 3200},
+                    width = 1600,
+                    height = 800,
+                },
+                {
+                    attachment = {platform = nil, xOffset = 7.25 * 3200, yOffset = 6.75 * 3200},
+                    width = 1600,
+                    height = 800,
+                },
+                {
+                    attachment = {platform = nil, xOffset = 9.25 * 3200, yOffset = 6.75 * 3200},
+                    width = 1600,
+                    height = 800,
+                },
+                {
+                    attachment = {platform = nil, xOffset = 11.25 * 3200, yOffset = 6.75 * 3200},
+                    width = 1600,
+                    height = 800,
+                },
+                {
+                    attachment = {platform = nil, xOffset = 13.25 * 3200, yOffset = 6.75 * 3200},
+                    width = 1600,
+                    height = 800,
+                },
+            },
             timeDirection = 'forwards',
             triggerID = 1,
             stateTriggerID = 3
         },
     },
-	protoGlitz = {
-		bts.wireGlitz{
-			x1 = {platform = nil, pos = 3.25 * 3200},
-			y1 = {platform = nil, pos = 7 * 3200 },
-			x2 = {platform = nil, pos = 13.75 * 3200},
-			y2 = {platform = nil, pos = 7.2 * 3200},
-			triggerID = 1,
-			useTriggerArrival = false
-		},
-		bts.wireGlitz{
-			x1 = {platform = nil, pos = 8.2 * 3200},
-			y1 = {platform = nil, pos = 7.2 * 3200 },
-			x2 = {platform = nil, pos = 8.3 * 3200},
-			y2 = {platform = nil, pos = 7.55 * 3200},
-			triggerID = 1,
-			useTriggerArrival = false
-		},
-		bts.wireGlitz{
-			x1 = {platform = nil, pos = 21.45 * 3200},
-			y1 = {platform = nil, pos = 7.45 * 3200 },
-			x2 = {platform = nil, pos = 8.3 * 3200},
-			y2 = {platform = nil, pos = 7.55 * 3200},
-			triggerID = 1,
-			useTriggerArrival = false
-		},
-		bts.wireGlitz{
-			x1 = {platform = nil, pos = 21.45 * 3200},
-			y1 = {platform = nil, pos = 2.45 * 3200 },
-			x2 = {platform = nil, pos = 21.55 * 3200},
-			y2 = {platform = nil, pos = 7.55 * 3200},
-			triggerID = 1,
-			useTriggerArrival = false
-		},
-		bts.wireGlitz{
-			x1 = {platform = nil, pos = 16.45 * 3200},
-			y1 = {platform = nil, pos = 2.45 * 3200 },
-			x2 = {platform = nil, pos = 21.55 * 3200},
-			y2 = {platform = nil, pos = 2.55 * 3200},
-			triggerID = 1,
-			useTriggerArrival = false
-		},
-		bts.wireGlitz{
-			x1 = {platform = nil, pos = 16.45 * 3200},
-			y1 = {platform = nil, pos = 3 * 3200 },
-			x2 = {platform = nil, pos = 16.55 * 3200},
-			y2 = {platform = nil, pos = 2.55 * 3200},
-			triggerID = 1,
-			useTriggerArrival = false
-		},
-	}
+    protoGlitz = {
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 3.25 * 3200},
+            y1 = {platform = nil, pos = 7 * 3200 },
+            x2 = {platform = nil, pos = 13.75 * 3200},
+            y2 = {platform = nil, pos = 7.2 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 8.2 * 3200},
+            y1 = {platform = nil, pos = 7.2 * 3200 },
+            x2 = {platform = nil, pos = 8.3 * 3200},
+            y2 = {platform = nil, pos = 7.55 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 21.45 * 3200},
+            y1 = {platform = nil, pos = 7.45 * 3200 },
+            x2 = {platform = nil, pos = 8.3 * 3200},
+            y2 = {platform = nil, pos = 7.55 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 21.45 * 3200},
+            y1 = {platform = nil, pos = 2.45 * 3200 },
+            x2 = {platform = nil, pos = 21.55 * 3200},
+            y2 = {platform = nil, pos = 7.55 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 16.45 * 3200},
+            y1 = {platform = nil, pos = 2.45 * 3200 },
+            x2 = {platform = nil, pos = 21.55 * 3200},
+            y2 = {platform = nil, pos = 2.55 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 16.45 * 3200},
+            y1 = {platform = nil, pos = 3 * 3200 },
+            x2 = {platform = nil, pos = 16.55 * 3200},
+            y2 = {platform = nil, pos = 2.55 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+    }
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

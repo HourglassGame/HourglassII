@@ -28,8 +28,8 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 6,
             triggerFunction = function(triggers)
-				return triggers[3][1] == 1 and triggers[5][1] == 1
-			end,
+                return triggers[3][1] == 1 and triggers[5][1] == 1
+            end,
             destinations =
             {
                 onDestination = {
@@ -62,7 +62,7 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 0,
             height = 0,
             timeDirection = 'forwards',
@@ -108,22 +108,22 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timeReverse'
+            pickupType = 'timeReverse'
         },
-		bts.pickup{
+        bts.pickup{
             attachment = {platform = nil, xOffset = 18.5 * 3200, yOffset = 4.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 2,
-			pickupType = 'timeReverse'
+            pickupType = 'timeReverse'
         },
-		bts.spikes{
-			attachment = {platform = 2, xOffset = 0 * 3200, yOffset = -0.5 * 3200},
+        bts.spikes{
+            attachment = {platform = 2, xOffset = 0 * 3200, yOffset = -0.5 * 3200},
             width = 4 * 3200,
             height = 0.5 * 3200,
             timeDirection = 'forwards',
-		},
+        },
     },
     protoButtons = {
         bts.momentarySwitch{
@@ -133,14 +133,14 @@ local tempStore =
             timeDirection = 'forwards',
             triggerID = 3
         },
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 7.5 * 3200, yOffset = 11.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
             triggerID = 4
         },
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 9.5 * 3200, yOffset = 12.75 * 3200},
             width = 3200,
             height = 800,

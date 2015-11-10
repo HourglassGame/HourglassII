@@ -20,7 +20,7 @@ local tempStore =
             fallable = false,
             winner = false
         },
-		{
+        {
             attachment = {platform = 1, xOffset = -3 * 3200, yOffset = 1 * 3200},
             index = 2,
             width = 2 * 3200,
@@ -46,7 +46,7 @@ local tempStore =
             buttonTriggerID = 1,
             destinations =
             {
-				onDestination = {
+                onDestination = {
                     xDestination = {
                         desiredPosition = 10 * 3200,
                         maxSpeed = 200,
@@ -61,7 +61,7 @@ local tempStore =
                     }
                 },
                 offDestination = {
-					xDestination = {
+                    xDestination = {
                         desiredPosition = 10 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
@@ -77,7 +77,7 @@ local tempStore =
                 
             }
         },
-		{
+        {
             width = 4 * 3200,
             height = 3200,
             timeDirection = 'forwards',
@@ -126,7 +126,7 @@ local tempStore =
             timeDirection = 'forwards',
             triggerID = 1
         },
-		bts.stickySwitch{
+        bts.stickySwitch{
             attachment = {platform = nil, xOffset = 6 * 3200, yOffset = 7.25 * 3200},
             width = 800,
             height = 1600,

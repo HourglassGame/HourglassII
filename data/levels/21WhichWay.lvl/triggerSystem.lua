@@ -21,7 +21,7 @@ local tempStore =
             winner = true
         }
     },
-	protoCollisions = {},
+    protoCollisions = {},
     protoMutators = {
         bts.pickup{
             attachment = {platform = nil, xOffset = 11.25 * 3200, yOffset =9.25 * 3200},
@@ -29,18 +29,18 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
-		bts.pickup{
+        bts.pickup{
             attachment = {platform = nil, xOffset = 25.25 * 3200, yOffset = 5.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 2,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
     },
-	protoButtons = {},
+    protoButtons = {},
 }
 
 --==Callin Definitions==--

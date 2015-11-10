@@ -31,7 +31,7 @@ initialGuy =
         facing = "right",
         timeDirection = "reverse",
         pickups = {timeJump = 0, timeReverse = 1, timeGun = 0, timePause = 0},
-		boxCarrying = true,
+        boxCarrying = true,
         boxCarrySize = 3200,
         boxCarryDirection = "reverse",
     }

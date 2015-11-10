@@ -41,7 +41,7 @@ initialGuy =
 }
 initialArrivals =
 {
-	{type = "box", x = 16 * 3200, y = 4 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+    {type = "box", x = 16 * 3200, y = 4 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
 }
 triggerSystem =
 {
@@ -56,7 +56,7 @@ triggerSystem =
             offset=1,
             default={1}
         },
-		{
+        {
             offset=1,
             default={1}
         },
@@ -64,11 +64,11 @@ triggerSystem =
             offset = 1,
             default = {0}
         },
-		{
+        {
             offset = 1,
             default = {0}
         },
-		{
+        {
             offset = 1,
             default = {0}
         },
@@ -76,7 +76,7 @@ triggerSystem =
             offset = 1,
             default = {22 * 3200, 5.25 * 3200, 0, 0}
         },
-		{
+        {
             offset = 1,
             default = {20 * 3200, 10 * 3200, 0, 0}
         }
