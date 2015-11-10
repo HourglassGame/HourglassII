@@ -76,9 +76,14 @@ Finish and Submit Boost patch(es).
     * Optional (move-enable)
     * Thread (incompete type bug)
 
+Improve trigger system performance:
+ *Lazy load the data that is sent to the trigger system (use a meta-table rather than always loading up the tables with data that might not be used)
+  (Might not even be an improvement).
+ *Add a 'ConfiguredTriggerSystem' that lacks hooks for custom behaviour, but which just sets up a pure C++ trigger system implementation.
+
 Get automated builds working again
 
-Make sure the code still works on windows and linux
+Make sure the code still works on osx and linux (and MinGW windows)
 
 ----===== FRONT END =====----
 
@@ -87,7 +92,7 @@ Make sure the code still works on windows and linux
 *Something about it being a horrible hack currently
 *Put in better graphics than the current "coloured-rectangles"
 *Current guy marker (arrow over head or similar)
-
+*Improve performance on MSVC++ (possibly stop using SFML)
 Create a Level Editor that Jeffrey/Kieren/Etc can use.
 
 ----===== GAMEPLAY ====----

@@ -21,7 +21,7 @@ local tempStore =
             winner = true
         }
     },
-	protoCollisions = {},
+    protoCollisions = {},
      protoMutators = {
         bts.pickup{
             attachment = {platform = nil, xOffset = 16 * 3200, yOffset = 8.25 * 3200},
@@ -29,10 +29,10 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timeGun'
+            pickupType = 'timeGun'
         }
     },
-	protoButtons = {},
+    protoButtons = {},
 }
 
 --==Callin Definitions==--

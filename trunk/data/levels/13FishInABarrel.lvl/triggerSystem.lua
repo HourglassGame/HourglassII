@@ -68,14 +68,14 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timeGun'
+            pickupType = 'timeGun'
         },
-		bts.spikes{
-			attachment = {platform = 1, xOffset = 0 * 3200, yOffset = 1 * 3200},
+        bts.spikes{
+            attachment = {platform = 1, xOffset = 0 * 3200, yOffset = 1 * 3200},
             width = 3 * 3200,
             height = 0.5 * 3200,
             timeDirection = 'forwards',
-		},
+        },
     },
     protoButtons = {
         bts.momentarySwitch{

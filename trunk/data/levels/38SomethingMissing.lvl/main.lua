@@ -52,10 +52,10 @@ triggerSystem =
     --to do its stuff.
     system = [==[require "triggerSystem"]==],
     triggerOffsetsAndDefaults = {
-			{
-			offset = 1,
-			default = {1}
-		},
-	},
+            {
+            offset = 1,
+            default = {1}
+        },
+    },
     arrivalLocationsSize = 1
 }

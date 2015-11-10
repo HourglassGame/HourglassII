@@ -53,7 +53,7 @@ triggerSystem =
             offset = 1,
             default = {0}
         },
-		{
+        {
             offset = 1,
             default = {0}
         },
@@ -61,15 +61,15 @@ triggerSystem =
             offset = 1,
             default = {9 * 3200, 4 * 3200, 0, 0}
         },
-		{
+        {
             offset = 1,
             default = {1}
         },
-		{
+        {
             offset = 1,
             default = {1}
         },
-		{
+        {
             offset = -300,
             default = {0}
         },
@@ -81,7 +81,7 @@ triggerSystem =
             offset = 1,
             default = {12 * 3200, 8 * 3200, 0, 0}
         },
-		{
+        {
             offset = 1,
             default = {0}
         },

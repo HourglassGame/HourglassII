@@ -46,8 +46,8 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timePause',
-			pickupNumber = 2
+            pickupType = 'timePause',
+            pickupNumber = 2
         },
     },
     protoButtons = {

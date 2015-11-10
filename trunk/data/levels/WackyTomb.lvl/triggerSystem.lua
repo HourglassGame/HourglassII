@@ -28,8 +28,8 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 6,
             triggerFunction = function(triggers)
-				return (triggers[5][1] == 1 and triggers[4][1] == 1) or triggers[3][1] == 1
-			end,
+                return (triggers[5][1] == 1 and triggers[4][1] == 1) or triggers[3][1] == 1
+            end,
             destinations =
             {
                 onDestination = {
@@ -63,24 +63,24 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
-	--	bts.pickup{
-	--		attachment = {platform = nil, xOffset = 8.75 * 3200, yOffset = 12.75 * 3200},
-	--		width = 1600,
-	--		height = 1600,
-	--		timeDirection = 'forwards',
-	--		triggerID = 1,
-	--	pickupType = 'timeJump'
-	--	},
-	--ts.pickup{
-	--		attachment = {platform = nil, xOffset = 14.75 * 3200, yOffset = 12.75 * 3200},
-	--		width = 1600,
-	--		height = 1600,
-	--		timeDirection = 'forwards',
-	--		triggerID = 2,
-	--	pickupType = 'timeJump'
-	--	},
-	},
+    protoMutators = {
+    --    bts.pickup{
+    --        attachment = {platform = nil, xOffset = 8.75 * 3200, yOffset = 12.75 * 3200},
+    --        width = 1600,
+    --        height = 1600,
+    --        timeDirection = 'forwards',
+    --        triggerID = 1,
+    --    pickupType = 'timeJump'
+    --    },
+    --ts.pickup{
+    --        attachment = {platform = nil, xOffset = 14.75 * 3200, yOffset = 12.75 * 3200},
+    --        width = 1600,
+    --        height = 1600,
+    --        timeDirection = 'forwards',
+    --        triggerID = 2,
+    --    pickupType = 'timeJump'
+    --    },
+    },
     protoButtons = {
         bts.stickySwitch{
             attachment = {platform = nil, xOffset = 21.75 * 3200, yOffset = 5 * 3200},

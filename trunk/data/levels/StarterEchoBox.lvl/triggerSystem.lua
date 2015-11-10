@@ -20,7 +20,7 @@ local tempStore =
             fallable = true,
             winner = false,
         },
-		{
+        {
             attachment = {xOffset = 44500, yOffset = 31000},
             index = 2,
             width = 4200,
@@ -36,7 +36,7 @@ local tempStore =
             fallable = false,
             winner = false,
         },
-		{
+        {
             attachment = {xOffset = 52800, yOffset = 28800},
             index = 3,
             width = 6400,

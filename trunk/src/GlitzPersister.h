@@ -18,7 +18,7 @@ struct GlitzPersisterImpl : private boost::totally_ordered<GlitzPersisterImpl>
     
     virtual std::size_t clone_size() const = 0;
     virtual GlitzPersisterImpl *perform_clone(void *memory) const = 0;
-    virtual ~GlitzPersisterImpl() {}
+    virtual ~GlitzPersisterImpl() noexcept {}
     
     virtual int order_ranking() const = 0;
     virtual bool operator==(GlitzPersisterImpl const &o) const = 0;
@@ -97,7 +97,7 @@ public:
     virtual StaticGlitzPersister *perform_clone(void *memory) const override {
         return new (memory) StaticGlitzPersister(*this);
     }
-    virtual ~StaticGlitzPersister() override {}
+    virtual ~StaticGlitzPersister() noexcept override {}
     virtual int order_ranking() const override {
         return 0;
     }
@@ -137,7 +137,7 @@ public:
     virtual AudioGlitzPersister *perform_clone(void *memory) const override {
         return new (memory) AudioGlitzPersister(*this);
     }
-    virtual ~AudioGlitzPersister() override {}
+    virtual ~AudioGlitzPersister() noexcept override {}
     virtual int order_ranking() const override {
         return 1;
     }

@@ -11,10 +11,20 @@
 namespace hg {
 extern sf::Font const *defaultFont;
 
+
+
 struct LevelResources {
     std::map<std::string, sf::Image> images;
     std::map<std::string, sf::SoundBuffer> sounds;
 };
+
+
+struct LevelUIData {
+    LevelResources resources;
+    sf::Image wallImage;
+    sf::Image guyPositionImage;
+};
+
 //MUST BE CALLED ON MAIN THREAD (since it uses sf::Texture)
 //(Currently it's not always called on the main thread... it seems to mostly work)
 //Should probably start getting rid of most of SFML, since it can't handle this stuff properly.

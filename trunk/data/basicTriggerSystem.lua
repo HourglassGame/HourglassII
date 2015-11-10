@@ -84,9 +84,9 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
         end
         
         
-		local active = (self.buttonTriggerID and triggerArrivals[self.buttonTriggerID][1] == 1) 
-					or (self.triggerFunction and self.triggerFunction(triggerArrivals))
-		local destination = active and self.destinations.onDestination or self.destinations.offDestination
+        local active = (self.buttonTriggerID and triggerArrivals[self.buttonTriggerID][1] == 1) 
+                    or (self.triggerFunction and self.triggerFunction(triggerArrivals))
+        local destination = active and self.destinations.onDestination or self.destinations.offDestination
 
         local lastStateTrigger = triggerArrivals[self.lastStateTriggerID]
         
@@ -140,7 +140,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
         
-		local retPortal =  {
+        local retPortal =  {
             index = protoPortal.index,
             x = x,
             y = y,
@@ -155,67 +155,67 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             yDestination = protoPortal.yDestination,
             relativeTime = protoPortal.relativeTime,
             timeDestination = protoPortal.timeDestination,
-			relativeDirection = (protoPortal.relativeDirection ~= nil) or true,
+            relativeDirection = (protoPortal.relativeDirection ~= nil) or true,
             destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
             fallable = protoPortal.fallable,
             winner = false
         }
-		
-		if protoPortal.winner then
+        
+        if protoPortal.winner then
             retPortal.winner = true
-			retPortal.relativeTime = false
-			retPortal.timeDestination = 1
-			retPortal.relativeDirection = false
-		    retPortal.destinationDirection = 'reverse'
-		end
-		
-		local active = true
-		if protoPortal.triggerFunction then
-			active = protoPortal.triggerFunction(triggerArrivals)
-		end
-		
+            retPortal.relativeTime = false
+            retPortal.timeDestination = 1
+            retPortal.relativeDirection = false
+            retPortal.destinationDirection = 'reverse'
+        end
+        
+        local active = true
+        if protoPortal.triggerFunction then
+            active = protoPortal.triggerFunction(triggerArrivals)
+        end
+        
         return retPortal, active
     end
 
-	local function calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
-	
-		local colour
-		if active then 
-			colour = {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120}
-		else
-			colour = {r = 70, g = 70, b = 70}, {r = 70, g = 70, b = 70}
-		end
+    local function calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
+    
+        local colour
+        if active then 
+            colour = {r = 120, g = 120, b = 120}, {r = 120, g = 120, b = 120}
+        else
+            colour = {r = 70, g = 70, b = 70}, {r = 70, g = 70, b = 70}
+        end
 
-		local forGlitz, revGlitz = calculateBidirectionalGlitz(350, portal, colour, colour)
-		
-		-- Text does not support changing time directions
-		local text
-		if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
+        local forGlitz, revGlitz = calculateBidirectionalGlitz(350, portal, colour, colour)
+        
+        -- Text does not support changing time directions
+        local text
+        if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
             text = active and "Win" or "Inactive"
-		elseif portal.relativeTime and portal.timeDestination > 0 then
-			text = "+" .. portal.timeDestination
-		else
-			text = portal.timeDestination
-		end
-		
-		local textGlitz = {
-			type = "text",
-			x = portal.x+portal.width/2-1600,
-			y = portal.y-2400,
-			text = text,
-			size = 2000,
-			layer = 440,
-			colour = {r = 0, g = 0, b = 0},
-		}
-		
-		table.insert(forwardsGlitz, forGlitz)
-		table.insert(reverseGlitz, revGlitz)
-		table.insert(forwardsGlitz, textGlitz)
-		table.insert(reverseGlitz, textGlitz)
-	end
-	
-	local function calculateArrivalLocation(portal)
+        elseif portal.relativeTime and portal.timeDestination > 0 then
+            text = "+" .. portal.timeDestination
+        else
+            text = portal.timeDestination
+        end
+        
+        local textGlitz = {
+            type = "text",
+            x = portal.x+portal.width/2-1600,
+            y = portal.y-2400,
+            text = text,
+            size = 2000,
+            layer = 440,
+            colour = {r = 0, g = 0, b = 0},
+        }
+        
+        table.insert(forwardsGlitz, forGlitz)
+        table.insert(reverseGlitz, revGlitz)
+        table.insert(forwardsGlitz, textGlitz)
+        table.insert(reverseGlitz, textGlitz)
+    end
+    
+    local function calculateArrivalLocation(portal)
         return
         {
             x = portal.x,
@@ -225,19 +225,19 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             timeDirection = portal.timeDirection
         }
     end
-	
+    
     local portals = {}
-	local portalCount = 0
-	local arrivalLocations = {}
+    local portalCount = 0
+    local arrivalLocations = {}
 
     for i, protoPortal in ipairs(protoPortals) do
-		local portal, active = calculatePortal(protoPortal, collisions)
+        local portal, active = calculatePortal(protoPortal, collisions)
         calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
-		arrivalLocations[i] = calculateArrivalLocation(portal)
-		if active then
-			portalCount = portalCount + 1
-			portals[portalCount] = portal
-		end
+        arrivalLocations[i] = calculateArrivalLocation(portal)
+        if active then
+            portalCount = portalCount + 1
+            portals[portalCount] = portal
+        end
     end
 
     return portals, arrivalLocations
@@ -403,12 +403,12 @@ local function momentarySwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
             outputTriggers[stateTriggerID] = {state and 1 or 0}
-			if p.extraTriggerIDs then
-				local extraTriggerIDs = p.extraTriggerIDs
-				for i = 1, #extraTriggerIDs do
-					outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
-				end
-			end
+            if p.extraTriggerIDs then
+                local extraTriggerIDs = p.extraTriggerIDs
+                for i = 1, #extraTriggerIDs do
+                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                end
+            end
         end,
     }
 end
@@ -449,12 +449,12 @@ local function stickySwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
             outputTriggers[stateTriggerID] = {state and 1 or 0}
-			if p.extraTriggerIDs then
-				local extraTriggerIDs = p.extraTriggerIDs
-				for i = 1, #extraTriggerIDs do
-					outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
-				end
-			end
+            if p.extraTriggerIDs then
+                local extraTriggerIDs = p.extraTriggerIDs
+                for i = 1, #extraTriggerIDs do
+                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                end
+            end
         end,
     }
 end
@@ -462,10 +462,10 @@ end
 local function multiStickySwitch(p)
     local PnV = {}
     local state = nil
-	local individualState = {}
-	local buttons = p.buttons
-	local bCount = #p.buttons
-	local proto = {}
+    local individualState = {}
+    local buttons = p.buttons
+    local bCount = #p.buttons
+    local proto = {}
     
     local triggerID = p.triggerID
     local stateTriggerID = p.stateTriggerID
@@ -473,20 +473,20 @@ local function multiStickySwitch(p)
     local justPressed = {}
     local justReleased = {}
 
-	for i = 1, bCount do
-		proto[i] = {
-			timeDirection = p.timeDirection,
-			attachment = cloneAttachment(buttons[i].attachment),
-			width = buttons[i].width,
-			height = buttons[i].height,
-		}
-	end
+    for i = 1, bCount do
+        proto[i] = {
+            timeDirection = p.timeDirection,
+            attachment = cloneAttachment(buttons[i].attachment),
+            width = buttons[i].width,
+            height = buttons[i].height,
+        }
+    end
     
     return {
         calcPnV = function(self, collisions)
             for i = 1, bCount do
-				PnV[i] = calculateButtonPositionAndVelocity(proto[i], collisions)
-			end
+                PnV[i] = calculateButtonPositionAndVelocity(proto[i], collisions)
+            end
         end,
         updateState = function(self, departures, triggerArrivals)
             state = true
@@ -497,17 +497,17 @@ local function multiStickySwitch(p)
                 end
             end
 
-			if not state then
-				state = true
-				for i = 1, bCount do
-					individualState[i] = checkPressed(constructDynamicArea(proto[i], PnV[i]), departures)
-					if not individualState[i] then 
-						state = false
-					end
+            if not state then
+                state = true
+                for i = 1, bCount do
+                    individualState[i] = checkPressed(constructDynamicArea(proto[i], PnV[i]), departures)
+                    if not individualState[i] then 
+                        state = false
+                    end
                     justPressed[i] = triggerArrivals[stateTriggerID][i] == 0 and individualState[i]
                     justReleased[i] = triggerArrivals[stateTriggerID][i] == 1 and not individualState[i]
-				end
-			else
+                end
+            else
                 for i = 1, bCount do
                     justPressed[i] = false
                     justReleased[i] = false
@@ -516,9 +516,9 @@ local function multiStickySwitch(p)
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             for i = 1, bCount do
-				local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], state or individualState[i])
-				table.insert(forwardsGlitz, forGlitz)
-				table.insert(reverseGlitz, revGlitz)
+                local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], state or individualState[i])
+                table.insert(forwardsGlitz, forGlitz)
+                table.insert(reverseGlitz, revGlitz)
                 if justPressed[i] then
                     table.insert(
                         persistentGlitz,
@@ -529,17 +529,17 @@ local function multiStickySwitch(p)
                         persistentGlitz,
                         {type = "audio", key = "global.switch_push_up", duration = 10, timeDirection = proto[i].timeDirection})
                 end
-			end
+            end
         end,
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {state and 1 or 0}
             outputTriggers[stateTriggerID] = map(function(val) return val and 1 or 0 end, individualState)
-			if p.extraTriggerIDs then
-				local extraTriggerIDs = p.extraTriggerIDs
-				for i = 1, #extraTriggerIDs do
-					outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
-				end
-			end
+            if p.extraTriggerIDs then
+                local extraTriggerIDs = p.extraTriggerIDs
+                for i = 1, #extraTriggerIDs do
+                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                end
+            end
         end,
     }
 end
@@ -609,12 +609,12 @@ local function toggleSwitch(p)
         fillTrigger = function(self, outputTriggers)
             outputTriggers[triggerID] = {switchState}
             outputTriggers[stateTriggerID] = {switchState}
-			if p.extraTriggerIDs then
-				local extraTriggerIDs = p.extraTriggerIDs
-				for i = 1, #extraTriggerIDs do
-					outputTriggers[extraTriggerIDs[i]] = {switchState}
-				end
-			end
+            if p.extraTriggerIDs then
+                local extraTriggerIDs = p.extraTriggerIDs
+                for i = 1, #extraTriggerIDs do
+                    outputTriggers[extraTriggerIDs[i]] = {switchState}
+                end
+            end
         end,
         first = cloneButtonSegment(p.first),
         second = cloneButtonSegment(p.second)
@@ -622,16 +622,16 @@ local function toggleSwitch(p)
 end
 
 local pickupGlitzNameMap = {
-	timeJump = "global.time_jump",
-	timeReverse = "global.time_reverse",
-	timeGun = "global.time_gun",
-	timePause = "global.time_pause"
+    timeJump = "global.time_jump",
+    timeReverse = "global.time_reverse",
+    timeGun = "global.time_gun",
+    timePause = "global.time_pause"
 }
 
 local function pickup(p)
 
-	local PnV = nil
-	local active = true
+    local PnV = nil
+    local active = true
     local triggerID = p.triggerID
     local justTaken = false
     local proto = {
@@ -645,9 +645,9 @@ local function pickup(p)
 
     return {
         addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
-			if triggerArrivals[triggerID][1] == 1 then
-				PnV = calculateButtonPositionAndVelocity(proto, collisions)
-				mutators[#mutators+1] = {
+            if triggerArrivals[triggerID][1] == 1 then
+                PnV = calculateButtonPositionAndVelocity(proto, collisions)
+                mutators[#mutators+1] = {
                     x = PnV.x, y = PnV.y,
                     width = proto.width, height = proto.height,
                     xspeed = PnV.xspeed, yspeed = PnV.yspeed,
@@ -661,11 +661,11 @@ local function pickup(p)
         end,
         effect = function(self, dynamicObject)
             if not active then 
-				return dynamicObject 
-			end
+                return dynamicObject 
+            end
             if dynamicObject.type ~= 'guy' then 
-				return dynamicObject 
-			end
+                return dynamicObject 
+            end
             dynamicObject.pickups[proto.pickupType] =
                 dynamicObject.pickups[proto.pickupType] + (proto.pickupNumber or 1)
             active = false
@@ -712,199 +712,199 @@ local function pickup(p)
 end
 
 local function spikes(p)
-	local PnV = nil
-	local deathGlitz = {}
-	local proto = {
-		timeDirection = p.timeDirection,
-		attachment = cloneAttachment(p.attachment),
-		width = p.width,
-		height = p.height,
-	}
-	
-	return {
-        addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
-            PnV = calculateButtonPositionAndVelocity(proto, collisions)
-			mutators[#mutators+1] = {
-				x = PnV.x, y = PnV.y,
-				width = proto.width, height = proto.height,
-				xspeed = PnV.xspeed, yspeed = PnV.yspeed,
-				collisionOverlap = 1, -- So that spikes just below the surface are not deadly
-				timeDirection = proto.timeDirection
-			}
-			activeMutators[#activeMutators+1] = self
-        end,
-		calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
-			local colour = {r = 255, g = 0, b = 0}
-			local forGlitz, revGlitz = calculateBidirectionalGlitz(430, constructDynamicArea(proto, PnV), colour, colour)
-			table.insert(forwardsGlitz, forGlitz)
-			table.insert(reverseGlitz, revGlitz)
-			for i = 1, #deathGlitz do
-				local forGlitz, revGlitz = calculateBidirectionalGlitz(430, deathGlitz[i], {r = 255, g = 0, b = 0},  {r = 0, g = 255, b = 255})
-				table.insert(forwardsGlitz, forGlitz)
-				table.insert(reverseGlitz, revGlitz)
-			end
-        end,
-		effect = function(self, dynamicObject)
-            if dynamicObject.type == 'guy' then 
-				deathGlitz[#deathGlitz+1] = {
-					x = dynamicObject.x,
-					y = dynamicObject.y,
-					width = dynamicObject.width,
-					height = dynamicObject.height,
-					timeDirection = dynamicObject.timeDirection
-				}
-				return nil
-			else
-				return dynamicObject 
-			end
-        end,
-		fillTrigger = function(self, outputTriggers)
-        end
-	}
-end
-
-local function boxOMatic(p)
-	local PnV = nil
-	local boxCreationFunction = p.boxCreationFunction
-	local proto = {
+    local PnV = nil
+    local deathGlitz = {}
+    local proto = {
         timeDirection = p.timeDirection,
         attachment = cloneAttachment(p.attachment),
         width = p.width,
         height = p.height,
     }
-	
-	return {
-		calcPnV = function(self, collisions)
+    
+    return {
+        addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
+            PnV = calculateButtonPositionAndVelocity(proto, collisions)
+            mutators[#mutators+1] = {
+                x = PnV.x, y = PnV.y,
+                width = proto.width, height = proto.height,
+                xspeed = PnV.xspeed, yspeed = PnV.yspeed,
+                collisionOverlap = 1, -- So that spikes just below the surface are not deadly
+                timeDirection = proto.timeDirection
+            }
+            activeMutators[#activeMutators+1] = self
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            local colour = {r = 255, g = 0, b = 0}
+            local forGlitz, revGlitz = calculateBidirectionalGlitz(430, constructDynamicArea(proto, PnV), colour, colour)
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+            for i = 1, #deathGlitz do
+                local forGlitz, revGlitz = calculateBidirectionalGlitz(430, deathGlitz[i], {r = 255, g = 0, b = 0},  {r = 0, g = 255, b = 255})
+                table.insert(forwardsGlitz, forGlitz)
+                table.insert(reverseGlitz, revGlitz)
+            end
+        end,
+        effect = function(self, dynamicObject)
+            if dynamicObject.type == 'guy' then 
+                deathGlitz[#deathGlitz+1] = {
+                    x = dynamicObject.x,
+                    y = dynamicObject.y,
+                    width = dynamicObject.width,
+                    height = dynamicObject.height,
+                    timeDirection = dynamicObject.timeDirection
+                }
+                return nil
+            else
+                return dynamicObject 
+            end
+        end,
+        fillTrigger = function(self, outputTriggers)
+        end
+    }
+end
+
+local function boxOMatic(p)
+    local PnV = nil
+    local boxCreationFunction = p.boxCreationFunction
+    local proto = {
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        width = p.width,
+        height = p.height,
+    }
+    
+    return {
+        calcPnV = function(self, collisions)
             PnV = calculateButtonPositionAndVelocity(proto, collisions)
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
-		    local colour = {r = 150, g = 150, b = 255}
+            local colour = {r = 150, g = 150, b = 255}
             local forGlitz, revGlitz = calculateBidirectionalGlitz(800, constructDynamicArea(proto, PnV), colour, colour)
-			local textGlitz = {
-					type = "text",
-					x = PnV.x+150,
-					y = PnV.y+100,
-					text = "Box\n  O\nMatic",
-					size = 1200,
-					layer = 850,
-					colour = {r = 0, g = 0, b = 0},
-				}
+            local textGlitz = {
+                    type = "text",
+                    x = PnV.x+150,
+                    y = PnV.y+100,
+                    text = "Box\n  O\nMatic",
+                    size = 1200,
+                    layer = 850,
+                    colour = {r = 0, g = 0, b = 0},
+                }
             table.insert(forwardsGlitz, forGlitz)
             table.insert(reverseGlitz, revGlitz)
-			table.insert(forwardsGlitz, textGlitz)
-			table.insert(reverseGlitz, textGlitz)
+            table.insert(forwardsGlitz, textGlitz)
+            table.insert(reverseGlitz, textGlitz)
         end,
         getAdditionalBoxes = function(self, triggers, frameNumber, additionalBoxes)
             local newBox = boxCreationFunction(triggers, frameNumber)
-			if newBox then
-				newBox.x = newBox.x + PnV.x
-				newBox.y = newBox.y + PnV.y
-				newBox.xspeed = newBox.xspeed + PnV.xspeed
-				newBox.yspeed = newBox.yspeed + PnV.yspeed
-				
-				additionalBoxes[#additionalBoxes+1] = newBox
-			end
+            if newBox then
+                newBox.x = newBox.x + PnV.x
+                newBox.y = newBox.y + PnV.y
+                newBox.xspeed = newBox.xspeed + PnV.xspeed
+                newBox.yspeed = newBox.yspeed + PnV.yspeed
+                
+                additionalBoxes[#additionalBoxes+1] = newBox
+            end
         end,
-	}
+    }
 end
 
 local function wireGlitz(p)
 
-	local triggerID = p.triggerID
-	local triggerFunction = p.triggerFunction
-	local useTriggerArrival = p.useTriggerArrival
-	local proto = {
+    local triggerID = p.triggerID
+    local triggerFunction = p.triggerFunction
+    local useTriggerArrival = p.useTriggerArrival
+    local proto = {
         x1 = p.x1, 
-		y1 = p.y1,
+        y1 = p.y1,
         x2 = p.x2,
-		y2 = p.y2
+        y2 = p.y2
     }
 
-	return {
-		calculateGlitz = function(self, forwardsGlitz, reverseGlitz, physicsAffectingStuff, triggerArrivals, outputTriggers)
+    return {
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz, physicsAffectingStuff, triggerArrivals, outputTriggers)
 
-			local collisions = physicsAffectingStuff.collisions
-		
-			local x1 = proto.x1.pos + ((proto.x1.platform ~= nil and collisions[proto.x1.platform].x) or 0)
-			local y1 = proto.y1.pos + ((proto.y1.platform ~= nil and collisions[proto.y1.platform].y) or 0)
-			local x2 = proto.x2.pos + ((proto.x2.platform ~= nil and collisions[proto.x2.platform].x) or 0)
-			local y2 = proto.y2.pos + ((proto.y2.platform ~= nil and collisions[proto.y2.platform].y) or 0)
-		
-			local obj = {
-				x = (x1 < x2 and x1) or x2,
-				y = (y1 < y2 and y1) or y2,
-				width = (x1 < x2 and x2 - x1) or x1 - x2,
-				height = (y1 < y2 and y2 - y1) or y1 - y2,
-			}
-			
-			local forGlitz, revGlitz
-			local active = false
-			if triggerID then
-				active = (useTriggerArrival and triggerArrivals[triggerID][1] == 1) or (not useTriggerArrival and outputTriggers[triggerID][1] == 1)
-			elseif triggerFunction then
-				active = triggerFunction(triggerArrivals, outputTriggers)
-			end
-			
-			if active then
-				forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 0, g = 180, b = 0}, {r = 0, g = 180, b = 0})
-			else
-				forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 180, g = 0, b = 0}, {r = 180, g = 0, b = 0})
-			end
-			
-			table.insert(forwardsGlitz, forGlitz)
-			table.insert(reverseGlitz, revGlitz)
-		end,
-	}
+            local collisions = physicsAffectingStuff.collisions
+        
+            local x1 = proto.x1.pos + ((proto.x1.platform ~= nil and collisions[proto.x1.platform].x) or 0)
+            local y1 = proto.y1.pos + ((proto.y1.platform ~= nil and collisions[proto.y1.platform].y) or 0)
+            local x2 = proto.x2.pos + ((proto.x2.platform ~= nil and collisions[proto.x2.platform].x) or 0)
+            local y2 = proto.y2.pos + ((proto.y2.platform ~= nil and collisions[proto.y2.platform].y) or 0)
+        
+            local obj = {
+                x = (x1 < x2 and x1) or x2,
+                y = (y1 < y2 and y1) or y2,
+                width = (x1 < x2 and x2 - x1) or x1 - x2,
+                height = (y1 < y2 and y2 - y1) or y1 - y2,
+            }
+            
+            local forGlitz, revGlitz
+            local active = false
+            if triggerID then
+                active = (useTriggerArrival and triggerArrivals[triggerID][1] == 1) or (not useTriggerArrival and outputTriggers[triggerID][1] == 1)
+            elseif triggerFunction then
+                active = triggerFunction(triggerArrivals, outputTriggers)
+            end
+            
+            if active then
+                forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 0, g = 180, b = 0}, {r = 0, g = 180, b = 0})
+            else
+                forGlitz, revGlitz = calculateBidirectionalGlitz(1500, obj, {r = 180, g = 0, b = 0}, {r = 180, g = 0, b = 0})
+            end
+            
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+        end,
+    }
 end
 
 local function easyWireGlitz(p)
-	if p.x then
-		p.x1 = {platform = p.x.platform, pos = p.x.pos - 0.05 * 3200}
-		p.x2 = {platform = p.x.platform, pos = p.x.pos + 0.05 * 3200}
-		p.x = nil
-	end
-	if p.y then
-		p.y1 = {platform = p.y.platform, pos = p.y.pos - 0.05 * 3200}
-		p.y2 = {platform = p.y.platform, pos = p.y.pos + 0.05 * 3200}
-		p.y = nil
-	end
-	return wireGlitz(p)
+    if p.x then
+        p.x1 = {platform = p.x.platform, pos = p.x.pos - 0.05 * 3200}
+        p.x2 = {platform = p.x.platform, pos = p.x.pos + 0.05 * 3200}
+        p.x = nil
+    end
+    if p.y then
+        p.y1 = {platform = p.y.platform, pos = p.y.pos - 0.05 * 3200}
+        p.y2 = {platform = p.y.platform, pos = p.y.pos + 0.05 * 3200}
+        p.y = nil
+    end
+    return wireGlitz(p)
 end
 
 local function basicRectangleGlitz(p)
-	local colour = p.colour
-	local layer = p.layer
-	local proto = {
-		x = p.x,
-		y = p.y,
-		width = p.width,
-		height = p.height,
+    local colour = p.colour
+    local layer = p.layer
+    local proto = {
+        x = p.x,
+        y = p.y,
+        width = p.width,
+        height = p.height,
     }
-	return {
-		calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
-			local forGlitz, revGlitz = calculateBidirectionalGlitz(layer, proto, colour, colour)
-			table.insert(forwardsGlitz, forGlitz)
-			table.insert(reverseGlitz, revGlitz)
-		end,
-	}
+    return {
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            local forGlitz, revGlitz = calculateBidirectionalGlitz(layer, proto, colour, colour)
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+        end,
+    }
 end
 
 local function basicTextGlitz(p)
-	local proto = {
-		type = "text",
-		x = p.x,
-		y = p.y,
-		text = p.text,
-		size = p.size,
-		layer = p.layer,
-		colour = p.colour,
-	}
-	return {
-		calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
-			table.insert(forwardsGlitz, proto)
-			table.insert(reverseGlitz, proto)
-		end,
-	}
+    local proto = {
+        type = "text",
+        x = p.x,
+        y = p.y,
+        text = p.text,
+        size = p.size,
+        layer = p.layer,
+        colour = p.colour,
+    }
+    return {
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz)
+            table.insert(forwardsGlitz, proto)
+            table.insert(reverseGlitz, proto)
+        end,
+    }
 end
 
 local function calculateMutators(protoMutators, collisions, triggerArrivals)
@@ -937,12 +937,12 @@ function calculatePhysicsAffectingStuff(tempStore)
         retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals)
         
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)
-		
-		local portals, arrivalLocations = calculatePortals(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.protoPortals, retv.collisions, triggerArrivals)
-		
-		retv.portals = portals
-		retv.arrivalLocations = arrivalLocations
-		
+        
+        local portals, arrivalLocations = calculatePortals(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.protoPortals, retv.collisions, triggerArrivals)
+        
+        retv.portals = portals
+        retv.arrivalLocations = arrivalLocations
+        
         calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions)
 
         fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions)
@@ -952,16 +952,16 @@ function calculatePhysicsAffectingStuff(tempStore)
             table.insert(tempStore.forwardsGlitz, forwardsGlitz)
             table.insert(tempStore.reverseGlitz, reverseGlitz)
         end
-		
-		if tempStore.protoBoxCreators then
-			for protoBoxCreator in list_iter(tempStore.protoBoxCreators) do
-				protoBoxCreator:calcPnV(retv.collisions)
-				protoBoxCreator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
-				protoBoxCreator:getAdditionalBoxes(tempStore.triggerArrivals, tempStore.frameNumber, retv.additionalBoxes)
-			end
-		end
-		
-		tempStore.physicsAffectingStuff = retv
+        
+        if tempStore.protoBoxCreators then
+            for protoBoxCreator in list_iter(tempStore.protoBoxCreators) do
+                protoBoxCreator:calcPnV(retv.collisions)
+                protoBoxCreator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
+                protoBoxCreator:getAdditionalBoxes(tempStore.triggerArrivals, tempStore.frameNumber, retv.additionalBoxes)
+            end
+        end
+        
+        tempStore.physicsAffectingStuff = retv
 
         return retv
     end
@@ -990,14 +990,14 @@ local function getDepartureInformation(tempStore)
 
         for protoMutator in list_iter(tempStore.protoMutators) do
             protoMutator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz)
-			protoMutator:fillTrigger(tempStore.outputTriggers)
+            protoMutator:fillTrigger(tempStore.outputTriggers)
         end
-		
-		if tempStore.protoGlitz then
-			for protoGlitz in list_iter(tempStore.protoGlitz) do
-				protoGlitz:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.physicsAffectingStuff, tempStore.triggerArrivals, tempStore.outputTriggers)
-			end
-		end
+        
+        if tempStore.protoGlitz then
+            for protoGlitz in list_iter(tempStore.protoGlitz) do
+                protoGlitz:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.physicsAffectingStuff, tempStore.triggerArrivals, tempStore.outputTriggers)
+            end
+        end
 
         return
             tempStore.outputTriggers,
@@ -1022,14 +1022,14 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
-	multiStickySwitch = multiStickySwitch,
+    multiStickySwitch = multiStickySwitch,
     pickup = pickup,
-	spikes = spikes,
-	boxOMatic = boxOMatic,
-	wireGlitz = wireGlitz,
-	easyWireGlitz = easyWireGlitz,
-	basicRectangleGlitz = basicRectangleGlitz,
-	basicTextGlitz = basicTextGlitz,
+    spikes = spikes,
+    boxOMatic = boxOMatic,
+    wireGlitz = wireGlitz,
+    easyWireGlitz = easyWireGlitz,
+    basicRectangleGlitz = basicRectangleGlitz,
+    basicTextGlitz = basicTextGlitz,
     mutateObject = mutateObject,
     calculatePhysicsAffectingStuff = calculatePhysicsAffectingStuff,
     getDepartureInformation = getDepartureInformation,

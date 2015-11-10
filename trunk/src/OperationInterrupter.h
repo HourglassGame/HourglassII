@@ -1,5 +1,5 @@
-#ifndef HG_OPERATION_interrupter_H
-#define HG_OPERATION_interrupter_H
+#ifndef HG_OPERATION_INTERRUPTER_H
+#define HG_OPERATION_INTERRUPTER_H
 #include <tbb/spin_mutex.h>
 #include "mt/boost/container/stable_vector.hpp"
 #include "move_function.h"
@@ -35,6 +35,9 @@ public:
         }
         
         ~FunctionHandle() {
+            //TODO: Reconsider the safety of the possibility of `lock` throwing in a destructor
+            //      and consider alternative designs.
+            //This is probably safe, spin_mutex can't throw(??) (it's just a loop).
             if (interrupter) {
                 OperationInterrupter &i(*interrupter);
                 tbb::spin_mutex::scoped_lock lock(i.mutex);
@@ -81,4 +84,4 @@ inline void swap(OperationInterrupter::FunctionHandle &l, OperationInterrupter::
 
 
 }//namespace hg
-#endif //HG_OPERATION_interrupter_H
+#endif //HG_OPERATION_INTERRUPTER_H

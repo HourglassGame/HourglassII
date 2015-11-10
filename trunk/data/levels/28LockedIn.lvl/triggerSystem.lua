@@ -20,7 +20,7 @@ local tempStore =
             fallable = false,
             winner = false
         },
-		{
+        {
             attachment = {platform = nil, xOffset = 22 * 3200, yOffset = 2 * 3200},
             index = 1,
             width = 2 * 3200,
@@ -84,15 +84,15 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
-		bts.pickup{
+        bts.pickup{
             attachment = {platform = nil, xOffset = 2.25 * 3200, yOffset = 5.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 2,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
     },
     protoButtons = {

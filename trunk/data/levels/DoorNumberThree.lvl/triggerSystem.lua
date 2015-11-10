@@ -22,12 +22,12 @@ local tempStore =
         }
     },
     protoCollisions = {
-		{
+        {
             width = 3200,
             height = 4 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 7,
-			buttonTriggerID = 1,
+            buttonTriggerID = 1,
             destinations =
             {
                 onDestination = {
@@ -60,12 +60,12 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 3200,
             height = 4 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 8,
-			buttonTriggerID = 2,
+            buttonTriggerID = 2,
             destinations =
             {
                 onDestination = {
@@ -98,12 +98,12 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 3200,
             height = 4 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 9,
-			buttonTriggerID = 3,
+            buttonTriggerID = 3,
             destinations =
             {
                 onDestination = {
@@ -144,23 +144,23 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 4,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
-		bts.pickup{
+        bts.pickup{
             attachment = {platform = nil, xOffset = 9.25 * 3200, yOffset = 7.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 5,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
-		bts.pickup{
+        bts.pickup{
             attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 9.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 6,
-			pickupType = 'timeGun'
+            pickupType = 'timeGun'
         }
     },
     protoButtons = {
@@ -171,14 +171,14 @@ local tempStore =
             timeDirection = 'forwards',
             triggerID = 1
         },
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 9 * 3200, yOffset = 8.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
             triggerID = 2
         },
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 15 * 3200, yOffset = 10.75 * 3200},
             width = 3200,
             height = 800,

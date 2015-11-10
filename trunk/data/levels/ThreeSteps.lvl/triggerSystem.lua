@@ -22,14 +22,14 @@ local tempStore =
         }
     },
     protoCollisions = {
-		{
+        {
             width = 3200,
             height = 0.5 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 5,
-			triggerFunction = function(triggers)
-				return triggers[1][1] == 1 and triggers[2][1] == 1
-			end,
+            triggerFunction = function(triggers)
+                return triggers[1][1] == 1 and triggers[2][1] == 1
+            end,
             destinations =
             {
                 onDestination = {
@@ -70,15 +70,15 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 3,
-			pickupType = 'timeJump'
+            pickupType = 'timeJump'
         },
-		bts.pickup{
+        bts.pickup{
             attachment = {platform = nil, xOffset = 18.25 * 3200, yOffset = 12 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 4,
-			pickupType = 'timeGun'
+            pickupType = 'timeGun'
         }
     },
     protoButtons = {
@@ -89,7 +89,7 @@ local tempStore =
             timeDirection = 'forwards',
             triggerID = 1
         },
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {platform = nil, xOffset = 13 * 3200, yOffset = 9.75 * 3200},
             width = 3200,
             height = 800,

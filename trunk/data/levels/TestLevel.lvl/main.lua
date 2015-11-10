@@ -77,13 +77,13 @@ initialGuy =
 --only boxes for now, but the plan is that this is all dynamic objects other than guys
 initialArrivals =
 {
-    {type = "box", x = 32400, y = 8000,  xspeed = 0, 	 yspeed = -600, size = 3200, timeDirection = "forwards"},
+    {type = "box", x = 32400, y = 8000,  xspeed = 0,      yspeed = -600, size = 3200, timeDirection = "forwards"},
     {type = "box", x = 46400, y = 14200, xspeed = -1000, yspeed = -500, size = 3200, timeDirection = "forwards"},
     {type = "box", x = 46400, y = 10800, xspeed = -1000, yspeed = -500, size = 3200, timeDirection = "forwards"},
     {type = "box", x = 46400, y = 17600, xspeed = -1000, yspeed = -500, size = 3200, timeDirection = "forwards"},
     {type = "box", x = 46400, y = 21600, xspeed = -500,  yspeed = -500, size = 3200, timeDirection = "forwards"},
     {type = "box", x = 6400,  y = 15600, xspeed = 1000,  yspeed = -500, size = 3200, timeDirection = "forwards"},
-    {type = "box", x = 56400, y = 15600, xspeed = 0,     yspeed = 0, 	size = 3200, timeDirection = "forwards"}
+    {type = "box", x = 56400, y = 15600, xspeed = 0,     yspeed = 0,     size = 3200, timeDirection = "forwards"}
 }
 triggerSystem = 
 {

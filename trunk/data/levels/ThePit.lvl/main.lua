@@ -39,7 +39,7 @@ initialGuy =
 }
 initialArrivals =
 {
-	{type = "box", x = 12.75 * 3200, y = 7 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+    {type = "box", x = 12.75 * 3200, y = 7 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
 }
 triggerSystem =
 {
