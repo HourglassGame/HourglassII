@@ -65,8 +65,10 @@ bool testLevels() {
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
+
 //#define HG_TEST_LEVELS
-//#define HG_REWRITE_REPLAY
+bool constexpr rewrite_replay{ false };
+
 //usually #if'd out as these tests take far too long to run to be run at the start of every execution
 #ifdef HG_TEST_LEVELS
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
@@ -81,38 +83,34 @@ bool testLevels() {
             TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
 
             auto const replay = loadReplay((entry.path()/"win.replay").string());
-#ifdef HG_REWRITE_REPLAY
             std::vector<InputList> outReplay;
-#endif
-            
             try {
-                for (auto const& input: replay) {
-#ifdef HG_REWRITE_REPLAY
+                for (auto const& input : replay) {
                     outReplay.push_back(input);
-#endif
                     timeEngine.runToNextPlayerFrame(input);
+
                 }
-#ifdef HG_REWRITE_REPLAY
-                std::cout << " Extending replay ..." << std::flush;
-                while (true) {
-                    outReplay.push_back(InputList());
-                    timeEngine.runToNextPlayerFrame(outReplay.back());
+                if (rewrite_replay) {
+                    std::cout << " Extending replay ..." << std::flush;
+                    while (true) {
+                        outReplay.push_back(InputList());
+                        timeEngine.runToNextPlayerFrame(outReplay.back());
+                    }
                 }
-#endif
             }
             catch (PlayerVictoryException const&) {
-#ifdef HG_REWRITE_REPLAY
-                if (replay.size() > outReplay.size()) {
-                    std::cout << " Truncating replay ..." << std::flush;
+                if (rewrite_replay) {
+                    if (replay.size() > outReplay.size()) {
+                        std::cout << " Truncating replay ..." << std::flush;
+                    }
                 }
-#endif
                 auto timeTaken =
                     std::chrono::duration_cast<std::chrono::duration<double>>(
                         std::chrono::high_resolution_clock::now()-start);
-                std::cout << " OK, in: " << timeTaken.count() << "s\n" << std::flush;
-#ifdef HG_REWRITE_REPLAY
-                saveReplay((entry.path()/"win.replay").string(), outReplay);
-#endif
+                std::cout << " OK, time: " << timeTaken.count() << "s, inReplaySize: "<< replay.size() << ", outReplaySize: " << outReplay.size() <<"\n" << std::flush;
+                if (rewrite_replay) {
+                    saveReplay((entry.path() / "win.replay").string(), outReplay);
+                }
                 continue;
             }
             std::cerr << " Did not win\n" << std::flush;
