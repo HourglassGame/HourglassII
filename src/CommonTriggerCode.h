@@ -51,8 +51,8 @@ calculateActualTriggerDepartures(
         retv[
             getArbitraryFrame(
                 universe, 
-                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[trigger.getIndex()].first)].push_back(
-                    trigger);
+                getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[trigger.getIndex()].first)]
+          .push_back(trigger);
     }
     return retv;
 }
