@@ -24,12 +24,11 @@ bool testLevelsLoad() {
     //For every *.lvl that does not
     //contain a file called "DoNotTest",
     //load the level and continue.
-//#define HG_TEST_LEVELS_LOAD
-
-    //TODO -- make this test only run in an "expensive tests" run
+    constexpr bool test_levels_load{ false };
+    if (!test_levels_load) return true;
+    //TODO -- make this test only run in an "expensive tests" run (rather than hardcoding 'test_levels_load = false')
     //TODO -- get rid of hard-coded progress display.
     bool testPassed = true;
-#ifdef HG_TEST_LEVELS_LOAD
     for (auto const entry : boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
         boost::filesystem::directory_iterator()))
     {
@@ -47,11 +46,16 @@ bool testLevelsLoad() {
             std::cout << " Loaded OK, in: " << timeTaken.count() << "s\n" << std::flush;
         }
     }
-#endif
     return testPassed;
 }
 
 bool testLevels() {
+    bool constexpr test_levels{ false };
+    bool constexpr rewrite_replay{ false };
+
+    //usually not run, as these tests take far too long to run to be run at the start of every execution
+    if (!test_levels) return true;
+
     //Iterate the `levels` folder.
     //For every *.lvl that does not
     //contain a file called "DoNotTest",
@@ -65,12 +69,6 @@ bool testLevels() {
     for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
                                                       boost::filesystem::directory_iterator()))
     {
-
-//#define HG_TEST_LEVELS
-bool constexpr rewrite_replay{ false };
-
-//usually #if'd out as these tests take far too long to run to be run at the start of every execution
-#ifdef HG_TEST_LEVELS
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
             if (exists(entry.path()/"DoNotTest")) continue;
             std::cout << "Testing " << entry.path() << " ..." << std::flush;
@@ -117,7 +115,6 @@ bool constexpr rewrite_replay{ false };
             testPassed = false;
             continue;
         }
-#endif
     }
     return testPassed;
 }

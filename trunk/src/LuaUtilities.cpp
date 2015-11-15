@@ -109,7 +109,14 @@ int to<int>(lua_State *L, int index)
 {
     //TODO: better rounding/handling of non-integers!
     assert(lua_isnumber(L, index));
-    return static_cast<int>(lua_tointeger(L, index));
+    lua_Number num = lua_tonumber(L, index);
+
+    lua_Integer integ = 0;
+    int is_integer = lua_numbertointeger(num, &integ);
+    assert(is_integer);
+    //Note that by default, lua_Integer has a much larger range than int,
+    //so this conversion could overflow. This need to be improved.
+    return static_cast<int>(integ);
 }
 
 template<>
