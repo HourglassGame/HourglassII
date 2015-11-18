@@ -1,0 +1,399 @@
+### 1. Easy start ###
+Summary: Introduces using past self to hold down button while future self goes through door.
+
+Status: Faithfully remade.
+
+
+### 2. Open and closed ###
+Summary: Similar to (1), introduces timing.
+
+Status: Faithfully remade.
+
+
+### 3. Standard box puzzle ###
+Summary: Introduces boxes.
+
+Status: Faithfully remade.
+
+
+### 4. Not so standard... ###
+Summary: Introduces taking boxes through portals.
+
+Status: Faithfully remade.
+
+
+### 5. Going up ###
+Summary: Many switch and timing elements. Only new thing is platform.
+
+Status: Faithfully remade.
+
+
+### 6. Stacked high ###
+Summary: Introduced infinite boxes.
+
+Status: Faithfully remade.
+
+
+### 7. Timebelt ###
+Summary: Introduced timeJump pickup and ability to move around obstructions.
+
+Status: Faithfully remade.
+
+
+### 8. All the way up ###
+Summary: Excersise in leaving guys on sitches to control platforms.
+
+Status: Not immediately worth remaking. No new features.
+
+
+### 9. One-way trip ###
+Summary: Similar to (4). Introduces laser switch.
+
+Status: Requires laser switch. Effectively a copy of (4).
+
+
+### 10. Triplicate ###
+Summary: Similar to (4) but with timeJump instead of portal.
+
+Status: Faithfully remade (with allowances for changed jump-height)
+
+
+### 11. Time and Space ###
+Summary: Introduces portal attached to platform.
+
+Status: A level such as this is worthwhile. More platform antics are possible.
+
+
+### 12. Fairly routine ###
+Summary: TimeJump is used to go around player created obstacle.
+
+Status: Simple enough to remake idea.
+
+
+### 13. Fish in a barrel ###
+Summary: Introduces timeGun to get a box past an obstruction.
+
+Status: Faithfully remade.
+
+
+### 14. Wrong way ###
+Summary: Player uses timeJump to go backwards up a down platform.
+
+Status: Level requires Game Pause and is harder to implement due to low jump height. Good UI tools would prevent chance of chronofrag in this level.
+
+
+### 15. Reverse ###
+Summary: Same as (14) yet implemented with timeReverse. Introduces timeReverse.
+
+Status: Can be made.
+
+
+### 16. Don't touch that ###
+Summary: Box duplication to pass spikes. Has timeJump.
+
+Status: Jump physics has changed so faithful implementation is problematic.
+
+
+### 17. It's a trap ###
+Summary: Level with timeJump and timeReverse at the same time.
+
+Status: Needs laser switch to remake. Worth doing.
+
+
+### 18. Alcatraz ###
+Summary: TimeJump into a moving box to win.
+
+Status: Requires Game Pause to reduce frustration. Jump physics changed but this can still be remade.
+
+
+### 19. Impossible? ###
+Summary: First programming level.
+
+Status: Faithfully remade.
+
+
+### 20. What goes down... ###
+Summary: First reverse box riding level. Box duplication via timeReverse.
+
+Status: Faithfully remade.
+
+
+### 21. Which way? ###
+Summary: A fun 'trick' that Jeffrey is proud of. Can also be done with programming.
+
+Status: Faithfully remade (with allowances for changed jump-height)
+
+
+### 22. Another box puzzle ###
+Summary: Fairly straightforward box duplication with reverse time.
+
+Status:
+
+
+### 23. Blast from your past ###
+Summary: The idea is to shoot a hypothetical future self with the laser so they can get back across the spikes before they happen. There might be an easier way.
+
+Status:
+
+
+### 24. Get up there ###
+Summary: Create three boxes with a jump, a laser, and a box. Not especially exciting to us but it's a skill a new player needs to learn.
+
+Status:
+
+
+### 25. Shafted ###
+Summary: Two timejumps and a reverse time. The jumps get you through the elevator and back, and the reverse gets you back up.
+
+A decent enough level, and quite straightforward.
+
+Status:
+
+
+### 26. The Big Stack ###
+Summary: Save for the complications of using the one laser to get a box back up to the portal, this is box-stacking writ large.
+
+It's an okay level, all in all. Not more than okay, but okay.
+
+Status:
+
+
+### 27. Which Way II ###
+Summary: 
+
+Status: As only Jeffrey even knows how to finish this, we can't recreate it at this stage.
+
+Here's a hint: If you've changed jump mechanics this level is very likely to be unsolvable as it stands. ~Jeffrey
+
+### 28. Locked in ###
+Summary: Programming past guy to get pickup such that present guy can escape.
+
+Status: Reduced jump height poses a problem for jumping up to the top level with one box. This has been remade with two boxes.
+
+### 29. Torqueless ###
+Summary: Get over a pit of spikes by stacking boxes laterally. Works because HG physics does not model torque.
+
+Status:
+
+
+### 30. Mixed Bag ###
+Summary: Wasn't this possible with only half the available items? I seem to recall half the reason for this level being so that we could put a picture with all the items into the manual. ~Jeffrey
+
+Not particularly interesting all-in-all.
+
+Status:
+
+
+### 31. Ups and Downs ###
+Summary: Programming, but not incredibly onerous and one of the purest interpretations.
+
+I like this level for its cleanness, myself. ~Jeffrey
+
+Status:
+
+
+### 32. Spiky Death ###
+Summary: Act fast, or die
+
+Status: Should be doable with minor positioning changes. Is a good test level for HGII's "do stuff while paused" capabilities.
+
+
+### 33. Upsypupsy ###
+Summary: A single box; many reverse times.
+
+Should give reverse-time a good workout. Were all of the powerups even necessary?
+
+Status:
+
+
+### 34. Disembodied ###
+Summary: Reverse time box stacking and a portal moving without any visible platform it's attached to.
+
+Might be worth recreating for the latter mechanic but not a very exciting level.
+
+Status:
+
+
+### 35. Make your time ###
+Summary: The end goal is to shoot your beginning self into the future so as not to trip the spikes until later. Contains a fixed-time portal which is not t=0.
+
+Might be worth remaking if only to test t>0 fixed time portals. It crashed once when I played it in HG1, though I could not recreate - when I entered the portal, I failed to come out for a while while time played onwards then it crashed. Maybe I entered right on the t=2 frame? ~Jeffrey
+
+Status:
+
+
+### 36. Elevator ###
+Summary: Jump back in time to get beneath the elevator and get the box, jump forward to get back above, then use the box to get back from opening the door. You need to lower the elevator twice at the start so as to have an opportunity to get back down to the exit.
+
+Not especially exciting but a reasonably solid level.
+
+Status:
+
+
+### 37. Watch the first step ###
+Summary: I seem to remember someone else finding a much easier solution to this level than the intended one. Can't remember though, should check up on this. ~Jeffrey
+
+Status:
+
+
+### 38. Something Missing ###
+Summary: Use a single laser and a box to get two boxes and up a cliff. Technically challenging and exceptionally easy to recreate.
+
+Should be trivial to make and will test that it still works.
+
+Status: Seems to be created already ~Jeffrey
+
+
+### 39 Two Boxes ###
+Summary: Use one box now, use a different one later so as to not pass through the laser.
+
+Could stand to be less obvious but not a terrible idea. Doesn't really test anything new though.
+
+Status:
+
+### 40 Too High ###
+Summary: The original "steal a powerup from yourself" level.
+
+I imagine some variant of this has already been implemented. ~Jeffrey
+
+Status: Seems to be created already ~Jeffrey
+
+### 41 Desync is bac ###
+Summary: The mother of all programming levels
+
+Skip. Why did I do this. ~Jeffrey
+
+Status:
+
+### 42 Prisoner's Dilemma ###
+Summary: Something
+
+I don't remember how this was meant to work and I remember being unsatisfied with it. Leave it for now. ~Jeffrey
+
+Status:
+
+### 43 Crusher ###
+Summary: A neat idea (jump, jump to t=0, then catch the block while it falls) but hellishly difficult to actually execute. Will need rejiggering to deal with new jump mechanics and may simply be unworkable. Some powerup-stealing involved too, probably.
+
+Leave for now IMO. ~Jeffrey
+
+Status:
+
+### 44 Widdershins ###
+Summary: Going backwards in a forwards world
+
+I have no idea whether the new engine will make this level impossible, trivial, or anywhere in between. It was very specifically designed around the old reverse-time system. ~Jeffrey
+
+Status: 
+
+### 45 Omega ###
+Summary: Loadsa programming
+
+I still kind of like this idea (I believe it was first conceived during the Gamemaker phase of development) but it could stand to be executed less clumsily. Leave it alone for now. ~Jeffrey
+
+Status:
+
+### Bonus 1 Walk Through Walls ###
+Summary: Programming. Lovely.
+
+Not very exciting.
+
+Status:
+
+### Bonus 2 Two Doors ###
+Summary: Pretty easy, just shoot empty space into the past and then arrange to be standing there later.
+
+Not very exciting.
+
+Status:
+
+### Bonus 3 The Abyss ###
+Summary: This level was made to verify that a box on a platform moving sideways would hit a sideways button. 
+
+Not very exciting.
+
+Status:
+
+### Bonus 4 Forethought ###
+Summary: programming. Not especially exciting but not particularly bad either.
+
+Could be recreated but not as a priority by any means.
+
+Status:
+
+### Bonus 5 Regression ###
+Summary: This is the only level to use an arbitrary-point portal. Note that its label is cut off by the platform above it - less than ideal!
+
+Could be recreated but it's probably best to start with that kind of portal in a simpler level.
+
+Status:
+
+### Bonus 6 Flip Flop ###
+Summary: Tests flip-flop portals, has a fair few moving parts though. The portal is attached to the platform. Not the simplest testing ground.
+
+Maybe worth recreating but not a big priority.
+
+Status:
+
+### Bonus 7 Keep Moving ###
+Summary: I don't know if this level will work in the new game as it is here but it's a quite interesting level for a few reasons, and as a design idea it should probably be revisited at some point. More of an "adventure" than a "puzzle". Also, the only case I remember where a powerup is a TRAP.
+
+I'm not sure if it can be directly recreated in HGII but the idea was good. ~Jeffrey
+
+Status:
+
+### Bonus 8 A New Toy ###
+Summary: Trying out some non-standard portal types (reverse).
+
+The simpler of the two reverse-time portals. A decent testing ground for it IIRC.
+
+Status:
+
+### Bonus 9 Swirls ###
+Summary: Trying out some non-standard portal types (reverse).
+
+It's probably easier to use bonus 8 to test reverse portals than to recreate this one, it's rather long and contains a number of things it doesn't really need.
+
+Status:
+
+### Bonus 10 Dual Purpose ###
+Summary: One of the doors doesn't have a sprite - whoops! Stand on two buttons, retrieve the laser, use the laser to send yourself back in time to hit both buttons at once. Not very difficult for the amount of design difficulty.
+
+Tests flip-flop portals but doesn't really have all that many redeeming features as a level.
+
+Status:
+
+### Bonus 11 On the Clock ###
+Summary: Uses a flip-flop portal (which wasn't clearly shown to be one before you went through it at the time, this should be remedied). Besides that it looks like box-stacking, though due to the flip-flop mechanic you had to work fast so as to have enough time to get to the lift after you press the button.
+
+As good a test for flip-flop portals as any level.
+
+Status:
+
+### Bonus 12 I'm out of names ###
+Summary: Stealing powerups from your past self, this time applied to reverse powerups.
+
+This should give the reverse-time mechanic a good working-out, if it still works and isn't trivial in the new system.
+
+Status:
+
+### Bonus 13 Shameless ###
+Summary: Probably a lot of programming garbage given the name.
+
+Feel free to skip this level.
+
+Status:
+
+### Bonus 14 Inadequate ###
+Summary: Two sequential ledges each requiring two boxes. You start at the bottom with a laser. A belt is on the middle level, and another laser and the exit are at the top. A combination of Level 40's "steal from your past self, then provide for them" concept and Level 38's creating boxes with lasers. Combining the two is conceptually interesting - the level itself IIRC is quite difficult to execute correctly, especially compared to its simple design.
+
+This should be easy to recreate, and an interesting challenge to solve.
+
+Status:
+
+### Bonus X North Star ###
+Summary: I imagine nobody else has even seen this level since I made it some day I had time to kill in 2012. It involves a single reverse-time pickup, a strictly forward-time jump portal, and you had to (somehow) create a "staircase" of falling blocks to the exit at the top of the room, coming back up falling blocks (since you're reversed) and jumping a little higher. It's an interesting concept at least. 
+
+Ask me about it sometime when you're over this way and I'll show it to you. ~Jeffrey
+
+Status:
