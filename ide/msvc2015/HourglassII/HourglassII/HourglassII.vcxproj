@@ -315,6 +315,7 @@
     <ClCompile Include="..\..\..\..\src\LuaInterruption.cpp" />
     <ClCompile Include="..\..\..\..\src\LuaSandbox.cpp" />
     <ClCompile Include="..\..\..\..\src\LuaUtilities.cpp" />
+    <ClCompile Include="..\..\..\..\src\LuaUtilities_test.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lapi.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lauxlib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lbaselib.cpp" />

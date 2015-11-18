@@ -25,7 +25,7 @@ std::vector<char> loadFileIntoVector(
     std::vector<char> vec;
     boost::filesystem::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
-    file.open(filename);
+    file.open(filename, std::ifstream::in | std::ifstream::binary);
     file.seekg(0, std::ios::end);
     std::streampos length(file.tellg());
     if (length) {

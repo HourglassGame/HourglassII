@@ -12,6 +12,7 @@
 #include "../src/IngameMenuScene.cpp"
 #include "../src/LuaInterruption.cpp"
 #include "../src/LuaUtilities.cpp"
+#include "../src/LuaUtilities_test.cpp"
 #include "../src/LuaSandbox.cpp"
 #include "../src/SimpleLuaCpp.cpp"
 #include "../src/UserDataProxyTable.cpp"

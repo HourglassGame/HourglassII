@@ -1,0 +1,12 @@
+/ext/boost
+/ext/SFML
+/ext/tbb
+
+/ide/msvc2015/HourglassII/x64
+/ide/msvc2015/HourglassII/HourglassII/x64
+/ide/msvc2015/HourglassII/HourglassIIUnity/x64
+
+*.vcxproj.user
+*.vs
+*.sdf
+*.opensdf
