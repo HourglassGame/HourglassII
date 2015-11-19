@@ -51,7 +51,7 @@ variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::Rende
         bool menuDrawn = true;
         while (menuDrawn) {
             sf::Event event;
-            do if (window.waitEvent(event)) {
+            if (window.waitEvent(event)) do {
                 switch (event.type) {
                   case sf::Event::KeyPressed:
                     switch (event.key.code) {

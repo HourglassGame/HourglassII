@@ -46,7 +46,7 @@ run_main_menu(hg::RenderWindow &window)
         bool mainMenuDrawn = true;
         while (mainMenuDrawn) {
             sf::Event event;
-            do if (window.waitEvent(event)) {
+            if (window.waitEvent(event)) do {
                 switch (event.type) {
                   case sf::Event::KeyPressed:
                     switch (event.key.code) {
