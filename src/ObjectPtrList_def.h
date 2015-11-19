@@ -25,7 +25,7 @@ struct InsertAddresses
     template<typename Container, typename ForwardRange>
     void operator()(Container &toInsertInto, ForwardRange const &toInsert) const
     {
-        toInsertInto.reserve(boost::distance(toInsertInto) + boost::distance(toInsert));
+        toInsertInto.reserve(boost::size(toInsertInto) + boost::size(toInsert));
         typedef typename boost::range_value<ForwardRange>::type ObjType;
         for (ObjType const &obj: toInsert) {
             toInsertInto.push_back(

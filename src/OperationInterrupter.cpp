@@ -1,5 +1,4 @@
 #include "OperationInterrupter.h"
-#include <boost/thread/locks.hpp>
 #include <thread>
 namespace hg {
 //Operation interrupter holds its lock while running the interruption function.

@@ -38,6 +38,7 @@ void Frame::correctArrivalFramePointers(Universe_Frame_access, FramePointerUpdat
         bool inserted = updatedArrivals.insert(std::make_pair(
                             updater.updateFrame(arrivalPair.first), arrivalPair.second));
         assert(inserted);
+        static_cast<void>(inserted);
     }
     arrivals.swap(updatedArrivals);
 }

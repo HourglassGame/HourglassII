@@ -20,7 +20,7 @@ static void drawLevelSelection(hg::RenderWindow &window, std::string const& leve
     levelNameGlyph.setString(levelName);
     levelNameGlyph.setColor(sf::Color(255,255,255));
     levelNameGlyph.setPosition(150, 120);
-    levelNameGlyph.setCharacterSize(32.f);
+    levelNameGlyph.setCharacterSize(32);
     window.draw(levelNameGlyph);
 
     window.display();

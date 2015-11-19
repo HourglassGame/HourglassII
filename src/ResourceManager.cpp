@@ -30,6 +30,7 @@ inline sf::Image loadImage(fs::path const &file) {
     sf::Image img;
     bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
+    static_cast<void>(loaded);
     return img;
 }
 
@@ -37,6 +38,7 @@ inline sf::SoundBuffer loadSoundBuffer(fs::path const &file) {
     sf::SoundBuffer sound;
     bool loaded(sound.loadFromFile(file.string()));
     assert(loaded);
+    static_cast<void>(loaded);
     return sound;
 }
 
@@ -44,6 +46,7 @@ inline sf::Texture loadTexture(fs::path const &file) {
     sf::Texture img;
     bool loaded(img.loadFromFile(file.string()));
     assert(loaded);
+    static_cast<void>(loaded);
     return img;
 }
 
@@ -63,8 +66,8 @@ inline void loadPackage(LevelResources &resourceStore, std::string const &prefix
 
 sf::Sprite spriteForBlock(sf::Texture const &tex, double x, double y, double size) {
     sf::Sprite sprite(tex);
-    sprite.setPosition(sf::Vector2f(x,y));
-    sprite.setScale(sf::Vector2f(size*1.f/tex.getSize().x, size*1.f/tex.getSize().y));
+    sprite.setPosition(sf::Vector2f(static_cast<float>(x),static_cast<float>(y)));
+    sprite.setScale(sf::Vector2f(static_cast<float>(size*1.f/tex.getSize().x), static_cast<float>(size*1.f/tex.getSize().y)));
     return sprite;
 }
 }//namespace
@@ -144,8 +147,8 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
                             int const right((hpos+1)/2);
                             foregroundImageBuf.copy(
                                 cornerImages[bottom][right],
-                                x*segmentSize + right*segmentSize/2.,
-                                y*segmentSize + bottom*segmentSize/2.);
+                                static_cast<int>(x*segmentSize + right*segmentSize/2.),
+                                static_cast<int>(y*segmentSize + bottom*segmentSize/2.));
                         }
                     }
                 }

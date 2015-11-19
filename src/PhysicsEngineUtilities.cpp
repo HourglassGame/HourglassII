@@ -445,7 +445,7 @@ bool getRaytraceRectangleCollision(
 
 void doGunRaytrace(
         PhysicsObjectType &targetType,
-        int &targetId,
+        std::size_t &targetId,
         Environment const &env,
         int &sx, int &sy, int &px, int &py,
         mt::std::vector<Collision> const &nextPlatform,
@@ -466,7 +466,7 @@ void doGunRaytrace(
         px = sx;
         py = sy;
         targetType = NONE;
-        targetId = -1;
+        targetId = std::numeric_limits<std::size_t>::max();
         return;
     }
 
@@ -736,7 +736,7 @@ void doGunRaytrace(
     }
     
     // Guy
-    for (std::size_t i(0), isize(boost::distance(gx)); i < isize; ++i)
+    for (std::size_t i(0), isize(boost::size(gx)); i < isize; ++i)
     {
         if (shootable[i])
         {

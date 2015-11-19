@@ -23,7 +23,7 @@ inline mt::std::vector<mt::std::vector<int>>
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
     mt::std::vector<mt::std::vector<int>> apparentTriggers;
-    apparentTriggers.reserve(boost::distance(triggerOffsetsAndDefaults));
+    apparentTriggers.reserve(boost::size(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
     for (TriggerOffsetAndDefault const &offsetAndDefault: triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(

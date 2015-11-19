@@ -362,12 +362,12 @@ void runStep(
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
 
-    framesExecutedList.reserve(boost::distance(waveInfo.updatedFrames));
+    framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
     for (
         hg::FrameUpdateSet const &updateSet:
         waveInfo.updatedFrames)
     {
-        framesExecutedList.push_back(static_cast<int>(boost::distance(updateSet)));
+        framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
     }
 
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
@@ -461,7 +461,7 @@ void runStep(
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
         currentPlayerGlyph.setPosition(580, 433);
-        currentPlayerGlyph.setCharacterSize(10.f);
+        currentPlayerGlyph.setCharacterSize(10);
         currentPlayerGlyph.setColor(uiTextColor);
         app.draw(currentPlayerGlyph);
     }
@@ -472,7 +472,7 @@ void runStep(
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
         frameNumberGlyph.setPosition(580, 445);
-        frameNumberGlyph.setCharacterSize(8.f);
+        frameNumberGlyph.setCharacterSize(8);
         frameNumberGlyph.setColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
@@ -483,7 +483,7 @@ void runStep(
             for (
                 int num:
                 framesExecutedList
-                | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
+                | boost::adaptors::sliced(1, boost::size(framesExecutedList)))
             {
                 numberOfFramesExecutedString << ":" << num;
             }
@@ -492,7 +492,7 @@ void runStep(
         numberOfFramesExecutedGlyph.setFont(*hg::defaultFont);
         numberOfFramesExecutedGlyph.setString(numberOfFramesExecutedString.str());
         numberOfFramesExecutedGlyph.setPosition(580, 455);
-        numberOfFramesExecutedGlyph.setCharacterSize(8.f);
+        numberOfFramesExecutedGlyph.setCharacterSize(8);
         numberOfFramesExecutedGlyph.setColor(uiTextColor);
         app.draw(numberOfFramesExecutedGlyph);
     }
@@ -505,7 +505,7 @@ void runStep(
         fpsglyph.setFont(*hg::defaultFont);
         fpsglyph.setString(fpsstring.str());
         fpsglyph.setPosition(600, 465);
-        fpsglyph.setCharacterSize(8.f);
+        fpsglyph.setCharacterSize(8);
         fpsglyph.setColor(uiTextColor);
         app.draw(fpsglyph);
     }

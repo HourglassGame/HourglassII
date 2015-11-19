@@ -166,7 +166,7 @@ bool getRaytraceRectangleCollision(
 
 void doGunRaytrace(
     PhysicsObjectType &targetType,
-    int &targetId,
+    std::size_t &targetId,
     Environment const &env,
     int &sx, int &sy, int &px, int &py,
     mt::std::vector<Collision> const &nextPlatform,

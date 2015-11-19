@@ -25,7 +25,7 @@ void DrawGlitzAndWall(
     //window.
     double scalingFactor(std::min(target.getSize().x*100./wall.roomWidth(), target.getSize().y*100./wall.roomHeight()));
     sf::View oldView(target.getView());
-    sf::View scaledView(sf::FloatRect(0.f, 0.f, target.getSize().x/scalingFactor, target.getSize().y/scalingFactor));
+    sf::View scaledView(sf::FloatRect(0.f, 0.f, static_cast<float>(target.getSize().x/scalingFactor), static_cast<float>(target.getSize().y/scalingFactor)));
     target.setView(scaledView);
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
@@ -59,7 +59,7 @@ void drawInventory(
         timeJumpGlyph.setFont(*hg::defaultFont);
         timeJumpGlyph.setString(timeJump.str());
         timeJumpGlyph.setPosition(500, 350);
-        timeJumpGlyph.setCharacterSize(10.f);
+        timeJumpGlyph.setCharacterSize(10);
         timeJumpGlyph.setColor(uiTextColor);
         app.draw(timeJumpGlyph);
     }
@@ -70,7 +70,7 @@ void drawInventory(
         timeReversesGlyph.setFont(*hg::defaultFont);
         timeReversesGlyph.setString(timeReverses.str());
         timeReversesGlyph.setPosition(500, 370);
-        timeReversesGlyph.setCharacterSize(10.f);
+        timeReversesGlyph.setCharacterSize(10);
         timeReversesGlyph.setColor(uiTextColor);
         app.draw(timeReversesGlyph);
     }
@@ -81,7 +81,7 @@ void drawInventory(
         timeGunsGlyph.setFont(*hg::defaultFont);
         timeGunsGlyph.setString(timeGuns.str());
         timeGunsGlyph.setPosition(500, 390);
-        timeGunsGlyph.setCharacterSize(10.f);
+        timeGunsGlyph.setCharacterSize(10);
         timeGunsGlyph.setColor(uiTextColor);
         app.draw(timeGunsGlyph);
     }
@@ -92,23 +92,28 @@ void drawInventory(
         timePausesGlyph.setFont(*hg::defaultFont);
         timePausesGlyph.setString(timeGuns.str());
         timePausesGlyph.setPosition(500, 410);
-        timePausesGlyph.setCharacterSize(10.f);
+        timePausesGlyph.setCharacterSize(10);
         timePausesGlyph.setColor(uiTextColor);
         app.draw(timePausesGlyph);
     }
 }
 
+constexpr double clamp(double val, double min, double max)
+{
+    return val < min ?
+        min
+      : val > max ? max : val;
+}
 
-
-sf::Color asColor(sf::Vector3<double>const &vec) {
-    return sf::Color(vec.x, vec.y, vec.z);
+sf::Color asColor(sf::Vector3<double> const &vec) {
+    return sf::Color(static_cast<sf::Uint8>(clamp(vec.x,0.,1.)*255), static_cast<sf::Uint8>(clamp(vec.y, 0., 1.)*255), static_cast<sf::Uint8>(clamp(vec.z, 0., 1.)*255));
 }
 
 
 sf::Color guyPositionToColor(double xFrac, double yFrac) {
-    static sf::Vector3<double> const posStart(255,0,0);
-    static sf::Vector3<double> const xMax(127,255,0);
-    static sf::Vector3<double> const yMax(128,0,255);
+    static sf::Vector3<double> const posStart(1,0,0);
+    static sf::Vector3<double> const xMax(0.5,1,0);
+    static sf::Vector3<double> const yMax(0.5,0,1);
     
     static sf::Vector3<double> const xDif(xMax - posStart);
     static sf::Vector3<double> const yDif(yMax - posStart);
@@ -138,37 +143,44 @@ void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight)
 void DrawTimelineContents(
     sf::RenderTarget &target,
     hg::TimeEngine const &timeEngine,
-    double height)
+    unsigned int const height)
 {
+    static constexpr int boxLineHeight = 1;
+    static constexpr int guyLineHeight = 4;
     sf::Image timelineContents;
-    timelineContents.create(target.getView().getSize().x, height, sf::Color(0, 0, 0, 0));
-    double const numberOfGuys(timeEngine.getReplayData().size()+1);
-    double const timelineLength(timeEngine.getTimelineLength());
+    timelineContents.create(static_cast<int>(std::round(target.getView().getSize().x)), height, sf::Color(0, 0, 0, 0));
+    //TODO: This can become very slow on HiDPI displays (because the texture width is based on the window width in pixels)(?)
+    //      It also looks bad, due to aliasing artefacts.
+    //      Check; and reconsider the algorithm/implementation.
+    std::size_t const numberOfGuys(timeEngine.getReplayData().size()+1);
+    std::size_t const timelineLength(timeEngine.getTimelineLength());
     hg::UniverseID const universe(timeEngine.getTimelineLength());
     
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         for (hg::GuyOutputInfo const &guy: frame->getView().getGuyInformation()) {
-            double left = frameNumber*target.getView().getSize().x/timelineLength;
-            double top = (height-4)*guy.getIndex()/numberOfGuys;
+            int const left = static_cast<int>(frameNumber*target.getView().getSize().x/timelineLength);
+            std::size_t const top = static_cast<std::size_t>((height-guyLineHeight)*(guy.getIndex()/static_cast<double>(numberOfGuys)));
             
-            double xFrac = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
-            double yFrac = guy.getY()/static_cast<double>(timeEngine.getWall().roomHeight());
+            double const xFrac = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
+            double const yFrac = guy.getY()/static_cast<double>(timeEngine.getWall().roomHeight());
 
             sf::Color const color(guyPositionToColor(xFrac, yFrac));
 
-            int pos(top);
-            for (int const end(top+1); pos != end; ++pos) {
+            std::size_t pos(top);
+            for (std::size_t const bot(top+boxLineHeight); pos != bot; ++pos) {
+                assert(pos <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
                 timelineContents.setPixel(
-                    left, pos,
+                    static_cast<int>(left), static_cast<int>(pos),
                     !guy.getBoxCarrying() ?
                         color :
                         guy.getBoxCarryDirection() == guy.getTimeDirection() ?
                             sf::Color(255, 0, 255)
                           : sf::Color(0, 255, 0));
             }
-            for (int const end(top+4); pos != end; ++pos) {
-                timelineContents.setPixel(left, pos, color);
+            for (std::size_t const bot(top+guyLineHeight); pos != bot; ++pos) {
+                assert(pos <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
+                timelineContents.setPixel(static_cast<int>(left), static_cast<int>(pos), color);
             }
         }
     }
@@ -186,15 +198,18 @@ void DrawWaves(
     int timelineLength,
     double height)
 {
-    std::vector<char> pixelsWhichHaveBeenDrawnIn(target.getView().getSize().x);
+    //TODO: This can become slow on HiDPI displays, because it is determined by the width of the display in pixels(?)
+    //It also looks bad; due to alisaing artefacts.
+    //Come up with a better algorithm.
+    std::vector<char> pixelsWhichHaveBeenDrawnIn(static_cast<std::size_t>(std::round(target.getView().getSize().x)));
     for (hg::FrameUpdateSet const &wave: waves) {
         for (hg::Frame *frame: wave) {
             if (frame) {
-                pixelsWhichHaveBeenDrawnIn[
-                    static_cast<int>(
-                        (static_cast<double>(getFrameNumber(frame))/timelineLength)
-                        *target.getView().getSize().x)
-                    ] = true;
+                auto pixelToDrawIn = static_cast<std::size_t>(
+                    (static_cast<double>(getFrameNumber(frame)) / timelineLength)
+                    *target.getView().getSize().x);
+                assert(pixelToDrawIn < pixelsWhichHaveBeenDrawnIn.size());
+                pixelsWhichHaveBeenDrawnIn[pixelToDrawIn] = true;
             }
             else {
                 assert(false && "I don't think that invalid frames can get updated");
@@ -202,6 +217,7 @@ void DrawWaves(
         }
         bool inWaveRegion = false;
         int leftOfWaveRegion = 0;
+        assert(pixelsWhichHaveBeenDrawnIn.size() <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
         for (int i = 0; i != static_cast<int>(pixelsWhichHaveBeenDrawnIn.size()); ++i) {
             bool pixelOn = pixelsWhichHaveBeenDrawnIn[i];
             if (pixelOn) {
@@ -212,8 +228,8 @@ void DrawWaves(
             }
             else {
                 if (inWaveRegion) {
-                    sf::RectangleShape wavegroup(sf::Vector2f(i-leftOfWaveRegion, height));
-                    wavegroup.setPosition(leftOfWaveRegion, 10.f);
+                    sf::RectangleShape wavegroup(sf::Vector2f(static_cast<float>(i-leftOfWaveRegion), static_cast<float>(height)));
+                    wavegroup.setPosition(static_cast<float>(leftOfWaveRegion), 10.f);
                     wavegroup.setFillColor(sf::Color(250,0,0));
                     target.draw(wavegroup);
                     inWaveRegion = false;
@@ -222,8 +238,8 @@ void DrawWaves(
         }
         //Draw when waves extend to far right.
         if (inWaveRegion) {
-            sf::RectangleShape wavegroup(sf::Vector2f(target.getView().getSize().x-leftOfWaveRegion, height));
-            wavegroup.setPosition(leftOfWaveRegion, 10.f);
+            sf::RectangleShape wavegroup(sf::Vector2f(target.getView().getSize().x-leftOfWaveRegion, static_cast<float>(height)));
+            wavegroup.setPosition(static_cast<float>(leftOfWaveRegion), 10.f);
             wavegroup.setFillColor(sf::Color(250,0,0));
             target.draw(wavegroup);
         }
@@ -233,7 +249,7 @@ void DrawWaves(
 
 void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength) {
     for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5*60) {
-        float left(frameNo/static_cast<double>(timelineLength)*target.getView().getSize().x);
+        float const left(static_cast<float>(frameNo/static_cast<double>(timelineLength)*target.getView().getSize().x));
         sf::RectangleShape tick(sf::Vector2f(1., 10.));
         tick.setFillColor(sf::Color(255,255,0));
         tick.setPosition(sf::Vector2f(left, 0.));
@@ -246,24 +262,24 @@ void DrawTimeline(
     sf::RenderTarget &target,
     hg::TimeEngine const &timeEngine,
     hg::TimeEngine::FrameListList const &waves,
-    hg::FrameID playerFrame,
-    hg::FrameID timeCursor,
-    int timelineLength)
+    hg::FrameID const playerFrame,
+    hg::FrameID const timeCursor,
+    int const timelineLength)
 {
-    double height = 75.;
+    unsigned int const height = 75;
     
     DrawTicks(target, timelineLength);
     
     DrawWaves(target, waves, timelineLength, height);
     
     if (playerFrame.isValidFrame()) {
-        sf::RectangleShape playerLine(sf::Vector2f(3, height));
+        sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height)));
         playerLine.setPosition(playerFrame.getFrameNumber()*target.getView().getSize().x/timelineLength, 10.f);
         playerLine.setFillColor(sf::Color(200,200,0));
         target.draw(playerLine);
     }
     if (timeCursor.isValidFrame()) {
-        sf::RectangleShape timeCursorLine(sf::Vector2f(3, height));
+        sf::RectangleShape timeCursorLine(sf::Vector2f(3.f, static_cast<float>(height)));
         timeCursorLine.setPosition(timeCursor.getFrameNumber()*target.getView().getSize().x/timelineLength, 10.f);
         timeCursorLine.setFillColor(sf::Color(0,0,200));
         target.draw(timeCursorLine);

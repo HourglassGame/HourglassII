@@ -75,8 +75,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
 #endif
 
 
-
-#ifdef _WIN32
+#ifdef _MSC_VER
 /// \brief This class is a derivate of basic_stringbuf which will output all the written data using the OutputDebugString function
 template<typename TChar, typename TTraits = std::char_traits<TChar>>
 class OutputDebugStringBuf : public std::basic_stringbuf<TChar, TTraits, std::allocator<TChar>> {
@@ -102,7 +101,7 @@ public:
         std::lock_guard<std::mutex> lock(_mutex);
         auto syncRet = sync();
         if (c != TTraits::eof()) {
-            _buffer[0] = c;
+            _buffer[0] = static_cast<TChar>(c);
             setp(_buffer.data(), _buffer.data() + 1, _buffer.data() + _buffer.size());
         }
         return syncRet == -1 ? TTraits::eof() : 0;
@@ -154,7 +153,7 @@ void initialseCurrentPath(std::vector<std::string> const &args)
 
 void initialiseStdIO()
 {
-#ifdef _WIN32
+#ifdef _MSC_VER
     static OutputDebugStringBuf<char> charDebugOutput;
     std::cout.rdbuf(&charDebugOutput);
     std::cerr.rdbuf(&charDebugOutput);

@@ -15,8 +15,6 @@
 #include "ImageGlitz.h"
 
 #include <boost/ref.hpp>
-#include <thread>
-#include <future>
 
 #include <iostream>
 
@@ -48,7 +46,8 @@ static int preloadReset(lua_State *L) {
 static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const &extraChunks) {
     //protoPreload = makeTable(extraChunks.name -> load(extraChunks.chunk))
     checkstack(L, 2);
-    lua_createtable(L, 0, extraChunks.size());//[protoPreload]
+    assert(extraChunks.size() <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
+    lua_createtable(L, 0, static_cast<int>(extraChunks.size()));//[protoPreload]
     for (LuaModule const &mod: extraChunks) {
         pushFunctionFromVector(L, mod.chunk, mod.name);//[protoPreload, chunk]
         lua_setfield(L, -2, mod.name.c_str());//[protoPreload]
@@ -148,6 +147,7 @@ Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
 std::string abilityToString(Ability ability)
 {
     switch (ability) {
+    default:
     case Ability::NO_ABILITY:
         assert(false);
         return std::string("noAbility");
@@ -199,7 +199,7 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     lua_getfield(L, -1, "illegalDestination");
     int illegalDestination;
     if (lua_isnumber(L, -1)) {
-        illegalDestination = static_cast<int>(lua_tointeger(L, -1)) - 1;
+        illegalDestination = static_cast<int>(std::round(lua_tonumber(L, -1))) - 1;
         luaassert(illegalDestination >= 0);
     }
     else {
@@ -283,6 +283,7 @@ GlitzPersister toGlitzPersister(lua_State *L) {
     }
     std::cerr << "Unknown Glitz Persister Type: " << type << "\n";
     luaassert("Unknown Glitz Persister Type" && false);
+    return GlitzPersister(nullptr);
 }
 
 Box readBoxField(lua_State *L, char const *fieldName, std::size_t arrivalLocationsSize)
@@ -305,11 +306,11 @@ ObjectAndTime<Box, Frame *> toObjectAndTimeBox(lua_State *L, Frame *currentFrame
 }
 
 PhysicsAffectingStuff
-    DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
-        Frame const *currentFrame,
-        boost::transformed_range<
-            GetBase<TriggerDataConstPtr>,
-            mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
+DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
+    Frame const *currentFrame,
+    boost::transformed_range<
+    GetBase<TriggerDataConstPtr>,
+    mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
 {
     //All indicies viewed or written by lua count starting from 1, and are adjusted
     //before geing used in c++.
@@ -353,7 +354,7 @@ PhysicsAffectingStuff
     //tables with the following format:
     /*
         {
-            --index is used for identifying a portal for the purposes of 
+            --index is used for identifying a portal for the purposes of
             --determining which portals are illegal
             --(in this context `illegal` means that an object may not fall through
             --the portal)
@@ -373,10 +374,10 @@ PhysicsAffectingStuff
             timeDestination = <number>,
             relativeDirection = <boolean>,
             destinationDirection = <'forwards' or 'reverse'>,
-            --nil indicates that no portals should be illegal 
+            --nil indicates that no portals should be illegal
             --for an object upon the arrival of that object
             --at its destination after travelling though this portal
-            illegalDestination = <positive number or nil>, 
+            illegalDestination = <positive number or nil>,
             fallable = <boolean>,
             winner = <boolean>
         }
@@ -411,12 +412,12 @@ PhysicsAffectingStuff
     //Furthermore, the "destinationIndex" field of those tables
     //that need it must contain an integer in the range [1, n]
     //where n is that number of tables in arrivalLocations.
-    
+
     lua_State *L(L_.ptr);
-    
+
     mt::std::vector<mt::std::vector<int>>
         apparentTriggers(calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals));
-        
+
     PhysicsAffectingStuff retv;
 
     LuaStackManager stackSaver(L);
@@ -429,22 +430,24 @@ PhysicsAffectingStuff
     lua_pushinteger(L, getFrameNumber(currentFrame));
     //push `triggerArrivals` argument [
     luaL_checkstack(L, 1, nullptr);
-    lua_createtable(L, static_cast<int>(boost::distance(triggerArrivals)), 0);
+    lua_createtable(L, static_cast<int>(boost::size(triggerArrivals)), 0);
     //create index and table for each trigger
-    int i(0);
-    for (mt::std::vector<int> const &apparentTrigger: apparentTriggers) {
-        ++i;
-        luaL_checkstack(L, 1, nullptr);
-        lua_createtable(L, static_cast<int>(apparentTrigger.size()), 0);
-        //insert each triggerElement into the table for the particular trigger
-        int j(0);
-        for (int triggerElement: apparentTrigger) {
-            ++j;
+    {
+        int i(0);
+        for (mt::std::vector<int> const &apparentTrigger : apparentTriggers) {
+            ++i;
             luaL_checkstack(L, 1, nullptr);
-            lua_pushinteger(L, triggerElement);
-            lua_rawseti(L, -2, j);
+            lua_createtable(L, static_cast<int>(apparentTrigger.size()), 0);
+            //insert each triggerElement into the table for the particular trigger
+            int j(0);
+            for (int triggerElement : apparentTrigger) {
+                ++j;
+                luaL_checkstack(L, 1, nullptr);
+                lua_pushinteger(L, triggerElement);
+                lua_rawseti(L, -2, j);
+            }
+            lua_rawseti(L, -2, i);
         }
-        lua_rawseti(L, -2, i);
     }
     //]
     //call function
@@ -845,37 +848,39 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     //array elements or non-array elements
     luaL_checkstack(L, 1, nullptr);
     lua_createtable(L, static_cast<int>(departures.size()), 0);
-    int i(0);
-    for (
-        ObjectList<Normal> const &departureSection:
-        departures | boost::adaptors::map_values)
     {
-        ++i;
-        luaL_checkstack(L, 1, nullptr);
-        lua_createtable(L, 0, 2);
+        int i(0);
+        for (
+            ObjectList<Normal> const &departureSection :
+            departures | boost::adaptors::map_values)
         {
+            ++i;
             luaL_checkstack(L, 1, nullptr);
-            lua_createtable(L, static_cast<int>(departureSection.getList<Guy>().size()), 0);
-            int j(0);
-            for (Guy const &guy: departureSection.getList<Guy>()) {
-                ++j;
-                pushGuy(L, guy);
-                lua_rawseti(L, -2, j);
+            lua_createtable(L, 0, 2);
+            {
+                luaL_checkstack(L, 1, nullptr);
+                lua_createtable(L, static_cast<int>(departureSection.getList<Guy>().size()), 0);
+                int j(0);
+                for (Guy const &guy : departureSection.getList<Guy>()) {
+                    ++j;
+                    pushGuy(L, guy);
+                    lua_rawseti(L, -2, j);
+                }
+                lua_setfield(L, -2, "guys");
             }
-            lua_setfield(L, -2, "guys");
-        }
-        {
-            luaL_checkstack(L, 1, nullptr);
-            lua_createtable(L, static_cast<int>(departureSection.getList<Box>().size()), 0);
-            int j(0);
-            for (Box const &box: departureSection.getList<Box>()) {
-                ++j;
-                pushBox(L, box);
-                lua_rawseti(L, -2, j);
+            {
+                luaL_checkstack(L, 1, nullptr);
+                lua_createtable(L, static_cast<int>(departureSection.getList<Box>().size()), 0);
+                int j(0);
+                for (Box const &box : departureSection.getList<Box>()) {
+                    ++j;
+                    pushBox(L, box);
+                    lua_rawseti(L, -2, j);
+                }
+                lua_setfield(L, -2, "boxes");
             }
-            lua_setfield(L, -2, "boxes");
+            lua_rawseti(L, -2, i);
         }
-        lua_rawseti(L, -2, i);
     }
     //]
     //call function
@@ -912,13 +917,13 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
             lua_pushinteger(L, k);
             lua_gettable(L, -2);
             luaassert(lua_isnumber(L, -1));
-            value.push_back(lua_tointeger(L, -1));
+            value.push_back(static_cast<int>(lua_tonumber(L, -1)));
             lua_pop(L, 1);
         }
         triggers.push_back(TriggerData(index, value));
         lua_pop(L, 1);
     }
-    luaassert(boost::distance(triggers) <= boost::distance(triggerOffsetsAndDefaults_)
+    luaassert(boost::size(triggers) <= boost::size(triggerOffsetsAndDefaults_)
             && "The trigger system lua must not create more trigger departures than those declared with offsets and defaults");
     //read glitz return values
     //Glitz return value looks like this:

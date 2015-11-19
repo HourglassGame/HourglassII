@@ -14,16 +14,16 @@ struct MenuItem {
 
 static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &menu, int const currentItem) {
     window.clear();
-    int ypos = 100;
+    float ypos = 100.f;
     int i = 0;
     for (auto const& menuItem: menu) {
         sf::Text menuItemGlyph;
         menuItemGlyph.setFont(*hg::defaultFont);
         menuItemGlyph.setString(menuItem.text);
         menuItemGlyph.setColor(i == currentItem ? sf::Color(0, 255, 255) : sf::Color(255,255,255));
-        menuItemGlyph.setPosition(200, ypos);
-        ypos += 50;
-        menuItemGlyph.setCharacterSize(32.f);
+        menuItemGlyph.setPosition(200.f, ypos);
+        ypos += 50.f;
+        menuItemGlyph.setCharacterSize(32);
         window.draw(menuItemGlyph);
         
         ++i;

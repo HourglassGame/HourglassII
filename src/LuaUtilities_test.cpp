@@ -26,7 +26,7 @@ namespace {
     }
     struct tester {
         tester() {
-            ::hg::getTestDriver().registerUnitTest("LuaUtilities_loadFileIntoVector", test_loadFileIntoVectorCRLF);
+            ::hg::getTestDriver().registerUnitTest("LuaUtilities_loadFileIntoVectorCRLF", test_loadFileIntoVectorCRLF);
         }
     } tester;
 }

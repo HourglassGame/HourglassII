@@ -68,7 +68,7 @@ public:
     void resize(std::array<std::size_t, N_dims> const &newSize) {
         //TODO, allow arbitrary resizing etc
         assert(data.empty() && "Missing Feature! For now, we only allow single initialiseation.");
-        std::size_t newStorageSpace = boost::accumulate(newSize, 1, std::multiplies<std::size_t>{});
+        std::size_t newStorageSpace = boost::accumulate(newSize, static_cast<std::size_t>(1), std::multiplies<std::size_t>{});
         data.resize(newStorageSpace);
         size = newSize;
         capacity = newSize;
@@ -121,7 +121,7 @@ public:
 //iter_proxy iterate_over(std::array<bool, dimensions>, multi_vector<T, dimensions>)
 //
 
-}//namespace HG
+}//namespace hg
 
 
 #endif //HG_MULTI_VECTOR_H

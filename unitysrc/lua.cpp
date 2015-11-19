@@ -4,9 +4,6 @@
 //luaconf.h is protected by an include guard).
 #define LUA_LIB
 #define LUA_CORE
-#define lobject_c
-#define lvm_c
-#define ltable_c
 
 #include "../src/lua/luaconf.h"
 

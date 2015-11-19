@@ -16,7 +16,7 @@ static void drawLoadingScreen(hg::RenderWindow &window) {
     loadingGlyph.setString("Loading Level...");
     loadingGlyph.setColor(sf::Color(255,255,255));
     loadingGlyph.setPosition(520, 450);
-    loadingGlyph.setCharacterSize(12.f);
+    loadingGlyph.setCharacterSize(12);
     window.clear();
     window.draw(loadingGlyph);
     window.display();

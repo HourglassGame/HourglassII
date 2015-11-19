@@ -104,7 +104,7 @@ void run_post_level_scene(
                 replayGlyph.setString("You Won -- Replay");
                 replayGlyph.setColor(sf::Color(255,0,0));
                 replayGlyph.setPosition(480, 32);
-                replayGlyph.setCharacterSize(16.f);
+                replayGlyph.setCharacterSize(16);
                 window.draw(replayGlyph);
             }
             {
@@ -113,7 +113,7 @@ void run_post_level_scene(
                 replayGlyph.setString(", . / keys control the displayed time");
                 replayGlyph.setColor(sf::Color(255,0,0));
                 replayGlyph.setPosition(380, 64);
-                replayGlyph.setCharacterSize(16.f);
+                replayGlyph.setCharacterSize(16);
                 window.draw(replayGlyph);
             }
             //Fast-Forward
@@ -212,7 +212,7 @@ void runStep(
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
         currentPlayerGlyph.setPosition(580, 433);
-        currentPlayerGlyph.setCharacterSize(10.f);
+        currentPlayerGlyph.setCharacterSize(10);
         currentPlayerGlyph.setColor(uiTextColor);
         app.draw(currentPlayerGlyph);
     }
@@ -223,7 +223,7 @@ void runStep(
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
         frameNumberGlyph.setPosition(580, 445);
-        frameNumberGlyph.setCharacterSize(8.f);
+        frameNumberGlyph.setCharacterSize(8);
         frameNumberGlyph.setColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
@@ -234,7 +234,7 @@ void runStep(
             for (
                 int num:
                 framesExecutedList
-                | boost::adaptors::sliced(1, boost::distance(framesExecutedList)))
+                | boost::adaptors::sliced(1, boost::size(framesExecutedList)))
             {
                 numberOfFramesExecutedString << ":" << num;
             }

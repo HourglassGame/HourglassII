@@ -138,9 +138,9 @@ template<typename Variant, typename Head> struct MoveVisitor<Variant, Head> {
     Variant *o;
     MoveVisitor(Variant &&o) : o(&o) {}
     void operator()(Head &h) const noexcept {
-        static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
+        static_assert(noexcept(new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()))),
                       "Types used in Variant must have no-throw move constructor");
-        new ((void*)&h) Head(std::move(o->template get<Head>()));
+        new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()));
     }
 };
 template<typename Variant, typename Head, typename... Types>
@@ -149,9 +149,9 @@ struct MoveVisitor<Variant, Head, Types...> : MoveVisitor<Variant, Types...> {
     using MoveVisitor<Variant, Types...>::operator();
     using MoveVisitor<Variant, Types...>::o;
     void operator()(Head& h) const noexcept {
-        static_assert(noexcept(new ((void*)&h) Head(std::move(o->template get<Head>()))),
+        static_assert(noexcept(new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()))),
                       "Types used in Variant must have no-throw move constructor");
-        new ((void*)&h) Head(std::move(o->template get<Head>()));
+        new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()));
     }
 };
 
@@ -232,7 +232,7 @@ class variant final {
         variant_detail::max_size<Types...>::value,
         variant_detail::max_align<Types...>::value>::type storage_t;
     
-    typedef typename variant_detail::UnionTagType<sizeof... (Types)> tag_t;
+    typedef variant_detail::UnionTagType<sizeof... (Types)> tag_t;
     
     storage_t storage;
     tag_t currentMember; //Index in Types... of current member
@@ -412,13 +412,13 @@ private:
     //Dummy parameter since templates cannot be fully specialised in class scope.
     template<typename, typename... ToLookFor> struct active_struct;
     template<typename unused> struct active_struct<unused> {
-        bool operator()(typename variant_detail::UnionTagType<sizeof... (Types)> currentMember) const {return false;}
+        bool operator()(variant_detail::UnionTagType<sizeof... (Types)> currentMember_) const {return false;}
     };
     template<typename unused, typename Head, typename... ToLookFor>
     struct active_struct<unused, Head, ToLookFor...> {
-        bool operator()(typename variant_detail::UnionTagType<sizeof... (Types)> currentMember) const {
-            return variant_detail::IndexOf<Head, Types...>::value == currentMember
-                || active_struct<unused, ToLookFor...>{}(currentMember);
+        bool operator()(variant_detail::UnionTagType<sizeof... (Types)> currentMember_) const {
+            return variant_detail::IndexOf<Head, Types...>::value == currentMember_
+                || active_struct<unused, ToLookFor...>{}(currentMember_);
         }
     };
 public:

@@ -63,7 +63,7 @@ static void recursive_getfield(lua_State *L, int index, char const *name) {
     bool firstTime(true);
     int absidx(lua_absindex(L, index));
     for (split_iterator<char const*> it(name, name + std::strlen(name), first_finder(".")); !it.eof(); ++it) {
-        lua_pushlstring(L, boost::begin(*it), boost::distance(*it));//[..., t, ..., x?, str]
+        lua_pushlstring(L, boost::begin(*it), boost::size(*it));//[..., t, ..., x?, str]
         lua_gettable(L, firstTime ? absidx : -2); //[..., t, ..., x?, v]
         if (!firstTime) lua_replace(L, -2); //[..., t, ..., v]
         firstTime = false;

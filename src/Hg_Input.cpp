@@ -1,6 +1,8 @@
 #include "Hg_Input.h"
 #include "InputList.h"
 #include "Maths.h"
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
 namespace hg
 {
 static void updatePress(int &var, bool inputState)
@@ -59,8 +61,8 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXOfE
     if (input.isMouseButtonPressed(sf::Mouse::XButton2)) {
         mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
-    mouseX = input.getMousePosition().x*mouseScale;
-    mouseY = input.getMousePosition().y*mouseScale;
+    mouseX = static_cast<int>(std::round(input.getMousePosition().x*mouseScale));
+    mouseY = static_cast<int>(std::round(input.getMousePosition().y*mouseScale));
 }
 
 InputList Input::AsInputList() const

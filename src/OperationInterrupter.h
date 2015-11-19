@@ -1,7 +1,16 @@
 #ifndef HG_OPERATION_INTERRUPTER_H
 #define HG_OPERATION_INTERRUPTER_H
 #include <tbb/spin_mutex.h>
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4457)
+#endif
 #include "mt/boost/container/stable_vector.hpp"
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
 #include "move_function.h"
 #include <boost/swap.hpp>
 

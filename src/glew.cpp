@@ -33,6 +33,10 @@ extern "C" {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpedantic"
 #endif
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4191 )
+#endif
 #include "GL/glew.h"
 
 #if defined(_WIN32)
@@ -18128,4 +18132,8 @@ GLboolean glxewIsSupported (const char* name)
 }
 #ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
+#ifdef _MSC_VER
+#pragma warning(pop)
 #endif

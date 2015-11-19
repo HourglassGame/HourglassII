@@ -42,16 +42,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GLEW_BUILD;NOMINMAX;WIN32;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;BOOST_THREAD_VERSION=4;_DEBUG;_WINDOWS;_UNICODE%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
@@ -62,6 +62,13 @@
       <AdditionalIncludeDirectories>..\..\..\..\ext\boost\include;..\..\..\..\ext\SFML\include;..\..\..\..\ext\tbb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
       <EnablePREfast>false</EnablePREfast>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
+      <DisableSpecificWarnings>4100;4127;4191;4242;4265;4365;4371;4373;4514;4571;4574;4619;4623;4625;4626;4647;4668;4710;4711;4800;4820;4886;4913;5026;5027</DisableSpecificWarnings>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -72,7 +79,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -85,7 +92,13 @@
       </PrecompiledHeaderOutputFile>
       <AdditionalIncludeDirectories>..\..\..\..\ext\boost\include;..\..\..\..\ext\SFML\include;..\..\..\..\ext\tbb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableLanguageExtensions>false</DisableLanguageExtensions>
-      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <FloatingPointModel>Strict</FloatingPointModel>
+      <UseUnicodeForAssemblerListing>true</UseUnicodeForAssemblerListing>
+      <DisableSpecificWarnings>4100;4127;4191;4242;4265;4365;4371;4373;4514;4571;4574;4619;4623;4625;4626;4647;4668;4710;4711;4800;4820;4886;4913;5026;5027</DisableSpecificWarnings>
+      <ControlFlowGuard>Guard</ControlFlowGuard>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -316,38 +329,71 @@
     <ClCompile Include="..\..\..\..\src\LuaSandbox.cpp" />
     <ClCompile Include="..\..\..\..\src\LuaUtilities.cpp" />
     <ClCompile Include="..\..\..\..\src\LuaUtilities_test.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lapi.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lauxlib.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\lapi.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;4702;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;4702;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\lua\lauxlib.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\lbaselib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lbitlib.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lcode.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\lcode.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\lcorolib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lctype.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\ldblib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\ldebug.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\ldo.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\ldo.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\ldump.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lfunc.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lgc.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\lgc.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\linit.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\liolib.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\liolib.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\llex.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lmathlib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lmem.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\loadlib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lobject.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lopcodes.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\loslib.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lparser.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\loslib.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4702;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4702;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\lua\lparser.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\lstate.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lstring.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lstrlib.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\lstring.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\src\lua\lstrlib.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;4267;4310;4774;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;4267;4310;4774;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\ltable.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\ltablib.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\ltm.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lundump.cpp" />
     <ClCompile Include="..\..\..\..\src\lua\lutf8lib.cpp" />
-    <ClCompile Include="..\..\..\..\src\lua\lvm.cpp" />
+    <ClCompile Include="..\..\..\..\src\lua\lvm.cpp">
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\lzio.cpp" />
     <ClCompile Include="..\..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\..\src\MainMenuScene.cpp" />

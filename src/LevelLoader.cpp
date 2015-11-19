@@ -71,6 +71,7 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path
     else {
         std::cerr << type << std::endl;
         luaassert(false && "unrecognised triggerSystem type");
+        return TriggerSystem(std::unique_ptr<TriggerSystemImplementation>(nullptr));
     }
 }
 

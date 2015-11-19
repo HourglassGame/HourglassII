@@ -15,11 +15,11 @@ namespace hg {
 
 
 namespace {
-float magnitude(sf::Vector2f vec) {
+float magnitude(sf::Vector2f const vec) {
     return std::sqrt(vec.x*vec.x+vec.y*vec.y);
 }
 
-sf::Vector2f normal(sf::Vector2f vec) {
+sf::Vector2f normal(sf::Vector2f const vec) {
     sf::Vector2f direction(vec.y, -vec.x);
     assert(magnitude(direction));
     return direction/magnitude(direction);
@@ -40,17 +40,17 @@ public:
     resources(&resources),
     soundsToPlay()
     {}
-    virtual void playSound(std::string const &key, int n) override {
+    virtual void playSound(std::string const &key, int const n) override {
         soundsToPlay.push_back(AudioGlitzObject(key,n));
     }
-    virtual void drawRect(float x, float y, float width, float height, unsigned colour) override
+    virtual void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
     {
         sf::RectangleShape rect(sf::Vector2f(width, height));
         rect.setPosition(x, y);
         rect.setFillColor(interpretAsColour(colour));
         target->draw(rect);
     }
-    virtual void drawLine(float xa, float ya, float xb, float yb, float width, unsigned colour) override
+    virtual void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
     {
         sf::Vector2f const pa(xa, ya);
         sf::Vector2f const pb(xb, yb);
@@ -66,17 +66,17 @@ public:
             target->draw(line);
         }
     }
-    virtual void drawText(std::string const &text, float x, float y, float size, unsigned colour) override
+    virtual void drawText(std::string const &text, float const x, float const y, float const size, unsigned const colour) override
     {
         sf::Text glyphs;
         glyphs.setFont(*defaultFont);
         glyphs.setString(sf::String(text));
         glyphs.setPosition(x, y);
-        glyphs.setCharacterSize(size);
+        glyphs.setCharacterSize(static_cast<unsigned>(size));
         glyphs.setColor(interpretAsColour(colour));
         target->draw(glyphs);
     }
-    virtual void drawImage(std::string const &key, float x, float y, float width, float height) override
+    virtual void drawImage(std::string const &key, float const x, float const y, float const width, float const height) override
     {
         std::map<std::string, sf::Image>::const_iterator it(resources->images.find(key));
         if (it == resources->images.end()) {
@@ -90,7 +90,7 @@ public:
         sprite.setScale(sf::Vector2f(width*1.f/tex.getSize().x, height*1.f/tex.getSize().y));
         target->draw(sprite);
     }
-    virtual void flushFrame() {
+    virtual void flushFrame() override {
         audioPlayingState->runStep(audioGlitzManager->updatePlayingState(soundsToPlay));
     }
 private:

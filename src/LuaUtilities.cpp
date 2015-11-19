@@ -25,6 +25,9 @@ std::vector<char> loadFileIntoVector(
     std::vector<char> vec;
     boost::filesystem::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
+    //Need to use binary mode; otherwise CRLF line endings count as 2 for
+    //`length` calculation but only 1 for `file.read` (on some platforms),
+    //and we get undefined  behaviour when trying to read `length` characters.
     file.open(filename, std::ifstream::in | std::ifstream::binary);
     file.seekg(0, std::ios::end);
     std::streampos length(file.tellg());
@@ -112,8 +115,10 @@ int to<int>(lua_State *L, int index)
     lua_Number num = lua_tonumber(L, index);
 
     lua_Integer integ = 0;
+
     int is_integer = lua_numbertointeger(num, &integ);
     assert(is_integer);
+    static_cast<void>(is_integer);
     //Note that by default, lua_Integer has a much larger range than int,
     //so this conversion could overflow. This need to be improved.
     return static_cast<int>(integ);
@@ -131,10 +136,10 @@ std::vector<std::string> to<std::vector<std::string> >(lua_State *L, int index) 
     
     assert(lua_istable(L, index));
     lua_len(L, index);
-    int const tablelen(lua_tointeger(L, -1));
+    lua_Integer const tablelen(lua_tointeger(L, -1));
     lua_pop(L, 1);
     std::vector<std::string> retv(tablelen);
-    for (int i(0), end(tablelen); i != end ; ++i) {
+    for (lua_Integer i(0), end(tablelen); i != end ; ++i) {
         lua_rawgeti(L, index, i+1);
         retv[i] = to<std::string>(L, -1);
         lua_pop(L, 1);
@@ -278,6 +283,7 @@ FacingDirection to<FacingDirection>(lua_State *L, int index)
     else {
         std::cerr << facingString << std::endl;
         assert(false && "invalid facing direction string");
+        return FacingDirection::LEFT;
     }
 }
 
@@ -289,7 +295,7 @@ mt::std::map<Ability, int>
     mt::std::map<Ability, int> retv;
     lua_pushnil(L);
     while (lua_next(L, index - 1) != 0) {
-        lua_Integer abilityQuantity(lua_tointeger(L, -1));
+        auto abilityQuantity(std::round(lua_tonumber(L, -1)));
         assert(abilityQuantity >= -1);
         retv[to<Ability>(L, -2)] = static_cast<int>(abilityQuantity);
         lua_pop(L, 1);
@@ -313,7 +319,7 @@ Guy to<Guy>(lua_State* L, int index)
     lua_getfield(L, index, "illegalPortal");
     if (!lua_isnil(L, -1)) {
         assert(lua_isnumber(L, -1));
-        illegalPortal = static_cast<int>(lua_tointeger(L, -1));
+        illegalPortal = static_cast<int>(std::round(lua_tonumber(L, -1)));
     }
     lua_pop(L, 1);
     int arrivalBasis(-1);
@@ -478,6 +484,7 @@ Glitz to<Glitz>(lua_State *L, int index)
     }
     std::cerr << "Unknown Glitz Type: " << type << "\n";
     luaassert("Unknown Glitz Type" && false);
+    return Glitz(nullptr);
 }
 
 unsigned readColourField(lua_State *L, char const *fieldName)

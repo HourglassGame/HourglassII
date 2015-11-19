@@ -20,10 +20,10 @@ bool chunkwise_less(T const &l, T const &r) {
         return false;
     }
     else if (std::isdigit(*boost::begin(l)) && std::isdigit(*boost::begin(r))) {
-        if (boost::distance(l) == boost::distance(r)) {
+        if (boost::size(l) == boost::size(r)) {
             return boost::range::lexicographical_compare(l, r);
         }
-        return boost::distance(l) < boost::distance(r);
+        return boost::size(l) < boost::size(r);
     }
     else {
         return boost::algorithm::ilexicographical_compare(l, r);

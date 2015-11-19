@@ -16,14 +16,14 @@ bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_
     //The arrivals are sorted
     //The current player arrival can be either the last arrival, or the second last arrival.
     //If it is the second last arrival, then the last arrival must be the next player arrival.
-    if (boost::distance(guyArrivals) == 0) {
+    if (boost::size(guyArrivals) == 0) {
         return false;
     }
     else {
         std::size_t lastGuyIndex((boost::end(guyArrivals) - 1)->getIndex());
         if (lastGuyIndex < playerInputSize - 1) return false;
         if (lastGuyIndex == playerInputSize - 1) return true;
-        if (boost::distance(guyArrivals) == 1) return false;
+        if (boost::size(guyArrivals) == 1) return false;
         return (boost::end(guyArrivals) - 2)->getIndex() == playerInputSize - 1;
     }
 }
@@ -195,18 +195,18 @@ void guyStep(
     mt::std::vector<char> finishedWith;
     mt::std::vector<FacingDirection> facing;
 
-    x.reserve(boost::distance(guyArrivalList));
-    y.reserve(boost::distance(guyArrivalList));
-    xspeed.reserve(boost::distance(guyArrivalList));
-    yspeed.reserve(boost::distance(guyArrivalList));
-    supported.reserve(boost::distance(guyArrivalList));
-    supportedSpeed.reserve(boost::distance(guyArrivalList));
-    finishedWith.reserve(boost::distance(guyArrivalList));
-    facing.reserve(boost::distance(guyArrivalList));
+    x.reserve(boost::size(guyArrivalList));
+    y.reserve(boost::size(guyArrivalList));
+    xspeed.reserve(boost::size(guyArrivalList));
+    yspeed.reserve(boost::size(guyArrivalList));
+    supported.reserve(boost::size(guyArrivalList));
+    supportedSpeed.reserve(boost::size(guyArrivalList));
+    finishedWith.reserve(boost::size(guyArrivalList));
+    facing.reserve(boost::size(guyArrivalList));
 
     // position, velocity, collisions
     // check collisions in Y direction then do the same in X direction
-    for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
+    for (std::size_t i(0), isize(boost::size(guyArrivalList)); i < isize; ++i)
     {
         // initialise positions with arrivalBasis
         if (guyArrivalList[i].getArrivalBasis() == -1)
@@ -516,14 +516,14 @@ void guyStep(
         }
     }
     
-    assert(boost::distance(x) == boost::distance(guyArrivalList));
-    assert(boost::distance(y) == boost::distance(guyArrivalList));
-    assert(boost::distance(xspeed) == boost::distance(guyArrivalList));
-    assert(boost::distance(yspeed) == boost::distance(guyArrivalList));
-    assert(boost::distance(supported) == boost::distance(guyArrivalList));
-    assert(boost::distance(supportedSpeed) == boost::distance(guyArrivalList));
-    assert(boost::distance(finishedWith) == boost::distance(guyArrivalList));
-    assert(boost::distance(facing) == boost::distance(guyArrivalList));
+    assert(boost::size(x) == boost::size(guyArrivalList));
+    assert(boost::size(y) == boost::size(guyArrivalList));
+    assert(boost::size(xspeed) == boost::size(guyArrivalList));
+    assert(boost::size(yspeed) == boost::size(guyArrivalList));
+    assert(boost::size(supported) == boost::size(guyArrivalList));
+    assert(boost::size(supportedSpeed) == boost::size(guyArrivalList));
+    assert(boost::size(finishedWith) == boost::size(guyArrivalList));
+    assert(boost::size(facing) == boost::size(guyArrivalList));
     
 
     mt::std::vector<char> carry(guyArrivalList.size());
@@ -533,7 +533,7 @@ void guyStep(
     
     // Do movement for pause guys. Do box manipulation for all guys.
     // This is to make pause guys not affect their past selves with box manipulation.
-    for (std::size_t i(0), isize(boost::distance(guyArrivalList)); i < isize; ++i)
+    for (std::size_t i(0), isize(boost::size(guyArrivalList)); i < isize; ++i)
     {
         if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getTimePaused())
         {
@@ -976,9 +976,9 @@ void guyStep(
         }
     }
     
-    assert(boost::distance(carry) == boost::distance(guyArrivalList));
-    assert(boost::distance(carrySize) == boost::distance(guyArrivalList));
-    assert(boost::distance(carryDirection) == boost::distance(guyArrivalList));
+    assert(boost::size(carry) == boost::size(guyArrivalList));
+    assert(boost::size(carrySize) == boost::size(guyArrivalList));
+    assert(boost::size(carryDirection) == boost::size(guyArrivalList));
 
     mt::std::vector<int> newWidth(guyArrivalList.size());
     mt::std::vector<int> newHeight(guyArrivalList.size());
@@ -1339,9 +1339,9 @@ void guyStep(
         {
             // Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
             mt::std::vector<char> shootable;
-            shootable.reserve(boost::distance(guyArrivalList));
+            shootable.reserve(boost::size(guyArrivalList));
             
-            for (std::size_t j(0), size(guyArrivalList.size()); j != size; ++j)
+            for (std::size_t j(0); j != size; ++j)
             {
                 shootable.push_back(!finishedWith[j] && i != j && !newTimePaused[i]);
             }
@@ -1355,7 +1355,7 @@ void guyStep(
             
             // Return values from doGunRaytrace
             PhysicsObjectType targetType = NONE;
-            int targetId = -1;
+            std::size_t targetId = std::numeric_limits<std::size_t>::max();
             
             doGunRaytrace(
                 targetType, targetId, env, 
@@ -1369,6 +1369,8 @@ void guyStep(
                 
             if (targetType == GUY)
             {
+                assert(targetId != std::numeric_limits<std::size_t>::max());
+                assert(targetId >= 0 && targetId < boost::size(guyArrivalList));
                 nextGuy.push_back(
                     ObjectAndTime<Guy, Frame *>(
                         Guy(
@@ -1400,10 +1402,17 @@ void guyStep(
             }
             else if (targetType == BOX)
             {
+                assert(targetId != std::numeric_limits<std::size_t>::max());
+                assert(targetId >= 0 && targetId < boost::size(nextBox));
                 nextBox[targetId].frame = targetTime;
                 nextBoxNormalDeparture[targetId] = false;
             }
-            
+            else
+            {
+                assert(targetType == NONE);
+                assert(targetId == std::numeric_limits<std::size_t>::max());
+            }
+
             if (timeGun->second > 0)
             {
                 newPickups[i][Ability::TIME_GUN] = timeGun->second - 1;
@@ -1498,14 +1507,14 @@ void boxCollisionAlogorithm(
     mt::std::vector<char> squished(oldBoxList.size());
 
     // Check with triggers if the box should arrive at all
-    for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
         if (!triggerFrameState.shouldArrive(oldBoxList[i])) {
             squished[i] = true;
         }
     }
 
     // Inititalise box location with arrival basis
-    for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
         if (oldBoxList[i].getArrivalBasis() == -1) {
             xTemp[i] = oldBoxList[i].getX();
             yTemp[i] = oldBoxList[i].getY();
@@ -1536,7 +1545,7 @@ void boxCollisionAlogorithm(
     }
 
     // Destroy boxes that are overlapping with platforms and walls
-    for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
         if (!squished[i]) {
             if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i]+size[i]-1, yTemp[i])
                     && env.wall.at(xTemp[i], yTemp[i]+size[i]-1) && env.wall.at(xTemp[i]+size[i], yTemp[i]+size[i]-1))
@@ -1580,28 +1589,29 @@ void boxCollisionAlogorithm(
     }
 
     // Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-    mt::std::vector<char> toBeSquished(oldBoxList.size());
+    {
+        mt::std::vector<char> toBeSquished(oldBoxList.size());
 
-    for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
-        if (!squished[i]) {
-            for (std::size_t j(0); j < i; ++j) {
-                if (!squished[j]) {
-                    if (IntersectingRectanglesExclusive(
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+            if (!squished[i]) {
+                for (std::size_t j(0); j < i; ++j) {
+                    if (!squished[j]) {
+                        if (IntersectingRectanglesExclusive(
                             xTemp[i], yTemp[i], size[i], size[i],
                             xTemp[j], yTemp[j], size[j], size[j]))
-                    {
-                        toBeSquished[i] = true;
-                        toBeSquished[j] = true;
+                        {
+                            toBeSquished[i] = true;
+                            toBeSquished[j] = true;
+                        }
                     }
                 }
             }
         }
-    }
 
-    for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
-        if (toBeSquished[i]) squished[i] = true;
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+            if (toBeSquished[i]) squished[i] = true;
+        }
     }
-
     // do all the other things until there are no more things to do
     bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
     bool firstTimeThrough(true);
@@ -1612,7 +1622,7 @@ void boxCollisionAlogorithm(
         if (count > 10)
         {
             std::cerr << count << "\n";
-            for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+            for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
             {
                 std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
                         << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
@@ -1634,7 +1644,7 @@ void boxCollisionAlogorithm(
         thereAreStillThingsToDo = false;
 
         //*** collide boxes with platforms and walls to discover the hard bounds on the system ***//
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i) {
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
             if (!squished[i]) {
 
                 //std::cerr << "Box " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
@@ -1904,7 +1914,7 @@ void boxCollisionAlogorithm(
         }
 
         // Store position before box collision
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -1915,7 +1925,7 @@ void boxCollisionAlogorithm(
         }
 
         // Now make the map of vertical collisions
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -1949,7 +1959,7 @@ void boxCollisionAlogorithm(
         // propagate through vertical collision links to reposition and explode
         mt::std::vector<char> toBeSquished(oldBoxList.size());
 
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -1965,7 +1975,7 @@ void boxCollisionAlogorithm(
             }
         }
 
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (toBeSquished[i])
             {
@@ -1974,7 +1984,7 @@ void boxCollisionAlogorithm(
         }
 
         // Now make the map of horizontal collisions
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -2005,12 +2015,12 @@ void boxCollisionAlogorithm(
         }
 
         // propagate through horizontal collision links to reposition and explode
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             toBeSquished[i] = false;
         }
 
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -2025,7 +2035,7 @@ void boxCollisionAlogorithm(
             }
         }
 
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (toBeSquished[i])
             {
@@ -2034,7 +2044,7 @@ void boxCollisionAlogorithm(
         }
 
         // Collide boxes vertically which are still overlapping. These will be the unbounded ones
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -2044,7 +2054,7 @@ void boxCollisionAlogorithm(
         }
 
         // Collide them horizontally
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -2054,7 +2064,7 @@ void boxCollisionAlogorithm(
         }
 
         // If anything moved then rerun box collision until nothing moves.
-        for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (!squished[i])
             {
@@ -2070,7 +2080,7 @@ void boxCollisionAlogorithm(
     }
 
     // Send boxes
-    for (std::size_t i(0), isize(boost::distance(oldBoxList)); i < isize; ++i)
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
     {
         if (!squished[i])
         {
