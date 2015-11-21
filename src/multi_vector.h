@@ -76,14 +76,12 @@ public:
     }
     void insert(std::size_t axis, std::size_t position/*=end,array_with_compatible_size newValues=array_of_default_T*/);
     
-    auto operator[](std::size_t i)
-   -> decltype(op_index_proxy<N_dims,T>{data.data(), this}[i])
+    auto operator[](std::size_t i) -> decltype(auto)
     {
         return op_index_proxy<N_dims,T>{data.data(), this}[i];
     }
     
-    auto operator[](std::size_t i) const
-   -> decltype(op_index_proxy<N_dims,T const>{data.data(), this}[i])
+    auto operator[](std::size_t i) const -> decltype(auto)
     {
         return op_index_proxy<N_dims,T const>{data.data(), this}[i];
     }
