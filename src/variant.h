@@ -116,8 +116,8 @@ template<typename Variant, typename Head> struct CopyVisitor<Variant, Head> {
     typedef void result_type;
     Variant const *o;
     CopyVisitor(Variant const &o) : o(&o) {}
-    void operator()(Head const &h) const {
-        new ((void*)&h) Head(o->template get<Head>());
+    void operator()(Head &h) const {
+        new (static_cast<void*>(&h)) Head(o->template get<Head>());
     }
 };
 template<typename Variant, typename Head, typename... Types>
@@ -125,8 +125,8 @@ struct CopyVisitor<Variant, Head, Types...> : CopyVisitor<Variant, Types...> {
     CopyVisitor(Variant const &o) : CopyVisitor<Variant, Types...>(o) {}
     using CopyVisitor<Variant, Types...>::operator();
     using CopyVisitor<Variant, Types...>::o;
-    void operator()(Head const &h) const {
-        new ((void*)&h) Head(o->template get<Head>());
+    void operator()(Head &h) const {
+        new (static_cast<void*>(&h)) Head(o->template get<Head>());
     }
 };
 
@@ -148,7 +148,7 @@ struct MoveVisitor<Variant, Head, Types...> : MoveVisitor<Variant, Types...> {
     MoveVisitor(Variant&& o) : MoveVisitor<Variant, Types...>(std::move(o)) {}
     using MoveVisitor<Variant, Types...>::operator();
     using MoveVisitor<Variant, Types...>::o;
-    void operator()(Head& h) const noexcept {
+    void operator()(Head &h) const noexcept {
         static_assert(noexcept(new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()))),
                       "Types used in Variant must have no-throw move constructor");
         new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()));
@@ -260,14 +260,14 @@ public:
         scrub_storage();
 #endif
         currentMember = static_cast<tag_t>(o.which());
-        visit(variant_detail::CopyVisitor<variant, Types...>{o});
+        visit(CopyVisitor_t{o});
     }
     variant(variant &&o) noexcept {
 #ifndef NDEBUG
         scrub_storage();
 #endif
         currentMember = static_cast<tag_t>(o.which());
-        visit(variant_detail::MoveVisitor<variant, Types...>{std::move(o)});
+        visit(MoveVisitor_t{std::move(o)});
     }
 
     //Move+Copy Assignment
@@ -278,12 +278,12 @@ public:
         return *this;
     }
     variant &operator=(variant &&o) noexcept {
-        visit(variant_detail::DtorVisitor<Types...>());
+        visit(DtorVisitor_t());
 #ifndef NDEBUG
         scrub_storage();
 #endif
         currentMember = static_cast<tag_t>(o.which());
-        visit(variant_detail::MoveVisitor<variant, Types...>{std::move(o)});
+        visit(MoveVisitor_t{std::move(o)});
         return *this;
     }
 
@@ -323,7 +323,7 @@ public:
     }
     
     ~variant() noexcept {
-        visit(variant_detail::DtorVisitor<Types...>());
+        visit(DtorVisitor_t{});
     }
 
 //Accessors:
@@ -340,7 +340,7 @@ private:
     
     template<typename T, typename... V>
     void reset_impl(tag<T>, V &&...values) noexcept {
-        visit(variant_detail::DtorVisitor<Types...>());
+        visit(DtorVisitor_t{});
 #ifndef NDEBUG
         scrub_storage();
 #endif
