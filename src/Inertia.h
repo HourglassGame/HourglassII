@@ -6,6 +6,7 @@
 namespace hg {
 class Inertia {
     public:
+    Inertia() = default;
     void reset() {
         frame_ = FrameID();
     }

@@ -19,6 +19,7 @@ bool chunkwise_less(T const &l, T const &r) {
     else if (boost::empty(r)) {
         return false;
     }
+    //TODO: Correctly handle non-ascii encoding with isdigit
     else if (std::isdigit(*boost::begin(l)) && std::isdigit(*boost::begin(r))) {
         if (boost::size(l) == boost::size(r)) {
             return boost::range::lexicographical_compare(l, r);

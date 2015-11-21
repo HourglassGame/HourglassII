@@ -153,8 +153,8 @@ public:
                 >
         > triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
-    virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const;
-    virtual TriggerSystemImplementation *clone() const
+    virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const override;
+    virtual TriggerSystemImplementation *clone() const override
     {
         return new DirectLuaTriggerSystem(*this);
     }

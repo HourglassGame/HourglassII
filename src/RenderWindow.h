@@ -54,12 +54,12 @@ struct RenderWindow {
                     //Nothing to do.
                 break;
                 case sf::Event::KeyPressed:             ///< A key was pressed (data in event.key)
-                    if (0 <= event.key.code && (std::size_t)event.key.code < pressedKeys.size()) {
+                    if (0 <= event.key.code && static_cast<std::size_t>(event.key.code) < pressedKeys.size()) {
                         pressedKeys[event.key.code] = true;
                     }
                 break;
                 case sf::Event::KeyReleased:            ///< A key was released (data in event.key)
-                    if (0 <= event.key.code && (std::size_t)event.key.code < pressedKeys.size()) {
+                    if (0 <= event.key.code && static_cast<std::size_t>(event.key.code) < pressedKeys.size()) {
                         pressedKeys[event.key.code] = false;
                     }
                 break;
@@ -67,12 +67,12 @@ struct RenderWindow {
                     //Nothing to do.
                 break;
                 case sf::Event::MouseButtonPressed:     ///< A mouse button was pressed (data in event.mouseButton)
-                    if (0 <= event.mouseButton.button && (std::size_t)event.mouseButton.button < pressedMouseButtons.size()) {
+                    if (0 <= event.mouseButton.button && static_cast<std::size_t>(event.mouseButton.button) < pressedMouseButtons.size()) {
                         pressedMouseButtons[event.mouseButton.button] = true;
                     }
                 break;
                 case sf::Event::MouseButtonReleased:    ///< A mouse button was released (data in event.mouseButton)
-                    if (0 <= event.mouseButton.button && (std::size_t)event.mouseButton.button < pressedMouseButtons.size()) {
+                    if (0 <= event.mouseButton.button && static_cast<std::size_t>(event.mouseButton.button) < pressedMouseButtons.size()) {
                         pressedMouseButtons[event.mouseButton.button] = false;
                     }
                 break;

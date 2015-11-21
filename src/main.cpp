@@ -37,6 +37,7 @@ namespace {
             std::string const filename("Arial.ttf");
             bool const fontLoaded(defaultFontHolder.loadFromFile(filename));
             assert(fontLoaded);
+            static_cast<void>(fontLoaded);
             hg::defaultFont = &defaultFontHolder;
         }
     private:
@@ -68,7 +69,11 @@ int main(int argc, char *argv[])
     return run_main(args);
 }
 #ifdef WIN32
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, INT)
+int WINAPI WinMain(
+    _In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPSTR lpCmdLine,
+    _In_ int nShowCmd)
 {
     return main(__argc, __argv);
 }
@@ -87,7 +92,7 @@ public:
 
     static_assert(std::is_same<TChar, char>::value || std::is_same<TChar, wchar_t>::value, "OutputDebugStringBuf only supports char and wchar_t types");
 
-    int sync() try {
+    int sync() override try {
         std::lock_guard<std::mutex> lock(_mutex);
         MessageOutputer<TChar, TTraits>()(pbase(), pptr());
         setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
@@ -97,7 +102,7 @@ public:
         return -1;
     }
 
-    int_type overflow(int_type c = TTraits::eof()) {
+    int_type overflow(int_type c = TTraits::eof()) override {
         std::lock_guard<std::mutex> lock(_mutex);
         auto syncRet = sync();
         if (c != TTraits::eof()) {

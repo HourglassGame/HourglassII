@@ -26,7 +26,7 @@ public:
     typedef typename tbb_alloc::reference reference;
     typedef typename tbb_alloc::const_reference const_reference;
     
-    pointer allocate(size_type n, void const *u = 0) { return alloc.allocate(n, u); }
+    pointer allocate(size_type n, void const *u = nullptr) { return alloc.allocate(n, u); }
     void deallocate(pointer p, size_type n) { alloc.deallocate(p, n); }
     size_type max_size() const { return alloc.max_size(); }
     

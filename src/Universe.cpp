@@ -98,7 +98,7 @@ Universe::FrameMatchingUniverseConstness<UniverseT> *Universe::getEntryFrameImpl
         assert(false);
     }
     //Never reached
-    return 0;
+    return nullptr;
 }
 
 Frame *Universe::getEntryFrame(TimeDirection direction)
