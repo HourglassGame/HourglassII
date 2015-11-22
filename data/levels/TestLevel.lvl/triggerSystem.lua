@@ -143,7 +143,7 @@ function mutateObject(responsibleManipulatorIndices, dynamicObject)
 end
 
 function getDepartureInformation(departures)
-    local outputTriggers, forwardsGlitz, reverseGlitz, additionalEndBoxes = bts.getDepartureInformation(tempStore)(departures)
+    local outputTriggers, forwardsGlitz, reverseGlitz, persistentGlitz, additionalEndBoxes = bts.getDepartureInformation(tempStore)(departures)
     
     local forwardsMutGlitz, reverseMutGlitz = calculateMutatorGlitz(tempStore.protoMuts[1].data)
     table.insert(forwardsGlitz, forwardsMutGlitz)
@@ -157,5 +157,5 @@ function getDepartureInformation(departures)
         }
     end
     
-    return outputTriggers, forwardsGlitz, reverseGlitz, additionalEndBoxes
+    return outputTriggers, forwardsGlitz, reverseGlitz, persistentGlitz, additionalEndBoxes
 end
