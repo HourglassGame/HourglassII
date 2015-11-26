@@ -4,7 +4,7 @@ void buildDeparturesForComplexEntities(
     RandomAccessObjectAndTypeRange const &next,
     PhysicsEngine::FrameDepartureT &newDepartures)
 {
-    for (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime: next)
+    for (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime : next)
     {
         newDepartures[thingAndTime.frame].add(thingAndTime.object);
     }
@@ -32,20 +32,20 @@ template <
     typename RandomAccessPortalRange,
     typename RandomAccessMutatorRange,
     typename FrameT>
-void makeBoxAndTimeWithPortalsAndMutators(
-    mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
-    RandomAccessPortalRange const &portals,
-    RandomAccessMutatorRange const &mutators,
-    int x,
-    int y,
-    int xspeed,
-    int yspeed,
-    int size,
-    int oldIllegalPortal,
-    TimeDirection const oldTimeDirection,
-    TriggerFrameState &triggerFrameState,
-    FrameT frame)
+    void makeBoxAndTimeWithPortalsAndMutators(
+        mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
+        mt::std::vector<char> &nextBoxNormalDeparture,
+        RandomAccessPortalRange const &portals,
+        RandomAccessMutatorRange const &mutators,
+        int x,
+        int y,
+        int xspeed,
+        int yspeed,
+        int size,
+        int oldIllegalPortal,
+        TimeDirection const oldTimeDirection,
+        TriggerFrameState &triggerFrameState,
+        FrameT frame)
 {
     TimeDirection timeDirection(oldTimeDirection);
     int arrivalBasis = -1;
@@ -59,9 +59,9 @@ void makeBoxAndTimeWithPortalsAndMutators(
     for (unsigned i = 0; i < mutators.size(); ++i)
     {
         if (IntersectingRectanglesInclusiveCollisionOverlap(x, y, size, size,
-                    mutators[i].getX(), mutators[i].getY(),
-                    mutators[i].getWidth(), mutators[i].getHeight(),
-                    mutators[i].getCollisionOverlap()))
+            mutators[i].getX(), mutators[i].getY(),
+            mutators[i].getWidth(), mutators[i].getHeight(),
+            mutators[i].getCollisionOverlap()))
         {
             mutatorCollisions.push_back(i);
         }
@@ -95,29 +95,29 @@ void makeBoxAndTimeWithPortalsAndMutators(
         //arrivalLocation = newBox->getArrivalLocation();
         timeDirection = newBox->getTimeDirection();
     }
-    
+
     bool normalDeparture = timeDirection == oldTimeDirection;
 
     // fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
     {
         if (IntersectingRectanglesInclusiveCollisionOverlap(x, y, size, size,
-                portals[i].getX(), portals[i].getY(),
-                portals[i].getWidth(), portals[i].getHeight(),
-                portals[i].getCollisionOverlap())
-                && portals[i].getFallable())
+            portals[i].getX(), portals[i].getY(),
+            portals[i].getWidth(), portals[i].getHeight(),
+            portals[i].getCollisionOverlap())
+            && portals[i].getFallable())
         {
             if (oldIllegalPortal != -1 && portals[i].getIndex() == oldIllegalPortal)
             {
                 illegalPortal = i;
             }
-            else if (triggerFrameState.shouldPort(i, Box(x,y,xspeed,yspeed,size,oldIllegalPortal,-1,timeDirection), false))
+            else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, size, oldIllegalPortal, -1, timeDirection), false))
             {
                 FrameT portalTime(
-                        portals[i].getRelativeTime() ?
-                    getArbitraryFrame(getUniverse(frame), getFrameNumber(frame) + portals[i].getTimeDestination()):
+                    portals[i].getRelativeTime() ?
+                    getArbitraryFrame(getUniverse(frame), getFrameNumber(frame) + portals[i].getTimeDestination()) :
                     getArbitraryFrame(getUniverse(frame), portals[i].getTimeDestination()));
-                
+
                 if (portals[i].getRelativeDirection())
                 {
                     timeDirection *= portals[i].getDestinationDirection();
@@ -126,7 +126,7 @@ void makeBoxAndTimeWithPortalsAndMutators(
                 {
                     timeDirection = portals[i].getDestinationDirection();
                 }
-                
+
                 nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : FrameT();
                 illegalPortal = portals[i].getIllegalDestination();
                 arrivalBasis = portals[i].getDestinationIndex();
@@ -245,7 +245,7 @@ void guyStep(
         supportedSpeed.push_back(0);
         finishedWith.push_back(false);
         facing.push_back(guyArrivalList[i].getFacing());
-        
+
         //std::cerr << "Pre Physics Speed " << getFrameNumber(frame) << ": " << yspeed[i] << "\n";
 
         // Check with triggers if guy should affect frame
@@ -284,8 +284,8 @@ void guyStep(
                 }
             }
             */
-            
-            for (Collision const &platform: nextPlatform)
+
+            for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -299,7 +299,7 @@ void guyStep(
                     if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
                     {
                         finishedWith[i] = true;
-                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
+                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
                         continue;
                     }
                 }
@@ -308,23 +308,23 @@ void guyStep(
                     pX += platform.getXspeed();
                     pY += platform.getYspeed();
                     if (IntersectingRectanglesExclusive(x[i], y[i], width, height,
-                        pX+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
-                        pY+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
-                        pWidth-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2, 
-                        pHeight-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2))
+                        pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
+                        pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
+                        pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
+                        pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
                     {
                         finishedWith[i] = true;
-                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
+                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
                         continue;
                     }
                 }
             }
-            
+
             // chonofrag with walls
             if (wallAtExclusive(env, x[i], y[i], width, height))
             {
                 finishedWith[i] = true;
-                guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
+                guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
                 continue;
             }
 
@@ -355,16 +355,16 @@ void guyStep(
                     int boxYspeed(nextBox[j].object.getYspeed());
                     int boxSize(nextBox[j].object.getSize());
                     TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
-                    if (x[i] < boxX+boxSize && x[i]+width > boxX)
+                    if (x[i] < boxX + boxSize && x[i] + width > boxX)
                     {
                         if (boxDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
                         {
                             //std::cerr << "Box Col " << getFrameNumber(frame) << ": " << newY + height << ", " << yspeed[i] << ",     " << boxY << ", " << boxYspeed << "\n";
                             // -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
-                            if (newY + height >= boxY && newY+height-yspeed[i]-env.gravity <= boxY+boxYspeed)
+                            if (newY + height >= boxY && newY + height - yspeed[i] - env.gravity <= boxY + boxYspeed)
                             {
                                 //boxThatIamStandingOn = j;
-                                newY = boxY-height;
+                                newY = boxY - height;
                                 xspeed[i] = -boxXspeed;
                                 supported[i] = true;
                                 bottom = true;
@@ -374,10 +374,10 @@ void guyStep(
                         }
                         else
                         {
-                            if (newY+height >= boxY && newY+height-yspeed[i] <= boxY-boxYspeed)
+                            if (newY + height >= boxY && newY + height - yspeed[i] <= boxY - boxYspeed)
                             {
                                 //boxThatIamStandingOn = j;
-                                newY = boxY-height;
+                                newY = boxY - height;
                                 xspeed[i] = boxXspeed;
                                 supported[i] = true;
                                 bottom = true;
@@ -389,22 +389,22 @@ void guyStep(
             }
 
             // check platform collision in Y direction
-            for (Collision const &platform: nextPlatform)
+            for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
                 TimeDirection pDirection(platform.getTimeDirection());
                 int pWidth(platform.getWidth());
                 int pHeight(platform.getHeight());
-                
+
                 if (IntersectingRectanglesExclusive(
-                        x[i], newY, width, height,
-                        pX, pY, pWidth, pHeight))
+                    x[i], newY, width, height,
+                    pX, pY, pWidth, pHeight))
                 {
-                    int colDir = RectangleIntersectionDirection(x[i],y[i],width,height,pX, pY, pWidth, pHeight);
+                    int colDir = RectangleIntersectionDirection(x[i], y[i], width, height, pX, pY, pWidth, pHeight);
                     if (colDir == 1)
                     {
-                        newY = pY-height;
+                        newY = pY - height;
                         xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
                         supported[i] = true;
                         bottom = true;
@@ -421,37 +421,37 @@ void guyStep(
             //check wall collision in Y direction
             if (yspeed[i] > 0) // down
             {
-                if (env.wall.at(x[i], newY+height) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY+height)))
+                if (env.wall.at(x[i], newY + height) || (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height)))
                 {
-					newY = ((newY + height) / env.wall.segmentSize())*env.wall.segmentSize() - height;
-					supported[i] = true;
-					bottom = true;
-					supportedSpeed[i] = 0;
-					while (newY > 0 && (env.wall.at(x[i], newY + height - 1) || 
-						(x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height - 1))))
-					{
-						newY = newY - env.wall.segmentSize();
-					}
+                    newY = ((newY + height) / env.wall.segmentSize())*env.wall.segmentSize() - height;
+                    supported[i] = true;
+                    bottom = true;
+                    supportedSpeed[i] = 0;
+                    while (newY > 0 && (env.wall.at(x[i], newY + height - 1) ||
+                        (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height - 1))))
+                    {
+                        newY = newY - env.wall.segmentSize();
+                    }
                 }
             }
             else if (yspeed[i] < 0) // up
             {
-                if  (env.wall.at(x[i], newY) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY)))
+                if (env.wall.at(x[i], newY) || (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY)))
                 {
-					newY = (newY / env.wall.segmentSize() + 1)*env.wall.segmentSize();
+                    newY = (newY / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                     top = true;
-					while (newY + height < env.wall.roomHeight() && (env.wall.at(x[i], newY + 1) || 
-						(x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + 1))))
-					{
-						newY = newY + env.wall.segmentSize();
-					}
+                    while (newY + height < env.wall.roomHeight() && (env.wall.at(x[i], newY + 1) ||
+                        (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + 1))))
+                    {
+                        newY = newY + env.wall.segmentSize();
+                    }
                 }
             }
 
             if (bottom && top)
             {
                 finishedWith[i] = true;
-                guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
+                guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
                 continue;
             }
 
@@ -471,7 +471,7 @@ void guyStep(
             }
 
             // platform collision
-            for (Collision const &platform: nextPlatform)
+            for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -480,62 +480,62 @@ void guyStep(
 
                 if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
                 {
-                    if (x[1]+width/2 < pX+pWidth/2)
+                    if (x[1] + width / 2 < pX + pWidth / 2)
                     {
-                        newX = pX-width;
+                        newX = pX - width;
                         right = true;
                     }
                     else
                     {
-                        newX = pX+pWidth;
+                        newX = pX + pWidth;
                         left = true;
                     }
                 }
             }
 
-            if (newX-x[i] > 0) // right
+            if (newX - x[i] > 0) // right
             {
-                if (env.wall.at(newX+width, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX+width, newY+height)))
+                if (env.wall.at(newX + width, newY) || (newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + width, newY + height)))
                 {
-					newX = (newX + width) / env.wall.segmentSize()*env.wall.segmentSize() - width;
+                    newX = (newX + width) / env.wall.segmentSize()*env.wall.segmentSize() - width;
                     right = true;
-					while (newX > 0 && (env.wall.at(newX + width - 1, newY) ||
-						(newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + width - 1, newY + height))))
-					{
-						newX = newX - env.wall.segmentSize();
-					}
+                    while (newX > 0 && (env.wall.at(newX + width - 1, newY) ||
+                        (newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + width - 1, newY + height))))
+                    {
+                        newX = newX - env.wall.segmentSize();
+                    }
                 }
             }
-            else if (newX-x[i] < 0) // left
+            else if (newX - x[i] < 0) // left
             {
-                if (env.wall.at(newX, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX, newY+height)))
+                if (env.wall.at(newX, newY) || (newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX, newY + height)))
                 {
-					newX = (newX / env.wall.segmentSize() + 1)*env.wall.segmentSize();
+                    newX = (newX / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                     left = true;
-					while (newX + width < env.wall.roomWidth() && (env.wall.at(newX + 1, newY) ||
-						(newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + 1, newY + height))))
-					{
-						newX = newX + env.wall.segmentSize();
-					}
+                    while (newX + width < env.wall.roomWidth() && (env.wall.at(newX + 1, newY) ||
+                        (newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + 1, newY + height))))
+                    {
+                        newX = newX + env.wall.segmentSize();
+                    }
                 }
             }
 
             if (left && right)
             {
                 finishedWith[i] = true;
-                guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
+                guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
                 continue;
             }
 
             // Apply Change
-            xspeed[i] = newX-x[i];
-            yspeed[i] = newY-y[i];
+            xspeed[i] = newX - x[i];
+            yspeed[i] = newY - y[i];
 
             x[i] = newX;
             y[i] = newY;
         }
     }
-    
+
     assert(boost::size(x) == boost::size(guyArrivalList));
     assert(boost::size(y) == boost::size(guyArrivalList));
     assert(boost::size(xspeed) == boost::size(guyArrivalList));
@@ -544,13 +544,13 @@ void guyStep(
     assert(boost::size(supportedSpeed) == boost::size(guyArrivalList));
     assert(boost::size(finishedWith) == boost::size(guyArrivalList));
     assert(boost::size(facing) == boost::size(guyArrivalList));
-    
+
 
     mt::std::vector<char> carry(guyArrivalList.size());
     mt::std::vector<int> carrySize(guyArrivalList.size());
     mt::std::vector<TimeDirection> carryDirection(guyArrivalList.size());
     mt::std::vector<char> justPickedUpBox(guyArrivalList.size());
-    
+
     // Do movement for pause guys. Do box manipulation for all guys.
     // This is to make pause guys not affect their past selves with box manipulation.
     for (std::size_t i(0), isize(boost::size(guyArrivalList)); i < isize; ++i)
@@ -565,7 +565,7 @@ void guyStep(
             int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
             // chonofrag with platforms
-            for (Collision const &platform: nextPlatform)
+            for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -610,12 +610,12 @@ void guyStep(
                     int boxX(nextBox[j].object.getX());
                     int boxY(nextBox[j].object.getY());
                     int boxSize(nextBox[j].object.getSize());
-                    if (x[i] < boxX+boxSize && x[i]+width > boxX)
+                    if (x[i] < boxX + boxSize && x[i] + width > boxX)
                     {
-                        if (newY+height >= boxY && newY-yspeed[i]+height <= boxY)
+                        if (newY + height >= boxY && newY - yspeed[i] + height <= boxY)
                         {
                             //boxThatIamStandingOn = j;
-                            newY = boxY-height;
+                            newY = boxY - height;
                             xspeed[i] = 0;
                             supported[i] = true;
                             bottom = true;
@@ -626,7 +626,7 @@ void guyStep(
             }
 
             // check platform collision in Y direction
-            for (Collision const &platform: nextPlatform)
+            for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -634,12 +634,12 @@ void guyStep(
                 int pHeight(platform.getHeight());
 
                 if (IntersectingRectanglesExclusive(
-                        x[i], newY, width, height,
-                        pX - platform.getXspeed(), pY, pWidth, pHeight))
+                    x[i], newY, width, height,
+                    pX - platform.getXspeed(), pY, pWidth, pHeight))
                 {
-                    if (newY+height/2 < pY+pHeight/2)
+                    if (newY + height / 2 < pY + pHeight / 2)
                     {
-                        newY = pY-height;
+                        newY = pY - height;
                         xspeed[i] = 0;
                         supported[i] = true;
                         bottom = true;
@@ -656,9 +656,9 @@ void guyStep(
             //check wall collision in Y direction
             if (yspeed[i] > 0) // down
             {
-                if (env.wall.at(x[i], newY+height) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY+height)))
+                if (env.wall.at(x[i], newY + height) || (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height)))
                 {
-                    newY = ((newY+height)/env.wall.segmentSize())*env.wall.segmentSize() - height;
+                    newY = ((newY + height) / env.wall.segmentSize())*env.wall.segmentSize() - height;
                     supported[i] = true;
                     bottom = true;
                     supportedSpeed[i] = 0;
@@ -666,9 +666,9 @@ void guyStep(
             }
             else if (yspeed[i] < 0) // up
             {
-                if  (env.wall.at(x[i], newY) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY)))
+                if (env.wall.at(x[i], newY) || (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY)))
                 {
-                    newY = (newY/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+                    newY = (newY / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                     top = true;
                 }
             }
@@ -695,7 +695,7 @@ void guyStep(
             }
 
             // platform collision
-            for (Collision const &platform: nextPlatform)
+            for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
                 int pY(platform.getY());
@@ -704,32 +704,32 @@ void guyStep(
 
                 if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
                 {
-                    if (newX+width/2 < pX+pWidth/2)
+                    if (newX + width / 2 < pX + pWidth / 2)
                     {
-                        newX = pX-width;
+                        newX = pX - width;
                         right = true;
                     }
                     else
                     {
-                        newX = pX+pWidth;
+                        newX = pX + pWidth;
                         left = true;
                     }
                 }
             }
 
-            if (newX-x[i] > 0) // right
+            if (newX - x[i] > 0) // right
             {
-                if (env.wall.at(newX+width, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX+width, newY+height)))
+                if (env.wall.at(newX + width, newY) || (newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + width, newY + height)))
                 {
-                    newX = (newX+width)/env.wall.segmentSize()*env.wall.segmentSize() - width;
+                    newX = (newX + width) / env.wall.segmentSize()*env.wall.segmentSize() - width;
                     right = true;
                 }
             }
-            else if (newX-x[i] < 0) // left
+            else if (newX - x[i] < 0) // left
             {
-                if (env.wall.at(newX, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX, newY+height)))
+                if (env.wall.at(newX, newY) || (newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX, newY + height)))
                 {
-                    newX = (newX/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+                    newX = (newX / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                     left = true;
                 }
             }
@@ -741,13 +741,13 @@ void guyStep(
             }
 
             // Apply Change
-            xspeed[i] = newX-x[i];
-            yspeed[i] = newY-y[i];
+            xspeed[i] = newX - x[i];
+            yspeed[i] = newY - y[i];
 
             x[i] = newX;
             y[i] = newY;
         }
-        
+
         // Box Manipulation
         if (guyArrivalList[i].getIndex() < playerInput.size() && !finishedWith[i])
         {
@@ -772,7 +772,7 @@ void guyStep(
                     // Initialise bounds on drops based on movement direction
                     int dropY(y[i] + height - dropSize);
                     int leftBound, rightBound;
-                   
+
                     if (dropSize < width)
                     {
                         leftBound = x[i];
@@ -783,7 +783,7 @@ void guyStep(
                         leftBound = x[i] - dropSize + width;
                         rightBound = x[i];
                     }
-                    
+
                     //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
 
                     // Narrow drop bounds with wall collision
@@ -794,7 +794,7 @@ void guyStep(
                         int cy = initial_cy;
                         while (cy < dropY + dropSize)
                         {
-                            if (env.wall.at(cx,cy))
+                            if (env.wall.at(cx, cy))
                             {
                                 rightBound = cx - dropSize;
                                 goto rightBoundCheckDoubleBreak;
@@ -803,7 +803,7 @@ void guyStep(
                         }
                         cx += env.wall.segmentSize();
                     }
-                    rightBoundCheckDoubleBreak:
+                rightBoundCheckDoubleBreak:
 
                     //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
 
@@ -813,7 +813,7 @@ void guyStep(
                         int cy = initial_cy;
                         while (cy < dropY + dropSize)
                         {
-                            if (env.wall.at(cx,cy))
+                            if (env.wall.at(cx, cy))
                             {
                                 leftBound = cx + 1;
                                 goto leftBoundCheckDoubleBreak;
@@ -822,7 +822,7 @@ void guyStep(
                         }
                         cx -= env.wall.segmentSize();
                     }
-                    leftBoundCheckDoubleBreak:
+                leftBoundCheckDoubleBreak:
 
                     //std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
 
@@ -836,8 +836,8 @@ void guyStep(
                             int pw = nextPlatform[j].getWidth();
                             int ph = nextPlatform[j].getHeight();
                             if (IntersectingRectanglesExclusive(
-                                    px, py, pw, ph,
-                                    leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+                                px, py, pw, ph,
+                                leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
                             {
                                 if (px + pw > leftBound + dropSize && px < rightBound + dropSize)
                                 {
@@ -869,8 +869,8 @@ void guyStep(
                                 //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
                                 //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
                                 if (IntersectingRectanglesExclusive(
-                                        bx, by, bs, bs,
-                                        leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+                                    bx, by, bs, bs,
+                                    leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
                                 {
                                     if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
                                     {
@@ -908,7 +908,7 @@ void guyStep(
                         }
                         else
                         {
-                            int midX = x[i]+width/2-dropSize/2;
+                            int midX = x[i] + width / 2 - dropSize / 2;
                             if (leftBound <= midX)
                             {
                                 if (midX <= rightBound)
@@ -925,7 +925,7 @@ void guyStep(
                                 dropX = leftBound;
                             }
                         }
-                        
+
                         // Add box
                         makeBoxAndTimeWithPortalsAndMutators(
                             nextBox,
@@ -962,16 +962,16 @@ void guyStep(
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
                     //CAREFUL - loop modifies nextBox
-                    mt::std::vector<ObjectAndTime<Box, Frame *> >::iterator nextBoxIt(nextBox.begin()),nextBoxEnd(nextBox.end());
+                    mt::std::vector<ObjectAndTime<Box, Frame *> >::iterator nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end());
                     mt::std::vector<char>::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
-                    for (;nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
+                    for (; nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
                     {
                         if (*nextBoxNormalDepartureIt)
                         {
                             int boxX = nextBoxIt->object.getX();
                             int boxY = nextBoxIt->object.getY();
                             int boxSize = nextBoxIt->object.getSize();
-                            if ((x[i] < boxX+boxSize) && (x[i]+width > boxX) && (y[i] < boxY+boxSize) && (y[i]+height >= boxY+boxSize))
+                            if ((x[i] < boxX + boxSize) && (x[i] + width > boxX) && (y[i] < boxY + boxSize) && (y[i] + height >= boxY + boxSize))
                             {
                                 carry[i] = true;
                                 carrySize[i] = boxSize;
@@ -980,7 +980,7 @@ void guyStep(
                                 nextBoxIt = nextBox.erase(nextBoxIt);
                                 nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
                                 nextBoxEnd = nextBox.end();
-                                
+
                                 justPickedUpBox[i] = true;
                                 break;
                             }
@@ -995,7 +995,7 @@ void guyStep(
             }
         }
     }
-    
+
     assert(boost::size(carry) == boost::size(guyArrivalList));
     assert(boost::size(carrySize) == boost::size(guyArrivalList));
     assert(boost::size(carryDirection) == boost::size(guyArrivalList));
@@ -1014,8 +1014,8 @@ void guyStep(
         if (finishedWith[i])
         {
             assert(guyArrivalList[i].getIndex() != playerInput.size()
-                    && "nextPlayerFrame must always be set for guys with"
-                       " index == playerInput.size()");
+                && "nextPlayerFrame must always be set for guys with"
+                " index == playerInput.size()");
             continue;
         }
 
@@ -1043,10 +1043,10 @@ void guyStep(
             for (unsigned j = 0; j < mutators.size(); ++j)
             {
                 if (IntersectingRectanglesInclusiveCollisionOverlap(
-                        x[i], y[i], newWidth[i], newHeight[i],
-                        mutators[j].getX(), mutators[j].getY(),
-                        mutators[j].getWidth(), mutators[j].getHeight(),
-                        mutators[j].getCollisionOverlap()))
+                    x[i], y[i], newWidth[i], newHeight[i],
+                    mutators[j].getX(), mutators[j].getY(),
+                    mutators[j].getWidth(), mutators[j].getHeight(),
+                    mutators[j].getCollisionOverlap()))
                 {
                     mutatorCollisions.push_back(j);
                 }
@@ -1072,7 +1072,7 @@ void guyStep(
                         carryDirection[i],
                         nextTimeDirection,
                         newTimePaused[i]
-                    ));
+                        ));
                 if (!newGuy)
                 {
                     finishedWith[i] = true;
@@ -1112,10 +1112,10 @@ void guyStep(
                 for (unsigned int j = 0; j < nextPortal.size(); ++j)
                 {
                     if (IntersectingRectanglesInclusiveCollisionOverlap(
-                            x[i], y[i], newWidth[i], newHeight[i],
-                            nextPortal[j].getX(), nextPortal[j].getY(),
-                            nextPortal[j].getWidth(), nextPortal[j].getHeight(),
-                            nextPortal[j].getCollisionOverlap())
+                        x[i], y[i], newWidth[i], newHeight[i],
+                        nextPortal[j].getX(), nextPortal[j].getY(),
+                        nextPortal[j].getWidth(), nextPortal[j].getHeight(),
+                        nextPortal[j].getCollisionOverlap())
                         && nextPortal[j].getFallable())
                     {
                         if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
@@ -1123,13 +1123,13 @@ void guyStep(
                             illegalPortal[i] = j;
                         }
                         else if (triggerFrameState.shouldPort(
-                                j,
-                                Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
-                                    newJumpSpeed[i],
-                                    illegalPortal[i],-1,
-                                    supported[i],supportedSpeed[i], newPickups[i], facing[i],
-                                    carry[i],carrySize[i], carryDirection[i],nextTimeDirection,newTimePaused[i]),
-                                false))
+                            j,
+                            Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+                                newJumpSpeed[i],
+                                illegalPortal[i], -1,
+                                supported[i], supportedSpeed[i], newPickups[i], facing[i],
+                                carry[i], carrySize[i], carryDirection[i], nextTimeDirection, newTimePaused[i]),
+                            false))
                         {
                             if (nextPortal[j].getWinner())
                             {
@@ -1140,13 +1140,13 @@ void guyStep(
                             }
                             Frame *portalTime(
                                 nextPortal[j].getRelativeTime() ?
-                                    getArbitraryFrameClamped(
-                                        getUniverse(frame),
-                                        getFrameNumber(frame) + nextPortal[j].getTimeDestination()):
-                                    getArbitraryFrame(
-                                        getUniverse(frame),
-                                        nextPortal[j].getTimeDestination()));
-                            
+                                getArbitraryFrameClamped(
+                                    getUniverse(frame),
+                                    getFrameNumber(frame) + nextPortal[j].getTimeDestination()) :
+                                getArbitraryFrame(
+                                    getUniverse(frame),
+                                    nextPortal[j].getTimeDestination()));
+
                             if (nextPortal[j].getRelativeDirection())
                             {
                                 nextTimeDirection *= nextPortal[j].getDestinationDirection();
@@ -1155,7 +1155,7 @@ void guyStep(
                             {
                                 nextTimeDirection = nextPortal[j].getDestinationDirection();
                             }
-                            
+
                             nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
                             normalDeparture = false;
                             illegalPortal[i] = nextPortal[j].getIllegalDestination();
@@ -1224,16 +1224,16 @@ void guyStep(
                     for (unsigned int j = 0; j < nextPortal.size(); ++j)
                     {
                         if (IntersectingRectanglesInclusiveCollisionOverlap(
-                                x[i], y[i], newWidth[i], newHeight[i],
-                                nextPortal[j].getX(), nextPortal[j].getY(),
-                                nextPortal[j].getWidth(), nextPortal[j].getHeight(),
-                                nextPortal[j].getCollisionOverlap())
+                            x[i], y[i], newWidth[i], newHeight[i],
+                            nextPortal[j].getX(), nextPortal[j].getY(),
+                            nextPortal[j].getWidth(), nextPortal[j].getHeight(),
+                            nextPortal[j].getCollisionOverlap())
                             && (triggerFrameState.shouldPort(j,
-                                    Guy(relativeIndex,x[i], y[i],xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+                                Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], newWidth[i], newHeight[i],
                                     newJumpSpeed[i],
-                                    illegalPortal[i],-1,
-                                    supported[i],supportedSpeed[i], newPickups[i], facing[i],
-                                    carry[i],carrySize[i], carryDirection[i],nextTimeDirection,newTimePaused[i]),true)))
+                                    illegalPortal[i], -1,
+                                    supported[i], supportedSpeed[i], newPickups[i], facing[i],
+                                    carry[i], carrySize[i], carryDirection[i], nextTimeDirection, newTimePaused[i]), true)))
                         {
                             if (nextPortal[j].getWinner())
                             {
@@ -1244,13 +1244,13 @@ void guyStep(
                             }
                             Frame *portalTime(
                                 nextPortal[j].getRelativeTime() ?
-                                    getArbitraryFrameClamped(
-                                        getUniverse(frame),
-                                        getFrameNumber(frame) + nextPortal[j].getTimeDestination()) :
-                                    getArbitraryFrame(
-                                        getUniverse(frame),
-                                        nextPortal[j].getTimeDestination()));
-                                        
+                                getArbitraryFrameClamped(
+                                    getUniverse(frame),
+                                    getFrameNumber(frame) + nextPortal[j].getTimeDestination()) :
+                                getArbitraryFrame(
+                                    getUniverse(frame),
+                                    nextPortal[j].getTimeDestination()));
+
                             if (nextPortal[j].getRelativeDirection())
                             {
                                 nextTimeDirection *= nextPortal[j].getDestinationDirection();
@@ -1259,7 +1259,7 @@ void guyStep(
                             {
                                 nextTimeDirection = nextPortal[j].getDestinationDirection();
                             }
-                            
+
                             nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
                             normalDeparture = false;
                             illegalPortal[i] = nextPortal[j].getIllegalDestination();
@@ -1281,8 +1281,8 @@ void guyStep(
                     }
                 }
             }
-            
-            if (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size()-1)
+
+            if (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size() - 1)
             {
                 guyGlitzAdder.addGlitzForGuy(
                     vector2<int>(glitzX, glitzY),
@@ -1292,10 +1292,10 @@ void guyStep(
                     carry[i],
                     carrySize[i],
                     carryDirection[i],
-                    guyArrivalList[i].getIndex() == playerInput.size()-1,
+                    guyArrivalList[i].getIndex() == playerInput.size() - 1,
                     justPickedUpBox[i]);
             }
-            
+
             if (!normalDeparture)
             {
                 nextGuy.push_back(
@@ -1321,10 +1321,10 @@ void guyStep(
 
                             nextTimeDirection,
                             newTimePaused[i]
-                        ),
+                            ),
                         nextTime
-                    )
-                );
+                        )
+                    );
                 finishedWith[i] = true;
             }
         }
@@ -1349,44 +1349,44 @@ void guyStep(
 
         std::size_t const relativeIndex(guyArrivalList[i].getIndex());
         InputList const &input = playerInput[relativeIndex];
-        
+
         mt::std::map<Ability, int>::iterator timeGun(newPickups[i].find(Ability::TIME_GUN));
 
         if (input.getAbilityUsed()
-        && input.getAbilityCursor() == Ability::TIME_GUN
-        && timeGun != newPickups[i].end()
-        && timeGun->second != 0)
+            && input.getAbilityCursor() == Ability::TIME_GUN
+            && timeGun != newPickups[i].end()
+            && timeGun->second != 0)
         {
             // Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
             mt::std::vector<char> shootable;
             shootable.reserve(boost::size(guyArrivalList));
-            
+
             for (std::size_t j(0); j != size; ++j)
             {
                 shootable.push_back(!finishedWith[j] && i != j && !newTimePaused[i]);
             }
-            
+
             // Parameters for ability. sx, sy, px and py are returned as line glitz params
             Frame *targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
-            int sx = x[i] + newWidth[i]/2;
-            int sy = y[i] + newHeight[i]/4;
+            int sx = x[i] + newWidth[i] / 2;
+            int sy = y[i] + newHeight[i] / 4;
             int px = input.getXCursor();
             int py = input.getYCursor();
-            
+
             // Return values from doGunRaytrace
             PhysicsObjectType targetType = NONE;
             std::size_t targetId = std::numeric_limits<std::size_t>::max();
-            
+
             doGunRaytrace(
-                targetType, targetId, env, 
-                sx,sy,px,py,
+                targetType, targetId, env,
+                sx, sy, px, py,
                 nextPlatform,
                 nextBox, nextBoxNormalDeparture,
                 x, y, newWidth, newHeight,
                 shootable);
-                
-            guyGlitzAdder.addLaserGlitz(sx,sy,px,py,input.getXCursor(),input.getYCursor(),guyArrivalList[i].getTimeDirection());
-                
+
+            guyGlitzAdder.addLaserGlitz(sx, sy, px, py, input.getXCursor(), input.getYCursor(), guyArrivalList[i].getTimeDirection());
+
             if (targetType == GUY)
             {
                 assert(targetId != std::numeric_limits<std::size_t>::max());
@@ -1414,10 +1414,10 @@ void guyStep(
 
                             guyArrivalList[targetId].getTimeDirection(),
                             newTimePaused[targetId]
-                        ),
+                            ),
                         targetTime
-                    )
-                );
+                        )
+                    );
                 finishedWith[targetId] = true;
             }
             else if (targetType == BOX)
@@ -1470,10 +1470,10 @@ void guyStep(
 
                     guyArrivalList[i].getTimeDirection(),
                     newTimePaused[i]
-                ),
+                    ),
                 newTimePaused[i] ? frame : nextFrame(frame, guyArrivalList[i].getTimeDirection())
-            )
-        );
+                )
+            );
     }
 }
 
@@ -1484,18 +1484,18 @@ template <
     typename RandomAccessArrivalLocationRange,
     typename RandomAccessMutatorRange,
     typename FrameT>
-void boxCollisionAlogorithm(
-    Environment const &env,
-    RandomAccessBoxRange const &boxArrivalList,
-    mt::std::vector<Box> const &additionalBox,
-    mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
-    RandomAccessPlatformRange const &nextPlatform,
-    RandomAccessPortalRange const &nextPortal,
-    RandomAccessArrivalLocationRange const &arrivalLocations,
-    RandomAccessMutatorRange const &mutators,
-    TriggerFrameState &triggerFrameState,
-    FrameT const &frame)
+    void boxCollisionAlogorithm(
+        Environment const &env,
+        RandomAccessBoxRange const &boxArrivalList,
+        mt::std::vector<Box> const &additionalBox,
+        mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
+        mt::std::vector<char> &nextBoxNormalDeparture,
+        RandomAccessPlatformRange const &nextPlatform,
+        RandomAccessPortalRange const &nextPortal,
+        RandomAccessArrivalLocationRange const &arrivalLocations,
+        RandomAccessMutatorRange const &mutators,
+        TriggerFrameState &triggerFrameState,
+        FrameT const &frame)
 {
     mt::std::vector<Box> oldBoxList;
 
@@ -1567,14 +1567,14 @@ void boxCollisionAlogorithm(
     // Destroy boxes that are overlapping with platforms and walls
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
         if (!squished[i]) {
-            if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i]+size[i]-1, yTemp[i])
-                    && env.wall.at(xTemp[i], yTemp[i]+size[i]-1) && env.wall.at(xTemp[i]+size[i], yTemp[i]+size[i]-1))
+            if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i] + size[i] - 1, yTemp[i])
+                && env.wall.at(xTemp[i], yTemp[i] + size[i] - 1) && env.wall.at(xTemp[i] + size[i], yTemp[i] + size[i] - 1))
             {
                 squished[i] = true;
                 continue;
             }
 
-            for (Collision const &platform: nextPlatform) {
+            for (Collision const &platform : nextPlatform) {
                 int pX(platform.getX());
                 int pY(platform.getY());
                 int pWidth(platform.getWidth());
@@ -1595,10 +1595,10 @@ void boxCollisionAlogorithm(
                     pX += platform.getXspeed();
                     pY += platform.getYspeed();
                     if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
-                        pX+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
-                        pY+REVERSE_PLATFORM_CHRONOFRAG_FUDGE, 
-                        pWidth-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2, 
-                        pHeight-REVERSE_PLATFORM_CHRONOFRAG_FUDGE*2))
+                        pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
+                        pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
+                        pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
+                        pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
                     {
                         squished[i] = true;
                         continue;
@@ -1637,19 +1637,19 @@ void boxCollisionAlogorithm(
     bool firstTimeThrough(true);
     //unsigned int count(0);
     while (thereAreStillThingsToDo) {
-       
-		/*
+
+        /*
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
                     << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
         }
-		*/
+        */
 
-        mt::std::vector<std::pair<bool,int> > top(oldBoxList.size());
-        mt::std::vector<std::pair<bool,int> > bottom(oldBoxList.size());
-        mt::std::vector<std::pair<bool,int> > left(oldBoxList.size());
-        mt::std::vector<std::pair<bool,int> > right(oldBoxList.size());
+        mt::std::vector<std::pair<bool, int> > top(oldBoxList.size());
+        mt::std::vector<std::pair<bool, int> > bottom(oldBoxList.size());
+        mt::std::vector<std::pair<bool, int> > left(oldBoxList.size());
+        mt::std::vector<std::pair<bool, int> > right(oldBoxList.size());
 
         mt::std::vector<mt::std::vector<std::size_t> > topLinks(oldBoxList.size());
         mt::std::vector<mt::std::vector<std::size_t>> bottomLinks(oldBoxList.size());
@@ -1670,20 +1670,20 @@ void boxCollisionAlogorithm(
                     int xOut = x[i] + size[i] - env.wall.roomWidth();
                     int yOut = y[i] + size[i] - env.wall.roomHeight();
                     if (x[i] < 0 && (y[i] > 0 || x[i] < y[i]) && (yOut <= 0 || -x[i] > yOut)) {
-                        y[i] = y[i] - (x[i]-env.wall.segmentSize()/2)*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
-                        x[i] = env.wall.segmentSize()/2;
+                        y[i] = y[i] - (x[i] - env.wall.segmentSize() / 2)*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
+                        x[i] = env.wall.segmentSize() / 2;
                     }
                     else if (y[i] < 0 && (x[i] > 0 || y[i] < x[i]) && (xOut <= 0 || -y[i] > xOut)) {
-                        x[i] = x[i] - (y[i]-env.wall.segmentSize()/2)*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
-                        y[i] = env.wall.segmentSize()/2;
+                        x[i] = x[i] - (y[i] - env.wall.segmentSize() / 2)*(x[i] - xTemp[i]) / std::abs(y[i] - yTemp[i]);
+                        y[i] = env.wall.segmentSize() / 2;
                     }
                     else if (xOut > 0 && (y[i] > 0 || xOut > -y[i]) && (yOut <= 0 || xOut > yOut)) {
-                        y[i] = y[i] - (xOut+env.wall.segmentSize()/2+size[i])*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
-                        x[i] = env.wall.roomWidth() - env.wall.segmentSize()/2 - size[i];
+                        y[i] = y[i] - (xOut + env.wall.segmentSize() / 2 + size[i])*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
+                        x[i] = env.wall.roomWidth() - env.wall.segmentSize() / 2 - size[i];
                     }
                     else if (yOut > 0 && (x[i] > 0 || yOut > -x[i]) && (xOut <= 0 || yOut > xOut)) {
-                        x[i] = x[i] - (yOut+env.wall.segmentSize()/2+size[i])*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
-                        y[i] = env.wall.roomHeight() - env.wall.segmentSize()/2 - size[i];
+                        x[i] = x[i] - (yOut + env.wall.segmentSize() / 2 + size[i])*(x[i] - xTemp[i]) / std::abs(y[i] - yTemp[i]);
+                        y[i] = env.wall.roomHeight() - env.wall.segmentSize() / 2 - size[i];
                     }
                 }
 
@@ -1691,9 +1691,9 @@ void boxCollisionAlogorithm(
                 // the box by size[i] will ensure that the box still collides with the wall
                 // it is attempted to be moved out of.
                 if (false) {
-                    TryAgainWithMoreInterpolation:
+                TryAgainWithMoreInterpolation:
                     //std::cerr << "Interpolate " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
-                    if (std::abs(x[i]-xTemp[i]) < std::abs(y[i]-yTemp[i])) {
+                    if (std::abs(x[i] - xTemp[i]) < std::abs(y[i] - yTemp[i])) {
                         int newY;
                         if (y[i] < yTemp[i])
                         {
@@ -1703,7 +1703,7 @@ void boxCollisionAlogorithm(
                         {
                             newY = y[i] - y[i] % env.wall.segmentSize() - size[i];
                         }
-                        x[i] = x[i] - std::abs(y[i]-newY)*(x[i]-xTemp[i])/std::abs(y[i]-yTemp[i]);
+                        x[i] = x[i] - std::abs(y[i] - newY)*(x[i] - xTemp[i]) / std::abs(y[i] - yTemp[i]);
                         y[i] = newY;
                     }
                     else {
@@ -1727,14 +1727,14 @@ void boxCollisionAlogorithm(
                 right[i] = std::make_pair(false, 0);
 
                 // Normal case; box does not have 2 or more sides lined up on the wallmap.
-                bool w00,w10,w01,w11;
+                bool w00, w10, w01, w11;
 
                 if (size[i] <= env.wall.segmentSize()) {
                     // purely a speedup for this case
                     w00 = env.wall.at(x[i], y[i]);
-                    w10 = env.wall.at(x[i]+size[i]-1, y[i]);
-                    w01 = env.wall.at(x[i], y[i]+size[i]-1);
-                    w11 = env.wall.at(x[i]+size[i]-1, y[i]+size[i]-1);
+                    w10 = env.wall.at(x[i] + size[i] - 1, y[i]);
+                    w01 = env.wall.at(x[i], y[i] + size[i] - 1);
+                    w11 = env.wall.at(x[i] + size[i] - 1, y[i] + size[i] - 1);
                 }
                 else {
                     // Extra collision for box size greater than wall size (would handle other case too)
@@ -1744,29 +1744,29 @@ void boxCollisionAlogorithm(
                     w11 = false;
 
                     int xOff = 0;
-                    while (xOff < size[i]-1) {
+                    while (xOff < size[i] - 1) {
                         xOff += env.wall.segmentSize();
-                        if (xOff > size[i]-1) {
-                            xOff = size[i]-1;
+                        if (xOff > size[i] - 1) {
+                            xOff = size[i] - 1;
                         }
                         int yOff = 0;
-                        while (yOff < size[i]-1) {
+                        while (yOff < size[i] - 1) {
                             yOff += env.wall.segmentSize();
-                            if (yOff > size[i]-1) {
-                                yOff = size[i]-1;
+                            if (yOff > size[i] - 1) {
+                                yOff = size[i] - 1;
                             }
                             // the collision test bit
                             if (!w00) {
-                                w00 = env.wall.at(x[i]+size[i]-xOff, y[i]+size[i]-yOff);
+                                w00 = env.wall.at(x[i] + size[i] - xOff, y[i] + size[i] - yOff);
                             }
                             if (!w10) {
-                                w10 = env.wall.at(x[i]+yOff, y[i]+size[i]-yOff);
+                                w10 = env.wall.at(x[i] + yOff, y[i] + size[i] - yOff);
                             }
                             if (!w01) {
-                                w01 = env.wall.at(x[i]+size[i]-xOff, y[i]+yOff);
+                                w01 = env.wall.at(x[i] + size[i] - xOff, y[i] + yOff);
                             }
                             if (!w11) {
-                                w11 = env.wall.at(x[i]+xOff, y[i]+yOff);
+                                w11 = env.wall.at(x[i] + xOff, y[i] + yOff);
                             }
                         }
                     }
@@ -1777,55 +1777,55 @@ void boxCollisionAlogorithm(
                     if (w11) {
                         if (w10) {
                             if (w01) {
-								if (x[i] == xTemp[i] && y[i] == yTemp[i]) {
-									// Cannot interpolate a static box.
-									squished[i] = true;
-								}
-								else {
-									goto TryAgainWithMoreInterpolation;
-								}
+                                if (x[i] == xTemp[i] && y[i] == yTemp[i]) {
+                                    // Cannot interpolate a static box.
+                                    squished[i] = true;
+                                }
+                                else {
+                                    goto TryAgainWithMoreInterpolation;
+                                }
                             }
                             else {
-                                x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                                x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                                 right[i] = std::make_pair(true, x[i]);
-                                y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                                y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                                 top[i] = std::make_pair(true, y[i]);
                             }
                         }
                         //This triangle check needs improvement for rectangles
-                        else if (w01 || !env.wall.inTopRightTriangle(x[i],y[i])) {
-                            x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                        else if (w01 || !env.wall.inTopRightTriangle(x[i], y[i])) {
+                            x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
-                            y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                            y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             bottom[i] = std::make_pair(true, y[i]);
                         }
                         else {
-                            x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                            x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             right[i] = std::make_pair(true, x[i]);
-                            y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                            y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
                     else if (w10) {
                         if (w01) {
-                            x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                            x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
-                            y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                            y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                         else {
-                            y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                            y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w01 || env.wall.inTopRightTriangle(x[i],y[i]))
+                    else if (w01 || env.wall.inTopRightTriangle(x[i], y[i]))
                     {
-                        x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                        x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         left[i] = std::make_pair(true, x[i]);
                     }
                     else
                     {
-                        y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                        y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         top[i] = std::make_pair(true, y[i]);
                     }
                 }
@@ -1833,63 +1833,63 @@ void boxCollisionAlogorithm(
                 {
                     if (w01)
                     {
-                        if (w11 || env.wall.inTopLeftTriangle(x[i]+size[i]-1,y[i])) // this triangle check needs improvement for rectangles
+                        if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i])) // this triangle check needs improvement for rectangles
                         {
-                            x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                            x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             right[i] = std::make_pair(true, x[i]);
-                            y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                            y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             bottom[i] = std::make_pair(true, y[i]);
                         }
                         else
                         {
-                            x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                            x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
-                            y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                            y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w11 || env.wall.inTopLeftTriangle(x[i]+size[i]-1,y[i]))
+                    else if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i]))
                     {
-                        x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                        x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         right[i] = std::make_pair(true, x[i]);
                     }
                     else
                     {
-                        y[i] = (y[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                        y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         top[i] = std::make_pair(true, y[i]);
                     }
                 }
                 else if (w01)
                 {
-                    if (w11 || env.wall.inTopLeftTriangle(x[i],y[i]+size[i]-1))
+                    if (w11 || env.wall.inTopLeftTriangle(x[i], y[i] + size[i] - 1))
                     {
-                        y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                        y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         bottom[i] = std::make_pair(true, y[i]);
                         x[i] = xTemp[i];
                     }
                     else
                     {
-                        x[i] = (x[i]/env.wall.segmentSize()+1)*env.wall.segmentSize();
+                        x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         left[i] = std::make_pair(true, x[i]);
                     }
                 }
                 else if (w11)
                 {
-                    if (env.wall.inTopRightTriangle(x[i]+size[i]-1,y[i]+size[i]-1))
+                    if (env.wall.inTopRightTriangle(x[i] + size[i] - 1, y[i] + size[i] - 1))
                     {
-                        y[i] = ((y[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                        y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         bottom[i] = std::make_pair(true, y[i]);
                         x[i] = xTemp[i];
                     }
                     else
                     {
-                        x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
+                        x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         right[i] = std::make_pair(true, x[i]);
                     }
                 }
 
                 // Check inside a platform
-                for (Collision const &platform: nextPlatform)
+                for (Collision const &platform : nextPlatform)
                 {
                     int pX(platform.getX());
                     int pY(platform.getY());
@@ -1899,9 +1899,9 @@ void boxCollisionAlogorithm(
 
                     if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
                     {
-                        if (IsPointInVerticalQuadrant(xTemp[i] + size[i]/2, yTemp[i] + size[i]/2, pX, pY, pWidth, pHeight))
+                        if (IsPointInVerticalQuadrant(xTemp[i] + size[i] / 2, yTemp[i] + size[i] / 2, pX, pY, pWidth, pHeight))
                         {
-                            if (yTemp[i] + size[i]/2 < pY + pHeight/2) // box above platform
+                            if (yTemp[i] + size[i] / 2 < pY + pHeight / 2) // box above platform
                             {
                                 y[i] = pY - size[i];
                                 bottom[i] = std::make_pair(true, y[i]);
@@ -1918,7 +1918,7 @@ void boxCollisionAlogorithm(
                         }
                         else // left or right
                         {
-                            if (xTemp[i] + size[i]/2 < pX + pWidth/2) // box left of platform
+                            if (xTemp[i] + size[i] / 2 < pX + pWidth / 2) // box left of platform
                             {
                                 x[i] = pX - size[i];
                                 right[i] = std::make_pair(true, x[i]);
@@ -1956,7 +1956,7 @@ void boxCollisionAlogorithm(
                     {
                         if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
                         {
-                            if (std::abs(x[i] + size[i]/2 - x[j] - size[j]/2) < std::abs(y[i] + size[i]/2 - y[j] - size[j]/2)) // top or bot
+                            if (std::abs(x[i] + size[i] / 2 - x[j] - size[j] / 2) < std::abs(y[i] + size[i] / 2 - y[j] - size[j] / 2)) // top or bot
                             {
                                 if (y[i] < y[j]) // i above j
                                 {
@@ -2015,7 +2015,7 @@ void boxCollisionAlogorithm(
                         && !squished[j]
                         && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
                     {
-                        if (std::abs(x[i] + size[i]/2 - x[j] - size[j]/2) >= std::abs(y[i] + size[i]/2 - y[j] - size[j]/2)) // left or right
+                        if (std::abs(x[i] + size[i] / 2 - x[j] - size[j] / 2) >= std::abs(y[i] + size[i] / 2 - y[j] - size[j] / 2)) // left or right
                         {
                             if (x[i] < x[j]) // i left of j
                             {
@@ -2137,7 +2137,7 @@ void boxCollisionAlogorithm(
                     relx = relx + relativePortal.getXspeed();
                     rely = rely + relativePortal.getYspeed();
                 }
-            
+
                 makeBoxAndTimeWithPortalsAndMutators(
                     nextBox,
                     nextBoxNormalDeparture,

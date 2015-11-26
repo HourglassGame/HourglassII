@@ -7,8 +7,7 @@
 #include "Maths.h"
 namespace hg {
 
-
-sf::Color const uiTextColor(100,100,200);
+sf::Color const uiTextColor(100, 100, 200);
 
 void DrawGlitzAndWall(
     hg::RenderWindow &target,
@@ -19,30 +18,30 @@ void DrawGlitzAndWall(
     AudioGlitzManager &audioGlitzManager,
     sf::Image const &wallImage)
 {
-    target.clear(sf::Color(255,255,255));
+    target.clear(sf::Color(255, 255, 255));
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
     //window.
-    double scalingFactor(std::min(target.getSize().x*100./wall.roomWidth(), target.getSize().y*100./wall.roomHeight()));
+    double scalingFactor(std::min(target.getSize().x*100. / wall.roomWidth(), target.getSize().y*100. / wall.roomHeight()));
     sf::View oldView(target.getView());
-    sf::View scaledView(sf::FloatRect(0.f, 0.f, static_cast<float>(target.getSize().x/scalingFactor), static_cast<float>(target.getSize().y/scalingFactor)));
+    sf::View scaledView(sf::FloatRect(0.f, 0.f, static_cast<float>(target.getSize().x / scalingFactor), static_cast<float>(target.getSize().y / scalingFactor)));
     target.setView(scaledView);
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
-    for (hg::Glitz const &particularGlitz: glitz) particularGlitz.display(layeredCanvas);
+    for (hg::Glitz const &particularGlitz : glitz) particularGlitz.display(layeredCanvas);
     hg::Flusher flusher(layeredCanvas.getFlusher());
     flusher.partialFlush(1000);
-    
+
     sf::Texture wallTex;
     wallTex.loadFromImage(wallImage);
     target.draw(sf::Sprite(wallTex));
-    
+
     flusher.partialFlush(std::numeric_limits<int>::max());
     if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) {
         DrawColors(target, wall.roomWidth(), wall.roomHeight(), wall.segmentSize());
     }
     target.setView(oldView);
-    
+
     canvas.flushFrame();
 }
 
@@ -102,19 +101,19 @@ constexpr double clamp(double val, double min, double max)
 {
     return val < min ?
         min
-      : val > max ? max : val;
+        : val > max ? max : val;
 }
 
 sf::Color asColor(sf::Vector3<double> const &vec) {
-    return sf::Color(static_cast<sf::Uint8>(clamp(vec.x,0.,1.)*255), static_cast<sf::Uint8>(clamp(vec.y, 0., 1.)*255), static_cast<sf::Uint8>(clamp(vec.z, 0., 1.)*255));
+    return sf::Color(static_cast<sf::Uint8>(clamp(vec.x, 0., 1.) * 255), static_cast<sf::Uint8>(clamp(vec.y, 0., 1.) * 255), static_cast<sf::Uint8>(clamp(vec.z, 0., 1.) * 255));
 }
 
 
 sf::Color guyPositionToColor(double xFrac, double yFrac) {
-    static sf::Vector3<double> const posStart(1,0,0);
-    static sf::Vector3<double> const xMax(0.5,1,0);
-    static sf::Vector3<double> const yMax(0.5,0,1);
-    
+    static sf::Vector3<double> const posStart(1, 0, 0);
+    static sf::Vector3<double> const xMax(0.5, 1, 0);
+    static sf::Vector3<double> const yMax(0.5, 0, 1);
+
     static sf::Vector3<double> const xDif(xMax - posStart);
     static sf::Vector3<double> const yDif(yMax - posStart);
 
@@ -124,20 +123,20 @@ sf::Color guyPositionToColor(double xFrac, double yFrac) {
 
 void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight, int segmentSize)
 {
-	sf::Image colors;
-	colors.create(roomWidth / 100, roomHeight / 100, sf::Color(0, 0, 0, 0));
-	for (int x(segmentSize/100); x != (roomWidth - segmentSize) / 100; ++x) {
-		for (int y(segmentSize / 100); y != (roomHeight - segmentSize) / 100; ++y) {
-			sf::Color color(guyPositionToColor(
-				(x - segmentSize / 100)*100. / (roomWidth - 2 * segmentSize), (y - segmentSize / 100)*100. / (roomHeight - 2 * segmentSize)));
-			color.a = 220;
-			colors.setPixel(x, y, color);
-		}
-	}
-	sf::Texture tex;
-	tex.loadFromImage(colors);
+    sf::Image colors;
+    colors.create(roomWidth / 100, roomHeight / 100, sf::Color(0, 0, 0, 0));
+    for (int x(segmentSize / 100); x != (roomWidth - segmentSize) / 100; ++x) {
+        for (int y(segmentSize / 100); y != (roomHeight - segmentSize) / 100; ++y) {
+            sf::Color color(guyPositionToColor(
+                (x - segmentSize / 100)*100. / (roomWidth - 2 * segmentSize), (y - segmentSize / 100)*100. / (roomHeight - 2 * segmentSize)));
+            color.a = 220;
+            colors.setPixel(x, y, color);
+        }
+    }
+    sf::Texture tex;
+    tex.loadFromImage(colors);
 
-	target.draw(sf::Sprite(tex));
+    target.draw(sf::Sprite(tex));
 }
 
 void DrawTimelineContents(
@@ -152,33 +151,33 @@ void DrawTimelineContents(
     //TODO: This can become very slow on HiDPI displays (because the texture width is based on the window width in pixels)(?)
     //      It also looks bad, due to aliasing artefacts.
     //      Check; and reconsider the algorithm/implementation.
-    std::size_t const numberOfGuys(timeEngine.getReplayData().size()+1);
+    std::size_t const numberOfGuys(timeEngine.getReplayData().size() + 1);
     std::size_t const timelineLength(timeEngine.getTimelineLength());
     hg::UniverseID const universe(timeEngine.getTimelineLength());
-    
+
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
-        for (hg::GuyOutputInfo const &guy: frame->getView().getGuyInformation()) {
-            int const left = static_cast<int>(frameNumber*target.getView().getSize().x/timelineLength);
-            std::size_t const top = static_cast<std::size_t>((height-guyLineHeight)*(guy.getIndex()/static_cast<double>(numberOfGuys)));
+        for (hg::GuyOutputInfo const &guy : frame->getView().getGuyInformation()) {
+            int const left = static_cast<int>(frameNumber*target.getView().getSize().x / timelineLength);
+            std::size_t const top = static_cast<std::size_t>((height - guyLineHeight)*(guy.getIndex() / static_cast<double>(numberOfGuys)));
 
-            double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize())/static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());
-            double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize())/static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
+            double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());
+            double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
 
             sf::Color const color(guyPositionToColor(xFrac, yFrac));
 
             std::size_t pos(top);
-            for (std::size_t const bot(top+boxLineHeight); pos != bot; ++pos) {
+            for (std::size_t const bot(top + boxLineHeight); pos != bot; ++pos) {
                 assert(pos <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
                 timelineContents.setPixel(
                     static_cast<int>(left), static_cast<int>(pos),
                     !guy.getBoxCarrying() ?
-                        color :
-                        guy.getBoxCarryDirection() == guy.getTimeDirection() ?
-                            sf::Color(255, 0, 255)
-                          : sf::Color(0, 255, 0));
+                    color :
+                    guy.getBoxCarryDirection() == guy.getTimeDirection() ?
+                    sf::Color(255, 0, 255)
+                    : sf::Color(0, 255, 0));
             }
-            for (std::size_t const bot(top+guyLineHeight); pos != bot; ++pos) {
+            for (std::size_t const bot(top + guyLineHeight); pos != bot; ++pos) {
                 assert(pos <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
                 timelineContents.setPixel(static_cast<int>(left), static_cast<int>(pos), color);
             }
@@ -202,8 +201,8 @@ void DrawWaves(
     //It also looks bad; due to alisaing artefacts.
     //Come up with a better algorithm.
     std::vector<char> pixelsWhichHaveBeenDrawnIn(static_cast<std::size_t>(std::round(target.getView().getSize().x)));
-    for (hg::FrameUpdateSet const &wave: waves) {
-        for (hg::Frame *frame: wave) {
+    for (hg::FrameUpdateSet const &wave : waves) {
+        for (hg::Frame *frame : wave) {
             if (frame) {
                 auto pixelToDrawIn = static_cast<std::size_t>(
                     (static_cast<double>(getFrameNumber(frame)) / timelineLength)
@@ -228,9 +227,9 @@ void DrawWaves(
             }
             else {
                 if (inWaveRegion) {
-                    sf::RectangleShape wavegroup(sf::Vector2f(static_cast<float>(i-leftOfWaveRegion), static_cast<float>(height)));
+                    sf::RectangleShape wavegroup(sf::Vector2f(static_cast<float>(i - leftOfWaveRegion), static_cast<float>(height)));
                     wavegroup.setPosition(static_cast<float>(leftOfWaveRegion), 10.f);
-                    wavegroup.setFillColor(sf::Color(250,0,0));
+                    wavegroup.setFillColor(sf::Color(250, 0, 0));
                     target.draw(wavegroup);
                     inWaveRegion = false;
                 }
@@ -238,9 +237,9 @@ void DrawWaves(
         }
         //Draw when waves extend to far right.
         if (inWaveRegion) {
-            sf::RectangleShape wavegroup(sf::Vector2f(target.getView().getSize().x-leftOfWaveRegion, static_cast<float>(height)));
+            sf::RectangleShape wavegroup(sf::Vector2f(target.getView().getSize().x - leftOfWaveRegion, static_cast<float>(height)));
             wavegroup.setPosition(static_cast<float>(leftOfWaveRegion), 10.f);
-            wavegroup.setFillColor(sf::Color(250,0,0));
+            wavegroup.setFillColor(sf::Color(250, 0, 0));
             target.draw(wavegroup);
         }
     }
@@ -248,10 +247,10 @@ void DrawWaves(
 
 
 void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength) {
-    for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5*60) {
-        float const left(static_cast<float>(frameNo/static_cast<double>(timelineLength)*target.getView().getSize().x));
+    for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5 * 60) {
+        float const left(static_cast<float>(frameNo / static_cast<double>(timelineLength)*target.getView().getSize().x));
         sf::RectangleShape tick(sf::Vector2f(1., 10.));
-        tick.setFillColor(sf::Color(255,255,0));
+        tick.setFillColor(sf::Color(255, 255, 0));
         tick.setPosition(sf::Vector2f(left, 0.));
         target.draw(tick);
     }
@@ -267,21 +266,21 @@ void DrawTimeline(
     int const timelineLength)
 {
     unsigned int const height = 75;
-    
+
     DrawTicks(target, timelineLength);
-    
+
     DrawWaves(target, waves, timelineLength, height);
-    
+
     if (playerFrame.isValidFrame()) {
         sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height)));
-        playerLine.setPosition(playerFrame.getFrameNumber()*target.getView().getSize().x/timelineLength, 10.f);
-        playerLine.setFillColor(sf::Color(200,200,0));
+        playerLine.setPosition(playerFrame.getFrameNumber()*target.getView().getSize().x / timelineLength, 10.f);
+        playerLine.setFillColor(sf::Color(200, 200, 0));
         target.draw(playerLine);
     }
     if (timeCursor.isValidFrame()) {
         sf::RectangleShape timeCursorLine(sf::Vector2f(3.f, static_cast<float>(height)));
-        timeCursorLine.setPosition(timeCursor.getFrameNumber()*target.getView().getSize().x/timelineLength, 10.f);
-        timeCursorLine.setFillColor(sf::Color(0,0,200));
+        timeCursorLine.setPosition(timeCursor.getFrameNumber()*target.getView().getSize().x / timelineLength, 10.f);
+        timeCursorLine.setFillColor(sf::Color(0, 0, 200));
         target.draw(timeCursorLine);
     }
     DrawTimelineContents(target, timeEngine, height);
@@ -297,12 +296,8 @@ struct CompareIndicies {
 
 hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    double const mouseXFraction = app.getInputState().getMousePosition().x*1./app.getSize().x;
+    double const mouseXFraction = app.getInputState().getMousePosition().x*1. / app.getSize().x;
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }
-
-
-
-
 }
