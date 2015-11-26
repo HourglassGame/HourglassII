@@ -1617,19 +1617,14 @@ void boxCollisionAlogorithm(
     bool firstTimeThrough(true);
     //unsigned int count(0);
     while (thereAreStillThingsToDo) {
-        /*
-        ++count;
-        if (count > 10)
+       
+		/*
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            std::cerr << count << "\n";
-            for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
-            {
-                std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
-                        << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
-            }
-            int bla = 1/0;
+            std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
+                    << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
         }
-        */
+		*/
 
         mt::std::vector<std::pair<bool,int> > top(oldBoxList.size());
         mt::std::vector<std::pair<bool,int> > bottom(oldBoxList.size());
@@ -1701,7 +1696,7 @@ void boxCollisionAlogorithm(
                         {
                             newX = x[i] - x[i] % env.wall.segmentSize() - size[i];
                         }
-                        y[i] = y[i] - std::abs(x[i]-newX)*(y[i]-yTemp[i])/std::abs(x[i]-xTemp[i]);
+                        y[i] = y[i] - std::abs(x[i] - newX)*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
                         x[i] = newX;
                     }
                 }
@@ -1762,7 +1757,13 @@ void boxCollisionAlogorithm(
                     if (w11) {
                         if (w10) {
                             if (w01) {
-                                goto TryAgainWithMoreInterpolation;
+								if (x[i] == xTemp[i] && y[i] == yTemp[i]) {
+									// Cannot interpolate a static box.
+									squished[i] = true;
+								}
+								else {
+									goto TryAgainWithMoreInterpolation;
+								}
                             }
                             else {
                                 x[i] = ((x[i]+size[i]-1)/env.wall.segmentSize())*env.wall.segmentSize()-size[i];
