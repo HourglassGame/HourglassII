@@ -1899,9 +1899,9 @@ void boxCollisionAlogorithm(
 
                     if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
                     {
-                        if (IsPointInVerticalQuadrant(x[i] + size[i]/2, y[i] + size[i]/2, pX, pY, pWidth, pHeight))
+                        if (IsPointInVerticalQuadrant(xTemp[i] + size[i]/2, yTemp[i] + size[i]/2, pX, pY, pWidth, pHeight))
                         {
-                            if (y[i] + size[i]/2 < pY + pHeight/2) // box above platform
+                            if (yTemp[i] + size[i]/2 < pY + pHeight/2) // box above platform
                             {
                                 y[i] = pY - size[i];
                                 bottom[i] = std::make_pair(true, y[i]);
@@ -1918,7 +1918,7 @@ void boxCollisionAlogorithm(
                         }
                         else // left or right
                         {
-                            if (x[i] + size[i]/2 < pX + pWidth/2) // box left of platform
+                            if (xTemp[i] + size[i]/2 < pX + pWidth/2) // box left of platform
                             {
                                 x[i] = pX - size[i];
                                 right[i] = std::make_pair(true, x[i]);

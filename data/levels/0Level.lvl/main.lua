@@ -1,9 +1,9 @@
 name = "Guy Killer"
 speedOfTime = 3
-timelineLength = 3
+timelineLength = 9000
 environment =
 {
-    gravity = 5500,
+    gravity = 200,
     wall =
     {
         width = 25,
@@ -44,8 +44,12 @@ initialGuy =
 }
 initialArrivals =
 {
-	--{type = "box", x = 2.75 * 3200, y = 6 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
-	{type = "box", x = 11.5 * 3200, y = 8.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+	{type = "box", x = 5.5 * 3200, y = 3.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+	{type = "box", x = 5.5 * 3200, y = 4.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+	{type = "box", x = 5.5 * 3200, y = 5.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+	{type = "box", x = 5.5 * 3200, y = 6.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+	{type = "box", x = 5.5 * 3200, y = 7.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+	{type = "box", x = 11.5 * 3200, y = 7.5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
 }
 triggerSystem =
 {
