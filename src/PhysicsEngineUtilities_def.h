@@ -423,18 +423,29 @@ void guyStep(
             {
                 if (env.wall.at(x[i], newY+height) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY+height)))
                 {
-                    newY = ((newY+height)/env.wall.segmentSize())*env.wall.segmentSize() - height;
-                    supported[i] = true;
-                    bottom = true;
-                    supportedSpeed[i] = 0;
+					newY = ((newY + height) / env.wall.segmentSize())*env.wall.segmentSize() - height;
+					supported[i] = true;
+					bottom = true;
+					supportedSpeed[i] = 0;
+					while (newY > 0 && (env.wall.at(x[i], newY + height - 1) || 
+						(x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height - 1))))
+					{
+						newY = newY - env.wall.segmentSize();
+					}
                 }
             }
             else if (yspeed[i] < 0) // up
             {
                 if  (env.wall.at(x[i], newY) || (x[i] - (x[i]/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-width && env.wall.at(x[i]+width, newY)))
                 {
-                    newY = (newY/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+					newY = (newY / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                     top = true;
+					while (newY + height < env.wall.roomHeight() && (env.wall.at(x[i], newY + 1) || 
+						(x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + 1))))
+					{
+						newY = newY + env.wall.segmentSize();
+					}
+				}
                 }
             }
 
@@ -487,16 +498,26 @@ void guyStep(
             {
                 if (env.wall.at(newX+width, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX+width, newY+height)))
                 {
-                    newX = (newX+width)/env.wall.segmentSize()*env.wall.segmentSize() - width;
+					newX = (newX + width) / env.wall.segmentSize()*env.wall.segmentSize() - width;
                     right = true;
+					while (newX > 0 && (env.wall.at(newX + width - 1, newY) ||
+						(newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + width - 1, newY + height))))
+					{
+						newX = newX - env.wall.segmentSize();
+					}
                 }
             }
             else if (newX-x[i] < 0) // left
             {
                 if (env.wall.at(newX, newY) || (newY - (newY/env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize()-height && env.wall.at(newX, newY+height)))
                 {
-                    newX = (newX/env.wall.segmentSize() + 1)*env.wall.segmentSize();
+					newX = (newX / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                     left = true;
+					while (newX + width < env.wall.roomWidth() && (env.wall.at(newX + 1, newY) ||
+						(newY - (newY / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - height && env.wall.at(newX + 1, newY + height))))
+					{
+						newX = newX + env.wall.segmentSize();
+					}
                 }
             }
 
