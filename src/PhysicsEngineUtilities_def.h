@@ -445,7 +445,6 @@ void guyStep(
 					{
 						newY = newY + env.wall.segmentSize();
 					}
-				}
                 }
             }
 
