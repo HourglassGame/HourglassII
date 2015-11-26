@@ -39,7 +39,7 @@ void DrawGlitzAndWall(
     
     flusher.partialFlush(std::numeric_limits<int>::max());
     if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) {
-        DrawColors(target, wall.roomWidth(), wall.roomHeight());
+        DrawColors(target, wall.roomWidth(), wall.roomHeight(), wall.segmentSize());
     }
     target.setView(oldView);
     
@@ -122,23 +122,23 @@ sf::Color guyPositionToColor(double xFrac, double yFrac) {
 }
 
 
-void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight)
+void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight, int segmentSize)
 {
-    sf::Image colors;
-    colors.create(roomWidth/100, roomHeight/100, sf::Color(0, 0, 0, 0));
-    for (int x(0); x != roomWidth/100; ++x) {
-        for (int y(0); y != roomHeight/100; ++y) {
-            sf::Color color(guyPositionToColor(x*100./roomWidth,y*100./roomHeight));
-            color.a = 220;
-            colors.setPixel(x, y, color);
-        }
-    }
-    sf::Texture tex;
-    tex.loadFromImage(colors);
-    
-    target.draw(sf::Sprite(tex));
-}
+	sf::Image colors;
+	colors.create(roomWidth / 100, roomHeight / 100, sf::Color(0, 0, 0, 0));
+	for (int x(segmentSize/100); x != (roomWidth - segmentSize) / 100; ++x) {
+		for (int y(segmentSize / 100); y != (roomHeight - segmentSize) / 100; ++y) {
+			sf::Color color(guyPositionToColor(
+				(x - segmentSize / 100)*100. / (roomWidth - 2 * segmentSize), (y - segmentSize / 100)*100. / (roomHeight - 2 * segmentSize)));
+			color.a = 220;
+			colors.setPixel(x, y, color);
+		}
+	}
+	sf::Texture tex;
+	tex.loadFromImage(colors);
 
+	target.draw(sf::Sprite(tex));
+}
 
 void DrawTimelineContents(
     sf::RenderTarget &target,
@@ -161,9 +161,9 @@ void DrawTimelineContents(
         for (hg::GuyOutputInfo const &guy: frame->getView().getGuyInformation()) {
             int const left = static_cast<int>(frameNumber*target.getView().getSize().x/timelineLength);
             std::size_t const top = static_cast<std::size_t>((height-guyLineHeight)*(guy.getIndex()/static_cast<double>(numberOfGuys)));
-            
-            double const xFrac = guy.getX()/static_cast<double>(timeEngine.getWall().roomWidth());
-            double const yFrac = guy.getY()/static_cast<double>(timeEngine.getWall().roomHeight());
+
+            double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize())/static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());
+            double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize())/static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
 
             sf::Color const color(guyPositionToColor(xFrac, yFrac));
 

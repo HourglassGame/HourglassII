@@ -30,7 +30,7 @@ namespace hg {
         sf::RenderTarget &target,
         hg::TimeEngine const &timeEngine,
         unsigned int height);
-    void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight);
+    void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight, int segmentSize);
     void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength);
     void DrawTimeline(
         sf::RenderTarget &target,
