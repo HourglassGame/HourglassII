@@ -401,7 +401,7 @@ void guyStep(
                         x[i], newY, width, height,
                         pX, pY, pWidth, pHeight))
                 {
-                    int colDir = RectangleIntersectionDirection(x[i],newY,width,height,pX, pY, pWidth, pHeight);
+                    int colDir = RectangleIntersectionDirection(x[i],y[i],width,height,pX, pY, pWidth, pHeight);
                     if (colDir == 1)
                     {
                         newY = pY-height;
@@ -470,7 +470,7 @@ void guyStep(
 
                 if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
                 {
-                    if (newX+width/2 < pX+pWidth/2)
+                    if (x[1]+width/2 < pX+pWidth/2)
                     {
                         newX = pX-width;
                         right = true;
