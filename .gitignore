@@ -10,3 +10,7 @@
 *.vs
 *.sdf
 *.opensdf
+/data/replay
+/data/replayLogOut
+/ext/MSVCToolpackv0.7z
+/ext/readme.txt
