@@ -18,6 +18,12 @@ enum class AudioAction {
 };
 
 struct AudioGlitzObject : boost::totally_ordered<AudioGlitzObject> {
+private:
+    auto comparison_tuple() const -> decltype(auto)
+    {
+        return std::tie(key, index);
+    }
+public:
     AudioGlitzObject(std::string key, int index)
     : boost::totally_ordered<AudioGlitzObject>(),
       key(std::move(key)),
@@ -28,15 +34,10 @@ struct AudioGlitzObject : boost::totally_ordered<AudioGlitzObject> {
     std::string key;
     int index;
     bool operator==(AudioGlitzObject const &o) const {
-        return as_tie() == o.as_tie();
+        return comparison_tuple() == o.comparison_tuple();
     }
     bool operator<(AudioGlitzObject const &o) const {
-        return as_tie() < o.as_tie();
-    }
-private:
-    auto as_tie() const -> decltype(std::tie(key,index))
-    {
-        return std::tie(key,index);
+        return comparison_tuple() < o.comparison_tuple();
     }
 };
 

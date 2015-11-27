@@ -49,11 +49,11 @@ FrameID FrameID::arbitraryFrameInUniverse(int frameNumber) const
 }
 
 bool FrameID::operator==(FrameID const &o) const {
-    return as_tie() == o.as_tie();
+    return comparison_tuple() == o.comparison_tuple();
 }
 
 bool FrameID::operator<(FrameID const &o) const {
-    return as_tie() < o.as_tie();
+    return comparison_tuple() < o.comparison_tuple();
 }
 bool FrameID::isValidFrame() const {
     if (frame >= 0 && frame < getTimelineLength(universeID)) {

@@ -257,6 +257,7 @@
     <ClInclude Include="..\..\..\..\src\RunningGameScene.h" />
     <ClInclude Include="..\..\..\..\src\scalable_allocator.h" />
     <ClInclude Include="..\..\..\..\src\Scene.h" />
+    <ClInclude Include="..\..\..\..\src\SelectionScene.h" />
     <ClInclude Include="..\..\..\..\src\sfColour.h" />
     <ClInclude Include="..\..\..\..\src\sfRenderTargetCanvas.h" />
     <ClInclude Include="..\..\..\..\src\SimpleLuaCpp.h" />
@@ -416,6 +417,7 @@
     <ClCompile Include="..\..\..\..\src\ResourceManager.cpp" />
     <ClCompile Include="..\..\..\..\src\RunningGameScene.cpp" />
     <ClCompile Include="..\..\..\..\src\Scene.cpp" />
+    <ClCompile Include="..\..\..\..\src\SelectionScene.cpp" />
     <ClCompile Include="..\..\..\..\src\SimpleLuaCpp.cpp" />
     <ClCompile Include="..\..\..\..\src\TestDriver.cpp" />
     <ClCompile Include="..\..\..\..\src\TimeDirection.cpp" />

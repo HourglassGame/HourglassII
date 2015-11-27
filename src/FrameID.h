@@ -74,7 +74,7 @@ private:
     //positiong of frame within universeID_
     int frame;
     UniverseID universeID;
-    auto as_tie() const -> decltype(std::tie(frame, universeID)) {
+    auto comparison_tuple() const -> decltype(auto) {
         return std::tie(frame, universeID);
     }
 };

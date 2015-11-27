@@ -89,19 +89,16 @@ private:
     TimeDirection timeDirection;
     bool timePaused;
     
-    #define HG_EQ_TIE_DEF std::tie(\
-                index,\
-                x,y,xspeed,yspeed,width,height,jumpSpeed,\
-                illegalPortal,arrivalBasis,supported,supportedSpeed,\
-                pickups,facing,\
-                boxCarrying,boxCarrySize,boxCarryDirection,\
-                timeDirection,timePaused)
-    
-    auto equality_tuple() const -> decltype(HG_EQ_TIE_DEF)
+    auto equality_tuple() const -> decltype(auto)
     {
-        return HG_EQ_TIE_DEF;
+        return std::tie(
+            index, 
+            x, y, xspeed, yspeed, width, height, jumpSpeed,
+            illegalPortal, arrivalBasis, supported, supportedSpeed,
+            pickups, facing,
+            boxCarrying, boxCarrySize, boxCarryDirection,
+            timeDirection, timePaused);
     }
-    #undef HG_EQ_TIE_DEF
 };
 
 class GuyConstPtr : boost::totally_ordered<GuyConstPtr>

@@ -12,6 +12,9 @@ namespace hg {
 //       since GlitzImplementation is designed
 //       for graphics rather than sound.
 class AudioGlitz final : public GlitzImplementation {
+    auto comparison_tuple() const -> decltype(auto) {
+        return std::tie(key, n);
+    }
 public:
     AudioGlitz(std::string key, std::size_t n) :
         key(std::move(key)),
@@ -36,11 +39,11 @@ public:
     //(for persistent glitz).
     virtual bool operator<(GlitzImplementation const &o) const override {
         AudioGlitz const &actual_other(*boost::polymorphic_downcast<AudioGlitz const*>(&o));
-        return as_tie() < actual_other.as_tie();
+        return comparison_tuple() < actual_other.comparison_tuple();
     }
     virtual bool operator==(GlitzImplementation const &o) const override {
         AudioGlitz const &actual_other(*boost::polymorphic_downcast<AudioGlitz const*>(&o));
-        return as_tie() == actual_other.as_tie();
+        return comparison_tuple() == actual_other.comparison_tuple();
     }
 private:
     virtual int order_ranking() const override {
@@ -53,9 +56,6 @@ private:
                    //Sounds are divided into 1/60 second chunks
     //FrameID startFrame; //maybe?
 
-    auto as_tie() const -> decltype(std::tie(key,n)) {
-        return std::tie(key,n);
-    }
 };
 }
 #endif // HG_AUDIO_GLITZ_H

@@ -93,6 +93,7 @@ Level loadLevelFromFile(
     int timelineLength(readGlobal<int>(L, "timelineLength"));
     Environment environment(readGlobal<Environment>(L, "environment"));
     ObjectList<NonGuyDynamic> initialArrivals(readGlobal<InitialObjects>(L, "initialArrivals").list);
+    initialArrivals.sort();
     InitialGuyArrival initialGuy(readGlobal<InitialGuyArrival>(L, "initialGuy"));
     Guy &guyArrival(initialGuy.arrival);
     FrameID guyStartTime(initialGuy.arrivalTime, UniverseID(timelineLength));

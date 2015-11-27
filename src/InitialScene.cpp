@@ -10,6 +10,8 @@
 #include "LevelSelectionScene.h"
 #include <functional>
 #include <iostream>
+#include "ReplaySelectionScene.h"
+
 namespace hg {
 struct RunGameResultVisitor {
     typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>result_type;
@@ -22,15 +24,16 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
     loadAndRunLevel(
         hg::RenderWindow &window,
         LoadLevelFunction const &levelLoadingFunction,
-        hg::move_function<std::vector<InputList>()>&& replayLoadingFunction = {})
+        hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
 {
     hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
               loading_outcome = load_level_scene(window, levelLoadingFunction);
     
     struct {
         hg::RenderWindow &window;
-        hg::move_function<std::vector<InputList>()> &replayLoadingFunction;
+        hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
         typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
+
         variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
         operator()(LoadedLevel &level) const
         {
@@ -40,7 +43,6 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
             else {
                 return run_game_scene(window, std::move(level)).visit(RunGameResultVisitor{});
             }
-           
         }
         variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
             return GameAborted_tag{};
@@ -81,12 +83,10 @@ int run_hourglassii() {
     try {
         while (true) {
             variant<RunALevel_tag, RunAReplay_tag, Exit_tag> main_menu_result = run_main_menu(window);
-            std::vector<hg::InputList> replay;
             if (main_menu_result.active<Exit_tag>()) {
                 return EXIT_SUCCESS;
             }
             else if (main_menu_result.active<RunAReplay_tag>()) {
-                replay = loadReplay("replay");
             }
             else {
                 assert(main_menu_result.active<RunALevel_tag>());
@@ -101,11 +101,27 @@ int run_hourglassii() {
             else {
                 assert(selected_level.active<LoadLevelFunction>());
             }
+            move_function<std::vector<InputList>()> replayLoader;
+            if (main_menu_result.active<RunAReplay_tag>()) {
+                variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
+                    = run_replay_selection_scene(window, selected_level.get<LoadLevelFunction>().levelName);
+                if (selected_replay.active<SceneAborted_tag>()) {
+                    continue;
+                }
+                else {
+                    assert(selected_replay.active<move_function<std::vector<InputList>()>>());
+                }
+                //TODO: Make failure to use std::move here be a compile time error, rather than
+                //      a stack-overflow.
+                //      (requires enhancement to move_function)
+                replayLoader = std::move(selected_replay.get<move_function<std::vector<InputList>()>>());
+            }
             
             variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
                 game_scene_result = ReloadLevel_tag{};
             while (game_scene_result.active<ReloadLevel_tag>()
-                || game_scene_result.active<move_function<std::vector<InputList>()>>()) {
+                || game_scene_result.active<move_function<std::vector<InputList>()>>())
+            {
                 try {
                     auto& levelLoadFunction = selected_level.get<LoadLevelFunction>();
                     if (game_scene_result.active<move_function<std::vector<InputList>()>>())
@@ -116,7 +132,7 @@ int run_hourglassii() {
                             std::move(game_scene_result.get<move_function<std::vector<InputList>()>>()));
                     }
                     else {
-                        game_scene_result = loadAndRunLevel(window, levelLoadFunction, [&](){return replay;});
+                        game_scene_result = loadAndRunLevel(window, levelLoadFunction, std::move(replayLoader));
                     }
                     assert( game_scene_result.active<GameAborted_tag>()
                          || game_scene_result.active<GameWon_tag>()

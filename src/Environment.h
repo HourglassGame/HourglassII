@@ -9,6 +9,11 @@
 namespace hg {
     //stores the wall (the static environment over which the game is played)
     class Wall {
+    private:
+        auto equality_tuple() const -> decltype(auto)
+        {
+            return std::tie(segmentSize_, wallmap_, tilesetName_);
+        }
     public:
         Wall(
             int segmentSize,
@@ -79,7 +84,11 @@ namespace hg {
         std::string const &tilesetName() const noexcept {
             return tilesetName_;
         }
+        bool operator==(Wall const &o) const {
+            return equality_tuple() == o.equality_tuple();
+        }
     private:
+
         int segmentSize_;
         hg::multi_vector<bool, 2> wallmap_;
         std::string tilesetName_;
@@ -88,8 +97,17 @@ namespace hg {
     //in which the game is played.
     //That is - the wall and gravity
     struct Environment {
+    private:
+        auto equality_tuple() const -> decltype(auto)
+        {
+            return std::tie(wall, gravity);
+        }
+    public:
         Wall wall;
         int gravity;
+        bool operator==(Environment const &o) const {
+            return equality_tuple() == o.equality_tuple();
+        }
     };
     inline void swap(Environment &l, Environment &r) noexcept
     {

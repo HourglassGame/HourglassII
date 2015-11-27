@@ -108,10 +108,7 @@ private:
     Glitz reverseGlitz;
     unsigned framesLeft;
     TimeDirection timeDirection;
-    auto as_tie() const ->
-        decltype(std::tie(
-                    forwardsGlitz, reverseGlitz,
-                    framesLeft,timeDirection))
+    auto comparison_tuple() const -> decltype(auto)
     {
         return std::tie(
             forwardsGlitz, reverseGlitz,
@@ -154,12 +151,7 @@ private:
     unsigned currentFrame;
     TimeDirection timeDirection;
 
-    auto as_tie() const ->
-        decltype(std::tie(
-                    key,
-                    duration,
-                    currentFrame,
-                    timeDirection))
+    auto comparison_tuple() const -> decltype(auto)
     {
         return std::tie(
             key,

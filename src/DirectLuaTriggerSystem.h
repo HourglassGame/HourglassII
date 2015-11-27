@@ -142,6 +142,12 @@ private:
 class DirectLuaTriggerSystem final :
     public TriggerSystemImplementation
 {
+
+    auto comparison_tuple() const -> decltype(auto)
+    {
+        //Doesn't include luaStates_, since luaStates_ is just a cache.
+        return std::tie(compiledMainChunk_, compiledExtraChunks_, triggerOffsetsAndDefaults_, arrivalLocationsSize_);
+    }
 public:
     DirectLuaTriggerSystem(
         std::vector<char> const &mainChunk,
@@ -158,6 +164,15 @@ public:
     {
         return new DirectLuaTriggerSystem(*this);
     }
+    virtual bool operator==(TriggerSystemImplementation const &o) const override
+    {
+        DirectLuaTriggerSystem const &actual_other(*boost::polymorphic_downcast<DirectLuaTriggerSystem const*>(&o));
+        return comparison_tuple() == actual_other.comparison_tuple();
+    }
+    virtual int order_ranking() const override
+    {
+        return 1000;
+    }
 private:
     //lazy_ptr because TriggerSystemImplementations must
     //be cloneable, but there is no way to copy
@@ -168,6 +183,7 @@ private:
     //luaStates_ a cache, so the act of ignoring its contents
     //does not cause any problems.
     lazy_ptr<ThreadLocal<LuaState>> luaStates_;
+
     std::vector<char> compiledMainChunk_;
     std::vector<LuaModule> compiledExtraChunks_;
     std::vector<
@@ -177,6 +193,7 @@ private:
         >
     > triggerOffsetsAndDefaults_;
     std::size_t arrivalLocationsSize_;
+
 };
 }
 #endif //HG_DIRECT_LUA_TRIGGER_SYSTEM_H

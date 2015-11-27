@@ -8,6 +8,7 @@
 #include "../src/MainMenuScene.cpp"
 #include "../src/LevelSelectionScene.cpp"
 #include "../src/ReplaySelectionScene.cpp"
+#include "../src/SelectionScene.cpp"
 #include "../src/PostLevelScene.cpp"
 #include "../src/IngameMenuScene.cpp"
 #include "../src/LuaInterruption.cpp"
