@@ -1172,7 +1172,7 @@ void guyStep(
                             {
                                 x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
                                 y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-                                if (nextPortal[i].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
+                                if (nextPortal[j].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
                                 {
                                     xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
                                     yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
