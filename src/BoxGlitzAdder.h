@@ -5,13 +5,17 @@
 #include "vector2.h"
 #include "ImageGlitz.h"
 #include "multi_thread_allocator.h"
+#include "RectangleGlitz.h"
 namespace hg {
 class BoxGlitzAdder {
 public:
     BoxGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,
-        mt::std::vector<Glitz> &reverseGlitz) :
-    forwardsGlitz(&forwardsGlitz), reverseGlitz(&reverseGlitz)
+        mt::std::vector<Glitz> &reverseGlitz,
+        mt::std::vector<GlitzPersister> &persistentGlitz) :
+    forwardsGlitz(&forwardsGlitz), 
+    reverseGlitz(&reverseGlitz),
+    persistentGlitz(&persistentGlitz)
     {}
     //Adds the glitz that would be appropriate for a box
     //with the given characteristics
@@ -41,6 +45,7 @@ public:
 private:
     mt::std::vector<Glitz> *forwardsGlitz;
     mt::std::vector<Glitz> *reverseGlitz;
+    mt::std::vector<GlitzPersister> *persistentGlitz;
 };
 }
 #endif //HG_BOX_GLITZ_ADDER_H

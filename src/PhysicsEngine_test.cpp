@@ -107,6 +107,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         mt::std::vector<char> nextBoxNormalDeparture;
         mt::std::vector<Glitz> forwardsGlitz;
         mt::std::vector<Glitz> reverseGlitz;
+        mt::std::vector<GlitzPersister> persistentGlitz;
         std::vector<Collision> nextPlatform;
         nextPlatform += Collision(22400, 43800, 0, 0, 6400, 1600, TimeDirection::FORWARDS);
         std::vector<PortalArea> nextPortal;
@@ -129,6 +130,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
             arrivalLocations,
             mutators,
             triggerFrameState,
+            BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
             frame);
 
         return true;

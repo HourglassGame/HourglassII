@@ -72,6 +72,8 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
     mt::std::vector<Glitz> forwardsGlitz;
     mt::std::vector<Glitz> reverseGlitz;
+    mt::std::vector<GlitzPersister> persistentGlitz;
+    boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
 
     // boxes do their crazy wizz-bang collision algorithm
     boxCollisionAlogorithm(
@@ -85,6 +87,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.arrivalLocations,
         physicsTriggerStuff.mutators,
         triggerFrameState,
+        BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
         frame);
 
     bool currentPlayerFrame(currentPlayerInArrivals(arrivals.getList<Guy>(), playerInput.size()));
@@ -98,8 +101,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
             | boost::adaptors::transformed(ConstructGuyOutputInfo(physicsTriggerStuff.arrivalLocations)));
 
     mt::std::vector<ObjectAndTime<Guy, Frame*> > nextGuy;
-    mt::std::vector<GlitzPersister> persistentGlitz;
-    boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
 
     FrameDepartureT newDepartures;
 
@@ -124,7 +125,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     makeBoxGlitzListForNormalDepartures(
         nextBox,
         nextBoxNormalDeparture,
-        BoxGlitzAdder(forwardsGlitz, reverseGlitz));
+        BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz));
 
     buildDepartures(
         nextBox,

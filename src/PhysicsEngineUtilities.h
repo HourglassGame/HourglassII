@@ -83,6 +83,7 @@ void boxCollisionAlogorithm(
     RandomAccessArrivalLocationRange const &arrivalLocations,
     RandomAccessMutatorRange const &mutators,
     TriggerFrameState &triggerFrameState,
+    BoxGlitzAdder const &boxGlitzAdder,
     FrameT const &frame);
     
 void makeBoxGlitzListForNormalDepartures(
