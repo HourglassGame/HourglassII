@@ -50,10 +50,6 @@ triggerSystem =
 
     -- C++ still manages offsets and defaults.
     triggerOffsetsAndDefaults = {
-        {
-            offset = 1,
-            default = {11 * 3200, 11 * 3200, 0, 0}
-        },
     },
     arrivalLocationsSize = 3,
 }
