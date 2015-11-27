@@ -99,11 +99,11 @@ local tempStore =
 				return
 				{
 					x = 25000,
-					y = 25000,
-					xspeed = 0,
+					y = 28000,
+					xspeed = -200,
 					yspeed = 0,
-					width = 5000,
-					height = 6000,
+					width = 15000,
+					height = 2000,
 					timeDirection = 'forwards'
 				}
 			end

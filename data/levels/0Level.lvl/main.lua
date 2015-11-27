@@ -33,8 +33,8 @@ initialGuy =
     arrivalTime = 0,
     arrival =
     {
-        x = 9.5 * 3200,
-        y = 9 * 3200,
+        x = 2.5 * 3200,
+        y = 5 * 3200,
         width = 1600,
         height = 3200,
         facing = "right",
