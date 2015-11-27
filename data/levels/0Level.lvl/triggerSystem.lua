@@ -92,6 +92,22 @@ local tempStore =
                 }
             }
         },
+		{
+            lastStateTriggerID = 3,
+			rawCollisionFunction = function(triggerArrivals, outputTriggers)
+			
+				return
+				{
+					x = 25000,
+					y = 25000,
+					xspeed = 0,
+					yspeed = 0,
+					width = 5000,
+					height = 6000,
+					timeDirection = 'forwards'
+				}
+			end
+        },
     },
 	protoMutators = {
 	},

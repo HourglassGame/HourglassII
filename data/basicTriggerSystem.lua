@@ -28,9 +28,13 @@ local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseCo
     end
 end
 
-local function calculateCollisions(protoCollisions, triggerArrivals)
-    local function calculateCollision(self, triggerArrivals)
-        local function solvePDEquation(destination, position, velocity)
+local function calculateCollisions(protoCollisions, triggerArrivals, outputTriggers)
+    local function calculateCollision(self, triggerArrivals, outputTriggers)
+        if self.rawCollisionFunction then
+			return self.rawCollisionFunction(triggerArrivals, outputTriggers)
+		end
+		
+		local function solvePDEquation(destination, position, velocity)
             local function square(a) return a * a end
             local function sign(a) return math.abs(a) / a end
             
@@ -104,7 +108,9 @@ local function calculateCollisions(protoCollisions, triggerArrivals)
             timeDirection = self.timeDirection
         }
     end
-    return map(function(protoCollision) return calculateCollision(protoCollision, triggerArrivals) end, protoCollisions)
+    return map(function(protoCollision) 
+			return calculateCollision(protoCollision, triggerArrivals, outputTriggers) 
+		end, protoCollisions)
 end
 
 
@@ -934,7 +940,7 @@ function calculatePhysicsAffectingStuff(tempStore)
         retv.additionalBoxes = {}
         tempStore.additionalEndBoxes = {}
 
-        retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals)
+        retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals, tempStore.outputTriggers)
         
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)
         

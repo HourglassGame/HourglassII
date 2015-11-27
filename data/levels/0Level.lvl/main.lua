@@ -3,7 +3,7 @@ speedOfTime = 3
 timelineLength = 9000
 environment =
 {
-    gravity = 200,
+    gravity = 22,
     wall =
     {
         width = 25,
@@ -63,6 +63,10 @@ triggerSystem =
         {
             offset = 1,
             default = {0}
+        },
+        {
+            offset = 1,
+            default = {11 * 3200, 11 * 3200, 0, 0}
         },
         {
             offset = 1,
