@@ -83,8 +83,7 @@ local tempStore =
             lastStateTriggerID = 3,
 			rawCollisionFunction = function(triggerArrivals, outputTriggers)
 				if triggerArrivals[1][1] == 0 and triggerArrivals[4][1] == 0 then
-					return
-					{
+					return {
 						x = 19.75 * 3200,
 						y = 10 * 3200,
 						xspeed = 0,
@@ -101,8 +100,7 @@ local tempStore =
 				if x < 1600 then
 					x = x + 24 * 3200
 				end
-				return
-					{
+				return {
 						x = x,
 						y = 10 * 3200,
 						xspeed = -128,
