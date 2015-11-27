@@ -130,17 +130,25 @@ template <
                 nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : FrameT();
                 illegalPortal = portals[i].getIllegalDestination();
                 arrivalBasis = portals[i].getDestinationIndex();
-                x = x - portals[i].getX() + portals[i].getXdestination();
-                y = y - portals[i].getY() + portals[i].getYdestination();
-                if (portals[i].getTimeDirection() * timeDirection == TimeDirection::FORWARDS)
+                if (arrivalBasis != -1)
                 {
-                    xspeed = xspeed - portals[i].getXspeed();
-                    yspeed = yspeed - portals[i].getYspeed();
+                    x = x - portals[i].getX() + portals[i].getXdestination();
+                    y = y - portals[i].getY() + portals[i].getYdestination();
+                    if (portals[i].getTimeDirection() * timeDirection == TimeDirection::FORWARDS)
+                    {
+                        xspeed = xspeed - portals[i].getXspeed();
+                        yspeed = yspeed - portals[i].getYspeed();
+                    }
+                    else
+                    {
+                        xspeed = xspeed + portals[i].getXspeed();
+                        yspeed = yspeed + portals[i].getYspeed();
+                    }
                 }
                 else
                 {
-                    xspeed = xspeed + portals[i].getXspeed();
-                    yspeed = yspeed + portals[i].getYspeed();
+                    x = x + portals[i].getXdestination();
+                    y = y + portals[i].getYdestination();
                 }
                 //std::cerr << "yspeed " << yspeed << "\n";
                 normalDeparture = false;
@@ -1160,17 +1168,25 @@ void guyStep(
                             normalDeparture = false;
                             illegalPortal[i] = nextPortal[j].getIllegalDestination();
                             arrivalBasis = nextPortal[j].getDestinationIndex();
-                            x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
-                            y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-                            if (nextPortal[i].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
+                            if (arrivalBasis != -1)
                             {
-                                xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
-                                yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
+                                x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+                                y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+                                if (nextPortal[i].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
+                                {
+                                    xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
+                                    yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
+                                }
+                                else
+                                {
+                                    xspeed[i] = xspeed[i] + nextPortal[j].getXspeed();
+                                    yspeed[i] = yspeed[i] + nextPortal[j].getYspeed();
+                                }
                             }
                             else
                             {
-                                xspeed[i] = xspeed[i] + nextPortal[j].getXspeed();
-                                yspeed[i] = yspeed[i] + nextPortal[j].getYspeed();
+                                x[i] = x[i] + nextPortal[j].getXdestination();
+                                y[i] = y[i] + nextPortal[j].getYdestination();
                             }
                             break;
                         }
@@ -1264,17 +1280,25 @@ void guyStep(
                             normalDeparture = false;
                             illegalPortal[i] = nextPortal[j].getIllegalDestination();
                             arrivalBasis = nextPortal[j].getDestinationIndex();
-                            x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
-                            y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
-                            if (nextPortal[j].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
+                            if (arrivalBasis != -1)
                             {
-                                xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
-                                yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
+                                x[i] = x[i] - nextPortal[j].getX() + nextPortal[j].getXdestination();
+                                y[i] = y[i] - nextPortal[j].getY() + nextPortal[j].getYdestination();
+                                if (nextPortal[j].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
+                                {
+                                    xspeed[i] = xspeed[i] - nextPortal[j].getXspeed();
+                                    yspeed[i] = yspeed[i] - nextPortal[j].getYspeed();
+                                }
+                                else
+                                {
+                                    xspeed[i] = xspeed[i] + nextPortal[j].getXspeed();
+                                    yspeed[i] = yspeed[i] + nextPortal[j].getYspeed();
+                                }
                             }
                             else
                             {
-                                xspeed[i] = xspeed[i] + nextPortal[j].getXspeed();
-                                yspeed[i] = yspeed[i] + nextPortal[j].getYspeed();
+                                x[i] = x[i] + nextPortal[j].getXdestination();
+                                y[i] = y[i] + nextPortal[j].getYdestination();
                             }
                             break;
                         }

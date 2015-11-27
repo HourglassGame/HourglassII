@@ -185,7 +185,7 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     lua_getfield(L, -1, "destinationIndex");
     if (!lua_isnil(L, -1)) {
         destinationIndex = to<int>(L) - 1;
-        luaassert(destinationIndex >= 0 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
+        luaassert(destinationIndex >= -1 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
     }
     lua_pop(L, 1);
     
