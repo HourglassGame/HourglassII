@@ -1554,6 +1554,7 @@ template <
     // Check with triggers if the box should arrive at all
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
         if (!triggerFrameState.shouldArrive(oldBoxList[i])) {
+            // Triggers should add Glitz for this case as required.
             squished[i] = true;
         }
     }
@@ -1595,6 +1596,7 @@ template <
             if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i] + size[i] - 1, yTemp[i])
                 && env.wall.at(xTemp[i], yTemp[i] + size[i] - 1) && env.wall.at(xTemp[i] + size[i], yTemp[i] + size[i] - 1))
             {
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
                 continue;
             }
@@ -1611,6 +1613,7 @@ template <
                     pY -= platform.getYspeed();
                     if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
                     {
+                        boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                         squished[i] = true;
                         continue;
                     }
@@ -1625,6 +1628,7 @@ template <
                         pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
                         pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
                     {
+                        boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                         squished[i] = true;
                         continue;
                     }
@@ -1654,7 +1658,10 @@ template <
         }
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-            if (toBeSquished[i]) squished[i] = true;
+            if (toBeSquished[i]) {
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                squished[i] = true;
+            }
         }
     }
     // do all the other things until there are no more things to do
@@ -1804,6 +1811,7 @@ template <
                             if (w01) {
                                 if (x[i] == xTemp[i] && y[i] == yTemp[i]) {
                                     // Cannot interpolate a static box.
+                                    boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                                     squished[i] = true;
                                 }
                                 else {
@@ -2025,6 +2033,7 @@ template <
         {
             if (toBeSquished[i])
             {
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
             }
         }
@@ -2085,6 +2094,7 @@ template <
         {
             if (toBeSquished[i])
             {
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
             }
         }

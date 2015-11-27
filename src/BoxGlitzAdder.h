@@ -42,6 +42,35 @@ public:
         reverseGlitz->push_back(
             timeDirection == TimeDirection::REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
     }
+
+    void addDeathGlitz(
+        int x,
+        int y,
+        int size,
+        TimeDirection timeDirection) const
+    {
+        persistentGlitz->push_back(
+            GlitzPersister(
+                new (multi_thread_tag{}) StaticGlitzPersister(
+                    Glitz(
+                        new (multi_thread_tag{}) RectangleGlitz(
+                            1500,
+                            x,
+                            y,
+                            size,
+                            size,
+                            timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+                    Glitz(
+                        new (multi_thread_tag{}) RectangleGlitz(
+                            1500,
+                            x,
+                            y,
+                            size,
+                            size,
+                            timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+                    60,
+                    timeDirection)));
+    }
 private:
     mt::std::vector<Glitz> *forwardsGlitz;
     mt::std::vector<Glitz> *reverseGlitz;
