@@ -1140,7 +1140,7 @@ void guyStep(
                             }
                             Frame *portalTime(
                                 nextPortal[j].getRelativeTime() ?
-                                getArbitraryFrameClamped(
+                                getArbitraryFrame(
                                     getUniverse(frame),
                                     getFrameNumber(frame) + nextPortal[j].getTimeDestination()) :
                                 getArbitraryFrame(
@@ -1244,7 +1244,7 @@ void guyStep(
                             }
                             Frame *portalTime(
                                 nextPortal[j].getRelativeTime() ?
-                                getArbitraryFrameClamped(
+                                getArbitraryFrame(
                                     getUniverse(frame),
                                     getFrameNumber(frame) + nextPortal[j].getTimeDestination()) :
                                 getArbitraryFrame(
