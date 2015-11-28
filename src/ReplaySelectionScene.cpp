@@ -53,7 +53,7 @@ namespace hg {
         }
         else
         {
-            assert(selectedOption.active<SceneAborted_tag>(std::size_t));
+            assert(selectedOption.active<std::size_t>());
         }
         boost::filesystem::path selectedPath{ optionList[selectedOption.get<std::size_t>()] };
         //return load function for selected replay.
