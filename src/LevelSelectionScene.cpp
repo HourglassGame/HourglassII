@@ -73,7 +73,7 @@ variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::Rende
     }
     else
     {
-        assert(selectedOption.active<SceneAborted_tag>(std::size_t));
+        assert(selectedOption.active<std::size_t>());
     }
     boost::filesystem::path selectedPath{ levelPaths[selectedOption.get<std::size_t>()] };
     {
