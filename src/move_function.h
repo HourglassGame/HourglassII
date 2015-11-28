@@ -85,7 +85,7 @@ public:
         assert(f);
         return (*f)(std::forward<ArgTypes>(args)...);
     }
-    explicit operator bool() noexcept { return f.get(); }
+    explicit operator bool() const noexcept { return f.get(); }
 
 private:
     typedef std::unique_ptr<

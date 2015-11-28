@@ -46,16 +46,13 @@ private:
 
     TimeDirection timeDirection;
     
-    #define HG_EQ_TIE_DEF boost::tie(\
-                x, y, xspeed, yspeed, size,\
-                illegalPortal, arrivalBasis,\
-                timeDirection)
-    
-    auto as_tie() const -> decltype(HG_EQ_TIE_DEF)
+    auto comparison_tuple() const -> decltype(auto)
     {
-        return HG_EQ_TIE_DEF;
+        return boost::tie(
+            x, y, xspeed, yspeed, size,
+            illegalPortal, arrivalBasis,
+            timeDirection);
     }
-    #undef HG_EQ_TIE_DEF
     //For debugging
     friend std::ostream &operator<<(std::ostream &str, Box const &b);
 };

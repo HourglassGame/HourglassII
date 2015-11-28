@@ -27,6 +27,7 @@ namespace hg {
     struct SceneAborted_tag{};
     
     struct LoadLevelFunction {
+        std::string levelName;
         hg::move_function<hg::TimeEngine(hg::OperationInterrupter &)> timeEngineLoadFun;
         hg::move_function<hg::LoadedLevel(hg::TimeEngine &&)> glitzLoadFun;
     };

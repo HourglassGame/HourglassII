@@ -6,6 +6,15 @@
 namespace hg
 {
 class TriggerSystem {
+    clone_ptr<TriggerSystemImplementation> impl;
+    typedef
+        std::tuple<
+        decltype(impl->order_ranking()),
+        TriggerSystemImplementation const &>
+        comparison_tuple_type;
+    comparison_tuple_type comparison_tuple() const {
+        return comparison_tuple_type(impl->order_ranking(), *impl);
+    }
 public:
     //default constructed triggers system to enable moving.
     //a TriggerSystem without a TriggerSystemImplementation
@@ -28,8 +37,9 @@ public:
     {
         return impl.get().getFrameState(interrupter);
     }
-private:
-    clone_ptr<TriggerSystemImplementation> impl;
+    bool operator==(TriggerSystem const &o) const {
+        return comparison_tuple() == o.comparison_tuple();
+    }
 };
 inline void swap(TriggerSystem &l, TriggerSystem &r)
 {

@@ -159,6 +159,12 @@ class TriggerSystemImplementation
     virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const = 0;
     virtual TriggerSystemImplementation *clone() const = 0;
     virtual ~TriggerSystemImplementation(){}
+    virtual bool operator==(TriggerSystemImplementation const &o) const = 0;
+    //Arbitrary number, must be distinct for each different implementation
+    //(Could just as well come from a comparison of typeid addresses or something).
+    //Currently:
+    //DirectLuaTriggerSystem == 1000
+    virtual int order_ranking() const = 0;
 };
 }
 

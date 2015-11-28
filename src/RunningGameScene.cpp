@@ -227,32 +227,22 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     case sf::Keyboard::Escape:
                         std::cout << "Returning GameAborted\n";
                         return GameAborted_tag{};
-                        //Restart
+                    //Restart
                     case sf::Keyboard::R:
-                        interrupter->interrupt();
-                        futureRunResult.wait();
-                        receivedInputs.clear();
-                        timeEngine = initialLevel.timeEngine;
-                        loadedLevel.resources = initialLevel.resources;
-                        loadedLevel.bakedWall = initialLevel.bakedWall;
-                        audioPlayingState = AudioPlayingState(initialLevel.resources.sounds);
-                        audioGlitzManager = AudioGlitzManager();
-                        state = AWAITING_INPUT;
-                        goto continuemainloop;
-                        //return ReloadLevel_tag{};
+                        return ReloadLevel_tag{};
                     //Load replay
                     case sf::Keyboard::L:
                         return move_function<std::vector<InputList>()>([] {return loadReplay("replay");});
-                        //Interrupt replay and begin Playing
+                    //Interrupt replay and begin Playing
                     case sf::Keyboard::C:
                         currentReplayIt = replay.end();
                         currentReplayEnd = replay.end();
                         break;
-                        //Save replay
+                    //Save replay
                     case sf::Keyboard::K:
                         saveReplay("replay", receivedInputs);
                         break;
-                        //Generate a replay from replayLogIn
+                    //Generate a replay from replayLogIn
                     case sf::Keyboard::G:
                         generateReplay();
                         break;
