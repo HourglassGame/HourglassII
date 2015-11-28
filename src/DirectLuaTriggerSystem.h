@@ -8,7 +8,10 @@
 #include "LuaModule.h"
 #include <string>
 #include <vector>
-#include <boost/tuple/tuple.hpp>
+
+#include <boost/optional.hpp>
+#include <boost/polymorphic_cast.hpp>
+#include <tuple>
 namespace hg {
 class OperationInterrupter;
 class DirectLuaTriggerFrameState final :
