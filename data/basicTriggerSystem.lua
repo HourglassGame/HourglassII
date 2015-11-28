@@ -28,10 +28,10 @@ local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseCo
     end
 end
 
-local function calculateCollisions(protoCollisions, triggerArrivals, outputTriggers)
+local function calculateCollisions(protoCollisions, triggerArrivals, outputTriggers, frameNumber)
     local function calculateCollision(self, triggerArrivals, outputTriggers)
         if self.rawCollisionFunction then
-			return self.rawCollisionFunction(triggerArrivals, outputTriggers)
+			return self.rawCollisionFunction(triggerArrivals, outputTriggers, frameNumber)
 		end
 		
 		local function solvePDEquation(destination, position, velocity)
@@ -89,7 +89,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals, outputTrigg
         
         
         local active = (self.buttonTriggerID and triggerArrivals[self.buttonTriggerID][1] == 1) 
-                    or (self.triggerFunction and self.triggerFunction(triggerArrivals))
+                    or (self.triggerFunction and self.triggerFunction(triggerArrivals, frameNumber))
         local destination = active and self.destinations.onDestination or self.destinations.offDestination
 
         local lastStateTrigger = triggerArrivals[self.lastStateTriggerID]
@@ -141,7 +141,7 @@ local function snapAttachment(objectTimeDirection, attachment, collisions)
     return x, y, xspeed, yspeed
 end
 
-local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, collisions, triggerArrivals)
+local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, collisions, triggerArrivals, frameNumber)
     local function calculatePortal(protoPortal, collisions)
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
@@ -178,7 +178,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
         
         local active = true
         if protoPortal.triggerFunction then
-            active = protoPortal.triggerFunction(triggerArrivals)
+            active = protoPortal.triggerFunction(triggerArrivals, frameNumber)
         end
         
         return retPortal, active
@@ -940,7 +940,11 @@ function calculatePhysicsAffectingStuff(tempStore)
         retv.additionalBoxes = {}
         tempStore.additionalEndBoxes = {}
 
-        retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals, tempStore.outputTriggers)
+		if tempStore.triggerManipulationFunction then
+			tempStore.triggerManipulationFunction(triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)
+		end
+		
+        retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)
         
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)
         
