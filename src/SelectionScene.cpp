@@ -1,4 +1,5 @@
 #include "SelectionScene.h"
+#include <SFML/Graphics/Text.hpp>
 namespace hg {
     static void drawOptionSelection(hg::RenderWindow &window, std::string const &selected) {
         //TODO: Display surrounding options, rather than just one option;

@@ -6,6 +6,7 @@
 #include <functional>
 #include <boost/container/vector.hpp>
 #include <boost/operators.hpp>
+#include <boost/range/algorithm/equal.hpp>
 namespace hg {
 
 template<typename T, std::size_t N_dims, typename Allocator = std::allocator<T>>

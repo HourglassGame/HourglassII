@@ -14,6 +14,7 @@
 #include "TextGlitz.h"
 #include "ImageGlitz.h"
 
+#include <boost/polymorphic_cast.hpp>
 #include <boost/ref.hpp>
 
 #include <iostream>
