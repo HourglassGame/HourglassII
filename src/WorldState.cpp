@@ -75,7 +75,7 @@ WorldState::WorldState(
     Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
     nextPlayerFrames_.add(guyStartFrame);
     {
-        std::map<Frame *, ObjectList<Normal> > initialArrivals;
+        std::map<Frame *, ObjectList<Normal>> initialArrivals;
 
         // boxes
         for (Box const &box: initialObjects.getList<Box>())
