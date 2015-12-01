@@ -127,7 +127,7 @@ Status: Faithfully remade (with allowances for changed jump-height)
 ### 22. Another box puzzle ###
 Summary: Fairly straightforward box duplication with reverse time.
 
-Status:
+Status: Remade. The old terrain is copied so it is harder to jump up the cliffs. Still possible.
 
 
 ### 23. Blast from your past ###
@@ -147,7 +147,7 @@ Summary: Two timejumps and a reverse time. The jumps get you through the elevato
 
 A decent enough level, and quite straightforward.
 
-Status:
+Status: Faithfully remade.
 
 
 ### 26. The Big Stack ###
@@ -189,7 +189,7 @@ Summary: Programming, but not incredibly onerous and one of the purest interpret
 
 I like this level for its cleanness, myself. ~Jeffrey
 
-Status:
+Status: Remade with reduced cliffs for jump height change. A programming solution probably exists but that is not what I did for the win replay.
 
 
 ### 32. Spiky Death ###
@@ -203,7 +203,7 @@ Summary: A single box; many reverse times.
 
 Should give reverse-time a good workout. Were all of the powerups even necessary?
 
-Status:
+Status: Remade. Old terrain was kept so it is harder to climb up some cliffs. All the powerups seem to be necessary in this version due to the increased box requirement to scale cliffs.
 
 
 ### 34. Disembodied ###
@@ -284,7 +284,7 @@ Summary: Going backwards in a forwards world
 
 I have no idea whether the new engine will make this level impossible, trivial, or anywhere in between. It was very specifically designed around the old reverse-time system. ~Jeffrey
 
-Status: 
+Status: WIP, terrain done. Not sure how to proceed.
 
 ### 45 Omega ###
 Summary: Loadsa programming
