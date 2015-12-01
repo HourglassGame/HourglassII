@@ -1,3 +1,5 @@
+local framesPerSecond = 60
+
 local function map(f, l)
     local r = {}
     for i, v in ipairs(l) do
@@ -31,10 +33,10 @@ end
 local function calculateCollisions(protoCollisions, triggerArrivals, outputTriggers, frameNumber)
     local function calculateCollision(self, triggerArrivals, outputTriggers)
         if self.rawCollisionFunction then
-			return self.rawCollisionFunction(triggerArrivals, outputTriggers, frameNumber)
-		end
-		
-		local function solvePDEquation(destination, position, velocity)
+            return self.rawCollisionFunction(triggerArrivals, outputTriggers, frameNumber)
+        end
+        
+        local function solvePDEquation(destination, position, velocity)
             local function square(a) return a * a end
             local function sign(a) return math.abs(a) / a end
             
@@ -109,8 +111,8 @@ local function calculateCollisions(protoCollisions, triggerArrivals, outputTrigg
         }
     end
     return map(function(protoCollision) 
-			return calculateCollision(protoCollision, triggerArrivals, outputTriggers) 
-		end, protoCollisions)
+            return calculateCollision(protoCollision, triggerArrivals, outputTriggers) 
+        end, protoCollisions)
 end
 
 
@@ -200,9 +202,9 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
         if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
             text = active and "Win" or "Inactive"
         elseif portal.relativeTime and portal.timeDestination > 0 then
-            text = "+" .. portal.timeDestination
+            text = "+" .. portal.timeDestination/framesPerSecond
         else
-            text = portal.timeDestination
+            text = portal.timeDestination/framesPerSecond
         end
         
         local textGlitz = {
@@ -940,10 +942,10 @@ function calculatePhysicsAffectingStuff(tempStore)
         retv.additionalBoxes = {}
         tempStore.additionalEndBoxes = {}
 
-		if tempStore.triggerManipulationFunction then
-			tempStore.triggerManipulationFunction(triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)
-		end
-		
+        if tempStore.triggerManipulationFunction then
+            tempStore.triggerManipulationFunction(triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)
+        end
+        
         retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)
         
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)
