@@ -70,7 +70,7 @@ local tempStore =
 						y = 3 * 3200,
 						xspeed = 0,
 						yspeed = 0,
-						width = 4 * 3200,
+						width = 2 * 3200,
 						height = 0.5 * 3200,
 						timeDirection = 'forwards'
 					}
