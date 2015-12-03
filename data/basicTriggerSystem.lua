@@ -8,6 +8,13 @@ local function map(f, l)
     return r
 end
 
+local function formatTime(frames)
+	if frames%framesPerSecond == 0 then
+		return math.floor(frames/framesPerSecond) .. "s"
+	end
+	return string.format("%.1fs", frames/framesPerSecond)
+end
+
 local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseColour)
     local sameDirectionGlitz = {
         layer = layer,
@@ -202,9 +209,9 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
         if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
             text = active and "Win" or "Inactive"
         elseif portal.relativeTime and portal.timeDestination > 0 then
-            text = "+" .. portal.timeDestination/framesPerSecond
+            text = "+" .. formatTime(portal.timeDestination)
         else
-            text = portal.timeDestination/framesPerSecond
+            text = formatTime(portal.timeDestination)
         end
         
         local textGlitz = {
