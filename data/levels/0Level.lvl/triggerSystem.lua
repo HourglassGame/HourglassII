@@ -20,38 +20,6 @@ local tempStore =
             fallable = false,
             winner = true
         },
-		{
-            attachment = {xOffset = 11.5 * 3200, yOffset = 12.5 * 3200},
-            index = 2,
-            width = 6400,
-            height = 6400,
-            collisionOverlap = 50,
-            timeDirection = 'forwards',
-            destinationIndex = 3,
-            xDestination = 0,
-            yDestination = 0,
-            relativeTime = true,
-            timeDestination = -300,
-            illegalDestination = 3,
-            fallable = true,
-            winner = false,
-        },
-		{
-            attachment = {xOffset = 11.5 * 3200, yOffset = 2.5 * 3200},
-            index = 3,
-            width = 6400,
-            height = 6400,
-            collisionOverlap = 50,
-            timeDirection = 'forwards',
-            destinationIndex = 2,
-            xDestination = 0,
-            yDestination = 0,
-            relativeTime = true,
-            timeDestination = 300,
-            illegalDestination = 2,
-            fallable = true,
-            winner = false,
-        }
     },
     protoCollisions = {
         {
@@ -64,7 +32,7 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 11 * 3200,
+                        desiredPosition = 110 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
@@ -78,7 +46,7 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 11 * 3200,
+                        desiredPosition = 110 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
@@ -95,17 +63,31 @@ local tempStore =
 		{
             lastStateTriggerID = 3,
 			rawCollisionFunction = function(triggerArrivals, outputTriggers)
-			
-				return
-				{
-					x = 25000,
-					y = 28000,
-					xspeed = -200,
-					yspeed = 0,
-					width = 15000,
-					height = 2000,
-					timeDirection = 'forwards'
-				}
+				if triggerArrivals[1][1] == 1 then
+					return
+					{
+						x = 2 * 3200,
+						y = 3 * 3200,
+						xspeed = 0,
+						yspeed = 0,
+						width = 4 * 3200,
+						height = 0.5 * 3200,
+						timeDirection = 'forwards'
+					}
+				else
+					return
+					{
+						x = 2 * 3200,
+						y = 3 * 3200,
+						xspeed = 0,
+						yspeed = 0,
+						width = 20 * 3200,
+						height = 0.5 * 3200,
+						timeDirection = 'forwards'
+					}
+				
+				end
+				
 			end
         },
     },
