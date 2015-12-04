@@ -1842,9 +1842,9 @@ template <
                     {
                         if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
                         {
-                            if (std::abs(x[i] + size[i] / 2 - x[j] - size[j] / 2) < std::abs(y[i] + size[i] / 2 - y[j] - size[j] / 2)) // top or bot
+                            if (std::abs(xTemp[i] + size[i] / 2 - x[j] - size[j] / 2) < std::abs(yTemp[i] + size[i] / 2 - y[j] - size[j] / 2)) // top or bot
                             {
-                                if (y[i] < y[j]) // i above j
+                                if (yTemp[i] < y[j]) // i above j
                                 {
                                     bottomLinks[i].push_back(j);
                                     topLinks[j].push_back(i);
@@ -1902,9 +1902,9 @@ template <
                         && !squished[j]
                         && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
                     {
-                        if (std::abs(x[i] + size[i] / 2 - x[j] - size[j] / 2) >= std::abs(y[i] + size[i] / 2 - y[j] - size[j] / 2)) // left or right
+                        if (std::abs(xTemp[i] + size[i] / 2 - x[j] - size[j] / 2) >= std::abs(yTemp[i] + size[i] / 2 - y[j] - size[j] / 2)) // left or right
                         {
-                            if (x[i] < x[j]) // i left of j
+                            if (xTemp[i] < x[j]) // i left of j
                             {
                                 rightLinks[i].push_back(j);
                                 leftLinks[j].push_back(i);
