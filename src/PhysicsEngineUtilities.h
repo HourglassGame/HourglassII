@@ -68,6 +68,7 @@ void guyStep(
 template <
     typename RandomAccessPlatformRange>
 void boxInteractionBoundLoop(
+    TimeDirection const boxDirection,
     Environment const &env,
     mt::std::vector<int> &x,
     mt::std::vector<int> &y,
@@ -154,7 +155,9 @@ void recursiveBoxCollision(
     mt::std::vector<char> const &squished,
     mt::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
-    int subtractionNumber);
+    int subtractionNumber,
+    TimeDirection const boxDirection,
+    mt::std::vector<Box> const &oldBoxList);
 
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(

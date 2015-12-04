@@ -1,6 +1,6 @@
 name = "Guy Killer"
 speedOfTime = 3
-timelineLength = 600
+timelineLength = 120
 environment =
 {
     gravity = 22,

@@ -76,7 +76,7 @@ bool explodeBoxes(
             || subSquished;
     }
 
-    if (subSquished || (bound[index].first && bound[index].second * sign <= boundSoFar * sign))
+    if (subSquished || (bound[index].first && bound[index].second * sign < boundSoFar * sign))
     {
         toBeSquished[index] = true;
         return true;
@@ -123,7 +123,7 @@ bool explodeBoxesUpwards(
             || subSquished;
     }
 
-    if (subSquished || (bound[index].first && bound[index].second >= boundSoFar))
+    if (subSquished || (bound[index].first && bound[index].second > boundSoFar))
     {
         toBeSquished[index] = true;
         return true;
@@ -137,13 +137,15 @@ void recursiveBoxCollision(
     mt::std::vector<char> const &squished,
     mt::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
-    int subtractionNumber) // horizontal wins a tie
+    int subtractionNumber, // horizontal wins a tie
+    TimeDirection const boxDirection,
+    mt::std::vector<Box> const &oldBoxList)
 {
     boxesSoFar.push_back(index);
 
     for (std::size_t i(0), isize(majorAxis.size()); i < isize; ++i)
     {
-        if (i != index && !squished[i] &&
+        if (i != index && !squished[i] && oldBoxList[i].getTimeDirection() == boxDirection &&
             IntersectingRectanglesExclusive(
                 majorAxis[index], minorAxis[index], size[index], size[index],
                 majorAxis[i], minorAxis[i], size[i], size[i]) &&
@@ -163,7 +165,7 @@ void recursiveBoxCollision(
                 majorAxis[boxesSoFar[j]] = majorAxis[boxesSoFar[j]] + indexMovement;
             }
             majorAxis[i] = majorAxis[i] + iMovement;
-            recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i, subtractionNumber);
+            recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i, subtractionNumber, boxDirection, oldBoxList);
         }
     }
 }

@@ -1504,6 +1504,7 @@ void guyStep(
 template <
     typename RandomAccessPlatformRange>
     void boxInteractionBoundLoop(
+        TimeDirection const boxDirection,
         Environment const &env,
         mt::std::vector<int> &x,
         mt::std::vector<int> &y,
@@ -1541,11 +1542,11 @@ template <
         mt::std::vector<mt::std::vector<std::size_t>> rightLinks(oldBoxList.size());
         mt::std::vector<mt::std::vector<std::size_t>> leftLinks(oldBoxList.size());
 
-        thereAreStillThingsToDo = false;
+        thereAreStillThingsToDo = false; 
 
         //*** collide boxes with platforms and walls to discover the hard bounds on the system ***//
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-            if (!squished[i]) {
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection) {
 
                 //std::cerr << "Box " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
                 //** Check inside a wall, velocity independent which is why it is so complex **//
@@ -1817,13 +1818,57 @@ template <
                         }
                     }
                 }
+
+                // Collide with reverse boxes
+                for (std::size_t j(0), jsize(boost::size(oldBoxList)); j < jsize; ++j)
+                {
+                    if (oldBoxList[j].getTimeDirection() != boxDirection)
+                    {
+                        int bX = oldBoxList[j].getX() - oldBoxList[j].getXspeed();
+                        int bY = oldBoxList[j].getY() - oldBoxList[j].getYspeed();
+                        int bSize = oldBoxList[j].getSize();
+                        if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], bX, bY, bSize, bSize))
+                        {
+                            if (IsPointInVerticalQuadrant(xTemp[i] + size[i] / 2, yTemp[i] + size[i] / 2, bX, bY, bSize, bSize))
+                            {
+                                if (yTemp[i] + size[i] / 2 < bY + bSize / 2) // on top of reverse box
+                                {
+                                    y[i] = bY - size[i];
+                                    bottom[i] = std::make_pair(true, y[i]);
+                                    if (firstTimeThrough)
+                                    {
+                                        x[i] = xTemp[i] - oldBoxList[j].getXspeed();
+                                    }
+                                }
+                                else
+                                {
+                                    y[i] = bY + bSize;
+                                    top[i] = std::make_pair(true, y[i]);
+                                }
+                            }
+                            else // left or right
+                            {
+                                if (xTemp[i] + size[i] / 2 < bX + bSize / 2) // box left of reverse box
+                                {
+                                    x[i] = bX - size[i];
+                                    right[i] = std::make_pair(true, x[i]);
+                                }
+                                else
+                                {
+                                    x[i] = bX + bSize;
+                                    left[i] = std::make_pair(true, x[i]);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
         // Store position before box collision
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 //std::cerr << "Wall " << i << ": " << x[i] << ", " << y[i] << " " << (right[i].first ? "> " : "  ") << (top[i].first ? "^ " : "  ") << (left[i].first ? "< " : "  ") << (bottom[i].first ? "v\n" : " \n");
                 xPreBox[i] = x[i];
@@ -1834,11 +1879,11 @@ template <
         // Now make the map of vertical collisions
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 for (std::size_t j(0); j < i; ++j)
                 {
-                    if (j != i && !squished[j])
+                    if (j != i && !squished[j] && oldBoxList[j].getTimeDirection() == boxDirection)
                     {
                         if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
                         {
@@ -1868,7 +1913,7 @@ template <
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 if (bottom[i].first) // Push boxes up
                 {
@@ -1884,7 +1929,7 @@ template <
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (toBeSquished[i])
+            if (toBeSquished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
@@ -1894,13 +1939,14 @@ template <
         // Now make the map of horizontal collisions
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 for (unsigned j = 0; j < i; ++j)
                 {
                     if (j != i
                         && !squished[j]
-                        && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
+                        && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j])
+                        && oldBoxList[j].getTimeDirection() == boxDirection)
                     {
                         if (std::abs(xTemp[i] + size[i] / 2 - x[j] - size[j] / 2) >= std::abs(yTemp[i] + size[i] / 2 - y[j] - size[j] / 2)) // left or right
                         {
@@ -1925,12 +1971,15 @@ template <
         // propagate through horizontal collision links to reposition and explode
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            toBeSquished[i] = false;
+            if (oldBoxList[i].getTimeDirection() == boxDirection)
+            {
+                toBeSquished[i] = false;
+            }
         }
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 if (right[i].first)
                 {
@@ -1945,7 +1994,7 @@ template <
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (toBeSquished[i])
+            if (toBeSquished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
@@ -1955,27 +2004,27 @@ template <
         // Collide boxes vertically which are still overlapping. These will be the unbounded ones
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 mt::std::vector<std::size_t> pass;
-                recursiveBoxCollision(y, x, size, squished, pass, i, 0);
+                recursiveBoxCollision(y, x, size, squished, pass, i, 0, boxDirection, oldBoxList);
             }
         }
 
         // Collide them horizontally
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 mt::std::vector<std::size_t> pass;
-                recursiveBoxCollision(x, y, size, squished, pass, i, 1);
+                recursiveBoxCollision(x, y, size, squished, pass, i, 1, boxDirection, oldBoxList);
             }
         }
 
         // If anything moved then rerun box collision until nothing moves.
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            if (!squished[i])
+            if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 if (x[i] != xTemp[i] || y[i] != yTemp[i])
                 {
@@ -2128,7 +2177,7 @@ template <
     // Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
     {
         mt::std::vector<char> toBeSquished(oldBoxList.size());
-
+    
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
             if (!squished[i]) {
                 for (std::size_t j(0); j < i; ++j) {
@@ -2144,7 +2193,7 @@ template <
                 }
             }
         }
-
+    
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
             if (toBeSquished[i]) {
                 boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
@@ -2153,7 +2202,8 @@ template <
         }
     }
 
-    boxInteractionBoundLoop(env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder);
+    boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder);
+    boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder);
 
     // Send boxes
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
