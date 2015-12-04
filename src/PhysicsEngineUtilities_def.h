@@ -1502,169 +1502,22 @@ void guyStep(
 }
 
 template <
-    typename RandomAccessBoxRange,
-    typename RandomAccessPortalRange,
-    typename RandomAccessPlatformRange,
-    typename RandomAccessArrivalLocationRange,
-    typename RandomAccessMutatorRange,
-    typename FrameT>
-    void boxCollisionAlogorithm(
+    typename RandomAccessPlatformRange>
+    void boxInteractionBoundLoop(
         Environment const &env,
-        RandomAccessBoxRange const &boxArrivalList,
-        mt::std::vector<Box> const &additionalBox,
-        mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-        mt::std::vector<char> &nextBoxNormalDeparture,
+        mt::std::vector<int> &x,
+        mt::std::vector<int> &y,
+        mt::std::vector<int> &xTemp,
+        mt::std::vector<int> &yTemp,
+        mt::std::vector<char> &squished,
+        mt::std::vector<int> const &size,
+        mt::std::vector<Box> const &oldBoxList,
         RandomAccessPlatformRange const &nextPlatform,
-        RandomAccessPortalRange const &nextPortal,
-        RandomAccessArrivalLocationRange const &arrivalLocations,
-        RandomAccessMutatorRange const &mutators,
-        TriggerFrameState &triggerFrameState,
-        BoxGlitzAdder const &boxGlitzAdder,
-        FrameT const &frame)
+        BoxGlitzAdder const &boxGlitzAdder)
 {
-    mt::std::vector<Box> oldBoxList;
-
-    boost::push_back(oldBoxList, boxArrivalList);
-    boost::push_back(oldBoxList, additionalBox);
-
-    boost::sort(oldBoxList);
-
-
-    //std::cerr << "*** New Step ***\n";
-    /*
-    for (Collision const &platform: nextPlatform)
-    {
-        int pX(platform.getX());
-        int pY(platform.getY());
-        int pWidth(platform.getWidth());
-        int pHeight(platform.getHeight());
-        std::cerr << "Platform " << pX << ", " << pY << ", " << pWidth << ", " << pHeight << "\n";
-    }
-    */
-
-    mt::std::vector<int> x(oldBoxList.size());
-    mt::std::vector<int> y(oldBoxList.size());
-    mt::std::vector<int> xTemp(oldBoxList.size());
-    mt::std::vector<int> yTemp(oldBoxList.size());
     mt::std::vector<int> xPreBox(oldBoxList.size());
     mt::std::vector<int> yPreBox(oldBoxList.size());
-    mt::std::vector<int> size(oldBoxList.size());
-    mt::std::vector<char> squished(oldBoxList.size());
 
-    // Check with triggers if the box should arrive at all
-    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-        if (!triggerFrameState.shouldArrive(oldBoxList[i])) {
-            // Triggers should add Glitz for this case as required.
-            squished[i] = true;
-        }
-    }
-
-    // Inititalise box location with arrival basis
-    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-        if (oldBoxList[i].getArrivalBasis() == -1) {
-            xTemp[i] = oldBoxList[i].getX();
-            yTemp[i] = oldBoxList[i].getY();
-            x[i] = xTemp[i] + oldBoxList[i].getXspeed();
-            y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
-        }
-        else
-        {
-            ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
-            int relx = relativePortal.getX() + oldBoxList[i].getX();
-            int rely = relativePortal.getY() + oldBoxList[i].getY();
-            if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
-            {
-                xTemp[i] = relx - relativePortal.getXspeed();
-                yTemp[i] = rely - relativePortal.getYspeed();
-                x[i] = relx + oldBoxList[i].getXspeed();
-                y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
-            }
-            else
-            {
-                xTemp[i] = relx + relativePortal.getXspeed();
-                yTemp[i] = rely + relativePortal.getYspeed();
-                x[i] = relx + oldBoxList[i].getXspeed();
-                y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
-            }
-        }
-        size[i] = oldBoxList[i].getSize();
-    }
-
-    // Destroy boxes that are overlapping with platforms and walls
-    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-        if (!squished[i]) {
-            if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i] + size[i] - 1, yTemp[i])
-                && env.wall.at(xTemp[i], yTemp[i] + size[i] - 1) && env.wall.at(xTemp[i] + size[i], yTemp[i] + size[i] - 1))
-            {
-                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
-                squished[i] = true;
-                continue;
-            }
-
-            for (Collision const &platform : nextPlatform) {
-                int pX(platform.getX());
-                int pY(platform.getY());
-                int pWidth(platform.getWidth());
-                int pHeight(platform.getHeight());
-                TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
-                {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
-                    {
-                        boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
-                        squished[i] = true;
-                        continue;
-                    }
-                }
-                else
-                {
-                    pX += platform.getXspeed();
-                    pY += platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
-                        pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
-                        pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
-                        pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
-                        pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
-                    {
-                        boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
-                        squished[i] = true;
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-
-    // Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
-    {
-        mt::std::vector<char> toBeSquished(oldBoxList.size());
-
-        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-            if (!squished[i]) {
-                for (std::size_t j(0); j < i; ++j) {
-                    if (!squished[j]) {
-                        if (IntersectingRectanglesExclusive(
-                            xTemp[i], yTemp[i], size[i], size[i],
-                            xTemp[j], yTemp[j], size[j], size[j]))
-                        {
-                            toBeSquished[i] = true;
-                            toBeSquished[j] = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-            if (toBeSquished[i]) {
-                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
-                squished[i] = true;
-            }
-        }
-    }
-    // do all the other things until there are no more things to do
     bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
     bool firstTimeThrough(true);
     //unsigned int count(0);
@@ -1673,8 +1526,8 @@ template <
         /*
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
-            std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
-                    << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
+        std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
+        << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
         }
         */
 
@@ -2134,6 +1987,173 @@ template <
         }
         firstTimeThrough = false;
     }
+}
+
+template <
+    typename RandomAccessBoxRange,
+    typename RandomAccessPortalRange,
+    typename RandomAccessPlatformRange,
+    typename RandomAccessArrivalLocationRange,
+    typename RandomAccessMutatorRange,
+    typename FrameT>
+    void boxCollisionAlogorithm(
+        Environment const &env,
+        RandomAccessBoxRange const &boxArrivalList,
+        mt::std::vector<Box> const &additionalBox,
+        mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
+        mt::std::vector<char> &nextBoxNormalDeparture,
+        RandomAccessPlatformRange const &nextPlatform,
+        RandomAccessPortalRange const &nextPortal,
+        RandomAccessArrivalLocationRange const &arrivalLocations,
+        RandomAccessMutatorRange const &mutators,
+        TriggerFrameState &triggerFrameState,
+        BoxGlitzAdder const &boxGlitzAdder,
+        FrameT const &frame)
+{
+    mt::std::vector<Box> oldBoxList;
+
+    boost::push_back(oldBoxList, boxArrivalList);
+    boost::push_back(oldBoxList, additionalBox);
+
+    boost::sort(oldBoxList);
+
+
+    //std::cerr << "*** New Step ***\n";
+    /*
+    for (Collision const &platform: nextPlatform)
+    {
+        int pX(platform.getX());
+        int pY(platform.getY());
+        int pWidth(platform.getWidth());
+        int pHeight(platform.getHeight());
+        std::cerr << "Platform " << pX << ", " << pY << ", " << pWidth << ", " << pHeight << "\n";
+    }
+    */
+
+    mt::std::vector<int> x(oldBoxList.size());
+    mt::std::vector<int> y(oldBoxList.size());
+    mt::std::vector<int> xTemp(oldBoxList.size());
+    mt::std::vector<int> yTemp(oldBoxList.size());
+    mt::std::vector<int> xPreBox(oldBoxList.size());
+    mt::std::vector<int> yPreBox(oldBoxList.size());
+    mt::std::vector<int> size(oldBoxList.size());
+    mt::std::vector<char> squished(oldBoxList.size());
+
+    // Check with triggers if the box should arrive at all
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+        if (!triggerFrameState.shouldArrive(oldBoxList[i])) {
+            // Triggers should add Glitz for this case as required.
+            squished[i] = true;
+        }
+    }
+
+    // Inititalise box location with arrival basis
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+        if (oldBoxList[i].getArrivalBasis() == -1) {
+            xTemp[i] = oldBoxList[i].getX();
+            yTemp[i] = oldBoxList[i].getY();
+            x[i] = xTemp[i] + oldBoxList[i].getXspeed();
+            y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
+        }
+        else
+        {
+            ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
+            int relx = relativePortal.getX() + oldBoxList[i].getX();
+            int rely = relativePortal.getY() + oldBoxList[i].getY();
+            if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
+            {
+                xTemp[i] = relx - relativePortal.getXspeed();
+                yTemp[i] = rely - relativePortal.getYspeed();
+                x[i] = relx + oldBoxList[i].getXspeed();
+                y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
+            }
+            else
+            {
+                xTemp[i] = relx + relativePortal.getXspeed();
+                yTemp[i] = rely + relativePortal.getYspeed();
+                x[i] = relx + oldBoxList[i].getXspeed();
+                y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
+            }
+        }
+        size[i] = oldBoxList[i].getSize();
+    }
+
+    // Destroy boxes that are overlapping with platforms and walls
+    for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+        if (!squished[i]) {
+            if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i] + size[i] - 1, yTemp[i])
+                && env.wall.at(xTemp[i], yTemp[i] + size[i] - 1) && env.wall.at(xTemp[i] + size[i], yTemp[i] + size[i] - 1))
+            {
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                squished[i] = true;
+                continue;
+            }
+
+            for (Collision const &platform : nextPlatform) {
+                int pX(platform.getX());
+                int pY(platform.getY());
+                int pWidth(platform.getWidth());
+                int pHeight(platform.getHeight());
+                TimeDirection pDirection(platform.getTimeDirection());
+                if (pDirection * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
+                {
+                    pX -= platform.getXspeed();
+                    pY -= platform.getYspeed();
+                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
+                    {
+                        boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                        squished[i] = true;
+                        continue;
+                    }
+                }
+                else
+                {
+                    pX += platform.getXspeed();
+                    pY += platform.getYspeed();
+                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
+                        pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
+                        pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
+                        pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
+                        pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
+                    {
+                        boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                        squished[i] = true;
+                        continue;
+                    }
+                }
+            }
+        }
+    }
+
+    // Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
+    {
+        mt::std::vector<char> toBeSquished(oldBoxList.size());
+
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+            if (!squished[i]) {
+                for (std::size_t j(0); j < i; ++j) {
+                    if (!squished[j]) {
+                        if (IntersectingRectanglesExclusive(
+                            xTemp[i], yTemp[i], size[i], size[i],
+                            xTemp[j], yTemp[j], size[j], size[j]))
+                        {
+                            toBeSquished[i] = true;
+                            toBeSquished[j] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+            if (toBeSquished[i]) {
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                squished[i] = true;
+            }
+        }
+    }
+
+    boxInteractionBoundLoop(env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder);
 
     // Send boxes
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)

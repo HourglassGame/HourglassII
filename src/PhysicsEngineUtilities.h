@@ -66,6 +66,20 @@ void guyStep(
     bool &winFrame);
 
 template <
+    typename RandomAccessPlatformRange>
+void boxInteractionBoundLoop(
+    Environment const &env,
+    mt::std::vector<int> &x,
+    mt::std::vector<int> &y,
+    mt::std::vector<int> &xTemp,
+    mt::std::vector<int> &yTemp,
+    mt::std::vector<char> &squished,
+    mt::std::vector<int> const &size,
+    mt::std::vector<Box> const &oldBoxList,
+    RandomAccessPlatformRange const &nextPlatform,
+    BoxGlitzAdder const &boxGlitzAdder);
+
+template <
     typename RandomAccessBoxRange,
     typename RandomAccessPortalRange,
     typename RandomAccessPlatformRange,
