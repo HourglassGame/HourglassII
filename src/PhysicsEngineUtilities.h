@@ -47,7 +47,9 @@ struct SortObjectList {
     }
 };
 
-template<typename RandomAccessGuyRange>
+template<
+    typename RandomAccessGuyRange,
+    typename RandomAccessBoxRange>
 void guyStep(
     Environment const &env,
     RandomAccessGuyRange const &guyArrivalList,
@@ -56,6 +58,7 @@ void guyStep(
     mt::std::vector<ObjectAndTime<Guy, Frame*>> &nextGuy,
     mt::std::vector<ObjectAndTime<Box, Frame*>> &nextBox,
     mt::std::vector<char> &nextBoxNormalDeparture,
+    RandomAccessBoxRange const &boxArrivalList,
     mt::std::vector<Collision> const &nextPlatform,
     mt::std::vector<PortalArea> const &nextPortal,
     mt::std::vector<ArrivalLocation> const &arrivalLocations,

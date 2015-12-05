@@ -176,7 +176,9 @@ template <
 
 
 
-template<typename RandomAccessGuyRange>
+template<
+    typename RandomAccessGuyRange,
+    typename RandomAccessBoxRange>
 void guyStep(
     Environment const &env,
     RandomAccessGuyRange const &guyArrivalList,
@@ -185,6 +187,7 @@ void guyStep(
     mt::std::vector<ObjectAndTime<Guy, Frame *> > &nextGuy,
     mt::std::vector<ObjectAndTime<Box, Frame *> > &nextBox,
     mt::std::vector<char> &nextBoxNormalDeparture,
+    RandomAccessBoxRange const &boxArrivalList,
     mt::std::vector<Collision> const &nextPlatform,
     mt::std::vector<PortalArea> const &nextPortal,
     mt::std::vector<ArrivalLocation> const &arrivalLocations,
@@ -352,53 +355,54 @@ void guyStep(
             // Y direction collisions
             int newY(y[i] + yspeed[i]);
 
-            // box collision (only occurs in Y direction)
+            // Forwards box collision (only occurs in Y direction)
             for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
             {
-                if (nextBoxNormalDeparture[j])
+                if (nextBoxNormalDeparture[j] && nextBox[j].object.getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
                 {
                     int boxX(nextBox[j].object.getX());
                     int boxY(nextBox[j].object.getY());
                     int boxXspeed(nextBox[j].object.getXspeed());
                     int boxYspeed(nextBox[j].object.getYspeed());
 
-                    boxX -= boxXspeed;
-                    boxY -= boxYspeed;
-
                     int boxSize(nextBox[j].object.getSize());
-                    TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
-                    if (x[i] < boxX + boxSize && x[i] + width > boxX)
+                    if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] <= boxY - boxYspeed)
                     {
-                        if (boxDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
-                        {
-                            //std::cerr << "Box Col " << getFrameNumber(frame) << ": " << newY + height << ", " << yspeed[i] << ",     " << boxY << ", " << boxYspeed << "\n";
-                            // -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
-                            if (newY + height >= boxY && newY + height - yspeed[i] - env.gravity <= boxY + boxYspeed)
-                            {
-                                //boxThatIamStandingOn = j;
-                                newY = boxY - height;
-                                xspeed[i] = -boxXspeed;
-                                supported[i] = true;
-                                bottom = true;
-                                supportedSpeed[i] = -boxYspeed;
-                                //std::cerr << "Hit " << newY + height << "\n";
-                            }
-                        }
-                        else
-                        {
-                            if (newY + height >= boxY && newY + height - yspeed[i] <= boxY - boxYspeed)
-                            {
-                                //boxThatIamStandingOn = j;
-                                newY = boxY - height;
-                                xspeed[i] = boxXspeed;
-                                supported[i] = true;
-                                bottom = true;
-                                supportedSpeed[i] = boxYspeed;
-                            }
-                        }
+                        //boxThatIamStandingOn = j;
+                        newY = boxY - height;
+                        xspeed[i] = boxXspeed;
+                        supported[i] = true;
+                        bottom = true;
+                        supportedSpeed[i] = boxYspeed; 
                     }
                 }
             }
+
+            // Reverse box collision
+            for (std::size_t j(0), jsize(boxArrivalList.size()); j < jsize; ++j)
+            {
+                if (boxArrivalList[j].getTimeDirection() *guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                {
+                    int boxXspeed(boxArrivalList[j].getXspeed());
+                    int boxYspeed(boxArrivalList[j].getYspeed());
+
+                    int boxX(boxArrivalList[j].getX() - boxXspeed);
+                    int boxY(boxArrivalList[j].getY() - boxYspeed);
+
+                    int boxSize(nextBox[j].object.getSize());
+
+                    // -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
+                    if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - env.gravity <= boxY + boxYspeed)
+                    {
+                        newY = boxY - height;
+                        xspeed[i] = -boxXspeed;
+                        supported[i] = true;
+                        bottom = true;
+                        supportedSpeed[i] = -boxYspeed;
+                    }
+                }
+            }
+
 
             // check platform collision in Y direction
             for (Collision const &platform : nextPlatform)
@@ -1111,8 +1115,8 @@ void guyStep(
                 // relativeIndex is missing for obvious reasons
             }
 
-            int glitzX = x[i];
-            int glitzY = y[i];
+            int glitzX = x[i] - xspeed[i];
+            int glitzY = y[i] - yspeed[i];
 
             // Things that do time travel
             // The occurrence of one thing precludes subsequent ones

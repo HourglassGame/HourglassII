@@ -113,6 +113,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         nextGuy,
         nextBox,
         nextBoxNormalDeparture,
+        arrivals.getList<Box>(),
         physicsTriggerStuff.collisions,
         physicsTriggerStuff.portals,
         physicsTriggerStuff.arrivalLocations,
