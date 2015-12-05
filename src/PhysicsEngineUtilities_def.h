@@ -361,6 +361,10 @@ void guyStep(
                     int boxY(nextBox[j].object.getY());
                     int boxXspeed(nextBox[j].object.getXspeed());
                     int boxYspeed(nextBox[j].object.getYspeed());
+
+                    boxX -= boxXspeed;
+                    boxY -= boxYspeed;
+
                     int boxSize(nextBox[j].object.getSize());
                     TimeDirection boxDirection(nextBox[j].object.getTimeDirection());
                     if (x[i] < boxX + boxSize && x[i] + width > boxX)
