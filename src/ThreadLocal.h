@@ -1,8 +1,8 @@
 #ifndef HG_THREAD_LOCAL_H
 #define HG_THREAD_LOCAL_H
-#include "mt/boost/container/map.hpp"
+#include <map>
 #include <tbb/task_scheduler_observer.h>
-#include <boost/thread.hpp>
+#include <thread>
 #include <tbb/spin_rw_mutex.h>
 namespace hg {
 template<typename T>
@@ -12,7 +12,7 @@ class ThreadLocal : private tbb::task_scheduler_observer
     //so a (lightweight) spin_mutex is preferable.
     //This has not actually been tested though.
     typedef tbb::spin_rw_mutex Mutex;
-    typedef mt::boost::container::map<boost::thread::id, T> Map;
+    typedef std::map<std::thread::id, T> Map;
 public:
     ThreadLocal() :
         threadLocalData(),
@@ -22,14 +22,14 @@ public:
         {
             Mutex::scoped_lock l(mut, false);
             typename Map::iterator it(
-                threadLocalData.find(boost::this_thread::get_id()));
+                threadLocalData.find(std::this_thread::get_id()));
             if (it != threadLocalData.end()) {
                 return it->second;
             }
         }
         {
             Mutex::scoped_lock l(mut, true);
-            return threadLocalData[boost::this_thread::get_id()];
+            return threadLocalData[std::this_thread::get_id()];
         }
     }
 private:
@@ -42,7 +42,7 @@ private:
         //this class is used with non-tbb-task threads.
         Mutex::scoped_lock l(mut, false);
         typename Map::iterator it(
-            threadLocalData.find(boost::this_thread::get_id()));
+            threadLocalData.find(std::this_thread::get_id()));
         if (it == threadLocalData.end()) return;
         l.release();
         //Relying on the fact that `it` cannot be invalidated

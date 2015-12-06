@@ -8,6 +8,7 @@
 #include "LuaModule.h"
 #include <string>
 #include <vector>
+#include <mutex>
 
 #include <boost/optional.hpp>
 #include <boost/polymorphic_cast.hpp>
@@ -88,58 +89,47 @@ private:
 //The behaviour of this class is somewhat strange and not particularly useful
 //in general, so the use of this class should be limited to cases where there
 //are no better options.
-//!!WARNING - The const members of this class cannot be regarded as
-//safe when concurrently called on the same object!! Mutable is in use.
 template<typename T>
-class lazy_ptr
+class copy_as_new_ptr
 {
 public:
-    lazy_ptr() :
-        ptr()
+    copy_as_new_ptr() :
+        ptr(new T())
     {
     }
     //Notice that these do not actually copy their arguments.
     //The arguments are not even moved. This is deliberate.
-    lazy_ptr(lazy_ptr const &) :
-        ptr()
+    copy_as_new_ptr(copy_as_new_ptr const &) :
+        ptr(new T())
     {
     }
-    lazy_ptr &operator=(lazy_ptr const&)
+    copy_as_new_ptr &operator=(copy_as_new_ptr o)
     {
-        //nothing to do.
-        return *this;
+        return *this = std::move(o);
     }
-    lazy_ptr(lazy_ptr &&o) noexcept :
-        ptr()
-    {
-        boost::swap(ptr, o.ptr);
-    }
-    lazy_ptr &operator=(lazy_ptr &&o) noexcept
-    {
-        boost::swap(ptr, o.ptr);
-        return *this;
-    }
-    ~lazy_ptr() noexcept
+
+    //Move operations are not useful, because they cannot be made no-throw.
+    copy_as_new_ptr(copy_as_new_ptr &&o) = delete;
+    copy_as_new_ptr &operator=(copy_as_new_ptr &&o) = delete;
+    ~copy_as_new_ptr() noexcept
     {
         delete ptr;
     }
     T &operator*() const
     {
-        if (!ptr) ptr = new T();
-        return *ptr;
+        return get();
     }
     T *operator->() const
     {
-        if (!ptr) ptr = new T();
-        return ptr;
+        return get();
     }
     T *get() const
     {
-        if (!ptr) ptr = new T();
+        assert(ptr);
         return ptr;
     }
 private:
-    mutable T *ptr;
+    T *ptr;
 };
 
 class DirectLuaTriggerSystem final :
@@ -180,12 +170,11 @@ private:
     //lazy_ptr because TriggerSystemImplementations must
     //be cloneable, but there is no way to copy
     //a LuaState (or by extension a ThreadLocal<LuaState>).
-    //lazy_ptr side-steps this problem by making copying a no-op,
-    //and creating a fresh instance of the ThreadLocal<LuaState>,
-    //when it is eventually needed.
+    //copy_as_new_ptr side-steps this problem by making copying create
+    //a fresh instance of the ThreadLocal<LuaState> every time.
     //luaStates_ a cache, so the act of ignoring its contents
     //does not cause any problems.
-    lazy_ptr<ThreadLocal<LuaState>> luaStates_;
+    copy_as_new_ptr<ThreadLocal<LuaState>> luaStates_;
 
     std::vector<char> compiledMainChunk_;
     std::vector<LuaModule> compiledExtraChunks_;
