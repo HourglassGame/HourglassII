@@ -11,6 +11,20 @@ BUG - make DirectLuaTriggerSystem deterministic + consistent
 BUG - there is a lot of potential for numeric overflow in the code. Need to at least block
       obviously out of range data coming from Lua.
 
+Add some way to see how old each guy in a frame is.
+      
+Consider a 'I don't want to take pickups' button
+      
+Update all levels with any form of pre-0-time to make the guy start in the middle of the timeline
+      
+Move 'destruction of TimeEngine at end of level/level-reload' to background thread.
+      
+Better error checking for Lua in general. At least perform the checking that is already there in release mode.
+
+Add Trigger-system-produced time gun
+
+Add additional level loading information. (Perhaps even a debug mode where the state of the world during initial propagaion can be viewed).
+
 Better error reporting for level-file-not-found errors (and related errors).
 
 Implement variable box/guy/segment sizes - partially done, boxes can be different sized squares.
@@ -40,10 +54,6 @@ Add trigger-only data to Guys and Boxes.
 Think about removing illegal portal? With the above 2 things implemented it is possible.
 Tim: Bad idea to remove, again speed related.
 
-Time Guns
- * Physics: Finish raytrace algo
- * Requires persistent Glitz and line Glitz to visualise. - apparently line is in
- 
 Think about pause time
  * A Guy that departs to its current frame
  * This seems to replicate the old pause time specs.
@@ -70,17 +80,11 @@ Improve Input
    * RELEASE (was on last frame, now off)
  * Remove hardcoded portal/mutator actioned.
 
-Finish and Submit Boost patch(es).
-    * Container
-    * Variant (move-enable)
-    * Optional (move-enable)
-    * Thread (incompete type bug)
-
 Improve trigger system performance:
  *Lazy load the data that is sent to the trigger system (use a meta-table rather than always loading up the tables with data that might not be used)
   (Might not even be an improvement).
  *Add a 'ConfiguredTriggerSystem' that lacks hooks for custom behaviour, but which just sets up a pure C++ trigger system implementation.
-
+ *Add 'BetterTriggerSystem', using safe code that shares the C++ object model and is compiled at runtime when the level is loaded.
 Get automated builds working again
 
 Make sure the code still works on osx and linux (and MinGW windows)
@@ -91,7 +95,6 @@ Make sure the code still works on osx and linux (and MinGW windows)
 *Save games? (quick save, automatic saving)
 *Something about it being a horrible hack currently
 *Put in better graphics than the current "coloured-rectangles"
-*Current guy marker (arrow over head or similar)
 *Improve performance on MSVC++ (possibly stop using SFML)
 Create a Level Editor that Jeffrey/Kieren/Etc can use.
 
