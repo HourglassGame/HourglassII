@@ -5,13 +5,13 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {xOffset = 1.5 * 3200, yOffset = 5 * 3200},
-            index = 2,
+            attachment = {xOffset = 13 * 3200, yOffset = 4 * 3200},
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = 1,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
@@ -23,8 +23,8 @@ local tempStore =
     },
     protoCollisions = {
         {
-            width = 1 * 3200,
-            height = 2 * 3200,
+            width = 2 * 3200,
+            height = 1 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
@@ -32,13 +32,13 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 16 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
                     },
                     yDestination = {
-                        desiredPosition = 3 * 3200,
+                        desiredPosition = 6 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 20
@@ -46,13 +46,13 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 21 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
                     },
                     yDestination = {
-                        desiredPosition = 5 * 3200,
+                        desiredPosition = 6 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 20
@@ -61,51 +61,43 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
+    protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 8 * 3200, yOffset = 6.25 * 3200},
+            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 9 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 3,
-            pickupType = 'timeReverse'
+            pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 11.25 * 3200},
+            attachment = {platform = nil, xOffset = 14.5 * 3200, yOffset = 9 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 4,
-            pickupType = 'timeReverse'
+            pickupType = 'timeGun'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 17 * 3200, yOffset = 8.25 * 3200},
+            attachment = {platform = nil, xOffset = 15.5 * 3200, yOffset = 9 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 5,
-            pickupType = 'timeReverse'
+            pickupType = 'timeGun'
         },
-        bts.pickup{
-            attachment = {platform = nil, xOffset = 22.5 * 3200, yOffset = 13.25 * 3200},
-            width = 1600,
-            height = 1600,
-            timeDirection = 'forwards',
-            triggerID = 6,
-            pickupType = 'timeReverse'
-        },
-	},
+    },
     protoButtons = {
-		bts.momentarySwitch{
-            attachment = {xOffset = 27.5 * 3200, yOffset = 10.75 * 3200},
-            width = 3200,
-            height = 800,
+        bts.stickySwitch{
+            attachment = {xOffset = 29.75 * 3200, yOffset = 6 * 3200},
+            width = 800,
+            height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
         },
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
