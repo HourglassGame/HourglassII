@@ -496,7 +496,7 @@ local function stickyLaserSwitch(p)
     local attachment = p.attachment
     local beamLength = p.beamLength
     local beamDirection = p.beamDirection
-	local beamWidth = 160
+	local beamWidth = 120
 	
 	local emitterLength = 400
 	local emitterWidth = 1200
