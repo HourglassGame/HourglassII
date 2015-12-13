@@ -840,6 +840,13 @@ void guyStep(
                             int py = nextPlatform[j].getY();
                             int pw = nextPlatform[j].getWidth();
                             int ph = nextPlatform[j].getHeight();
+
+                            if (nextPlatform[j].getTimeDirection() != guyArrivalList[i].getTimeDirection())
+                            {
+                                px -= nextPlatform[j].getXspeed() + nextPlatform[j].getPrevXspeed();
+                                py -= nextPlatform[j].getYspeed() + nextPlatform[j].getPrevYspeed();
+                            }
+
                             if (IntersectingRectanglesExclusive(
                                 px, py, pw, ph,
                                 leftBound, dropY, rightBound - leftBound + dropSize, dropSize))

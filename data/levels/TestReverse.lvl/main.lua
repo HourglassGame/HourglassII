@@ -1,4 +1,4 @@
-name = "Assert Trigger"
+name = "Test Reverse"
 speedOfTime = 3
 timelineLength = 3600
 environment =
@@ -30,7 +30,7 @@ environment =
 }
 initialGuy =
 {
-    arrivalTime = 0,
+    arrivalTime = 1800,
     arrival =
     {
         x = 5.5 * 3200,
@@ -38,8 +38,8 @@ initialGuy =
         width = 1600,
         height = 3200,
         facing = "right",
-        timeDirection = "reverse",
-        pickups = {timeJump = 0, timeReverse = 0, timeGun = 0},
+        timeDirection = "forwards",
+        pickups = {timeJump = -1, timeReverse = -1, timeGun = 0},
     }
 }
 initialArrivals =
