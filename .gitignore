@@ -6,6 +6,7 @@
 /ide/msvc2015/HourglassII/HourglassII/x64
 /ide/msvc2015/HourglassII/HourglassIIUnity/x64
 
+*.VC.opendb
 *.vcxproj.user
 *.vs
 *.sdf
