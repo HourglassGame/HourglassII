@@ -6,11 +6,12 @@
 #include <SFML/Window/Event.hpp>
 #include <boost/container/vector.hpp>
 #include <cassert>
+
 namespace hg {
 //Wraps sf::RenderWindow and adds some additional features.
 struct RenderWindow {
     struct InputState {
-        InputState(
+        explicit InputState(
             boost::container::vector<bool> const &pressedKeys,
             boost::container::vector<bool> const &pressedMouseButtons,
             sf::Vector2i mousePosition):
@@ -38,7 +39,7 @@ struct RenderWindow {
         sf::Vector2i mousePosition;
     };
     struct InputStateTracker {
-        InputStateTracker(sf::RenderWindow const &window) :
+        explicit InputStateTracker(sf::RenderWindow const &window) :
             pressedKeys(sf::Keyboard::KeyCount),
             pressedMouseButtons(sf::Mouse::ButtonCount),
             mousePos(sf::Mouse::getPosition(window))
@@ -82,6 +83,11 @@ struct RenderWindow {
                 break;
                 case sf::Event::MouseEntered:           ///< The mouse cursor entered the area of the window (no data)
                 case sf::Event::MouseLeft:              ///< The mouse cursor left the area of the window (no data)
+                case sf::Event::SensorChanged:
+                case sf::Event::TouchMoved:
+                case sf::Event::MouseWheelScrolled:
+                case sf::Event::TouchBegan:
+                case sf::Event::TouchEnded:
                     //Nothing to do.
                 break;
                 case sf::Event::JoystickButtonPressed:  ///< A joystick button was pressed (data in event.joystickButton)
@@ -91,6 +97,7 @@ struct RenderWindow {
                 case sf::Event::JoystickDisconnected:   ///< A joystick was disconnected (data in event.joystickConnect)
                     //TODO implement joystick support
                 break;
+                
                 case sf::Event::Count:                   ///< Keep last -- the total number of event types
                     assert(false && "sf::Event::Count is not a real event");
                 break;
@@ -121,7 +128,7 @@ struct RenderWindow {
     
     
     RenderWindow() : renderWindow(), inputStateTracker(renderWindow) {}
-    RenderWindow(
+    explicit RenderWindow(
         sf::VideoMode mode,
         const sf::String &title,
         sf::Uint32 style = sf::Style::Default,
