@@ -45,6 +45,8 @@ namespace {
     };
 }
 
+
+
 //Exceptions and HourglassII:
 //Unless otherwise specified, all functions in HourglassII can throw std::bad_alloc.
 //Unless otherwise specified, all functions in HourglassII provide the weak exception safety guarantee.
@@ -52,22 +54,23 @@ namespace {
 //which may have been modified by a function which has thrown an exception, without checking the documentation
 //(please add documentation if it is missing).
 //All exceptions other than std::bad_alloc should be explicitly documented, but this is not uniformly done.
-int main(int argc, char *argv[])
+int main_entry(int argc, char *argv[])
 {
-    std::vector<std::string> args(argv, argv+argc);
+    std::vector<std::string> args(argv, argv + argc);
 
     initialiseStdIO();
 
     initialseCurrentPath(args);
     GlobalResourceHolder global_resources;
-
+    
     if (!hg::getTestDriver().passesAllTests()) {
         std::cerr << "Failed self-check! Aborting." << std::endl;
         return EXIT_FAILURE;
     }
-
+    
     return run_main(args);
 }
+
 #ifdef WIN32
 int WINAPI WinMain(
     _In_ HINSTANCE hInstance,
@@ -75,7 +78,12 @@ int WINAPI WinMain(
     _In_ LPSTR lpCmdLine,
     _In_ int nShowCmd)
 {
-    return main(__argc, __argv);
+    return main_entry(__argc, __argv);
+}
+#else
+int main(int argc, char *argv[])
+{
+    return main_entry(argc, argv);
 }
 #endif
 
