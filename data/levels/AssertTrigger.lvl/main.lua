@@ -80,5 +80,5 @@ triggerSystem =
             default = {15 * 3200, 15 * 3200, 0, 0}
         },
     },
-    arrivalLocationsSize = 3,
+    arrivalLocationsSize = 1,
 }
