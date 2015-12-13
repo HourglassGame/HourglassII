@@ -297,6 +297,8 @@ void guyStep(
                 }
                 else
                 {
+                    pX -= platform.getXspeed();
+                    pY -= platform.getYspeed();
                     if (IntersectingRectanglesExclusive(x[i], y[i], width, height,
                         pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
                         pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
@@ -394,8 +396,8 @@ void guyStep(
 
                 if (pDirection != guyArrivalList[i].getTimeDirection())
                 {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
+                    pX -= platform.getXspeed() + platform.getPrevXspeed();
+                    pY -= platform.getYspeed() + platform.getPrevYspeed();
                 }
 
                 if (IntersectingRectanglesExclusive(
@@ -481,8 +483,8 @@ void guyStep(
 
                 if (platform.getTimeDirection() != guyArrivalList[i].getTimeDirection())
                 {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
+                    pX -= platform.getXspeed() + platform.getPrevXspeed();
+                    pY -= platform.getYspeed() + platform.getPrevYspeed();
                 }
 
                 if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
@@ -1785,8 +1787,8 @@ template <
 
                     if (pDirection != boxDirection)
                     {
-                        pX -= platform.getXspeed();
-                        pY -= platform.getYspeed();
+                        pX -= platform.getXspeed() + platform.getPrevXspeed();
+                        pY -= platform.getYspeed() + platform.getPrevYspeed();
                     }
 
                     if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
@@ -2162,6 +2164,8 @@ template <
                 }
                 else
                 {
+                    pX -= platform.getXspeed();
+                    pY -= platform.getYspeed();
                     if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
                         pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
                         pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,

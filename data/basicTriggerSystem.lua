@@ -112,6 +112,8 @@ local function calculateCollisions(protoCollisions, triggerArrivals, outputTrigg
             y = verticalPosAndVel.position,
             xspeed = horisontalPosAndVel.velocity,
             yspeed = verticalPosAndVel.velocity,
+            prevXspeed = lastStateTrigger[3],
+            prevYspeed = lastStateTrigger[4],
             width = self.width,
             height = self.height,
             timeDirection = self.timeDirection

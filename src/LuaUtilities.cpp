@@ -443,11 +443,13 @@ Collision to<Collision>(lua_State *L, int index)
     int y(readField<int>(L, "y", index));
     int xspeed(readField<int>(L, "xspeed", index));
     int yspeed(readField<int>(L, "yspeed", index));
+    int prevXspeed(readField<int>(L, "prevXspeed", index));
+    int prevYspeed(readField<int>(L, "prevYspeed", index));
     int width(readField<int>(L, "width", index));
     int height(readField<int>(L, "height", index));
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
     
-    return Collision(x, y, xspeed, yspeed, width, height, timeDirection);
+    return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, timeDirection);
 }
 
 template<>
