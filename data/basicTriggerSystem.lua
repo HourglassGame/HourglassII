@@ -374,6 +374,14 @@ local function calculateButtonGlitz(proto, buttonPositionAndVelocity, buttonStat
     return calculateBidirectionalGlitz(400, constructDynamicArea(proto, buttonPositionAndVelocity), colour, colour)
 end
 
+local function calculateBeamGlitz(proto, beamPositionAndVelocity, buttonState)
+    if buttonState then
+		return false
+	end
+	local colour = {r = 255, g = 0, b = 0}
+
+    return calculateBidirectionalGlitz(400, constructDynamicArea(proto, beamPositionAndVelocity), colour, colour)
+end
 
 local function momentarySwitch(p)
     local justPressed = nil
@@ -459,6 +467,136 @@ local function stickySwitch(p)
                 table.insert(
                     persistentGlitz,
                     {type = "audio", key = "global.switch_push_down", duration = 10, timeDirection = proto.timeDirection})
+            end
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[triggerID] = {state and 1 or 0}
+            outputTriggers[stateTriggerID] = {state and 1 or 0}
+            if p.extraTriggerIDs then
+                local extraTriggerIDs = p.extraTriggerIDs
+                for i = 1, #extraTriggerIDs do
+                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                end
+            end
+        end,
+    }
+end
+
+local function stickyLaserSwitch(p)
+    local beamPnV = nil
+    local emitterPnV = nil
+    local state = nil
+
+    local justPressed = nil
+
+    local triggerID = p.triggerID
+    local stateTriggerID = p.stateTriggerID or p.triggerID
+	
+    local timeDirection = p.timeDirection
+    local attachment = p.attachment
+    local beamLength = p.beamLength
+    local beamDirection = p.beamDirection
+	local beamWidth = 160
+	
+	local emitterLength = 400
+	local emitterWidth = 1200
+	
+	local protoBeam
+	local protoEmitter
+	
+	if beamDirection == 0 then -- Right
+		protoBeam = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			width = beamLength,
+			height = beamWidth,
+		}
+		protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamWidth/2
+		
+		protoEmitter = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			height = emitterWidth,
+			width = emitterLength,
+		}
+		protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterWidth/2
+	elseif beamDirection == 1 then -- Down (following right hand rule)
+		protoBeam = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			width = beamWidth,
+			height = beamLength,
+		}
+		protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamWidth/2
+		
+		protoEmitter = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			height = emitterLength,
+			width = emitterWidth,
+		}
+		protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
+	elseif beamDirection == 2 then -- Left
+		protoBeam = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			width = beamLength,
+			height = beamWidth,
+		}
+		protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamLength
+		protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamWidth/2
+		
+		protoEmitter = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			height = emitterWidth,
+			width = emitterLength,
+		}
+		protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterLength
+		protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterWidth/2
+	else -- Up
+		protoBeam = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			width = beamWidth,
+			height = beamLength,
+		}
+		protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamWidth/2
+		protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamLength
+		
+		protoEmitter = {
+			timeDirection = timeDirection,
+			attachment = cloneAttachment(attachment),
+			height = emitterLength,
+			width = emitterWidth,
+		}
+		protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
+		protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterLength
+	end
+    
+    return {
+        calcPnV = function(self, collisions)
+            beamPnV = calculateButtonPositionAndVelocity(protoBeam, collisions)
+			emitterPnV = calculateButtonPositionAndVelocity(protoEmitter, collisions)
+        end,
+        updateState = function(self, departures, triggerArrivals)
+            state = triggerArrivals[stateTriggerID][1] == 1 or checkPressed(constructDynamicArea(protoBeam, beamPnV), departures)
+            justPressed = triggerArrivals[stateTriggerID][1] == 0 and state
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
+            local forGlitzBeam, revGlitzBeam = calculateBeamGlitz(protoBeam, beamPnV, state)
+            if forGlitzBeam then
+				table.insert(forwardsGlitz, forGlitzBeam)
+				table.insert(reverseGlitz, revGlitzBeam)
+			end
+			
+			local forGlitz, revGlitz = calculateButtonGlitz(protoEmitter, emitterPnV, state)
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+            if justPressed then
+                table.insert(
+                    persistentGlitz,
+                    {type = "audio", key = "global.switch_push_down", duration = 10, timeDirection = timeDirection})
             end
         end,
         fillTrigger = function(self, outputTriggers)
@@ -1041,6 +1179,7 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
+	stickyLaserSwitch = stickyLaserSwitch,
     multiStickySwitch = multiStickySwitch,
     pickup = pickup,
     spikes = spikes,
