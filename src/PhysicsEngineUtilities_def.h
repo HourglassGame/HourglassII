@@ -775,18 +775,35 @@ void guyStep(
                     //int dropX(facing[i] ? x[i] + width : x[i] - guyArrivalList[i].getBoxCarrySize());
 
                     // Initialise bounds on drops based on movement direction
-                    int dropY(y[i] + height - dropSize);
-                    int leftBound, rightBound;
+                    int dropY, leftBound, rightBound;
 
-                    if (dropSize < width)
+                    if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
                     {
-                        leftBound = x[i];
-                        rightBound = x[i] - dropSize + width;
+                        dropY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed() + height - dropSize;
+                        if (dropSize < width)
+                        {
+                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
+                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + width;
+                        }
+                        else
+                        {
+                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + width;
+                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
+                        }
                     }
                     else
                     {
-                        leftBound = x[i] - dropSize + width;
-                        rightBound = x[i];
+                        dropY = y[i] + height - dropSize;
+                        if (dropSize < width)
+                        {
+                            leftBound = x[i];
+                            rightBound = x[i] - dropSize + width;
+                        }
+                        else
+                        {
+                            leftBound = x[i] - dropSize + width;
+                            rightBound = x[i];
+                        }
                     }
 
                     //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
@@ -841,7 +858,7 @@ void guyStep(
                             int pw = nextPlatform[j].getWidth();
                             int ph = nextPlatform[j].getHeight();
 
-                            if (nextPlatform[j].getTimeDirection() != guyArrivalList[i].getTimeDirection())
+                            if (guyArrivalList[i].getBoxCarryDirection()*nextPlatform[j].getTimeDirection() == TimeDirection::REVERSE)
                             {
                                 px -= nextPlatform[j].getXspeed() + nextPlatform[j].getPrevXspeed();
                                 py -= nextPlatform[j].getYspeed() + nextPlatform[j].getPrevYspeed();
@@ -920,7 +937,15 @@ void guyStep(
                         }
                         else
                         {
-                            int midX = x[i] + width / 2 - dropSize / 2;
+                            int midX;
+                            if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                            {
+                                midX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() + width / 2 - dropSize / 2;
+                            }
+                            else
+                            {
+                                midX = x[i] + width / 2 - dropSize / 2;
+                            }
                             if (leftBound <= midX)
                             {
                                 if (midX <= rightBound)
@@ -982,6 +1007,13 @@ void guyStep(
                         {
                             int boxX = nextBoxIt->object.getX();
                             int boxY = nextBoxIt->object.getY();
+
+                            if (nextBoxIt->object.getTimeDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                            {
+                                boxX += -nextBoxIt->object.getXspeed() + x[i] - guyArrivalList[i].getX();
+                                boxY += -nextBoxIt->object.getYspeed() + y[i] - guyArrivalList[i].getY();
+                            }
+
                             int boxSize = nextBoxIt->object.getSize();
                             if ((x[i] < boxX + boxSize) && (x[i] + width > boxX) && (y[i] < boxY + boxSize) && (y[i] + height >= boxY + boxSize))
                             {
