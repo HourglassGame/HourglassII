@@ -212,8 +212,7 @@ template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_t playerInputSize);
 enum {
     COLLISION_BUFFER_RANGE = 100,
-    HALF_COLLISION_BUFFER_RANGE = 50,
-    REVERSE_PLATFORM_CHRONOFRAG_FUDGE = 250
+    HALF_COLLISION_BUFFER_RANGE = 50
 };
 }
 #include "PhysicsEngineUtilities_def.h"

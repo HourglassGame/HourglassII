@@ -299,11 +299,7 @@ void guyStep(
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(x[i], y[i], width, height,
-                        pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
-                        pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
-                        pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
-                        pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
+                    if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
                     {
                         finishedWith[i] = true;
                         guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
@@ -2166,11 +2162,7 @@ template <
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
-                        pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
-                        pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
-                        pWidth - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2,
-                        pHeight - REVERSE_PLATFORM_CHRONOFRAG_FUDGE * 2))
+                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
                     {
                         boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
                         squished[i] = true;
