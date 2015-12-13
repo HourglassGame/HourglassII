@@ -11,6 +11,11 @@
 #include <thread>
 #include <boost/throw_exception.hpp>
 namespace hg {
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4646) //[[noreturn]] declared with return type. Justified because `panic` has to be a lua_Cfunction, which returns int.
+#endif
 [[noreturn]] inline int panic(lua_State *L) {
     //Check whether this is a memory allocation error
     LuaUserData &ud(getUserData(L));
@@ -24,6 +29,9 @@ namespace hg {
         boost::throw_exception(LuaError(L));
     }
 }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 //RAII class for lua_State.
 //Movable but non-copyable, as I do not know
