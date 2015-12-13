@@ -11,6 +11,7 @@
 #include <functional>
 #include <iostream>
 #include "ReplaySelectionScene.h"
+#include "RuntimeErrorScene.h"
 
 namespace hg {
 struct RunGameResultVisitor {
@@ -140,15 +141,18 @@ int run_hourglassii() {
                          || game_scene_result.active<move_function<std::vector<InputList>()>>());
                 }
                 catch (hg::LuaError const &e) {
-                    std::cerr << "There was an error in some lua, the error message was:\n" << e.message << std::endl;
-                    return EXIT_FAILURE;
+                    std::cerr << "There was an error in some lua, the error message was:\n" << boost::diagnostic_information(e) << std::endl;
+                    report_runtime_error(window, e);
+                    game_scene_result = GameAborted_tag{};
                 }
                 catch (std::bad_alloc const &) {
+                    //report_out_of_memory();
                     std::cerr << "oops... ran out of memory ):" << std::endl;
                     return EXIT_FAILURE;
                 }
                 catch (std::exception const &e) {
-                    std::cerr << "A std::exception was caught, e.what() is: " <<e.what() << std::endl;
+                    //
+                    std::cerr << "A std::exception was caught, e.what() is: " << e.what() << std::endl;
                     return EXIT_FAILURE;
                 }
             }

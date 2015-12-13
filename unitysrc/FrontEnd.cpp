@@ -3,6 +3,7 @@
 #include "../src/GameDisplayHelpers.cpp"
 #include "../src/Scene.cpp"
 #include "../src/RunningGameScene.cpp"
+#include "../src/RuntimeErrorScene.cpp"
 #include "../src/LoadingLevelScene.cpp"
 #include "../src/InitialScene.cpp"
 #include "../src/MainMenuScene.cpp"

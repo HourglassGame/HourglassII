@@ -6,17 +6,17 @@ local tempStore =
     {
         {
             attachment = {platform = nil, xOffset = 5 * 3200, yOffset = 14.5 * 3200},
-            index = 2,
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 2,
+            illegalDestination = nil,
             fallable = false,
             winner = true
         }
@@ -60,7 +60,7 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 0 * 3200,
             height = 0 * 3200,
             timeDirection = 'forwards',
@@ -98,7 +98,7 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 0 * 3200,
             height = 0 * 3200,
             timeDirection = 'forwards',
@@ -180,7 +180,7 @@ local tempStore =
             timeDirection = 'forwards',
             attachment = {platform = nil, xOffset = 21.75 * 3200, yOffset = 9 * 3200 },
             beamLength = 2*3200,
-			beamDirection = 3,
+            beamDirection = 3,
         },
     }
 }

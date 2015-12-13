@@ -6,17 +6,17 @@ local tempStore =
     {
         {
             attachment = {xOffset = 18.5 * 3200, yOffset = 7 * 3200},
-            index = 2,
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = nil,
             fallable = false,
             winner = true
         },
@@ -60,7 +60,7 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 0.5 * 3200,
             height = 2 * 3200,
             timeDirection = 'forwards',
@@ -99,7 +99,7 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
+    protoMutators = {
         bts.pickup{
             attachment = {platform = nil, xOffset = 12.5 * 3200, yOffset = 8.25 * 3200},
             width = 1600,
@@ -124,16 +124,16 @@ local tempStore =
             triggerID = 7,
             pickupType = 'timeReverse'
         },
-	},
+    },
     protoButtons = {
-		bts.stickySwitch{
+        bts.stickySwitch{
             attachment = {xOffset = 4 * 3200, yOffset = 8.25 * 3200},
             width = 800,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
         },
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {xOffset = 10 * 3200, yOffset = 16.75 * 3200},
             width = 3200,
             height = 800,
@@ -141,8 +141,8 @@ local tempStore =
             triggerID = 2,
         },
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

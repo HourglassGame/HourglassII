@@ -41,7 +41,7 @@ inline mt::std::vector<mt::std::vector<int>>
 inline mt::std::map<Frame *, mt::std::vector<TriggerData>>
 calculateActualTriggerDepartures(
     mt::std::vector<TriggerData> const &triggers,
-    std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
+    std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults,
     Frame *currentFrame)
 {
     mt::std::map<Frame *, mt::std::vector<TriggerData>> retv;

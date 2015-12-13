@@ -11,7 +11,7 @@ local tempStore =
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
@@ -20,14 +20,14 @@ local tempStore =
             fallable = false,
             winner = true
         },
-		{
+        {
             attachment = {platform = 2, xOffset = 0 * 3200, yOffset = -4 * 3200},
             index = 2,
             width = 1600,
             height = 9600,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 0,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = true,
@@ -79,27 +79,29 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             lastStateTriggerID = 3,
-			rawCollisionFunction = function(triggerArrivals, outputTriggers, frameNumber)
-				-- 600 frames to sweep map (10 seconds)
-				return {
-						x = -frameNumber%600 * 128 + 1600,
-						y = 10 * 3200,
-						xspeed = -128,
-						yspeed = 0,
-						width = 1500,
-						height = 2000,
-						timeDirection = 'forwards'
-					}
-				
-			end
+            rawCollisionFunction = function(triggerArrivals, outputTriggers, frameNumber)
+                -- 600 frames to sweep map (10 seconds)
+                return {
+                        x = -frameNumber%600 * 128 + 1600,
+                        y = 10 * 3200,
+                        xspeed = -128,
+                        yspeed = 0,
+                        prevXspeed = -128,
+                        prevYspeed = 0,
+                        width = 1500,
+                        height = 2000,
+                        timeDirection = 'forwards'
+                    }
+                
+            end
         },
     },
-	protoMutators = {
-	},
+    protoMutators = {
+    },
     protoButtons = {
-		bts.stickySwitch{
+        bts.stickySwitch{
             attachment = {xOffset = 9.75 * 3200, yOffset = 8.75 * 3200},
             width = 1600,
             height = 800,
@@ -107,13 +109,13 @@ local tempStore =
             triggerID = 1,
         },
     },
-	protoGlitz = {
-	},
-	triggerManipulationFunction = function (triggerArrivals, outputTriggers, frameNumber)
-		if triggerArrivals[1][1] == 1 and (frameNumber%600 == 116 or triggerArrivals[4][1] == 1) then
-			outputTriggers[4] = {1}
-		end
-	end
+    protoGlitz = {
+    },
+    triggerManipulationFunction = function (triggerArrivals, outputTriggers, frameNumber)
+        if triggerArrivals[1][1] == 1 and (frameNumber%600 == 116 or triggerArrivals[4][1] == 1) then
+            outputTriggers[4] = {1}
+        end
+    end
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

@@ -19,7 +19,7 @@ environment =
         {1,1,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,1},
         {1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1},
         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     }
 }
 initialGuy =
@@ -38,8 +38,8 @@ initialGuy =
 }
 initialArrivals =
 {
-	{type = "box", x = 26.5 * 3200, y = 3 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
-	{type = "box", x = 28.5 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+    {type = "box", x = 26.5 * 3200, y = 3 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+    {type = "box", x = 28.5 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
 }
 triggerSystem =
 {

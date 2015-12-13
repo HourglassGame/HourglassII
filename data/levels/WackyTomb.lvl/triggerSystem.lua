@@ -130,14 +130,14 @@ local tempStore =
             x1 = {platform = nil, pos = 15 * 3200},
             x2 = {platform = nil, pos = 17.55 * 3200},
             y = {platform = nil, pos = 14.5 * 3200},
-			triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[4][1]*triggerArrivals[5][1] == 1 end,
+            triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[4][1]*triggerArrivals[5][1] == 1 end,
             useTriggerArrival = false
         },
         bts.easyWireGlitz{
             x = {platform = nil, pos = 17.5 * 3200},
             y1 = {platform = nil, pos = 14.5 * 3200},
             y2 = {platform = nil, pos = 6.5 * 3200},
-			triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[4][1]*triggerArrivals[5][1] == 1 end,
+            triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[4][1]*triggerArrivals[5][1] == 1 end,
             useTriggerArrival = false
         },
         bts.basicRectangleGlitz{
@@ -182,9 +182,9 @@ local tempStore =
             y1 = {platform = nil, pos = 5 * 3200},
             y2 = {platform = nil, pos = 6.5 * 3200},
             y2 = {platform = nil, pos = 6.5 * 3200},
-			triggerFunction = function(triggerArrivals, outputTriggers) 
-				return (triggerArrivals[4][1] == 1 and triggerArrivals[5][1] == 1) or triggerArrivals[3][1] == 1
-			end,
+            triggerFunction = function(triggerArrivals, outputTriggers) 
+                return (triggerArrivals[4][1] == 1 and triggerArrivals[5][1] == 1) or triggerArrivals[3][1] == 1
+            end,
             useTriggerArrival = false
         },
     },

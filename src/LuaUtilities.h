@@ -54,14 +54,29 @@ T readFieldWithDefault(lua_State *L, char const *fieldName, int index, T default
     lua_pop(L, 1);
     return retv;
 }
-
+template<typename IntegralType>
+inline IntegralType lua_index_to_C_index(IntegralType val) {
+    return val - 1;
+}
+template<typename IntegralType>
+inline lua_Integer C_index_to_lua_index(IntegralType val) {
+    return val + 1;
+}
 template<typename T>
 T readField(lua_State *L, char const *fieldName, int index = -1)
 {
-    lua_getfield(L, index, fieldName);
-    T retv(to<T>(L));
-    lua_pop(L, 1);
-    return retv;
+    try {
+        lua_getfield(L, index, fieldName);
+        T retv(to<T>(L));
+        lua_pop(L, 1);
+        return retv;
+    }
+    catch (LuaInterfaceError &e) {
+        std::stringstream  ss;
+        ss << "readField(" << fieldName << ")";
+        add_semantic_callstack_info(e, ss.str());
+        throw;
+    }
 }
 template<typename T>
 T readGlobal(lua_State *L, char const *globalName)

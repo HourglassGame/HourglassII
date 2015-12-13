@@ -1,4 +1,4 @@
-#include "LuaUtilities.h"
+﻿#include "LuaUtilities.h"
 #include "LuaUserData.h"
 #include <boost/filesystem/fstream.hpp>
 #include <iostream>
@@ -13,7 +13,6 @@
 
 #include "LuaStackManager.h"
 #include <cassert>
-#define luaassert assert
 //TODO everywhere:
 //* fix usage of lua_checkstack
 //* make code correct in the face of errors and incorrect input
@@ -40,10 +39,10 @@ std::vector<char> loadFileIntoVector(
 }
 
 int lua_VectorWriter(
-    lua_State *L,
-    const void *p,
-    size_t sz,
-    void *ud)
+    lua_State * const L,
+    const void * const p,
+    size_t const sz,
+    void * const ud)
 {
     (void)L;
     std::vector<char> &vec(*static_cast<std::vector<char> *>(ud));
@@ -52,9 +51,9 @@ int lua_VectorWriter(
 }
 
 const char *lua_VectorReader (
-    lua_State *L,
-    void *ud,
-    size_t *size)
+    lua_State * const L,
+    void * const ud,
+    size_t * const size)
 {
     (void)L;
     std::pair<char const *, char const *>& data(*static_cast<std::pair<char const *, char const *> *>(ud));
@@ -70,16 +69,17 @@ const char *lua_VectorReader (
 }
 
 
-void pushFunctionFromVector(lua_State *L, std::vector<char> const &luaData, std::string const &chunkName)
+void pushFunctionFromVector(lua_State * const L, std::vector<char> const &luaData, std::string const &chunkName)
 {
     if (luaL_loadbuffer(L, luaData.empty() ? "" : &luaData.front() , luaData.size(), chunkName.c_str()) != LUA_OK) {
-        std::cerr << lua_tostring(L, -1) << std::endl;
-        assert(false);
+        std::stringstream ss;
+        ss << "Couldn't load lua-function: " << lua_tostring(L, -1);
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
-    assert(lua_type(L, -1) == LUA_TFUNCTION);
+    assert(lua_type(L, -1) == LUA_TFUNCTION && "luaL_loadbuffer is specified to push a function onto the lua-stack if it succeeds");
 }
 
-void checkstack(lua_State *L, int extra)
+void checkstack(lua_State * const L, int const extra)
 {
     if (!lua_checkstack(L, extra)) {
         //Maybe change to a more specific error?
@@ -90,68 +90,95 @@ void checkstack(lua_State *L, int extra)
 }
 
 template<>
-bool isValid<bool>(lua_State *L, int index)
+bool isValid<bool>(lua_State * const L, int const index)
 {
     return lua_isboolean(L, index);
 }
 
 template<>
-bool to<bool>(lua_State *L, int index)
+bool to<bool>(lua_State * const L, int const index) try
 {
     //TODO: better error checking
-    assert(lua_isboolean(L, index));
+    if (!lua_isboolean(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Non-boolean value produced where bool expected"));
+    }
     return lua_toboolean(L, index);
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<bool>");
+    throw;
+}
 template<>
-bool isValid<int>(lua_State *L, int index)
+bool isValid<int>(lua_State * const L, int const index)
 {
     return lua_isnumber(L, index);
 }
 template<>
-int to<int>(lua_State *L, int index)
+int to<int>(lua_State * const L, int const index) try
 {
     //TODO: better rounding/handling of non-integers!
-    assert(lua_isnumber(L, index));
-    lua_Number num = lua_tonumber(L, index);
+    if (!lua_isnumber(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Non-numeric value found where numeric value expected"));
+    }
+    lua_Number const num = lua_tonumber(L, index);
 
     lua_Integer integ = 0;
 
-    int is_integer = lua_numbertointeger(num, &integ);
-    assert(is_integer);
-    static_cast<void>(is_integer);
+    int const is_integer = lua_numbertointeger(num, &integ);
+    if (!is_integer) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Numeric value out-of-range to be an integer, unable to convert"));
+    }
     //Note that by default, lua_Integer has a much larger range than int,
     //so this conversion could overflow. This need to be improved.
     return static_cast<int>(integ);
 }
-
-template<>
-std::string to<std::string>(lua_State *L, int index)
-{
-    assert(lua_isstring(L, index));
-    return std::string(lua_tostring(L, index));
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<int>");
+    throw;
 }
 
 template<>
-std::vector<std::string> to<std::vector<std::string> >(lua_State *L, int index) {
+std::string to<std::string>(lua_State * const L, int const index) try
+{
+    if (!lua_isstring(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Non-string value found where string value expected"));
+    }
+    return std::string(lua_tostring(L, index));
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<std::string>");
+    throw;
+}
+
+template<>
+std::vector<std::string> to<std::vector<std::string> >(lua_State * const L, int const index) try {
     
-    assert(lua_istable(L, index));
+    if (!lua_istable(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Non-table value found where table value expected"));
+    }
     lua_len(L, index);
     lua_Integer const tablelen(lua_tointeger(L, -1));
     lua_pop(L, 1);
     std::vector<std::string> retv(tablelen);
-    for (lua_Integer i(0), end(tablelen); i != end ; ++i) {
+    for (lua_Integer i(0), end(tablelen); i != end; ++i) {
         lua_rawgeti(L, index, i+1);
         retv[i] = to<std::string>(L, -1);
         lua_pop(L, 1);
     }
     return retv;
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<std::vector<std::string>>");
+    throw;
+}
 
 template<>
-TimeDirection to<TimeDirection>(lua_State *L, int index)
+TimeDirection to<TimeDirection>(lua_State * const L, int const index) try
 {
-    assert(lua_isstring(L, index));
-    char const *timeDirectionString(lua_tostring(L, index));
+    if (!lua_isstring(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("TimeDirection values must be strings"));
+    }
+    char const * const timeDirectionString(lua_tostring(L, index));
     TimeDirection retv{TimeDirection::INVALID};
     if (strcmp(timeDirectionString, "forwards") == 0) {
         retv = TimeDirection::FORWARDS;
@@ -160,20 +187,29 @@ TimeDirection to<TimeDirection>(lua_State *L, int index)
         retv = TimeDirection::REVERSE;
     }
     else {
-        std::cerr << timeDirectionString << std::endl;
-        assert(false && "invalid string given as timeDirection");
+        std::stringstream ss;
+        ss << "Invalid string given as timeDirection: " << timeDirectionString;
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
     return retv;
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<TimeDirection>");
+    throw;
+}
 
 template<>
-Wall to<Wall>(lua_State *L, int index)
+Wall to<Wall>(lua_State * const L, int const index) try
 {
-    int segmentSize(readField<int>(L, "segmentSize", index));
-    int width(readField<int>(L, "width", index));
-    assert(width >= 0);
-    int height(readField<int>(L, "height", index));
-    assert(height >= 0);
+    int const segmentSize(readField<int>(L, "segmentSize", index));
+    int const width(readField<int>(L, "width", index));
+    if (width < 0) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Wall width must be >= 0"));
+    }
+    int const height(readField<int>(L, "height", index));
+    if (height < 0) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Wall height must be >= 0"));
+    }
     
     std::array<hg::multi_vector<bool, 2>::index, 2> const wallShape = {{
         static_cast<hg::multi_vector<bool, 2>::index>(width),
@@ -181,11 +217,16 @@ Wall to<Wall>(lua_State *L, int index)
     hg::multi_vector<bool, 2> wall;
     wall.resize(wallShape);
     
-    assert(lua_rawlen(L, index) == static_cast<unsigned>(height));
+    if (lua_rawlen(L, index) != static_cast<unsigned>(height)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Wall table size doesn't match specified wall height"));
+    }
     for (std::size_t i(1), iend(height); i <= iend; ++i) {
         lua_pushinteger(L, i);
         lua_gettable(L, index - 1);
-        assert(lua_rawlen(L, -1) == static_cast<unsigned>(width));
+
+        if (lua_rawlen(L, -1) != static_cast<unsigned>(width)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Wall table size doesn't match specified wall width"));
+        }
         for (std::size_t j(1), jend(width); j <= jend;  ++j) {
             lua_pushinteger(L, j);
             lua_gettable(L, -2);
@@ -196,19 +237,30 @@ Wall to<Wall>(lua_State *L, int index)
     }
     return Wall(segmentSize, std::move(wall), "HourglassI");
 }
-
-template<>
-Environment to<Environment>(lua_State *L, int index)
-{
-    return {readField<Wall>(L, "wall", index), readField<int>(L, "gravity", index)};
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<Wall>");
+    throw;
 }
 
 template<>
-InitialBox to<InitialBox>(lua_State *L, int index)
+Environment to<Environment>(lua_State *L, int index) try
 {
-    assert(lua_istable(L, index) && "an initial box must be a table");
-    assert(readField<std::string>(L, "type", index) == "box" 
-        && "there is no support for initial objects other than boxes");
+    return {readField<Wall>(L, "wall", index), readField<int>(L, "gravity", index)};
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<Environment>");
+    throw;
+}
+
+template<>
+InitialBox to<InitialBox>(lua_State *L, int index) try
+{
+    if (!lua_istable(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("an initial box must be a table"));
+    }
+    if (readField<std::string>(L, "type", index) != "box") {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("there is no support for initial objects other than boxes"));
+    }
     return
       InitialBox(
         Box(readField<int>(L, "x", index), readField<int>(L, "y", index),
@@ -218,9 +270,13 @@ InitialBox to<InitialBox>(lua_State *L, int index)
             -1,
             readField<TimeDirection>(L, "timeDirection", index)));
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<InitialBox>");
+    throw;
+}
 
 template<>
-InitialObjects to<InitialObjects>(lua_State *L, int index)
+InitialObjects to<InitialObjects>(lua_State *L, int index) try
 {
     ObjectList<NonGuyDynamic> retv;
     for (std::size_t i(1), iend(lua_rawlen(L, index)); i <= iend; ++i) {
@@ -231,24 +287,33 @@ InitialObjects to<InitialObjects>(lua_State *L, int index)
             retv.add(to<InitialBox>(L).box);
         }
         else {
-            std::cerr << type << std::endl;
-            assert(false && "invalid type given for InitialObject");
+            std::stringstream ss;
+            ss << "invalid type given for InitialObject: " << type;
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
         }
         lua_pop(L, 1);
     }
     return InitialObjects(retv);
 }
-
-
-template<>
-InitialGuyArrival to<InitialGuyArrival>(lua_State *L, int index)
-{
-    return InitialGuyArrival(readField<int>(L, "arrivalTime", index), readField<InitialGuy>(L, "arrival", index).guy);
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<InitialObjects>");
+    throw;
 }
 
 
 template<>
-Ability to<Ability>(lua_State *L, int index)
+InitialGuyArrival to<InitialGuyArrival>(lua_State *L, int index) try
+{
+    return InitialGuyArrival(readField<int>(L, "arrivalTime", index), readField<InitialGuy>(L, "arrival", index).guy);
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<InitialGuyArrival>");
+    throw;
+}
+
+
+template<>
+Ability to<Ability>(lua_State *L, int index) try
 {
     std::string abilityString(lua_tostring(L, index));
     if (abilityString == "timeJump") {
@@ -264,14 +329,18 @@ Ability to<Ability>(lua_State *L, int index)
         return Ability::TIME_PAUSE;
     }
     else {
-        std::cerr << abilityString << std::endl;
-        assert(false && "invalid ability string");
-        return Ability::NO_ABILITY;
+        std::stringstream ss;
+        ss << "invalid ability string: " << abilityString;
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<Ability>");
+    throw;
 }
 
 template<>
-FacingDirection to<FacingDirection>(lua_State *L, int index)
+FacingDirection to<FacingDirection>(lua_State *L, int index) try
 {
     std::string facingString(lua_tostring(L, index));
     if (facingString == "left") {
@@ -281,32 +350,46 @@ FacingDirection to<FacingDirection>(lua_State *L, int index)
         return FacingDirection::RIGHT;
     }
     else {
-        std::cerr << facingString << std::endl;
-        assert(false && "invalid facing direction string");
-        return FacingDirection::LEFT;
+        std::stringstream ss;
+        ss << "invalid facing direction string: " << facingString;
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<FacingDirection>");
+    throw;
 }
 
 template<>
 mt::std::map<Ability, int>
-    to<mt::std::map<Ability, int>>(lua_State *L, int index)
+    to<mt::std::map<Ability, int>>(lua_State *L, int index) try
 {
-    assert(lua_istable(L, index) && "pickups must be a table");
+    if (!lua_istable(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("pickups must be a table"));
+    }
     mt::std::map<Ability, int> retv;
     lua_pushnil(L);
     while (lua_next(L, index - 1) != 0) {
         auto abilityQuantity(std::round(lua_tonumber(L, -1)));
-        assert(abilityQuantity >= -1);
+        if (abilityQuantity < -1) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("pickupQuantity must be an integer in the range [-1, inf)"));
+        }
         retv[to<Ability>(L, -2)] = static_cast<int>(abilityQuantity);
         lua_pop(L, 1);
     }
     return retv;
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<InitialPickups>");
+    throw;
+}
 
 template<>
-Guy to<Guy>(lua_State* L, int index)
+Guy to<Guy>(lua_State* L, int index) try
 {
-    assert(lua_istable(L, index) && "a guy must be a table");
+    if (!lua_istable(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a guy must be a table"));
+    }
     int relativeIndex(readField<int>(L, "index",index));
     int x(readField<int>(L, "x",index));            
     int y(readField<int>(L, "y",index));
@@ -318,7 +401,9 @@ Guy to<Guy>(lua_State* L, int index)
     int illegalPortal(-1);
     lua_getfield(L, index, "illegalPortal");
     if (!lua_isnil(L, -1)) {
-        assert(lua_isnumber(L, -1));
+        if (!lua_isnumber(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Guy's illegalPortal must be nil or a number"));
+        }
         illegalPortal = static_cast<int>(std::round(lua_tonumber(L, -1)));
     }
     lua_pop(L, 1);
@@ -362,11 +447,16 @@ Guy to<Guy>(lua_State* L, int index)
         timeDirection,
         timePaused);
 }
-
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<Guy>");
+    throw;
+}
 template<>
-InitialGuy to<InitialGuy>(lua_State *L, int index)
+InitialGuy to<InitialGuy>(lua_State *L, int index) try
 {
-    assert(lua_istable(L, index) && "an initial guy must be a table");
+    if (!lua_istable(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("an initial guy must be a table"));
+    }
     int x(readField<int>(L, "x",index));
     int y(readField<int>(L, "y",index));
     int xspeed(readFieldWithDefault<int>(L, "xspeed",index,0));
@@ -405,9 +495,13 @@ InitialGuy to<InitialGuy>(lua_State *L, int index)
         timeDirection,
         timePaused));
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<InitialGuy>");
+    throw;
+}
 
 template<>
-TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
+TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index) try
 {
     std::vector<std::pair<int, std::vector<int> > > toad;
     std::size_t iend(lua_rawlen(L, index));
@@ -433,12 +527,16 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
     }
     return {toad};
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<TriggerOffsetsAndDefaults>");
+    throw;
+}
 
 template<>
-Collision to<Collision>(lua_State *L, int index)
-{
-    assert(lua_istable(L, -1) && "a collision must be a table");
-
+Collision to<Collision>(lua_State *L, int index) try {
+    if (!lua_istable(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a collision must be a table"));
+    }
     int x(readField<int>(L, "x", index));            
     int y(readField<int>(L, "y", index));
     int xspeed(readField<int>(L, "xspeed", index));
@@ -451,10 +549,13 @@ Collision to<Collision>(lua_State *L, int index)
     
     return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, timeDirection);
 }
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<Collision>");
+    throw;
+}
 
 template<>
-Glitz to<Glitz>(lua_State *L, int index)
-{
+Glitz to<Glitz>(lua_State *L, int index) try {
     std::string const type(readField<std::string>(L, "type", index));
     if (type == "rectangle") {
         int const layer(readField<int>(L, "layer", index));
@@ -484,12 +585,16 @@ Glitz to<Glitz>(lua_State *L, int index)
         
         return Glitz(new (multi_thread_tag{}) ImageGlitz(layer, std::move(key), x, y, width, height));
     }
-    std::cerr << "Unknown Glitz Type: " << type << "\n";
-    luaassert("Unknown Glitz Type" && false);
-    return Glitz(nullptr);
+    std::stringstream ss;
+    ss << "Unknown Glitz Type: " << type;
+    BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<Glitz>");
+    throw;
 }
 
-unsigned readColourField(lua_State *L, char const *fieldName)
+unsigned readColourField(lua_State *L, char const *fieldName) try
 {
     LuaStackManager stack_manager(L);
     lua_getfield(L, -1, fieldName);
@@ -498,6 +603,10 @@ unsigned readColourField(lua_State *L, char const *fieldName)
     unsigned b(readField<int>(L, "b"));
     lua_pop(L, 1);
     return r << 24 | g << 16 | b << 8;
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "readColourField");
+    throw;
 }
 
 

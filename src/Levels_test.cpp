@@ -14,6 +14,8 @@
 #include "ReplayIO.h"
 #include "TimeEngine.h"
 #include "PlayerVictoryException.h"
+#include "prettyprint.hpp"
+#include "LuaError.h"
 #include <chrono>
 #include <iostream>
 namespace hg {
@@ -38,8 +40,14 @@ bool testLevelsLoad() {
         {
             std::cout << "Test-loading " << entry.path() << " ..." << std::flush;
             auto const start = std::chrono::high_resolution_clock::now();
-            TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
-
+            try {
+                TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
+            }
+            catch (LuaError const &e) {
+                std::string const diagInfo = boost::diagnostic_information(e);
+                std::cout << "Failed with: " << diagInfo << "\n" << std::flush;
+                testPassed = false;
+            }
             auto timeTaken =
                 std::chrono::duration_cast<std::chrono::duration<double>>(
                     std::chrono::high_resolution_clock::now() - start);
@@ -66,27 +74,28 @@ bool testLevels() {
     //TODO -- make this test only run in an "expensive tests" run
     //TODO -- get rid of hard-coded progress display.
     bool testPassed = true;
-    for (auto const entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
-                                                      boost::filesystem::directory_iterator()))
+    for (auto const entry : boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
+        boost::filesystem::directory_iterator()))
     {
-        if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
-            if (exists(entry.path()/"DoNotTest")) continue;
-            std::cout << "Testing " << entry.path() << " ..." << std::flush;
-            if (!exists(entry.path()/"win.replay")) {
-                std::cerr << " Did not have win.replay\n" << std::flush;
-                testPassed = false;
-                continue;
-            }
-            auto const start = std::chrono::high_resolution_clock::now();
-            TimeEngine timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
+        ;
+        if (!is_directory(entry.status()) || entry.path().extension() != ".lvl" || exists(entry.path() / "DoNotTest")) continue;
 
-            auto const replay = loadReplay((entry.path()/"win.replay").string());
+        std::cout << "Testing " << entry.path() << " ..." << std::flush;
+        if (!exists(entry.path() / "win.replay")) {
+            std::cerr << " Did not have win.replay\n" << std::flush;
+            testPassed = false;
+            continue;
+        }
+        auto const start = std::chrono::high_resolution_clock::now();
+        try {
+            auto timeEngine = TimeEngine(loadLevelFromFile(entry.path()));
+
+            auto const replay = loadReplay((entry.path() / "win.replay").string());
             std::vector<InputList> outReplay;
             try {
                 for (auto const& input : replay) {
                     outReplay.push_back(input);
                     timeEngine.runToNextPlayerFrame(input);
-
                 }
                 if (rewrite_replay) {
                     std::cout << " Extending replay ..." << std::flush;
@@ -104,17 +113,21 @@ bool testLevels() {
                 }
                 auto timeTaken =
                     std::chrono::duration_cast<std::chrono::duration<double>>(
-                        std::chrono::high_resolution_clock::now()-start);
-                std::cout << " OK, time: " << timeTaken.count() << "s, inReplaySize: "<< replay.size() << ", outReplaySize: " << outReplay.size() <<"\n" << std::flush;
+                        std::chrono::high_resolution_clock::now() - start);
+                std::cout << " OK, time: " << timeTaken.count() << "s, inReplaySize: " << replay.size() << ", outReplaySize: " << outReplay.size() << "\n" << std::flush;
                 if (rewrite_replay) {
                     saveReplay((entry.path() / "win.replay").string(), outReplay);
                 }
                 continue;
             }
-            std::cerr << " Did not win\n" << std::flush;
-            testPassed = false;
-            continue;
         }
+        catch (LuaError const &e) {
+            std::string const diagInfo = boost::diagnostic_information(e);
+            std::cout << "Failed with: " << diagInfo << "\n" << std::flush;
+        }
+        std::cerr << " Did not win\n" << std::flush;
+        testPassed = false;
+        continue;
     }
     return testPassed;
 }

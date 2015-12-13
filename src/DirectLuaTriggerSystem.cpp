@@ -22,9 +22,6 @@
 #include <cassert>
 
 namespace hg {
-#define luaassert assert
-
-
 static int preloadReset(lua_State *L) {
     //preloadReset is equivalent to the lua function:
     //return deepcopy(upvalues[1])
@@ -118,7 +115,9 @@ namespace {
 Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
 {
     LuaStackManager stack_manager(L);
-    luaassert(lua_istable(L, -1) && "a box must be a table");
+    if (!lua_istable(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a box must be a table"));
+    }
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
     int xspeed(readField<int>(L, "xspeed"));
@@ -127,17 +126,29 @@ Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
     int illegalPortal(-1);
     lua_getfield(L, -1, "illegalPortal");
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_isnumber(L, -1));
-        illegalPortal = static_cast<int>(lua_tonumber(L, -1)) - 1;
-        luaassert(0 <= illegalPortal);
+        if (!lua_isnumber(L, -1))
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("illegalPortal must be nil or a positive integer."));
+        }
+        illegalPortal = lua_index_to_C_index(static_cast<int>(lua_tonumber(L, -1)));
+        if (0 > illegalPortal)
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("illegalPortal must be nil or a positive integer."));
+        }
     }
     lua_pop(L, 1);
     int arrivalBasis(-1);
     lua_getfield(L, -1, "arrivalBasis");
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_isnumber(L, -1));
-        arrivalBasis = static_cast<int>(lua_tonumber(L, -1)) - 1;
-        luaassert(0 <= arrivalBasis && arrivalBasis < static_cast<int>(arrivalLocationsSize));
+        if (!lua_isnumber(L, -1))
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("arrivalBasis must be nil or an integer in the range [1, arrivalLocationsSize+1)"));
+        }
+        arrivalBasis = lua_index_to_C_index(static_cast<int>(lua_tonumber(L, -1)));
+        if (arrivalBasis < 0 || static_cast<int>(arrivalLocationsSize) <= arrivalBasis)
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("arrivalBasis must be nil or an integer in the range [1, arrivalLocationsSize+1)"));
+        }
     }
     lua_pop(L, 1);
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
@@ -166,11 +177,15 @@ std::string abilityToString(Ability ability)
 PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
 {
     LuaStackManager stack_manager(L);
-    luaassert(lua_istable(L, -1) && "a portal must be a table");
-    
-    int index(readField<int>(L, "index") - 1);
+    if (!lua_istable(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a portal must be a table"));
+    }
+
+    int index(lua_index_to_C_index(readField<int>(L, "index")));
     //TODO: better rounding!
-    luaassert(index >= 0);
+    if (index < 0) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("A portal's index must be > 0"));
+    }
     
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
@@ -185,8 +200,11 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     luaL_checkstack(L, 1, nullptr);
     lua_getfield(L, -1, "destinationIndex");
     if (!lua_isnil(L, -1)) {
-        destinationIndex = to<int>(L) - 1;
-        luaassert(destinationIndex >= -1 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize);
+        destinationIndex = lua_index_to_C_index(to<int>(L));
+        if (!(destinationIndex >= 0 && static_cast<std::size_t>(destinationIndex) < arrivalLocationsSize))
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("destinationIndex must be nil, or in the range [1, arrivalLocationsSize+1)"));
+        }
     }
     lua_pop(L, 1);
     
@@ -200,11 +218,17 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     lua_getfield(L, -1, "illegalDestination");
     int illegalDestination;
     if (lua_isnumber(L, -1)) {
-        illegalDestination = static_cast<int>(std::round(lua_tonumber(L, -1))) - 1;
-        luaassert(illegalDestination >= 0);
+        illegalDestination = lua_index_to_C_index(static_cast<int>(std::round(lua_tonumber(L, -1))));
+        if (illegalDestination < 0)
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Portal's illegalDestination must be >= 1"));
+        }
     }
     else {
-        luaassert(lua_isnil(L, -1));
+        if (!lua_isnil(L, -1))
+        {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Portal's illegalDestination must be an integer, or nil."));
+        }
         illegalDestination = -1;
     }
     lua_pop(L, 1);
@@ -232,8 +256,9 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
 
 MutatorArea toMutatorArea(lua_State *L)
 {
-    luaassert(lua_istable(L, -1) && "a mutator must be a table");
-    
+    if (!lua_istable(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a mutator must be a table"));
+    }
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
     int width(readField<int>(L, "width"));
@@ -269,7 +294,9 @@ GlitzPersister toGlitzPersister(lua_State *L) {
         Glitz forwardsGlitz = readField<Glitz>(L, "forwardsGlitz");
         Glitz reverseGlitz = readField<Glitz>(L, "reverseGlitz");
         int lifetime = readField<int>(L, "lifetime");
-        luaassert(lifetime >= 0 && "Glitz lifetimes must be positive");
+        if (lifetime < 0) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Glitz lifetimes must be positive"));
+        }
         TimeDirection timeDirection = readField<TimeDirection>(L, "timeDirection");
         return GlitzPersister(
             new (multi_thread_tag{}) StaticGlitzPersister(
@@ -282,9 +309,9 @@ GlitzPersister toGlitzPersister(lua_State *L) {
         return GlitzPersister(
             new (multi_thread_tag{}) AudioGlitzPersister(std::move(key), duration, timeDirection));
     }
-    std::cerr << "Unknown Glitz Persister Type: " << type << "\n";
-    luaassert("Unknown Glitz Persister Type" && false);
-    return GlitzPersister(nullptr);
+    std::stringstream ss;
+    ss << "Unknown Glitz Persister Type: " << type;
+    BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
 }
 
 Box readBoxField(lua_State *L, char const *fieldName, std::size_t arrivalLocationsSize)
@@ -311,8 +338,7 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     Frame const *currentFrame,
     boost::transformed_range<
     GetBase<TriggerDataConstPtr>,
-    mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
-{
+    mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) try {
     //All indicies viewed or written by lua count starting from 1, and are adjusted
     //before geing used in c++.
     //Expects a chunk which, when executed, returns 1 element:
@@ -425,7 +451,9 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "calculatePhysicsAffectingStuff");
-    luaassert(lua_type(L, -1) == LUA_TFUNCTION);
+    if (lua_type(L, -1) != LUA_TFUNCTION) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("calculatePhysicsAffectingStuff must be a function"));
+    }
     //push `frameNumber` argument
     luaL_checkstack(L, 1, nullptr);
     lua_pushinteger(L, getFrameNumber(currentFrame));
@@ -462,7 +490,9 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     luaL_checkstack(L, 1, nullptr);
     lua_getfield(L, -1, "additionalBoxes");
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_istable(L, -1) && "additionalBoxes must be a table");
+        if (!lua_istable(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("additionalBoxes must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -477,7 +507,9 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     luaL_checkstack(L, 1, nullptr);
     lua_getfield(L, -1, "collisions");
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_istable(L, -1) && "collisions must be a table");
+        if (!lua_istable(L, -1)) {
+            throw("collisions must be a table");
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -492,7 +524,9 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     luaL_checkstack(L, 1, nullptr);
     lua_getfield(L, -1, "portals");
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_istable(L, -1) && "portals must be a table");
+        if (!lua_istable(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("portals must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -507,7 +541,9 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     luaL_checkstack(L, 1, nullptr);
     lua_getfield(L, -1, "mutators");
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_istable(L, -1) && "mutators must be a table");
+        if (!lua_istable(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("mutators must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -521,9 +557,13 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     //read 'arrivalLocations' table
     luaL_checkstack(L, 1, nullptr);
     lua_getfield(L, -1, "arrivalLocations");
-    luaassert(lua_istable(L, -1) && "arrivalLocations must be a table");
+    if (!lua_istable(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("arrivalLocations must be a table"));
+    }
     for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
-        luaassert(end == arrivalLocationsSize_);
+        if (end != arrivalLocationsSize_) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("arrivalLocations must contain 'arrivalLocationsSize' elements"));
+        }
         luaL_checkstack(L, 1, nullptr);
         lua_pushinteger(L, i);
         lua_gettable(L, -2);
@@ -535,6 +575,10 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     //pop return value
     lua_pop(L, 1);
     return retv;
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "calculatePhysicsAffectingStuff");
+    throw;
 }
 
 
@@ -649,7 +693,9 @@ bool DirectLuaTriggerFrameState::shouldArrive(Guy const &potentialArriver)
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "shouldArrive");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldArrive must be a function"));
+    }
     //push `potentialArriver` argument
     pushGuy(L, potentialArriver);
     luaL_checkstack(L, 1, nullptr);
@@ -658,7 +704,9 @@ bool DirectLuaTriggerFrameState::shouldArrive(Guy const &potentialArriver)
     //call function
     lua_call(L, 1, 1);
     //read return value
-    luaassert(lua_isboolean(L, -1));
+    if (!lua_isboolean(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldArrive must return a boolean value"));
+    }
     bool retv(lua_toboolean(L, -1));
     //pop return value
     lua_pop(L, 1);
@@ -671,7 +719,9 @@ bool DirectLuaTriggerFrameState::shouldArrive(Box const &potentialArriver)
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "shouldArrive");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldArrive must be a function"));
+    }
     //push `potentialArriver` argument
     pushBox(L, potentialArriver);
     luaL_checkstack(L, 1, nullptr);
@@ -680,7 +730,9 @@ bool DirectLuaTriggerFrameState::shouldArrive(Box const &potentialArriver)
     //call function
     lua_call(L, 1, 1);
     //read return value
-    luaassert(lua_isboolean(L, -1));
+    if (!lua_isboolean(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldArrive must return a boolean value"));
+    }
     bool retv(lua_toboolean(L, -1));
     //pop return value
     lua_pop(L, 1);
@@ -701,7 +753,9 @@ bool DirectLuaTriggerFrameState::shouldPort(
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "shouldPort");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldPort must be a function"));
+    }
     //push `responsiblePortalIndex` argument
     luaL_checkstack(L, 1, nullptr);
     lua_pushinteger(L, responsiblePortalIndex + 1);
@@ -716,7 +770,9 @@ bool DirectLuaTriggerFrameState::shouldPort(
     //call function
     lua_call(L, 3, 1);
     //read return value
-    luaassert(lua_isboolean(L, -1));
+    if (!lua_isboolean(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldPort must return a boolean value"));
+    }
     bool retv(lua_toboolean(L, -1));
     //pop return value
     lua_pop(L, 1);
@@ -732,7 +788,9 @@ bool DirectLuaTriggerFrameState::shouldPort(
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "shouldPort");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldPort must be a function"));
+    }
     //push `responsiblePortalIndex` argument
     luaL_checkstack(L, 1, nullptr);
     lua_pushinteger(L, responsiblePortalIndex + 1);
@@ -747,7 +805,9 @@ bool DirectLuaTriggerFrameState::shouldPort(
     //call function
     lua_call(L, 3, 1);
     //read return value
-    luaassert(lua_isboolean(L, -1));
+    if (!lua_isboolean(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("shouldPort must return a boolean value"));
+    }
     bool retv(lua_toboolean(L, -1));
     //pop return value
     lua_pop(L, 1);
@@ -766,16 +826,18 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "mutateObject");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("mutateObject must be a function"));
+    }
     //push responsibleMutatorIndices argument
     luaL_checkstack(L, 1, nullptr);
     lua_createtable(L, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
-    for (int mutatorIndex: responsibleMutatorIndices) {
+    for (int const mutatorIndex: responsibleMutatorIndices) {
         ++i;
         luaL_checkstack(L, 1, nullptr);
-        lua_pushinteger(L, mutatorIndex + 1);
+        lua_pushinteger(L, C_index_to_lua_index(mutatorIndex));
         lua_rawseti(L, -2, i);
     }
     //push dynamicObject argument
@@ -788,7 +850,9 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     //read return value
     boost::optional<Guy> retv;
     if (!lua_isnil(L, -1)) {
-        assert(lua_istable(L, -1) && "mutated object must be a table");
+        if (!lua_istable(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("mutated object must be a table"));
+        }
         retv = to<Guy>(L);
     }
     //pop return value
@@ -804,16 +868,18 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "mutateObject");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("mutateObject must be a function"));
+    }
     //push responsibleMutatorIndices argument
     luaL_checkstack(L, 1, nullptr);
     lua_createtable(L, static_cast<int>(responsibleMutatorIndices.size()), 0);
     //insert each triggerElement into the table for the particular trigger
     int i(0);
-    for (int mutatorIndex: responsibleMutatorIndices) {
+    for (int const mutatorIndex: responsibleMutatorIndices) {
         ++i;
         luaL_checkstack(L, 1, nullptr);
-        lua_pushinteger(L, mutatorIndex + 1);
+        lua_pushinteger(L, C_index_to_lua_index(mutatorIndex));
         lua_rawseti(L, -2, i);
     }
     //push dynamicObject argument
@@ -826,7 +892,9 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
     //read return value
     boost::optional<Box> retv;
     if (!lua_isnil(L, -1)) {
-        assert(lua_istable(L, -1) && "mutated object must be a table");
+        if (!lua_istable(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("mutated object must be a table"));
+        }
         retv = toBox(L, static_cast<int>(arrivalLocationsSize_));
     }
     //pop return value
@@ -843,7 +911,9 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     //push function to call
     luaL_checkstack(L, 1, nullptr);
     lua_getglobal(L, "getDepartureInformation");
-    luaassert(lua_isfunction(L, -1));
+    if (!lua_isfunction(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("getDepartureInformation must be a table"));
+    }
     //push `departures` argument [
     //TODO find out if sparse arrays count as
     //array elements or non-array elements
@@ -895,7 +965,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     /*
     {
         [1] = {13},
-        [3] = {100, 1020},
+        [3] = {100, 1020}, --Note that trigger return values may be sparse/incomplete. Missing values take their default values (when they arrive).
         [4] = {},
         [5] = {2131, 144, 70, 154}
         [trigger index] = {trigger value},
@@ -903,29 +973,39 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     }
     */
     mt::std::vector<TriggerData> triggers;
-    luaassert(lua_istable(L, -5));
+    if (!lua_istable(L, -5)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Trigger List must be a table"));
+    }
     luaL_checkstack(L, 2, nullptr);
-    lua_pushnil(L); //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes,nil]
-    while (lua_next(L, -6) != 0) {
-        //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes,triggerIndex,triggerValue]
-        luaassert(lua_isnumber(L, -2));
-        int index(static_cast<int>(lua_tonumber(L, -2)) - 1);
-        mt::std::vector<int> value;
-        luaassert(lua_istable(L, -1) && "trigger value must be a table");
-        
-        for (std::size_t k(1), end(lua_rawlen(L, -1)); k <= end; ++k) {
-            luaL_checkstack(L, 1, nullptr);
-            lua_pushinteger(L, k);
-            lua_gettable(L, -2);
-            luaassert(lua_isnumber(L, -1));
-            value.push_back(static_cast<int>(lua_tonumber(L, -1)));
+    {
+        lua_pushnil(L); //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes,nil]
+        while (lua_next(L, -6) != 0) {
+            //[triggers,forwardsGlitz,reverseGlitz,glitzPersisters,extraBoxes,triggerIndex,triggerValue]
+            if (!lua_isnumber(L, -2)) {
+                BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Trigger List must contain only integer keys"));
+            }
+            int index(lua_index_to_C_index(static_cast<int>(lua_tonumber(L, -2))));
+            mt::std::vector<int> value;
+            if (!lua_istable(L, -1)) {
+                BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("trigger value must be a table"));
+            }
+            for (std::size_t k(1), end(lua_rawlen(L, -1)); k <= end; ++k) {
+                luaL_checkstack(L, 1, nullptr);
+                lua_pushinteger(L, k);
+                lua_gettable(L, -2);
+                if (!lua_isnumber(L, -1)) {
+                    BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("trigger data elements must be integers"));
+                }
+                value.push_back(static_cast<int>(lua_tonumber(L, -1)));
+                lua_pop(L, 1);
+            }
+            triggers.push_back(TriggerData(index, value));
             lua_pop(L, 1);
         }
-        triggers.push_back(TriggerData(index, value));
-        lua_pop(L, 1);
+        if (boost::size(triggers) > boost::size(triggerOffsetsAndDefaults_)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("The trigger system lua must not create more trigger departures than those declared with offsets and defaults"));
+        }
     }
-    luaassert(boost::size(triggers) <= boost::size(triggerOffsetsAndDefaults_)
-            && "The trigger system lua must not create more trigger departures than those declared with offsets and defaults");
     //read glitz return values
     //Glitz return value looks like this:
     /*
@@ -964,7 +1044,9 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     // get forwards glitz departure
     mt::std::vector<Glitz> forwardsGlitz;
     if (!lua_isnil(L, -4)) {
-        luaassert(lua_istable(L, -4) && "forwards glitz list must be a table");
+        if (!lua_istable(L, -4)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("forwards glitz list must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -4)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -977,7 +1059,9 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     // get reverse glitz departure
     mt::std::vector<Glitz> reverseGlitz;
     if (!lua_isnil(L, -3)) {
-        luaassert(lua_istable(L, -3) && "background glitz list must be a table");
+        if (!lua_istable(L, -3)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("background glitz list must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -3)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -1010,7 +1094,9 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     */
     mt::std::vector<GlitzPersister> glitzPersisters;
     if (!lua_isnil(L, -2)) {
-        luaassert(lua_istable(L, -2) && "glitz persisters list must be a table");
+        if (!lua_istable(L, -2)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("glitz persisters list must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -2)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -1048,7 +1134,9 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
     */
     mt::std::vector<ObjectAndTime<Box, Frame *>> newBox;
     if (!lua_isnil(L, -1)) {
-        luaassert(lua_istable(L, -1) && "extra boxes list must be a table");
+        if (!lua_istable(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("extra boxes list must be a table"));
+        }
         for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
             luaL_checkstack(L, 1, nullptr);
             lua_pushinteger(L, i);
@@ -1082,11 +1170,12 @@ std::vector<char> compileLuaChunk(std::vector<char> const &sourceChunk, char con
     std::vector<char> compiledChunk;
     LuaState L{LuaState::new_state_t{}};
     if (lua_load(L.ptr, lua_VectorReader, &source_iterators, name, nullptr)) {
-        std::cerr << lua_tostring(L.ptr, -1) << std::endl;
-        luaassert(false);
+        std::stringstream ss;
+        ss << "Couldn't compile lua chunk: " << name << ", got error: " << lua_tostring(L.ptr, -1);
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
     if (lua_dump(L.ptr, lua_VectorWriter, &compiledChunk, true)) {
-        luaassert(false);
+        assert(false && "Failure to insert into the vector should have resulted in bad_alloc being thrown, rather than a non-zero return value from lua_VectorWriter");
     }
     return compiledChunk;
 }

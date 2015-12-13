@@ -85,7 +85,7 @@ local tempStore =
             timeDirection = 'forwards',
             attachment = {platform = nil, xOffset = 8 * 3200, yOffset = 13.5 * 3200 },
             beamLength = 10*3200,
-			beamDirection = 0,
+            beamDirection = 0,
         },
     }
 }

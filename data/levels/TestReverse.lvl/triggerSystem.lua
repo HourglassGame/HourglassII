@@ -6,17 +6,17 @@ local tempStore =
     {
         {
             attachment = {xOffset = 21.5 * 3200, yOffset = 5 * 3200},
-            index = 2,
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = nil,
             fallable = false,
             winner = true
         },
@@ -61,8 +61,8 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
-	},
+    protoMutators = {
+    },
     protoButtons = {
         bts.toggleSwitch{
             triggerID = 1,
@@ -79,8 +79,8 @@ local tempStore =
             }
         },
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
