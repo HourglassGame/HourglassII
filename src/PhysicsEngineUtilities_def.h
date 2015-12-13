@@ -276,26 +276,7 @@ void guyStep(
             int const height(guyArrivalList[i].getHeight());
             int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
-            // chonofrag with platforms
-            /*
-            if (guyArrivalList[i].getArrivalBasis() != -1)
-            {
-                for (Collision const &platform: nextPlatform)
-                {
-                    int pX(platform.getX());
-                    int pY(platform.getY());
-                    int pWidth(platform.getWidth());
-                    int pHeight(platform.getHeight());
-                    if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
-                    {
-                        finishedWith[i] = true;
-                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height,guyArrivalList[i].getTimeDirection());
-                        continue;
-                    }
-                }
-            }
-            */
-
+            // Chonofrag with platforms
             for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
@@ -316,8 +297,6 @@ void guyStep(
                 }
                 else
                 {
-                    pX += platform.getXspeed();
-                    pY += platform.getYspeed();
                     if (IntersectingRectanglesExclusive(x[i], y[i], width, height,
                         pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
                         pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
@@ -389,7 +368,7 @@ void guyStep(
                     int boxX(boxArrivalList[j].getX() - boxXspeed);
                     int boxY(boxArrivalList[j].getY() - boxYspeed);
 
-                    int boxSize(nextBox[j].object.getSize());
+                    int boxSize(boxArrivalList[j].getSize());
 
                     // -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
                     if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - env.gravity <= boxY + boxYspeed)
@@ -404,7 +383,7 @@ void guyStep(
             }
 
 
-            // check platform collision in Y direction
+            // Platform collision in Y direction
             for (Collision const &platform : nextPlatform)
             {
                 int pX(platform.getX());
@@ -412,6 +391,12 @@ void guyStep(
                 TimeDirection pDirection(platform.getTimeDirection());
                 int pWidth(platform.getWidth());
                 int pHeight(platform.getHeight());
+
+                if (pDirection != guyArrivalList[i].getTimeDirection())
+                {
+                    pX -= platform.getXspeed();
+                    pY -= platform.getYspeed();
+                }
 
                 if (IntersectingRectanglesExclusive(
                     x[i], newY, width, height,
@@ -493,6 +478,12 @@ void guyStep(
                 int pY(platform.getY());
                 int pWidth = platform.getWidth();
                 int pHeight = platform.getHeight();
+
+                if (platform.getTimeDirection() != guyArrivalList[i].getTimeDirection())
+                {
+                    pX -= platform.getXspeed();
+                    pY -= platform.getYspeed();
+                }
 
                 if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
                 {
@@ -1792,6 +1783,12 @@ template <
                     int pWidth(platform.getWidth());
                     int pHeight(platform.getHeight());
 
+                    if (pDirection != boxDirection)
+                    {
+                        pX -= platform.getXspeed();
+                        pY -= platform.getYspeed();
+                    }
+
                     if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
                     {
                         if (IsPointInVerticalQuadrant(xTemp[i] + size[i] / 2, yTemp[i] + size[i] / 2, pX, pY, pWidth, pHeight))
@@ -2165,8 +2162,6 @@ template <
                 }
                 else
                 {
-                    pX += platform.getXspeed();
-                    pY += platform.getYspeed();
                     if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i],
                         pX + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,
                         pY + REVERSE_PLATFORM_CHRONOFRAG_FUDGE,

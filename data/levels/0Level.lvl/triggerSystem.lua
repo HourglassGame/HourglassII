@@ -32,13 +32,13 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 110 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
                     },
                     yDestination = {
-                        desiredPosition = 14.5 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 20
@@ -46,49 +46,19 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 110 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
                     },
                     yDestination = {
-                        desiredPosition = 11 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 20
                     }
                 }
             }
-        },
-		{
-            lastStateTriggerID = 3,
-			rawCollisionFunction = function(triggerArrivals, outputTriggers)
-				if triggerArrivals[1][1] == 1 then
-					return
-					{
-						x = 2 * 3200,
-						y = 3 * 3200,
-						xspeed = 0,
-						yspeed = 0,
-						width = 2 * 3200,
-						height = 0.5 * 3200,
-						timeDirection = 'forwards'
-					}
-				else
-					return
-					{
-						x = 2 * 3200,
-						y = 3 * 3200,
-						xspeed = 0,
-						yspeed = 0,
-						width = 20 * 3200,
-						height = 0.5 * 3200,
-						timeDirection = 'forwards'
-					}
-				
-				end
-				
-			end
         },
     },
 	protoMutators = {
