@@ -100,19 +100,14 @@ public:
 
     static_assert(std::is_same<TChar, char>::value || std::is_same<TChar, wchar_t>::value, "OutputDebugStringBuf only supports char and wchar_t types");
 
-    int sync() override try {
+    int sync() override {
         std::lock_guard<std::mutex> lock(_mutex);
-        MessageOutputer<TChar, TTraits>()(pbase(), pptr());
-        setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
-        return 0;
-    }
-    catch (...) {
-        return -1;
+        return do_sync();
     }
 
     int_type overflow(int_type c = TTraits::eof()) override {
         std::lock_guard<std::mutex> lock(_mutex);
-        auto syncRet = sync();
+        auto syncRet = do_sync();
         if (c != TTraits::eof()) {
             _buffer[0] = static_cast<TChar>(c);
             setp(_buffer.data(), _buffer.data() + 1, _buffer.data() + _buffer.size());
@@ -122,6 +117,16 @@ public:
 
 
 private:
+    int do_sync() try {
+        MessageOutputer<TChar, TTraits>()(pbase(), pptr());
+        setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
+        return 0;
+    }
+    catch (...) {
+        return -1;
+    }
+
+
     std::mutex              _mutex;
     std::vector<TChar>      _buffer;
 
