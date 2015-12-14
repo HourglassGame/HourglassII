@@ -227,6 +227,17 @@ void runStep(
         frameNumberGlyph.setColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
+    {
+        std::stringstream timeString;
+        timeString << "Time: " << (drawnFrame.getFrameNumber()*10/60)/10. << "s";
+        sf::Text frameNumberGlyph;
+        frameNumberGlyph.setFont(*hg::defaultFont);
+        frameNumberGlyph.setString(timeString.str());
+        frameNumberGlyph.setPosition(580, 457);
+        frameNumberGlyph.setCharacterSize(8);
+        frameNumberGlyph.setColor(uiTextColor);
+        app.draw(frameNumberGlyph);
+    }
     /*{
         std::stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
