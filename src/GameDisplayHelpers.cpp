@@ -97,7 +97,7 @@ void drawInventory(
     }
 }
 
-constexpr double clamp(double val, double min, double max)
+constexpr double clamp(double const val, double const min, double const max)
 {
     return val < min ?
         min
@@ -278,10 +278,24 @@ void DrawTimeline(
         target.draw(playerLine);
     }
     if (timeCursor.isValidFrame()) {
+        sf::Color const timeCursorColor(0, 0, 200);
         sf::RectangleShape timeCursorLine(sf::Vector2f(3.f, static_cast<float>(height)));
-        timeCursorLine.setPosition(timeCursor.getFrameNumber()*target.getView().getSize().x / timelineLength, 10.f);
-        timeCursorLine.setFillColor(sf::Color(0, 0, 200));
+        float const timeCursorHorizontalPosition{ timeCursor.getFrameNumber()*target.getView().getSize().x / timelineLength };
+        timeCursorLine.setPosition(timeCursorHorizontalPosition, 10.f);
+        timeCursorLine.setFillColor(timeCursorColor);
         target.draw(timeCursorLine);
+
+        {
+            std::stringstream cursorTime;
+            cursorTime << (timeCursor.getFrameNumber()*10 / 60)/10. << "s";
+            sf::Text cursorTimeGlyph;
+            cursorTimeGlyph.setFont(*hg::defaultFont);
+            cursorTimeGlyph.setString(cursorTime.str());
+            cursorTimeGlyph.setPosition(timeCursorHorizontalPosition-3.f, height + 20.f);
+            cursorTimeGlyph.setCharacterSize(10);
+            cursorTimeGlyph.setColor(timeCursorColor);
+            target.draw(cursorTimeGlyph);
+        }
     }
     DrawTimelineContents(target, timeEngine, height);
 }

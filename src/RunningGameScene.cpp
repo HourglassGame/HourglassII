@@ -467,6 +467,17 @@ void runStep(
         app.draw(frameNumberGlyph);
     }
     {
+        std::stringstream timeString;
+        timeString << "Time: " << (drawnFrame.getFrameNumber()*10 / 60)/10. << "s";
+        sf::Text frameNumberGlyph;
+        frameNumberGlyph.setFont(*hg::defaultFont);
+        frameNumberGlyph.setString(timeString.str());
+        frameNumberGlyph.setPosition(580, 457);
+        frameNumberGlyph.setCharacterSize(8);
+        frameNumberGlyph.setColor(uiTextColor);
+        app.draw(frameNumberGlyph);
+    }
+    {
         std::stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
@@ -481,7 +492,7 @@ void runStep(
         sf::Text numberOfFramesExecutedGlyph;
         numberOfFramesExecutedGlyph.setFont(*hg::defaultFont);
         numberOfFramesExecutedGlyph.setString(numberOfFramesExecutedString.str());
-        numberOfFramesExecutedGlyph.setPosition(580, 455);
+        numberOfFramesExecutedGlyph.setPosition(580, 469);
         numberOfFramesExecutedGlyph.setCharacterSize(8);
         numberOfFramesExecutedGlyph.setColor(uiTextColor);
         app.draw(numberOfFramesExecutedGlyph);
@@ -494,7 +505,7 @@ void runStep(
         sf::Text fpsglyph;
         fpsglyph.setFont(*hg::defaultFont);
         fpsglyph.setString(fpsstring.str());
-        fpsglyph.setPosition(600, 465);
+        fpsglyph.setPosition(600, 415);
         fpsglyph.setCharacterSize(8);
         fpsglyph.setColor(uiTextColor);
         app.draw(fpsglyph);

@@ -11,7 +11,7 @@ local tempStore =
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
@@ -20,14 +20,14 @@ local tempStore =
             fallable = false,
             winner = true
         },
-		{
+        {
             attachment = {platform = 2, xOffset = 0 * 3200, yOffset = -4 * 3200},
             index = 2,
             width = 1600,
             height = 9600,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 0,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = true,
@@ -79,44 +79,48 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             lastStateTriggerID = 3,
-			rawCollisionFunction = function(triggerArrivals, outputTriggers)
-				if triggerArrivals[1][1] == 0 and triggerArrivals[4][1] == 0 then
-					return {
-						x = 19.75 * 3200,
-						y = 10 * 3200,
-						xspeed = 0,
-						yspeed = 0,
-						width = 1600,
-						height = 2000,
-						timeDirection = 'forwards'
-					}
-				end
-				
-				-- 600 frames to sweep map (10 seconds)
-				local x = triggerArrivals[3][1]
-				x = x - 128
-				if x < 1600 then
-					x = x + 24 * 3200
-				end
-				return {
-						x = x,
-						y = 10 * 3200,
-						xspeed = -128,
-						yspeed = 0,
-						width = 1500,
-						height = 2000,
-						timeDirection = 'forwards'
-					}
-				
-			end
+            rawCollisionFunction = function(triggerArrivals, outputTriggers)
+                if triggerArrivals[1][1] == 0 and triggerArrivals[4][1] == 0 then
+                    return {
+                        x = 19.75 * 3200,
+                        y = 10 * 3200,
+                        xspeed = 0,
+                        yspeed = 0,
+                        prevXspeed = 0,
+                        prevYspeed = 0,
+                        width = 1600,
+                        height = 2000,
+                        timeDirection = 'forwards'
+                    }
+                end
+                
+                -- 600 frames to sweep map (10 seconds)
+                local x = triggerArrivals[3][1]
+                x = x - 128
+                if x < 1600 then
+                    x = x + 24 * 3200
+                end
+                return {
+                        x = x,
+                        y = 10 * 3200,
+                        xspeed = -128,
+                        yspeed = 0,
+                        prevXspeed = -128,
+                        prevYspeed = 0,
+                        width = 1500,
+                        height = 2000,
+                        timeDirection = 'forwards'
+                    }
+                
+            end
         },
     },
-	protoMutators = {
-	},
+    protoMutators = {
+    },
     protoButtons = {
-		bts.stickySwitch{
+        bts.stickySwitch{
             attachment = {xOffset = 9.25 * 3200, yOffset = 8.75 * 3200},
             width = 1600,
             height = 800,
@@ -125,8 +129,8 @@ local tempStore =
             extraTriggerIDs = {4}
         },
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

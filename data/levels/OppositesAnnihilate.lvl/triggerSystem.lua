@@ -11,24 +11,24 @@ local tempStore =
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = nil,
             fallable = false,
             winner = true
         },
     },
     protoCollisions = {
     },
-	protoMutators = {
-	},
+    protoMutators = {
+    },
     protoButtons = {
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

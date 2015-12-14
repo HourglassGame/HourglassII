@@ -23,10 +23,10 @@ namespace hg {
         throw std::bad_alloc();
     }
     else if (ud.is_interrupted()) {
-        boost::throw_exception(OperationInterruptedException());
+        BOOST_THROW_EXCEPTION(OperationInterruptedException());
     }
     else {
-        boost::throw_exception(LuaError(L));
+        BOOST_THROW_EXCEPTION(LuaRunError(L));
     }
 }
 #ifdef _MSC_VER

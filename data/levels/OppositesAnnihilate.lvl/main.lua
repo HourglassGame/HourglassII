@@ -38,8 +38,8 @@ initialGuy =
 }
 initialArrivals =
 {
-	{type = "box", x = 4.5 * 3200, y = 6 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
-	{type = "box", x = 4.5 * 3200, y = 6 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "reverse"},
+    {type = "box", x = 4.5 * 3200, y = 6 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
+    {type = "box", x = 4.5 * 3200, y = 6 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "reverse"},
 }
 triggerSystem =
 {
@@ -51,5 +51,5 @@ triggerSystem =
     -- C++ still manages offsets and defaults.
     triggerOffsetsAndDefaults = {
     },
-    arrivalLocationsSize = 3,
+    arrivalLocationsSize = 1,
 }

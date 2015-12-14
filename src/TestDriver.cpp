@@ -11,6 +11,7 @@ void TestDriver::registerUnitTest(std::string testName, std::function<bool()> te
 bool TestDriver::passesAllTests() {
     bool allTestsPassed = true;
     for (auto const& test: tests) {
+        std::cerr << "Testing: " << std::get<0>(test) << "\n" << std::flush;
         if (!std::get<1>(test)()) {
             allTestsPassed = false;
             std::cerr << "Failed: " << std::get<0>(test) << "\n";

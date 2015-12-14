@@ -61,10 +61,10 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
-	},
+    protoMutators = {
+    },
     protoButtons = {
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {xOffset = 7 * 3200, yOffset = 10.75 * 3200},
             width = 3200,
             height = 800,
@@ -72,8 +72,8 @@ local tempStore =
             triggerID = 1,
         },
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

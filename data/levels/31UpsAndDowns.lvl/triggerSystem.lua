@@ -4,7 +4,7 @@ local tempStore =
 {
     protoPortals =
     {
-		{
+        {
             attachment = {xOffset = 24.25 * 3200, yOffset = 4 * 3200},
             index = 1,
             width = 2 * 3200,
@@ -39,14 +39,14 @@ local tempStore =
     },
     protoCollisions = {
     },
-	protoMutators = {
+    protoMutators = {
         
-	},
-    protoButtons = {
-		
     },
-	protoGlitz = {
-	},
+    protoButtons = {
+        
+    },
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

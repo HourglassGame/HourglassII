@@ -11,12 +11,12 @@ local tempStore =
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = nil,
             fallable = false,
             winner = true
         },
@@ -60,7 +60,7 @@ local tempStore =
                 }
             }
         },
-		{
+        {
             width = 0 * 3200,
             height = 0 * 3200,
             timeDirection = 'forwards',
@@ -99,7 +99,7 @@ local tempStore =
             }
         },
     },
-	protoMutators = {
+    protoMutators = {
         bts.pickup{
             attachment = {platform = nil, xOffset = 18.75 * 3200, yOffset = 6 * 3200},
             width = 1600,
@@ -114,9 +114,9 @@ local tempStore =
             height = 0.5 * 3200,
             timeDirection = 'forwards',
         },
-	},
+    },
     protoButtons = {
-		bts.momentarySwitch{
+        bts.momentarySwitch{
             attachment = {xOffset = 30.75 * 3200, yOffset = 2.5 * 3200},
             width = 800,
             height = 3200,
@@ -128,11 +128,11 @@ local tempStore =
             timeDirection = 'forwards',
             attachment = {platform = nil, xOffset = 26.75 * 3200, yOffset = 7 * 3200 },
             beamLength = 2*3200,
-			beamDirection = 1,
+            beamDirection = 1,
         },
     },
-	protoGlitz = {
-	},
+    protoGlitz = {
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

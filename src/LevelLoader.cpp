@@ -10,7 +10,6 @@
 #include <boost/algorithm/string/finder.hpp>
 
 namespace hg {
-#define luaassert assert
 using boost::filesystem::path;
 namespace fs = boost::filesystem;
 
@@ -69,9 +68,9 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path
         return loadDirectLuaTriggerSystem(L, levelPath);
     }
     else {
-        std::cerr << type << std::endl;
-        luaassert(false && "unrecognised triggerSystem type");
-        return TriggerSystem(std::unique_ptr<TriggerSystemImplementation>(nullptr));
+        std::stringstream ss;
+        ss << "unrecognised triggerSystem type: " << type;
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
 }
 
