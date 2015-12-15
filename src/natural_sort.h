@@ -9,6 +9,12 @@
 namespace hg {
 template<typename T>
 bool chunkwise_less(T const &l, T const &r) {
+    using value_type = typename boost::range_value<T>::type;
+    static_assert(
+        std::is_same<value_type, char>::value
+     || std::is_same<value_type, unsigned char>::value
+     || std::is_same<value_type, signed char>::value,
+        "std::isdigit requires values to be within the range of an unsigned char");
     if (boost::empty(l) && boost::empty(r)) {
         assert(false && "This shouldn't happen for current usages of chunkwise_less; if this assert triggers, check that you are being sensible, and perhaps remove this assert.");
         return false;
@@ -20,7 +26,7 @@ bool chunkwise_less(T const &l, T const &r) {
         return false;
     }
     //TODO: Correctly handle non-ascii encoding with isdigit
-    else if (std::isdigit(*boost::begin(l)) && std::isdigit(*boost::begin(r))) {
+    else if (std::isdigit(static_cast<unsigned char>(*boost::begin(l))) && std::isdigit(static_cast<unsigned char>(*boost::begin(r)))) {
         if (boost::size(l) == boost::size(r)) {
             return boost::range::lexicographical_compare(l, r);
         }
