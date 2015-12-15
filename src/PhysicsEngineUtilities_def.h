@@ -1726,7 +1726,7 @@ template <
                             }
                         }
                         //This triangle check needs improvement for rectangles
-                        else if (w01 || !env.wall.inTopRightTriangle(xTemp[i], yTemp[i])) {
+                        else if (w01 || !env.wall.inTopRightTriangle(x[i], y[i], xTemp[i], yTemp[i])) {
                             // xo
                             // .x
                             x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
@@ -1761,7 +1761,7 @@ template <
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w01 || env.wall.inTopRightTriangle(xTemp[i], yTemp[i]))
+                    else if (w01 || env.wall.inTopRightTriangle(x[i], y[i], xTemp[i], yTemp[i]))
                     {
                         // xo
                         // .o
@@ -1784,7 +1784,7 @@ template <
                     {
                         // ox
                         // x.
-                        if (w11 || env.wall.inTopLeftTriangle(xTemp[i] + size[i] - 1, yTemp[i])) // this triangle check needs improvement for rectangles
+                        if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i], xTemp[i] + size[i] - 1, yTemp[i])) // this triangle check needs improvement for rectangles
                         {
                             // ox
                             // x.
@@ -1803,7 +1803,7 @@ template <
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w11 || env.wall.inTopLeftTriangle(xTemp[i] + size[i] - 1, yTemp[i]))
+                    else if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i], xTemp[i] + size[i] - 1, yTemp[i]))
                     {
                         // ox
                         // o.
@@ -1822,7 +1822,7 @@ template <
                 {
                     // oo
                     // x.
-                    if (w11 || env.wall.inTopLeftTriangle(xTemp[i], yTemp[i] + size[i] - 1))
+                    if (w11 || env.wall.inTopLeftTriangle(x[i], y[i] + size[i] - 1, xTemp[i], yTemp[i] + size[i] - 1))
                     {
                         // oo
                         // x.
@@ -1842,7 +1842,7 @@ template <
                 {
                     // oo
                     // ox
-                    if (env.wall.inTopRightTriangle(xTemp[i] + size[i] - 1, yTemp[i] + size[i] - 1))
+                    if (env.wall.inTopRightTriangle(x[i] + size[i] - 1, y[i] + size[i] - 1, xTemp[i] + size[i] - 1, yTemp[i] + size[i] - 1))
                     {
                         y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         bottom[i] = std::make_pair(true, y[i]);

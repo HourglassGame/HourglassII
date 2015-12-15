@@ -62,14 +62,14 @@ namespace hg {
             return Rect<int>(minx, miny, maxx - minx, maxy - miny);
         }
 
-        bool inTopLeftTriangle(int x, int y) const noexcept
+        bool inTopLeftTriangle(int x, int y, int oldX, int oldY) const noexcept
         {
-            return flooredModulo(x, segmentSize_) + flooredModulo(y, segmentSize_) < segmentSize_;
+            return flooredModulo(x, segmentSize_) + oldX - x + flooredModulo(y, segmentSize_) + oldY - y < segmentSize_;
         }
 
-        bool inTopRightTriangle(int x, int y) const noexcept
+        bool inTopRightTriangle(int x, int y, int oldX, int oldY) const noexcept
         {
-            return flooredModulo(x, segmentSize_) > flooredModulo(y, segmentSize_);
+            return flooredModulo(x, segmentSize_) + oldX - x > flooredModulo(y, segmentSize_) + oldY - y;
         }
 
         int segmentSize() const noexcept {
