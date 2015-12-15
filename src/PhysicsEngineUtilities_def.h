@@ -1696,9 +1696,17 @@ template <
 
                 // collide with walls based on corner status
                 if (w00) {
+                    // x.
+                    // ..
                     if (w11) {
+                        // x.
+                        // .x
                         if (w10) {
+                            // xx
+                            // .x
                             if (w01) {
+                                // xx
+                                // xx
                                 if (x[i] == xTemp[i] && y[i] == yTemp[i]) {
                                     // Cannot interpolate a static box.
                                     boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
@@ -1709,6 +1717,8 @@ template <
                                 }
                             }
                             else {
+                                // xx
+                                // ox
                                 x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                                 right[i] = std::make_pair(true, x[i]);
                                 y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
@@ -1716,13 +1726,17 @@ template <
                             }
                         }
                         //This triangle check needs improvement for rectangles
-                        else if (w01 || !env.wall.inTopRightTriangle(x[i], y[i])) {
+                        else if (w01 || !env.wall.inTopRightTriangle(xTemp[i], yTemp[i])) {
+                            // xo
+                            // .x
                             x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
                             y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             bottom[i] = std::make_pair(true, y[i]);
                         }
                         else {
+                            // xo
+                            // ox
                             x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             right[i] = std::make_pair(true, x[i]);
                             y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
@@ -1730,34 +1744,50 @@ template <
                         }
                     }
                     else if (w10) {
+                        // xx
+                        // .o
                         if (w01) {
+                            // xx
+                            // xo
                             x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
                             y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                         else {
+                            // xx
+                            // oo
                             y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w01 || env.wall.inTopRightTriangle(x[i], y[i]))
+                    else if (w01 || env.wall.inTopRightTriangle(xTemp[i], yTemp[i]))
                     {
+                        // xo
+                        // .o
                         x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         left[i] = std::make_pair(true, x[i]);
                     }
                     else
                     {
+                        // xo
+                        // oo
                         y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         top[i] = std::make_pair(true, y[i]);
                     }
                 }
                 else if (w10)
                 {
+                    // ox
+                    // ..
                     if (w01)
                     {
-                        if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i])) // this triangle check needs improvement for rectangles
+                        // ox
+                        // x.
+                        if (w11 || env.wall.inTopLeftTriangle(xTemp[i] + size[i] - 1, yTemp[i])) // this triangle check needs improvement for rectangles
                         {
+                            // ox
+                            // x.
                             x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                             right[i] = std::make_pair(true, x[i]);
                             y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
@@ -1765,40 +1795,54 @@ template <
                         }
                         else
                         {
+                            // ox
+                            // xo
                             x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
                             y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i]))
+                    else if (w11 || env.wall.inTopLeftTriangle(xTemp[i] + size[i] - 1, yTemp[i]))
                     {
+                        // ox
+                        // o.
                         x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         right[i] = std::make_pair(true, x[i]);
                     }
                     else
                     {
+                        // ox
+                        // oo
                         y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         top[i] = std::make_pair(true, y[i]);
                     }
                 }
                 else if (w01)
                 {
-                    if (w11 || env.wall.inTopLeftTriangle(x[i], y[i] + size[i] - 1))
+                    // oo
+                    // x.
+                    if (w11 || env.wall.inTopLeftTriangle(xTemp[i], yTemp[i] + size[i] - 1))
                     {
+                        // oo
+                        // x.
                         y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         bottom[i] = std::make_pair(true, y[i]);
                         x[i] = xTemp[i];
                     }
                     else
                     {
+                        // oo
+                        // xo
                         x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                         left[i] = std::make_pair(true, x[i]);
                     }
                 }
                 else if (w11)
                 {
-                    if (env.wall.inTopRightTriangle(x[i] + size[i] - 1, y[i] + size[i] - 1))
+                    // oo
+                    // ox
+                    if (env.wall.inTopRightTriangle(xTemp[i] + size[i] - 1, yTemp[i] + size[i] - 1))
                     {
                         y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
                         bottom[i] = std::make_pair(true, y[i]);
