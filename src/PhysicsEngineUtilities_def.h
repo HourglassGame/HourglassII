@@ -895,6 +895,13 @@ void guyStep(
                                 int bx = nextBox[j].object.getX();
                                 int by = nextBox[j].object.getY();
                                 int bs = nextBox[j].object.getSize();
+
+                                if (guyArrivalList[i].getBoxCarryDirection()*nextBox[j].object.getTimeDirection() == TimeDirection::REVERSE)
+                                {
+                                    bx -= nextBox[j].object.getXspeed();
+                                    by -= nextBox[j].object.getYspeed();
+                                }
+
                                 //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
                                 //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
                                 if (IntersectingRectanglesExclusive(
