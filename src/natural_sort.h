@@ -39,9 +39,16 @@ bool chunkwise_less(T const &l, T const &r) {
 
 template<typename Iterator>
 Iterator advance_to_end_of_chunk(Iterator begin, Iterator const &end) {
+    using value_type = typename boost::iterator_value<Iterator>::type;
+    static_assert(
+           std::is_same<value_type, char>::value
+        || std::is_same<value_type, unsigned char>::value
+        || std::is_same<value_type, signed char>::value,
+        "std::isdigit requires values to be within the range of an unsigned char");
+
     if (begin != end) {
-        bool const numeric = std::isdigit(*begin);
-        do { ++begin; } while (begin != end && !!std::isdigit(*begin) == numeric);
+        bool const numeric = std::isdigit(static_cast<unsigned char>(*begin));
+        do { ++begin; } while (begin != end && !!std::isdigit(static_cast<unsigned char>(*begin)) == numeric);
     }
     return begin;
 }
