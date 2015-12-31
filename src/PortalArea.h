@@ -11,6 +11,8 @@ public:
         int index,
         int x,
         int y,
+        int xaim,
+        int yaim,
         int width,
         int height,
         int xspeed,
@@ -26,11 +28,14 @@ public:
         TimeDirection destinationDirection,
         int illegalDestination,
         bool fallable,
+        bool isLaser,
         bool winner
         ) :
             index_(index),
             x_(x),
             y_(y),
+            xaim_(xaim),
+            yaim_(yaim),
             width_(width),
             height_(height),
             xspeed_(xspeed),
@@ -46,6 +51,7 @@ public:
             destinationDirection_(destinationDirection),
             illegalDestination_(illegalDestination),
             fallable_(fallable),
+            isLaser_(isLaser),
             winner_(winner)
             {
             }
@@ -58,6 +64,8 @@ public:
     
     int getX()      const { return x_; }
     int getY()      const { return y_; }
+    int getXaim()      const { return xaim_; }
+    int getYaim()      const { return yaim_; }
     int getWidth()  const { return width_; }
     int getHeight() const { return height_; }
     int getXspeed() const { return xspeed_; }
@@ -78,6 +86,7 @@ public:
     
     int getIllegalDestination() const { return illegalDestination_; }
     bool getFallable() const { return fallable_; }
+    bool getIsLaser() const { return isLaser_; }
     bool getWinner() const { return winner_; }
     
     friend std::ostream &operator<<(std::ostream &os, PortalArea const &toPrint)
@@ -87,6 +96,8 @@ public:
         HG_PORTAL_AREA_PRINT(index_) << ',';
         HG_PORTAL_AREA_PRINT(x_) << ',';
         HG_PORTAL_AREA_PRINT(y_) << ',';
+        HG_PORTAL_AREA_PRINT(xaim_) << ',';
+        HG_PORTAL_AREA_PRINT(yaim_) << ',';
         HG_PORTAL_AREA_PRINT(width_) << ',';
         HG_PORTAL_AREA_PRINT(height_) << ',';
         HG_PORTAL_AREA_PRINT(xspeed_) << ',';
@@ -102,6 +113,7 @@ public:
         HG_PORTAL_AREA_PRINT(destinationDirection_) << ',';
         HG_PORTAL_AREA_PRINT(illegalDestination_) << ',';
         HG_PORTAL_AREA_PRINT(fallable_) << ',';
+        HG_PORTAL_AREA_PRINT(isLaser_) << ',';
         HG_PORTAL_AREA_PRINT(winner_);
 #undef HG_PORTAL_AREA_PRINT
         os << '}';
@@ -126,6 +138,8 @@ private:
     int index_;
     int x_;
     int y_;
+    int xaim_;
+    int yaim_;
     int width_;
     int height_;
     int xspeed_;
@@ -141,6 +155,7 @@ private:
     TimeDirection destinationDirection_;
     int illegalDestination_;
     bool fallable_;
+    bool isLaser_;
     bool winner_;
 };
 }//namespace hg

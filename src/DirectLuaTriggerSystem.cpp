@@ -189,8 +189,7 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     
     int x(readField<int>(L, "x"));
     int y(readField<int>(L, "y"));
-    int width(readField<int>(L, "width"));
-    int height(readField<int>(L, "height"));
+
     int xspeed(readField<int>(L, "xspeed"));
     int yspeed(readField<int>(L, "yspeed"));
     int collisionOverlap(readField<int>(L, "collisionOverlap"));
@@ -234,12 +233,25 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
     lua_pop(L, 1);
     
     bool fallable(readField<bool>(L, "fallable"));
+    bool isLaser(readField<bool>(L, "isLaser"));
     bool winner(readField<bool>(L, "winner"));
-    
+    int xaim = 0;
+    int yaim = 0;
+    int width = 0;
+    int height = 0;
+    if (isLaser) {
+        xaim = readField<int>(L, "xaim");
+        yaim = readField<int>(L, "yaim");
+    }
+    else {
+        width = readField<int>(L, "width");
+        height = readField<int>(L, "height");
+    }
     return
         PortalArea(
             index,
             x, y,
+            xaim, yaim,
             width, height,
             xspeed, yspeed,
             collisionOverlap,
@@ -251,6 +263,7 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
             destinationDirection,
             illegalDestination,
             fallable,
+            isLaser,
             winner);
 }
 

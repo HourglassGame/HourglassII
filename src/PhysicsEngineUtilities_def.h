@@ -101,11 +101,12 @@ template <
     // fall through portals
     for (unsigned i = 0; i < portals.size(); ++i)
     {
-        if (IntersectingRectanglesInclusiveCollisionOverlap(x, y, size, size,
+        if (portals[i].getFallable() &&
+            (!portals[i].getIsLaser()) &&
+            IntersectingRectanglesInclusiveCollisionOverlap(x, y, size, size,
             portals[i].getX(), portals[i].getY(),
             portals[i].getWidth(), portals[i].getHeight(),
-            portals[i].getCollisionOverlap())
-            && portals[i].getFallable())
+            portals[i].getCollisionOverlap()))
         {
             if (oldIllegalPortal != -1 && portals[i].getIndex() == oldIllegalPortal)
             {
@@ -1027,7 +1028,6 @@ void guyStep(
                                 carry[i] = true;
                                 carrySize[i] = boxSize;
                                 carryDirection[i] = nextBoxIt->object.getTimeDirection();
-
                                 nextBoxIt = nextBox.erase(nextBoxIt);
                                 nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
                                 nextBoxEnd = nextBox.end();
@@ -1162,12 +1162,13 @@ void guyStep(
             {
                 for (unsigned int j = 0; j < nextPortal.size(); ++j)
                 {
-                    if (IntersectingRectanglesInclusiveCollisionOverlap(
+                    if (nextPortal[j].getFallable() && 
+                        (!nextPortal[j].getIsLaser()) &&
+                        IntersectingRectanglesInclusiveCollisionOverlap(
                         x[i], y[i], newWidth[i], newHeight[i],
                         nextPortal[j].getX(), nextPortal[j].getY(),
                         nextPortal[j].getWidth(), nextPortal[j].getHeight(),
-                        nextPortal[j].getCollisionOverlap())
-                        && nextPortal[j].getFallable())
+                        nextPortal[j].getCollisionOverlap()))
                     {
                         if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
                         {
@@ -1282,7 +1283,8 @@ void guyStep(
                 {
                     for (unsigned int j = 0; j < nextPortal.size(); ++j)
                     {
-                        if (IntersectingRectanglesInclusiveCollisionOverlap(
+                        if ((!nextPortal[j].getIsLaser()) &&
+                            IntersectingRectanglesInclusiveCollisionOverlap(
                             x[i], y[i], newWidth[i], newHeight[i],
                             nextPortal[j].getX(), nextPortal[j].getY(),
                             nextPortal[j].getWidth(), nextPortal[j].getHeight(),
@@ -1400,6 +1402,205 @@ void guyStep(
             assert(guyArrivalList[i].getIndex() == playerInput.size());
             nextPlayerFrame = true;
             finishedWith[i] = true;
+        }
+    }
+
+    // Get shot by laser portals
+    for (unsigned int i = 0; i < nextPortal.size(); ++i)
+    {
+        std::size_t numberOfGuys = guyArrivalList.size();
+        if (nextPortal[i].getIsLaser())
+        {
+            // Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
+            mt::std::vector<char> shootable;
+            shootable.reserve(boost::size(guyArrivalList));
+
+            for (std::size_t j(0); j != numberOfGuys; ++j)
+            {
+                shootable.push_back(!finishedWith[j] && i != j && !newTimePaused[i]);
+            }
+
+            // Return values from doGunRaytrace
+            PhysicsObjectType targetType = NONE;
+            std::size_t targetId = std::numeric_limits<std::size_t>::max();
+
+            int sx = nextPortal[i].getX();
+            int sy = nextPortal[i].getY();
+            int px = nextPortal[i].getXaim();
+            int py = nextPortal[i].getYaim();
+
+            doGunRaytrace(
+                targetType, targetId, env,
+                sx, sy, px, py,
+                nextPlatform,
+                nextBox, nextBoxNormalDeparture,
+                x, y, newWidth, newHeight,
+                shootable);
+
+            // Should be a different glitz adder?
+            guyGlitzAdder.addLaserGlitz(sx, sy, px, py, sx, sy, nextPortal[i].getTimeDirection());
+
+            if (targetType == GUY)
+            {
+                assert(targetId != std::numeric_limits<std::size_t>::max());
+                assert(targetId >= 0 && targetId < boost::size(guyArrivalList));
+
+                TimeDirection nextTimeDirection = guyArrivalList[targetId].getTimeDirection();
+                Frame *nextTime(nextFrame(frame, nextTimeDirection));
+
+                if (nextPortal[i].getWinner())
+                {
+                    winFrame = true;
+                    nextTime = nullptr;
+                }
+                else
+                {
+                    Frame *portalTime(
+                        nextPortal[i].getRelativeTime() ?
+                        getArbitraryFrame(
+                            getUniverse(frame),
+                            getFrameNumber(frame) + nextPortal[i].getTimeDestination()) :
+                        getArbitraryFrame(
+                            getUniverse(frame),
+                            nextPortal[i].getTimeDestination()));
+
+
+                    if (nextPortal[i].getRelativeDirection())
+                    {
+                        nextTimeDirection *= nextPortal[i].getDestinationDirection();
+                    }
+                    else
+                    {
+                        nextTimeDirection = nextPortal[i].getDestinationDirection();
+                    }
+
+                    nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
+                    illegalPortal[targetId] = nextPortal[i].getIllegalDestination();
+                    int arrivalBasis = nextPortal[i].getDestinationIndex();
+                    if (arrivalBasis != -1)
+                    {
+                        x[targetId] = x[targetId] - nextPortal[i].getX() + nextPortal[i].getXdestination();
+                        y[targetId] = y[targetId] - nextPortal[i].getY() + nextPortal[i].getYdestination();
+                        if (nextPortal[i].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
+                        {
+                            xspeed[targetId] = xspeed[targetId] - nextPortal[i].getXspeed();
+                            yspeed[targetId] = yspeed[targetId] - nextPortal[i].getYspeed();
+                        }
+                        else
+                        {
+                            xspeed[targetId] = xspeed[targetId] + nextPortal[i].getXspeed();
+                            yspeed[targetId] = yspeed[targetId] + nextPortal[i].getYspeed();
+                        }
+                    }
+                    else
+                    {
+                        x[targetId] = x[targetId] + nextPortal[i].getXdestination();
+                        y[targetId] = y[targetId] + nextPortal[i].getYdestination();
+                    }
+                }
+
+                nextGuy.push_back(
+                    ObjectAndTime<Guy, Frame *>(
+                        Guy(
+                            guyArrivalList[targetId].getIndex() + 1,
+                            x[targetId], y[targetId],
+                            xspeed[targetId], yspeed[targetId],
+                            newWidth[targetId], newHeight[targetId],
+                            newJumpSpeed[targetId],
+
+                            illegalPortal[targetId],
+                            -1,
+                            supported[targetId],
+                            supportedSpeed[targetId],
+
+                            newPickups[targetId],
+                            facing[targetId],
+
+                            carry[targetId],
+                            carrySize[targetId],
+                            carryDirection[targetId],
+
+                            guyArrivalList[targetId].getTimeDirection(),
+                            newTimePaused[targetId]
+                            ),
+                        nextTime
+                        )
+                    );
+
+                finishedWith[targetId] = true;
+            }
+            else if (targetType == BOX)
+            {
+                assert(targetId != std::numeric_limits<std::size_t>::max());
+                assert(targetId >= 0 && targetId < boost::size(nextBox));
+
+                int boxX = nextBox[targetId].object.getX();
+                int boxY = nextBox[targetId].object.getY();
+                int boxXspeed = nextBox[targetId].object.getXspeed();
+                int boxYspeed = nextBox[targetId].object.getYspeed();
+                int size = nextBox[targetId].object.getSize();
+
+                TimeDirection timeDirection = nextBox[targetId].object.getTimeDirection();
+
+                Frame *portalTime(
+                    nextPortal[i].getRelativeTime() ?
+                    getArbitraryFrame(getUniverse(frame), getFrameNumber(frame) + nextPortal[i].getTimeDestination()) :
+                    getArbitraryFrame(getUniverse(frame), nextPortal[i].getTimeDestination()));
+
+                if (nextPortal[i].getRelativeDirection())
+                {
+                    timeDirection *= nextPortal[i].getDestinationDirection();
+                }
+                else
+                {
+                    timeDirection = nextPortal[i].getDestinationDirection();
+                }
+
+                Frame *nextTime = !isNullFrame(portalTime) ? nextFrame(portalTime, timeDirection) : nullptr;
+                int arrivalBasis = nextPortal[i].getDestinationIndex();
+
+                if (arrivalBasis != -1)
+                {
+                    boxX = boxX - nextPortal[i].getX() + nextPortal[i].getXdestination();
+                    boxY = boxY - nextPortal[i].getY() + nextPortal[i].getYdestination();
+                    if (nextPortal[i].getTimeDirection() * timeDirection == TimeDirection::FORWARDS)
+                    {
+                        boxXspeed = boxXspeed - nextPortal[i].getXspeed();
+                        boxYspeed = boxYspeed - nextPortal[i].getYspeed();
+                    }
+                    else
+                    {
+                        boxXspeed = boxXspeed + nextPortal[i].getXspeed();
+                        boxYspeed = boxYspeed + nextPortal[i].getYspeed();
+                    }
+                }
+                else
+                {
+                    boxX = boxX + nextPortal[i].getXdestination();
+                    boxY = boxY + nextPortal[i].getYdestination();
+                }
+
+                // Replace box
+                assert(targetId < nextBox.size());
+
+                nextBox[targetId] = ObjectAndTime<Box, Frame *>(
+                        Box(
+                            boxX,
+                            boxY,
+                            boxXspeed,
+                            boxYspeed,
+                            size,
+                            nextPortal[i].getIllegalDestination(),
+                            arrivalBasis,
+                            timeDirection),
+                        nextTime);
+                nextBoxNormalDeparture[targetId] = false;
+            }
+            else
+            {
+                assert(targetType == NONE);
+                assert(targetId == std::numeric_limits<std::size_t>::max());
+            }
         }
     }
 

@@ -97,7 +97,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals, outputTrigg
         end
         
         
-        local active = (self.buttonTriggerID and triggerArrivals[self.buttonTriggerID][1] == 1) 
+        local active = (self.buttonTriggerID and triggerArrivals[self.buttonTriggerID][1] > 0) 
                     or (self.triggerFunction and self.triggerFunction(triggerArrivals, frameNumber))
         local destination = active and self.destinations.onDestination or self.destinations.offDestination
 
@@ -152,8 +152,8 @@ local function snapAttachment(objectTimeDirection, attachment, collisions)
     return x, y, xspeed, yspeed
 end
 
-local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, collisions, triggerArrivals, frameNumber)
-    local function calculatePortal(protoPortal, collisions)
+local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, protoLasers, collisions, triggerArrivals, frameNumber)
+    local function calculatePortal(protoPortal, collisions, isLaser)
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
         
@@ -161,6 +161,8 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             index = protoPortal.index,
             x = x,
             y = y,
+			xaim = protoPortal.xaim,
+			yaim = protoPortal.yaim,
             width = protoPortal.width,
             height = protoPortal.height,
             xspeed = xspeed,
@@ -176,10 +178,12 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
             fallable = protoPortal.fallable,
+			isLaser = isLaser,
             winner = false
         }
         
         if protoPortal.winner then
+			-- Not necessary
             retPortal.winner = true
             retPortal.relativeTime = false
             retPortal.timeDestination = 1
@@ -208,7 +212,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
         
         -- Text does not support changing time directions
         local text
-        if portal.winner or (portal.timeDestination == 1 and portal.destinationDirection == 'reverse') then -- Hax upon hax
+        if portal.winner then
             text = active and "Win" or "Inactive"
         elseif portal.relativeTime and portal.timeDestination > 0 then
             text = "+" .. formatTime(portal.timeDestination)
@@ -248,15 +252,26 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
     local arrivalLocations = {}
 
     for i, protoPortal in ipairs(protoPortals) do
-        local portal, active = calculatePortal(protoPortal, collisions)
+        local portal, active = calculatePortal(protoPortal, collisions, false)
         calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
-        arrivalLocations[i] = calculateArrivalLocation(portal)
+        arrivalLocations[#arrivalLocations + 1] = calculateArrivalLocation(portal)
         if active then
             portalCount = portalCount + 1
             portals[portalCount] = portal
         end
     end
-
+	
+	if protoLasers then
+		for i, protoLaser in ipairs(protoLasers) do
+			local portal, active = calculatePortal(protoLaser, collisions, true)
+			arrivalLocations[#arrivalLocations + 1] = calculateArrivalLocation(portal)
+			if active then
+				portalCount = portalCount + 1
+				portals[portalCount] = portal
+			end
+		end
+	end
+	
     return portals, arrivalLocations
 end
 
@@ -406,12 +421,16 @@ local function momentarySwitch(p)
             PnV = calculateButtonPositionAndVelocity(proto, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-            state = checkPressed(constructDynamicArea(proto, PnV), departures)
-            justPressed = triggerArrivals[stateTriggerID][1] == 0 and state == true
-            justReleased = triggerArrivals[stateTriggerID][1] == 1 and state == false
+			local oldState = triggerArrivals[stateTriggerID][1]
+            state = (checkPressed(constructDynamicArea(proto, PnV), departures) and oldState + 1) or 0
+			if state > 2 then
+				state = 2
+			end
+            justPressed = oldState == 0 and state > 0
+            justReleased = oldState > 0 and state == 0
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
-            local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state)
+            local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state > 0)
             table.insert(forwardsGlitz, forGlitz)
             table.insert(reverseGlitz, revGlitz)
             if justPressed then
@@ -426,12 +445,12 @@ local function momentarySwitch(p)
             end
         end,
         fillTrigger = function(self, outputTriggers)
-            outputTriggers[triggerID] = {state and 1 or 0}
-            outputTriggers[stateTriggerID] = {state and 1 or 0}
+            outputTriggers[triggerID] = {state}
+            outputTriggers[stateTriggerID] = {state}
             if p.extraTriggerIDs then
                 local extraTriggerIDs = p.extraTriggerIDs
                 for i = 1, #extraTriggerIDs do
-                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                    outputTriggers[extraTriggerIDs[i]] = {state}
                 end
             end
         end,
@@ -458,11 +477,15 @@ local function stickySwitch(p)
             PnV = calculateButtonPositionAndVelocity(proto, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-            state = triggerArrivals[stateTriggerID][1] == 1 or checkPressed(constructDynamicArea(proto, PnV), departures)
-            justPressed = triggerArrivals[stateTriggerID][1] == 0 and state
+			local oldState = triggerArrivals[stateTriggerID][1]
+            state = (oldState > 0 and oldState + 1) or (checkPressed(constructDynamicArea(proto, PnV), departures) and 1) or 0
+			if state > 2 then
+				state = 2
+			end
+            justPressed = oldState == 0 and state > 0
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
-            local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state)
+            local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state > 0)
             table.insert(forwardsGlitz, forGlitz)
             table.insert(reverseGlitz, revGlitz)
             if justPressed then
@@ -472,12 +495,12 @@ local function stickySwitch(p)
             end
         end,
         fillTrigger = function(self, outputTriggers)
-            outputTriggers[triggerID] = {state and 1 or 0}
-            outputTriggers[stateTriggerID] = {state and 1 or 0}
+            outputTriggers[triggerID] = {state}
+            outputTriggers[stateTriggerID] = {state}
             if p.extraTriggerIDs then
                 local extraTriggerIDs = p.extraTriggerIDs
                 for i = 1, #extraTriggerIDs do
-                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                    outputTriggers[extraTriggerIDs[i]] = {state}
                 end
             end
         end,
@@ -582,17 +605,21 @@ local function stickyLaserSwitch(p)
 			emitterPnV = calculateButtonPositionAndVelocity(protoEmitter, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-            state = triggerArrivals[stateTriggerID][1] == 1 or checkPressed(constructDynamicArea(protoBeam, beamPnV), departures)
-            justPressed = triggerArrivals[stateTriggerID][1] == 0 and state
+			local oldState = triggerArrivals[stateTriggerID][1]
+            state = (oldState and oldState + 1) or (checkPressed(constructDynamicArea(proto, PnV), departures) and 1) or 0
+			if state > 2 then
+				state = 2
+			end
+            justPressed = oldState == 0 and state > 0
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
-            local forGlitzBeam, revGlitzBeam = calculateBeamGlitz(protoBeam, beamPnV, state)
+            local forGlitzBeam, revGlitzBeam = calculateBeamGlitz(protoBeam, beamPnV, state > 0)
             if forGlitzBeam then
 				table.insert(forwardsGlitz, forGlitzBeam)
 				table.insert(reverseGlitz, revGlitzBeam)
 			end
 			
-			local forGlitz, revGlitz = calculateButtonGlitz(protoEmitter, emitterPnV, state)
+			local forGlitz, revGlitz = calculateButtonGlitz(protoEmitter, emitterPnV, state > 0)
             table.insert(forwardsGlitz, forGlitz)
             table.insert(reverseGlitz, revGlitz)
             if justPressed then
@@ -602,12 +629,12 @@ local function stickyLaserSwitch(p)
             end
         end,
         fillTrigger = function(self, outputTriggers)
-            outputTriggers[triggerID] = {state and 1 or 0}
-            outputTriggers[stateTriggerID] = {state and 1 or 0}
+            outputTriggers[triggerID] = {state}
+            outputTriggers[stateTriggerID] = {state}
             if p.extraTriggerIDs then
                 local extraTriggerIDs = p.extraTriggerIDs
                 for i = 1, #extraTriggerIDs do
-                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                    outputTriggers[extraTriggerIDs[i]] = {state}
                 end
             end
         end,
@@ -624,7 +651,7 @@ local function multiStickySwitch(p)
     
     local triggerID = p.triggerID
     local stateTriggerID = p.stateTriggerID
-
+	
     local justPressed = {}
     local justReleased = {}
 
@@ -644,7 +671,7 @@ local function multiStickySwitch(p)
             end
         end,
         updateState = function(self, departures, triggerArrivals)
-            state = true
+			state = true
             for i = 1, bCount do
                 if triggerArrivals[stateTriggerID][i] == 0 then
                     state = false
@@ -660,7 +687,7 @@ local function multiStickySwitch(p)
                         state = false
                     end
                     justPressed[i] = triggerArrivals[stateTriggerID][i] == 0 and individualState[i]
-                    justReleased[i] = triggerArrivals[stateTriggerID][i] == 1 and not individualState[i]
+                    justReleased[i] = triggerArrivals[stateTriggerID][i] > 0 and not individualState[i]
                 end
             else
                 for i = 1, bCount do
@@ -668,10 +695,15 @@ local function multiStickySwitch(p)
                     justReleased[i] = false
                 end
             end
+			
+			state = (state and triggerArrivals[triggerID][1] + 1) or 0
+			if state > 2 then
+				state = 2
+			end
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             for i = 1, bCount do
-                local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], state or individualState[i])
+                local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], (state > 0) or individualState[i])
                 table.insert(forwardsGlitz, forGlitz)
                 table.insert(reverseGlitz, revGlitz)
                 if justPressed[i] then
@@ -687,12 +719,12 @@ local function multiStickySwitch(p)
             end
         end,
         fillTrigger = function(self, outputTriggers)
-            outputTriggers[triggerID] = {state and 1 or 0}
+            outputTriggers[triggerID] = {state}
             outputTriggers[stateTriggerID] = map(function(val) return val and 1 or 0 end, individualState)
             if p.extraTriggerIDs then
                 local extraTriggerIDs = p.extraTriggerIDs
                 for i = 1, #extraTriggerIDs do
-                    outputTriggers[extraTriggerIDs[i]] = {state and 1 or 0}
+                    outputTriggers[extraTriggerIDs[i]] = {state}
                 end
             end
         end,
@@ -745,7 +777,7 @@ local function toggleSwitch(p)
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             do
                 local forGlitz, revGlitz =
-                    calculateButtonGlitz(constructCompleteProto(timeDirection, self.first), firstPnV, switchState == 1)
+                    calculateButtonGlitz(constructCompleteProto(timeDirection, self.first), firstPnV, switchState > 0)
                 table.insert(forwardsGlitz, forGlitz)
                 table.insert(reverseGlitz, revGlitz)
             end
@@ -995,7 +1027,7 @@ local function wireGlitz(p)
             local forGlitz, revGlitz
             local active = false
             if triggerID then
-                active = (useTriggerArrival and triggerArrivals[triggerID][1] == 1) or (not useTriggerArrival and outputTriggers[triggerID][1] == 1)
+                active = (useTriggerArrival and triggerArrivals[triggerID][1] > 0) or (not useTriggerArrival and outputTriggers[triggerID][1] > 0)
             elseif triggerFunction then
                 active = triggerFunction(triggerArrivals, outputTriggers)
             end
@@ -1097,7 +1129,15 @@ function calculatePhysicsAffectingStuff(tempStore)
         
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)
         
-        local portals, arrivalLocations = calculatePortals(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.protoPortals, retv.collisions, triggerArrivals)
+        local portals, arrivalLocations = calculatePortals(
+			tempStore.forwardsGlitz, 
+			tempStore.reverseGlitz, 
+			tempStore.protoPortals, 
+			tempStore.protoLasers, 
+			retv.collisions, 
+			triggerArrivals, 
+			tempStore.frameNumber
+		)
         
         retv.portals = portals
         retv.arrivalLocations = arrivalLocations
