@@ -6,6 +6,10 @@
 /ide/msvc2015/HourglassII/HourglassII/x64
 /ide/msvc2015/HourglassII/HourglassIIUnity/x64
 
+*.VC.db
+*.ncrunchsolution
+*.crunchsolution.cache
+*.ncrunchsolution.user
 *.VC.opendb
 *.vcxproj.user
 *.vs
