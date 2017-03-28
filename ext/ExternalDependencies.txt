@@ -3,7 +3,7 @@ HourglassII depends on the following libraries:
 
 Boost version 1.59.0 -- http://www.boost.org/users/history/version_1_59_0.html
 SFML version 2.3.2 -- http://www.sfml-dev.org/download.php
-Threading Building Blocks version 4.4 -- http://threadingbuildingblocks.org
+Threading Building Blocks version 2017 Update 5 -- http://threadingbuildingblocks.org
 
 These libraries must be compiled and placed in the following directory structure within the ext/ directory.
 
