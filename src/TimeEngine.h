@@ -15,14 +15,6 @@
 #include <boost/swap.hpp>
 #include <utility>
 namespace hg {
-//TimeEngines are movable but non-copyable.
-//This is not due to any underlying limitation, but simply
-//because the use of Frame pointers makes
-//writing a correct copy assignment operator or constructor
-//a rather involved task.
-
-//If the capability to copy time engines becomes important then
-//copying operations can be added.
 class Frame;
 class Level;
 struct TimeEngineImpl;
