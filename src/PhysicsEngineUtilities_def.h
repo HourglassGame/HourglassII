@@ -1417,7 +1417,7 @@ void guyStep(
 
             for (std::size_t j(0); j != numberOfGuys; ++j)
             {
-                shootable.push_back(!finishedWith[j] && i != j && !newTimePaused[i]);
+                shootable.push_back(!finishedWith[j] && !newTimePaused[j]);
             }
 
             // Return values from doGunRaytrace
