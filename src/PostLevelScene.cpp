@@ -102,7 +102,8 @@ void run_post_level_scene(
                 sf::Text replayGlyph;
                 replayGlyph.setFont(*hg::defaultFont);
                 replayGlyph.setString("You Won -- Replay");
-                replayGlyph.setColor(sf::Color(255,0,0));
+                replayGlyph.setFillColor(sf::Color(255,0,0));
+                replayGlyph.setOutlineColor(sf::Color(255, 0, 0));
                 replayGlyph.setPosition(480, 32);
                 replayGlyph.setCharacterSize(16);
                 window.draw(replayGlyph);
@@ -111,7 +112,8 @@ void run_post_level_scene(
                 sf::Text replayGlyph;
                 replayGlyph.setFont(*hg::defaultFont);
                 replayGlyph.setString(", . / keys control the displayed time");
-                replayGlyph.setColor(sf::Color(255,0,0));
+                replayGlyph.setFillColor(sf::Color(255,0,0));
+                replayGlyph.setOutlineColor(sf::Color(255, 0, 0));
                 replayGlyph.setPosition(380, 64);
                 replayGlyph.setCharacterSize(16);
                 window.draw(replayGlyph);
@@ -213,7 +215,8 @@ void runStep(
         currentPlayerGlyph.setString(currentPlayerIndex.str());
         currentPlayerGlyph.setPosition(580, 433);
         currentPlayerGlyph.setCharacterSize(10);
-        currentPlayerGlyph.setColor(uiTextColor);
+        currentPlayerGlyph.setFillColor(uiTextColor);
+        currentPlayerGlyph.setOutlineColor(uiTextColor);
         app.draw(currentPlayerGlyph);
     }
     {
@@ -224,7 +227,8 @@ void runStep(
         frameNumberGlyph.setString(frameNumberString.str());
         frameNumberGlyph.setPosition(580, 445);
         frameNumberGlyph.setCharacterSize(8);
-        frameNumberGlyph.setColor(uiTextColor);
+        frameNumberGlyph.setFillColor(uiTextColor);
+        frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
     {
@@ -235,7 +239,8 @@ void runStep(
         frameNumberGlyph.setString(timeString.str());
         frameNumberGlyph.setPosition(580, 457);
         frameNumberGlyph.setCharacterSize(8);
-        frameNumberGlyph.setColor(uiTextColor);
+        frameNumberGlyph.setFillColor(uiTextColor);
+        frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
     /*{

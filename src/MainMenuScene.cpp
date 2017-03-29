@@ -20,7 +20,9 @@ static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &
         sf::Text menuItemGlyph;
         menuItemGlyph.setFont(*hg::defaultFont);
         menuItemGlyph.setString(menuItem.text);
-        menuItemGlyph.setColor(i == currentItem ? sf::Color(0, 255, 255) : sf::Color(255,255,255));
+        auto const menuItemColour = i == currentItem ? sf::Color(0, 255, 255) : sf::Color(255, 255, 255);
+        menuItemGlyph.setFillColor(menuItemColour);
+        menuItemGlyph.setOutlineColor(menuItemColour);
         menuItemGlyph.setPosition(200.f, ypos);
         ypos += 50.f;
         menuItemGlyph.setCharacterSize(32);

@@ -282,7 +282,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     sf::Text replayGlyph;
                     replayGlyph.setFont(*hg::defaultFont);
                     replayGlyph.setString("R");
-                    replayGlyph.setColor(sf::Color(255, 25, 50));
+                    replayGlyph.setFillColor(sf::Color(255, 25, 50));
+                    replayGlyph.setOutlineColor(sf::Color(255, 25, 50));
                     replayGlyph.setPosition(580, 32);
                     replayGlyph.setCharacterSize(32);
                     window.draw(replayGlyph);
@@ -452,7 +453,8 @@ void runStep(
         currentPlayerGlyph.setString(currentPlayerIndex.str());
         currentPlayerGlyph.setPosition(580, 433);
         currentPlayerGlyph.setCharacterSize(10);
-        currentPlayerGlyph.setColor(uiTextColor);
+        currentPlayerGlyph.setFillColor(uiTextColor);
+        currentPlayerGlyph.setOutlineColor(uiTextColor);
         app.draw(currentPlayerGlyph);
     }
     {
@@ -463,7 +465,8 @@ void runStep(
         frameNumberGlyph.setString(frameNumberString.str());
         frameNumberGlyph.setPosition(580, 445);
         frameNumberGlyph.setCharacterSize(8);
-        frameNumberGlyph.setColor(uiTextColor);
+        frameNumberGlyph.setFillColor(uiTextColor);
+        frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
     {
@@ -474,7 +477,8 @@ void runStep(
         frameNumberGlyph.setString(timeString.str());
         frameNumberGlyph.setPosition(580, 457);
         frameNumberGlyph.setCharacterSize(8);
-        frameNumberGlyph.setColor(uiTextColor);
+        frameNumberGlyph.setFillColor(uiTextColor);
+        frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
     }
     {
@@ -494,7 +498,8 @@ void runStep(
         numberOfFramesExecutedGlyph.setString(numberOfFramesExecutedString.str());
         numberOfFramesExecutedGlyph.setPosition(580, 469);
         numberOfFramesExecutedGlyph.setCharacterSize(8);
-        numberOfFramesExecutedGlyph.setColor(uiTextColor);
+        numberOfFramesExecutedGlyph.setFillColor(uiTextColor);
+        numberOfFramesExecutedGlyph.setOutlineColor(uiTextColor);
         app.draw(numberOfFramesExecutedGlyph);
     }
     {
@@ -507,7 +512,8 @@ void runStep(
         fpsglyph.setString(fpsstring.str());
         fpsglyph.setPosition(600, 415);
         fpsglyph.setCharacterSize(8);
-        fpsglyph.setColor(uiTextColor);
+        fpsglyph.setFillColor(uiTextColor);
+        fpsglyph.setOutlineColor(uiTextColor);
         app.draw(fpsglyph);
     }
 }

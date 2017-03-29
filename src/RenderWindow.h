@@ -247,10 +247,6 @@ struct RenderWindow {
     //    return renderWindow.getSize();
     //}
 
-    sf::Image capture() const {
-        return renderWindow.capture();
-    }
-    
     //====== sf::RenderTarget functions ======
     void clear(const sf::Color &color = sf::Color(0, 0, 0, 255)) {
         return renderWindow.clear(color);

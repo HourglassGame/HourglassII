@@ -59,7 +59,8 @@ void drawInventory(
         timeJumpGlyph.setString(timeJump.str());
         timeJumpGlyph.setPosition(500, 350);
         timeJumpGlyph.setCharacterSize(10);
-        timeJumpGlyph.setColor(uiTextColor);
+        timeJumpGlyph.setFillColor(uiTextColor);
+        timeJumpGlyph.setOutlineColor(uiTextColor);
         app.draw(timeJumpGlyph);
     }
     {
@@ -70,7 +71,8 @@ void drawInventory(
         timeReversesGlyph.setString(timeReverses.str());
         timeReversesGlyph.setPosition(500, 370);
         timeReversesGlyph.setCharacterSize(10);
-        timeReversesGlyph.setColor(uiTextColor);
+        timeReversesGlyph.setFillColor(uiTextColor);
+        timeReversesGlyph.setOutlineColor(uiTextColor);
         app.draw(timeReversesGlyph);
     }
     {
@@ -81,7 +83,8 @@ void drawInventory(
         timeGunsGlyph.setString(timeGuns.str());
         timeGunsGlyph.setPosition(500, 390);
         timeGunsGlyph.setCharacterSize(10);
-        timeGunsGlyph.setColor(uiTextColor);
+        timeGunsGlyph.setFillColor(uiTextColor);
+        timeGunsGlyph.setOutlineColor(uiTextColor);
         app.draw(timeGunsGlyph);
     }
     {
@@ -92,7 +95,8 @@ void drawInventory(
         timePausesGlyph.setString(timeGuns.str());
         timePausesGlyph.setPosition(500, 410);
         timePausesGlyph.setCharacterSize(10);
-        timePausesGlyph.setColor(uiTextColor);
+        timePausesGlyph.setFillColor(uiTextColor);
+        timePausesGlyph.setOutlineColor(uiTextColor);
         app.draw(timePausesGlyph);
     }
 }
@@ -293,7 +297,8 @@ void DrawTimeline(
             cursorTimeGlyph.setString(cursorTime.str());
             cursorTimeGlyph.setPosition(timeCursorHorizontalPosition-3.f, height + 20.f);
             cursorTimeGlyph.setCharacterSize(10);
-            cursorTimeGlyph.setColor(timeCursorColor);
+            cursorTimeGlyph.setFillColor(timeCursorColor);
+            cursorTimeGlyph.setOutlineColor(timeCursorColor);
             target.draw(cursorTimeGlyph);
         }
     }

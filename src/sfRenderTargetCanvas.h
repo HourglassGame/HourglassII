@@ -73,7 +73,8 @@ public:
         glyphs.setString(sf::String(text));
         glyphs.setPosition(x, y);
         glyphs.setCharacterSize(static_cast<unsigned>(size));
-        glyphs.setColor(interpretAsColour(colour));
+        glyphs.setFillColor(interpretAsColour(colour));
+        glyphs.setOutlineColor(interpretAsColour(colour));
         target->draw(glyphs);
     }
     virtual void drawImage(std::string const &key, float const x, float const y, float const width, float const height) override
