@@ -606,7 +606,7 @@ local function stickyLaserSwitch(p)
         end,
         updateState = function(self, departures, triggerArrivals)
 			local oldState = triggerArrivals[stateTriggerID][1]
-            state = (oldState and oldState + 1) or (checkPressed(constructDynamicArea(proto, PnV), departures) and 1) or 0
+            state = (oldState > 0 and oldState + 1) or (checkPressed(constructDynamicArea(protoBeam, beamPnV), departures) and 1) or 0
 			if state > 2 then
 				state = 2
 			end
