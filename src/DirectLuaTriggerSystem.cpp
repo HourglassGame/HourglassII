@@ -928,43 +928,39 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("getDepartureInformation must be a table"));
     }
     //push `departures` argument [
+    luaL_checkstack(L, 1, nullptr);
     //TODO find out if sparse arrays count as
     //array elements or non-array elements
-    luaL_checkstack(L, 1, nullptr);
+    //TODO: Finesse this table sizing for the case where departures contains a departure to the nullFrame.
     lua_createtable(L, static_cast<int>(departures.size()), 0);
+    for (std::pair<Frame *, ObjectList<Normal>> const &departureSection : departures)
     {
-        int i(0);
-        for (
-            ObjectList<Normal> const &departureSection :
-            departures | boost::adaptors::map_values)
+        luaL_checkstack(L, 1, nullptr);
+        lua_createtable(L, 0, 2);
         {
-            ++i;
             luaL_checkstack(L, 1, nullptr);
-            lua_createtable(L, 0, 2);
-            {
-                luaL_checkstack(L, 1, nullptr);
-                lua_createtable(L, static_cast<int>(departureSection.getList<Guy>().size()), 0);
-                int j(0);
-                for (Guy const &guy : departureSection.getList<Guy>()) {
-                    ++j;
-                    pushGuy(L, guy);
-                    lua_rawseti(L, -2, j);
-                }
-                lua_setfield(L, -2, "guys");
+            lua_createtable(L, static_cast<int>(departureSection.second.getList<Guy>().size()), 0);
+            int j(0);
+            for (Guy const &guy : departureSection.second.getList<Guy>()) {
+                ++j;
+                pushGuy(L, guy);
+                lua_rawseti(L, -2, j);
             }
-            {
-                luaL_checkstack(L, 1, nullptr);
-                lua_createtable(L, static_cast<int>(departureSection.getList<Box>().size()), 0);
-                int j(0);
-                for (Box const &box : departureSection.getList<Box>()) {
-                    ++j;
-                    pushBox(L, box);
-                    lua_rawseti(L, -2, j);
-                }
-                lua_setfield(L, -2, "boxes");
-            }
-            lua_rawseti(L, -2, i);
+            lua_setfield(L, -2, "guys");
         }
+        {
+            luaL_checkstack(L, 1, nullptr);
+            lua_createtable(L, static_cast<int>(departureSection.second.getList<Box>().size()), 0);
+            int j(0);
+            for (Box const &box : departureSection.second.getList<Box>()) {
+                ++j;
+                pushBox(L, box);
+                lua_rawseti(L, -2, j);
+            }
+            lua_setfield(L, -2, "boxes");
+        }
+        //Departure to null frame represented by -1. Is this good? Should a non-numerical key be used instead?
+        lua_rawseti(L, -2, isNullFrame(departureSection.first) ? -1 : getFrameNumber(departureSection.first)+1);
     }
     //]
     //call function
