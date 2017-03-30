@@ -4,9 +4,6 @@
 #include <boost/range/algorithm/stable_sort.hpp>
 #include <algorithm>
 
-#include <boost/bind/bind.hpp>
-#include <boost/ref.hpp>
-
 namespace hg {
 
 namespace lc_internal {
@@ -129,7 +126,7 @@ Flusher LayeredCanvas::getFlusher() {
 void Flusher::partialFlush(int upperLimit) {
     boost::container::vector<lc_internal::DrawCall>::iterator lowerBound(upperBound);
     upperBound = std::upper_bound(lowerBound, boost::end(canvas->drawCalls), DrawCall{upperLimit, clone_ptr<Drawer>(nullptr)});
-    std::for_each(lowerBound, upperBound, boost::bind(&DrawCall::drawTo, _1, boost::ref(*canvas->canvas)));
+    std::for_each(lowerBound, upperBound, [this](lc_internal::DrawCall const &drawCall) { drawCall.drawTo(*canvas->canvas); });
 }
 Flusher::Flusher(LayeredCanvas *canvas) : canvas(canvas) {
     boost::stable_sort(canvas->drawCalls);

@@ -177,9 +177,18 @@ public:
         static std::size_t const current_axis = N_dims - 1;
     //public:
         U &operator[](std::size_t i) const {
+            //These two assertions could be placed in a constructor.
+            //They do not depend on i.
+            assert(this_->data.size() >= this_->size[current_axis]);
+            assert(std::less_equal<>()(array_start, this_->data.data() + this_->data.size()));
+            assert(std::less_equal<>()(array_start, this_->data.data() + this_->data.size() - this_->size[current_axis]));
+
             assert(current_axis < this_->size.size());
             assert(i < this_->size[current_axis]);
-            assert(array_start+i >= this_->data.data() && array_start+i < &this_->data[this_->data.size()]);
+            //TODO: This assert invokes undefined behaviour if violated! (Due to inter-array comparisons/creation of invalid pointers)
+            //Not sure how to avoid this. I believe the earlier assertions in combination are equivalent to this assertion; so maybe this
+            //assertion can just be removed.
+            assert(array_start+i >= this_->data.data() && array_start+i < this_->data.data() + this_->data.size());
             return array_start[i];
         }
     };
