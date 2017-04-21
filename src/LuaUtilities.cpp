@@ -179,19 +179,17 @@ TimeDirection to<TimeDirection>(lua_State * const L, int const index) try
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("TimeDirection values must be strings"));
     }
     char const * const timeDirectionString(lua_tostring(L, index));
-    TimeDirection retv{TimeDirection::INVALID};
     if (strcmp(timeDirectionString, "forwards") == 0) {
-        retv = TimeDirection::FORWARDS;
+        return TimeDirection::FORWARDS;
     }
     else if (strcmp(timeDirectionString, "reverse") == 0) {
-        retv = TimeDirection::REVERSE;
+        return TimeDirection::REVERSE;
     }
     else {
         std::stringstream ss;
         ss << "Invalid string given as timeDirection: " << timeDirectionString;
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
-    return retv;
 }
 catch (LuaError &e) {
     add_semantic_callstack_info(e, "to<TimeDirection>");
@@ -556,6 +554,9 @@ catch (LuaError &e) {
 
 template<>
 Glitz to<Glitz>(lua_State *L, int index) try {
+    //TODO: Don't use std::string here; as its allocator isn't multi-thread aware. We should be using the tbb allocator
+    //      for all allocations within the PhysicsEngine.
+    //Note that the Glitz itself is created with `multi_thread_tag{}`.
     std::string const type(readField<std::string>(L, "type", index));
     if (type == "rectangle") {
         int const layer(readField<int>(L, "layer", index));

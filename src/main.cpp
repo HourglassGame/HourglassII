@@ -28,7 +28,7 @@ namespace hg {
 
 namespace {
     int run_main(std::vector<std::string> const &args);
-    void initialseCurrentPath(std::vector<std::string> const &args);
+    void initialiseCurrentPath(std::vector<std::string> const &args);
     void initialiseStdIO();
     struct GlobalResourceHolder {
         GlobalResourceHolder() :
@@ -60,7 +60,7 @@ int main_entry(int argc, char *argv[])
 
     initialiseStdIO();
 
-    initialseCurrentPath(args);
+    initialiseCurrentPath(args);
     GlobalResourceHolder global_resources;
     
     if (!hg::getTestDriver().passesAllTests()) {
@@ -155,7 +155,7 @@ private:
 
 namespace  {
 
-void initialseCurrentPath(std::vector<std::string> const &args)
+void initialiseCurrentPath(std::vector<std::string> const &args)
 {
 #if defined(__APPLE__) && defined(__MACH__)
     assert(args.size() >= 1);

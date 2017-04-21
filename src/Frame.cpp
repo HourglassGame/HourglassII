@@ -142,6 +142,11 @@ FrameUpdateSet Frame::updateDeparturesFromHere(FrameDeparturesT &&newDeparture)
         //Change even if arrivals are identical,
         //because old arrival pointer will become invalid
         ni->first->changeArrival(std::make_pair(this, &ni->second));
+        //TODO: Compare trigger arrivals as if CommonTriggerCode.h:calculateApparentTriggers
+        //      has already run and so triggerOffsetsAndDefaults default values
+        //      are used for trigger arrivals that are missing values.
+        //      (Performance optimisation for level loading times.)
+        //      (Not sure how to make this not be overly coupled to the trigger system)
         if (ni->second != oi->second) changedTimes.add(ni->first);
         ++oi;
         ++ni;

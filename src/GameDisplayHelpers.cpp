@@ -159,6 +159,9 @@ void DrawTimelineContents(
     std::size_t const timelineLength(timeEngine.getTimelineLength());
     hg::UniverseID const universe(timeEngine.getTimelineLength());
 
+    //For example:
+    //   * only redraw the changed frames; cache the texture between renders.
+    //   * draw as colored lines with vertex shader and cached line textures??
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         for (hg::GuyOutputInfo const &guy : frame->getView().getGuyInformation()) {

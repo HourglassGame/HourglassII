@@ -34,31 +34,13 @@ public:
         ObjectList<NonGuyDynamic>&& initialObjects,
         OperationInterrupter &interrupter);
 
-    void swap(WorldState &o);
+    void swap(WorldState &o) noexcept;
 
     WorldState(WorldState const& o);
     WorldState &operator=(WorldState const& o);
 
-    WorldState(WorldState &&o) noexcept :
-        timeline_(std::move(o.timeline_)),
-        playerInput_(std::move(o.playerInput_)),
-        frameUpdateSet_(std::move(o.frameUpdateSet_)),
-        physics_(std::move(o.physics_)),
-        nextPlayerFrames_(std::move(o.nextPlayerFrames_)),
-        currentPlayerFrames_(std::move(o.currentPlayerFrames_)),
-        currentWinFrames_(std::move(o.currentWinFrames_))
-    {
-    }
-    WorldState &operator=(WorldState &&o) noexcept {
-        timeline_= std::move(o.timeline_);
-        playerInput_ = std::move(o.playerInput_);
-        frameUpdateSet_ = std::move(o.frameUpdateSet_);
-        physics_ = std::move(o.physics_);
-        nextPlayerFrames_ = std::move(o.nextPlayerFrames_);
-        currentPlayerFrames_ = std::move(o.currentPlayerFrames_);
-        currentWinFrames_ = std::move(o.currentWinFrames_);
-        return *this;
-    }
+    WorldState(WorldState &&o) noexcept = default;
+    WorldState &operator=(WorldState &&o) noexcept = default;
     /**
      * Updates the state of the world once.
      * Throws PlayerVictoryException if the player has won
@@ -109,6 +91,6 @@ private:
     //win condition has been met at some previous time.
     ConcurrentTimeSet currentWinFrames_;
 };
-inline void swap(WorldState &l, WorldState &r) { l.swap(r); }
+inline void swap(WorldState &l, WorldState &r) noexcept { l.swap(r); }
 }
 #endif //HG_WORLD_STATE_H

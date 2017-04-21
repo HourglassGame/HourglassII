@@ -120,6 +120,7 @@ class AudioGlitzManager {
 public:
     template<typename RandomAccessAudioGlitzObjectRange>
     std::vector<AudioStateChange> updatePlayingState(RandomAccessAudioGlitzObjectRange const &newAudios) {
+        //TODO: This is very similar to frame update logic. Perhaps the two can be merged in a generic function.
         incrementCurrentAudio();
         auto oi(std::begin(currentAudio));
         auto const oend(std::end(currentAudio));

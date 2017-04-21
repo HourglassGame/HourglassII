@@ -7,6 +7,9 @@
 #include "LayeredCanvas.h"
 namespace hg {
 class ImageGlitz final : public GlitzImplementation {
+    auto asTie() const -> decltype(auto) {
+        return boost::tie(layer, key, x, y, width, height);
+    }
 public:
     ImageGlitz(
         int layer,
@@ -35,15 +38,13 @@ public:
         return asTie() == actual_other.asTie();
     }
 private:
-    boost::tuple<int const &, std::string const &, int const &, int const &, int const &, int const &> asTie() const {
-        return boost::tie(layer, key, x, y, width, height);
-    }
     virtual int order_ranking() const override {
         return 3;
     }
     int layer;
     
     std::string key;
+    //TODO: use tbb allocator for key (or use small fixed maximum-size key?)
     
     int x;
     int y;

@@ -93,13 +93,14 @@ WorldState::WorldState(
     for (int i(0); i != timelineLength; ++i) {
         frameUpdateSet_.add(getArbitraryFrame(timeline_.getUniverse(), i));
     }
+    //TODO: Give some way for the UI to hook into this, for a 'Debug' loading view...
     //Run level for a while
     for (int i(0); i != timelineLength && !interrupter.interrupted(); ++i) {
         executeWorld(interrupter);
     }
 }
 
-void WorldState::swap(WorldState &o)
+void WorldState::swap(WorldState &o) noexcept
 {
     boost::swap(timeline_, o.timeline_);
     boost::swap(playerInput_, o.playerInput_);

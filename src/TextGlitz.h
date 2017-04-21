@@ -7,6 +7,10 @@
 #include <string>
 namespace hg {
 class TextGlitz final : public GlitzImplementation {
+private:
+    auto asTie() const -> decltype(auto) {
+        return boost::tie(layer, text, x, y, size, colour);
+    }
 public:
     TextGlitz(
         int layer,
@@ -38,9 +42,6 @@ public:
         return asTie() == actual_other.asTie();
     }
 private:
-    boost::tuple<int const &, std::string const &, int const &, int const &, int const &, unsigned const &> asTie() const {
-        return boost::tie(layer, text, x, y, size, colour);
-    }
     virtual int order_ranking() const override {
         return 2;
     }

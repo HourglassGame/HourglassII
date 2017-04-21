@@ -1,4 +1,3 @@
-//NOT YET IMPLEMENTED!
 //This file contains test cases intended to ensure that every level in the
 //game is playable.
 
