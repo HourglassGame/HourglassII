@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include <vector>
 #include <string>
+#include "mt/std/string"
 #include "InitialGuyArrival.h"
 #include "InitialObjects.h"
 #include "InitialBox.h"
@@ -98,6 +99,9 @@ bool to<bool>(lua_State *L, int index);
 
 template<>
 std::string to<std::string>(lua_State *L, int index);
+
+template<>
+mt::std::string to<mt::std::string>(lua_State *L, int index);
 
 template<>
 std::vector<std::string> to<std::vector<std::string> >(lua_State *L, int index);

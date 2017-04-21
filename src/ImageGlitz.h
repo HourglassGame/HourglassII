@@ -3,7 +3,7 @@
 #include "GlitzImplementation.h"
 #include <boost/cast.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
-#include <string>
+#include "mt/std/string"
 #include "LayeredCanvas.h"
 namespace hg {
 class ImageGlitz final : public GlitzImplementation {
@@ -13,15 +13,16 @@ class ImageGlitz final : public GlitzImplementation {
 public:
     ImageGlitz(
         int layer,
-        std::string const &key,
+        mt::std::string key,
         int x, int y,
         int width, int height) :
-            layer(layer), key(key),
+            layer(layer), key(std::move(key)),
             x(x), y(y),
             width(width), height(height)
     {}
     virtual void display(LayeredCanvas &canvas) const override {
-        canvas.drawImage(layer, key, x/100.f, y/100.f, width/100.f, height/100.f);
+        std::string key_str(std::begin(key), std::end(key));
+        canvas.drawImage(layer, key_str, x/100.f, y/100.f, width/100.f, height/100.f);
     }
     virtual std::size_t clone_size() const override {
         return sizeof *this;
@@ -42,9 +43,8 @@ private:
         return 3;
     }
     int layer;
-    
-    std::string key;
-    //TODO: use tbb allocator for key (or use small fixed maximum-size key?)
+    //TODO: investigate using small fixed maximum-size key, to avoid allocations
+    mt::std::string key;
     
     int x;
     int y;

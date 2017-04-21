@@ -1,6 +1,6 @@
 #ifndef HG_AUDIO_GLITZ_H
 #define HG_AUDIO_GLITZ_H
-#include <string>
+#include "mt/std/string"
 #include <tuple>
 #include <boost/cast.hpp>
 #include "GlitzImplementation.h"
@@ -16,13 +16,14 @@ class AudioGlitz final : public GlitzImplementation {
         return std::tie(key, n);
     }
 public:
-    AudioGlitz(std::string key, std::size_t n) :
+    AudioGlitz(mt::std::string key, std::size_t n) :
         key(std::move(key)),
         n(std::move(n))
     {}
 
     virtual void display(LayeredCanvas &canvas) const override {
-        canvas.playSound(key, static_cast<int>(n));
+        std::string key_str(std::begin(key), std::end(key));
+        canvas.playSound(key_str, static_cast<int>(n));
     }
     virtual std::size_t clone_size() const override {
         return sizeof *this;
@@ -49,7 +50,7 @@ private:
     virtual int order_ranking() const override {
         return -1;
     }
-    std::string key;
+    mt::std::string key;
     std::size_t n; //`n` gives the index into the sound;
                    //that is, the exact part of the sound
                    //that must be played in the given frame.

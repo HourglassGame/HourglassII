@@ -2,6 +2,7 @@
 #define HG_GLITZ_PERSISTER_H
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
+#include "mt/std/string"
 #include <tuple>
 #include "ObjectAndTime.h"
 #include "Glitz.h"
@@ -120,7 +121,7 @@ class AudioGlitzPersister : public GlitzPersisterImpl
 {
 public:
     AudioGlitzPersister(
-        std::string key,
+        mt::std::string key,
         unsigned duration,
         TimeDirection timeDirection);
 
@@ -142,11 +143,11 @@ public:
     bool operator<(GlitzPersisterImpl const &o) const override;
 private:
     AudioGlitzPersister(
-        std::string key,
+        mt::std::string key,
         unsigned duration,
         unsigned currentFrame,
         TimeDirection timeDirection);
-    std::string key;
+    mt::std::string key;
     unsigned duration;
     unsigned currentFrame;
     TimeDirection timeDirection;

@@ -2,6 +2,7 @@
 #define HG_BOX_GLITZ_ADDER_H
 #include "Glitz.h"
 #include "mt/std/vector"
+#include "mt/std/string"
 #include "vector2.h"
 #include "ImageGlitz.h"
 #include "multi_thread_allocator.h"
@@ -26,13 +27,13 @@ public:
     {
         Glitz sameDirectionGlitz(
             new (multi_thread_tag{}) ImageGlitz(
-                500, std::string("global.box"),
+                500, mt::std::string("global.box"),
                 position.x, position.y,
                 size, size));
     
         Glitz oppositeDirectionGlitz(
             new (multi_thread_tag{}) ImageGlitz(
-                500, std::string("global.box_r"),
+                500, mt::std::string("global.box_r"),
                 position.x, position.y,
                 size, size));
         

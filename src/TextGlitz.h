@@ -4,7 +4,7 @@
 #include <boost/cast.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include "LayeredCanvas.h"
-#include <string>
+#include "mt/std/string"
 namespace hg {
 class TextGlitz final : public GlitzImplementation {
 private:
@@ -14,17 +14,18 @@ private:
 public:
     TextGlitz(
         int layer,
-        std::string text,
+        mt::std::string text,
         int x, int y,
         int size,
         unsigned colour) :
             layer(layer),
-            text(text),
+            text(std::move(text)),
             x(x), y(y),
             size(size),
             colour(colour) {}
     virtual void display(LayeredCanvas &canvas) const override {
-        canvas.drawText(layer, text, x/100.f, y/100.f, size/100.f, colour);
+        std::string text_str(std::begin(text), std::end(text));
+        canvas.drawText(layer, text_str, x/100.f, y/100.f, size/100.f, colour);
     }
     virtual std::size_t clone_size() const override {
         return sizeof *this;
@@ -47,7 +48,7 @@ private:
     }
     int layer;
     
-    std::string text;
+    mt::std::string text;
     
     int x;
     int y;

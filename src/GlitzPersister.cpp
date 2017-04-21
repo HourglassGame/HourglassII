@@ -33,7 +33,7 @@ bool StaticGlitzPersister::operator<(GlitzPersisterImpl const &o) const
 }
 
 AudioGlitzPersister::AudioGlitzPersister(
-        std::string key,
+        mt::std::string key,
         unsigned duration,
         TimeDirection timeDirection) :
     key(std::move(key)),
@@ -43,7 +43,7 @@ AudioGlitzPersister::AudioGlitzPersister(
 {}
 
 AudioGlitzPersister::AudioGlitzPersister(
-        std::string key,
+        mt::std::string key,
         unsigned duration,
         unsigned currentFrame,
         TimeDirection timeDirection) :
@@ -54,14 +54,14 @@ AudioGlitzPersister::AudioGlitzPersister(
 {}
 
 Glitz AudioGlitzPersister::getForwardsGlitz() const  {
-    std::string suffix = timeDirection == TimeDirection::FORWARDS ? "" : "_r";
+    mt::std::string suffix = timeDirection == TimeDirection::FORWARDS ? "" : "_r";
     return Glitz(
         new (multi_thread_tag{}) AudioGlitz(
             key+suffix,
             timeDirection == TimeDirection::FORWARDS ? currentFrame : duration-currentFrame));
 }
 Glitz AudioGlitzPersister::getReverseGlitz() const  {
-    std::string suffix = timeDirection == TimeDirection::REVERSE ? "" : "_r";
+    mt::std::string suffix = timeDirection == TimeDirection::REVERSE ? "" : "_r";
     return Glitz(
         new (multi_thread_tag{}) AudioGlitz(
             key+suffix,

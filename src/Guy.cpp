@@ -13,7 +13,7 @@ Guy::Guy(
     bool supported,
     int supportedSpeed,
 
-    mt::std::map<Ability, int> const &pickups,
+    mt::std::map<Ability, int> pickups,
     FacingDirection facing,
 
     bool boxCarrying,
@@ -33,7 +33,7 @@ Guy::Guy(
         supported(supported),
         supportedSpeed(supportedSpeed),
 
-        pickups(pickups),
+        pickups(std::move(pickups)),
         facing(facing),
 
         boxCarrying(boxCarrying),

@@ -156,21 +156,21 @@ Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
     return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
 }
 
-std::string abilityToString(Ability ability)
+mt::std::string abilityToString(Ability ability)
 {
     switch (ability) {
     default:
     case Ability::NO_ABILITY:
         assert(false);
-        return std::string("noAbility");
+        return mt::std::string("noAbility");
     case Ability::TIME_JUMP:
-        return std::string("timeJump");
+        return mt::std::string("timeJump");
     case Ability::TIME_REVERSE:
-        return std::string("timeReverse");
+        return mt::std::string("timeReverse");
     case Ability::TIME_GUN:
-        return std::string("timeGun");
+        return mt::std::string("timeGun");
     case Ability::TIME_PAUSE:
-        return std::string("timePause");
+        return mt::std::string("timePause");
     }
 }
 
@@ -302,7 +302,7 @@ ArrivalLocation toArrivalLocation(lua_State *L)
 }
 
 GlitzPersister toGlitzPersister(lua_State *L) {
-    std::string const type(readField<std::string>(L, "type"));
+    mt::std::string const type(readField<mt::std::string>(L, "type"));
     if (type == "static") {
         Glitz forwardsGlitz = readField<Glitz>(L, "forwardsGlitz");
         Glitz reverseGlitz = readField<Glitz>(L, "reverseGlitz");
@@ -316,7 +316,7 @@ GlitzPersister toGlitzPersister(lua_State *L) {
                 std::move(forwardsGlitz), std::move(reverseGlitz), lifetime, timeDirection));
     }
     else if (type == "audio") {
-        std::string key = readField<std::string>(L, "key");
+        mt::std::string key = readField<mt::std::string>(L, "key");
         int duration = readField<int>(L, "duration");
         TimeDirection timeDirection = readField<TimeDirection>(L, "timeDirection");
         return GlitzPersister(

@@ -68,7 +68,6 @@ const char *lua_VectorReader (
     }
 }
 
-
 void pushFunctionFromVector(lua_State * const L, std::vector<char> const &luaData, std::string const &chunkName)
 {
     if (luaL_loadbuffer(L, luaData.empty() ? "" : &luaData.front() , luaData.size(), chunkName.c_str()) != LUA_OK) {
@@ -151,8 +150,20 @@ catch (LuaError &e) {
 }
 
 template<>
+mt::std::string to<mt::std::string>(lua_State * const L, int const index) try
+{
+    if (!lua_isstring(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Non-string value found where string value expected"));
+    }
+    return mt::std::string(lua_tostring(L, index));
+}
+catch (LuaError &e) {
+    add_semantic_callstack_info(e, "to<mt::std::string>");
+    throw;
+}
+
+template<>
 std::vector<std::string> to<std::vector<std::string> >(lua_State * const L, int const index) try {
-    
     if (!lua_istable(L, index)) {
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Non-table value found where table value expected"));
     }
@@ -280,13 +291,21 @@ InitialObjects to<InitialObjects>(lua_State *L, int index) try
     for (std::size_t i(1), iend(lua_rawlen(L, index)); i <= iend; ++i) {
         lua_pushinteger(L, i);
         lua_gettable(L, index - 1);
-        std::string type(readField<std::string>(L, "type"));
-        if (type == "box") {
+
+        lua_getfield(L, index, "type");
+        if (!lua_isstring(L, -1)) {
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("InitialObject[n].type values must be strings"));
+        }
+        char const * const type(lua_tostring(L, -1));
+
+        if (strcmp(type, "box") == 0) {
+            lua_pop(L, 1);
             retv.add(to<InitialBox>(L).box);
         }
         else {
             std::stringstream ss;
             ss << "invalid type given for InitialObject: " << type;
+            lua_pop(L, 1);
             BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
         }
         lua_pop(L, 1);
@@ -313,17 +332,21 @@ catch (LuaError &e) {
 template<>
 Ability to<Ability>(lua_State *L, int index) try
 {
-    std::string abilityString(lua_tostring(L, index));
-    if (abilityString == "timeJump") {
+    //TODO abstract and combine this with to<TimeDirection> and to<FacingDirection> (maybe)
+    if (!lua_isstring(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Ability values must be strings"));
+    }
+    char const * const abilityString(lua_tostring(L, index));
+    if (strcmp(abilityString, "timeJump") == 0) {
         return Ability::TIME_JUMP;
     }
-    else if (abilityString == "timeReverse") {
+    else if (strcmp(abilityString, "timeReverse") == 0) {
         return Ability::TIME_REVERSE;
     }
-    else if (abilityString == "timeGun") {
+    else if (strcmp(abilityString, "timeGun") == 0) {
         return Ability::TIME_GUN;
     }
-    else if (abilityString == "timePause") {
+    else if (strcmp(abilityString, "timePause") == 0) {
         return Ability::TIME_PAUSE;
     }
     else {
@@ -340,11 +363,14 @@ catch (LuaError &e) {
 template<>
 FacingDirection to<FacingDirection>(lua_State *L, int index) try
 {
-    std::string facingString(lua_tostring(L, index));
-    if (facingString == "left") {
+    if (!lua_isstring(L, index)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("FacingDirection values must be strings"));
+    }
+    char const * const facingString(lua_tostring(L, index));
+    if (strcmp(facingString, "left") == 0) {
         return FacingDirection::LEFT;
     }
-    else if (facingString == "right") {
+    else if (strcmp(facingString, "right") == 0) {
         return FacingDirection::RIGHT;
     }
     else {
@@ -388,14 +414,14 @@ Guy to<Guy>(lua_State* L, int index) try
     if (!lua_istable(L, index)) {
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a guy must be a table"));
     }
-    int relativeIndex(readField<int>(L, "index",index));
-    int x(readField<int>(L, "x",index));            
-    int y(readField<int>(L, "y",index));
-    int xspeed(readField<int>(L, "xspeed",index));
-    int yspeed(readField<int>(L, "yspeed",index));
-    int width(readField<int>(L, "width",index));
-    int height(readField<int>(L, "height",index));
-    int jumpSpeed(readField<int>(L, "jumpSpeed",index));
+    int const relativeIndex(readField<int>(L, "index",index));
+    int const x(readField<int>(L, "x",index));            
+    int const y(readField<int>(L, "y",index));
+    int const xspeed(readField<int>(L, "xspeed",index));
+    int const yspeed(readField<int>(L, "yspeed",index));
+    int const width(readField<int>(L, "width",index));
+    int const height(readField<int>(L, "height",index));
+    int const jumpSpeed(readField<int>(L, "jumpSpeed",index));
     int illegalPortal(-1);
     lua_getfield(L, index, "illegalPortal");
     if (!lua_isnil(L, -1)) {
@@ -411,22 +437,15 @@ Guy to<Guy>(lua_State* L, int index) try
         arrivalBasis = to<int>(L);
     }
     lua_pop(L, 1);
-    bool supported(readField<bool>(L, "supported", index));
-    int supportedSpeed(0);
-    if (supported) {
-        supportedSpeed = readField<int>(L, "supportedSpeed", index);
-    }
+    bool const supported(readField<bool>(L, "supported", index));
+    int const supportedSpeed(supported ? 0 : readField<int>(L, "supportedSpeed", index));
     mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
-    FacingDirection facing(readField<FacingDirection>(L, "facing", index));
-    bool boxCarrying(readField<bool>(L, "boxCarrying", index));
-    int boxCarrySize(0);
-    TimeDirection boxCarryDirection{TimeDirection::INVALID};
-    if (boxCarrying) {
-        boxCarrySize = readField<int>(L, "boxCarrySize", index);
-        boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
-    }
-    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
-    bool timePaused(readField<bool>(L, "timePaused", index));
+    FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
+    bool const boxCarrying(readField<bool>(L, "boxCarrying", index));
+    int const boxCarrySize(boxCarrying ? readField<int>(L, "boxCarrySize", index) : 0);
+    TimeDirection const boxCarryDirection{boxCarrying ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
+    TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
+    bool const timePaused(readField<bool>(L, "timePaused", index));
     return Guy(
         relativeIndex,
         x, y,
@@ -437,7 +456,7 @@ Guy to<Guy>(lua_State* L, int index) try
         arrivalBasis,
         supported,
         supportedSpeed,
-        pickups,
+        std::move(pickups),
         facing,
         boxCarrying,
         boxCarrySize,
@@ -455,24 +474,20 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) try
     if (!lua_istable(L, index)) {
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("an initial guy must be a table"));
     }
-    int x(readField<int>(L, "x",index));
-    int y(readField<int>(L, "y",index));
-    int xspeed(readFieldWithDefault<int>(L, "xspeed",index,0));
-    int yspeed(readFieldWithDefault<int>(L, "yspeed",index,0));
-    int width(readFieldWithDefault<int>(L, "width",index,1600));
-    int height(readFieldWithDefault<int>(L, "height",index,3200));
-    int jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
+    int const x(readField<int>(L, "x",index));
+    int const y(readField<int>(L, "y",index));
+    int const xspeed(readFieldWithDefault<int>(L, "xspeed",index,0));
+    int const yspeed(readFieldWithDefault<int>(L, "yspeed",index,0));
+    int const width(readFieldWithDefault<int>(L, "width",index,1600));
+    int const height(readFieldWithDefault<int>(L, "height",index,3200));
+    int const jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed",index,-450));
     mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
-    FacingDirection facing(readField<FacingDirection>(L, "facing", index));
-    bool boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
-    int boxCarrySize(0);
-    TimeDirection boxCarryDirection{TimeDirection::INVALID};
-    if (boxCarrying) {
-        boxCarrySize = readField<int>(L, "boxCarrySize", index);
-        boxCarryDirection = readField<TimeDirection>(L, "boxCarryDirection", index);
-    }
-    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
-    bool timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
+    FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
+    bool const boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
+    int const boxCarrySize(boxCarrying ? readField<int>(L, "boxCarrySize", index) : 0);
+    TimeDirection const boxCarryDirection{boxCarrying ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
+    TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
+    bool const timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
     return
     InitialGuy(
       Guy(
@@ -485,7 +500,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) try
         -1,
         false,
         0,
-        pickups,
+        std::move(pickups),
         facing,
         boxCarrying,
         boxCarrySize,
@@ -502,7 +517,7 @@ template<>
 TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index) try
 {
     std::vector<std::pair<int, std::vector<int> > > toad;
-    std::size_t iend(lua_rawlen(L, index));
+    std::size_t const iend(lua_rawlen(L, index));
     toad.reserve(iend);
     for (std::size_t i(1); i <= iend; ++i) {
         lua_pushinteger(L, i);
@@ -511,7 +526,7 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
         
         lua_getfield(L, index, "default");
         std::vector<int> default_;
-        std::size_t jend(lua_rawlen(L, -1));
+        std::size_t const jend(lua_rawlen(L, -1));
         default_.reserve(jend);
         for (std::size_t j(1); j <= jend;  ++j) {
             lua_pushinteger(L, j);
@@ -535,15 +550,15 @@ Collision to<Collision>(lua_State *L, int index) try {
     if (!lua_istable(L, -1)) {
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("a collision must be a table"));
     }
-    int x(readField<int>(L, "x", index));            
-    int y(readField<int>(L, "y", index));
-    int xspeed(readField<int>(L, "xspeed", index));
-    int yspeed(readField<int>(L, "yspeed", index));
-    int prevXspeed(readField<int>(L, "prevXspeed", index));
-    int prevYspeed(readField<int>(L, "prevYspeed", index));
-    int width(readField<int>(L, "width", index));
-    int height(readField<int>(L, "height", index));
-    TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection", index));
+    int const x(readField<int>(L, "x", index));            
+    int const y(readField<int>(L, "y", index));
+    int const xspeed(readField<int>(L, "xspeed", index));
+    int const yspeed(readField<int>(L, "yspeed", index));
+    int const prevXspeed(readField<int>(L, "prevXspeed", index));
+    int const prevYspeed(readField<int>(L, "prevYspeed", index));
+    int const width(readField<int>(L, "width", index));
+    int const height(readField<int>(L, "height", index));
+    TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
     
     return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, timeDirection);
 }
@@ -554,31 +569,35 @@ catch (LuaError &e) {
 
 template<>
 Glitz to<Glitz>(lua_State *L, int index) try {
-    //TODO: Don't use std::string here; as its allocator isn't multi-thread aware. We should be using the tbb allocator
-    //      for all allocations within the PhysicsEngine.
-    //Note that the Glitz itself is created with `multi_thread_tag{}`.
-    std::string const type(readField<std::string>(L, "type", index));
-    if (type == "rectangle") {
+    lua_getfield(L, index, "type");
+    if (!lua_isstring(L, -1)) {
+        BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Glitz.type values must be strings"));
+    }
+    char const * const type(lua_tostring(L, -1));
+    if (strcmp(type, "rectangle") == 0) {
+        lua_pop(L, 1);
         int const layer(readField<int>(L, "layer", index));
         int const x(readField<int>(L, "x", index));
         int const y(readField<int>(L, "y", index));
         int const width(readField<int>(L, "width", index));
         int const height(readField<int>(L, "height", index));
-        unsigned colour(readColourField(L, "colour"));
+        unsigned const colour(readColourField(L, "colour"));
         return Glitz(new (multi_thread_tag{}) RectangleGlitz(layer, x, y, width, height, colour));
     }
-    else if (type == "text") {
+    else if (strcmp(type, "text") == 0) {
+        lua_pop(L, 1);
         int const layer(readField<int>(L, "layer", index));
-        std::string text(readField<std::string>(L, "text", index));
+        auto const text(readField<mt::std::string>(L, "text", index));
         int const x(readField<int>(L, "x", index));
         int const y(readField<int>(L, "y", index));
         int const size(readField<int>(L, "size", index));
-        unsigned colour(readColourField(L, "colour"));
+        unsigned const colour(readColourField(L, "colour"));
         return Glitz(new (multi_thread_tag{}) TextGlitz(layer, std::move(text), x, y, size, colour));
     }
-    else if (type == "image") {
+    else if (strcmp(type, "image") == 0) {
+        lua_pop(L, 1);
         int const layer(readField<int>(L, "layer"));
-        std::string key(readField<std::string>(L, "key"));
+        auto const key(readField<mt::std::string>(L, "key"));
         int const x(readField<int>(L, "x"));
         int const y(readField<int>(L, "y"));
         int const width(readField<int>(L, "width"));
@@ -588,6 +607,8 @@ Glitz to<Glitz>(lua_State *L, int index) try {
     }
     std::stringstream ss;
     ss << "Unknown Glitz Type: " << type;
+    lua_pop(L, 1);
+
     BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
 }
 catch (LuaError &e) {
@@ -599,9 +620,9 @@ unsigned readColourField(lua_State *L, char const *fieldName) try
 {
     LuaStackManager stack_manager(L);
     lua_getfield(L, -1, fieldName);
-    unsigned r(readField<int>(L, "r"));
-    unsigned g(readField<int>(L, "g"));
-    unsigned b(readField<int>(L, "b"));
+    unsigned const r(readField<int>(L, "r"));
+    unsigned const g(readField<int>(L, "g"));
+    unsigned const b(readField<int>(L, "b"));
     lua_pop(L, 1);
     return r << 24 | g << 16 | b << 8;
 }
