@@ -146,29 +146,32 @@ void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight, int seg
 void DrawTimelineContents(
     sf::RenderTarget &target,
     hg::TimeEngine const &timeEngine,
-    unsigned int const height)
+    unsigned const height)
 {
     static constexpr int boxLineHeight = 1;
-    static constexpr int guyLineHeight = 4;
+    static constexpr int guyLineHeightStandard = 4;
     sf::Image timelineContents;
     timelineContents.create(static_cast<int>(std::round(target.getView().getSize().x)), height, sf::Color(0, 0, 0, 0));
     //TODO: This can become very slow on HiDPI displays (because the texture width is based on the window width in pixels)(?)
     //      It also looks bad, due to aliasing artefacts.
     //      Check; and reconsider the algorithm/implementation.
-    std::size_t const numberOfGuys(timeEngine.getReplayData().size() + 1);
-    std::size_t const timelineLength(timeEngine.getTimelineLength());
-    hg::UniverseID const universe(timeEngine.getTimelineLength());
 
     //For example:
     //   * only redraw the changed frames; cache the texture between renders.
     //   * draw as colored lines with vertex shader and cached line textures??
+    std::size_t const numberOfGuys(timeEngine.getReplayData().size() + 1);
+    int const timelineLength(timeEngine.getTimelineLength());
+    hg::UniverseID const universe(timeEngine.getTimelineLength());
+    assert(numberOfGuys > 0);
+    const int guyLineHeight = std::max(static_cast<int>(std::ceil(static_cast<double>(height) / numberOfGuys)), guyLineHeightStandard);
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
+        assert(!isNullFrame(frame));
+        int const left = static_cast<int>(frameNumber*target.getView().getSize().x / timelineLength);
         for (hg::GuyOutputInfo const &guy : frame->getView().getGuyInformation()) {
-            int const left = static_cast<int>(frameNumber*target.getView().getSize().x / timelineLength);
             std::size_t const top = static_cast<std::size_t>((height - guyLineHeight)*(guy.getIndex() / static_cast<double>(numberOfGuys)));
 
-            double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());
+            double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomWidth()  - 2 * timeEngine.getWall().segmentSize());
             double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
 
             sf::Color const color(guyPositionToColor(xFrac, yFrac));
@@ -176,8 +179,12 @@ void DrawTimelineContents(
             std::size_t pos(top);
             for (std::size_t const bot(top + boxLineHeight); pos != bot; ++pos) {
                 assert(pos <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
+                auto const xPix = static_cast<unsigned int>(left);
+                auto const yPix = static_cast<unsigned int>(pos);
+                assert(xPix < timelineContents.getSize().x);
+                assert(yPix < timelineContents.getSize().y);
                 timelineContents.setPixel(
-                    static_cast<int>(left), static_cast<int>(pos),
+                    xPix, yPix,
                     !guy.getBoxCarrying() ?
                     color :
                     guy.getBoxCarryDirection() == guy.getTimeDirection() ?
@@ -186,7 +193,11 @@ void DrawTimelineContents(
             }
             for (std::size_t const bot(top + guyLineHeight); pos != bot; ++pos) {
                 assert(pos <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
-                timelineContents.setPixel(static_cast<int>(left), static_cast<int>(pos), color);
+                auto const xPix = static_cast<unsigned int>(left);
+                auto const yPix = static_cast<unsigned int>(pos);
+                assert(xPix < timelineContents.getSize().x);
+                assert(yPix < timelineContents.getSize().y);
+                timelineContents.setPixel(xPix, yPix, color);
             }
         }
     }
