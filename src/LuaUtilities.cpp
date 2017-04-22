@@ -438,7 +438,7 @@ Guy to<Guy>(lua_State* L, int index) try
     }
     lua_pop(L, 1);
     bool const supported(readField<bool>(L, "supported", index));
-    int const supportedSpeed(supported ? 0 : readField<int>(L, "supportedSpeed", index));
+    int const supportedSpeed(supported ? readField<int>(L, "supportedSpeed", index) : 0);
     mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
     FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
     bool const boxCarrying(readField<bool>(L, "boxCarrying", index));
