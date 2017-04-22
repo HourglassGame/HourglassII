@@ -350,6 +350,7 @@ void runStep(
     sf::Image const &wallImage,
     std::chrono::steady_clock::time_point &frameStartTime)
 {
+    app.clear(sf::Color(255, 255, 255));
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
 

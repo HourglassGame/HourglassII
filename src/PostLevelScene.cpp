@@ -151,6 +151,7 @@ void runStep(
     hg::LevelResources const &resources,
     sf::Image const &wallImage)
 {
+    app.clear(sf::Color(255, 255, 255));
     hg::FrameID drawnFrame;
 
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {

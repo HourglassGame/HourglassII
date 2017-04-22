@@ -18,7 +18,6 @@ void DrawGlitzAndWall(
     AudioGlitzManager &audioGlitzManager,
     sf::Image const &wallImage)
 {
-    target.clear(sf::Color(255, 255, 255));
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
     //window.
