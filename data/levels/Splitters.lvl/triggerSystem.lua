@@ -282,7 +282,7 @@ local tempStore =
             y1 = {platform = nil, pos = 4.45 * 3200},
             x2 = {platform = nil, pos = 9.55 * 3200},
             y2 = {platform = nil, pos = 5.55 * 3200},
-            triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[1][1]*(1-triggerArrivals[2][1]) == 1 end,
+            triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[1][1] > 0 and triggerArrivals[2][1] == 0 end,
             useTriggerArrival = false
         },
         bts.wireGlitz{
@@ -290,7 +290,7 @@ local tempStore =
             y1 = {platform = nil, pos = 5.45 * 3200},
             x2 = {platform = nil, pos = 10.55 * 3200},
             y2 = {platform = nil, pos = 5.55 * 3200},
-            triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[1][1]*(1-triggerArrivals[2][1]) == 1 end,
+            triggerFunction = function(triggerArrivals, outputTriggers) return triggerArrivals[1][1] > 0 and triggerArrivals[2][1] == 0 end,
             useTriggerArrival = false
         },
         bts.wireGlitz{
@@ -415,8 +415,10 @@ mutateObject = bts.mutateObject(tempStore)
 
 function getDepartureInformation(departures)
     bts.getDepartureInformation(tempStore)(departures)
-    
-    tempStore.outputTriggers[6] = {tempStore.outputTriggers[1][1]*(1 - tempStore.outputTriggers[2][1])}
+    tempStore.outputTriggers[6] = {
+        (tempStore.outputTriggers[1][1] > 0 and tempStore.outputTriggers[2][1] == 0)
+        and ((tempStore.triggerArrivals[1][1] == 0 or tempStore.triggerArrivals[2][1] > 0) and 1 or 2)
+        or 0}
     
     return tempStore.outputTriggers, tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz, tempStore.additionalEndBoxes
 end

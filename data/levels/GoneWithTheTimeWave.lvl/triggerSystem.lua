@@ -36,7 +36,7 @@ local tempStore =
             fallable = true,
             winner = false,
             triggerFunction = function (triggers)
-                return triggers[1][1] == 1
+                return triggers[1][1] > 0
             end,
         }
     },

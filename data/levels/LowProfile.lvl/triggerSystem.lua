@@ -28,7 +28,7 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 6,
             triggerFunction = function(triggers)
-                return (triggers[5][1] == 1 and triggers[4][1] == 1 and triggers[3][1] == 1 and triggers[2][1] == 1) or triggers[1][1] == 1
+                return (triggers[5][1] > 0 and triggers[4][1] > 0 and triggers[3][1] > 0 and triggers[2][1] > 0) or triggers[1][1] > 0
             end,
             destinations =
             {
@@ -151,7 +151,7 @@ local tempStore =
             x2 = {platform = nil, pos = 14 * 3200},
             y2 = {platform = nil, pos = 14.55 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[2][1] == 1 and triggerArrivals[3][1] == 1
+                return triggerArrivals[2][1] > 0 and triggerArrivals[3][1] > 0
             end,
         },
         bts.wireGlitz{
@@ -160,7 +160,7 @@ local tempStore =
             x2 = {platform = nil, pos = 18 * 3200},
             y2 = {platform = nil, pos = 14.55 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[2][1] == 1 and triggerArrivals[3][1] == 1 and triggerArrivals[4][1] == 1
+                return triggerArrivals[2][1] > 0 and triggerArrivals[3][1] > 0 and triggerArrivals[4][1] > 0
             end,
         },
         -- Logic boxes at the bottom of the screen
@@ -219,7 +219,7 @@ local tempStore =
             x2 = {platform = nil, pos = 20.55 * 3200},
             y2 = {platform = nil, pos = 14.55 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[2][1] == 1 and triggerArrivals[3][1] == 1 and triggerArrivals[4][1] == 1 and triggerArrivals[5][1] == 1
+                return triggerArrivals[2][1] > 0 and triggerArrivals[3][1] > 0 and triggerArrivals[4][1] > 0 and triggerArrivals[5][1] > 0
             end,
         },
         bts.wireGlitz{
@@ -228,7 +228,7 @@ local tempStore =
             x2 = {platform = nil, pos = 20.55 * 3200},
             y2 = {platform = nil, pos = 7.5 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[2][1] == 1 and triggerArrivals[3][1] == 1 and triggerArrivals[4][1] == 1 and triggerArrivals[5][1] == 1
+                return triggerArrivals[2][1] > 0 and triggerArrivals[3][1] > 0 and triggerArrivals[4][1] > 0 and triggerArrivals[5][1] > 0
             end,
         },
         -- Right wall OR box
@@ -271,8 +271,7 @@ local tempStore =
             x2 = {platform = nil, pos = 20.5 * 3200},
             y2 = {platform = nil, pos = 7.55 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return (triggerArrivals[2][1] == 1 and triggerArrivals[3][1] == 1 and 
-                triggerArrivals[4][1] == 1 and triggerArrivals[5][1] == 1) or triggerArrivals[1][1] == 1
+                return (triggerArrivals[2][1] > 0 and triggerArrivals[3][1] > 0 and triggerArrivals[4][1] > 0 and triggerArrivals[5][1] > 0) or triggerArrivals[1][1] > 0
             end,
         },
         bts.wireGlitz{
@@ -281,8 +280,7 @@ local tempStore =
             x2 = {platform = nil, pos = 15.05 * 3200},
             y2 = {platform = nil, pos = 6 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return (triggerArrivals[2][1] == 1 and triggerArrivals[3][1] == 1 and 
-                triggerArrivals[4][1] == 1 and triggerArrivals[5][1] == 1) or triggerArrivals[1][1] == 1
+                return (triggerArrivals[2][1] > 0 and triggerArrivals[3][1] > 0 and triggerArrivals[4][1] > 0 and triggerArrivals[5][1] > 0) or triggerArrivals[1][1] > 0
             end,
         },
     }

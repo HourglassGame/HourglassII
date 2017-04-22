@@ -28,7 +28,7 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 4,
             triggerFunction = function(triggers)
-                return triggers[1][1] == 1 or triggers[2][1] == 1
+                return triggers[1][1] > 0 or triggers[2][1] > 0
             end,
             destinations =
             {
@@ -139,7 +139,7 @@ local tempStore =
             y1 = {pos = 5.45 * 3200},
             y2 = {pos = 10.55 * 3200},
             triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[1][1] == 1 or triggerArrivals[2][1] == 1
+                return triggerArrivals[1][1] > 0 or triggerArrivals[2][1] > 0
             end,
         },
         bts.basicRectangleGlitz{

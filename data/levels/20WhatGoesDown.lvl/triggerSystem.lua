@@ -28,7 +28,7 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 6,
             triggerFunction = function(triggers)
-                return triggers[3][1] == 1 and triggers[5][1] == 1
+                return triggers[3][1] > 0 and triggers[5][1] > 0
             end,
             destinations =
             {

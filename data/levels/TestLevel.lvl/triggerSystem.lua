@@ -121,7 +121,7 @@ function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
     
     tempStore.makeBox = (frameNumber == 2000 and triggerArrivals[3][1] == 0)
     retv.mutators = { [1] = tempStore.protoMuts[1].data}
-    tempStore.portalActive = (triggerArrivals[3][1] == 1)
+    tempStore.portalActive = (triggerArrivals[3][1] > 0)
     
     return retv
 end

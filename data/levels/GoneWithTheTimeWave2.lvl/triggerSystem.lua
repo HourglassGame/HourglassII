@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {xOffset = 21.25 * 3200, yOffset = 7 * 3200},
+            attachment = {xOffset = 2125 * 32, yOffset = 7 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -36,7 +36,7 @@ local tempStore =
             fallable = true,
             winner = false,
             triggerFunction = function (triggers)
-                return triggers[4][1] == 1
+                return triggers[4][1] > 0
             end,
         }
     },
@@ -51,7 +51,7 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 19.5 * 3200,
+                        desiredPosition = 195 * 320,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
@@ -65,7 +65,7 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 19.5 * 3200,
+                        desiredPosition = 195 * 320,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 20
@@ -102,7 +102,7 @@ local tempStore =
     },
     protoButtons = {
         bts.stickySwitch{
-            attachment = {xOffset = 9.75 * 3200, yOffset = 8.75 * 3200},
+            attachment = {xOffset = 975 * 32, yOffset = 875 * 32},
             width = 1600,
             height = 800,
             timeDirection = 'forwards',
@@ -112,8 +112,8 @@ local tempStore =
     protoGlitz = {
     },
     triggerManipulationFunction = function (triggerArrivals, outputTriggers, frameNumber)
-        if triggerArrivals[1][1] == 1 and (frameNumber%600 == 116 or triggerArrivals[4][1] == 1) then
-            outputTriggers[4] = {1}
+        if triggerArrivals[1][1] > 0 and (frameNumber%600 == 116 or triggerArrivals[4][1] > 0) then
+            outputTriggers[4] = {triggerArrivals[4][1] == 0 and 1 or 2}
         end
     end
 }
