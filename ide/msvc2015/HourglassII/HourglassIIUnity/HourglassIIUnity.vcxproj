@@ -312,6 +312,8 @@
     <ClCompile Include="..\..\..\..\unitysrc\glew.cpp" />
     <ClCompile Include="..\..\..\..\unitysrc\lua.cpp">
       <DisableSpecificWarnings>4244;4267;4310;4702;4774;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4244;4267;4310;4334;4702;4774;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <DisableSpecificWarnings Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4244;4267;4310;4334;4702;4774;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ClCompile Include="..\..\..\..\unitysrc\main.cpp" />
     <ClCompile Include="..\..\..\..\unitysrc\PhysicsEngine.cpp" />
