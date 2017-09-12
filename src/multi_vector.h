@@ -119,24 +119,19 @@ public:
             return *this;
         }
 
-        simple_const_iterator_proxy &operator+(difference_type dif)
+        simple_const_iterator_proxy operator+(difference_type dif) const
         {
             return simple_const_iterator_proxy(*this) += dif;
         }
 
-        simple_const_iterator_proxy &operator-(difference_type dif)
+        simple_const_iterator_proxy operator-(difference_type dif) const
         {
             return simple_const_iterator_proxy(*this) -= dif;
         }
 
-        simple_const_iterator_proxy operator+(simple_const_iterator_proxy r)
+        difference_type operator-(simple_const_iterator_proxy const &r) const
         {
-            return simple_const_iterator_proxy(*this) += r.pos;
-        }
-
-        simple_const_iterator_proxy operator-(simple_const_iterator_proxy r)
-        {
-            return simple_const_iterator_proxy(*this) -= r.pos;
+            return pos - r.pos;
         }
         
         reference operator[](difference_type dif)
