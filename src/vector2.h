@@ -8,5 +8,9 @@ struct vector2
     T x;
     T y;
 };
+template<typename T>
+bool operator==(vector2<T> const &l, vector2<T> const &r) {
+    return l.x == r.x && r.y == r.y;
+}
 }
 #endif //HG_VECTOR2_H

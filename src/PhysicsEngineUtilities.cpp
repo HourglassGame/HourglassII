@@ -18,7 +18,7 @@ void buildDepartures(
 void makeBoxGlitzListForNormalDepartures(
     mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
     mt::std::vector<char> &nextBoxNormalDeparture,
-    BoxGlitzAdder const &boxGlitzAdder)    
+    BoxGlitzAdder const &boxGlitzAdder)
 {
     for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
     {
@@ -186,553 +186,488 @@ bool wallAtExclusive(Environment const &env, int x, int y, int w, int h)
     return wallAtExclusive(env.wall, x, y, w, h);
 }
 
-bool getRaytraceRectangleCollision(
-    int sx, int sy, 
-    int &px, int &py,
-    int left, int top,
-    int width, int height,
-    int dx, int dy,
-    bool mostlySideways)
+
+
+
+struct RayToLineCollisionResult{
+    bool hit;
+    int aPos;
+};
+
+RayToLineCollisionResult getNormalisedRayToLineCollision(
+    int const sa, int const sb, int const aima, int const aimb,
+    int const lineStarta, int const lineEnda, int const linePosb,
+    //If true, the rectangle that the line is an edge of extends in the positive b direction;
+    //If false, the rectangle extends in the negative b direction.
+    //(I'm pretty sure that due to normalisation/preprocessing, lineBisSmallB is only relevant in cases where sb == linePosb)
+    //(Perhaps the logic for the case where sb == linePosb should be moved from getNormalisedRayToLineCollision to 
+    // getRayToLineCollision (or even further up the call tree), so that this parameter is no longer needed?)
+    bool const lineBisSmallB,
+    //-1 or 1; decides if the aPos of the return value should be computed rounding up (-1) or rounding down (1).
+    int const aRound)
 {
-    int right = left + width;
-    int bottom = top + height;
+    //Should be normalised and preprocessed such that
+    assert(sa <= aima);
+    assert(lineStarta <= lineEnda);
+    assert(sb <= aimb);
+    assert(aRound == 1 || aRound == -1);
+    assert(sa != aima || sb != aimb);
+    //i.e. increasing a and b for ray, increasing a for line.
 
-    if (PointInRectangleExclusive(sx, sy, left, top, width, height))
-    {
-        px = sx;
-        py = sy;
-    }
+    //TODO: Take advantage of this construction of rayAatLine (the sb == aimb special case); or eliminate it?
+    int const rayAatLine =
+        sb == aimb ?
+         std::max(sa, lineStarta) :
+         sa + (aRound*flooredDivision(aRound*(linePosb - sb)*(aima - sa), (aimb - sb)));
+    
+    bool const shouldHit =
+        //sb <= aimb, so ray can't hit line segment unless sb <= linePosb
+        (sb <= linePosb) &&
+      (
+        //For perfectly vertical rays, only hit if the b position matches the b position of the line.
+        //Also check the vertical location; since rays that start below the line segment can't hit the line segment
+        //(since sa < aima in this case; so the ray must be aiming downwards)
+        (sb == aimb) ?
+            sb == linePosb && sa < lineEnda
+        //For rays that start on the b position of the line but which are not perfectly vertical; only hit if the
+        //ray is aiming into the object whose edge the line corresponds to.
+      : (sb == linePosb) ?
+            lineBisSmallB && (lineStarta <= sa && sa < lineEnda)
+        //For all other rays, the ray must hit the line
+      : lineStarta <= rayAatLine && rayAatLine <= lineEnda);
 
-    if (px != sx || py != sy)
-    {
-        if (mostlySideways)
-        {
-            if (dx > 0)
-            {
-                if (left < px && right > sx)
-                {
-                    if (dy > 0) // even Diagonal, OCTANT 0
-                    {
-                        if (bottom > sy)
-                        {
-                            if (sy + (left - sx)*dy/dx < bottom && sy + (right - sx)*dy/dx > top) 
-                            {
-                                // Test which face was hit
-                                if (sy + (left - sx)*dy/dx < top)
-                                {
-                                    int offFaceValue = sx + (top - sy)*dx/dy;
-                                    if (offFaceValue < px)
-                                    {
-                                        py = top;
-                                        px = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    px = left;
-                                    py = sy + (px - sx)*dy/dx;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    else // odd Diagonal, OCTANT 7
-                    {
-                        if (top < sy)
-                        {
-                            if (sy + (right - sx)*dy/dx < bottom && sy + (left - sx)*dy/dx > top) 
-                            {
-                                // Test which face was hit
-                                if (sy + (left - sx)*dy/dx > bottom)
-                                {
-                                    int offFaceValue = sx + (bottom - sy)*dx/dy;
-                                    if (offFaceValue < px)
-                                    {
-                                        py = bottom;
-                                        px = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    px = left;
-                                    py = sy + (px - sx)*dy/dx;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else // dx < 0
-            {
-                if (left < sx && right > px)
-                {
-                    if (dy < 0) // even Diagonal, OCTANT 4
-                    {
-                        if (top < sy)
-                        {
-                            if (sy + (left - sx)*dy/dx < bottom && sy + (right - sx)*dy/dx > top) 
-                            {
-                                // Test which face was hit
-                                if (sy + (right - sx)*dy/dx > bottom)
-                                {
-                                    int offFaceValue = sx + (bottom - sy)*dx/dy;
-                                    if (offFaceValue > px)
-                                    {
-                                        py = bottom;
-                                        px = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    px = right;
-                                    py = sy + (px - sx)*dy/dx;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    else // odd Diagonal, OCTANT 3
-                    {
-                        if (bottom > sy)
-                        {
-                            if (sy + (right - sx)*dy/dx < bottom && sy + (left - sx)*dy/dx > top) 
-                            {
-                                // Test which face was hit
-                                if (sy + (right - sx)*dy/dx < top)
-                                {
-                                    int offFaceValue = sx + (top - sy)*dx/dy;
-                                    if (offFaceValue > px)
-                                    {
-                                        py = top;
-                                        px = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    px = right;
-                                    py = sy + (px - sx)*dy/dx;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else // Mostly uppy-downy
-        {
-            if (dy > 0)
-            {
-                if (top < py && bottom > sy)
-                {
-                    if (dx > 0) // even Diagonal, OCTANT 1
-                    {
-                        if (right > sx)
-                        {
-                            if (sx + (top - sy)*dx/dy < right && sx + (bottom - sy)*dx/dy > left) 
-                            {
-                                // Test which face was hit
-                                if (sx + (top - sy)*dx/dy < left)
-                                {
-                                    int offFaceValue = sy + (left - sx)*dy/dx;
-                                    if (offFaceValue < py)
-                                    {
-                                        px = left;
-                                        py = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    py = top;
-                                    px = sx + (py - sy)*dx/dy;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    else // odd Diagonal, OCTANT 2
-                    {
-                        if (left < sx)
-                        {
-                            if (sx + (bottom - sy)*dx/dy < right && sx + (top - sy)*dx/dy > left) 
-                            {
-                                // Test which face was hit
-                                if (sx + (top - sy)*dx/dy > right)
-                                {
-                                    int offFaceValue = sy + (right - sx)*dy/dx;
-                                    if (offFaceValue < py)
-                                    {
-                                        px = right;
-                                        py = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    py = top;
-                                    px = sx + (py - sy)*dx/dy;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else // dy < 0
-            {
-                if (top < sy && bottom > py)
-                {
-                    if (dx < 0) // even Diagonal, OCTANT 5
-                    {
-                        if (left < sx)
-                        {
-                            if (sx + (top - sy)*dx/dy < right && sx + (bottom - sy)*dx/dy > left) 
-                            {
-                                // Test which face was hit
-                                if (sx + (bottom - sy)*dx/dy > right)
-                                {
-                                    int offFaceValue = sy + (right - sx)*dy/dx;
-                                    if (offFaceValue > py)
-                                    {
-                                        px = right;
-                                        py = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    py = bottom;
-                                    px = sx + (py - sy)*dx/dy;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    else // odd Diagonal, OCTANT 6
-                    {
-                        if (right > sx)
-                        {
-                            if (sx + (bottom - sy)*dx/dy < right && sx + (top - sy)*dx/dy > left) 
-                            {
-                                // Test which face was hit
-                                if (sx + (bottom - sy)*dx/dy < left)
-                                {
-                                    int offFaceValue = sy + (left - sx)*dy/dx;
-                                    if (offFaceValue > py)
-                                    {
-                                        px = left;
-                                        py = offFaceValue;
-                                        return true;
-                                    }
-                                }
-                                else
-                                {
-                                    py = bottom;
-                                    px = sx + (py - sy)*dx/dy;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return false;
+    return {
+        shouldHit,
+        rayAatLine
+    };
 }
 
-void doGunRaytrace(
-        PhysicsObjectType &targetType,
-        std::size_t &targetId,
-        Environment const &env,
-        int &sx, int &sy, int &px, int &py,
-        mt::std::vector<Collision> const &nextPlatform,
-        mt::std::vector<ObjectAndTime<Box, Frame *>> nextBox,
-        mt::std::vector<char> &nextBoxNormalDeparture,
-        mt::std::vector<int> gx, // other guy things
-        mt::std::vector<int> gy,
-        mt::std::vector<int> gw,
-        mt::std::vector<int> gh,
-        mt::std::vector<char> shootable)
+RayToLineCollisionResult getRayToLineCollision(
+    int const sa, int const sb, int const aima, int const aimb,
+    int const lineStarta, int const lineEnda, int const linePosb,
+    bool const axesSwapped,// bool const lineStartaInclusive, bool const lineEndaInclusive, bool const lineBinclusive,
+    bool const lineBisSmallB
+    )
 {
-    // source x,y
-    // point  x,y
+    assert(lineStarta <= lineEnda);
 
-    // starts in a wall all it can hit is a wall
-    if (env.wall.at(sx,sy))
+    //The following assert could easily be relaxed (and replaced with 'return {false};'); it is just a check that the overall rectangle algorithm
+    //is working as expected.
+    assert(lineBisSmallB ? sb <= linePosb : linePosb <= sb);
+    /*
+    +x +y -> ceil x, floor y
+    +x -y -> floor x, floor y
+    -x +y -> ceil x, ceil y
+    -x -y -> floor x, ceil y
+    */
+
+    //axesSwapped variable is for performing rounding correctly
+    //  false => a == x, b == y; this is a top/bottom edge.
+    //           When computing hit location in a axis, ceil if (aimb - sb) > 0 else floor
+    //  true  => a == y, b == x; this is a left/right edge.
+    //           When computing hit location in a axis, floor if (aimb - sb) > 0 else ceil
+
+    int const aFactor = sa <= aima ? 1 : -1;
+    int const bFactor = sb <= aimb ? 1 : -1;
+
+    int const aRound = (axesSwapped ? 1 : -1)*bFactor;
+
+    auto const normResult = getNormalisedRayToLineCollision(
+        sa*aFactor,
+        sb*bFactor,
+        aima*aFactor,
+        aimb*bFactor,
+        aFactor == 1 ? lineStarta : lineEnda*aFactor,
+        aFactor == 1 ? lineEnda : lineStarta*aFactor,
+        linePosb*bFactor,
+        //aFactor == 1 ? lineStartaInclusive : lineEndaInclusive,
+        //aFactor == 1 ? lineEndaInclusive : lineStartaInclusive,
+        //lineBinclusive,
+        (lineBisSmallB ? 1 : -1)*bFactor == 1,
+        aRound*aFactor
+        );
+
+    return {
+        normResult.hit,
+        normResult.aPos * aFactor
+    };
+}
+
+RaytraceRectangleCollisionResult getRaytraceRectangleCollision(
+    int const sx, int const sy,
+    int const aimx, int const aimy,
+    int const left, int const top,
+    int const width, int const height
+)
+{
+    //TODO: Update to correctly handle zero-size rectangles?
+    //TODO: Update to correctly handle zero-length lines?
+    assert(sx != aimx || sy != aimy);
+
+
+    //TODO: Handle s == aim, so that the 'move the aimpoint to the right' hack is consistent over the different object types...?
+    auto const raytraceRectangleResult = [=]() -> RaytraceRectangleCollisionResult {
+        int const right = left + width;
+        int const bottom = top + height;
+
+
+        if (PointInRectangleExclusive(sx, sy, left, top, width, height)) {
+            return {
+                true,
+                {sx, sy}
+            };
+        }
+        auto const checkSides = [=] (bool const swapAxes) -> RaytraceRectangleCollisionResult {
+            auto maybeSwap = [swapAxes](int& a, int& b) { if (swapAxes) {std::swap(a, b);} };
+
+            int sa = sx; int sb = sy; maybeSwap(sa, sb);
+            int aima = aimx; int aimb = aimy; maybeSwap(aima, aimb);
+            int smallA = left; int smallB = top; maybeSwap(smallA, smallB);
+            int largeA = right; int largeB = bottom; maybeSwap(largeA, largeB);
+
+            //Half-open range for rectangle
+            if (sb <= smallB || largeB <= sb) {
+                bool const lineBisSmallb = sb <= smallB;
+                int const lineB = lineBisSmallb ? smallB : largeB;
+                //bool const lineStartaInclusive = lineBisSmallb;
+                //bool const lineEndaInclusive = false;
+                auto const lineCollision = getRayToLineCollision(sa, sb, aima, aimb, smallA, largeA, lineB, swapAxes, /*lineStartaInclusive, lineEndaInclusive, lineBisSmallb,*/ lineBisSmallb);
+
+                if (lineCollision.hit) {
+                    return {
+                        lineCollision.hit,
+                        { swapAxes ? lineB : lineCollision.aPos, swapAxes ? lineCollision.aPos : lineB }
+                    };
+                }
+            }
+            return { false, { 0, 0 } };
+        };
+
+        auto const topBotRes = checkSides(false);
+        auto const leftRightRes = checkSides(true);
+
+        //TODO: Double check this logic for sanity.
+        //      Is it consistent with the rounding logic (round angles down)?
+        if (iabs(aimx - sx) > iabs(aimy - sy)) {
+            return topBotRes.hit ? topBotRes : leftRightRes;
+        }
+        else {
+            return leftRightRes.hit ? leftRightRes : topBotRes;
+        }
+    }();
+    assert(
+           !raytraceRectangleResult.hit
+        || (raytraceRectangleResult.point.x == sx && raytraceRectangleResult.point.y == sy && sx > left && sx < left+width && sy > top && sy < top + height)
+        || (raytraceRectangleResult.point.x == left || raytraceRectangleResult.point.x == left + width) && top  <= raytraceRectangleResult.point.y && raytraceRectangleResult.point.y <= top + height
+        || (raytraceRectangleResult.point.y == top  || raytraceRectangleResult.point.y == top + height) && left <= raytraceRectangleResult.point.x && raytraceRectangleResult.point.x <= left + width
+    );
+    return raytraceRectangleResult;
+}
+
+class NormalisedWall final {
+public:
+    NormalisedWall(Wall const &wall, bool const swapAxes, int const xFactor, int const yFactor) noexcept :
+        wall(&wall), swapAxes(swapAxes), xFactor(xFactor), yFactor(yFactor)
     {
-        px = sx;
-        py = sy;
-        targetType = NONE;
-        targetId = std::numeric_limits<std::size_t>::max();
-        return;
+    }
+    int segmentSize() const {
+        return wall->segmentSize();
+    }
+    bool atIndex(int const a, int const b) const {
+        auto const x = xFactor * (swapAxes ? b : a) + (xFactor == -1 ? -1 : 0);
+        auto const y = yFactor * (swapAxes ? a : b) + (yFactor == -1 ? -1 : 0);
+        return wall->atIndex(x, y);
     }
 
+private:
+    Wall const * const wall;
+    bool const swapAxes;
+    int const xFactor;
+    int const yFactor;
+};
+
+vector2<int> doNormalisedGunWallRaytrace(
+    NormalisedWall const &wall,
+    int const sa, int const sb,
+    int const aima, int const aimb,
+    //-1 or 1; decides if the aPos of the return value should be computed rounding up (-1) or rounding down (1).
+    int const aRound,
+    //-1 or 1; decides if the bPos of the return value should be computed rounding up (-1) or rounding down (1).
+    int const bRound
+){
+    assert(sa < aima);
+    assert(sb <= aimb);
+    assert(aimb - sb <= aima - sa);
+    
+    //Should be increasing in the a and b axes;
+    //Should be mostly moving in the a axis.
+    //(If a==x and b==y, this corresponds to a shallow down-right line;
+    // so this will be the naming scheme used for directions later in this function.
+    // i.e. Left == small a, Right == large a, Top == small b, bottom == large b, etc.
+    //)
+
+    auto const bForA = [=](int const a) {
+        assert(aima - sa != 0);
+        return sb + (bRound*flooredDivision(bRound*(a - sa)*(aimb - sb),(aima - sa)));
+    };
+    auto const aForB = [=](int const b) {
+        assert(aimb - sb != 0);
+        return sa + (aRound*flooredDivision(aRound*(b - sb)*(aima - sa),(aimb - sb)));
+    };
+    auto const indexOf = [&wall](int const pos) {
+        //TODO: Handle negative pos correctly/ensure that normalisation doesn't make negative positions
+        return flooredDivision(pos,wall.segmentSize());
+    };
+    auto const posFromIndex = [&wall](int const pos) {
+        //TODO: Handle negative pos correctly/ensure that normalisation doesn't make negative positions
+        return pos * wall.segmentSize();
+    };
+    //General algorithm:
+    // Move starting point to top-left of block containing the starting point.
+    // Loop;
+    //  checking visited points for wall;
+    //  moving one point to the right unless the next point to the right is in the next row below,
+    //   in which case first move downwards and then right.
+
+    //(It is safe to always move right, since the line must have a shallow gradient by (aimb - sb <= aima - sa), so da/db >= 1)
+    //TODO: Need to check that it is still safe for perfectly diagonal angles (it seems kinda unsafe, depending on what we want to do in the edge cases.)
+
+    int currentAIndex = indexOf(sa);
+    int currentBIndex = indexOf(sb);
+    //TODO: If laser starts right on edge of block and is aiming away from block, don't hit the block...
+    //TODO: If laser starts in concave corner of 3 blocks, aiming away from all 3, don't hit any of them...
+    //TODO: If laser starts on edge of block and is aimed directly along that edge, hit that edge...
+    if (wall.atIndex(currentAIndex, currentBIndex) || (sb == aimb && sb % wall.segmentSize() == 0 && sa % wall.segmentSize() != 0 && wall.atIndex(currentAIndex, currentBIndex-1))) {
+        //Source was inside wall (should only happen for laser-portals, never for guy lasers)
+        return {sa, sb};
+    }
+    int topB = posFromIndex(currentBIndex + 1);
+    while (true) {
+        int const nextA = posFromIndex(currentAIndex+1);
+        int const leftBforNextA = bForA(nextA);
+        {
+            //int const bAbove = posFromIndex(currentBIndex);
+            if (posFromIndex(currentBIndex) == leftBforNextA) {
+                if (wall.atIndex(currentAIndex, currentBIndex - 1)) {
+                    return { posFromIndex(currentAIndex), leftBforNextA };
+                }
+            }
+            //Using a while loop here would allow non-shallow gradients to work (I think?)
+            if (topB < leftBforNextA) {
+                currentBIndex += 1;
+                if (wall.atIndex(currentAIndex, currentBIndex)) {
+                    //Hit top of wall below
+                    return {aForB(topB), topB};
+                }
+                topB = posFromIndex(currentBIndex + 1);
+            }
+            //Perfect diagonal.
+            //Check both A+1, B+0 and A+0, B+1, then go to A+1, B+1
+            if (topB == leftBforNextA) {
+                if (wall.atIndex(currentAIndex+1, currentBIndex)
+                 || wall.atIndex(currentAIndex,   currentBIndex+1))
+                {
+                    //Hit exactly on diagonal corner
+                    return {nextA, topB};
+                }
+
+                //Special case; hit the acute edge rather than the right angle edge; to match behaviour of rectangle collision algo.
+                //TODO: What about extremely shallow lines
+                if (wall.atIndex(currentAIndex+1, currentBIndex+1)) {
+                    //Hit top of wall below and to right
+                    return { aForB(topB), topB };
+                }
+
+                currentBIndex += 1;
+                topB = posFromIndex(currentBIndex + 1);
+            }
+            
+        }
+        currentAIndex += 1;
+        if (wall.atIndex(currentAIndex, currentBIndex)) {
+            //Hit left of wall to the right
+            return {nextA, leftBforNextA};
+        }
+    }
+}
+
+vector2<int> doGunWallRaytraceUsingRectangles(
+    Wall const &wall,
+    int const sx, int const sy,
+    int const aimx, int const aimy
+)
+{
+    if (sx < 0 || sy < 0 || sx > wall.roomWidth() || sy > wall.roomHeight()) {
+        return { sx, sy };
+    }
+
+    mt::std::vector<Rect<int>> wallRects;
+
+    wallRects.reserve(((wall.roomWidth() / wall.segmentSize())+2)*((wall.roomHeight() / wall.segmentSize())+2));
+
+    auto const makeRectForIndex = [&wall](int const xIndex, int const yIndex) -> Rect<int> {
+        return { xIndex * wall.segmentSize(), yIndex * wall.segmentSize(), wall.segmentSize(), wall.segmentSize() };
+    };
+
+    for (int xIndex = -1; xIndex < wall.roomWidth() / wall.segmentSize() + 1; ++xIndex) {
+        for (int yIndex = -1; yIndex < wall.roomHeight() / wall.segmentSize() + 1; ++yIndex) {
+            if (wall.atIndex(xIndex, yIndex)) {
+                wallRects.push_back(makeRectForIndex(xIndex, yIndex));
+            }
+        }
+    }
+    bool hasHit{ false };
+    vector2<int> hitPoint{ 0,0 };
+
+    for (auto const &rect : wallRects) {
+        auto const collision = getRaytraceRectangleCollision(
+            sx, sy, aimx, aimy,
+            rect.x, rect.y,
+            rect.w, rect.h);
+        //TODO: Add vector2 functions instead of doing it manually?
+        //TODO: Merge this logic with the logic in doGunRaytrace
+        //TODO: Properly round this value, rather than just always taking the smaller line.
+        if (collision.hit && (!hasHit || (iabs(collision.point.x - sx) < iabs(hitPoint.x - sx) || iabs(collision.point.y - sy) < iabs(hitPoint.y - sy)))) {
+            hasHit = true;
+            hitPoint = collision.point;
+        }
+    }
+    assert(hasHit);
+    return hitPoint;
+}
+
+vector2<int> doGunWallRaytrace(
+    Wall const &wall,
+    int const sx, int const sy,
+    int const aimx, int const aimy)
+{
+    /*
+    line quadrant->floor / ceil when rounding
+        + x + y->ceil x, floor y
+        + x - y->floor x, floor y
+        - x + y->ceil x, ceil y
+        - x - y->floor x, ceil y
+    */
+    //TODO: Reduce number of operations here?
+    //If compiler doesn't already do so?
+    bool const swapAxes = iabs(aimx - sx) < iabs(aimy - sy);
+    int const xFactor = sx <= aimx ? 1 : -1;
+    int const yFactor = sy <= aimy ? 1 : -1;
+
+    //+ x + y -> xFactor =  1, yFactor =  1 -> xRound = -1, yRound =  1
+    //+ x - y -> xFactor =  1, yFactor = -1 -> xRound =  1, yRound =  1
+    //- x + y -> xFactor = -1, yFactor =  1 -> xRound = -1, yRound = -1
+    //- x - y -> xFactor = -1, yFactor = -1 -> xRound =  1, yRound = -1
+
+    int const xRound = -yFactor;
+    int const yRound =  xFactor;
+
+    int const aRound = swapAxes ? yRound * yFactor : xRound * xFactor;
+    int const bRound = swapAxes ? xRound * xFactor : yRound * yFactor;
+
+    auto const normResult = doNormalisedGunWallRaytrace(
+        NormalisedWall(wall, swapAxes, xFactor, yFactor),
+        swapAxes ? yFactor * sy : xFactor * sx, swapAxes ? xFactor * sx : yFactor * sy,
+        swapAxes ? yFactor * aimy : xFactor * aimx, swapAxes ? xFactor * aimx : yFactor * aimy,
+        aRound,
+        bRound
+    );
+    auto const rVal = vector2<int>{
+        (swapAxes ? normResult.y : normResult.x)*xFactor,
+        (swapAxes ? normResult.x : normResult.y)*yFactor
+    };
+    //Assert that the x/y pos is on the edge of a wall block.
+    assert(
+        (rVal.x == sx && rVal.y == sy && wall.at(sx, sy))
+     || flooredModulo(rVal.x, wall.segmentSize()) == 0 || flooredModulo(rVal.y, wall.segmentSize()) == 0
+    );
+    auto const xIntersect = flooredDivision(rVal.x, wall.segmentSize());
+    auto const yIntersect = flooredDivision(rVal.y, wall.segmentSize());
+    assert(
+        wall.atIndex(xIntersect, yIntersect)
+     || wall.atIndex(xIntersect-1, yIntersect)
+     || wall.atIndex(xIntersect, yIntersect-1)
+     || wall.atIndex(xIntersect-1, yIntersect-1)
+    );
+
+    assert(doGunWallRaytraceUsingRectangles(wall, sx, sy, aimx, aimy) == rVal);
+
+    //   Dy_in/Dx_in  == Dy_out/Dx_out
+    //=> Dy_in*Dx_out == Dy_out*Dx_in //Compare these values to avoid division by zero
+    //TODO: Assert that the x/y pos is (approximately) on the incoming line
+    //auto const a = (aimy - sy) * (rVal.x - sx);
+    //auto const b = (rVal.y - sy) * (aimx - sx);
+    //TODO: This assert is not quite right? Perhaps it is overly loose?
+    //assert(b - iabs(b)/2 <= a + iabs(a)/2 && a - iabs(a)/2 <= b + iabs(b)/2);
+    return rVal;
+}
+
+GunRaytraceResult doGunRaytrace(
+    int const sx, int const sy,
+    int const aimx_raw, int const aimy,
+
+    //Env data
+    Wall const &wall,
+
+    //Platform data
+    mt::std::vector<Collision> const &nextPlatform,
+
+    //Box Data
+    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mt::std::vector<char> const &nextBoxNormalDeparture,
+
+    //Guy Data
+    mt::std::vector<int> const &gx,
+    mt::std::vector<int> const &gy,
+    mt::std::vector<int> const &gw,
+    mt::std::vector<int> const &gh,
+    mt::std::vector<char> const &shootable
+)
+{
+    
+/*
+    if (wall.at(sx,sy))
+    {
+        return {
+            NONE,
+            std::numeric_limits<std::size_t>::max(),
+            sx,
+            sy
+        };
+    }
+    */
     // prevent zero length vectors
-    if (sx == px && sy == py)
-    {
-        px = sx + 1;
-    }
+    auto const aimx = sx == aimx_raw && sy == aimy ? aimx_raw + 1 : aimx_raw;
 
-    int size = env.wall.segmentSize();
-    
-    // ***  Find Wall ***
-    int dx = px - sx;
-    int dy = py - sy;
+    auto hitPoint = doGunWallRaytrace(wall, sx, sy, aimx, aimy);
 
-    int absDx = std::abs(dx);
-    int absDy = std::abs(dy);
-    
-    bool mostlySideways = (absDx > absDy);
-    
-    if (mostlySideways)
-    {
-        if (dx > 0) // Right
-        {
-            if (dy > 0) // Down Right
-            {
-                int dist = (sx/size + 1)*size - sx;
-                int nx, ny;
-                
-                while (true)
-                {
-                    nx = sx + dist;
-                    ny = sy + dy*dist/dx;
-                    
-                    if (env.wall.at(nx-1,ny))
-                    {
-                        py = (ny/size)*size;
-                        px = sx + (py - sy)*dx/dy;
-                        break;
-                    }
-                    if (env.wall.at(nx,ny))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist + size;
-                }
-            }
-            else // Up Right
-            {
-                int dist = (sx/size + 1)*size - sx;
-                int nx, ny;
-                
-                while (true)
-                {
-                    nx = sx + dist;
-                    ny = sy + dy*dist/dx;
-                    
-                    if (env.wall.at(nx-1,ny))
-                    {
-                        py = (ny/size + 1)*size;
-                        px = sx + (py - sy)*dx/dy;
-                        break;
-                    }
-                    if (env.wall.at(nx,ny))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist + size;
-                }
-            }
-        }
-        else // Left
-        {
-            if (dy > 0) // Down Left
-            {
-                int dist = (sx/size)*size - sx;
-                int nx, ny;
-                
-                while (true)
-                {
-                    nx = sx + dist;
-                    ny = sy + dy*dist/dx;
-                    
-                    if (env.wall.at(nx,ny))
-                    {
-                        py = (ny/size)*size;
-                        px = sx + (py - sy)*dx/dy;
-                        break;
-                    }
-                    if (env.wall.at(nx-1,ny))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist - size;
-                }
-            }
-            else // Up Left
-            {
-                int dist = (sx/size)*size - sx;
-                int nx, ny;
-                
-                while (true)
-                {
-                    nx = sx + dist;
-                    ny = sy + dy*dist/dx;
-                    
-                    if (env.wall.at(nx,ny))
-                    {
-                        py = (ny/size + 1)*size;
-                        px = sx + (py - sy)*dx/dy;
-                        break;
-                    }
-                    if (env.wall.at(nx-1,ny))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist - size;
-                }
-            }
-        }
-    }
-    else // Mostly Up or Down
-    {
-        if (dy > 0) // Down
-        {
-            if (dx > 0) // Down Right
-            {
-                int dist = (sy/size + 1)*size - sy;
-                int nx, ny;
-                
-                while (true)
-                {
-                    ny = sy + dist;
-                    nx = sx + dx*dist/dy;
-                    
-                    if (env.wall.at(nx,ny-1))
-                    {
-                        px = (nx/size)*size;
-                        py = sy + (px - sx)*dy/dx;
-                        break;
-                    }
-                    if (env.wall.at(nx,ny))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist + size;
-                }
-            }
-            else // Down Left
-            {
-                int dist = (sy/size + 1)*size - sy;
-                int nx, ny;
-                
-                while (true)
-                {
-                    ny = sy + dist;
-                    nx = sx + dx*dist/dy;
-                    
-                    if (env.wall.at(nx,ny-1))
-                    {
-                        px = (nx/size + 1)*size;
-                        py = sy + (px - sx)*dy/dx;
-                        break;
-                    }
-                    if (env.wall.at(nx,ny))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist + size;
-                }
-            }
-        }
-        else // Up
-        {
-            if (dy > 0) // Up Right
-            {
-                int dist = (sy/size)*size - sy;
-                int nx, ny;
-                
-                while (true)
-                {
-                    ny = sy + dist;
-                    nx = sx + dx*dist/dy;
-                    
-                    if (env.wall.at(nx,ny))
-                    {
-                        px = (nx/size)*size;
-                        py = sy + (px - sx)*dy/dx;
-                        break;
-                    }
-                    if (env.wall.at(nx,ny-1))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist - size;
-                }
-            }
-            else // Up Left
-            {
-                int dist = (sy/size)*size - sy;
-                int nx, ny;
-                
-                while (true)
-                {
-                    ny = sy + dist;
-                    nx = sx + dx*dist/dy;
-                    
-                    if (env.wall.at(nx,ny))
-                    {
-                        px = (nx/size + 1)*size;
-                        py = sy + (px - sx)*dy/dx;
-                        break;
-                    }
-                    if (env.wall.at(nx,ny-1))
-                    {
-                        py = ny;
-                        px = nx;
-                        break;
-                    }
-                    dist = dist - size;
-                }
-            }
-        }
-    }
-    
-    // *** Find Object Collisions ***
-    
+    //TODO: Don't write the same code 3 times?
     // Platforms
     for (std::size_t i(0), isize(nextPlatform.size()); i < isize; ++i)
     {
-        getRaytraceRectangleCollision(
-            sx, sy, px, py,
+        //TODO
+        auto const collision = getRaytraceRectangleCollision(
+            sx, sy, aimx, aimy,
             nextPlatform[i].getX(), nextPlatform[i].getY(), 
-            nextPlatform[i].getWidth(), nextPlatform[i].getHeight(),
-            dx, dy, mostlySideways);
+            nextPlatform[i].getWidth(), nextPlatform[i].getHeight());
+        //TODO: Add vector2 functions instead of doing it manually?
+        if (collision.hit && (iabs(collision.point.x - sx) < iabs(hitPoint.x - sx) || iabs(collision.point.y - sy) < iabs(hitPoint.y - sy))) {
+            hitPoint = collision.point;
+        }
     }
-
+    auto targetType = NONE;
+    std::size_t targetId = std::numeric_limits<std::size_t>::max();
     // Box
     for (std::size_t i(0), isize(nextBox.size()); i < isize; ++i)
     {
         if (nextBoxNormalDeparture[i])
         {
-            if (getRaytraceRectangleCollision(
-                sx, sy, px, py,
+            auto const collision = getRaytraceRectangleCollision(
+                sx, sy, aimx, aimy,
                 nextBox[i].object.getX(), nextBox[i].object.getY(), 
-                nextBox[i].object.getSize(), nextBox[i].object.getSize(),
-                dx, dy, mostlySideways))
-            {
+                nextBox[i].object.getSize(), nextBox[i].object.getSize());
+            if (collision.hit && (iabs(collision.point.x - sx) < iabs(hitPoint.x - sx) || iabs(collision.point.y - sy) < iabs(hitPoint.y - sy))) {
+                hitPoint = collision.point;
                 targetType = BOX;
                 targetId = i;
             }
@@ -744,18 +679,18 @@ void doGunRaytrace(
     {
         if (shootable[i])
         {
-            if (getRaytraceRectangleCollision(
-                sx, sy, px, py,
+            auto const collision = getRaytraceRectangleCollision(
+                sx, sy, aimx, aimy,
                 gx[i], gy[i], 
-                gw[i], gh[i],
-                dx, dy, mostlySideways))
-            {
+                gw[i], gh[i]);
+            if (collision.hit && (iabs(collision.point.x - sx) < iabs(hitPoint.x - sx) || iabs(collision.point.y - sy) < iabs(hitPoint.y - sy))) {
+                hitPoint = collision.point;
                 targetType = GUY;
                 targetId = i;
             }
         }
     }
-    
+    return {targetType, targetId, hitPoint.x, hitPoint.y};
 }
 
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
@@ -822,6 +757,15 @@ bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h)
         (px <= x + w && px >= x)
         &&
         (py <= y + h && py >= y)
+        ;
+}
+
+bool PointInRectangleSemiInclusive(int px, int py, int x, int y, int w, int h)
+{
+    return
+        (px < x + w && px >= x)
+        &&
+        (py < y + h && py >= y)
         ;
 }
 
@@ -942,6 +886,5 @@ bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, in
         &&
         (y1 >= y2 && y1 + h1 <= y2 + h2);
 }
-
 
 }//namespace hg

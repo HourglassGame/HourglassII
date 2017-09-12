@@ -29,8 +29,8 @@ namespace hg {
         {
             if (x < 0 || y < 0) return true;
 
-            unsigned const aX(x/segmentSize_);
-            unsigned const aY(y/segmentSize_);
+            unsigned const aX(flooredDivision(x,segmentSize_));
+            unsigned const aY(flooredDivision(y,segmentSize_));
 
             return aX >= wallmap_.extents()[0] || aY >= wallmap_.extents()[1] || wallmap_[aX][aY];
         }
@@ -47,18 +47,12 @@ namespace hg {
 
         Rect<int> transformBounds(Rect<int> const &input) const noexcept
         {
-            int minx(input.x/segmentSize_);
-            if (input.x < 0) minx -= 1;
+            int const minx(flooredDivision(input.x,segmentSize_));
             
-            int maxx((input.x + input.w) / segmentSize_);
-            if (input.x + input.w < 0) maxx -= 1;
+            int const maxx(flooredDivision(input.x + input.w,segmentSize_));
             
-            int miny(input.y/segmentSize_);
-            if (input.y < 0) miny -= 1;
-            
-            int maxy((input.y + input.h) / segmentSize_);
-            if (input.y + input.h < 0) maxy -= 1;
-            
+            int const miny(flooredDivision(input.y,segmentSize_));
+            int const maxy(flooredDivision(input.y + input.h, segmentSize_));
             return Rect<int>(minx, miny, maxx - minx, maxy - miny);
         }
 

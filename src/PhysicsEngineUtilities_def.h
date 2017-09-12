@@ -1421,31 +1421,31 @@ void guyStep(
             }
 
             // Return values from doGunRaytrace
-            PhysicsObjectType targetType = NONE;
-            std::size_t targetId = std::numeric_limits<std::size_t>::max();
+            //PhysicsObjectType targetType = NONE;
+            //std::size_t targetId = std::numeric_limits<std::size_t>::max();
 
-            int sx = nextPortal[i].getX();
-            int sy = nextPortal[i].getY();
-            int px = nextPortal[i].getXaim();
-            int py = nextPortal[i].getYaim();
+            int const sx = nextPortal[i].getX();
+            int const sy = nextPortal[i].getY();
+            //int px = nextPortal[i].getXaim();
+            //int py = nextPortal[i].getYaim();
 
-            doGunRaytrace(
-                targetType, targetId, env,
-                sx, sy, px, py,
+            auto const shot = doGunRaytrace(
+                sx, sy, nextPortal[i].getXaim(), nextPortal[i].getYaim(),
+                env.wall,
                 nextPlatform,
                 nextBox, nextBoxNormalDeparture,
                 x, y, newWidth, newHeight,
                 shootable);
 
             // Should be a different glitz adder?
-            guyGlitzAdder.addLaserGlitz(sx, sy, px, py, sx, sy, nextPortal[i].getTimeDirection());
+            guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, nextPortal[i].getXaim(), nextPortal[i].getYaim(), nextPortal[i].getTimeDirection());
 
-            if (targetType == GUY)
+            if (shot.targetType == GUY)
             {
-                assert(targetId != std::numeric_limits<std::size_t>::max());
-                assert(targetId >= 0 && targetId < boost::size(guyArrivalList));
+                assert(shot.targetId != std::numeric_limits<std::size_t>::max());
+                assert(shot.targetId >= 0 && shot.targetId < boost::size(guyArrivalList));
 
-                TimeDirection nextTimeDirection = guyArrivalList[targetId].getTimeDirection();
+                TimeDirection nextTimeDirection = guyArrivalList[shot.targetId].getTimeDirection();
                 Frame *nextTime(nextFrame(frame, nextTimeDirection));
 
                 if (nextPortal[i].getWinner())
@@ -1475,72 +1475,72 @@ void guyStep(
                     }
 
                     nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
-                    illegalPortal[targetId] = nextPortal[i].getIllegalDestination();
+                    illegalPortal[shot.targetId] = nextPortal[i].getIllegalDestination();
                     int arrivalBasis = nextPortal[i].getDestinationIndex();
                     if (arrivalBasis != -1)
                     {
-                        x[targetId] = x[targetId] - nextPortal[i].getX() + nextPortal[i].getXdestination();
-                        y[targetId] = y[targetId] - nextPortal[i].getY() + nextPortal[i].getYdestination();
+                        x[shot.targetId] = x[shot.targetId] - nextPortal[i].getX() + nextPortal[i].getXdestination();
+                        y[shot.targetId] = y[shot.targetId] - nextPortal[i].getY() + nextPortal[i].getYdestination();
                         if (nextPortal[i].getTimeDirection() * nextTimeDirection == TimeDirection::FORWARDS)
                         {
-                            xspeed[targetId] = xspeed[targetId] - nextPortal[i].getXspeed();
-                            yspeed[targetId] = yspeed[targetId] - nextPortal[i].getYspeed();
+                            xspeed[shot.targetId] = xspeed[shot.targetId] - nextPortal[i].getXspeed();
+                            yspeed[shot.targetId] = yspeed[shot.targetId] - nextPortal[i].getYspeed();
                         }
                         else
                         {
-                            xspeed[targetId] = xspeed[targetId] + nextPortal[i].getXspeed();
-                            yspeed[targetId] = yspeed[targetId] + nextPortal[i].getYspeed();
+                            xspeed[shot.targetId] = xspeed[shot.targetId] + nextPortal[i].getXspeed();
+                            yspeed[shot.targetId] = yspeed[shot.targetId] + nextPortal[i].getYspeed();
                         }
                     }
                     else
                     {
-                        x[targetId] = x[targetId] + nextPortal[i].getXdestination();
-                        y[targetId] = y[targetId] + nextPortal[i].getYdestination();
+                        x[shot.targetId] = x[shot.targetId] + nextPortal[i].getXdestination();
+                        y[shot.targetId] = y[shot.targetId] + nextPortal[i].getYdestination();
                     }
                 }
 
                 nextGuy.push_back(
                     ObjectAndTime<Guy, Frame *>(
                         Guy(
-                            guyArrivalList[targetId].getIndex() + 1,
-                            x[targetId], y[targetId],
-                            xspeed[targetId], yspeed[targetId],
-                            newWidth[targetId], newHeight[targetId],
-                            newJumpSpeed[targetId],
+                            guyArrivalList[shot.targetId].getIndex() + 1,
+                            x[shot.targetId], y[shot.targetId],
+                            xspeed[shot.targetId], yspeed[shot.targetId],
+                            newWidth[shot.targetId], newHeight[shot.targetId],
+                            newJumpSpeed[shot.targetId],
 
-                            illegalPortal[targetId],
+                            illegalPortal[shot.targetId],
                             -1,
-                            supported[targetId],
-                            supportedSpeed[targetId],
+                            supported[shot.targetId],
+                            supportedSpeed[shot.targetId],
 
-                            newPickups[targetId],
-                            facing[targetId],
+                            newPickups[shot.targetId],
+                            facing[shot.targetId],
 
-                            carry[targetId],
-                            carrySize[targetId],
-                            carryDirection[targetId],
+                            carry[shot.targetId],
+                            carrySize[shot.targetId],
+                            carryDirection[shot.targetId],
 
-                            guyArrivalList[targetId].getTimeDirection(),
-                            newTimePaused[targetId]
+                            guyArrivalList[shot.targetId].getTimeDirection(),
+                            newTimePaused[shot.targetId]
                             ),
                         nextTime
                         )
                     );
 
-                finishedWith[targetId] = true;
+                finishedWith[shot.targetId] = true;
             }
-            else if (targetType == BOX)
+            else if (shot.targetType == BOX)
             {
-                assert(targetId != std::numeric_limits<std::size_t>::max());
-                assert(targetId >= 0 && targetId < boost::size(nextBox));
+                assert(shot.targetId != std::numeric_limits<std::size_t>::max());
+                assert(shot.targetId >= 0 && shot.targetId < boost::size(nextBox));
 
-                int boxX = nextBox[targetId].object.getX();
-                int boxY = nextBox[targetId].object.getY();
-                int boxXspeed = nextBox[targetId].object.getXspeed();
-                int boxYspeed = nextBox[targetId].object.getYspeed();
-                int size = nextBox[targetId].object.getSize();
+                int boxX = nextBox[shot.targetId].object.getX();
+                int boxY = nextBox[shot.targetId].object.getY();
+                int boxXspeed = nextBox[shot.targetId].object.getXspeed();
+                int boxYspeed = nextBox[shot.targetId].object.getYspeed();
+                int size = nextBox[shot.targetId].object.getSize();
 
-                TimeDirection timeDirection = nextBox[targetId].object.getTimeDirection();
+                TimeDirection timeDirection = nextBox[shot.targetId].object.getTimeDirection();
 
                 Frame *portalTime(
                     nextPortal[i].getRelativeTime() ?
@@ -1581,9 +1581,9 @@ void guyStep(
                 }
 
                 // Replace box
-                assert(targetId < nextBox.size());
+                assert(shot.targetId < nextBox.size());
 
-                nextBox[targetId] = ObjectAndTime<Box, Frame *>(
+                nextBox[shot.targetId] = ObjectAndTime<Box, Frame *>(
                         Box(
                             boxX,
                             boxY,
@@ -1594,12 +1594,12 @@ void guyStep(
                             arrivalBasis,
                             timeDirection),
                         nextTime);
-                nextBoxNormalDeparture[targetId] = false;
+                nextBoxNormalDeparture[shot.targetId] = false;
             }
             else
             {
-                assert(targetType == NONE);
-                assert(targetId == std::numeric_limits<std::size_t>::max());
+                assert(shot.targetType == NONE);
+                assert(shot.targetId == std::numeric_limits<std::size_t>::max());
             }
         }
     }
@@ -1635,70 +1635,70 @@ void guyStep(
             }
 
             // Parameters for ability. sx, sy, px and py are returned as line glitz params
-            Frame *targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
-            int sx = x[i] + newWidth[i] / 2;
-            int sy = y[i] + newHeight[i] / 4;
-            int px = input.getXCursor();
-            int py = input.getYCursor();
+            Frame * const targetTime = getArbitraryFrame(getUniverse(frame), getFrameNumber(input.getTimeCursor()));
+            int const sx = x[i] + newWidth[i] / 2;
+            int const sy = y[i] + newHeight[i] / 4;
+            //int px = input.getXCursor();
+            //int py = input.getYCursor();
 
             // Return values from doGunRaytrace
-            PhysicsObjectType targetType = NONE;
-            std::size_t targetId = std::numeric_limits<std::size_t>::max();
+            //PhysicsObjectType targetType = NONE;
+            //std::size_t targetId = std::numeric_limits<std::size_t>::max();
 
-            doGunRaytrace(
-                targetType, targetId, env,
-                sx, sy, px, py,
+            auto const shot = doGunRaytrace(
+                sx, sy, input.getXCursor(), input.getYCursor(),
+                env.wall,
                 nextPlatform,
                 nextBox, nextBoxNormalDeparture,
                 x, y, newWidth, newHeight,
                 shootable);
 
-            guyGlitzAdder.addLaserGlitz(sx, sy, px, py, input.getXCursor(), input.getYCursor(), guyArrivalList[i].getTimeDirection());
+            guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, input.getXCursor(), input.getYCursor(), guyArrivalList[i].getTimeDirection());
 
-            if (targetType == GUY)
+            if (shot.targetType == GUY)
             {
-                assert(targetId != std::numeric_limits<std::size_t>::max());
-                assert(targetId >= 0 && targetId < boost::size(guyArrivalList));
+                assert(shot.targetId != std::numeric_limits<std::size_t>::max());
+                assert(shot.targetId >= 0 && shot.targetId < boost::size(guyArrivalList));
                 nextGuy.push_back(
                     ObjectAndTime<Guy, Frame *>(
                         Guy(
-                            guyArrivalList[targetId].getIndex() + 1,
-                            x[targetId], y[targetId],
-                            xspeed[targetId], yspeed[targetId],
-                            newWidth[targetId], newHeight[targetId],
-                            newJumpSpeed[targetId],
+                            guyArrivalList[shot.targetId].getIndex() + 1,
+                            x[shot.targetId], y[shot.targetId],
+                            xspeed[shot.targetId], yspeed[shot.targetId],
+                            newWidth[shot.targetId], newHeight[shot.targetId],
+                            newJumpSpeed[shot.targetId],
 
-                            illegalPortal[targetId],
+                            illegalPortal[shot.targetId],
                             -1,
-                            supported[targetId],
-                            supportedSpeed[targetId],
+                            supported[shot.targetId],
+                            supportedSpeed[shot.targetId],
 
-                            newPickups[targetId],
-                            facing[targetId],
+                            newPickups[shot.targetId],
+                            facing[shot.targetId],
 
-                            carry[targetId],
-                            carrySize[targetId],
-                            carryDirection[targetId],
+                            carry[shot.targetId],
+                            carrySize[shot.targetId],
+                            carryDirection[shot.targetId],
 
-                            guyArrivalList[targetId].getTimeDirection(),
-                            newTimePaused[targetId]
+                            guyArrivalList[shot.targetId].getTimeDirection(),
+                            newTimePaused[shot.targetId]
                             ),
                         targetTime
                         )
                     );
-                finishedWith[targetId] = true;
+                finishedWith[shot.targetId] = true;
             }
-            else if (targetType == BOX)
+            else if (shot.targetType == BOX)
             {
-                assert(targetId != std::numeric_limits<std::size_t>::max());
-                assert(targetId >= 0 && targetId < boost::size(nextBox));
-                nextBox[targetId].frame = targetTime;
-                nextBoxNormalDeparture[targetId] = false;
+                assert(shot.targetId != std::numeric_limits<std::size_t>::max());
+                assert(shot.targetId >= 0 && shot.targetId < boost::size(nextBox));
+                nextBox[shot.targetId].frame = targetTime;
+                nextBoxNormalDeparture[shot.targetId] = false;
             }
             else
             {
-                assert(targetType == NONE);
-                assert(targetId == std::numeric_limits<std::size_t>::max());
+                assert(shot.targetType == NONE);
+                assert(shot.targetId == std::numeric_limits<std::size_t>::max());
             }
 
             if (timeGun->second > 0)

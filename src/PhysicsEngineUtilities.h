@@ -177,36 +177,60 @@ void buildDepartures(
 bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const &env, int x, int y, int w, int h);
 
-bool getRaytraceRectangleCollision(
-    int sx, int sy, 
-    int &px, int &py,
-    int left, int top,
-    int width, int height,
-    int dx, int dy,
-    bool mostlySideways);
+struct GunRaytraceResult {
+    PhysicsObjectType targetType;
+    std::size_t targetId;
+    int px;
+    int py;
+};
 
-void doGunRaytrace(
-    PhysicsObjectType &targetType,
-    std::size_t &targetId,
-    Environment const &env,
-    int &sx, int &sy, int &px, int &py,
+GunRaytraceResult doGunRaytrace(
+    int const sx, int const sy,
+    int const aimx_raw, int const aimy,
+
+    //Env data
+    Wall const &wall,
+
+    //Platform data
     mt::std::vector<Collision> const &nextPlatform,
-    mt::std::vector<ObjectAndTime<Box, Frame*> > box,
-    mt::std::vector<char> &nextBoxNormalDeparture,
-    mt::std::vector<int> gx, // other guy things
-    mt::std::vector<int> gy,
-    mt::std::vector<int> gw,
-    mt::std::vector<int> gh,
-    mt::std::vector<char> shootable);
+
+    //Box Data
+    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mt::std::vector<char> const &nextBoxNormalDeparture,
+
+    //Guy Data
+    mt::std::vector<int> const &gx,
+    mt::std::vector<int> const &gy,
+    mt::std::vector<int> const &gw,
+    mt::std::vector<int> const &gh,
+    mt::std::vector<char> const &shootable
+);
     
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
+bool PointInRectangleSemiInclusive(int px, int py, int x, int y, int w, int h);
 bool PointInRectangleExclusive(int px, int py, int x, int y, int w, int h);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, int buffer);
 bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
+
+struct RaytraceRectangleCollisionResult {
+    //TODO: consider making this a variant/optional; since `point` should not be accessed unless `hit` is true
+    bool const hit;
+    vector2<int> const point;
+};
+inline bool operator==(RaytraceRectangleCollisionResult const& l, RaytraceRectangleCollisionResult const& r) {
+    return l.hit == r.hit && (l.hit == false || l.point.x == r.point.x && l.point.y == r.point.y);
+}
+
+RaytraceRectangleCollisionResult getRaytraceRectangleCollision(
+    int const sx, int const sy,
+    int const aimx, int const aimy,
+    int const left, int const top,
+    int const width, int const height
+);
 
 template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_t playerInputSize);
@@ -214,6 +238,11 @@ enum {
     COLLISION_BUFFER_RANGE = 100,
     HALF_COLLISION_BUFFER_RANGE = 50
 };
+
+vector2<int> doGunWallRaytrace(
+    Wall const &wall,
+    int const sx, int const sy,
+    int const aimx, int const aimy);
 }
 #include "PhysicsEngineUtilities_def.h"
 #endif //HG_PHYSICS_ENGINE_TEST_H

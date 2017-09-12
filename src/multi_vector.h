@@ -14,7 +14,7 @@ class multi_vector {
 private:
     T &getAtPos(std::size_t pos)
     {
-        T &elem(*data.data());
+        T *elem(data.data());
         for (size_t dim{ 0 }; dim != N_dims-1; ++dim)
         {
             auto const current_block_physical_length(total_capacity_by_dim(dim + 1));
@@ -32,7 +32,7 @@ private:
     T const &getAtPos(std::size_t pos) const
     {
         T const *elem(data.data());
-        for (size_t dim{ 0 }; dim != N_dims - 1; ++dim)
+        for (size_t dim{ 0 }; dim != N_dims-1; ++dim)
         {
             auto const current_block_physical_length(total_capacity_by_dim(dim + 1));
             auto const current_block_logical_length(total_size_by_dim(dim + 1));
