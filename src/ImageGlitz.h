@@ -1,7 +1,7 @@
 #ifndef HG_IMAGE_GLITZ_H
 #define HG_IMAGE_GLITZ_H
 #include "GlitzImplementation.h"
-#include <boost/cast.hpp>
+#include <boost/polymorphic_cast.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include "mt/std/string"
 #include "LayeredCanvas.h"

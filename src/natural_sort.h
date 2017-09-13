@@ -86,7 +86,7 @@ bool natural_less(T1 const &l, T2 const &r) {
 }
 
 template<typename T = void>
-struct natural_less_struct : std::binary_function <T,T,bool>  {
+struct natural_less_struct {
     bool operator()(T const &l, T const &r) const {
         return natural_less(l,r);
     }

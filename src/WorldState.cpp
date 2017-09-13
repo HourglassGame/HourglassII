@@ -9,7 +9,6 @@
 #include "OperationInterruptedException.h"
 
 #include <utility>
-#include <boost/lexical_cast.hpp>
 #include <tbb/task_group.h>
 #include <thread>
 

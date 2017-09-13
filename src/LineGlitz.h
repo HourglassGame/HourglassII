@@ -1,7 +1,7 @@
 #ifndef HG_LINE_GLITZ_H
 #define HG_LINE_GLITZ_H
 #include "GlitzImplementation.h"
-#include <boost/cast.hpp>
+#include <boost/polymorphic_cast.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include "LayeredCanvas.h"
 namespace hg {

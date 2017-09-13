@@ -2,7 +2,7 @@
 #define HG_AUDIO_GLITZ_H
 #include "mt/std/string"
 #include <tuple>
-#include <boost/cast.hpp>
+#include <boost/polymorphic_cast.hpp>
 #include "GlitzImplementation.h"
 #include "LayeredCanvas.h"
 namespace hg {

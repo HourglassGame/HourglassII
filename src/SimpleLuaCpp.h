@@ -6,7 +6,6 @@
 #include "LuaError.h"
 #include "LuaUserData.h"
 #include "OperationInterruptedException.h"
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <thread>
 #include <boost/throw_exception.hpp>

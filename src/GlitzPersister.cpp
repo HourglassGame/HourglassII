@@ -1,6 +1,6 @@
 #include "GlitzPersister.h"
 #include "Frame.h"
-#include <boost/cast.hpp>
+#include <boost/polymorphic_cast.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include "AudioGlitz.h"

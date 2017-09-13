@@ -29,7 +29,7 @@ PhysicsEngine::PhysicsEngine(
         triggerSystem_(triggerSystem)
 {
 }
-struct ConstructGuyOutputInfo : std::unary_function<Guy const &, GuyOutputInfo>{
+struct ConstructGuyOutputInfo {
     ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation> const &arrivalLocations) :
         arrivalLocations(&arrivalLocations) {}
     GuyOutputInfo operator()(Guy const &guy) const {
@@ -45,7 +45,7 @@ struct ConstructGuyOutputInfo : std::unary_function<Guy const &, GuyOutputInfo>{
     }
     mt::std::vector<ArrivalLocation> const *arrivalLocations;
 };
-struct NextPersister : std::unary_function<GlitzPersister const &, ObjectAndTime<GlitzPersister, Frame *> >
+struct NextPersister
 {
     NextPersister(Frame *frame): frame_(frame) {}
     ObjectAndTime<GlitzPersister, Frame *> operator()(GlitzPersister const &persister) const {
