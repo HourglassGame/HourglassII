@@ -160,11 +160,9 @@ void initialiseCurrentPath(std::vector<std::string> const &args)
 #if defined(__APPLE__) && defined(__MACH__)
     assert(args.size() >= 1);
     current_path(boost::filesystem::path(args[0]).remove_filename()/"../Resources/");
-#elif defined(_WIN32)
+#else
     assert(args.size() >= 1);
     current_path(boost::filesystem::path(args[0]).remove_filename()/"data/");
-#else
-#error "Configure resource path for your platform"
 #endif
 }
 
