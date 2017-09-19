@@ -69,7 +69,7 @@ public:
     move_function() noexcept = default;
     move_function(move_function &&o) noexcept = default;
     move_function<R(ArgTypes...)> &operator=(move_function &&o) noexcept = default;
-    template<typename F>
+    template<typename F, typename = std::enable_if_t<!std::is_same_v<std::remove_cv_t<std::remove_reference_t<F>>, move_function>>>
     move_function(F &&f) :
         f(new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::forward<F>(f)))
     {
