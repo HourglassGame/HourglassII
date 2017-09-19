@@ -218,34 +218,6 @@ Spec:
             (in this case,
                 I can't see any good reason to make the edges non-inclusive
                 and making the edges also inclusive seem the most natural, to me;
-    ))
-*/
-
-
-
-    bool testGetRaytraceRectangleCollision() {
-
-        /*
-        Rectanlge is half-open range:
-          *_______o
-          |       :
-          |       :
-          |       :
-          |       :
-          o- - - -o
-         All shots that originate within the rectangle should hit the rectangle at their start-point
-        
-         All shots aimed diagonally into any corner should hit that corner.
-        
-         All completely horizontal shots aimed at the top-right corner should hit this corner
-        
-         All completely vertical shots aimed at the bottom-left corner should hit this corner
-        
-         All shots aimed at the top-left corner from any direction should hit the
-         top-left corner.
-
-         For glancing shots, imagine a set of tangent lines (that continues around corners, including all directions between the two sides adjacent to the corner).
-         For the top-left corner, and the top and left sides, the tangent line should hit the rectangle, for all other sides/corners, the tangent line should miss the rectangle.
 
         Rounding:
         Should always be exactly on line in one dimension (no rounding here)
@@ -267,9 +239,12 @@ Spec:
         +x -y -> floor x, floor y
         -x +y -> ceil x, ceil y
         -x -y -> floor x, ceil y
-        */
+    ))
+*/
 
 
+
+    bool testGetRaytraceRectangleCollision() {
         //TODO
         //Foreach 8 starting points (midpoints of edges/corners)
         // Foreach 16 shooting directions
@@ -339,8 +314,8 @@ Spec:
                 //For each corner, test horizontal/vertical shots starting from outside the corner
                 //and aimed beyond the other side of the rectangle (inline with the horizontal/vertical edge starting from the given corner)
                 //
-                //This test is checking the handling of the half-open range edge condition for exactly horizontal/vertical lines that go exactly along the edge of the rectangle.
-                //The top/left edges should be hit and the bottom/right edges should not be hit
+                //This test is checking the handling of the edge condition for exactly horizontal/vertical lines that go exactly along the edge of the rectangle.
+                //The all edges should be hit
 
                 for (int xpos = -1; xpos <= 1; xpos += 2) {
                     for (int ypos = -1; ypos <= 1; ypos += 2) {
@@ -443,15 +418,6 @@ Spec:
                                 if (xdir == 0 && ydir == 0) continue;//TODO: actually check result for zero-length input lines?
                                 int const aimx = sx + xdir * 5000;
                                 int const aimy = sy + ydir * 5000;
-
-                                if (xpos == 0 &&
-                                    ypos == 1 &&
-                                    xdir == -1 &&
-                                    ydir == -2 &&
-                                    startInside == 0)
-                                {
-                                    std::cout << "Here\n";
-                                }
 
                                 //TODO: test a whole bunch of different aim lengths
                                 auto const collisionResult = getRaytraceRectangleCollision(
@@ -558,13 +524,6 @@ Spec:
                     int const aimx = sx - (verticalLine ? 0 : xpos * (segmentSize + rectanglewidth));
                     int const aimy = sy - (!verticalLine ? 0 : ypos * (segmentSize + rectangleheight));
 
-                    if (xpos == -1
-                     && ypos == 1
-                     && verticalLine == 0)
-                    {
-                        std::cout << "Here\n";
-                    }
-
                     auto const collisionResult = doGunWallRaytrace(
                         actualWall,
                         sx, sy,
@@ -597,14 +556,6 @@ Spec:
 
                             auto const sx = aimx + xstartdir * segmentSize/2;
                             auto const sy = aimy + ystartdir * segmentSize/2;
-
-                            if (xpos == -1
-                             && ypos == 1
-                             && xstartdir == 1
-                             && ystartdir == 0)
-                            {
-                                std::cout << "Here\n";
-                            }
 
                             //TODO: test a whole bunch of different aim lengths
                             auto const collisionResult = doGunWallRaytrace(
@@ -652,15 +603,6 @@ Spec:
                             if (xdir == 0 && ydir == 0) continue;//TODO: actually check result for zero-length input lines?
                             int const aimx = sx + xdir * 5000;
                             int const aimy = sy + ydir * 5000;
-
-                            if (xpos == 0 &&
-                                ypos == -1 &&
-                                xdir == -1 &&
-                                ydir == 2 &&
-                                startInside == 0)
-                            {
-                                std::cout << "Here\n";
-                            }
 
                             //TODO: test a whole bunch of different aim lengths
                             auto const collisionResult = doGunWallRaytrace(
