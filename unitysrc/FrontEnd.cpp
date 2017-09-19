@@ -42,3 +42,5 @@
 #include "../src/ParallelForEach_test.cpp"
 #include "../src/ReplayIO.cpp"
 #include "../src/ReplayIO_test.cpp"
+#include "../src/async.cpp"
+#include "../src/async_test.cpp"

@@ -5,9 +5,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Sleep.hpp>
 #include "RenderWindow.h"
+#include "async.h"
 namespace hg {
 
 static void drawLoadingScreen(hg::RenderWindow &window) {
@@ -31,7 +30,7 @@ displayLoadingScreen(
         hg::move_function<LoadedLevel(TimeEngine &&)> const &resourceLoadFun)
 {
     bool sceneDrawn = false;
-    while (!futureLoadedLevel.is_ready()) {
+    while (futureLoadedLevel.wait_for(boost::chrono::milliseconds(100)) != boost::future_status::ready) {
         if (!sceneDrawn) {
             drawLoadingScreen(window);
         }
@@ -58,7 +57,6 @@ displayLoadingScreen(
                 }
             }
         }
-        sf::sleep(sf::seconds(.1f));
     }
     auto loadedLevel = resourceLoadFun(futureLoadedLevel.get());
     if (interrupter.interrupted()) { return LoadingCanceled_tag{}; }
@@ -71,12 +69,9 @@ load_level_scene(
         LoadLevelFunction const &levelLoadingFunction)
 {
     hg::OperationInterrupter interruptor;
-    tbb::structured_task_group group;
-    boost::packaged_task<hg::TimeEngine()> levelLoadingTask([&](){return levelLoadingFunction.timeEngineLoadFun(interruptor);});
-    auto futureLoadedLevel = levelLoadingTask.get_future();
-    tbb::task_handle<decltype(std::ref(levelLoadingTask))> loadingLevel_task_handle{std::ref(levelLoadingTask)};
-    group.run(loadingLevel_task_handle);
-    
+
+    auto futureLoadedLevel = async([&]() {return levelLoadingFunction.timeEngineLoadFun(interruptor); });
+
     return displayLoadingScreen(window, futureLoadedLevel, interruptor, levelLoadingFunction.glitzLoadFun);
 }
 }

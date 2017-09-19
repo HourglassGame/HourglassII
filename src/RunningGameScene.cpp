@@ -23,7 +23,7 @@
 #include "ResourceManager.h"
 #include "RenderWindow.h"
 #include "Maths.h"
-#include "enqueue_task.h"
+#include "async.h"
 #include <SFML/Graphics.hpp>
 
 #include "AudioGlitzManager.h"
@@ -154,17 +154,10 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     //Gets rewritten whenever the level is reset.
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
-    tbb::task_group task_group;
-    struct task_group_waiter {
-        tbb::task_group &tg;
-        ~task_group_waiter() {
-            tg.wait();
-        }
-    } task_group_waiter_obj{task_group};
-    
+
     auto interrupter = hg::make_unique<hg::OperationInterrupter>();
     boost::future<hg::TimeEngine::RunResult> futureRunResult;
-    
+
     struct TimeEngineCleanupEnforcer {
         decltype(interrupter) &interrupter_;
         decltype(futureRunResult) &futureRunResult_;
@@ -197,8 +190,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
             interrupter = make_unique<hg::OperationInterrupter>();
             
             futureRunResult =
-                enqueue_task(
-                    task_group,
+                async(
                     [inputList, &timeEngine, &interrupter] {
                 return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter);});
             state = RUNNING_LEVEL;

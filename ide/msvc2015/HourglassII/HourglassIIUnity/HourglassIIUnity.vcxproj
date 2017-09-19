@@ -124,6 +124,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\src\Ability.h" />
     <ClInclude Include="..\..\..\..\src\ArrivalLocation.h" />
+    <ClInclude Include="..\..\..\..\src\async.h" />
     <ClInclude Include="..\..\..\..\src\as_lvalue.h" />
     <ClInclude Include="..\..\..\..\src\AttachmentMap.h" />
     <ClInclude Include="..\..\..\..\src\AudioGlitz.h" />
@@ -146,7 +147,6 @@
     <ClInclude Include="..\..\..\..\src\DepartureMap.h" />
     <ClInclude Include="..\..\..\..\src\DepartureMap_fwd.h" />
     <ClInclude Include="..\..\..\..\src\DirectLuaTriggerSystem.h" />
-    <ClInclude Include="..\..\..\..\src\enqueue_task.h" />
     <ClInclude Include="..\..\..\..\src\Environment.h" />
     <ClInclude Include="..\..\..\..\src\FacingDirection.h" />
     <ClInclude Include="..\..\..\..\src\Foreach.h" />
