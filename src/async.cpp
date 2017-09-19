@@ -15,7 +15,7 @@ namespace hg {
             pool(pool),
             ended(false) {}
 
-        void thread_comm_data::become_idle() {
+        void become_idle() {
             pool->push_idle_thread(this);
         }
         move_function<void()> get_next() {
@@ -26,7 +26,7 @@ namespace hg {
             cv.wait(l, [&] {return f || ended; });
             move_function<void()> retF;
             boost::swap(retF, f);
-            return { retF };
+            return retF;
         }
         void set_f(move_function<void()> &&new_f) {
             {
