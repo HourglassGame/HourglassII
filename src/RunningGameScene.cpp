@@ -67,7 +67,6 @@
 #include <boost/bind.hpp>
 
 #include <cstddef>
-#include <iostream>
 #include <utility>
 
 #include <cmath>
@@ -217,7 +216,6 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 case sf::Event::KeyPressed:
                     switch (event.key.code) {
                     case sf::Keyboard::Escape:
-                        std::cout << "Returning GameAborted\n";
                         return GameAborted_tag{};
                     //Restart
                     case sf::Keyboard::R:
