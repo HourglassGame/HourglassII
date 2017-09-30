@@ -141,8 +141,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     hg::LevelResources const &levelResources = loadedLevel.resources;
     sf::Image const &wallImage = *loadedLevel.bakedWall;
 
-    enum RunState { AWAITING_INPUT, RUNNING_LEVEL, PAUSED };
-    RunState state(AWAITING_INPUT);
+    enum class RunState { AWAITING_INPUT, RUNNING_LEVEL, PAUSED };
+    RunState state(RunState::AWAITING_INPUT);
 
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
@@ -170,7 +170,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 
     while (true) {
         switch (state) {
-        case AWAITING_INPUT:
+        case RunState::AWAITING_INPUT:
         {
             hg::InputList inputList;
             if (currentReplayIt != currentReplayEnd) {
@@ -193,11 +193,11 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 async(
                     [inputList, &timeEngine, &interrupter] {
                 return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter);});
-            state = RUNNING_LEVEL;
+            state = RunState::RUNNING_LEVEL;
             break;
         }
 
-        case RUNNING_LEVEL:
+        case RunState::RUNNING_LEVEL:
         {
             sf::Event event;
             while (window.pollEvent(event))
@@ -239,7 +239,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                         generateReplay();
                         break;
                     case sf::Keyboard::P:
-                        state = PAUSED;
+                        state = RunState::PAUSED;
                         goto continuemainloop;
 
                     default:
@@ -289,11 +289,11 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     window.setVerticalSyncEnabled(true);
                 }
                 window.display();
-                state = AWAITING_INPUT;
+                state = RunState::AWAITING_INPUT;
             }
             break;
         }
-        case PAUSED:
+        case RunState::PAUSED:
         {
             {
                 sf::Event event;
@@ -306,7 +306,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     case sf::Event::KeyPressed:
                         switch (event.key.code) {
                         case sf::Keyboard::P:
-                            state = RUNNING_LEVEL;
+                            state = RunState::RUNNING_LEVEL;
                             goto continuemainloop;
                         default: break;
                         }

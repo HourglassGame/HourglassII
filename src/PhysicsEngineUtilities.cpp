@@ -655,7 +655,7 @@ GunRaytraceResult doGunRaytrace(
             hitPoint = collision.point;
         }
     }
-    auto targetType = NONE;
+    auto targetType = PhysicsObjectType::NONE;
     std::size_t targetId = std::numeric_limits<std::size_t>::max();
     // Box
     for (std::size_t i(0), isize(nextBox.size()); i < isize; ++i)
@@ -668,7 +668,7 @@ GunRaytraceResult doGunRaytrace(
                 nextBox[i].object.getSize(), nextBox[i].object.getSize());
             if (collision.hit && (iabs(collision.point.x - sx) < iabs(hitPoint.x - sx) || iabs(collision.point.y - sy) < iabs(hitPoint.y - sy))) {
                 hitPoint = collision.point;
-                targetType = BOX;
+                targetType = PhysicsObjectType::BOX;
                 targetId = i;
             }
         }
@@ -685,7 +685,7 @@ GunRaytraceResult doGunRaytrace(
                 gw[i], gh[i]);
             if (collision.hit && (iabs(collision.point.x - sx) < iabs(hitPoint.x - sx) || iabs(collision.point.y - sy) < iabs(hitPoint.y - sy))) {
                 hitPoint = collision.point;
-                targetType = GUY;
+                targetType = PhysicsObjectType::GUY;
                 targetId = i;
             }
         }

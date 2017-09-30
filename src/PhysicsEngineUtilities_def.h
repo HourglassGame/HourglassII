@@ -1440,7 +1440,7 @@ void guyStep(
             // Should be a different glitz adder?
             guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, nextPortal[i].getXaim(), nextPortal[i].getYaim(), nextPortal[i].getTimeDirection());
 
-            if (shot.targetType == GUY)
+            if (shot.targetType == PhysicsObjectType::GUY)
             {
                 assert(shot.targetId != std::numeric_limits<std::size_t>::max());
                 assert(shot.targetId >= 0 && shot.targetId < boost::size(guyArrivalList));
@@ -1529,7 +1529,7 @@ void guyStep(
 
                 finishedWith[shot.targetId] = true;
             }
-            else if (shot.targetType == BOX)
+            else if (shot.targetType == PhysicsObjectType::BOX)
             {
                 assert(shot.targetId != std::numeric_limits<std::size_t>::max());
                 assert(shot.targetId >= 0 && shot.targetId < boost::size(nextBox));
@@ -1655,7 +1655,7 @@ void guyStep(
 
             guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, input.getXCursor(), input.getYCursor(), guyArrivalList[i].getTimeDirection());
 
-            if (shot.targetType == GUY)
+            if (shot.targetType == PhysicsObjectType::GUY)
             {
                 assert(shot.targetId != std::numeric_limits<std::size_t>::max());
                 assert(shot.targetId >= 0 && shot.targetId < boost::size(guyArrivalList));
@@ -1688,7 +1688,7 @@ void guyStep(
                     );
                 finishedWith[shot.targetId] = true;
             }
-            else if (shot.targetType == BOX)
+            else if (shot.targetType == PhysicsObjectType::BOX)
             {
                 assert(shot.targetId != std::numeric_limits<std::size_t>::max());
                 assert(shot.targetId >= 0 && shot.targetId < boost::size(nextBox));
