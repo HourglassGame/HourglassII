@@ -1598,7 +1598,7 @@ void guyStep(
             }
             else
             {
-                assert(shot.targetType == NONE);
+                assert(shot.targetType == PhysicsObjectType::NONE);
                 assert(shot.targetId == std::numeric_limits<std::size_t>::max());
             }
         }
@@ -1697,7 +1697,7 @@ void guyStep(
             }
             else
             {
-                assert(shot.targetType == NONE);
+                assert(shot.targetType == PhysicsObjectType::NONE);
                 assert(shot.targetId == std::numeric_limits<std::size_t>::max());
             }
 
