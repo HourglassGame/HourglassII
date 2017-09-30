@@ -60,7 +60,7 @@ displayLoadingScreen(
     }
     auto loadedLevel = resourceLoadFun(futureLoadedLevel.get());
     if (interrupter.interrupted()) { return LoadingCanceled_tag{}; }
-    return loadedLevel;
+    return std::move(loadedLevel);
 }
 
 hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
