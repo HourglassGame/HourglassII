@@ -7,10 +7,10 @@
 #include "prettyprint.hpp"
 #include <boost/exception/all.hpp>
 namespace hg {
-    struct semantic_callstack {};
+    struct semantic_callstack final {};
     typedef boost::error_info<semantic_callstack, std::vector<std::string>> semantic_callstack_info;
 
-    struct basic_error_message {};
+    struct basic_error_message final {};
     typedef boost::error_info<basic_error_message, std::string> basic_error_message_info;
     
 

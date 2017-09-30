@@ -5,7 +5,7 @@
 #include "Frame.h"
 #include "TimeDirection.h"
 namespace hg {
-class ConcurrentTimeMap {
+class ConcurrentTimeMap final {
     typedef
     tbb::concurrent_hash_map
     <

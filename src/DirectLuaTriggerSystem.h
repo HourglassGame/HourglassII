@@ -90,7 +90,7 @@ private:
 //in general, so the use of this class should be limited to cases where there
 //are no better options.
 template<typename T>
-class copy_as_new_ptr
+class copy_as_new_ptr final
 {
 public:
     copy_as_new_ptr() :

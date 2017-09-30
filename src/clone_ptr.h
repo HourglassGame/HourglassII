@@ -11,7 +11,7 @@ namespace hg {
 //TODO -- add complete support for stateful CloneManager.
 //        support is currently incomplete and buggy.
 template<typename Cloneable, typename CloneManager = default_clone<Cloneable>>
-class clone_ptr : CloneManager
+class clone_ptr final : CloneManager
 {
     template<typename, typename> friend class clone_ptr;
 public:

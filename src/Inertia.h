@@ -4,7 +4,7 @@
 #include "TimeDirection.h"
 #include <cassert>
 namespace hg {
-class Inertia {
+class Inertia final {
     public:
     Inertia() = default;
     void reset() {

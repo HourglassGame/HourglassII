@@ -9,7 +9,7 @@
 #include "GlitzImplementation.h"
 #include <cassert>
 namespace hg {
-class Glitz : boost::totally_ordered<Glitz> {
+class Glitz final : boost::totally_ordered<Glitz> {
 public:
     explicit Glitz(GlitzImplementation *impl)
       : impl(impl)
@@ -36,7 +36,7 @@ public:
         return comparison_tuple() == o.comparison_tuple();
     }
 private:
-    
+
     clone_ptr<GlitzImplementation, memory_source_clone<GlitzImplementation, multi_thread_memory_source>> impl;
     typedef
       std::tuple<

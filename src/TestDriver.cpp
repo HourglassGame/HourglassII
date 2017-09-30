@@ -27,7 +27,7 @@ TestDriver &getTestDriver() {
 #if 0
 bool testExpression = true;
 
-struct TestDriverTest: Test {
+struct TestDriverTest final : Test {
     virtual bool run(Outputter &o) override {
         switch (runMonitored([&]{return testExpression;})) {
             case OK: break;

@@ -8,7 +8,7 @@
 #include <string>
 namespace hg {
     //stores the wall (the static environment over which the game is played)
-    class Wall {
+    class Wall final {
     private:
         auto equality_tuple() const -> decltype(auto)
         {
@@ -90,7 +90,7 @@ namespace hg {
     //Stores the physical attributes of the world
     //in which the game is played.
     //That is - the wall and gravity
-    struct Environment {
+    struct Environment final {
     private:
         auto equality_tuple() const -> decltype(auto)
         {

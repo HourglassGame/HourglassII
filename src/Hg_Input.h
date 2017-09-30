@@ -7,7 +7,7 @@
 #include "InputList_fwd.h"
 
 namespace hg {
-class Input {
+class Input final {
 public:
     Input();
     void updateState(hg::RenderWindow::InputState const &keyState, int mouseXOfEndOfTimeline, double mouseScale);

@@ -20,7 +20,7 @@ ObjectPtrList<ListType>::ObjectPtrList() :
 }
 
 namespace {
-struct InsertAddresses
+struct InsertAddresses final
 {
     template<typename Container, typename ForwardRange>
     void operator()(Container &toInsertInto, ForwardRange const &toInsert) const

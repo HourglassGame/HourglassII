@@ -24,7 +24,7 @@ namespace {
         return fileVec == makeRepeatedVec(lfVec, num_newlines)
             || fileVec == makeRepeatedVec(crlfVec, num_newlines);
     }
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("LuaUtilities_loadFileIntoVectorCRLF", test_loadFileIntoVectorCRLF);
         }

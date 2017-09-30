@@ -5,7 +5,7 @@
 #include "unique_ptr.h"
 namespace hg
 {
-class TriggerSystem {
+class TriggerSystem final {
     clone_ptr<TriggerSystemImplementation> impl;
     typedef
         std::tuple<

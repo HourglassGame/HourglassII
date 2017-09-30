@@ -3,7 +3,7 @@
 #include "FrameUpdateSet.h"
 #include <tbb/enumerable_thread_specific.h>
 namespace hg {
-class ConcurrentFrameUpdateSet {
+class ConcurrentFrameUpdateSet final {
 public:
     ConcurrentFrameUpdateSet();
     void add(FrameUpdateSet const &toAdd);

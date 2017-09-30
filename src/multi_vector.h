@@ -10,7 +10,7 @@
 namespace hg {
 
 template<typename T, std::size_t N_dims, typename Allocator = std::allocator<T>>
-class multi_vector {
+class multi_vector final {
 private:
     T &getAtPos(std::size_t pos)
     {
@@ -70,7 +70,7 @@ private:
     std::array<std::size_t, N_dims> size;
     std::array<std::size_t, N_dims> capacity; //[2,3,4] stored as {{{a,a,a,a},{a,a,a,a},{a,a,a,a}}, {{a,a,a,a},{a,a,a,a},{a,a,a,a}}}
 public:
-    class simple_const_iterator_proxy : boost::totally_ordered<simple_const_iterator_proxy>
+    class simple_const_iterator_proxy final : boost::totally_ordered<simple_const_iterator_proxy>
     {
     private:
         multi_vector const *const this_;
@@ -145,7 +145,7 @@ public:
     template<std::size_t remaining_dims, typename U>
     friend struct op_index_proxy;
     template<std::size_t remaining_dims, typename U>
-    struct op_index_proxy {
+    struct op_index_proxy final {
     //private:
         U *const array_start;
         multi_vector const *const this_;
@@ -165,7 +165,7 @@ public:
         }
     };
     template<typename U>
-    struct op_index_proxy<1,U> {
+    struct op_index_proxy<1,U> final {
     //private:
         U *const array_start;
         multi_vector const *const this_;

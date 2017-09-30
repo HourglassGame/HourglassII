@@ -10,7 +10,7 @@ namespace hg {
 //Single-reader single-writer concurrent queue.
 //(Quite possibly can handle multi-reader multi-writer too, check before using)
 template<typename T, typename Alloc = typename multi_thread_allocator_t<T>>
-class ConcurrentQueue
+class ConcurrentQueue final
 {
 public:
     //Not safe for concurrent execution

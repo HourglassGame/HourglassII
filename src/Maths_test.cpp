@@ -48,7 +48,7 @@ namespace {
             && flooredModulo( 2, -3) == -1
             && flooredModulo( 3, -3) ==  0;
     }
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("Maths_testFlooredDivision", testFlooredDivision);
             ::hg::getTestDriver().registerUnitTest("Maths_testFlooredModulo", testFlooredModulo);

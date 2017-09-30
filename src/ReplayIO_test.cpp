@@ -14,7 +14,7 @@ namespace {
         saveReplay(stream, inputReplay);
         return inputReplay == loadReplay(stream);
     }
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("ReplayIO_testReplaySavingAndLoading", testReplaySavingAndLoading);
         }

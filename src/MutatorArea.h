@@ -5,7 +5,7 @@
 namespace hg {
 class MutatorArea;
 std::ostream &operator<<(std::ostream &os, MutatorArea const &toPrint);
-class MutatorArea {
+class MutatorArea final {
 public:
     MutatorArea(
         int x, int y,

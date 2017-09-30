@@ -8,7 +8,7 @@
 #include "multi_thread_allocator.h"
 #include "RectangleGlitz.h"
 namespace hg {
-class BoxGlitzAdder {
+class BoxGlitzAdder final {
 public:
     BoxGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,

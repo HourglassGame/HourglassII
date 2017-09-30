@@ -15,7 +15,7 @@ namespace hg {
         
     */
 
-    class Flusher {
+    class Flusher final {
     public:
         void partialFlush(int upperLimit);
     private:
@@ -25,7 +25,7 @@ namespace hg {
         boost::container::vector<lc_internal::DrawCall>::iterator upperBound;
     };
     
-    class LayeredCanvas {
+    class LayeredCanvas final {
     public:
         LayeredCanvas(Canvas &canvas);
         void playSound(std::string const &key, int n);

@@ -7,7 +7,7 @@
 #include "MutatorArea.h"
 #include "ArrivalLocation.h"
 namespace hg {
-struct PhysicsAffectingStuff {
+struct PhysicsAffectingStuff final {
     mt::std::vector<Box> additionalBoxes;
     mt::std::vector<PortalArea> portals;
     mt::std::vector<Collision> collisions;

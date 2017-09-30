@@ -6,7 +6,7 @@
 #include <tbb/spin_rw_mutex.h>
 namespace hg {
 template<typename T>
-class ThreadLocal : private tbb::task_scheduler_observer
+class ThreadLocal final : private tbb::task_scheduler_observer
 {
     //For practical purposes the mutex should almost never be contended,
     //so a (lightweight) spin_mutex is preferable.

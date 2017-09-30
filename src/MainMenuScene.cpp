@@ -6,7 +6,7 @@
 #include <SFML/System/Sleep.hpp>
 namespace hg {
 extern sf::Font const *defaultFont;
-struct MenuItem {
+struct MenuItem final {
     variant<RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
     std::string text;
 };

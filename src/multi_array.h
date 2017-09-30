@@ -9,12 +9,12 @@ namespace hg {
         struct multi_array_def;
         
         template<typename T, std::size_t N, std::size_t ...Sizes>
-        struct multi_array_def<T, N, Sizes...> {
+        struct multi_array_def<T, N, Sizes...> final {
             using type = std::array<typename multi_array_def<T, Sizes...>::type, N>;
         };
         
         template<typename T>
-        struct multi_array_def<T> {
+        struct multi_array_def<T> final {
             using type = T;
         };
     };

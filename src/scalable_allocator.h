@@ -20,7 +20,7 @@ public:
     typedef typename tbb_alloc::value_type value_type;
     typedef typename tbb_alloc::size_type size_type;
     typedef typename tbb_alloc::difference_type difference_type;
-    template<typename U> struct rebind
+    template<typename U> struct rebind final
         { typedef tbb_scalable_allocator<U> other; };
     
     typedef typename tbb_alloc::reference reference;
@@ -62,7 +62,7 @@ public:
     typedef void const *const_void_pointer;
     typedef tbb_alloc::value_type value_type;
 
-    template<typename U> struct rebind
+    template<typename U> struct rebind final
         { typedef tbb_scalable_allocator<U> other; };
 
     tbb_scalable_allocator() : alloc() {}

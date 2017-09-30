@@ -3,7 +3,7 @@
 #include <utility>
 namespace hg {
 template<typename T>
-struct Vector2 {
+struct Vector2 final {
     Vector2() :
         x(), y() {}
     
@@ -14,8 +14,7 @@ struct Vector2 {
 };
 
 template<typename T>
-struct Rect {
-    
+struct Rect final {
     Rect() :
         x(), y(), w(), h() {}
     

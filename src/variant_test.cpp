@@ -8,7 +8,7 @@ namespace {
     struct A{};
     struct B{};
 
-    struct test_Visitor {
+    struct test_Visitor final {
         typedef void result_type;
         
         result_type operator()(A) {}
@@ -19,7 +19,7 @@ namespace {
         bool &worked;
     };
     
-    struct test_MultiVisitor {
+    struct test_MultiVisitor final {
         typedef void result_type;
         
         result_type operator()(A, A) {
@@ -54,7 +54,7 @@ namespace {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-member-function"
 #endif
-    struct test_RefCategoryVisitor {
+    struct test_RefCategoryVisitor final {
         typedef void result_type;
         bool &worked;
         
@@ -113,21 +113,21 @@ namespace {
         }
     };
 
-    struct test_RefCatVis0 {
+    struct test_RefCatVis0 final {
         typedef void result_type;
         result_type operator()(A&&) {
         
         }
     };
     
-    struct test_RefCatVis1 {
+    struct test_RefCatVis1 final {
         typedef void result_type;
         result_type operator()(A&&) {
         }
         result_type operator()(B&&) {
         }
     };
-    struct test_RefCatVis2 {
+    struct test_RefCatVis2 final {
         typedef void result_type;
         bool &worked;
         result_type operator()(A&, A&) {
@@ -161,7 +161,7 @@ namespace {
         return worked;
     }
 
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("variant_test_apply_visitor", test_apply_visitor);
             ::hg::getTestDriver().registerUnitTest("variant_test_apply_visitor_forwarding", test_apply_visitor_forwarding);

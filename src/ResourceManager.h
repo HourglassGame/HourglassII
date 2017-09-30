@@ -13,13 +13,13 @@ extern sf::Font const *defaultFont;
 
 
 
-struct LevelResources {
+struct LevelResources final {
     boost::container::map<std::string, sf::Image> images;
     boost::container::map<std::string, sf::SoundBuffer> sounds;
 };
 
 
-struct LevelUIData {
+struct LevelUIData final {
     LevelResources resources;
     sf::Image wallImage;
     sf::Image guyPositionImage;

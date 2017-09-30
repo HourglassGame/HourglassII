@@ -4,7 +4,7 @@
 #include <limits>
 namespace hg
 {
-struct Attachment
+struct Attachment final
 {
     Attachment() :
             platformIndex(std::numeric_limits<std::size_t>::max()),

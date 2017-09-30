@@ -8,7 +8,7 @@ namespace hg {
 //This is the type used for the userdata which is attached to
 //the allocator. This happens to also be useful for holding other
 //information, so it has been hacked to hold the information that you see here.
-struct LuaUserData {
+struct LuaUserData final {
     LuaUserData(): is_out_of_memory_(false), is_interrupted_() {
         is_interrupted_ = false;
     }

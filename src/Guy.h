@@ -9,7 +9,7 @@
 #include "SortWeakerThanEquality_fwd.h"
 #include "ConstPtr_of_fwd.h"
 namespace hg {
-class Guy : boost::totally_ordered<Guy>
+class Guy final : boost::totally_ordered<Guy>
 {
 public:
     Guy(std::size_t index,
@@ -101,7 +101,7 @@ private:
     }
 };
 
-class GuyConstPtr : boost::totally_ordered<GuyConstPtr>
+class GuyConstPtr final : boost::totally_ordered<GuyConstPtr>
 {
 public:
     GuyConstPtr(Guy const &guy) : guy_(&guy) {}
@@ -147,13 +147,13 @@ struct ConstPtr_of<Guy> {
 };
 
 template<>
-struct sort_weaker_than_equality<Guy>
+struct sort_weaker_than_equality<Guy> final
 {
     static bool const value = true;
 };
 
 template<>
-struct sort_weaker_than_equality<GuyConstPtr>
+struct sort_weaker_than_equality<GuyConstPtr> final
 {
     static bool const value = true;
 };

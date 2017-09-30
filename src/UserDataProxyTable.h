@@ -22,7 +22,7 @@
 //In particular, the commented out functions are not wrapped, even though they probably should
 //be.
 namespace hg {
-    struct UDPT {
+    struct UDPT final {
         int baseTable;
         int outerTable;
     };

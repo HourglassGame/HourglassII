@@ -7,7 +7,7 @@
 #include <cstddef>
 namespace hg
 {
-class TriggerData : boost::totally_ordered<TriggerData>
+class TriggerData final : boost::totally_ordered<TriggerData>
 {
 public:
     TriggerData(std::size_t index, mt::std::vector<int> const &value);
@@ -22,7 +22,7 @@ private:
     std::size_t index;
     mt::std::vector<int> value;
 };
-class TriggerDataConstPtr : boost::totally_ordered<TriggerDataConstPtr>
+class TriggerDataConstPtr final : boost::totally_ordered<TriggerDataConstPtr>
 {
 public:
     typedef TriggerData base_type;
@@ -43,12 +43,12 @@ struct ConstPtr_of<TriggerData> {
     typedef TriggerDataConstPtr type;
 };
 template<>
-struct sort_weaker_than_equality<TriggerData>
+struct sort_weaker_than_equality<TriggerData> final
 {
     static bool const value = true;
 };
 template<>
-struct sort_weaker_than_equality<TriggerDataConstPtr>
+struct sort_weaker_than_equality<TriggerDataConstPtr> final
 {
     static bool const value = true;
 };

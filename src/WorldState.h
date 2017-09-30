@@ -19,7 +19,7 @@ namespace hg {
 struct NewExecuteFrame;
 struct EditDepartures;
 
-class WorldState {
+class WorldState final {
 public:
     /**
      * Creates a new world state.

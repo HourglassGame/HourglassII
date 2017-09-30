@@ -32,7 +32,7 @@ struct Test {
 //The idea is that unit tests get put into objects that are globally constructed,
 //which register the tests in their constructors, and the first thing
 //that main does is to run all the tests in the test driver.
-class TestDriver : boost::noncopyable {
+class TestDriver final : boost::noncopyable {
 public:
     void registerUnitTest(std::string testName, std::function<bool()> test);
     bool passesAllTests(/*TestMonitor &*/);

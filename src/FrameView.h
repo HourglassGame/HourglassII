@@ -12,7 +12,7 @@ namespace hg {
 //positions and time-directions of objects, references to sound and graphical samples,
 //player inventory contents (including the contents of the inventories of the other
 //guys in the frame), and so on.
-class FrameView {
+class FrameView final {
 public:
     FrameView();
     FrameView(

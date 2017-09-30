@@ -3,7 +3,7 @@
 #include <vector>
 #include <utility>
 namespace hg {
-struct TriggerOffsetsAndDefaults {
+struct TriggerOffsetsAndDefaults final {
     std::vector<std::pair<int,std::vector<int>>> value;
 };
 }

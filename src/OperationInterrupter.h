@@ -86,7 +86,7 @@ private:
     mutable tbb::spin_mutex mutex;
 };
 
-struct NullOperationInterrupter : OperationInterrupter {
+struct NullOperationInterrupter final : OperationInterrupter {
     virtual FunctionHandle addInterruptionFunction(move_function<void()> interruptionFunction) override;
 };
 inline void swap(OperationInterrupter::FunctionHandle &l, OperationInterrupter::FunctionHandle &r) { l.swap(r); }

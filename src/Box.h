@@ -8,7 +8,7 @@
 namespace hg {
 class Box;
 std::ostream &operator<<(std::ostream &str, Box const &b);
-class Box : boost::totally_ordered<Box>
+class Box final : boost::totally_ordered<Box>
 {
 public:
     Box(int x, int y,
@@ -57,7 +57,7 @@ private:
     friend std::ostream &operator<<(std::ostream &str, Box const &b);
 };
 
-class BoxConstPtr : boost::totally_ordered<BoxConstPtr>
+class BoxConstPtr final : boost::totally_ordered<BoxConstPtr>
 {
 public:
     BoxConstPtr(Box const &box) : box_(&box) {}

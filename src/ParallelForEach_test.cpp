@@ -38,7 +38,7 @@ namespace {
         return false;
     }
 
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("ParallelForEach_testMutatingFunctor", testMutatingFunctor);
             ::hg::getTestDriver().registerUnitTest("ParallelForEach_testConstRange", testConstRange);

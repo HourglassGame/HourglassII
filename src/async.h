@@ -7,7 +7,7 @@
 namespace hg {
 class pool_elem;
 class thread_comm_data;
-class thread_pool {
+class thread_pool final {
 private:
     mutable std::mutex m;
     boost::container::stable_vector<pool_elem> pool;

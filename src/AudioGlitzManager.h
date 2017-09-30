@@ -18,7 +18,7 @@ enum class AudioAction {
     Stop
 };
 
-struct AudioGlitzObject : boost::totally_ordered<AudioGlitzObject> {
+struct AudioGlitzObject final : boost::totally_ordered<AudioGlitzObject> {
 private:
     auto comparison_tuple() const -> decltype(auto)
     {
@@ -42,12 +42,12 @@ public:
     }
 };
 
-struct AudioStateChange {
+struct AudioStateChange final {
     AudioAction action;
     AudioGlitzObject glitz;
 };
 
-struct AudioPlayingState {
+struct AudioPlayingState final {
 public:
     void runStep(std::vector<AudioStateChange> const &diff) {
         for (auto const &change: diff) {
@@ -117,7 +117,7 @@ private:
     std::multimap<AudioGlitzObject, sf::Sound> currentAudio;
 };
 
-class AudioGlitzManager {
+class AudioGlitzManager final {
 public:
     template<typename RandomAccessAudioGlitzObjectRange>
     std::vector<AudioStateChange> updatePlayingState(RandomAccessAudioGlitzObjectRange const &newAudios) {

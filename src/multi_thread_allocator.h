@@ -22,7 +22,7 @@ namespace hg {
     //Metafunction to calculate the allocator type to use
     //when multiple threads may be performing allocations/deallocations
     //simultaneously.
-    template<typename T> struct multi_thread_allocator {
+    template<typename T> struct multi_thread_allocator final {
         typedef tbb_scalable_allocator<T> type;
     };
     

@@ -5,7 +5,7 @@
 namespace hg {
 class ArrivalLocation;
 std::ostream &operator<<(std::ostream &os, ArrivalLocation const &toPrint);
-class ArrivalLocation {
+class ArrivalLocation final {
 public:
     ArrivalLocation(
         int x,

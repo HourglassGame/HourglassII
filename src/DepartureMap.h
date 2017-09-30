@@ -11,7 +11,7 @@
 
 
 namespace hg {
-class DepartureMap {
+class DepartureMap final {
     typedef
     mt::boost::unordered_map<
         Frame *,

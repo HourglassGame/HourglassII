@@ -3,11 +3,11 @@
 #include <boost/checked_delete.hpp>
 namespace hg {
     template <typename T>
-    struct default_delete {
+    struct default_delete final {
         void operator()(T *ptr) const { boost::checked_delete(ptr); }
     };
     template <typename T>
-    struct default_delete<T[]> {
+    struct default_delete<T[]> final {
         void operator()(T ptr[]) const { boost::checked_array_delete(ptr); }
     };
 }

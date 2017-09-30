@@ -3,7 +3,7 @@
 #include <cstddef>
 namespace hg {
     template<class T, T... Ints>
-    struct integer_sequence {
+    struct integer_sequence final {
         typedef T value_type;
         static_assert( std::is_integral<T>::value,
                       "hg::integer_sequence can only be instantiated with an integral type" );

@@ -3,7 +3,7 @@
 namespace hg {
 namespace clone_ptr_test {
 namespace {
-    struct Cloneable {
+    struct Cloneable final {
         Cloneable(int na) : a(na) {}
         int a;
     };
@@ -20,7 +20,7 @@ namespace {
         three.swap(fourteen);
         return three.get()->a == 14 && fourteen.get()->a == 3;
     }
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("clone_ptr_testAssignment", testAssignment);
             ::hg::getTestDriver().registerUnitTest("clone_ptr_testSwap", testSwap);

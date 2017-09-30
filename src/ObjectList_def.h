@@ -24,7 +24,7 @@ ObjectList<ListTypes>::ObjectList() :
 }
 
 namespace {
-    struct Insert
+    struct Insert final
     {
         template<typename Container, typename SinglePassRange>
         void operator()(Container &toInsertInto, SinglePassRange const &toInsert) const
@@ -74,7 +74,7 @@ bool ObjectList<ListTypes>::operator==(ObjectList<ListTypes> const &o) const
 }
 
 namespace {
-    struct Empty
+    struct Empty final
     {
         template<typename T>
         bool operator()(T const &toCheck)

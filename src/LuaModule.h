@@ -4,7 +4,7 @@
 #include <string>
 #include <tuple>
 namespace hg {
-struct LuaModule {
+struct LuaModule final {
 private:
     auto comparison_tuple() const -> decltype(auto)
     {

@@ -5,7 +5,7 @@
 #include "Ability.h"
 #include "mt/std/map"
 namespace hg {
-class GuyOutputInfo {
+class GuyOutputInfo final {
 public:
     explicit GuyOutputInfo(
         std::size_t index,

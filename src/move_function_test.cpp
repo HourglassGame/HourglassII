@@ -22,7 +22,7 @@ namespace {
         return passed;
     }
 
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("move_function_testOperatorBool", testOperatorBool);
         }

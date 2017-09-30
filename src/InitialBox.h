@@ -2,7 +2,7 @@
 #define HG_INITIAL_BOX_H
 #include "Box.h"
 namespace hg {
-struct InitialBox {
+struct InitialBox final {
     explicit InitialBox(Box const &nbox) : box(nbox) {}
     Box box;
 };

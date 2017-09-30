@@ -3,7 +3,7 @@
 #include "multi_thread_allocator.h"
 namespace hg {
     template <typename T>
-    struct multi_thread_deleter {
+    struct multi_thread_deleter final {
         void operator()(T *ptr) const { multi_thread_delete(ptr); }
     };
     template <typename T>

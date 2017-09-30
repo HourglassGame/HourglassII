@@ -19,7 +19,7 @@
 #include "FrameID_fwd.h"
 
 namespace hg {
-struct Universe_Frame_access{
+struct Universe_Frame_access final {
     friend class Universe;
 private:
     Universe_Frame_access(){}
@@ -33,7 +33,7 @@ Universe &getUniverse(Frame *frame);
 Universe const &getUniverse(Frame const *frame);
 int getFrameNumber(Frame const *frame);
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
-class Frame {
+class Frame final {
 public:
     typedef mt::std::map<Frame *, ObjectList<Normal>> FrameDeparturesT;
     typedef tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *> FrameArrivalsT;

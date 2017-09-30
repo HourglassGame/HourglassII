@@ -18,7 +18,7 @@ namespace hg {
 class Frame;
 class Level;
 struct TimeEngineImpl;
-class TimeEngine
+class TimeEngine final
 {
 public:
     typedef boost::container::vector<FrameUpdateSet> FrameListList;

@@ -6,7 +6,7 @@
 #include "move_function.h"
 #include <functional>
 namespace hg {
-    class thread_comm_data {
+    class thread_comm_data final {
     public:
         thread_comm_data(thread_pool *pool, move_function<void()> &&f) :
             m(),
@@ -54,7 +54,7 @@ namespace hg {
         bool ended;
     };
 
-    class pool_elem {
+    class pool_elem final {
     public:
         pool_elem(thread_pool *pool, move_function<void()> &&f) :
             chan(pool, std::move(f)),

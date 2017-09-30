@@ -23,19 +23,19 @@
 namespace hg {
 
 template <typename T>
-struct tag {};
+struct tag final {};
 
 namespace variant_detail {
 template <typename... T>
 struct max_align;
 
 template<typename T>
-struct max_align<T>
+struct max_align<T> final
     : std::integral_constant<std::size_t, alignof (T)>
 {};
 
 template <typename T, typename... Tail>
-struct max_align<T, Tail...>
+struct max_align<T, Tail...> final
     : std::integral_constant<
         std::size_t,
         (max_align<T>::value > max_align<Tail...>::value ? max_align<T>::value : max_align<Tail...>::value)>
@@ -46,12 +46,12 @@ template <typename... T>
 struct max_size;
 
 template<typename T>
-struct max_size<T>
+struct max_size<T> final
     : std::integral_constant<std::size_t, sizeof (T)>
 {};
 
 template <typename T, typename... Tail>
-struct max_size<T, Tail...>
+struct max_size<T, Tail...> final
     : std::integral_constant<
         std::size_t,
         (max_size<T>::value > max_size<Tail...>::value ? max_size<T>::value : max_size<Tail...>::value)>
@@ -88,9 +88,9 @@ template <typename T>
 struct is_tag;
 
 template <typename T>
-struct is_tag<tag<T>> : std::true_type {};
+struct is_tag<tag<T>> final : std::true_type {};
 template <typename T>
-struct is_tag : std::false_type {};
+struct is_tag final : std::false_type {};
 template<typename... Types>
 struct DtorVisitor;
 template<typename Head> struct DtorVisitor<Head> {
@@ -133,7 +133,7 @@ struct CopyVisitor<Variant, Head, Types...> : CopyVisitor<Variant, Types...> {
 template<typename... Types>
 struct MoveVisitor;
 
-template<typename Variant, typename Head> struct MoveVisitor<Variant, Head> {
+template<typename Variant, typename Head> struct MoveVisitor<Variant, Head>  {
     typedef void result_type;
     Variant *o;
     MoveVisitor(Variant &&o) : o(&o) {}
@@ -357,26 +357,26 @@ private:
         }
     }
 
-    struct lvalue_ref_converter {
+    struct lvalue_ref_converter final {
         using variant_t = variant;
         template<typename T> struct apply {
             typedef T &type;
         };
     };
-    struct lvalue_const_ref_converter {
+    struct lvalue_const_ref_converter final {
         using variant_t = variant const;
         template<typename T> struct apply {
             typedef T const &type;
         };
     };
     
-    struct rvalue_ref_converter {
+    struct rvalue_ref_converter final {
         using variant_t = variant;
         template<typename T> struct apply {
             typedef T &&type;
         };
     };
-    struct rvalue_const_ref_converter {
+    struct rvalue_const_ref_converter final {
         using variant_t = variant const;
         template<typename T> struct apply {
             typedef T const &&type;
@@ -408,14 +408,14 @@ public:
     }
 
 private:
-    struct dummy{};
+    struct dummy final {};
     //Dummy parameter since templates cannot be fully specialised in class scope.
     template<typename, typename... ToLookFor> struct active_struct;
-    template<typename unused> struct active_struct<unused> {
+    template<typename unused> struct active_struct<unused> final {
         bool operator()(variant_detail::UnionTagType<sizeof... (Types)> currentMember_) const {return false;}
     };
     template<typename unused, typename Head, typename... ToLookFor>
-    struct active_struct<unused, Head, ToLookFor...> {
+    struct active_struct<unused, Head, ToLookFor...> final {
         bool operator()(variant_detail::UnionTagType<sizeof... (Types)> currentMember_) const {
             return variant_detail::IndexOf<Head, Types...>::value == currentMember_
                 || active_struct<unused, ToLookFor...>{}(currentMember_);
@@ -454,7 +454,7 @@ private:
     template<std::size_t N, typename RefConverter> friend struct visit_aux_struct;
     template<std::size_t N, typename RefConverter> struct visit_aux_struct;
     template<typename RefConverter>
-    struct visit_aux_struct<0,RefConverter> {
+    struct visit_aux_struct<0,RefConverter> final {
         typename RefConverter::variant_t *this_;
         visit_aux_struct(typename RefConverter::variant_t *this_) : this_(this_) {}
         template<typename Visitor>
@@ -469,7 +469,7 @@ private:
         }
     };
     template<std::size_t N, typename RefConverter>
-    struct visit_aux_struct {
+    struct visit_aux_struct final {
         typename RefConverter::variant_t *this_;
         visit_aux_struct(typename RefConverter::variant_t *this_) : this_(this_) {}
         template<typename Visitor>
@@ -517,7 +517,7 @@ make_NAryVisitorFlattener(
     std::tuple<TailVariants...> &&tailVariants);
 
 template<typename Visitor, typename MatchedValueTuple, typename CurrentVariant, typename... TailVariants>
-struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVariants...> {
+struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVariants...> final {
     typedef typename std::remove_reference<Visitor>::type::result_type result_type;
 
     Visitor visitor;
@@ -538,7 +538,7 @@ struct NAryVisitorFlattener<Visitor, MatchedValueTuple, CurrentVariant, TailVari
 
 
 template<typename Visitor, typename MatchedValueTuple>
-struct NAryVisitorFlattener<Visitor, MatchedValueTuple> {
+struct NAryVisitorFlattener<Visitor, MatchedValueTuple> final {
     typedef typename std::remove_reference<Visitor>::type::result_type result_type;
 
     Visitor visitor;

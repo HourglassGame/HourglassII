@@ -6,7 +6,7 @@
 #include <boost/swap.hpp>
 
 namespace hg {
-struct TimeEngineImpl {
+struct TimeEngineImpl final {
     TimeEngineImpl *clone() const {
         return new TimeEngineImpl(*this);
     }

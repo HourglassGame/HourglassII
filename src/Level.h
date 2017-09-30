@@ -7,7 +7,7 @@
 #include "Environment.h"
 #include <tuple>
 namespace hg {
-class Level {
+class Level final {
 private:
     auto equality_tuple() const -> decltype(auto)
     {

@@ -157,7 +157,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     auto interrupter = hg::make_unique<hg::OperationInterrupter>();
     boost::future<hg::TimeEngine::RunResult> futureRunResult;
 
-    struct TimeEngineCleanupEnforcer {
+    struct TimeEngineCleanupEnforcer final {
         decltype(interrupter) &interrupter_;
         decltype(futureRunResult) &futureRunResult_;
         ~TimeEngineCleanupEnforcer() {

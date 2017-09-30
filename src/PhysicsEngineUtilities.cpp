@@ -32,7 +32,7 @@ void makeBoxGlitzListForNormalDepartures(
     }
 }
 
-struct Collidables
+struct Collidables final
 {
     Collidables(
         Wall const *nwalls,

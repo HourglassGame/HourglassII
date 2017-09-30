@@ -48,7 +48,7 @@ inline void addCurrentGuyArrow(
                 0xFF000000u)));
 }
 
-class GuyGlitzAdder {
+class GuyGlitzAdder final {
 public:
     GuyGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,

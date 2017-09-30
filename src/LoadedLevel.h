@@ -7,7 +7,7 @@
 #include "OperationInterrupter.h"
 #include "as_lvalue.h"
 namespace hg{
-    struct LoadedLevel {
+    struct LoadedLevel final {
         TimeEngine timeEngine;
         LevelResources resources;
         std::unique_ptr<sf::Image> bakedWall;

@@ -4,7 +4,7 @@
 #include "OperationInterrupter.h"
 #include <utility>
 namespace hg {
-class LuaInterruptionHandle {
+class LuaInterruptionHandle final {
 public:
     LuaInterruptionHandle() = default;
     LuaInterruptionHandle(lua_State *L, OperationInterrupter::FunctionHandle functionHandle) :

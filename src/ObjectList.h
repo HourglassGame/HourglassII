@@ -18,7 +18,7 @@
 namespace hg {
 // Object list stores all data sent between frames or to rendering engine
 template<typename ListTypes>
-class ObjectList : boost::equality_comparable<ObjectList<ListTypes> >
+class ObjectList final : boost::equality_comparable<ObjectList<ListTypes> >
 {
 public:
     ObjectList();

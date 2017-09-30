@@ -27,7 +27,7 @@ FrameID getArbitraryFrame(UniverseID const &universe, int frameNumber);
 int getTimelineLength(UniverseID const &universe);
 std::size_t hash_value(UniverseID const &toHash);
 //Uniquely identifies a particular universe.
-class UniverseID {
+class UniverseID final {
 public:
     //top level universeID
     //timelineLength is always length of top-level universe

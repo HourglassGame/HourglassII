@@ -73,7 +73,7 @@ class TriggerFrameStateImplementation
 class TriggerFrameState;
 //Movable but non-copyable.
 //Movable using the move() member function, and also with swap().
-class TriggerFrameState
+class TriggerFrameState final
 {
     public:
     typedef TriggerFrameStateImplementation::DepartureInformation DepartureInformation;

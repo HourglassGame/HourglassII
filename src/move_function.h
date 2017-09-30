@@ -23,7 +23,7 @@ struct function_base<R(ArgTypes...)>
 template<typename F, typename Signature>
 struct function_obj;
 template<typename F, typename R, typename... ArgTypes>
-struct function_obj<F, R(ArgTypes...)> : function_base<R(ArgTypes...)>
+struct function_obj<F, R(ArgTypes...)> final : function_base<R(ArgTypes...)>
 {
     function_obj(F &&f) noexcept :
         f(std::forward<F>(f))
@@ -37,7 +37,7 @@ private:
     typename std::decay<F>::type f;
 };
 template<typename F, typename... ArgTypes>
-struct function_obj<F, void(ArgTypes...)> : function_base<void(ArgTypes...)>
+struct function_obj<F, void(ArgTypes...)> final : function_base<void(ArgTypes...)>
 {
     function_obj(F &&f) noexcept :
         f(std::forward<F>(f))
@@ -63,7 +63,7 @@ private:
 template<typename> class move_function;
 
 template<typename R, typename... ArgTypes>
-class move_function<R(ArgTypes...)>
+class move_function<R(ArgTypes...)> final
 {
 public:
     move_function() noexcept = default;

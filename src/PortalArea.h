@@ -5,7 +5,7 @@
 namespace hg {
 class PortalArea;
 std::ostream &operator<<(std::ostream &os, PortalArea const &toPrint);
-class PortalArea {
+class PortalArea final {
 public:
     PortalArea(
         int index,

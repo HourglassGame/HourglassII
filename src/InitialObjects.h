@@ -3,7 +3,7 @@
 #include "ObjectList.h"
 #include "ObjectListTypes.h"
 namespace hg {
-struct InitialObjects {
+struct InitialObjects final {
     explicit InitialObjects(ObjectList<NonGuyDynamic> const &nlist) : list(nlist) {}
     ObjectList<NonGuyDynamic> list;
 };

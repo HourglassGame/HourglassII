@@ -9,7 +9,7 @@
 
 namespace hg {
 //Wraps sf::RenderWindow and adds some additional features.
-struct RenderWindow {
+struct RenderWindow final {
     struct InputState {
         explicit InputState(
             boost::container::vector<bool> const &pressedKeys,
@@ -38,7 +38,7 @@ struct RenderWindow {
         boost::container::vector<bool> pressedMouseButtons;
         sf::Vector2i mousePosition;
     };
-    struct InputStateTracker {
+    struct InputStateTracker final {
         explicit InputStateTracker(sf::RenderWindow const &window) :
             pressedKeys(sf::Keyboard::KeyCount),
             pressedMouseButtons(sf::Mouse::ButtonCount),

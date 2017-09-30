@@ -4,7 +4,7 @@
 #include <cstddef>
 namespace hg {
 template <typename T>
-struct StdHashCompare
+struct StdHashCompare final
 {
     bool equal(T const &j, T const &k) const
     {

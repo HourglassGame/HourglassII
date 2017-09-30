@@ -2,7 +2,7 @@
 #define HG_VECTOR2_H
 namespace hg {
 template<typename T>
-struct vector2
+struct vector2 final
 {
     vector2(T nx, T ny) : x(nx), y(ny) {}
     T x;

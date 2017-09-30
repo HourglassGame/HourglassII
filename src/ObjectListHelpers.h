@@ -24,7 +24,7 @@ void n_ary_for_each(SequenceOfSequences const &s, Func const &f)
     boost::fusion::for_each(zip_view<SequenceOfSequences>(s),
              fused_procedure<Func const &>(f));
 }
-struct Swap
+struct Swap final
 {
     template<typename T1, typename T2>
     void operator()(T1 &lhs, T2 &rhs) const {
@@ -33,7 +33,7 @@ struct Swap
 };
 
 template<typename T>
-struct Equivalent
+struct Equivalent final
 {
     bool operator()(T const &l, T const &r) const {
         return !(l < r || r < l);

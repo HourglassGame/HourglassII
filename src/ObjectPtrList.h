@@ -16,7 +16,7 @@
 
 namespace hg {
 template <typename ObjectConstPtr>
-struct GetBase
+struct GetBase final
 {
     typename ObjectConstPtr::base_type const &
         operator()(ObjectConstPtr ptr) const
@@ -29,7 +29,7 @@ struct GetBase
 //As a general rule, none of the member functions of ObjectPtrList have well defined behaviour
 //if objects that had been added to the ObjectPtrList are not live.
 template<typename ListTypes>
-class ObjectPtrList
+class ObjectPtrList final
 {
 public:
     ObjectPtrList();

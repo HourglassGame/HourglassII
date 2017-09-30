@@ -26,7 +26,7 @@ struct GlitzPersisterImpl : private boost::totally_ordered<GlitzPersisterImpl>
     virtual bool operator<(GlitzPersisterImpl const &o) const = 0;
 };
 
-class GlitzPersister : boost::totally_ordered<GlitzPersister>
+class GlitzPersister final : boost::totally_ordered<GlitzPersister>
 {
 public:
     GlitzPersister(GlitzPersisterImpl *impl) :
@@ -60,7 +60,7 @@ private:
     }
 };
 
-class GlitzPersisterConstPtr : boost::totally_ordered<GlitzPersisterConstPtr>
+class GlitzPersisterConstPtr final : boost::totally_ordered<GlitzPersisterConstPtr>
 {
 public:
     GlitzPersisterConstPtr(GlitzPersister const &glitzPersister) : glitzPersister(&glitzPersister) {}
@@ -82,7 +82,7 @@ struct ConstPtr_of<GlitzPersister> {
     typedef GlitzPersisterConstPtr type;
 };
 
-class StaticGlitzPersister : public GlitzPersisterImpl
+class StaticGlitzPersister final : public GlitzPersisterImpl
 {
 public:
     StaticGlitzPersister(
@@ -117,7 +117,7 @@ private:
     }
 };
 
-class AudioGlitzPersister : public GlitzPersisterImpl
+class AudioGlitzPersister final : public GlitzPersisterImpl
 {
 public:
     AudioGlitzPersister(

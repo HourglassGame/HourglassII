@@ -654,7 +654,7 @@ Spec:
         return true;
     }
 
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("PhysicsEngine_testTester", testTester);
             ::hg::getTestDriver().registerUnitTest("PhysicsEngine_testGetNormalisedRayToLineCollision", testGetNormalisedRayToLineCollision);

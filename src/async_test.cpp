@@ -61,7 +61,7 @@ namespace {
         //enqueued tasks get to run in parallel.
         return true;
     }
-    struct tester {
+    struct tester final {
         tester() {
             ::hg::getTestDriver().registerUnitTest("async_testAsyncExecution", testAsyncExecution);
         }

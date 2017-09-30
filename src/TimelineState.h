@@ -19,7 +19,7 @@
 
 namespace hg {
 
-class TimelineState
+class TimelineState final
 {
     static boost::container::map<Frame*, ObjectList<Normal>> fixPermanentDepartures(
         FramePointerUpdater const& framePointerUpdater,

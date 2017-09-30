@@ -26,7 +26,7 @@ sf::Vector2f normal(sf::Vector2f const vec) {
 }
 }
 
-class sfRenderTargetCanvas : public Canvas
+class sfRenderTargetCanvas final : public Canvas
 {
 public:
     explicit sfRenderTargetCanvas(

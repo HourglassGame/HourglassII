@@ -29,7 +29,7 @@ class Frame;
 //My measurements show that this is approximately 5x faster than
 //a simple set implementation overall in typical high-propagation use.
 //(I have not done conclusive tests by any means).
-class FrameUpdateSet : boost::equality_comparable<FrameUpdateSet> {
+class FrameUpdateSet final : boost::equality_comparable<FrameUpdateSet> {
 public:
     typedef std::vector<Frame *> SetType;
 

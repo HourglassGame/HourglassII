@@ -18,7 +18,7 @@
 
 #include "Frame_fwd.h"
 namespace hg {
-class PhysicsEngine
+class PhysicsEngine final
 {
 public:
     PhysicsEngine(

@@ -2,7 +2,7 @@
 #define HG_OBJECT_AND_TIME
 namespace hg {
     template<typename Object, typename FrameT>
-    struct ObjectAndTime
+    struct ObjectAndTime final
     {
         ObjectAndTime(
             Object const &nobject,

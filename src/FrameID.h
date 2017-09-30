@@ -29,7 +29,7 @@ std::ostream &operator<<(std::ostream &os, FrameID const &toPrint);
 std::istream &operator>>(std::istream &is, FrameID &toRead);
 //Class following original intention of FrameID. May be too slow for back-end use,
 //Compliments Frame * by not requiring a central authority (ie the base universe) to be used
-class FrameID : boost::totally_ordered<FrameID>
+class FrameID final : boost::totally_ordered<FrameID>
 {
 public:
     //Creates a nullframe

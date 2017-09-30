@@ -20,7 +20,7 @@ namespace hg {
 class InputList;
 std::ostream &operator<<(std::ostream &os, InputList const &toPrint);
 std::istream &operator>>(std::istream &is, InputList &toRead);
-class InputList : boost::equality_comparable<InputList>
+class InputList final : boost::equality_comparable<InputList>
 {
 public:
     InputList() noexcept;

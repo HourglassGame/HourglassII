@@ -14,7 +14,7 @@
 namespace hg {
 class Universe;
 
-struct FramePointerUpdater_Universe_access {
+struct FramePointerUpdater_Universe_access final {
     private:
     friend struct FramePointerUpdater;
     FramePointerUpdater_Universe_access(){}
@@ -22,7 +22,7 @@ struct FramePointerUpdater_Universe_access {
 
 //TODO - performance optimisation of FramePointerUpdater,
 // it just hasn't been the same since it stopped using direct access to the `frames` array.
-struct FramePointerUpdater {
+struct FramePointerUpdater final {
     FramePointerUpdater(Universe& universe)
         : newUniverse(&universe)
     {}
@@ -49,7 +49,7 @@ Frame const *getArbitraryFrameClamped(Universe const &universe, int frameNumber)
 //returns the length of this universe's timeline
 int getTimelineLength(Universe const &universe);
 
-class Universe {
+class Universe final {
 public:
     explicit Universe(int timelineLength);
 

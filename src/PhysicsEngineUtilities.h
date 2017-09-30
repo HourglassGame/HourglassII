@@ -41,7 +41,7 @@
 
 #include <cassert>
 namespace hg {
-struct SortObjectList {
+struct SortObjectList final {
     void operator()(ObjectList<Normal>& toSort) const {
         toSort.sort();
     }
@@ -177,7 +177,7 @@ void buildDepartures(
 bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h);
 bool wallAtExclusive(Environment const &env, int x, int y, int w, int h);
 
-struct GunRaytraceResult {
+struct GunRaytraceResult final {
     PhysicsObjectType targetType;
     std::size_t targetId;
     int px;
@@ -216,7 +216,7 @@ bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int
 bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, int buffer);
 bool RectangleWithinInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
-struct RaytraceRectangleCollisionResult {
+struct RaytraceRectangleCollisionResult final {
     //TODO: consider making this a variant/optional; since `point` should not be accessed unless `hit` is true
     bool const hit;
     vector2<int> const point;
