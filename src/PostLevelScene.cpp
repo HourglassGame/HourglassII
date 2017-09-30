@@ -25,13 +25,13 @@ namespace {
 }
 void run_post_level_scene(
     hg::RenderWindow &window,
-    LoadedLevel const &initialTimeEngine,
-    LoadedLevel const &finalTimeEngine)
+    TimeEngine const &initialTimeEngine,
+    LoadedLevel const &finalLevel)
 {
     //hg::unique_ptr<hg::OperationInterrupter> interrupter(new hg::OperationInterrupter());
-    hg::TimeEngine const &timeEngine = finalTimeEngine.timeEngine;
-    hg::LevelResources const &levelResources = finalTimeEngine.resources;
-    sf::Image const &wallImage = finalTimeEngine.bakedWall;
+    hg::TimeEngine const &timeEngine = finalLevel.timeEngine;
+    hg::LevelResources const &levelResources = finalLevel.resources;
+    sf::Image const &wallImage = *finalLevel.bakedWall;
 
     //enum {AWAITING_INPUT, RUNNING_LEVEL, PAUSED} state(AWAITING_INPUT);
 
@@ -40,7 +40,7 @@ void run_post_level_scene(
     hg::Inertia inertia;
     inertia.save(FrameID(0, UniverseID(timeEngine.getTimelineLength())), TimeDirection::FORWARDS);
     
-    auto audioPlayingState = AudioPlayingState(initialTimeEngine.resources.sounds);
+    auto audioPlayingState = AudioPlayingState(finalLevel.resources.sounds);
     auto audioGlitzManager = AudioGlitzManager();
     
     //std::vector<hg::InputList> replay;
@@ -69,7 +69,7 @@ void run_post_level_scene(
                         return;
                       //Save Replay
                       case sf::Keyboard::K:
-                        saveReplay("replay", finalTimeEngine.timeEngine.getReplayData());
+                        saveReplay("replay", finalLevel.timeEngine.getReplayData());
                       break;
                       //Restart Replay
                     

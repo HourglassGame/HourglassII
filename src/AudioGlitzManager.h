@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <boost/container/map.hpp>
 #include <tuple>
 #include <boost/operators.hpp>
 #include <SFML/Audio/Sound.hpp>
@@ -74,7 +75,7 @@ public:
         }
     }
 
-    AudioPlayingState(std::map<std::string, sf::SoundBuffer> const& soundBuffers) :
+    AudioPlayingState(boost::container::map<std::string, sf::SoundBuffer> const& soundBuffers) :
         i(0),
         soundBuffers(&soundBuffers),
         currentAudio()
@@ -112,7 +113,7 @@ private:
     }
 
     int i;
-    std::map<std::string, sf::SoundBuffer> const *soundBuffers;
+    boost::container::map<std::string, sf::SoundBuffer> const *soundBuffers;
     std::multimap<AudioGlitzObject, sf::Sound> currentAudio;
 };
 

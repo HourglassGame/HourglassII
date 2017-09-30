@@ -11,12 +11,12 @@
 #include <algorithm>
 
 namespace hg {
-std::map<Frame *, ObjectList<Normal>>
+boost::container::map<Frame *, ObjectList<Normal>>
 TimelineState::fixPermanentDepartures(
         FramePointerUpdater const &framePointerUpdater,
-        std::map<Frame *, ObjectList<Normal>> const &oldPermanentDepartures)
+        boost::container::map<Frame *, ObjectList<Normal>> const &oldPermanentDepartures)
 {
-    std::map<Frame *, ObjectList<Normal>> newPermanentDepartures;
+    boost::container::map<Frame *, ObjectList<Normal>> newPermanentDepartures;
     for (auto const &departurePair: oldPermanentDepartures) {
         Frame *newFrame = framePointerUpdater.updateFrame(departurePair.first);
         newPermanentDepartures[newFrame] = departurePair.second;

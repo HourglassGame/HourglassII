@@ -9,7 +9,7 @@
 
 #include <tbb/task.h>
 
-#include <map>
+#include <boost/container/map.hpp>
 #include <utility>
 
 #include "FrameID_fwd.h"
@@ -21,9 +21,9 @@ namespace hg {
 
 class TimelineState
 {
-    static std::map<Frame*, ObjectList<Normal>> fixPermanentDepartures(
+    static boost::container::map<Frame*, ObjectList<Normal>> fixPermanentDepartures(
         FramePointerUpdater const& framePointerUpdater,
-        std::map<Frame*, ObjectList<Normal>> const& oldPermanentDepartures);
+        boost::container::map<Frame*, ObjectList<Normal>> const& oldPermanentDepartures);
 public:
     /**
      * Constructs a timeline state of length timeLength containing no arrivals or departures.
@@ -85,7 +85,7 @@ public:
     
 private:
     Universe universe_;
-    std::map<Frame*, ObjectList<Normal>> permanentDepartures_;
+    boost::container::map<Frame*, ObjectList<Normal>> permanentDepartures_;
 };
 inline void swap(TimelineState &l, TimelineState &r) { l.swap(r); }
 }

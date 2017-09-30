@@ -84,11 +84,11 @@ variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::Rende
                 CachingTimeEngineLoader(selectedPath)),
             move_function<LoadedLevel(TimeEngine &&)>(
                 [levelPathString](TimeEngine &&timeEngine) -> LoadedLevel {
-                    auto wall = loadAndBakeWallImage(timeEngine.getWall());
+                    auto wall = std::make_unique<sf::Image>(loadAndBakeWallImage(timeEngine.getWall()));
                     return {
                         std::move(timeEngine),
                         loadLevelResources(levelPathString, "GlitzData"),
-                        wall
+                        std::move(wall)
                     };
                 }
             )

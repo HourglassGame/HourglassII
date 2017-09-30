@@ -79,7 +79,7 @@ public:
     }
     virtual void drawImage(std::string const &key, float const x, float const y, float const width, float const height) override
     {
-        std::map<std::string, sf::Image>::const_iterator it(resources->images.find(key));
+        auto it(resources->images.find(key));
         if (it == resources->images.end()) {
             std::cout << "Key: " << key << " not found\n";
             assert(it != resources->images.end());

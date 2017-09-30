@@ -1,6 +1,6 @@
 #ifndef HG_RESOURCE_MANAGER_H
 #define HG_RESOURCE_MANAGER_H
-#include <map>
+#include <boost/container/map.hpp>
 #include <string>
 
 #include <SFML/Graphics/Image.hpp>
@@ -14,8 +14,8 @@ extern sf::Font const *defaultFont;
 
 
 struct LevelResources {
-    std::map<std::string, sf::Image> images;
-    std::map<std::string, sf::SoundBuffer> sounds;
+    boost::container::map<std::string, sf::Image> images;
+    boost::container::map<std::string, sf::SoundBuffer> sounds;
 };
 
 

@@ -10,7 +10,7 @@ namespace hg{
     struct LoadedLevel {
         TimeEngine timeEngine;
         LevelResources resources;
-        sf::Image bakedWall;
+        std::unique_ptr<sf::Image> bakedWall;
     };
     LoadedLevel loadLevelAndResourcesFromFile(
         boost::filesystem::path const &path,

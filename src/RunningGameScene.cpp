@@ -132,14 +132,14 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     std::vector<InputList> receivedInputs;
 
     auto frameStartTime = std::chrono::steady_clock().now();
-    LoadedLevel const initialLevel(loadedLevel);
+    TimeEngine const initialTimeEngine(loadedLevel.timeEngine);
 
     auto audioPlayingState = AudioPlayingState(loadedLevel.resources.sounds);
     auto audioGlitzManager = AudioGlitzManager();
 
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
     hg::LevelResources const &levelResources = loadedLevel.resources;
-    sf::Image const &wallImage = loadedLevel.bakedWall;
+    sf::Image const &wallImage = *loadedLevel.bakedWall;
 
     enum RunState { AWAITING_INPUT, RUNNING_LEVEL, PAUSED };
     RunState state(AWAITING_INPUT);
@@ -266,7 +266,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     interrupter.reset();
                 }
                 catch (hg::PlayerVictoryException const &) {
-                    run_post_level_scene(window, initialLevel, loadedLevel);
+                    run_post_level_scene(window, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)
                     return GameWon_tag{};
                 }
