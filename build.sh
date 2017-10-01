@@ -1,0 +1,1 @@
+${CXX} -O3 -DTBB_USE_CAPTURED_EXCEPTION=0 -lboost_filesystem -lboost_chrono -lboost_system -lboost_serialization -lboost_exception -lboost_thread -ltbbmalloc_proxy -ltbbmalloc -ltbb -lsfml-system -lsfml-network -lsfml-window -lsfml-audio -lsfml-graphics -DBOOST_THREAD_VERSION=4 -std=c++1z unitysrc/*.cpp -o HourglassII
