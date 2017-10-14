@@ -438,6 +438,7 @@
     <ClCompile Include="..\..\..\..\src\Scene.cpp" />
     <ClCompile Include="..\..\..\..\src\SelectionScene.cpp" />
     <ClCompile Include="..\..\..\..\src\SimpleLuaCpp.cpp" />
+    <ClCompile Include="..\..\..\..\src\StackUnwind_test.cpp" />
     <ClCompile Include="..\..\..\..\src\TestDriver.cpp" />
     <ClCompile Include="..\..\..\..\src\TimeDirection.cpp" />
     <ClCompile Include="..\..\..\..\src\TimeEngine.cpp" />

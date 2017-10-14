@@ -44,3 +44,4 @@
 #include "../src/ReplayIO_test.cpp"
 #include "../src/async.cpp"
 #include "../src/async_test.cpp"
+#include "../src/StackUnwind_test.cpp"
