@@ -4,7 +4,7 @@ stdenv.mkDerivation rec {
   env = buildEnv { name = name; paths = buildInputs; };
   buildInputs = [
     gcc7
-    boost163
+    boost165
     tbb
     sfml
   ];
