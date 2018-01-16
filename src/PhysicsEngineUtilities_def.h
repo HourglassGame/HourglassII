@@ -33,8 +33,8 @@ template <
     typename RandomAccessMutatorRange,
     typename FrameT>
     void makeBoxAndTimeWithPortalsAndMutators(
-        mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-        mt::std::vector<char> &nextBoxNormalDeparture,
+        mp::std::vector<ObjectAndTime<Box, FrameT>> &nextBox,
+        mp::std::vector<char> &nextBoxNormalDeparture,
         RandomAccessPortalRange const &portals,
         RandomAccessMutatorRange const &mutators,
         int x,
@@ -45,7 +45,8 @@ template <
         int oldIllegalPortal,
         TimeDirection const oldTimeDirection,
         TriggerFrameState &triggerFrameState,
-        FrameT frame)
+        FrameT frame,
+        memory_pool<user_allocator_tbb_alloc> &pool)
 {
     TimeDirection timeDirection(oldTimeDirection);
     int arrivalBasis = -1;
@@ -54,7 +55,7 @@ template <
 
 
     // Mutator check
-    mt::std::vector<int> mutatorCollisions;
+    mp::std::vector<int> mutatorCollisions(pool);
 
     for (unsigned i = 0; i < mutators.size(); ++i)
     {
@@ -185,27 +186,28 @@ void guyStep(
     RandomAccessGuyRange const &guyArrivalList,
     Frame *frame,
     std::vector<InputList> const &playerInput,
-    mt::std::vector<ObjectAndTime<Guy, Frame *> > &nextGuy,
-    mt::std::vector<ObjectAndTime<Box, Frame *> > &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Guy, Frame *>> &nextGuy,
+    mp::std::vector<ObjectAndTime<Box, Frame *>> &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
     RandomAccessBoxRange const &boxArrivalList,
-    mt::std::vector<Collision> const &nextPlatform,
-    mt::std::vector<PortalArea> const &nextPortal,
-    mt::std::vector<ArrivalLocation> const &arrivalLocations,
-    mt::std::vector<MutatorArea> const &mutators,
+    mp::std::vector<Collision> const &nextPlatform,
+    mp::std::vector<PortalArea> const &nextPortal,
+    mp::std::vector<ArrivalLocation> const &arrivalLocations,
+    mp::std::vector<MutatorArea> const &mutators,
     TriggerFrameState &triggerFrameState,
     GuyGlitzAdder const &guyGlitzAdder,
     bool &nextPlayerFrame,
-    bool &winFrame)
+    bool &winFrame,
+    memory_pool<user_allocator_tbb_alloc> &pool)
 {
-    mt::std::vector<int> x;
-    mt::std::vector<int> y;
-    mt::std::vector<int> xspeed;
-    mt::std::vector<int> yspeed;
-    mt::std::vector<char> supported;
-    mt::std::vector<int> supportedSpeed;
-    mt::std::vector<char> finishedWith;
-    mt::std::vector<FacingDirection> facing;
+    mp::std::vector<int> x(pool);
+    mp::std::vector<int> y(pool);
+    mp::std::vector<int> xspeed(pool);
+    mp::std::vector<int> yspeed(pool);
+    mp::std::vector<char> supported(pool);
+    mp::std::vector<int> supportedSpeed(pool);
+    mp::std::vector<char> finishedWith(pool);
+    mp::std::vector<FacingDirection> facing(pool);
 
     x.reserve(boost::size(guyArrivalList));
     y.reserve(boost::size(guyArrivalList));
@@ -552,10 +554,10 @@ void guyStep(
     assert(boost::size(facing) == boost::size(guyArrivalList));
 
 
-    mt::std::vector<char> carry(guyArrivalList.size());
-    mt::std::vector<int> carrySize(guyArrivalList.size());
-    mt::std::vector<TimeDirection> carryDirection(guyArrivalList.size());
-    mt::std::vector<char> justPickedUpBox(guyArrivalList.size());
+    mp::std::vector<char> carry(guyArrivalList.size(), pool);
+    mp::std::vector<int> carrySize(guyArrivalList.size(), pool);
+    mp::std::vector<TimeDirection> carryDirection(guyArrivalList.size(), pool);
+    mp::std::vector<char> justPickedUpBox(guyArrivalList.size(), pool);
 
     // Do movement for pause guys. Do box manipulation for all guys.
     // This is to make pause guys not affect their past selves with box manipulation.
@@ -985,7 +987,8 @@ void guyStep(
                             -1,
                             guyArrivalList[i].getBoxCarryDirection(),
                             triggerFrameState,
-                            frame);
+                            frame,
+                            pool);
 
                         carry[i] = false;
                         carrySize[i] = 0;
@@ -1007,8 +1010,8 @@ void guyStep(
                     int width = guyArrivalList[i].getWidth();
                     int height = guyArrivalList[i].getHeight();
                     //CAREFUL - loop modifies nextBox
-                    mt::std::vector<ObjectAndTime<Box, Frame *> >::iterator nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end());
-                    mt::std::vector<char>::iterator nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
+                    auto nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end());
+                    auto nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
                     for (; nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
                     {
                         if (*nextBoxNormalDepartureIt)
@@ -1051,12 +1054,12 @@ void guyStep(
     assert(boost::size(carrySize) == boost::size(guyArrivalList));
     assert(boost::size(carryDirection) == boost::size(guyArrivalList));
 
-    mt::std::vector<int> newWidth(guyArrivalList.size());
-    mt::std::vector<int> newHeight(guyArrivalList.size());
-    mt::std::vector<int> newJumpSpeed(guyArrivalList.size());
-    mt::std::vector<mt::std::map<Ability, int> > newPickups(guyArrivalList.size());
-    mt::std::vector<int> illegalPortal(guyArrivalList.size());
-    mt::std::vector<int> newTimePaused(guyArrivalList.size());
+    mp::std::vector<int> newWidth(guyArrivalList.size(), pool);
+    mp::std::vector<int> newHeight(guyArrivalList.size(), pool);
+    mp::std::vector<int> newJumpSpeed(guyArrivalList.size(), pool);
+    mp::std::vector<mt::std::map<Ability, int>> newPickups(guyArrivalList.size(), pool);
+    mp::std::vector<int> illegalPortal(guyArrivalList.size(), pool);
+    mp::std::vector<int> newTimePaused(guyArrivalList.size(), pool);
     // arrivalBasis is always -1 for normalDeparture
 
     // time travel, mutator and portal collision, item use
@@ -1090,7 +1093,7 @@ void guyStep(
 
             // Mutators
             // Mutator and falling must occur first due to exact frame effects.
-            mt::std::vector<int> mutatorCollisions;
+            mp::std::vector<int> mutatorCollisions(pool);
             for (unsigned j = 0; j < mutators.size(); ++j)
             {
                 if (IntersectingRectanglesInclusiveCollisionOverlap(
@@ -1242,9 +1245,9 @@ void guyStep(
             // "forced" departures occur before those due to input
             if (normalDeparture)
             {
-                mt::std::map<Ability, int>::iterator timeJump(newPickups[i].find(Ability::TIME_JUMP));
-                mt::std::map<Ability, int>::iterator timeReverse(newPickups[i].find(Ability::TIME_REVERSE));
-                mt::std::map<Ability, int>::iterator timePause(newPickups[i].find(Ability::TIME_PAUSE));
+                auto timeJump(newPickups[i].find(Ability::TIME_JUMP));
+                auto timeReverse(newPickups[i].find(Ability::TIME_REVERSE));
+                auto timePause(newPickups[i].find(Ability::TIME_PAUSE));
 
                 if (input.getAbilityUsed()) {
                     Ability abilityCursor = input.getAbilityCursor();
@@ -1412,7 +1415,7 @@ void guyStep(
         if (nextPortal[i].getIsLaser())
         {
             // Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
-            mt::std::vector<char> shootable;
+            mp::std::vector<char> shootable(pool);
             shootable.reserve(boost::size(guyArrivalList));
 
             for (std::size_t j(0); j != numberOfGuys; ++j)
@@ -1435,7 +1438,8 @@ void guyStep(
                 nextPlatform,
                 nextBox, nextBoxNormalDeparture,
                 x, y, newWidth, newHeight,
-                shootable);
+                shootable,
+                pool);
 
             // Should be a different glitz adder?
             guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, nextPortal[i].getXaim(), nextPortal[i].getYaim(), nextPortal[i].getTimeDirection());
@@ -1618,7 +1622,7 @@ void guyStep(
         std::size_t const relativeIndex(guyArrivalList[i].getIndex());
         InputList const &input = playerInput[relativeIndex];
 
-        mt::std::map<Ability, int>::iterator timeGun(newPickups[i].find(Ability::TIME_GUN));
+        auto timeGun(newPickups[i].find(Ability::TIME_GUN));
 
         if (input.getAbilityUsed()
             && input.getAbilityCursor() == Ability::TIME_GUN
@@ -1626,7 +1630,7 @@ void guyStep(
             && timeGun->second != 0)
         {
             // Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
-            mt::std::vector<char> shootable;
+            mp::std::vector<char> shootable(pool);
             shootable.reserve(boost::size(guyArrivalList));
 
             for (std::size_t j(0); j != size; ++j)
@@ -1651,7 +1655,8 @@ void guyStep(
                 nextPlatform,
                 nextBox, nextBoxNormalDeparture,
                 x, y, newWidth, newHeight,
-                shootable);
+                shootable,
+                pool);
 
             guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, input.getXCursor(), input.getYCursor(), guyArrivalList[i].getTimeDirection());
 
@@ -1750,18 +1755,19 @@ template <
     void boxInteractionBoundLoop(
         TimeDirection const boxDirection,
         Environment const &env,
-        mt::std::vector<int> &x,
-        mt::std::vector<int> &y,
-        mt::std::vector<int> &xTemp,
-        mt::std::vector<int> &yTemp,
-        mt::std::vector<char> &squished,
-        mt::std::vector<int> const &size,
-        mt::std::vector<Box> const &oldBoxList,
+        mp::std::vector<int> &x,
+        mp::std::vector<int> &y,
+        mp::std::vector<int> &xTemp,
+        mp::std::vector<int> &yTemp,
+        mp::std::vector<char> &squished,
+        mp::std::vector<int> const &size,
+        mp::std::vector<Box> const &oldBoxList,
         RandomAccessPlatformRange const &nextPlatform,
-        BoxGlitzAdder const &boxGlitzAdder)
+        BoxGlitzAdder const &boxGlitzAdder,
+        memory_pool<user_allocator_tbb_alloc> &pool)
 {
-    mt::std::vector<int> xPreBox(oldBoxList.size());
-    mt::std::vector<int> yPreBox(oldBoxList.size());
+    mp::std::vector<int> xPreBox(oldBoxList.size(), pool);
+    mp::std::vector<int> yPreBox(oldBoxList.size(), pool);
 
     bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
     bool firstTimeThrough(true);
@@ -1776,15 +1782,16 @@ template <
         }
         */
 
-        mt::std::vector<std::pair<bool, int> > top(oldBoxList.size());
-        mt::std::vector<std::pair<bool, int> > bottom(oldBoxList.size());
-        mt::std::vector<std::pair<bool, int> > left(oldBoxList.size());
-        mt::std::vector<std::pair<bool, int> > right(oldBoxList.size());
+        mp::std::vector<std::pair<bool, int>> top(oldBoxList.size(), pool);
+        mp::std::vector<std::pair<bool, int>> bottom(oldBoxList.size(), pool);
+        mp::std::vector<std::pair<bool, int>> left(oldBoxList.size(), pool);
+        mp::std::vector<std::pair<bool, int>> right(oldBoxList.size(), pool);
 
-        mt::std::vector<mt::std::vector<std::size_t> > topLinks(oldBoxList.size());
-        mt::std::vector<mt::std::vector<std::size_t>> bottomLinks(oldBoxList.size());
-        mt::std::vector<mt::std::vector<std::size_t>> rightLinks(oldBoxList.size());
-        mt::std::vector<mt::std::vector<std::size_t>> leftLinks(oldBoxList.size());
+        //TODO: Use scoped allocator?
+        mp::std::vector<mp::std::vector<std::size_t>> topLinks(oldBoxList.size(), mp::std::vector<std::size_t>(pool), pool);
+        mp::std::vector<mp::std::vector<std::size_t>> bottomLinks(oldBoxList.size(), mp::std::vector<std::size_t>(pool), pool);
+        mp::std::vector<mp::std::vector<std::size_t>> rightLinks(oldBoxList.size(), mp::std::vector<std::size_t>(pool), pool);
+        mp::std::vector<mp::std::vector<std::size_t>> leftLinks(oldBoxList.size(), mp::std::vector<std::size_t>(pool), pool);
 
         thereAreStillThingsToDo = false; 
 
@@ -2203,7 +2210,7 @@ template <
         }
 
         // propagate through vertical collision links to reposition and explode
-        mt::std::vector<char> toBeSquished(oldBoxList.size());
+        mp::std::vector<char> toBeSquished(oldBoxList.size(), pool);
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
@@ -2300,7 +2307,7 @@ template <
         {
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
-                mt::std::vector<std::size_t> pass;
+                mp::std::vector<std::size_t> pass(pool);
                 recursiveBoxCollision(y, x, size, squished, pass, i, 0, boxDirection, oldBoxList);
             }
         }
@@ -2310,7 +2317,7 @@ template <
         {
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
-                mt::std::vector<std::size_t> pass;
+                mp::std::vector<std::size_t> pass(pool);
                 recursiveBoxCollision(x, y, size, squished, pass, i, 1, boxDirection, oldBoxList);
             }
         }
@@ -2339,21 +2346,22 @@ template <
     typename RandomAccessArrivalLocationRange,
     typename RandomAccessMutatorRange,
     typename FrameT>
-    void boxCollisionAlogorithm(
+    void boxCollisionAlgorithm(
         Environment const &env,
         RandomAccessBoxRange const &boxArrivalList,
-        mt::std::vector<Box> const &additionalBox,
-        mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-        mt::std::vector<char> &nextBoxNormalDeparture,
+        mp::std::vector<Box> const &additionalBox,
+        mp::std::vector<ObjectAndTime<Box, FrameT>> &nextBox,
+        mp::std::vector<char> &nextBoxNormalDeparture,
         RandomAccessPlatformRange const &nextPlatform,
         RandomAccessPortalRange const &nextPortal,
         RandomAccessArrivalLocationRange const &arrivalLocations,
         RandomAccessMutatorRange const &mutators,
         TriggerFrameState &triggerFrameState,
         BoxGlitzAdder const &boxGlitzAdder,
-        FrameT const &frame)
+        FrameT const &frame,
+        memory_pool<user_allocator_tbb_alloc> &pool)
 {
-    mt::std::vector<Box> oldBoxList;
+    mp::std::vector<Box> oldBoxList(pool);
 
     boost::push_back(oldBoxList, boxArrivalList);
     boost::push_back(oldBoxList, additionalBox);
@@ -2373,14 +2381,14 @@ template <
     }
     */
 
-    mt::std::vector<int> x(oldBoxList.size());
-    mt::std::vector<int> y(oldBoxList.size());
-    mt::std::vector<int> xTemp(oldBoxList.size());
-    mt::std::vector<int> yTemp(oldBoxList.size());
-    mt::std::vector<int> xPreBox(oldBoxList.size());
-    mt::std::vector<int> yPreBox(oldBoxList.size());
-    mt::std::vector<int> size(oldBoxList.size());
-    mt::std::vector<char> squished(oldBoxList.size());
+    mp::std::vector<int> x(oldBoxList.size(), pool);
+    mp::std::vector<int> y(oldBoxList.size(), pool);
+    mp::std::vector<int> xTemp(oldBoxList.size(), pool);
+    mp::std::vector<int> yTemp(oldBoxList.size(), pool);
+    mp::std::vector<int> xPreBox(oldBoxList.size(), pool);
+    mp::std::vector<int> yPreBox(oldBoxList.size(), pool);
+    mp::std::vector<int> size(oldBoxList.size(), pool);
+    mp::std::vector<char> squished(oldBoxList.size(), pool);
 
     // Check with triggers if the box should arrive at all
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
@@ -2466,7 +2474,7 @@ template <
 
     // Destroy boxes that are overlapping, deals with chronofrag (maybe too strictly?)
     {
-        mt::std::vector<char> toBeSquished(oldBoxList.size());
+        mp::std::vector<char> toBeSquished(oldBoxList.size(), pool);
     
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
             if (!squished[i]) {
@@ -2492,8 +2500,8 @@ template <
         }
     }
 
-    boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder);
-    boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder);
+    boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder, pool);
+    boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder, pool);
 
     // Send boxes
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
@@ -2515,7 +2523,8 @@ template <
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
                     triggerFrameState,
-                    frame);
+                    frame,
+                    pool);
             }
             else
             {
@@ -2546,7 +2555,8 @@ template <
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
                     triggerFrameState,
-                    frame);
+                    frame,
+                    pool);
             }
         }
     }

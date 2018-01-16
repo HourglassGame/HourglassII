@@ -17,7 +17,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
-
+#include <tbb/task_scheduler_init.h>
 
 
 
@@ -62,7 +62,9 @@ int main_entry(int argc, char *argv[])
 
     initialiseCurrentPath(args);
     GlobalResourceHolder global_resources;
-    
+    //tbb::task_scheduler_init tbb_init(1);
+
+
     if (!hg::getTestDriver().passesAllTests()) {
         std::cerr << "Failed self-check! Aborting." << std::endl;
         return EXIT_FAILURE;
@@ -93,9 +95,11 @@ int main(int argc, char *argv[])
 template<typename TChar, typename TTraits = std::char_traits<TChar>>
 class OutputDebugStringBuf : public std::basic_stringbuf<TChar, TTraits, std::allocator<TChar>> {
 public:
+
+    typedef std::basic_streambuf<TChar, TTraits> StringBufT;
     explicit OutputDebugStringBuf() : _buffer(256) {
-        setg(nullptr, nullptr, nullptr);
-        setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
+        StringBufT::setg(nullptr, nullptr, nullptr);
+        StringBufT::setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
     }
 
     static_assert(std::is_same<TChar, char>::value || std::is_same<TChar, wchar_t>::value, "OutputDebugStringBuf only supports char and wchar_t types");
@@ -105,12 +109,13 @@ public:
         return do_sync();
     }
 
-    int_type overflow(int_type c = TTraits::eof()) override {
+    //int_type overflow(int_type c = TTraits::eof()) override
+    virtual typename TTraits::int_type overflow(typename TTraits::int_type c = TTraits::eof()) override  {
         std::lock_guard<std::mutex> lock(_mutex);
         auto syncRet = do_sync();
         if (c != TTraits::eof()) {
             _buffer[0] = static_cast<TChar>(c);
-            setp(_buffer.data(), _buffer.data() + 1, _buffer.data() + _buffer.size());
+            StringBufT::setp(_buffer.data(), _buffer.data() + 1, _buffer.data() + _buffer.size());
         }
         return syncRet == -1 ? TTraits::eof() : 0;
     }
@@ -118,8 +123,8 @@ public:
 
 private:
     int do_sync() try {
-        MessageOutputer<TChar, TTraits>()(pbase(), pptr());
-        setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
+        MessageOutputer<TChar, TTraits>()(StringBufT::pbase(), StringBufT::pptr());
+        StringBufT::setp(_buffer.data(), _buffer.data(), _buffer.data() + _buffer.size());
         return 0;
     }
     catch (...) {

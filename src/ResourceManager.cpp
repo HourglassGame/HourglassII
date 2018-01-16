@@ -159,4 +159,21 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
     return foregroundImageBuf;
 }
 
+sf::Image loadAndBakePositionColourImage(Wall const &wall) {
+    auto const roomWidth = wall.roomWidth();
+    auto const roomHeight = wall.roomHeight();
+    auto const segmentSize = wall.segmentSize();
+    sf::Image colors;
+    colors.create(roomWidth / 100, roomHeight / 100, sf::Color(0, 0, 0, 0));
+    for (int x(segmentSize / 100); x != (roomWidth - segmentSize) / 100; ++x) {
+        for (int y(segmentSize / 100); y != (roomHeight - segmentSize) / 100; ++y) {
+            sf::Color color(guyPositionToColor(
+                (x - segmentSize / 100)*100. / (roomWidth - 2 * segmentSize), (y - segmentSize / 100)*100. / (roomHeight - 2 * segmentSize)));
+            color.a = 220;
+            colors.setPixel(x, y, color);
+        }
+    }
+    return colors;
+}
+
 } //namespace hg

@@ -2,4 +2,5 @@
 #include "../src/PhysicsEngineUtilities.cpp"
 #include "../src/PhysicsEngine_test.cpp"
 #include "../src/DirectLuaTriggerSystem.cpp"
+#include "../src/SimpleConfiguredTriggerSystem.cpp"
 #include "../src/TriggerData.cpp"

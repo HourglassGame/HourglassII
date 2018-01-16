@@ -5,6 +5,7 @@
 #include "SimpleLuaCpp.h"
 #include "lua/lualib.h"
 #include "LuaUtilities.h"
+#include "SimpleConfiguredTriggerSystem.h"
 
 #include <boost/algorithm/string/find_iterator.hpp>
 #include <boost/algorithm/string/finder.hpp>
@@ -14,7 +15,7 @@ using boost::filesystem::path;
 namespace fs = boost::filesystem;
 
 namespace {
-    path translateToActualPath(std::string const &packageName, path const &levelPath) {
+    path translateToActualPath(std::string const &packageName, path const &levelPath/*, path const &globalModulesPath*/) {
         //Sanitise and translate (throw if given filename is broken or unsanitary).
         //THIS FUNCTION IS CURRENTLY RETARDED -- it allows levels to read any file on the filesystem.
         
@@ -24,7 +25,7 @@ namespace {
         if (packageName.size() >= global.size()
          && std::equal(global.begin(), global.end(), packageName.begin()))
         {
-            return path(packageName.substr(global.size()) + ".lua");
+            return /*globalModulesPath/*/path(packageName.substr(global.size()) + ".lua");
         }
         
         return levelPath/path(packageName + ".lua");
@@ -41,14 +42,30 @@ namespace {
         path const *levelPath;
     };
 }
+#if 0
+static TriggerSystem loadSimpleConfiguredTriggerSystem(lua_State *L, path const &levelPath) {
+    std::string system(readField<std::string>(L, "system"));
+    std::vector<std::string> luaPackageNames(readField<std::vector<std::string> >(L, "luaFiles", -1));
+    
+    std::vector<path> luaFilePaths;
+    luaFilePaths.reserve(luaPackageNames.size());
 
+    std::vector<LuaModule> luaFiles;
+    boost::push_back(luaFiles, luaPackageNames | boost::adaptors::transformed(LoadNamedModule(levelPath)));
+
+    hg::make_unique<SimpleConfiguredTriggerSystem>(
+          std::vector<char>(system.begin(), system.end()),
+          luaFiles,
+          std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
+          readField<int>(L, "arrivalLocationsSize"));
+}
+#endif
 static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelPath) {
     std::string system(readField<std::string>(L, "system"));
     std::vector<std::string> luaPackageNames(readField<std::vector<std::string> >(L, "luaFiles", -1));
     
     std::vector<path> luaFilePaths;
     luaFilePaths.reserve(luaPackageNames.size());
-    
 
     std::vector<LuaModule> luaFiles;
     boost::push_back(luaFiles, luaPackageNames | boost::adaptors::transformed(LoadNamedModule(levelPath)));

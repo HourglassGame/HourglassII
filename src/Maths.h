@@ -3,6 +3,11 @@
 #include <algorithm>
 namespace hg {
 
+template<typename Numeric>
+Numeric sign(Numeric a) {
+    return a == 0 ? 0 : a < 0 ? -1 : 1;
+}
+
 template<typename Integral>
 Integral iabs(Integral a) {
     return a < 0 ? -a : a;

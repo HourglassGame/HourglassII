@@ -20,7 +20,8 @@ namespace hg {
         hg::LevelResources const &resources,
         AudioPlayingState &audioPlayingState,
         AudioGlitzManager &audioGlitzManager,
-        sf::Image const &wallImage);
+        sf::Image const &wallImage,
+        sf::Image const &positionColoursImage);
     void DrawWaves(
         sf::RenderTarget &target,
         hg::TimeEngine::FrameListList const &waves,
@@ -30,7 +31,7 @@ namespace hg {
         sf::RenderTarget &target,
         hg::TimeEngine const &timeEngine,
         unsigned height);
-    void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight, int segmentSize);
+    void DrawColors(hg::RenderWindow &target, sf::Image const &positionColoursImage);
     void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength);
     void DrawTimeline(
         sf::RenderTarget &target,

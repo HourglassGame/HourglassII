@@ -2,11 +2,12 @@
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include "RectangleGlitz.h"
 #include "multi_thread_allocator.h"
+#include "mp/std/vector"
 namespace hg {
 
 void buildDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
-    mt::std::vector<ObjectAndTime<Guy, Frame *>> const &nextGuy,
+    mp::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mp::std::vector<ObjectAndTime<Guy, Frame *>> const &nextGuy,
     PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame)
 {
@@ -16,8 +17,8 @@ void buildDepartures(
 }
 
 void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
     BoxGlitzAdder const &boxGlitzAdder)
 {
     for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
@@ -46,11 +47,11 @@ struct Collidables final
 };
 
 bool explodeBoxes(
-    mt::std::vector<int> &pos,
-    mt::std::vector<int> const &size,
-    mt::std::vector<mt::std::vector<std::size_t>> const &links,
-    mt::std::vector<char> &toBeSquished,
-    mt::std::vector<std::pair<bool, int>> const &bound,
+    mp::std::vector<int> &pos,
+    mp::std::vector<int> const &size,
+    mp::std::vector<mp::std::vector<std::size_t>> const &links,
+    mp::std::vector<char> &toBeSquished,
+    mp::std::vector<std::pair<bool, int>> const &bound,
     std::size_t index,
     int boundSoFar,
     int sign)
@@ -87,14 +88,14 @@ bool explodeBoxes(
 }
 
 bool explodeBoxesUpwards(
-    mt::std::vector<int> &x,
-    mt::std::vector<int> const &xTemp,
-    mt::std::vector<int> &y,
-    mt::std::vector<int> const &size,
-    mt::std::vector<mt::std::vector<std::size_t>> const &links,
+    mp::std::vector<int> &x,
+    mp::std::vector<int> const &xTemp,
+    mp::std::vector<int> &y,
+    mp::std::vector<int> const &size,
+    mp::std::vector<mp::std::vector<std::size_t>> const &links,
     bool firstTime,
-    mt::std::vector<char> &toBeSquished,
-    mt::std::vector<std::pair<bool, int>> const &bound,
+    mp::std::vector<char> &toBeSquished,
+    mp::std::vector<std::pair<bool, int>> const &bound,
     std::size_t index,
     int boundSoFar)
 {
@@ -133,15 +134,15 @@ bool explodeBoxesUpwards(
     return false;
 }
 void recursiveBoxCollision(
-    mt::std::vector<int> &majorAxis,
-    mt::std::vector<int> const &minorAxis,
-    mt::std::vector<int> const &size,
-    mt::std::vector<char> const &squished,
-    mt::std::vector<std::size_t> &boxesSoFar,
+    mp::std::vector<int> &majorAxis,
+    mp::std::vector<int> const &minorAxis,
+    mp::std::vector<int> const &size,
+    mp::std::vector<char> const &squished,
+    mp::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
     int subtractionNumber, // horizontal wins a tie
     TimeDirection const boxDirection,
-    mt::std::vector<Box> const &oldBoxList)
+    mp::std::vector<Box> const &oldBoxList)
 {
     boxesSoFar.push_back(index);
 
@@ -494,14 +495,15 @@ vector2<int> doNormalisedGunWallRaytrace(
 vector2<int> doGunWallRaytraceUsingRectangles(
     Wall const &wall,
     int const sx, int const sy,
-    int const aimx, int const aimy
+    int const aimx, int const aimy,
+    memory_pool<user_allocator_tbb_alloc> &pool
 )
 {
     if (sx < 0 || sy < 0 || sx > wall.roomWidth() || sy > wall.roomHeight()) {
         return { sx, sy };
     }
 
-    mt::std::vector<Rect<int>> wallRects;
+    mp::std::vector<Rect<int>> wallRects(pool);
 
     wallRects.reserve(((wall.roomWidth() / wall.segmentSize())+2)*((wall.roomHeight() / wall.segmentSize())+2));
 
@@ -539,7 +541,8 @@ vector2<int> doGunWallRaytraceUsingRectangles(
 vector2<int> doGunWallRaytrace(
     Wall const &wall,
     int const sx, int const sy,
-    int const aimx, int const aimy)
+    int const aimx, int const aimy,
+    memory_pool<user_allocator_tbb_alloc> &pool)
 {
     /*
     line quadrant->floor / ceil when rounding
@@ -590,7 +593,7 @@ vector2<int> doGunWallRaytrace(
      || wall.atIndex(xIntersect-1, yIntersect-1)
     );
 
-    assert(doGunWallRaytraceUsingRectangles(wall, sx, sy, aimx, aimy) == rVal);
+    assert(doGunWallRaytraceUsingRectangles(wall, sx, sy, aimx, aimy, pool) == rVal);
 
     //   Dy_in/Dx_in  == Dy_out/Dx_out
     //=> Dy_in*Dx_out == Dy_out*Dx_in //Compare these values to avoid division by zero
@@ -610,18 +613,20 @@ GunRaytraceResult doGunRaytrace(
     Wall const &wall,
 
     //Platform data
-    mt::std::vector<Collision> const &nextPlatform,
+    mp::std::vector<Collision> const &nextPlatform,
 
     //Box Data
-    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
-    mt::std::vector<char> const &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mp::std::vector<char> const &nextBoxNormalDeparture,
 
     //Guy Data
-    mt::std::vector<int> const &gx,
-    mt::std::vector<int> const &gy,
-    mt::std::vector<int> const &gw,
-    mt::std::vector<int> const &gh,
-    mt::std::vector<char> const &shootable
+    mp::std::vector<int> const &gx,
+    mp::std::vector<int> const &gy,
+    mp::std::vector<int> const &gw,
+    mp::std::vector<int> const &gh,
+    mp::std::vector<char> const &shootable,
+
+    memory_pool<user_allocator_tbb_alloc> &pool
 )
 {
     
@@ -639,7 +644,7 @@ GunRaytraceResult doGunRaytrace(
     // prevent zero length vectors
     auto const aimx = sx == aimx_raw && sy == aimy ? aimx_raw + 1 : aimx_raw;
 
-    auto hitPoint = doGunWallRaytrace(wall, sx, sy, aimx, aimy);
+    auto hitPoint = doGunWallRaytrace(wall, sx, sy, aimx, aimy, pool);
 
     //TODO: Don't write the same code 3 times?
     // Platforms

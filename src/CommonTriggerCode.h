@@ -1,6 +1,7 @@
 #ifndef HG_COMMON_TRIGGER_CODE_H
 #define HG_COMMON_TRIGGER_CODE_H
 #include "mt/std/vector"
+#include "mp/std/vector"
 #include "TriggerData.h"
 #include "ObjectPtrList.h"
 #include "Frame.h"
@@ -15,32 +16,34 @@ typedef boost::transformed_range<
             GetBase<TriggerDataConstPtr>,
             mt::boost::container::vector<TriggerDataConstPtr> const> TriggerDataRange;
             
-inline mt::std::vector<mt::std::vector<int>>
+inline mp::std::vector<mp::std::vector<int>>
     calculateApparentTriggers(
-        std::vector<std::pair<int, std::vector<int> > > const &triggerOffsetsAndDefaults,
-        TriggerDataRange const &triggerArrivals)
+        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults,
+        TriggerDataRange const &triggerArrivals,
+        memory_pool<user_allocator_tbb_alloc> &pool)
 {
     //trigger arrivals with defaults for places where none arrived in triggerArrivals
     //index field replaced by position in list.
-    mt::std::vector<mt::std::vector<int>> apparentTriggers;
+    mp::std::vector<mp::std::vector<int>> apparentTriggers(pool);
     apparentTriggers.reserve(boost::size(triggerOffsetsAndDefaults));
     typedef std::pair<int, std::vector<int> > TriggerOffsetAndDefault;
     for (TriggerOffsetAndDefault const &offsetAndDefault: triggerOffsetsAndDefaults) {
         apparentTriggers.push_back(
-            mt::std::vector<int>(
+            mp::std::vector<int>(
                     offsetAndDefault.second.begin(),
-                    offsetAndDefault.second.end()));
+                    offsetAndDefault.second.end(),
+                    pool));
     }
     
     for (TriggerData const &arrival: triggerArrivals) {
-        apparentTriggers[arrival.getIndex()] = arrival.getValue();
+        apparentTriggers[arrival.getIndex()].assign(arrival.getValue().begin(), arrival.getValue().end());
     }
     return apparentTriggers;
 }
-
+//TODO: move TriggerData from triggers; rather than copying?
 inline mt::std::map<Frame *, mt::std::vector<TriggerData>>
 calculateActualTriggerDepartures(
-    mt::std::vector<TriggerData> const &triggers,
+    mp::std::vector<TriggerData> const &triggers,
     std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults,
     Frame *currentFrame)
 {

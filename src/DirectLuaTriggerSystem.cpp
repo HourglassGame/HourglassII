@@ -13,6 +13,7 @@
 #include "RectangleGlitz.h"
 #include "TextGlitz.h"
 #include "ImageGlitz.h"
+#include "memory_pool.h"
 
 #include <boost/polymorphic_cast.hpp>
 #include <boost/ref.hpp>
@@ -59,7 +60,7 @@ static void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const
 //To identify which asserts are actual asserts, and which are checking results from lua
 //luaassert is checking results from lua, and should eventually be replaced with an exception
 
-TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &interrupter) const
+TriggerFrameState DirectLuaTriggerSystem::getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const
 {
     LuaState &sharedState(luaStates_->get());
     //Load if not already loaded.
@@ -71,10 +72,10 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &in
         lua_State *L = newLuaState.ptr;
 
         loadSandboxedLibraries(L);
-        
+
         pushFunctionFromVector(L, compiledMainChunk_, "triggerSystem");
         setUpPreloadResetFunction(L, compiledExtraChunks_);
-        
+
         sharedState = boost::move(newLuaState);
     }
 
@@ -83,6 +84,7 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(OperationInterrupter &in
             boost::ref(sharedState),
             boost::cref(triggerOffsetsAndDefaults_),
             arrivalLocationsSize_,
+            boost::ref(pool),
             boost::ref(interrupter)));
 }
 
@@ -95,7 +97,9 @@ DirectLuaTriggerFrameState::DirectLuaTriggerFrameState(
         >
     > const &triggerOffsetsAndDefaults,
     std::size_t arrivalLocationsSize,
+    memory_pool<user_allocator_tbb_alloc> &pool,
     OperationInterrupter &interrupter) :
+        pool_(pool),
         interrupter_(interrupter),
         L_(sharedState),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
@@ -455,10 +459,10 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
 
     lua_State *L(L_.ptr);
 
-    mt::std::vector<mt::std::vector<int>>
-        apparentTriggers(calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals));
+    mp::std::vector<mp::std::vector<int>>
+        apparentTriggers(calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals, pool_));
 
-    PhysicsAffectingStuff retv;
+    PhysicsAffectingStuff retv(pool_);
 
     LuaStackManager stackSaver(L);
     //push function to call
@@ -476,7 +480,7 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
     //create index and table for each trigger
     {
         int i(0);
-        for (mt::std::vector<int> const &apparentTrigger : apparentTriggers) {
+        for (mp::std::vector<int> const &apparentTrigger : apparentTriggers) {
             ++i;
             luaL_checkstack(L, 1, nullptr);
             lua_createtable(L, static_cast<int>(apparentTrigger.size()), 0);
@@ -831,7 +835,7 @@ bool DirectLuaTriggerFrameState::shouldPort(
 //Unfortunately the current implementation allows lua to return all sorts of nonsensical things
 //for Guys (eg, change relative index, change illegalPortal, supportedSpeed etc.. none of these make much sense)
 boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
-    mt::std::vector<int> const &responsibleMutatorIndices,
+    mp::std::vector<int> const &responsibleMutatorIndices,
     Guy const &objectToManipulate)
 {
     lua_State *L(L_.ptr);
@@ -873,7 +877,7 @@ boost::optional<Guy> DirectLuaTriggerFrameState::mutateObject(
     return retv;
 }
 boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
-    mt::std::vector<int> const &responsibleMutatorIndices,
+    mp::std::vector<int> const &responsibleMutatorIndices,
     Box const &objectToManipulate)
 {
     lua_State *L(L_.ptr);
@@ -981,7 +985,7 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         ...
     }
     */
-    mt::std::vector<TriggerData> triggers;
+    mp::std::vector<TriggerData> triggers(pool_);
     if (!lua_istable(L, -5)) {
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Trigger List must be a table"));
     }

@@ -414,10 +414,12 @@
       <DisableSpecificWarnings>4244;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ClCompile Include="..\..\..\..\src\lua\lzio.cpp" />
+    <ClCompile Include="..\..\..\..\src\Lua_test.cpp" />
     <ClCompile Include="..\..\..\..\src\main.cpp" />
     <ClCompile Include="..\..\..\..\src\MainMenuScene.cpp" />
     <ClCompile Include="..\..\..\..\src\Maths_test.cpp" />
     <ClCompile Include="..\..\..\..\src\move_function_test.cpp" />
+    <ClCompile Include="..\..\..\..\src\multi_vector_test.cpp" />
     <ClCompile Include="..\..\..\..\src\natural_sort_test.cpp" />
     <ClCompile Include="..\..\..\..\src\ObjectList_inst_NonGuyDynamic.cpp" />
     <ClCompile Include="..\..\..\..\src\ObjectList_inst_Normal.cpp" />

@@ -33,9 +33,9 @@ public:
     //In a break from the usual OperationInterrupter semantics,
     //the interrupter which is passed to this function is used for the entire lifetime
     //of the returned TriggerFrameState.
-    TriggerFrameState getFrameState(OperationInterrupter &interrupter) const
+    TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const
     {
-        return impl.get().getFrameState(interrupter);
+        return impl.get().getFrameState(pool, interrupter);
     }
     bool operator==(TriggerSystem const &o) const {
         return comparison_tuple() == o.comparison_tuple();

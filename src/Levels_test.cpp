@@ -21,6 +21,8 @@ namespace hg {
 namespace levels_test {
 namespace {
 bool testLevelsLoad() {
+
+    auto const testStart = std::chrono::high_resolution_clock::now();
     //Iterate the `levels` folder.
     //For every *.lvl that does not
     //contain a file called "DoNotTest",
@@ -47,12 +49,16 @@ bool testLevelsLoad() {
                 std::cout << "Failed with: " << diagInfo << "\n" << std::flush;
                 testPassed = false;
             }
-            auto timeTaken =
+            auto const timeTaken =
                 std::chrono::duration_cast<std::chrono::duration<double>>(
                     std::chrono::high_resolution_clock::now() - start);
             std::cout << " Loaded OK, in: " << timeTaken.count() << "s\n" << std::flush;
         }
     }
+    auto const totalTimeTaken =
+        std::chrono::duration_cast<std::chrono::duration<double>>(
+            std::chrono::high_resolution_clock::now() - testStart);
+    std::cout << "Total Loading Time: " << totalTimeTaken.count() << "s\n" << std::flush;
     return testPassed;
 }
 

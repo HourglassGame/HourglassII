@@ -107,6 +107,7 @@ void runStep(
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
     sf::Image const &wallImage,
+    sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point &frameStartTime);
 
 
@@ -136,9 +137,13 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     auto audioPlayingState = AudioPlayingState(loadedLevel.resources.sounds);
     auto audioGlitzManager = AudioGlitzManager();
 
+    assert(loadedLevel.bakedWall);
+    assert(loadedLevel.bakedPositionColours);
+
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
     hg::LevelResources const &levelResources = loadedLevel.resources;
     sf::Image const &wallImage = *loadedLevel.bakedWall;
+    sf::Image const &positionColoursImage = *loadedLevel.bakedPositionColours;
 
     enum class RunState { AWAITING_INPUT, RUNNING_LEVEL, PAUSED };
     RunState state(RunState::AWAITING_INPUT);
@@ -260,7 +265,10 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 }
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-                    runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, frameStartTime);
+                    //Currently bugged on windows due to compiler bug:
+                    //https://developercommunity.visualstudio.com/content/problem/118080/c-incorrect-code-generation-destructor-being-calle.html
+                    //futureRunResult.get() crashes when the PlayerVictoryException is thrown
+                    runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
                     interrupter.reset();
                 }
                 catch (hg::PlayerVictoryException const &) {
@@ -269,6 +277,10 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     return GameWon_tag{};
                 }
                 if (runningFromReplay) {
+                    //TODO: also write some sort of replay progress display here
+                    //currentReplayIt-replay.begin() << "/" << currentReplayEnd-replay.begin()
+
+
                     sf::Text replayGlyph;
                     replayGlyph.setFont(*hg::defaultFont);
                     replayGlyph.setString("R");
@@ -338,6 +350,7 @@ void runStep(
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
     sf::Image const &wallImage,
+    sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point &frameStartTime)
 {
     app.clear(sf::Color(255, 255, 255));
@@ -364,12 +377,13 @@ void runStep(
                 hg::UniverseID(timeEngine.getTimelineLength()));
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
-             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-             timeEngine.getWall(),
-             resources,
-             audioPlayingState,
-             audioGlitzManager,
-             wallImage);
+            getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
+            timeEngine.getWall(),
+            resources,
+            audioPlayingState,
+            audioGlitzManager,
+            wallImage,
+            positionColoursImage);
     }
     else if (waveInfo.currentPlayerFrame) {
         hg::FrameView const &view(waveInfo.currentPlayerFrame->getView());
@@ -384,8 +398,9 @@ void runStep(
             resources,
             audioPlayingState,
             audioGlitzManager,
-            wallImage);
-        
+            wallImage,
+            positionColoursImage);
+
         drawInventory(
             app,
             findCurrentGuy(view.getGuyInformation()).getPickups(),
@@ -398,12 +413,13 @@ void runStep(
             drawnFrame = inertialFrame;
             hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
             DrawGlitzAndWall(app,
-                 getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
-                 timeEngine.getWall(),
-                 resources,
-                 audioPlayingState,
-                 audioGlitzManager,
-                 wallImage);
+                getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
+                timeEngine.getWall(),
+                resources,
+                audioPlayingState,
+                audioGlitzManager,
+                wallImage,
+                positionColoursImage);
         }
         else {
             drawnFrame =
@@ -424,7 +440,8 @@ void runStep(
                 resources,
                 audioPlayingState,
                 audioGlitzManager,
-                wallImage);
+                wallImage,
+                positionColoursImage);
         }
     }
     
@@ -496,16 +513,18 @@ void runStep(
     {
         auto newFrameStartTime = std::chrono::steady_clock().now();
         std::stringstream fpsstring;
-        fpsstring << (1./std::chrono::duration<double>(newFrameStartTime-frameStartTime).count());
+        auto const fps = (1. / std::chrono::duration<double>(newFrameStartTime - frameStartTime).count());
+        fpsstring << (fps > 5 ? std::round(fps) : fps);
         frameStartTime = newFrameStartTime;
         sf::Text fpsglyph;
         fpsglyph.setFont(*hg::defaultFont);
         fpsglyph.setString(fpsstring.str());
-        fpsglyph.setPosition(600, 415);
-        fpsglyph.setCharacterSize(8);
+        fpsglyph.setCharacterSize(16);
         fpsglyph.setFillColor(uiTextColor);
         fpsglyph.setOutlineColor(uiTextColor);
+        fpsglyph.setPosition(630 - fpsglyph.getLocalBounds().width, 415);
         app.draw(fpsglyph);
+        //std::cout << "fps: " << fps << "\n";
     }
 }
 

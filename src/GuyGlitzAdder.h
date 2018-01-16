@@ -2,6 +2,7 @@
 #define HG_GUY_GLITZ_ADDER_H
 #include "Glitz.h"
 #include "mt/std/vector"
+#include "mp/std/vector"
 #include "vector2.h"
 #include "multi_thread_allocator.h"
 #include "RectangleGlitz.h"
@@ -53,7 +54,7 @@ public:
     GuyGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,
         mt::std::vector<Glitz> &reverseGlitz,
-        mt::std::vector<GlitzPersister> &persistentGlitz) :
+        mp::std::vector<GlitzPersister> &persistentGlitz) :
     forwardsGlitz(&forwardsGlitz),
     reverseGlitz(&reverseGlitz),
     persistentGlitz(&persistentGlitz)
@@ -256,7 +257,7 @@ public:
 private:
     mt::std::vector<Glitz> *forwardsGlitz;
     mt::std::vector<Glitz> *reverseGlitz;
-    mt::std::vector<GlitzPersister> *persistentGlitz;
+    mp::std::vector<GlitzPersister> *persistentGlitz;
 };
 }
 #endif //HG_GUY_GLITZ_ADDER_H

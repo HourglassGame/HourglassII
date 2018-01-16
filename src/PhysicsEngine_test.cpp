@@ -4,6 +4,8 @@
 #include "MutatorArea.h"
 #include "FrameID.h"
 #include "multi_thread_allocator.h"
+#include "memory_pool.h"
+#include "mp/std/vector"
 #include <boost/assign.hpp>
 namespace hg {
 namespace physics_engine_test {
@@ -36,10 +38,10 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         bool /*porterActionedPortal*/) override { return true; }
 
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int> const &/*responsibleMutatorIndices*/,
+        mp::std::vector<int> const &/*responsibleMutatorIndices*/,
         Guy const &objectToManipulate) override { return objectToManipulate; }
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int> const &/*responsibleMutatorIndices*/,
+        mp::std::vector<int> const &/*responsibleMutatorIndices*/,
         Box const &objectToManipulate) override { return objectToManipulate; }
 
     virtual DepartureInformation
@@ -101,13 +103,16 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
             Box(35200, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
             Box(38400, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
             Box(41600, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS);
-        
-        mt::std::vector<Box> additionalBoxes;
-        mt::std::vector<ObjectAndTime<Box, FrameID>> nextBox;
-        mt::std::vector<char> nextBoxNormalDeparture;
+
+        const std::size_t initialPoolSize{ 2 << 5 };
+        memory_pool<user_allocator_tbb_alloc> pool{ initialPoolSize };
+
+        mp::std::vector<Box> additionalBoxes(pool);
+        mp::std::vector<ObjectAndTime<Box, FrameID>> nextBox(pool);
+        mp::std::vector<char> nextBoxNormalDeparture(pool);
         mt::std::vector<Glitz> forwardsGlitz;
         mt::std::vector<Glitz> reverseGlitz;
-        mt::std::vector<GlitzPersister> persistentGlitz;
+        mp::std::vector<GlitzPersister> persistentGlitz(pool);
         std::vector<Collision> nextPlatform;
         nextPlatform += Collision(22400, 43800, 0, 0, 0, 0, 6400, 1600, TimeDirection::FORWARDS);
         std::vector<PortalArea> nextPortal;
@@ -119,7 +124,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         
         //This is testing a case which caused a crash. If this line does not cause a crash,
         //then the test has succeeded.
-        boxCollisionAlogorithm(
+        boxCollisionAlgorithm(
             env,
             boxArrivalList,
             additionalBoxes,
@@ -131,7 +136,8 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
             mutators,
             triggerFrameState,
             BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
-            frame);
+            frame,
+            pool);
 
         return true;
     }
@@ -473,6 +479,7 @@ Spec:
             ;
     }
     bool testDoGunWallRaytrace(){
+        memory_pool<user_allocator_tbb_alloc> pool;
         //TODO
         //Test perfectly diagonal line
         //Test rounding is consistent between directions
@@ -527,7 +534,8 @@ Spec:
                     auto const collisionResult = doGunWallRaytrace(
                         actualWall,
                         sx, sy,
-                        aimx, aimy);
+                        aimx, aimy,
+                        pool);
 
                     auto const expectedCollisionResult =
                         vector2<int>{
@@ -561,7 +569,8 @@ Spec:
                             auto const collisionResult = doGunWallRaytrace(
                                 actualWall,
                                 sx, sy,
-                                aimx, aimy);
+                                aimx, aimy,
+                                pool);
 
                             bool startsInside = PointInRectangleInclusive(sx, sy, rectangleleft, rectangletop, rectanglewidth, rectangleheight);
                             
@@ -608,7 +617,8 @@ Spec:
                             auto const collisionResult = doGunWallRaytrace(
                                 actualWall,
                                 sx, sy,
-                                aimx, aimy);
+                                aimx, aimy,
+                                pool);
                             
                             bool const expectedHit =
                                 (startInside &&

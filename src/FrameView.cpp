@@ -8,12 +8,12 @@ FrameView::FrameView() :
 {
 }
 FrameView::FrameView(
-    mt::std::vector<Glitz> const &forwardsGlitz,
-    mt::std::vector<Glitz> const &reverseGlitz,
-    mt::std::vector<GuyOutputInfo> const &guyInformation) :
-        forwardsGlitz_(forwardsGlitz),
-        reverseGlitz_(reverseGlitz),
-        guyInformation_(guyInformation)
+    mt::std::vector<Glitz> &&forwardsGlitz,
+    mt::std::vector<Glitz> &&reverseGlitz,
+    mt::std::vector<GuyOutputInfo> &&guyInformation) :
+        forwardsGlitz_(std::move(forwardsGlitz)),
+        reverseGlitz_(std::move(reverseGlitz)),
+        guyInformation_(std::move(guyInformation))
 {
 }
 

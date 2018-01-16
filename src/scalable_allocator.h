@@ -22,28 +22,28 @@ public:
     typedef typename tbb_alloc::difference_type difference_type;
     template<typename U> struct rebind final
         { typedef tbb_scalable_allocator<U> other; };
-    
+
     typedef typename tbb_alloc::reference reference;
     typedef typename tbb_alloc::const_reference const_reference;
-    
+
     pointer allocate(size_type n, void const *u = nullptr) { return alloc.allocate(n, u); }
     void deallocate(pointer p, size_type n) { alloc.deallocate(p, n); }
     size_type max_size() const { return alloc.max_size(); }
-    
+
     tbb_scalable_allocator() : alloc() {}
     tbb_scalable_allocator(tbb_scalable_allocator const &)
         : alloc() {}
     template<typename U>
     tbb_scalable_allocator(tbb_scalable_allocator<U> const &)
         : alloc() {}
-    
+
     template<typename C, typename ...Args>
     void construct(C *c, Args &&...args) {
         ::new(const_cast<void*>(static_cast<void const*>(c))) C(std::forward<Args>(args)...);
     }
     template<typename C>
     void destroy(C *c) { c->~C(); }
-    
+
     tbb_scalable_allocator<T> select_on_container_copy_construction() const { return *this; }
 };
 
