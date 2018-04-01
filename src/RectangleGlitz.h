@@ -41,12 +41,12 @@ private:
         return 0;
     }
     int layer;
-    
+
     int x;
     int y;
     int width;
     int height;
-    
+
     //Colour packed as |RRRRRRRR|GGGGGGGG|BBBBBBBB|*unused*|
     //Why? -- because lua is all ints, and I can't be bothered with a better interface for such a temporary thing.
     unsigned colour;

@@ -18,6 +18,8 @@
 #include "FrameUpdateSet_fwd.h"
 #include "FrameID_fwd.h"
 
+#include "memory_pool.h"
+
 namespace hg {
 struct Universe_Frame_access final {
     friend class Universe;
@@ -38,7 +40,19 @@ public:
     typedef mt::std::map<Frame *, ObjectList<Normal>> FrameDeparturesT;
     typedef tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *> FrameArrivalsT;
     Frame(int frameNumber, Universe &universe);
-
+    #if 0
+    Frame(Frame const &o) :
+        frameNumber(o.frameNumber),
+        universe(o.universe),
+        //TODO: Consider making initial size match old departure pool size
+        departurePoolA(),
+        departurePoolB(),
+        //TODO: Move departures to use new departurePool
+        departures(o.departures),
+        arrivals(o.arrivals),
+        view(o.view)
+    {}
+    #endif
     //returns the frames whose arrivals are changed
     //newDeparture may get its contents pilfered
     FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT &&newDeparture);
@@ -96,10 +110,23 @@ private:
     int frameNumber;
     // Back-link to universe which this frame is in
     Universe *universe;
-
+    #if 0
+#if USE_POOL_ALLOCATOR
+    //TODO: allow memory_pool to be copied
+    memory_pool<user_allocator_tbb_alloc> departurePoolA;
+    memory_pool<user_allocator_tbb_alloc> departurePoolB;
+#else
+    memory_pool<> departurePoolA;
+    memory_pool<> departurePoolB;
+#endif
+    #endif
     //Arrival departure map stuff. Could instead be put in external hash-map keyed by Frame*
     FrameDeparturesT departures;
     FrameArrivalsT arrivals;
+
+        //const std::size_t initialPoolSize{2<<5};
+    //memory_pool<user_allocator_tbb_alloc> pool{initialPoolSize};
+
 
     FrameView view;
 };

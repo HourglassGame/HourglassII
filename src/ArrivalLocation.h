@@ -2,10 +2,21 @@
 #define HG_ARRIVAL_LOCATION_H
 #include "TimeDirection.h"
 #include <ostream>
+#include <tuple>
 namespace hg {
 class ArrivalLocation;
 std::ostream &operator<<(std::ostream &os, ArrivalLocation const &toPrint);
 class ArrivalLocation final {
+    auto comparison_tuple() const -> decltype(auto)
+    {
+        return std::tie(
+            x_,
+            y_,
+            xspeed_,
+            yspeed_,
+            timeDirection_
+        );
+    }
 public:
     ArrivalLocation(
         int x,
@@ -35,7 +46,9 @@ public:
         #undef HG_ARRIVAL_LOCATION_PRINT
         return os;
     }
-
+    bool operator==(ArrivalLocation const &o) const {
+        return comparison_tuple() == o.comparison_tuple();
+    }
 private:
     int x_;
     int y_;

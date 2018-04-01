@@ -20,7 +20,28 @@ local tempStore =
             fallable = false,
             winner = true
         },
+        {
+            attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
+            index = 2,
+            xaim = 5 * 3200,
+            yaim = 20 * 3200,
+            collisionOverlap = 50,
+            timeDirection = 'forwards',
+            destinationIndex = nil,
+            xDestination = 0,
+            yDestination = 0,
+            relativeTime = true,
+            timeDestination = -600,
+            illegalDestination = 1,
+            fallable = false,
+            winner = false,
+            isLaser = true,
+			triggerFunction = function(triggerArrivals, frameNumber)
+				return triggerArrivals[1][1] == 1
+			end
+        },
     },
+    --[[
     protoLasers =
     {
         {
@@ -43,6 +64,7 @@ local tempStore =
 			end
         },
     },
+    ]]--
     protoCollisions = {
         {
             width = 3 * 3200,

@@ -2,10 +2,24 @@
 #define HG_MUTATOR_AREA_H
 #include "TimeDirection.h"
 #include <ostream>
+#include <tuple>
 namespace hg {
 class MutatorArea;
 std::ostream &operator<<(std::ostream &os, MutatorArea const &toPrint);
 class MutatorArea final {
+    auto comparison_tuple() const -> decltype(auto)
+    {
+        return std::tie(
+            x_,
+            y_,
+            width_,
+            height_,
+            xspeed_,
+            yspeed_,
+            collisionOverlap_,
+            timeDirection_
+        );
+    }
 public:
     MutatorArea(
         int x, int y,
@@ -43,7 +57,9 @@ public:
         #undef HG_MUTATOR_AREA_PRINT
         return os;
     }
-
+    bool operator==(MutatorArea const &o) const {
+        return comparison_tuple() == o.comparison_tuple();
+    }
 private:
     int x_;
     int y_;

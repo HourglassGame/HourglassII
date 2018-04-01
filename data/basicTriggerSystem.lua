@@ -84,7 +84,7 @@ local function calculateCollisions(protoCollisions, triggerArrivals, outputTrigg
                 if math.abs(velocity) <= deceleration then
                     velocity = 0
                 else
-                    velocity = velocity + (math.abs(velocity)/velocity)*deceleration
+                    velocity = velocity + sign(velocity)*deceleration
                end
             end
             local maxSpeed = destination.maxSpeed
@@ -152,8 +152,8 @@ local function snapAttachment(objectTimeDirection, attachment, collisions)
     return x, y, xspeed, yspeed
 end
 
-local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, protoLasers, collisions, triggerArrivals, frameNumber)
-    local function calculatePortal(protoPortal, collisions, isLaser)
+local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, collisions, triggerArrivals, frameNumber)
+    local function calculatePortal(protoPortal, collisions)
         local x, y, xspeed, yspeed =
             snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions)
         
@@ -178,7 +178,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, proto
             destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
             fallable = protoPortal.fallable,
-			isLaser = isLaser,
+			isLaser = (protoPortal.isLaser or false),
             winner = false
         }
         
@@ -252,15 +252,17 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, proto
     local arrivalLocations = {}
 
     for i, protoPortal in ipairs(protoPortals) do
-        local portal, active = calculatePortal(protoPortal, collisions, false)
-        calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
+        local portal, active = calculatePortal(protoPortal, collisions)
+        if not protoPortal.isLaser then
+            calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active)
+        end
         arrivalLocations[#arrivalLocations + 1] = calculateArrivalLocation(portal)
         if active then
             portalCount = portalCount + 1
             portals[portalCount] = portal
         end
     end
-	
+	--[[
 	if protoLasers then
 		for i, protoLaser in ipairs(protoLasers) do
 			local portal, active = calculatePortal(protoLaser, collisions, true)
@@ -271,7 +273,7 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, proto
 			end
 		end
 	end
-	
+	]]--
     return portals, arrivalLocations
 end
 
@@ -864,7 +866,7 @@ local function pickup(p)
                 local forwardsImageGlitz = {
                     type = "image",
                     layer = 430,
-                    key = pickupGlitzNameMap[p.pickupType],
+                    key = pickupGlitzNameMap[proto.pickupType],
                     x = PnV.x,
                     y = PnV.y,
                     width = proto.height,
@@ -874,7 +876,7 @@ local function pickup(p)
                 local reverseImageGlitz = {
                     type = "image",
                     layer = 430,
-                    key = pickupGlitzNameMap[p.pickupType],
+                    key = pickupGlitzNameMap[proto.pickupType],
                     x = PnV.x,
                     y = PnV.y,
                     width = proto.height,
@@ -936,6 +938,8 @@ local function spikes(p)
                 deathGlitz[#deathGlitz+1] = {
                     x = dynamicObject.x,
                     y = dynamicObject.y,
+                    xspeed = dynamicObject.xspeed,
+                    yspeed = dynamicObject.yspeed,
                     width = dynamicObject.width,
                     height = dynamicObject.height,
                     timeDirection = dynamicObject.timeDirection
@@ -1133,7 +1137,7 @@ function calculatePhysicsAffectingStuff(tempStore)
 			tempStore.forwardsGlitz, 
 			tempStore.reverseGlitz, 
 			tempStore.protoPortals, 
-			tempStore.protoLasers, 
+			--tempStore.protoLasers, 
 			retv.collisions, 
 			triggerArrivals, 
 			tempStore.frameNumber
@@ -1167,11 +1171,12 @@ function calculatePhysicsAffectingStuff(tempStore)
 end
 
 local function mutateObject(tempStore)
-    return function(responsibleManipulatorIndices, dynamicObject)
-        for i in list_iter(responsibleManipulatorIndices) do
-            if dynamicObject then
-                dynamicObject = tempStore.activeMutators[i]:effect(dynamicObject)
+    return function(responsibleMutatorIndices, dynamicObject)
+        for i in list_iter(responsibleMutatorIndices) do
+            if not dynamicObject then
+                break
             end
+            dynamicObject = tempStore.activeMutators[i]:effect(dynamicObject)
         end
         return dynamicObject
     end

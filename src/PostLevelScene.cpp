@@ -21,7 +21,8 @@ namespace {
         AudioGlitzManager &audioGlitzManager,
         hg::Inertia &inertia,
         hg::LevelResources const &resources,
-        sf::Image const &wallImage);
+        sf::Image const &wallImage,
+        sf::Image const &positionColoursImage);
 }
 void run_post_level_scene(
     hg::RenderWindow &window,
@@ -32,6 +33,7 @@ void run_post_level_scene(
     hg::TimeEngine const &timeEngine = finalLevel.timeEngine;
     hg::LevelResources const &levelResources = finalLevel.resources;
     sf::Image const &wallImage = *finalLevel.bakedWall;
+    sf::Image const &positionColoursImage = *finalLevel.bakedPositionColours;
 
     //enum {AWAITING_INPUT, RUNNING_LEVEL, PAUSED} state(AWAITING_INPUT);
 
@@ -97,7 +99,7 @@ void run_post_level_scene(
             if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
                 inertia.reset();
             }
-            runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage);
+            runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage, positionColoursImage);
             {
                 sf::Text replayGlyph;
                 replayGlyph.setFont(*hg::defaultFont);
@@ -149,7 +151,8 @@ void runStep(
     AudioGlitzManager &audioGlitzManager,
     hg::Inertia &inertia,
     hg::LevelResources const &resources,
-    sf::Image const &wallImage)
+    sf::Image const &wallImage,
+    sf::Image const &positionColoursImage)
 {
     app.clear(sf::Color(255, 255, 255));
     hg::FrameID drawnFrame;
@@ -166,12 +169,13 @@ void runStep(
                 hg::UniverseID(timeEngine.getTimelineLength()));
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
-             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-             timeEngine.getWall(),
-             resources,
+            getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
+            timeEngine.getWall(),
+            resources,
             audioPlayingState,
-             audioGlitzManager,
-             wallImage);
+            audioGlitzManager,
+            wallImage,
+            positionColoursImage);
     }
     else {
         inertia.run();
@@ -180,12 +184,13 @@ void runStep(
             drawnFrame = inertialFrame;
             hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
             DrawGlitzAndWall(app,
-                 getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
-                 timeEngine.getWall(),
-                 resources,
-                 audioPlayingState,
-                 audioGlitzManager,
-                 wallImage);
+                getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
+                timeEngine.getWall(),
+                resources,
+                audioPlayingState,
+                audioGlitzManager,
+                wallImage,
+                positionColoursImage);
         }
         else {
             drawnFrame =
@@ -199,12 +204,13 @@ void runStep(
                 hg::UniverseID(timeEngine.getTimelineLength()));
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
             DrawGlitzAndWall(app,
-                 getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-                 timeEngine.getWall(),
-                 resources,
-                 audioPlayingState,
-                 audioGlitzManager,
-                 wallImage);
+                getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
+                timeEngine.getWall(),
+                resources,
+                audioPlayingState,
+                audioGlitzManager,
+                wallImage,
+                positionColoursImage);
         }
     }
     DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getTimeCursor(), timeEngine.getTimelineLength());

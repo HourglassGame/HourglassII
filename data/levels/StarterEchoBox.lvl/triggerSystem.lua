@@ -60,17 +60,24 @@ local tempStore =
     protoButtons = {
     }
 }
+--[[
 local function calculateMutatorGlitz(protoMutator)
     return bts.calculateBidirectionalGlitz(450, protoMutator, {r = 150, g = 150, b = 150}, {r = 150, g = 150, b = 150})
 end
+]]--
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++
 --for trigger indices that did not arrive by the time this is called
+--[[
 function calculatePhysicsAffectingStuff(frameNumber, triggerArrivals)
     local retv = bts.calculatePhysicsAffectingStuff(tempStore)(frameNumber, triggerArrivals)
     
     return retv
 end
+]]--
+
+calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
+
 
 --responsible*Index gives the position in the list of the thing that
 --is responsible for the callin happening.
@@ -84,10 +91,14 @@ end
 function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal) 
     return true
 end
+mutateObject = bts.mutateObject(tempStore)
+--[[
 function mutateObject(responsibleManipulatorIndices, dynamicObject)
     return tempStore.protoMutators[1].effect(tempStore, dynamicObject)
 end
-
+]]--
+getDepartureInformation = bts.getDepartureInformation(tempStore)
+--[[
 function getDepartureInformation(departures)
     local outputTriggers, forwardsGlitz, reverseGlitz, additionalEndBoxes = bts.getDepartureInformation(tempStore)(departures)
     
@@ -95,3 +106,4 @@ function getDepartureInformation(departures)
     
     return outputTriggers, forwardsGlitz, reverseGlitz, additionalEndBoxes
 end
+]]--

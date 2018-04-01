@@ -29,12 +29,29 @@ public:
         }
         {
             Mutex::scoped_lock l(mut, true);
-            return threadLocalData[std::this_thread::get_id()];
+            return threadLocalData
+                .emplace(
+                    std::piecewise_construct,
+                    std::make_tuple(std::this_thread::get_id()),
+                    std::make_tuple())
+                .first->second;
+            //return threadLocalData[std::this_thread::get_id()];
         }
     }
+    ThreadLocal(ThreadLocal const &o) : threadLocalData(), mut() {
+        Mutex::scoped_lock l(o.mut, false);
+        threadLocalData = o.threadLocalData;
+    }
+
+    ThreadLocal &operator=(ThreadLocal const &o) {
+        if (&o != this) {
+            Mutex::scoped_lock l1(mut, true);
+            Mutex::scoped_lock l2(o.mut, false);
+            threadLocalData = o.threadLocalData;
+        }
+        return *this;
+    }
 private:
-    ThreadLocal(ThreadLocal const &) = delete;
-    ThreadLocal &operator=(ThreadLocal const &) = delete;
     
     virtual void on_scheduler_exit(bool /*is_worker*/) override {
         //Note that this clears the element even for non-worker threads.
@@ -50,9 +67,9 @@ private:
         l.acquire(mut, true);
         threadLocalData.erase(it);
     }
-    
+
     Map threadLocalData;
-    Mutex mut;
+    mutable Mutex mut;
 };
 } //namespace hg
 #endif //HG_THREAD_LOCAL_H

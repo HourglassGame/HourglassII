@@ -11,6 +11,7 @@
 namespace hg {
 class Glitz final : boost::totally_ordered<Glitz> {
 public:
+    //TODO: Don't use raw pointer here?
     explicit Glitz(GlitzImplementation *impl)
       : impl(impl)
     {

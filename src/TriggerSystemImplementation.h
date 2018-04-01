@@ -13,6 +13,7 @@
 #include "mt/boost/container/map.hpp"
 #include "mt/std/map"
 #include "OperationInterrupter.h"
+#include "memory_pool.h"
 
 #include <boost/optional.hpp>
 #include <boost/range/adaptor/transformed.hpp>
@@ -49,10 +50,10 @@ class TriggerFrameStateImplementation
         bool porterActionedPortal) = 0;
     
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int> const &responsibleMutatorIndices,
+        mp::std::vector<int> const &responsibleMutatorIndices,
         Guy const &objectToManipulate) = 0;
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int> const &responsibleMutatorIndices,
+        mp::std::vector<int> const &responsibleMutatorIndices,
         Box const &objectToManipulate) = 0;
 
     struct DepartureInformation {
@@ -103,7 +104,7 @@ class TriggerFrameState final
     
     template<typename ObjectT>
     boost::optional<ObjectT> mutateObject(
-        mt::std::vector<int> const &responsibleMutatorIndices,
+        mp::std::vector<int> const &responsibleMutatorIndices,
         ObjectT const &objectToManipulate)
     {
         return impl->mutateObject(responsibleMutatorIndices, objectToManipulate);
@@ -121,12 +122,6 @@ class TriggerFrameState final
     TriggerFrameState() : impl()
     {}
 
-    //Takes ownership of impl.
-    //precondition:
-    //  The following must release impl:
-    //  multi_thread_delete(impl);
-    //THIS MEANS THAT impl MUST HAVE BEEN ALLOCATED IN A SPECIAL WAY!!
-    //(with new (multi_thread_tag{}) FrameStateImpl())
     explicit TriggerFrameState(TriggerFrameStateImplementation *impl) :
         impl(impl)
     {}
@@ -149,14 +144,14 @@ class TriggerFrameState final
     private:
     std::unique_ptr<
         TriggerFrameStateImplementation,
-        multi_thread_deleter<TriggerFrameStateImplementation>> impl;
+        memory_pool_deleter<TriggerFrameStateImplementation>> impl;
 };
 inline void swap(TriggerFrameState &l, TriggerFrameState &r) { l.swap(r); }
 
 class TriggerSystemImplementation
 {
     public:
-    virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const = 0;
+    virtual TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const = 0;
     virtual TriggerSystemImplementation *clone() const = 0;
     virtual ~TriggerSystemImplementation(){}
     virtual bool operator==(TriggerSystemImplementation const &o) const = 0;
@@ -164,6 +159,8 @@ class TriggerSystemImplementation
     //(Could just as well come from a comparison of typeid addresses or something).
     //Currently:
     //DirectLuaTriggerSystem == 1000
+    //SimpleConfiguredTriggerSystem == 2000
+    //ComparisonTestTriggerSystem == 10000
     virtual int order_ranking() const = 0;
 };
 }

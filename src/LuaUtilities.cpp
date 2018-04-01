@@ -21,21 +21,16 @@ namespace hg {
 std::vector<char> loadFileIntoVector(
     boost::filesystem::path const &filename)
 {
-    std::vector<char> vec;
     boost::filesystem::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
-    //Need to use binary mode; otherwise CRLF line endings count as 2 for
-    //`length` calculation but only 1 for `file.read` (on some platforms),
-    //and we get undefined  behaviour when trying to read `length` characters.
-    file.open(filename, std::ifstream::in | std::ifstream::binary);
-    file.seekg(0, std::ios::end);
-    std::streampos length(file.tellg());
-    if (length) {
-        file.seekg(0, std::ios::beg);
-        vec.resize(static_cast<std::size_t>(length));
-        file.read(&vec.front(), static_cast<std::size_t>(length));
+    file.open(filename, std::ifstream::in);
+
+    std::stringstream ss;
+    if (!(ss << file.rdbuf())) {
+        throw std::exception("Couldn't read file");
     }
-    return vec;
+    auto const s{ss.str()};
+    return std::vector<char>(s.begin(), s.end());
 }
 
 int lua_VectorWriter(
@@ -213,6 +208,28 @@ TimeDirection to<TimeDirection>(lua_State * const L, int const index) {
     }
     catch (LuaError &e) {
         add_semantic_callstack_info(e, "to<TimeDirection>");
+        throw;
+    }
+}
+template<>
+bool isValid<TimeDirection>(lua_State * const L, int const index) {
+    try {
+        if (!lua_isstring(L, index)) {
+            return false;
+        }
+        char const * const timeDirectionString(lua_tostring(L, index));
+        if (strcmp(timeDirectionString, "forwards") == 0) {
+            return true;
+        }
+        else if (strcmp(timeDirectionString, "reverse") == 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    catch (LuaError &e) {
+        add_semantic_callstack_info(e, "isValid<TimeDirection>");
         throw;
     }
 }

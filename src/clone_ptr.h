@@ -10,6 +10,8 @@ namespace hg {
 
 //TODO -- add complete support for stateful CloneManager.
 //        support is currently incomplete and buggy.
+
+//TODO - Make 'CloneManager' simply be an Allocator instead?
 template<typename Cloneable, typename CloneManager = default_clone<Cloneable>>
 class clone_ptr final : CloneManager
 {
@@ -30,8 +32,12 @@ public:
     {
     }
     
-    //TODO -- a constructor allowing initiaisation of CloneManager
-    
+    explicit clone_ptr(Cloneable *p, CloneManager const &alloc) :
+        CloneManager(alloc),
+        obj(p)
+    {
+    }
+
     clone_ptr(clone_ptr const &o) :
         CloneManager(o.get_cloner()),
         obj(o.obj?CloneManager::new_clone(*o.obj):pointer())
@@ -118,6 +124,10 @@ public:
     }
     CloneManager const &get_cloner() const noexcept {
         return *this;
+    }
+
+    explicit operator bool() const {
+        return obj;
     }
 private:
     Cloneable *obj;

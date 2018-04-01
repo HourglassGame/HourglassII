@@ -10,6 +10,9 @@
 #include "multi_thread_allocator.h"
 #include "FrameView.h"
 #include "OperationInterrupter.h"
+#include "ThreadLocal.h"
+#include "memory_pool.h"
+#include "copy_as_new_ptr.h"
 
 #include <vector>
 #include "mt/std/map"
@@ -25,9 +28,8 @@ public:
         Environment const &env,
         TriggerSystem const &newTriggerSystem);
 
+    typedef mt::std::map<Frame*, ObjectList<Normal>> FrameDepartureT;
 
-    typedef mt::std::map<Frame*, ObjectList<Normal> > FrameDepartureT;
-    
     struct PhysicsReturnT
     {
         FrameDepartureT departures;
@@ -46,6 +48,10 @@ public:
 private:
     Environment env_;
     TriggerSystem triggerSystem_;
+    //TODO: Allow memory_pool to be copied, to avoid use of copy_as_new_ptr?
+#if USE_POOL_ALLOCATOR
+    copy_as_new_ptr<ThreadLocal<memory_pool<user_allocator_tbb_alloc>>> shared_pool_;
+#endif
 };
 inline void swap(PhysicsEngine &l, PhysicsEngine &r)
 {

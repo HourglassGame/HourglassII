@@ -11,9 +11,12 @@ namespace hg{
         TimeEngine timeEngine;
         LevelResources resources;
         std::unique_ptr<sf::Image> bakedWall;
+        std::unique_ptr<sf::Image> bakedPositionColours;
     };
+#if 0
     LoadedLevel loadLevelAndResourcesFromFile(
         boost::filesystem::path const &path,
         OperationInterrupter &interrupter = as_lvalue(NullOperationInterrupter{}));
+#endif
 }
 #endif //HG_LOADED_LEVEL_H

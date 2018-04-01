@@ -1,11 +1,13 @@
 #ifndef HG_DIRECT_LUA_TRIGGER_SYSTEM_H
 #define HG_DIRECT_LUA_TRIGGER_SYSTEM_H
 #include "TriggerSystemImplementation.h"
+#include "copy_as_new_ptr.h"
 #include "SimpleLuaCpp.h"
 #include "ThreadLocal.h"
 #include "ObjectAndTime.h"
 #include "LuaInterruption.h"
 #include "LuaModule.h"
+#include "memory_pool.h"
 #include <string>
 #include <vector>
 #include <mutex>
@@ -28,6 +30,7 @@ class DirectLuaTriggerFrameState final :
             >
         > const &triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize,
+        memory_pool<user_allocator_tbb_alloc> &pool,
         OperationInterrupter &interrupter);
     
     virtual PhysicsAffectingStuff
@@ -36,10 +39,10 @@ class DirectLuaTriggerFrameState final :
             boost::transformed_range<
                 GetBase<TriggerDataConstPtr>,
                 mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) override;
-    
+
     virtual bool shouldArrive(Guy const &potentialArriver) override;
     virtual bool shouldArrive(Box const &potentialArriver) override;
-    
+
     virtual bool shouldPort(
         int responsiblePortalIndex,
         Guy const &potentialPorter,
@@ -50,10 +53,10 @@ class DirectLuaTriggerFrameState final :
         bool porterActionedPortal) override;
     
     virtual boost::optional<Guy> mutateObject(
-        mt::std::vector<int> const &responsibleMutatorIndices,
+        mp::std::vector<int> const &responsibleMutatorIndices,
         Guy const &objectToManipulate) override;
     virtual boost::optional<Box> mutateObject(
-        mt::std::vector<int> const &responsibleMutatorIndices,
+        mp::std::vector<int> const &responsibleMutatorIndices,
         Box const &objectToManipulate) override;
     
     virtual DepartureInformation getDepartureInformation(
@@ -61,6 +64,7 @@ class DirectLuaTriggerFrameState final :
         Frame *currentFrame) override;
     virtual ~DirectLuaTriggerFrameState() noexcept override;
 private:
+    memory_pool<user_allocator_tbb_alloc> &pool_;
     OperationInterrupter &interrupter_;
     LuaState &L_;
 
@@ -84,54 +88,6 @@ private:
     DirectLuaTriggerFrameState(DirectLuaTriggerFrameState &&o) = delete;
     DirectLuaTriggerFrameState &operator=(DirectLuaTriggerFrameState &&o) = delete;
 };
-
-
-//The behaviour of this class is somewhat strange and not particularly useful
-//in general, so the use of this class should be limited to cases where there
-//are no better options.
-template<typename T>
-class copy_as_new_ptr final
-{
-public:
-    copy_as_new_ptr() :
-        ptr(new T())
-    {
-    }
-    //Notice that these do not actually copy their arguments.
-    //The arguments are not even moved. This is deliberate.
-    copy_as_new_ptr(copy_as_new_ptr const &) :
-        ptr(new T())
-    {
-    }
-    copy_as_new_ptr &operator=(copy_as_new_ptr o)
-    {
-        return *this = std::move(o);
-    }
-
-    //Move operations are not useful, because they cannot be made no-throw.
-    copy_as_new_ptr(copy_as_new_ptr &&o) = delete;
-    copy_as_new_ptr &operator=(copy_as_new_ptr &&o) = delete;
-    ~copy_as_new_ptr() noexcept
-    {
-        delete ptr;
-    }
-    T &operator*() const
-    {
-        return get();
-    }
-    T *operator->() const
-    {
-        return get();
-    }
-    T *get() const
-    {
-        assert(ptr);
-        return ptr;
-    }
-private:
-    T *ptr;
-};
-
 class DirectLuaTriggerSystem final :
     public TriggerSystemImplementation
 {
@@ -152,7 +108,7 @@ public:
                 >
         > triggerOffsetsAndDefaults,
         std::size_t arrivalLocationsSize);
-    virtual TriggerFrameState getFrameState(OperationInterrupter &interrupter) const override;
+    virtual TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const override;
     virtual TriggerSystemImplementation *clone() const override
     {
         return new DirectLuaTriggerSystem(*this);

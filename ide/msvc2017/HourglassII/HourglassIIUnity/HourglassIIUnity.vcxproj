@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D20664A6-48A4-47DB-8955-860DB29A528C}</ProjectGuid>
     <RootNamespace>HourglassIIUnity</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -52,7 +52,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GLEW_BUILD;NOMINMAX;WIN32;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;BOOST_THREAD_VERSION=4;_DEBUG;_WINDOWS;_UNICODE%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_RANGE_ENABLE_CONCEPT_ASSERT=0;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;GLEW_BUILD;NOMINMAX;WIN32;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;BOOST_THREAD_VERSION=4;_DEBUG;_WINDOWS;_UNICODE%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -71,6 +71,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>false</MinimalRebuild>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -89,7 +90,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>GLEW_BUILD;NOMINMAX;WIN32;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;BOOST_THREAD_VERSION=4;NDEBUG;_WINDOWS;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_RANGE_ENABLE_CONCEPT_ASSERT=0;_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;GLEW_BUILD;NOMINMAX;WIN32;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;BOOST_THREAD_VERSION=4;NDEBUG;_WINDOWS;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>..\..\..\..\ext\boost\include;..\..\..\..\ext\SFML\include;..\..\..\..\ext\tbb\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -106,6 +107,7 @@
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -137,12 +139,14 @@
     <ClInclude Include="..\..\..\..\src\clone_ptr.h" />
     <ClInclude Include="..\..\..\..\src\Collision.h" />
     <ClInclude Include="..\..\..\..\src\CommonTriggerCode.h" />
+    <ClInclude Include="..\..\..\..\src\ComparisonTestTriggerSystem.h" />
     <ClInclude Include="..\..\..\..\src\ConcurrentFrameUpdateSet.h" />
     <ClInclude Include="..\..\..\..\src\ConcurrentQueue.h" />
     <ClInclude Include="..\..\..\..\src\ConcurrentTimeMap.h" />
     <ClInclude Include="..\..\..\..\src\ConcurrentTimeSet.h" />
     <ClInclude Include="..\..\..\..\src\ConstPtr_of.h" />
     <ClInclude Include="..\..\..\..\src\ConstPtr_of_fwd.h" />
+    <ClInclude Include="..\..\..\..\src\copy_as_new_ptr.h" />
     <ClInclude Include="..\..\..\..\src\default_clone.h" />
     <ClInclude Include="..\..\..\..\src\default_delete.h" />
     <ClInclude Include="..\..\..\..\src\default_memory_source.h" />
@@ -229,9 +233,14 @@
     <ClInclude Include="..\..\..\..\src\lua\lzio.h" />
     <ClInclude Include="..\..\..\..\src\MainMenuScene.h" />
     <ClInclude Include="..\..\..\..\src\Maths.h" />
+    <ClInclude Include="..\..\..\..\src\memory_pool.h" />
     <ClInclude Include="..\..\..\..\src\memory_source_clone.h" />
     <ClInclude Include="..\..\..\..\src\move.h" />
     <ClInclude Include="..\..\..\..\src\move_function.h" />
+    <ClInclude Include="..\..\..\..\src\mp\boost\container\map.hpp" />
+    <ClInclude Include="..\..\..\..\src\mp\boost\container\stable_vector.hpp" />
+    <ClInclude Include="..\..\..\..\src\mp\boost\container\vector.hpp" />
+    <ClInclude Include="..\..\..\..\src\mp\boost\unordered_map.hpp" />
     <ClInclude Include="..\..\..\..\src\mt\boost\container\map.hpp" />
     <ClInclude Include="..\..\..\..\src\mt\boost\container\stable_vector.hpp" />
     <ClInclude Include="..\..\..\..\src\mt\boost\container\vector.hpp" />
@@ -260,6 +269,7 @@
     <ClInclude Include="..\..\..\..\src\PhysicsEngineUtilities.h" />
     <ClInclude Include="..\..\..\..\src\PhysicsEngineUtilities_def.h" />
     <ClInclude Include="..\..\..\..\src\PhysicsObjectType.h" />
+    <ClInclude Include="..\..\..\..\src\PlatformDestination.h" />
     <ClInclude Include="..\..\..\..\src\PlayerVictoryException.h" />
     <ClInclude Include="..\..\..\..\src\PortalArea.h" />
     <ClInclude Include="..\..\..\..\src\PostLevelScene.h" />
@@ -277,6 +287,7 @@
     <ClInclude Include="..\..\..\..\src\SelectionScene.h" />
     <ClInclude Include="..\..\..\..\src\sfColour.h" />
     <ClInclude Include="..\..\..\..\src\sfRenderTargetCanvas.h" />
+    <ClInclude Include="..\..\..\..\src\SimpleConfiguredTriggerSystem.h" />
     <ClInclude Include="..\..\..\..\src\SimpleLuaCpp.h" />
     <ClInclude Include="..\..\..\..\src\SortWeakerThanEquality.h" />
     <ClInclude Include="..\..\..\..\src\SortWeakerThanEquality_fwd.h" />
@@ -307,7 +318,22 @@
     <ClInclude Include="..\..\..\..\src\mt\std\set">
       <FileType>CppHeader</FileType>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mt\std\string">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\mt\std\vector">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mp\std\map">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mp\std\set">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mp\std\string">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mp\std\vector">
       <FileType>CppHeader</FileType>
     </ClInclude>
   </ItemGroup>

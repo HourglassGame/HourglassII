@@ -1,6 +1,7 @@
 #include "LuaSandbox.h"
 
 #include "UserDataProxyTable.h"
+#include "LuaUtilities.h"
 
 #include "lua/lua.h"
 #include "lua/lualib.h"
@@ -389,4 +390,39 @@ void restoreGlobals(lua_State *L) {
     
     lua_pop(L, 1);//[]
 }
+
+int preloadReset(lua_State *L) {
+    //preloadReset is equivalent to the lua function:
+    //return deepcopy(upvalues[1])
+    
+    checkstack(L, 5);
+    lua_newtable(L);//[newPreload]
+    lua_pushvalue(L, lua_upvalueindex(1)); //[newPreload, proto]
+    
+    lua_pushnil(L);//[newPreload, proto, nil]
+    while (lua_next(L, -2) != 0) {//[newPreload, proto, key, value]
+        lua_pushvalue(L, -2);//[newPreload, proto, key, value, key]
+        lua_insert(L, -2);//[newPreload, proto, key, key, value]
+        lua_settable(L, -5);//[newPreload, proto, key]
+    }
+    //[newPreload, proto]
+    lua_pop(L, 1);//[newPreload]
+    return 1;
+}
+
+void setUpPreloadResetFunction(lua_State *L, std::vector<LuaModule> const &extraChunks) {
+    //protoPreload = makeTable(extraChunks.name -> load(extraChunks.chunk))
+    checkstack(L, 2);
+    assert(extraChunks.size() <= static_cast<std::size_t>(std::numeric_limits<int>::max()));
+    lua_createtable(L, 0, static_cast<int>(extraChunks.size()));//[protoPreload]
+    for (LuaModule const &mod: extraChunks) {
+        pushFunctionFromVector(L, mod.chunk, mod.name);//[protoPreload, chunk]
+        lua_setfield(L, -2, mod.name.c_str());//[protoPreload]
+    }
+    
+    //registry.preloadReset = preloadReset with upvalue[1] = protoPreload
+    lua_pushcclosure(L, preloadReset, 1);//[preloadReset]
+    setPackagePreloadResetFunction(L);//[]
+}
+
 }//namespace hg

@@ -16,7 +16,8 @@ void DrawGlitzAndWall(
     hg::LevelResources const &resources,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
-    sf::Image const &wallImage)
+    sf::Image const &wallImage,
+    sf::Image const &positionColoursImage)
 {
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
@@ -37,7 +38,7 @@ void DrawGlitzAndWall(
 
     flusher.partialFlush(std::numeric_limits<int>::max());
     if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) {
-        DrawColors(target, wall.roomWidth(), wall.roomHeight(), wall.segmentSize());
+        DrawColors(target, positionColoursImage);
     }
     target.setView(oldView);
 
@@ -124,20 +125,10 @@ sf::Color guyPositionToColor(double xFrac, double yFrac) {
 }
 
 
-void DrawColors(hg::RenderWindow &target, int roomWidth, int roomHeight, int segmentSize)
+void DrawColors(hg::RenderWindow &target, sf::Image const &positionColoursImage)
 {
-    sf::Image colors;
-    colors.create(roomWidth / 100, roomHeight / 100, sf::Color(0, 0, 0, 0));
-    for (int x(segmentSize / 100); x != (roomWidth - segmentSize) / 100; ++x) {
-        for (int y(segmentSize / 100); y != (roomHeight - segmentSize) / 100; ++y) {
-            sf::Color color(guyPositionToColor(
-                (x - segmentSize / 100)*100. / (roomWidth - 2 * segmentSize), (y - segmentSize / 100)*100. / (roomHeight - 2 * segmentSize)));
-            color.a = 220;
-            colors.setPixel(x, y, color);
-        }
-    }
     sf::Texture tex;
-    tex.loadFromImage(colors);
+    tex.loadFromImage(positionColoursImage);
 
     target.draw(sf::Sprite(tex));
 }

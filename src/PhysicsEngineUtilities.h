@@ -16,6 +16,7 @@
 #include <vector>
 #include "mt/boost/container/map.hpp"
 #include "mt/std/vector"
+#include "mp/std/vector"
 #include <utility>
 
 #include "Frame_fwd.h"
@@ -55,33 +56,35 @@ void guyStep(
     RandomAccessGuyRange const &guyArrivalList,
     Frame *frame,
     std::vector<InputList> const &playerInput,
-    mt::std::vector<ObjectAndTime<Guy, Frame*>> &nextGuy,
-    mt::std::vector<ObjectAndTime<Box, Frame*>> &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Guy, Frame*>> &nextGuy,
+    mp::std::vector<ObjectAndTime<Box, Frame*>> &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
     RandomAccessBoxRange const &boxArrivalList,
-    mt::std::vector<Collision> const &nextPlatform,
-    mt::std::vector<PortalArea> const &nextPortal,
-    mt::std::vector<ArrivalLocation> const &arrivalLocations,
-    mt::std::vector<MutatorArea> const &mutators,
+    mp::std::vector<Collision> const &nextPlatform,
+    mp::std::vector<PortalArea> const &nextPortal,
+    mp::std::vector<ArrivalLocation> const &arrivalLocations,
+    mp::std::vector<MutatorArea> const &mutators,
     TriggerFrameState &triggerFrameState,
     GuyGlitzAdder const &guyGlitzAdder,
     bool &nextPlayerFrame,
-    bool &winFrame);
+    bool &winFrame,
+    memory_pool<user_allocator_tbb_alloc> &pool);
 
 template <
     typename RandomAccessPlatformRange>
 void boxInteractionBoundLoop(
     TimeDirection const boxDirection,
     Environment const &env,
-    mt::std::vector<int> &x,
-    mt::std::vector<int> &y,
-    mt::std::vector<int> &xTemp,
-    mt::std::vector<int> &yTemp,
-    mt::std::vector<char> &squished,
-    mt::std::vector<int> const &size,
-    mt::std::vector<Box> const &oldBoxList,
+    mp::std::vector<int> &x,
+    mp::std::vector<int> &y,
+    mp::std::vector<int> &xTemp,
+    mp::std::vector<int> &yTemp,
+    mp::std::vector<char> &squished,
+    mp::std::vector<int> const &size,
+    mp::std::vector<Box> const &oldBoxList,
     RandomAccessPlatformRange const &nextPlatform,
-    BoxGlitzAdder const &boxGlitzAdder);
+    BoxGlitzAdder const &boxGlitzAdder,
+    memory_pool<user_allocator_tbb_alloc> &pool);
 
 template <
     typename RandomAccessBoxRange,
@@ -90,23 +93,24 @@ template <
     typename RandomAccessArrivalLocationRange,
     typename RandomAccessMutatorRange,
     typename FrameT>
-void boxCollisionAlogorithm(
+void boxCollisionAlgorithm(
     Environment const &env,
     RandomAccessBoxRange const &boxArrivalList,
-    mt::std::vector<Box> const &additionalBox,
-    mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
+    mp::std::vector<Box> const &additionalBox,
+    mp::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
     RandomAccessPlatformRange const &nextPlatform,
     RandomAccessPortalRange const &nextPortal,
     RandomAccessArrivalLocationRange const &arrivalLocations,
     RandomAccessMutatorRange const &mutators,
     TriggerFrameState &triggerFrameState,
     BoxGlitzAdder const &boxGlitzAdder,
-    FrameT const &frame);
+    FrameT const &frame,
+    memory_pool<user_allocator_tbb_alloc> &pool);
     
 void makeBoxGlitzListForNormalDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> > const &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Box, Frame*>> const &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
     BoxGlitzAdder const &boxGlitzAdder);
     
 template <
@@ -114,8 +118,8 @@ template <
     typename RandomAccessMutatorRange,
     typename FrameT>
 void makeBoxAndTimeWithPortalsAndMutators(
-    mt::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
-    mt::std::vector<char> &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Box, FrameT>> &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
     RandomAccessPortalRange const &portals,
     RandomAccessMutatorRange const &mutators,
     int x,
@@ -126,41 +130,42 @@ void makeBoxAndTimeWithPortalsAndMutators(
     int oldIllegalPortal,
     TimeDirection oldTimeDirection,
     TriggerFrameState &triggerFrameState,
-    FrameT frame);
+    FrameT frame,
+    memory_pool<user_allocator_tbb_alloc> &pool);
 
 bool explodeBoxesUpwards(
-    mt::std::vector<int> &x,
-    mt::std::vector<int> const &xTemp,
-    mt::std::vector<int> &y,
-    mt::std::vector<int> const &size,
-    mt::std::vector<mt::std::vector<std::size_t>> const &links,
+    mp::std::vector<int> &x,
+    mp::std::vector<int> const &xTemp,
+    mp::std::vector<int> &y,
+    mp::std::vector<int> const &size,
+    mp::std::vector<mp::std::vector<std::size_t>> const &links,
     bool firstTime,
-    mt::std::vector<char> &toBeSquished,
-    mt::std::vector<std::pair<bool, int> > const &bound,
+    mp::std::vector<char> &toBeSquished,
+    mp::std::vector<std::pair<bool, int> > const &bound,
     std::size_t index,
     int boundSoFar);
 
 
 bool explodeBoxes(
-    mt::std::vector<int> &pos,
-    mt::std::vector<int> const &size,
-    mt::std::vector<mt::std::vector<std::size_t>> const &links,
-    mt::std::vector<char> &toBeSquished,
-    mt::std::vector<std::pair<bool, int> > const &bound,
+    mp::std::vector<int> &pos,
+    mp::std::vector<int> const &size,
+    mp::std::vector<mp::std::vector<std::size_t>> const &links,
+    mp::std::vector<char> &toBeSquished,
+    mp::std::vector<std::pair<bool, int>> const &bound,
     std::size_t index,
     int boundSoFar,
     int sign);
 
 void recursiveBoxCollision(
-    mt::std::vector<int> &majorAxis,
-    mt::std::vector<int> const &minorAxis,
-    mt::std::vector<int> const &size,
-    mt::std::vector<char> const &squished,
-    mt::std::vector<std::size_t> &boxesSoFar,
+    mp::std::vector<int> &majorAxis,
+    mp::std::vector<int> const &minorAxis,
+    mp::std::vector<int> const &size,
+    mp::std::vector<char> const &squished,
+    mp::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
     int subtractionNumber,
     TimeDirection const boxDirection,
-    mt::std::vector<Box> const &oldBoxList);
+    mp::std::vector<Box> const &oldBoxList);
 
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(
@@ -168,8 +173,8 @@ void buildDeparturesForComplexEntities(
     PhysicsEngine::FrameDepartureT &newDepartures);
 
 void buildDepartures(
-    mt::std::vector<ObjectAndTime<Box, Frame*> > const &nextBox,
-    mt::std::vector<ObjectAndTime<Guy, Frame*> > const &nextGuy,
+    mp::std::vector<ObjectAndTime<Box, Frame*> > const &nextBox,
+    mp::std::vector<ObjectAndTime<Guy, Frame*> > const &nextGuy,
     PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame);
 
@@ -192,18 +197,20 @@ GunRaytraceResult doGunRaytrace(
     Wall const &wall,
 
     //Platform data
-    mt::std::vector<Collision> const &nextPlatform,
+    mp::std::vector<Collision> const &nextPlatform,
 
     //Box Data
-    mt::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
-    mt::std::vector<char> const &nextBoxNormalDeparture,
+    mp::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+    mp::std::vector<char> const &nextBoxNormalDeparture,
 
     //Guy Data
-    mt::std::vector<int> const &gx,
-    mt::std::vector<int> const &gy,
-    mt::std::vector<int> const &gw,
-    mt::std::vector<int> const &gh,
-    mt::std::vector<char> const &shootable
+    mp::std::vector<int> const &gx,
+    mp::std::vector<int> const &gy,
+    mp::std::vector<int> const &gw,
+    mp::std::vector<int> const &gh,
+    mp::std::vector<char> const &shootable,
+
+    memory_pool<user_allocator_tbb_alloc> &pool
 );
     
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
@@ -242,7 +249,8 @@ enum {
 vector2<int> doGunWallRaytrace(
     Wall const &wall,
     int const sx, int const sy,
-    int const aimx, int const aimy);
+    int const aimx, int const aimy,
+    memory_pool<user_allocator_tbb_alloc> &pool);
 }
 #include "PhysicsEngineUtilities_def.h"
 #endif //HG_PHYSICS_ENGINE_TEST_H

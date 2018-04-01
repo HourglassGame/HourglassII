@@ -1,3 +1,5 @@
+#include "../src/Lua_test.cpp"
+
 //luaconf.h changes behaviour depending on whether or not these are defined.
 //Make sure they are all defined up front, so the first time that luaconf.h is included,
 //all relevant macros/functions/whatever are made available (because from the second time onwards,
@@ -40,3 +42,7 @@
 #include "../src/lua/lutf8lib.cpp"
 #include "../src/lua/lvm.cpp"
 #include "../src/lua/lzio.cpp"
+
+
+#undef LUA_LIB
+#undef LUA_CORE

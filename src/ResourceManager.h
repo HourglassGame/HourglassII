@@ -11,8 +11,6 @@
 namespace hg {
 extern sf::Font const *defaultFont;
 
-
-
 struct LevelResources final {
     boost::container::map<std::string, sf::Image> images;
     boost::container::map<std::string, sf::SoundBuffer> sounds;
@@ -30,6 +28,7 @@ struct LevelUIData final {
 //Should probably start getting rid of most of SFML, since it can't handle this stuff properly.
 LevelResources loadLevelResources(std::string const &levelPath, std::string const &globalsPath);
 sf::Image loadAndBakeWallImage(Wall const &wall);
+sf::Image loadAndBakePositionColourImage(Wall const &wall);
 }
 
 #endif // HG_RESOURCE_MANAGER_H

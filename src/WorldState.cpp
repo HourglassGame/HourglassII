@@ -169,7 +169,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
                     //'''
                     //I was unable to figure out why this was considered a problem; but maybe this comment can be a clue
                     //if the problem reapppears. (If no problem reappears, or you prove the non-existence of any problem,
-                    //remove this comment.
+                    //remove this comment.)
                     //Note that `group.register_pending_exception()` seems to be buggy in MSVC++, and will sometimes
                     //just throw the pending exception, rather than capturing it. (It is also an undocumented feature).
                     group.cancel_group_execution();

@@ -3,6 +3,7 @@
 #include "Glitz.h"
 #include "mt/std/vector"
 #include "mt/std/string"
+#include "mp/std/vector"
 #include "vector2.h"
 #include "ImageGlitz.h"
 #include "multi_thread_allocator.h"
@@ -13,7 +14,7 @@ public:
     BoxGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,
         mt::std::vector<Glitz> &reverseGlitz,
-        mt::std::vector<GlitzPersister> &persistentGlitz) :
+        mp::std::vector<GlitzPersister> &persistentGlitz) :
     forwardsGlitz(&forwardsGlitz), 
     reverseGlitz(&reverseGlitz),
     persistentGlitz(&persistentGlitz)
@@ -30,7 +31,7 @@ public:
                 500, mt::std::string("global.box"),
                 position.x, position.y,
                 size, size));
-    
+
         Glitz oppositeDirectionGlitz(
             new (multi_thread_tag{}) ImageGlitz(
                 500, mt::std::string("global.box_r"),
@@ -75,7 +76,7 @@ public:
 private:
     mt::std::vector<Glitz> *forwardsGlitz;
     mt::std::vector<Glitz> *reverseGlitz;
-    mt::std::vector<GlitzPersister> *persistentGlitz;
+    mp::std::vector<GlitzPersister> *persistentGlitz;
 };
 }
 #endif //HG_BOX_GLITZ_ADDER_H

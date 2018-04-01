@@ -5,7 +5,12 @@ namespace hg {
     //is closer to malloc and free.
     template<typename T, typename MemorySource>
     struct memory_source_clone : private MemorySource {
+        explicit memory_source_clone() : MemorySource() {}
+        explicit memory_source_clone(MemorySource memorySource) : MemorySource(memorySource) {}
+
+
         T *new_clone(T const &toClone) const {
+            //TODO: Handle custom alignment as well as custom size
             void *p(MemorySource::alloc(toClone.clone_size()));
             try {
                 return toClone.perform_clone(p);

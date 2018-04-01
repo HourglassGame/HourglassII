@@ -2,12 +2,27 @@
 #define HG_COLLISION_H
 #include "TimeDirection.h"
 #include <ostream>
+#include <tuple>
 namespace hg
 {
 class Collision;
 std::ostream &operator<<(std::ostream &os, Collision const &toPrint);
 class Collision final
 {
+    auto comparison_tuple() const -> decltype(auto)
+    {
+        return std::tie(
+            x_,
+            y_,
+            xspeed_,
+            yspeed_,
+            prevXspeed_,
+            prevYspeed_,
+            width_,
+            height_,
+            timeDirection_
+        );
+    }
 public:
     Collision(
         int x, int y,
@@ -44,6 +59,9 @@ public:
         HG_COLLISION_PRINT(timeDirection_);
         #undef HG_COLLISION_PRINT
         return os;
+    }
+    bool operator==(Collision const &o) const {
+        return comparison_tuple() == o.comparison_tuple();
     }
 private:
     int x_;

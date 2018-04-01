@@ -42,16 +42,17 @@ template<typename T>
 bool isValid(lua_State *L, int index = -1);
 
 template<typename T>
-T toWithDefault(lua_State *L, int index, T defaultValue)
+T toWithDefault(lua_State *const L, int index, T defaultValue)
 {
-    return isValid<T>(L, index) ? to<T>(L, index) : defaultValue;
+    return isValid<T>(L, index) ? to<T>(L, index) : std::move(defaultValue);
 }
 
+//TODO: change arg order, make index have default value?
 template<typename T>
 T readFieldWithDefault(lua_State *L, char const *fieldName, int index, T defaultValue)
 {
     lua_getfield(L, index, fieldName);
-    T retv(toWithDefault<T>(L, -1, defaultValue));
+    T retv(toWithDefault<T>(L, -1, std::move(defaultValue)));
     lua_pop(L, 1);
     return retv;
 }
@@ -79,6 +80,7 @@ T readField(lua_State *L, char const *fieldName, int index = -1)
         throw;
     }
 }
+
 template<typename T>
 T readGlobal(lua_State *L, char const *globalName)
 {
@@ -98,6 +100,9 @@ template<>
 bool to<bool>(lua_State *L, int index);
 
 template<>
+bool isValid<bool>(lua_State *L, int index);
+
+template<>
 std::string to<std::string>(lua_State *L, int index);
 
 template<>
@@ -108,6 +113,9 @@ std::vector<std::string> to<std::vector<std::string> >(lua_State *L, int index);
 
 template<>
 TimeDirection to<TimeDirection>(lua_State *L, int index);
+
+template<>
+bool isValid<TimeDirection>(lua_State *L, int index);
 
 template<>
 Wall to<Wall>(lua_State *L, int index);
@@ -143,7 +151,7 @@ template<>
 InitialGuy to<InitialGuy>(lua_State *L, int index);
 
 template<>
-unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem> >(lua_State *L, int index);
+unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem>>(lua_State *L, int index);
 
 template<>
 TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index);

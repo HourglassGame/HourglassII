@@ -17,10 +17,59 @@
 #include "LuaError.h"
 #include <chrono>
 #include <iostream>
+#include <set>
 namespace hg {
 namespace levels_test {
 namespace {
+#if 0
+std::set<std::string> const levelsToTest{
+    "1EasyStart.lvl",
+    "2OpenAndClosed.lvl",
+    "3StandardBoxPuzzle.lvl",
+    "4NotSoStandard.lvl",
+    //"5GoingUp.lvl",//Needs toggleSwitch
+    "6StackedHigh.lvl",
+    "7Timebelt.lvl",
+    "8AllTheWayUp.lvl",
+    //"9OneWayTrip.lvl",//Needs stickyLaserSwitch
+    "13FishInABarrel.lvl",
+    //"17ItsATrap.lvl",//Needs stickyLaserSwitch
+    "19a_Really_Impossibru.lvl",
+    "19Impossibru.lvl",
+    //"20WhatGoesDown.lvl",//Needs triggerFunction support in collisions
+    "21WhichWay.lvl",
+    "22AnotherBoxPuzzle.lvl",
+    "25Shafted.lvl",
+    //"27WhichWayII.lvl",//Needs triggerFunction support in collisions
+    "31UpsAndDowns.lvl",
+    "33Upsypupsy.lvl",
+    "38SomethingMissing.lvl",
+    //"39TwoBoxes.lvl",//TODO
+    "40TooHigh.lvl",
+    "44Widdershins.lvl",
+    "DoorNumberThree.lvl",
+    "Elevator.lvl",
+    //"GoneWithTheTimeWave.lvl",//Needs advanced scripting
+    //"GoneWithTheTimeWave2.lvl",//Needs advanced scripting
+    //"HoldThemAll.lvl",//needs multistickyswitch
+    //"LowProfile.lvl",//Needs advanced scripting
+    //"Ontological.lvl",//Needs advanced scripting
+    "OppositesAnnihilate.lvl",
+    "ReverseBootstrap.lvl",
+
+    //"Splitters.lvl",//Needs multiStickySwitch, and advanced scripting for glitz
+    "StarterEchoBox.lvl",
+    "TestManyBoxes.lvl",
+    //"ThePit.lvl",//Needs triggerFunction support in collisions
+    "ThinkingWithPortals.lvl",
+    //"ThreeSteps.lvl",//Needs triggerFunction support in collisions
+    //"WackyTomb.lvl",//Needs triggerFunction support in collisions
+    "WaitAMoment.lvl"
+};
+#endif
 bool testLevelsLoad() {
+
+    auto const testStart = std::chrono::high_resolution_clock::now();
     //Iterate the `levels` folder.
     //For every *.lvl that does not
     //contain a file called "DoNotTest",
@@ -35,7 +84,8 @@ bool testLevelsLoad() {
     {
         if (is_directory(entry.status())
          && entry.path().extension() == ".lvl"
-         && !exists(entry.path() / "DoNotTest"))
+         //&& !exists(entry.path() / "DoNotTest")
+         /*&& levelsToTest.find(entry.path().filename().string()) != levelsToTest.end()*/)
         {
             std::cout << "Test-loading " << entry.path() << " ..." << std::flush;
             auto const start = std::chrono::high_resolution_clock::now();
@@ -47,12 +97,16 @@ bool testLevelsLoad() {
                 std::cout << "Failed with: " << diagInfo << "\n" << std::flush;
                 testPassed = false;
             }
-            auto timeTaken =
+            auto const timeTaken =
                 std::chrono::duration_cast<std::chrono::duration<double>>(
                     std::chrono::high_resolution_clock::now() - start);
             std::cout << " Loaded OK, in: " << timeTaken.count() << "s\n" << std::flush;
         }
     }
+    auto const totalTimeTaken =
+        std::chrono::duration_cast<std::chrono::duration<double>>(
+            std::chrono::high_resolution_clock::now() - testStart);
+    std::cout << "Total Loading Time: " << totalTimeTaken.count() << "s\n" << std::flush;
     return testPassed;
 }
 
@@ -70,6 +124,7 @@ bool testLevels() {
     //For the test to pass, every replay must result in
     //a win in the corresponding level.
 
+    auto const testStart = std::chrono::high_resolution_clock::now();
     //TODO -- make this test only run in an "expensive tests" run
     //TODO -- get rid of hard-coded progress display.
     bool testPassed = true;
@@ -77,7 +132,9 @@ bool testLevels() {
         boost::filesystem::directory_iterator()))
     {
         ;
-        if (!is_directory(entry.status()) || entry.path().extension() != ".lvl" || exists(entry.path() / "DoNotTest")) continue;
+        if (!is_directory(entry.status()) || entry.path().extension() != ".lvl"
+         || exists(entry.path() / "DoNotTest")
+         /*|| levelsToTest.find(entry.path().filename().string()) == levelsToTest.end()*/) continue;
 
         std::cout << "Testing " << entry.path() << " ..." << std::flush;
         if (!exists(entry.path() / "win.replay")) {
@@ -128,6 +185,11 @@ bool testLevels() {
         testPassed = false;
         continue;
     }
+
+    auto const totalTimeTaken =
+        std::chrono::duration_cast<std::chrono::duration<double>>(
+            std::chrono::high_resolution_clock::now() - testStart);
+    std::cout << "Total Running Time: " << totalTimeTaken.count() << "s\n" << std::flush;
     return testPassed;
 }
 

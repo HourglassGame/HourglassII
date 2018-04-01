@@ -24,7 +24,10 @@ thread_pool &getSharedThreadPool();
 //except that it uses a pool of threads (for improved performance).
 //That is, hg::async is guaranteed to run f on a separate thread,
 //but it caches and reuses threads, so 'f' might not be run on a new thread,
-//as it would be in std::asyng.
+//as it would be in std::async.
+
+//TODO: Update to use boost::async with an appropriate executor?
+//http://www.boost.org/doc/libs/1_65_1/doc/html/thread/synchronization.html#thread.synchronization.executors
 template<typename F>
 auto async(F &&f) -> boost::future<decltype(f())>
 {

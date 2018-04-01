@@ -16,10 +16,13 @@
 
 #include "mt/std/map"
 #include "mt/std/vector"
+#include "mp/std/vector"
 
 #include <cassert>
 
 #include "AudioGlitz.h"
+
+#include "memory_pool.h"
 
 namespace hg {
 PhysicsEngine::PhysicsEngine(
@@ -27,10 +30,15 @@ PhysicsEngine::PhysicsEngine(
     TriggerSystem const &triggerSystem) :
         env_(env),
         triggerSystem_(triggerSystem)
+
+#if USE_POOL_ALLOCATOR
+    ,
+        shared_pool_()
+#endif
 {
 }
 struct ConstructGuyOutputInfo {
-    ConstructGuyOutputInfo(mt::std::vector<ArrivalLocation> const &arrivalLocations) :
+    ConstructGuyOutputInfo(mp::std::vector<ArrivalLocation> const &arrivalLocations) :
         arrivalLocations(&arrivalLocations) {}
     GuyOutputInfo operator()(Guy const &guy) const {
         int x = guy.getX();
@@ -43,8 +51,9 @@ struct ConstructGuyOutputInfo {
             guy.getIndex(), guy.getTimeDirection(), guy.getPickups(),
             guy.getBoxCarrying(), guy.getBoxCarryDirection(), x, y);
     }
-    mt::std::vector<ArrivalLocation> const *arrivalLocations;
+    mp::std::vector<ArrivalLocation> const *arrivalLocations;
 };
+#if 0
 struct NextPersister
 {
     NextPersister(Frame *frame): frame_(frame) {}
@@ -54,29 +63,38 @@ struct NextPersister
     private:
     Frame *frame_;
 };
-
+#endif
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const &arrivals,
     Frame *frame,
     std::vector<InputList> const &playerInput,
     OperationInterrupter &interrupter) const
 {
-    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState(interrupter));
+    //const std::size_t initialPoolSize{2<<5};
+    //memory_pool<user_allocator_tbb_alloc> pool{initialPoolSize};
+#if USE_POOL_ALLOCATOR
+    auto &pool(shared_pool_->get());
+    pool.consolidate_memory();
+#else
+    memory_pool<> pool;
+#endif
+    TriggerFrameState triggerFrameState(triggerSystem_.getFrameState(pool, interrupter));
 
     //{extra boxes, collision, death, portal, pickup, arrival location}
     PhysicsAffectingStuff const physicsTriggerStuff(
         triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>()));
 
-    mt::std::vector<ObjectAndTime<Box, Frame *> > nextBox;
-    mt::std::vector<char> nextBoxNormalDeparture;
+    mp::std::vector<ObjectAndTime<Box, Frame *>> nextBox(pool);
+    mp::std::vector<char> nextBoxNormalDeparture(pool);
 
+    //TODO: Use frame-output memory pool
     mt::std::vector<Glitz> forwardsGlitz;
     mt::std::vector<Glitz> reverseGlitz;
-    mt::std::vector<GlitzPersister> persistentGlitz;
+    mp::std::vector<GlitzPersister> persistentGlitz(pool);
     boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
 
     // boxes do their crazy wizz-bang collision algorithm
-    boxCollisionAlogorithm(
+    boxCollisionAlgorithm(
         env_,
         arrivals.getList<Box>(),
         physicsTriggerStuff.additionalBoxes,
@@ -88,7 +106,8 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.mutators,
         triggerFrameState,
         BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
-        frame);
+        frame,
+        pool);
 
     bool currentPlayerFrame(currentPlayerInArrivals(arrivals.getList<Guy>(), playerInput.size()));
     bool nextPlayerFrame(false);
@@ -100,7 +119,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         arrivals.getList<Guy>()
             | boost::adaptors::transformed(ConstructGuyOutputInfo(physicsTriggerStuff.arrivalLocations)));
 
-    mt::std::vector<ObjectAndTime<Guy, Frame*> > nextGuy;
+    mp::std::vector<ObjectAndTime<Guy, Frame*>> nextGuy(pool);
 
     FrameDepartureT newDepartures;
 
@@ -121,8 +140,9 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         triggerFrameState,
         GuyGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
         nextPlayerFrame,
-        winFrame);
-    
+        winFrame,
+        pool);
+
     makeBoxGlitzListForNormalDepartures(
         nextBox,
         nextBoxNormalDeparture,
@@ -164,7 +184,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     boost::push_back(reverseGlitz, triggerSystemDepartureInformation.reverseGlitz);
 
     buildDeparturesForComplexEntities(
-        persistentGlitz | boost::adaptors::transformed(NextPersister(frame)), newDepartures);
+        persistentGlitz | boost::adaptors::transformed([=](GlitzPersister const& persister){return persister.runStep(frame);}), newDepartures);
 
     //also sort trigger departures. TODO: do this better (ie, don't re-sort non-trigger departures).
     boost::for_each(newDepartures | boost::adaptors::map_values, SortObjectList());
@@ -172,7 +192,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     // add data to departures
     return {
         newDepartures,
-        FrameView(forwardsGlitz, reverseGlitz, guyInfo),
+        FrameView(std::move(forwardsGlitz), std::move(reverseGlitz), std::move(guyInfo)),
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame};

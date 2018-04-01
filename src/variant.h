@@ -126,7 +126,7 @@ struct CopyVisitor<Variant, Head, Types...> : CopyVisitor<Variant, Types...> {
     using CopyVisitor<Variant, Types...>::operator();
     using CopyVisitor<Variant, Types...>::o;
     void operator()(Head &h) const {
-        new (static_cast<void*>(&h)) Head(o->template get<Head>());
+        new (static_cast<void*>(&h)) Head(o->get<Head>());
     }
 };
 
@@ -149,9 +149,12 @@ struct MoveVisitor<Variant, Head, Types...> : MoveVisitor<Variant, Types...> {
     using MoveVisitor<Variant, Types...>::operator();
     using MoveVisitor<Variant, Types...>::o;
     void operator()(Head &h) const noexcept {
-        static_assert(noexcept(new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()))),
-                      "Types used in Variant must have no-throw move constructor");
-        new (static_cast<void*>(&h)) Head(std::move(o->template get<Head>()));
+        static_assert(
+            noexcept(
+        new (static_cast<void*>(&h)) Head(std::move(o->get<Head>()))),
+            "Types used in Variant must have no-throw move constructor");
+
+        new (static_cast<void*>(&h)) Head(std::move(o->get<Head>()));
     }
 };
 

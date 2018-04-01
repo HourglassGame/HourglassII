@@ -1,0 +1,16 @@
+#ifndef HG_MP_STD_STRING
+#define HG_MP_STD_STRING
+#include "../../memory_pool.h"
+#include <string>
+namespace hg {
+namespace mp {
+namespace std{
+using string =
+        ::std::basic_string<
+            char,
+            ::std::char_traits<char>,
+            memory_pool_allocator<char>>;
+}
+}
+}
+#endif //HG_MP_STD_STRING
