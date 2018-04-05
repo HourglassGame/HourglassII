@@ -254,6 +254,9 @@
     <ClInclude Include="..\..\..\..\src\mt\std\map">
       <FileType>CppHeader</FileType>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mt\std\memory">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
     <ClInclude Include="..\..\..\..\src\mt\std\set">
       <FileType>CppHeader</FileType>
     </ClInclude>

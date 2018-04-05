@@ -1,8 +1,7 @@
 #ifndef HG_MOVE_FUNCTION_H
 #define HG_MOVE_FUNCTION_H
 #include <utility>
-#include <memory>
-#include "multi_thread_deleter.h"
+#include "mt/std/memory"
 #include <cassert>
 #include <type_traits>
 #include <functional>
@@ -71,14 +70,13 @@ public:
     move_function<R(ArgTypes...)> &operator=(move_function &&o) noexcept = default;
     template<typename F, typename = std::enable_if_t<!std::is_same_v<std::remove_cv_t<std::remove_reference_t<F>>, move_function>>>
     move_function(F &&f) :
-        f(new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::forward<F>(f)))
+        f(mt::std::make_unique<function::detail::function_obj<F, R(ArgTypes...)>>(std::forward<F>(f)))
     {
     }
     template<typename F>
     move_function<R(ArgTypes...)> &operator=(F &&f)
     {
-        this->f = function_obj_ptr_t(
-            new (multi_thread_tag{}) function::detail::function_obj<F, R(ArgTypes...)>(std::forward<F>(f)));
+        this->f = mt::std::make_unique<function::detail::function_obj<F, R(ArgTypes...)>>(std::forward<F>(f));
         return *this;
     }
     R operator()(ArgTypes &&...args) const {
@@ -88,10 +86,7 @@ public:
     explicit operator bool() const noexcept { return f.get(); }
 
 private:
-    typedef std::unique_ptr<
-        function::detail::function_base<R(ArgTypes...)>,
-        multi_thread_deleter<function::detail::function_base<R(ArgTypes...)>>> function_obj_ptr_t;
-    function_obj_ptr_t f;
+    mt::std::unique_ptr<function::detail::function_base<R(ArgTypes...)>> f;
 };
 
 } //namespace hg

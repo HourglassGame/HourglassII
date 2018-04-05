@@ -1,5 +1,6 @@
 #include "GlitzPersister.h"
 #include "Frame.h"
+#include "mt/std/memory"
 #include <boost/polymorphic_cast.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -16,7 +17,7 @@ ObjectAndTime<GlitzPersister, Frame *> StaticGlitzPersister::runStep(Frame *fram
 {
     return ObjectAndTime<GlitzPersister, Frame*>(
         GlitzPersister(
-            new (multi_thread_tag{}) StaticGlitzPersister(
+            mt::std::make_unique<StaticGlitzPersister>(
                 forwardsGlitz, reverseGlitz,
                 framesLeft - 1, timeDirection)),
         framesLeft ? nextFrame(frame, timeDirection) : nullptr);
@@ -43,6 +44,7 @@ AudioGlitzPersister::AudioGlitzPersister(
 {}
 
 AudioGlitzPersister::AudioGlitzPersister(
+        AudioGlitzPersister_access,
         mt::std::string key,
         unsigned duration,
         unsigned currentFrame,
@@ -55,15 +57,13 @@ AudioGlitzPersister::AudioGlitzPersister(
 
 Glitz AudioGlitzPersister::getForwardsGlitz() const  {
     mt::std::string suffix = timeDirection == TimeDirection::FORWARDS ? "" : "_r";
-    return Glitz(
-        new (multi_thread_tag{}) AudioGlitz(
+    return Glitz(mt::std::make_unique<AudioGlitz>(
             key+suffix,
             timeDirection == TimeDirection::FORWARDS ? currentFrame : duration-currentFrame));
 }
 Glitz AudioGlitzPersister::getReverseGlitz() const  {
     mt::std::string suffix = timeDirection == TimeDirection::REVERSE ? "" : "_r";
-    return Glitz(
-        new (multi_thread_tag{}) AudioGlitz(
+    return Glitz(mt::std::make_unique<AudioGlitz>(
             key+suffix,
             timeDirection == TimeDirection::REVERSE ? currentFrame : duration-currentFrame));
 }
@@ -72,7 +72,8 @@ ObjectAndTime<GlitzPersister, Frame *> AudioGlitzPersister::runStep(Frame *frame
 {
     return ObjectAndTime<GlitzPersister, Frame*>(
         GlitzPersister(
-            new (multi_thread_tag{}) AudioGlitzPersister(
+            mt::std::make_unique<AudioGlitzPersister>(
+                AudioGlitzPersister_access{},
                 key,
                 duration,
                 currentFrame + 1,

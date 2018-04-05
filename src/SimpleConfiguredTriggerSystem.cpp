@@ -9,6 +9,7 @@
 #include "LuaError.h"
 #include "LuaStackManager.h"
 #include "LuaSandbox.h"
+#include "mt/std/memory"
 #include "lua\lauxlib.h"
 #include <cmath>
 
@@ -25,13 +26,13 @@ namespace hg {
         unsigned const forwardsColour,
         unsigned const reverseColour)
     {
-        Glitz sameDirectionGlitz(new (multi_thread_tag{}) RectangleGlitz(
+        Glitz sameDirectionGlitz(mt::std::make_unique<RectangleGlitz>(
             layer,
             x - xspeed, y - yspeed,
             width, height,
             forwardsColour
         ));
-        Glitz oppositeDirectionGlitz(new (multi_thread_tag{}) RectangleGlitz(
+        Glitz oppositeDirectionGlitz(mt::std::make_unique<RectangleGlitz>(
             layer,
             x - xspeed, y - yspeed,
             width, height,
@@ -326,7 +327,7 @@ namespace hg {
         int size,
         unsigned colour
         */
-        auto textGlitz = Glitz(new (multi_thread_tag{}) TextGlitz(
+        auto textGlitz = Glitz(mt::std::make_unique<TextGlitz>(
             440,
             text,
             portal.getX()+portal.getWidth()/2-1600,
@@ -794,7 +795,7 @@ namespace hg {
         int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
         assert(triggerID < triggerOffsetsAndDefaults.size());
         assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
-        return new (multi_thread_tag{}) ProtoPickupImpl(
+        return ProtoMutator(mt::std::make_unique<ProtoPickupImpl>(
             timeDirection,
             attachment,
             width,
@@ -802,7 +803,7 @@ namespace hg {
             pickupType,
             pickupNumber,
             triggerID
-        );
+        ));
     }
 
     ProtoMutator toProtoSpikes(
@@ -812,12 +813,12 @@ namespace hg {
         Attachment const attachment(readField<Attachment>(L, "attachment"));
         int const width(readField<int>(L, "width"));
         int const height(readField<int>(L, "height"));
-        return new (multi_thread_tag{}) ProtoSpikesImpl(
+        return ProtoMutator(mt::std::make_unique<ProtoSpikesImpl>(
             timeDirection,
             attachment,
             width,
             height
-        );
+        ));
     }
 
     ProtoMutator toProtoMutator(
@@ -946,7 +947,7 @@ namespace hg {
         }
         lua_pop(L, 1);
 
-        return new (multi_thread_tag{}) ProtoMomentarySwitchImpl(
+        return ProtoButton(mt::std::make_unique<ProtoMomentarySwitchImpl>(
             timeDirection,
             attachment,
             width,
@@ -954,7 +955,7 @@ namespace hg {
             triggerID,
             stateTriggerID,
             std::move(extraTriggerIDs)
-        );
+        ));
     }
 
     ProtoButton toProtoStickySwitch(
@@ -995,7 +996,7 @@ namespace hg {
         }
         lua_pop(L, 1);
 
-        return new (multi_thread_tag{}) ProtoStickySwitchImpl(
+        return ProtoButton(mt::std::make_unique<ProtoStickySwitchImpl>(
             timeDirection,
             attachment,
             width,
@@ -1003,7 +1004,7 @@ namespace hg {
             triggerID,
             stateTriggerID,
             std::move(extraTriggerIDs)
-        );
+        ));
     }
 
     ProtoButton toProtoButton(
@@ -1154,7 +1155,7 @@ namespace hg {
         assert(proto->pickupType != Ability::NO_ABILITY);
         if (active) {
             forwardsGlitz.push_back(
-                Glitz(new (multi_thread_tag{}) ImageGlitz(
+                Glitz(mt::std::make_unique<ImageGlitz>(
                     430,
                     pickupGlitzNameMap.find(proto->pickupType)->second,//TODO: Avoid undefined behaviour on unfound ability
                     x_, y_,
@@ -1162,7 +1163,7 @@ namespace hg {
                 ))
             );
             reverseGlitz.push_back(
-                Glitz(new (multi_thread_tag{}) ImageGlitz(
+                Glitz(mt::std::make_unique<ImageGlitz>(
                     430,
                     pickupGlitzNameMap.find(proto->pickupType)->second,//TODO: Avoid undefined behaviour on unfound ability
                     x_, y_,
@@ -1173,7 +1174,7 @@ namespace hg {
         if (justTaken) {
             //TODO: Avoid possible memory leak here!
             persistentGlitz.push_back(
-                GlitzPersister(new (multi_thread_tag{}) AudioGlitzPersister(
+                GlitzPersister(mt::std::make_unique<AudioGlitzPersister>(
                     "global.pickup_pickup",
                     9,
                     proto->timeDirection
@@ -1507,12 +1508,12 @@ namespace hg {
 
         if (justPressed) {
             persistentGlitz.push_back(
-                GlitzPersister(new (multi_thread_tag{}) AudioGlitzPersister("global.switch_push_down", 10, proto->timeDirection))
+                GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_push_down", 10, proto->timeDirection))
             );
         }
         if (justReleased) {
             persistentGlitz.push_back(
-                GlitzPersister(new (multi_thread_tag{}) AudioGlitzPersister("global.switch_push_up", 10, proto->timeDirection))
+                GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_push_up", 10, proto->timeDirection))
             );
         }
     }
@@ -1563,7 +1564,7 @@ namespace hg {
 
         if (justPressed) {
             persistentGlitz.push_back(
-                GlitzPersister(new (multi_thread_tag{}) AudioGlitzPersister("global.switch_push_down", 10, proto->timeDirection))
+                GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_push_down", 10, proto->timeDirection))
             );
         }
     }

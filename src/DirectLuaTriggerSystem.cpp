@@ -284,7 +284,7 @@ GlitzPersister toGlitzPersister(lua_State *L) {
         }
         TimeDirection timeDirection = readField<TimeDirection>(L, "timeDirection");
         return GlitzPersister(
-            new (multi_thread_tag{}) StaticGlitzPersister(
+            mt::std::make_unique<StaticGlitzPersister>(
                 std::move(forwardsGlitz), std::move(reverseGlitz), lifetime, timeDirection));
     }
     else if (type == "audio") {
@@ -292,7 +292,7 @@ GlitzPersister toGlitzPersister(lua_State *L) {
         int duration = readField<int>(L, "duration");
         TimeDirection timeDirection = readField<TimeDirection>(L, "timeDirection");
         return GlitzPersister(
-            new (multi_thread_tag{}) AudioGlitzPersister(std::move(key), duration, timeDirection));
+            mt::std::make_unique<AudioGlitzPersister>(std::move(key), duration, timeDirection));
     }
     std::stringstream ss;
     ss << "Unknown Glitz Persister Type: " << type;

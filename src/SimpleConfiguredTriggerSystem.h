@@ -437,10 +437,12 @@ namespace hg {
             return comparison_tuple_type(pimpl_->order_ranking(), *pimpl_);
         }
     public:
-        template<typename ProtoButtonImpl>
-        ProtoButton(ProtoButtonImpl *impl)
-            : pimpl_(impl)
-        {}
+        
+        explicit ProtoButton(mt::std::unique_ptr<ProtoButtonImpl> impl)
+            : pimpl_(impl.release())
+        {
+            assert(pimpl_);
+        }
         ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const {
             assert(pimpl_);
             return pimpl_->getFrameState(pool);
@@ -734,10 +736,11 @@ namespace hg {
             return comparison_tuple_type(pimpl_->order_ranking(), *pimpl_);
         }
     public:
-        template<typename ProtoMutatorImpl>
-        ProtoMutator(ProtoMutatorImpl *impl)
-            : pimpl_(impl)
-        {}
+        explicit ProtoMutator(mt::std::unique_ptr<ProtoMutatorImpl> impl)
+            : pimpl_(impl.release())
+        {
+            assert(pimpl_);
+        }
 
         MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const {
             assert(pimpl_);

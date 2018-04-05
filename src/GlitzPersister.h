@@ -3,6 +3,7 @@
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
 #include "mt/std/string"
+#include "mt/std/memory"
 #include <tuple>
 #include "ObjectAndTime.h"
 #include "Glitz.h"
@@ -29,10 +30,10 @@ struct GlitzPersisterImpl : private boost::totally_ordered<GlitzPersisterImpl>
 class GlitzPersister final : boost::totally_ordered<GlitzPersister>
 {
 public:
-    GlitzPersister(GlitzPersisterImpl *impl) :
-        impl(impl)
+    explicit GlitzPersister(mt::std::unique_ptr<GlitzPersisterImpl> impl) :
+        impl(impl.release())
     {
-        assert(impl);
+        assert(this->impl);
     }
     
     ObjectAndTime<GlitzPersister, Frame *> runStep(Frame *frame) const {
@@ -63,7 +64,7 @@ private:
 class GlitzPersisterConstPtr final : boost::totally_ordered<GlitzPersisterConstPtr>
 {
 public:
-    GlitzPersisterConstPtr(GlitzPersister const &glitzPersister) : glitzPersister(&glitzPersister) {}
+    explicit GlitzPersisterConstPtr(GlitzPersister const &glitzPersister) : glitzPersister(&glitzPersister) {}
     typedef GlitzPersister base_type;
     GlitzPersister const &get() const   { return *glitzPersister; }
     
@@ -85,7 +86,7 @@ struct ConstPtr_of<GlitzPersister> {
 class StaticGlitzPersister final : public GlitzPersisterImpl
 {
 public:
-    StaticGlitzPersister(
+    explicit StaticGlitzPersister(
         Glitz const &forwardsGlitz, Glitz const &reverseGlitz,
         unsigned lifetime, TimeDirection timeDirection);
     ObjectAndTime<GlitzPersister, Frame *> runStep(Frame *frame) const override;
@@ -119,8 +120,13 @@ private:
 
 class AudioGlitzPersister final : public GlitzPersisterImpl
 {
+    struct AudioGlitzPersister_access final{
+        friend class AudioGlitzPersister;
+    private:
+        AudioGlitzPersister_access(){}
+    };
 public:
-    AudioGlitzPersister(
+    explicit AudioGlitzPersister(
         mt::std::string key,
         unsigned duration,
         TimeDirection timeDirection);
@@ -141,12 +147,16 @@ public:
     }
     bool operator==(GlitzPersisterImpl const &o) const override;
     bool operator<(GlitzPersisterImpl const &o) const override;
-private:
+    
+    //Mostly private. Only accessible via AudioGlitzPersister_access key, which can only be created by
+    //AudioGlitzPersister.
     AudioGlitzPersister(
+        AudioGlitzPersister_access,
         mt::std::string key,
         unsigned duration,
         unsigned currentFrame,
         TimeDirection timeDirection);
+private:
     mt::std::string key;
     unsigned duration;
     unsigned currentFrame;

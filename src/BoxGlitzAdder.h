@@ -8,6 +8,7 @@
 #include "ImageGlitz.h"
 #include "multi_thread_allocator.h"
 #include "RectangleGlitz.h"
+#include "mt/std/memory"
 namespace hg {
 class BoxGlitzAdder final {
 public:
@@ -26,14 +27,12 @@ public:
         int size,
         TimeDirection timeDirection) const
     {
-        Glitz sameDirectionGlitz(
-            new (multi_thread_tag{}) ImageGlitz(
+        Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
                 500, mt::std::string("global.box"),
                 position.x, position.y,
                 size, size));
 
-        Glitz oppositeDirectionGlitz(
-            new (multi_thread_tag{}) ImageGlitz(
+        Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
                 500, mt::std::string("global.box_r"),
                 position.x, position.y,
                 size, size));
@@ -53,23 +52,23 @@ public:
     {
         persistentGlitz->push_back(
             GlitzPersister(
-                new (multi_thread_tag{}) StaticGlitzPersister(
+                mt::std::make_unique<StaticGlitzPersister>(
                     Glitz(
-                        new (multi_thread_tag{}) RectangleGlitz(
-                            1500,
-                            x,
-                            y,
-                            size,
-                            size,
-                            timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+                        mt::std::make_unique<RectangleGlitz>(
+                                1500,
+                                x,
+                                y,
+                                size,
+                                size,
+                                timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
                     Glitz(
-                        new (multi_thread_tag{}) RectangleGlitz(
-                            1500,
-                            x,
-                            y,
-                            size,
-                            size,
-                            timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+                        mt::std::make_unique<RectangleGlitz>(
+                                1500,
+                                x,
+                                y,
+                                size,
+                                size,
+                                timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
                     60,
                     timeDirection)));
     }

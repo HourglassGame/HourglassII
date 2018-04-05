@@ -71,11 +71,11 @@ namespace hg {
     //  new T(args...),
     //except that it performs its allocation
     //using `multi_thread_operator_new`.
-inline void* operator new(std::size_t count, hg::multi_thread_tag) {
+inline void* operator new(std::size_t const count, hg::multi_thread_tag) {
     return hg::multi_thread_operator_new(count);
 }
 
-inline void operator delete(void *p, hg::multi_thread_tag) noexcept {
+inline void operator delete(void * const p, hg::multi_thread_tag) noexcept {
     hg::multi_thread_operator_delete(p);
 }
 

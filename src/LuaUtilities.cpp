@@ -5,6 +5,7 @@
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
 #include "multi_vector.h"
+#include "mt/std/memory"
 
 #include "ImageGlitz.h"
 #include "TextGlitz.h"
@@ -625,7 +626,7 @@ Glitz to<Glitz>(lua_State *L, int index) {
             int const width(readField<int>(L, "width", index));
             int const height(readField<int>(L, "height", index));
             unsigned const colour(readColourField(L, "colour"));
-            return Glitz(new (multi_thread_tag{}) RectangleGlitz(layer, x, y, width, height, colour));
+            return Glitz(mt::std::make_unique<RectangleGlitz>(layer, x, y, width, height, colour));
         }
         else if (strcmp(type, "text") == 0) {
             lua_pop(L, 1);
@@ -635,7 +636,7 @@ Glitz to<Glitz>(lua_State *L, int index) {
             int const y(readField<int>(L, "y", index));
             int const size(readField<int>(L, "size", index));
             unsigned const colour(readColourField(L, "colour"));
-            return Glitz(new (multi_thread_tag{}) TextGlitz(layer, std::move(text), x, y, size, colour));
+            return Glitz(mt::std::make_unique<TextGlitz>(layer, std::move(text), x, y, size, colour));
         }
         else if (strcmp(type, "image") == 0) {
             lua_pop(L, 1);
@@ -646,7 +647,7 @@ Glitz to<Glitz>(lua_State *L, int index) {
             int const width(readField<int>(L, "width"));
             int const height(readField<int>(L, "height"));
 
-            return Glitz(new (multi_thread_tag{}) ImageGlitz(layer, std::move(key), x, y, width, height));
+            return Glitz(mt::std::make_unique<ImageGlitz>(layer, std::move(key), x, y, width, height));
         }
         std::stringstream ss;
         ss << "Unknown Glitz Type: " << type;

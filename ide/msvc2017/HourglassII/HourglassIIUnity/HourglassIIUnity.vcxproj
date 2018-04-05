@@ -72,6 +72,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <MinimalRebuild>false</MinimalRebuild>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalOptions>/bigobj</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -313,6 +314,9 @@
     <ClInclude Include="..\..\..\..\src\VectorOf.h" />
     <ClInclude Include="..\..\..\..\src\WorldState.h" />
     <ClInclude Include="..\..\..\..\src\mt\std\map">
+      <FileType>CppHeader</FileType>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\mt\std\memory">
       <FileType>CppHeader</FileType>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\mt\std\set">

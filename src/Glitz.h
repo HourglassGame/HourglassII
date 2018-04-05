@@ -6,16 +6,18 @@
 #include "clone_ptr.h"
 #include "memory_source_clone.h"
 #include "multi_thread_memory_source.h"
+#include "multi_thread_allocator.h"
+#include "multi_thread_deleter.h"
 #include "GlitzImplementation.h"
+#include "mt/std/memory"
 #include <cassert>
 namespace hg {
 class Glitz final : boost::totally_ordered<Glitz> {
 public:
-    //TODO: Don't use raw pointer here?
-    explicit Glitz(GlitzImplementation *impl)
-      : impl(impl)
+    explicit Glitz(mt::std::unique_ptr<GlitzImplementation> impl)
+      : impl(impl.release())
     {
-        assert(impl);
+        assert(this->impl);
     }
     
     void display(LayeredCanvas &canvas) const {
