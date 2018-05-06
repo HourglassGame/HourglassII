@@ -10,7 +10,7 @@
 #include "LuaStackManager.h"
 #include "LuaSandbox.h"
 #include "mt/std/memory"
-#include "lua\lauxlib.h"
+#include "lua/lauxlib.h"
 #include <cmath>
 
 namespace hg {
@@ -313,7 +313,7 @@ namespace hg {
         if (portal.getWinner()) {
             text = active ? "Win" : "Inactive";
         }
-        else if (portal.getRelativeTime() and portal.getTimeDestination() > 0) {
+        else if (portal.getRelativeTime() && portal.getTimeDestination() > 0) {
             text = "+" + formatTime(portal.getTimeDestination());
         }
         else {
