@@ -71,7 +71,10 @@ WorldState::WorldState(
 {
     assert(guyStartTime.isValidFrame());
     assert(timelineLength > 0);
+
     Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
+    guyArrivalFrames_.push_back(guyStartFrame);
+
     nextPlayerFrames_.add(guyStartFrame);
     {
         std::map<Frame *, ObjectList<Normal>> initialArrivals;
@@ -216,6 +219,8 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 */
 void WorldState::addNewInputData(InputList const &newInputData)
 {
+    guyArrivalFrames_.push_back(nullptr);
+
     realPlayerInput_.push_back(newInputData);
     playerInput_.push_back(GuyInput());
     assert(newInputData.getRelativeGuyIndex() < playerInput_.size());
