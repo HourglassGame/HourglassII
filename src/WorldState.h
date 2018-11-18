@@ -60,7 +60,7 @@ public:
     Frame *getNextPlayerFrame();
     Frame *getCurrentPlayerFrame();
 
-    std::vector<InputList> const &getReplayData() const { return playerInput_; }
+    std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
 
     Frame const *getFrame(FrameID const &whichFrame) const;
     
@@ -73,7 +73,8 @@ private:
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to
     //the input for the guy with the index corresponding to that element.
-    std::vector<InputList> playerInput_;
+    std::vector<GuyInput> playerInput_;
+    std::vector<InputList> realPlayerInput_;
     //Stores the frames whose arrivals have changed but which have not been executed since the change.
     //executeWorld executes every frame in frameUpdateSet_
     FrameUpdateSet frameUpdateSet_;

@@ -1,6 +1,6 @@
 #include "InputList.h"
 namespace hg {
-InputList::InputList() noexcept :
+GuyInput::GuyInput() noexcept :
     left(),
     right(),
     up(),
@@ -13,7 +13,7 @@ InputList::InputList() noexcept :
     yCursor()
 {
 }
-InputList::InputList(
+GuyInput::GuyInput(
     bool left,
     bool right,
     bool up,
@@ -36,7 +36,7 @@ InputList::InputList(
         yCursor(yCursor)
 {
 }
-bool InputList::operator==(InputList const &o) const
+bool GuyInput::operator==(GuyInput const &o) const noexcept
 {
     return left == o.left
         && right == o.right

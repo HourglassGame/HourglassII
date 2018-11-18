@@ -67,7 +67,7 @@ struct NextPersister
 PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     ObjectPtrList<Normal> const &arrivals,
     Frame *frame,
-    std::vector<InputList> const &playerInput,
+    std::vector<GuyInput> const &playerInput,
     OperationInterrupter &interrupter) const
 {
     //const std::size_t initialPoolSize{2<<5};

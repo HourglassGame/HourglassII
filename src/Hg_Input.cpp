@@ -68,16 +68,18 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXOfE
 InputList Input::AsInputList() const
 {
     return InputList(
-        left,
-        right,
-        up,
-        down == 1,
-        space == 1,     //portalUsed
-        mouseLeft == 1, //abilityUsed
-        abilityCursor,  
-        FrameID(mouseTimelinePosition, UniverseID(timelineLength)),     
-        mouseX,
-        mouseY);
+        GuyInput(
+            left,
+            right,
+            up,
+            down == 1,
+            space == 1,     //portalUsed
+            mouseLeft == 1, //abilityUsed
+            abilityCursor,
+            FrameID(mouseTimelinePosition, UniverseID(timelineLength)),     
+            mouseX,
+            mouseY),
+        0/*TODO: allow overriding of past inputs*/);
 }
 }
 

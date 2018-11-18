@@ -55,7 +55,7 @@ void guyStep(
     Environment const &env,
     RandomAccessGuyRange const &guyArrivalList,
     Frame *frame,
-    std::vector<InputList> const &playerInput,
+    std::vector<GuyInput> const &playerInput,
     mp::std::vector<ObjectAndTime<Guy, Frame*>> &nextGuy,
     mp::std::vector<ObjectAndTime<Box, Frame*>> &nextBox,
     mp::std::vector<char> &nextBoxNormalDeparture,

@@ -185,7 +185,7 @@ void guyStep(
     Environment const &env,
     RandomAccessGuyRange const &guyArrivalList,
     Frame *frame,
-    std::vector<InputList> const &playerInput,
+    std::vector<GuyInput> const &playerInput,
     mp::std::vector<ObjectAndTime<Guy, Frame *>> &nextGuy,
     mp::std::vector<ObjectAndTime<Box, Frame *>> &nextBox,
     mp::std::vector<char> &nextBoxNormalDeparture,
@@ -273,7 +273,7 @@ void guyStep(
         if (guyArrivalList[i].getIndex() < playerInput.size() && !guyArrivalList[i].getTimePaused())
         {
             std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            InputList const &input(playerInput[relativeIndex]);
+            GuyInput const &input(playerInput[relativeIndex]);
 
             int const width(guyArrivalList[i].getWidth());
             int const height(guyArrivalList[i].getHeight());
@@ -566,7 +566,7 @@ void guyStep(
         if (guyArrivalList[i].getIndex() < playerInput.size() && guyArrivalList[i].getTimePaused())
         {
             std::size_t relativeIndex(guyArrivalList[i].getIndex());
-            InputList const &input(playerInput[relativeIndex]);
+            GuyInput const &input(playerInput[relativeIndex]);
 
             int const width(guyArrivalList[i].getWidth());
             int const height(guyArrivalList[i].getHeight());
@@ -764,7 +764,7 @@ void guyStep(
             carryDirection[i] = TimeDirection::INVALID;
 
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
-            InputList const &input(playerInput[relativeIndex]);
+            GuyInput const &input(playerInput[relativeIndex]);
 
             if (carry[i])
             {
@@ -1076,7 +1076,7 @@ void guyStep(
         if (guyArrivalList[i].getIndex() < playerInput.size())
         {
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
-            InputList const &input = playerInput[relativeIndex];
+            GuyInput const &input = playerInput[relativeIndex];
 
             int arrivalBasis = -1;
             illegalPortal[i] = -1;
@@ -1620,7 +1620,7 @@ void guyStep(
         }
 
         std::size_t const relativeIndex(guyArrivalList[i].getIndex());
-        InputList const &input = playerInput[relativeIndex];
+        GuyInput const &input = playerInput[relativeIndex];
 
         auto timeGun(newPickups[i].find(Ability::TIME_GUN));
 

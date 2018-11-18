@@ -211,7 +211,10 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 */
 void WorldState::addNewInputData(InputList const &newInputData)
 {
-    playerInput_.push_back(newInputData);
+    realPlayerInput_.push_back(newInputData);
+    playerInput_.push_back(GuyInput());
+    assert(newInputData.getRelativeGuyIndex() < playerInput_.size());
+    *(playerInput_.rbegin()+newInputData.getRelativeGuyIndex()) = newInputData.getGuyInput();
     for (Frame *frame: currentPlayerFrames_) {
         frameUpdateSet_.add(frame);
     }

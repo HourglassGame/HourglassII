@@ -405,7 +405,7 @@ void runStep(
         drawInventory(
             app,
             findCurrentGuy(view.getGuyInformation()).getPickups(),
-            timeEngine.getReplayData().back().getAbilityCursor());
+            timeEngine.getReplayData().back().getGuyInput().getAbilityCursor());
     }
     else {
         inertia.run();
@@ -451,7 +451,7 @@ void runStep(
         timeEngine,
         waveInfo.updatedFrames,
         drawnFrame,
-        timeEngine.getReplayData().back().getTimeCursor(),
+        timeEngine.getReplayData().back().getGuyInput().getTimeCursor(),
         timeEngine.getTimelineLength());
     
     {
