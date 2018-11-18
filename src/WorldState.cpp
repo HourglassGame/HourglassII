@@ -32,11 +32,23 @@ static ConcurrentTimeSet fixConcurrentTimeSet(
     }
     return newSet;
 }
+static std::vector<Frame*> fixFrameVector(
+    FramePointerUpdater const& frameUpdater,
+    std::vector<Frame*> const& oldVector)
+{
+    std::vector<Frame*> newVector;
+    for (unsigned int i = 0; i < oldVector.size(); ++i)
+    {
+        newVector.push_back(frameUpdater.updateFrame(oldVector[i]));
+    }
+    return newVector;
+}
 WorldState::WorldState(WorldState const& o) :
         timeline_(o.timeline_),
         playerInput_(o.playerInput_),
         frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
         physics_(o.physics_),
+        guyArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyArrivalFrames_)),
         nextPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_)),
         currentPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_)),
         currentWinFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_))
@@ -48,6 +60,7 @@ WorldState &WorldState::operator=(WorldState const& o)
     playerInput_ = o.playerInput_;
     frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
     physics_ = o.physics_;
+    guyArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyArrivalFrames_);
     nextPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_);
     currentPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_);
     currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
@@ -219,18 +232,27 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 */
 void WorldState::addNewInputData(InputList const &newInputData)
 {
+    assert(newInputData.getRelativeGuyIndex() > playerInput_.rbegin()); // Do not send input to negative guys.
     guyArrivalFrames_.push_back(nullptr);
-
     realPlayerInput_.push_back(newInputData);
-    playerInput_.push_back(GuyInput());
-    assert(newInputData.getRelativeGuyIndex() < playerInput_.size());
-    *(playerInput_.rbegin()+newInputData.getRelativeGuyIndex()) = newInputData.getGuyInput();
-    for (Frame *frame: currentPlayerFrames_) {
-        frameUpdateSet_.add(frame);
+    std::size_t guyInputIndex = playerInput_.size() - newInputData.getRelativeGuyIndex();
+    if (newInputData.getRelativeGuyIndex() > 0)
+    {
+        playerInput_.push_back(GuyInput());
+        playerInput_[guyInputIndex] = newInputData.getGuyInput();
     }
-    for (Frame *frame: nextPlayerFrames_) {
-        frameUpdateSet_.add(frame);
+    else
+    {
+        playerInput_.push_back(newInputData.getGuyInput());
     }
+    
+    frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]);
+    //for (Frame *frame: currentPlayerFrames_) {
+    //    frameUpdateSet_.add(frame);
+    //}
+    //for (Frame *frame: nextPlayerFrames_) {
+    //    frameUpdateSet_.add(frame);
+    //}
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one
     // of four categories prior to this being called:
