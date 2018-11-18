@@ -386,12 +386,12 @@ void runStep(
             wallImage,
             positionColoursImage);
     }
-    else if (waveInfo.currentPlayerFrame) {
-        hg::FrameView const &view(waveInfo.currentPlayerFrame->getView());
+    else if (*(waveInfo.guyFrames.rbegin()+1)) {
+        hg::FrameView const &view((*(waveInfo.guyFrames.rbegin() + 1))->getView());
         hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation()));
         hg::TimeDirection currentGuyDirection(currentGuy.getTimeDirection());
-        inertia.save(hg::FrameID(waveInfo.currentPlayerFrame), currentGuyDirection);
-        drawnFrame = hg::FrameID(waveInfo.currentPlayerFrame);
+        inertia.save(hg::FrameID((*(waveInfo.guyFrames.rbegin() + 1))), currentGuyDirection);
+        drawnFrame = hg::FrameID((*(waveInfo.guyFrames.rbegin() + 1)));
         DrawGlitzAndWall(
             app,
             getGlitzForDirection(view, currentGuyDirection),

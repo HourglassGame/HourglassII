@@ -24,9 +24,7 @@ public:
     typedef boost::container::vector<FrameUpdateSet> FrameListList;
     struct RunResult
     {
-        Frame const *currentPlayerFrame;
-        Frame const *nextPlayerFrame;
-		std::vector<Frame *> guyFrames;
+        std::vector<Frame *> guyFrames;
         FrameListList updatedFrames;
     };
     /**
