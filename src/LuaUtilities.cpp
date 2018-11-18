@@ -521,7 +521,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
         int const yspeed(readFieldWithDefault<int>(L, "yspeed", index, 0));
         int const width(readFieldWithDefault<int>(L, "width", index, 1600));
         int const height(readFieldWithDefault<int>(L, "height", index, 3200));
-        int const jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed", index, -450));
+        int const jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed", index, -hg::GUY_JUMP_SPEED_DEFAULT));
         mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
         bool const boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));

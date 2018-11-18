@@ -464,12 +464,12 @@ void guyStep(
             if (input.getLeft())
             {
                 facing[i] = FacingDirection::LEFT;
-                newX += -250;
+                newX += -hg::GUY_SPEED;
             }
             else if (input.getRight())
             {
                 facing[i] = FacingDirection::RIGHT;
-                newX += 250;
+                newX += hg::GUY_SPEED;
             }
 
             // platform collision
@@ -694,12 +694,12 @@ void guyStep(
             if (input.getLeft())
             {
                 facing[i] = FacingDirection::LEFT;
-                newX += -250;
+                newX += -hg::GUY_SPEED;
             }
             else if (input.getRight())
             {
                 facing[i] = FacingDirection::RIGHT;
-                newX += 250;
+                newX += hg::GUY_SPEED;
             }
 
             // platform collision
