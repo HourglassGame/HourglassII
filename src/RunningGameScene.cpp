@@ -5,6 +5,7 @@
 #include "LoadedLevel.h"
 #include "ReplayIO.h"
 #include "TimeEngine.h"
+#include "GlobalConst.h"
 #include <tbb/task_group.h>
 #include <boost/thread/future.hpp>
 #include <cassert>
@@ -98,8 +99,6 @@
 #include "GameDisplayHelpers.h"
 
 namespace hg {
-static double const framesPerSecond(30.);
-
 void runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
@@ -255,7 +254,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     break;
                 }
             }
-            if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (framesPerSecond))) == boost::future_status::ready) {
+            if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (hg::FRAMERATE))) == boost::future_status::ready) {
                 if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
                     inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
                 }
@@ -297,7 +296,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     window.setVerticalSyncEnabled(false);
                 }
                 else {
-                    window.setFramerateLimit(framesPerSecond);
+                    window.setFramerateLimit(hg::FRAMERATE);
                     window.setVerticalSyncEnabled(true);
                 }
                 window.display();
@@ -481,7 +480,7 @@ void runStep(
     }
     {
         std::stringstream timeString;
-        timeString << "Time: " << (drawnFrame.getFrameNumber()*10 / framesPerSecond)/10. << "s";
+        timeString << "Time: " << (drawnFrame.getFrameNumber()*10 / hg::FRAMERATE)/10. << "s";
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());

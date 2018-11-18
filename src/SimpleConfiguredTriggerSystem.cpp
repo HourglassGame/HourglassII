@@ -5,6 +5,7 @@
 #include "ImageGlitz.h"
 #include "AudioGlitz.h"
 #include "TextGlitz.h"
+#include "GlobalConst.h"
 #include "LuaUtilities.h"
 #include "LuaError.h"
 #include "LuaStackManager.h"
@@ -248,16 +249,15 @@ namespace hg {
     }
 
     mt::std::string formatTime(int const frames) {
-        auto const framesPerSecond = 60; //TODO: Move this to a central location?
         std::stringstream ss; //TODO: Use appropriate allocator here!
         
-        if (frames%framesPerSecond == 0) {
-            ss << floor(frames/static_cast<double>(framesPerSecond)) << "s";
+        if (frames%hg::FRAMERATE == 0) {
+            ss << floor(frames/static_cast<double>(hg::FRAMERATE)) << "s";
         }
         else {
-            double const seconds = frames/static_cast<double>(framesPerSecond);
+            double const seconds = frames/static_cast<double>(hg::FRAMERATE);
             ss << std::setprecision(std::ceil(std::log10(std::abs(seconds))));
-            ss << frames/static_cast<double>(framesPerSecond) << "s";
+            ss << frames/static_cast<double>(hg::FRAMERATE) << "s";
         }
         //TODO: Use appropriate allocator here too!!
         auto s = ss.str();
