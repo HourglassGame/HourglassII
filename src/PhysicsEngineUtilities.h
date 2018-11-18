@@ -66,7 +66,6 @@ void guyStep(
     mp::std::vector<MutatorArea> const &mutators,
     TriggerFrameState &triggerFrameState,
     GuyGlitzAdder const &guyGlitzAdder,
-    bool &nextPlayerFrame,
     bool &winFrame,
     memory_pool<user_allocator_tbb_alloc> &pool);
 

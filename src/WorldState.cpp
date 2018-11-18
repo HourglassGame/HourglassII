@@ -49,8 +49,6 @@ WorldState::WorldState(WorldState const& o) :
         frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
         physics_(o.physics_),
         guyArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyArrivalFrames_)),
-        nextPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_)),
-        currentPlayerFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_)),
         currentWinFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_))
 {
 }
@@ -61,8 +59,6 @@ WorldState &WorldState::operator=(WorldState const& o)
     frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
     physics_ = o.physics_;
     guyArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyArrivalFrames_);
-    nextPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.nextPlayerFrames_);
-    currentPlayerFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentPlayerFrames_);
     currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
     return *this;
 }
@@ -78,8 +74,7 @@ WorldState::WorldState(
         playerInput_(),
         frameUpdateSet_(),
         physics_(std::move(physics)),
-        nextPlayerFrames_(),
-        currentPlayerFrames_(),
+        guyArrivalFrames_(),
         currentWinFrames_()
 {
     assert(guyStartTime.isValidFrame());
@@ -87,8 +82,6 @@ WorldState::WorldState(
 
     Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
     guyArrivalFrames_.push_back(guyStartFrame);
-
-    nextPlayerFrames_.add(guyStartFrame);
     {
         std::map<Frame *, ObjectList<Normal>> initialArrivals;
 
@@ -121,8 +114,7 @@ void WorldState::swap(WorldState &o) noexcept
     boost::swap(playerInput_, o.playerInput_);
     boost::swap(frameUpdateSet_, o.frameUpdateSet_);
     boost::swap(physics_, o.physics_);
-    boost::swap(nextPlayerFrames_, o.nextPlayerFrames_);
-    boost::swap(currentPlayerFrames_, o.currentPlayerFrames_);
+    boost::swap(guyArrivalFrames_, o.guyArrivalFrames_);
     boost::swap(currentWinFrames_, o.currentWinFrames_);
 }
 
@@ -148,18 +140,6 @@ PhysicsEngine::FrameDepartureT
     for (unsigned i = 0; i < retv.guyDepartureFrames.size(); ++i)
     {
         guyArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])] = std::get<1>(retv.guyDepartureFrames[i]);
-    }
-    if (retv.currentPlayerFrame) {
-        currentPlayerFrames_.add(frame);
-    }
-    else {
-        currentPlayerFrames_.remove(frame);
-    }
-    if (retv.nextPlayerFrame) {
-        nextPlayerFrames_.add(frame);
-    }
-    else {
-        nextPlayerFrames_.remove(frame);
     }
     if (retv.currentWinFrame) {
         currentWinFrames_.add(frame);
@@ -211,22 +191,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
     return returnSet;
 }
 
-//The worrying situation is when there are arrivals at a frame which are equal to arrivals which happened earlier,
-//except that the effects of the new arrivals are different from the old ones because playerInput_.Count is larger
-//than it was before. This situation breaks the wave assumption that departures == apply_physics(arrivals).
-
-//this is ok because a new arrival with maxGuyIndex >= playerInput_.size() is either:
-//            run, in which case nextPlayerFrames_ will be set and the frame will be run again when new input becomes available
-//        or
-//            not run, in which case it will be still sitting in frameUpdateSet_ and will be run in the next executeWorld
-//The second case depends on the new arrival triggering placement in frameUpdateSet_,
-// which would not happen if that arrival was replacing an earlier equivalent arrival
-//However, in this case it would be ok because the earlier equivalent arrival must already run
-// and added itself to nextPlayerFrames_
 //The basic assertion in the whole system is maxGuyIndex <= playerInput_.size()
-
-//A better? system would remove physics from having to do any work at all, and would have the timeline manage this
-//together with the WorldState by scanning all new arrivals.
 /**
 * Stores the given input data, allowing the player to exist for another step.
 */
@@ -236,55 +201,18 @@ void WorldState::addNewInputData(InputList const &newInputData)
     guyArrivalFrames_.push_back(nullptr);
     realPlayerInput_.push_back(newInputData);
     std::size_t guyInputIndex = playerInput_.size() - newInputData.getRelativeGuyIndex();
+
+    frameUpdateSet_.add(guyArrivalFrames_[playerInput_.size()]);
     if (newInputData.getRelativeGuyIndex() > 0)
     {
         playerInput_.push_back(GuyInput());
         playerInput_[guyInputIndex] = newInputData.getGuyInput();
-        frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]); // Frame update is already occuring for the oldest guy.
+        frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]); // Frame update always occurs for the oldest guy.
     }
     else
     {
         playerInput_.push_back(newInputData.getGuyInput());
     }
-    
-    //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
-    //This is a valid assumption because max guy index of arrivals in a frame can be in one
-    // of four categories prior to this being called:
-    // maxGuyIndex == undefined, no guys:
-    //                    in this case the frame cannot contain a guy unless a guy arrives (which would trigger an update)
-    // maxGuyIndex < playerInput_.size():
-    //                    in this case maxGuyIndex is guaranteed to be < playerInput.size() - 1 after this is called
-    //                    (as this increases size by 1) and so the maxGuyIndex guy is neither a currentPlayer nor nextPlayer)
-    // maxGuyIndex == playerInput_.size():
-    //                    in this case maxGuyIndex == playerInput_.size() - 1 and so (barring new arrivals)
-    //                    it contains a currentPlayer. However, in this case physics would have added this frame to nextPlayerFrames_
-    //                    and so it was added to be executed just above
-    // maxGuyIndex > playerInput_.size():
-    //                    this can never happen, as physics cannot create a guy departure without having input for the guy
-    //                    and input does not exist unless maxGuyIndex < playerInput_.size()
-    currentPlayerFrames_.clear();
-    nextPlayerFrames_.clear();
 }
 
-Frame *WorldState::getCurrentPlayerFrame()
-{
-    if (!currentPlayerFrames_.empty()) {
-        assert(currentPlayerFrames_.size() == 1);
-        return currentPlayerFrames_.front();
-    }
-    else {
-        return nullptr;
-    }
-}
-
-Frame *WorldState::getNextPlayerFrame()
-{
-    if (!nextPlayerFrames_.empty()) {
-        assert(nextPlayerFrames_.size() == 1);
-        return nextPlayerFrames_.front();
-    }
-    else {
-        return nullptr;
-    }
-}
 }//namespace hg

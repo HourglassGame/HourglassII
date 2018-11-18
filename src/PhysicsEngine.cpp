@@ -109,8 +109,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         frame,
         pool);
 
-    bool currentPlayerFrame(currentPlayerInArrivals(arrivals.getList<Guy>(), playerInput.size()));
-    bool nextPlayerFrame(false);
     bool winFrame(false);
 
     mt::std::vector<GuyOutputInfo> guyInfo;
@@ -139,7 +137,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         physicsTriggerStuff.mutators,
         triggerFrameState,
         GuyGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
-        nextPlayerFrame,
         winFrame,
         pool);
 
@@ -196,8 +193,6 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         newDepartures,
         FrameView(std::move(forwardsGlitz), std::move(reverseGlitz), std::move(guyInfo)),
         guyDepartureFrames,
-        currentPlayerFrame,
-        nextPlayerFrame,
         winFrame};
 }
 } //namespace hg

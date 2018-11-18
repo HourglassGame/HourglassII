@@ -55,10 +55,8 @@ public:
     void addNewInputData(InputList const &newInputData);
 
     /**
-    * Returns the frame containing the oldest (highest relative index) Guy who has input.
+    * Returns the array mapping guy index to arrival frame.
     */
-    Frame *getNextPlayerFrame();
-    Frame *getCurrentPlayerFrame();
     std::vector<Frame *> getGuyFrames() const { return guyArrivalFrames_; };
 
     std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
@@ -83,12 +81,6 @@ private:
     PhysicsEngine physics_;
     //An array indexed by index of the frame at which the guy with that index arrives.
     std::vector<Frame*> guyArrivalFrames_;
-    //The set of frames containing the guys with the largest overall relative index - who has arrived but not yet departed.
-    //The important thing about nextPlayerFrames_ is that it must hold at least the set of frames that will have their 
-    //departures changed by the addition of new player input without the changing of arrivals.
-    ConcurrentTimeSet nextPlayerFrames_;
-    //The frame containing the guy with the largest relative index who has arrived and has input.
-    ConcurrentTimeSet currentPlayerFrames_;
     //Holds the frame(s) in which the win condition is met in the current universe state.
     //That is - just the frame(s) when a guy actually went through the end portal 
     //(or whatever the win condition is) and not the following frames when the
