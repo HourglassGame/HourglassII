@@ -229,7 +229,7 @@ struct RenderWindow final {
     }
 
    
-    bool setActive(bool active = true) const {
+    bool setActive(bool active = true) {
         return renderWindow.setActive(active);
     }
 
