@@ -240,19 +240,13 @@ void WorldState::addNewInputData(InputList const &newInputData)
     {
         playerInput_.push_back(GuyInput());
         playerInput_[guyInputIndex] = newInputData.getGuyInput();
+        frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]); // Frame update is already occuring for the oldest guy.
     }
     else
     {
         playerInput_.push_back(newInputData.getGuyInput());
     }
     
-    frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]);
-    //for (Frame *frame: currentPlayerFrames_) {
-    //    frameUpdateSet_.add(frame);
-    //}
-    //for (Frame *frame: nextPlayerFrames_) {
-    //    frameUpdateSet_.add(frame);
-    //}
     //All non-executing frames are assumed contain neither the currentPlayer nor the nextPlayer (eep D:)
     //This is a valid assumption because max guy index of arrivals in a frame can be in one
     // of four categories prior to this being called:

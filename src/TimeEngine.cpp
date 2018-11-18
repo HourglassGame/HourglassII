@@ -22,7 +22,7 @@ struct TimeEngineImpl final {
 TimeEngine::TimeEngine(Level &&level, OperationInterrupter &interrupter) :
     impl(
       new TimeEngineImpl{
-        1,
+        level.speedOfTime,
         WorldState(
             level.timelineLength,
             std::move(level.initialGuy),
