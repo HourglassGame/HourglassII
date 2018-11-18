@@ -54,7 +54,7 @@ private:
     std::size_t n; //`n` gives the index into the sound;
                    //that is, the exact part of the sound
                    //that must be played in the given frame.
-                   //Sounds are divided into 1/60 second chunks
+                   //Sounds are divided into 1/hg::FRAMERATE second chunks
     //FrameID startFrame; //maybe?
 
 };

@@ -295,7 +295,7 @@ void DrawTimeline(
 
         {
             std::stringstream cursorTime;
-            cursorTime << (timeCursor.getFrameNumber()*10 / 60)/10. << "s";
+            cursorTime << (timeCursor.getFrameNumber()*10 / hg::FRAMERATE)/10. << "s";
             sf::Text cursorTimeGlyph;
             cursorTimeGlyph.setFont(*hg::defaultFont);
             cursorTimeGlyph.setString(cursorTime.str());

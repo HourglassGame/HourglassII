@@ -3,6 +3,7 @@
 #include "LoadingLevelScene.h"
 #include "LoadedLevel.h"
 #include "RunningGameScene.h"
+#include "GlobalConst.h"
 #include "LuaError.h"
 #include "move_function.h"
 #include "MainMenuScene.h"
@@ -62,7 +63,7 @@ int run_hourglassii() {
         }
     }
     window.setVerticalSyncEnabled(true);
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(hg::FRAMERATE);
     //Do stuff!
     //Need a loop maybe, so that when a level is reset, it can come back to the loading screen.
     //... or something...?

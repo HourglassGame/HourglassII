@@ -1,6 +1,7 @@
 #ifndef HG_AUDIO_GLITZ_MANAGER_H
 #define HG_AUDIO_GLITZ_MANAGER_H
 #include "AudioGlitz.h"
+#include "GlobalConst.h"
 #include <vector>
 #include <string>
 #include <map>
@@ -108,7 +109,7 @@ private:
     sf::Sound makeSoundForGlitz(AudioGlitzObject const &glitz) const {
         assert(soundBuffers->find(glitz.key) != soundBuffers->end());
         sf::Sound newSound(soundBuffers->find(glitz.key)->second);
-        newSound.setPlayingOffset(sf::seconds(glitz.index * 1.f/60.f));
+        newSound.setPlayingOffset(sf::seconds(glitz.index * 1.f/static_cast<float>(hg::FRAMERATE)));
         return newSound;
     }
 

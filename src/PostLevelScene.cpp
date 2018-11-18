@@ -4,6 +4,7 @@
 
 #include "Inertia.h"
 #include "Scene.h"
+#include "GlobalConst.h"
 #include "GameDisplayHelpers.h"
 #include "Maths.h"
 #include "ReplayIO.h"
@@ -126,7 +127,7 @@ void run_post_level_scene(
                 window.setVerticalSyncEnabled(false);
             }
             else {
-                window.setFramerateLimit(60);
+                window.setFramerateLimit(hg::FRAMERATE);
                 window.setVerticalSyncEnabled(true);
             }
             window.display();
@@ -240,7 +241,7 @@ void runStep(
     }
     {
         std::stringstream timeString;
-        timeString << "Time: " << (drawnFrame.getFrameNumber()*10/60)/10. << "s";
+        timeString << "Time: " << (drawnFrame.getFrameNumber()*10/hg::FRAMERATE)/10. << "s";
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
