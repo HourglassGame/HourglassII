@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6B51453F-145F-4852-936C-03D50D848279}</ProjectGuid>
     <RootNamespace>HourglassII</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -244,9 +244,9 @@
     <ClInclude Include="..\..\..\..\src\mp\boost\container\vector.hpp" />
     <ClInclude Include="..\..\..\..\src\mp\boost\unordered_map.hpp" />
     <ClInclude Include="..\..\..\..\src\mp\std\map" />
-    <ClInclude Include="..\..\..\..\src\mp\std\set"/>
-    <ClInclude Include="..\..\..\..\src\mp\std\string"/>
-    <ClInclude Include="..\..\..\..\src\mp\std\vector"/>
+    <ClInclude Include="..\..\..\..\src\mp\std\set" />
+    <ClInclude Include="..\..\..\..\src\mp\std\string" />
+    <ClInclude Include="..\..\..\..\src\mp\std\vector" />
     <ClInclude Include="..\..\..\..\src\mt\boost\container\map.hpp" />
     <ClInclude Include="..\..\..\..\src\mt\boost\container\stable_vector.hpp" />
     <ClInclude Include="..\..\..\..\src\mt\boost\container\vector.hpp" />
