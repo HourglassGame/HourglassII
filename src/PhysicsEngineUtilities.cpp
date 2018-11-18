@@ -8,12 +8,13 @@ namespace hg {
 void buildDepartures(
     mp::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
     mp::std::vector<ObjectAndTime<Guy, Frame *>> const &nextGuy,
+    mt::std::vector<std::tuple<std::size_t, Frame *>> &guyDepartureFrames,
     PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame)
 {
     (void)frame;
     buildDeparturesForComplexEntities(nextBox, newDepartures);
-    buildDeparturesForComplexEntities(nextGuy, newDepartures);
+    buildDeparturesForComplexEntitiesWithIndexCaching(nextGuy, guyDepartureFrames, newDepartures);
 }
 
 void makeBoxGlitzListForNormalDepartures(

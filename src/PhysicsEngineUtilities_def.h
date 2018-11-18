@@ -10,6 +10,19 @@ void buildDeparturesForComplexEntities(
     }
 }
 
+template<typename RandomAccessObjectAndTypeRange>
+void buildDeparturesForComplexEntitiesWithIndexCaching(
+    RandomAccessObjectAndTypeRange const &next,
+    mt::std::vector<std::tuple<std::size_t, Frame *>> &departureFrames,
+    PhysicsEngine::FrameDepartureT &newDepartures)
+{
+    for (typename boost::range_reference<RandomAccessObjectAndTypeRange const>::type thingAndTime : next)
+    {
+        departureFrames.emplace_back(thingAndTime.object.getIndex(), thingAndTime.frame);
+        newDepartures[thingAndTime.frame].add(thingAndTime.object);
+    }
+}
+
 template<typename RandomAccessGuyRange>
 bool currentPlayerInArrivals(RandomAccessGuyRange const &guyArrivals, std::size_t playerInputSize)
 {

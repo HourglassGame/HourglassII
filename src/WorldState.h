@@ -59,6 +59,7 @@ public:
     */
     Frame *getNextPlayerFrame();
     Frame *getCurrentPlayerFrame();
+    std::vector<Frame *> getGuyFrames() const { return guyArrivalFrames_; };
 
     std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
 
@@ -80,6 +81,8 @@ private:
     FrameUpdateSet frameUpdateSet_;
     //Stores the physical properties of the world and uses them to turn arrivals into departures.
     PhysicsEngine physics_;
+    //An array indexed by index of the frame at which the guy with that index arrives.
+    std::vector<Frame*> guyArrivalFrames_;
     //The set of frames containing the guys with the largest overall relative index - who has arrived but not yet departed.
     //The important thing about nextPlayerFrames_ is that it must hold at least the set of frames that will have their 
     //departures changed by the addition of new player input without the changing of arrivals.

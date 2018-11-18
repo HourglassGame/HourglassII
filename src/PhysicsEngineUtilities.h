@@ -172,9 +172,16 @@ void buildDeparturesForComplexEntities(
     RandomAccessObjectAndTypeRange const &next,
     PhysicsEngine::FrameDepartureT &newDepartures);
 
+template<typename RandomAccessObjectAndTypeRange>
+void buildDeparturesForComplexEntitiesWithIndexCaching(
+    RandomAccessObjectAndTypeRange const &next,
+    mt::std::vector<std::tuple<std::size_t, Frame *>> &departureFrames,
+    PhysicsEngine::FrameDepartureT &newDepartures);
+
 void buildDepartures(
     mp::std::vector<ObjectAndTime<Box, Frame*> > const &nextBox,
     mp::std::vector<ObjectAndTime<Guy, Frame*> > const &nextGuy,
+    mt::std::vector<std::tuple<std::size_t, Frame *>> &guyDepartureFrames,
     PhysicsEngine::FrameDepartureT &newDepartures,
     Frame *frame);
 

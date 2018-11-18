@@ -34,6 +34,7 @@ public:
     {
         FrameDepartureT departures;
         FrameView view;
+        mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
         bool currentPlayerFrame;
         bool nextPlayerFrame;
         bool currentWinFrame;

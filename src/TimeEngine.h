@@ -26,6 +26,7 @@ public:
     {
         Frame const *currentPlayerFrame;
         Frame const *nextPlayerFrame;
+		std::vector<Frame *> guyFrames;
         FrameListList updatedFrames;
     };
     /**

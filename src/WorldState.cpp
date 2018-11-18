@@ -128,6 +128,11 @@ PhysicsEngine::FrameDepartureT
                               frame,
                               playerInput_,
                               interrupter));
+
+    for (unsigned i = 0; i < retv.guyDepartureFrames.size(); ++i)
+    {
+        guyArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])] = std::get<1>(retv.guyDepartureFrames[i]);
+    }
     if (retv.currentPlayerFrame) {
         currentPlayerFrames_.add(frame);
     }

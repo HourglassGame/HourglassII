@@ -148,9 +148,11 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         nextBoxNormalDeparture,
         BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz));
 
+    mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
     buildDepartures(
         nextBox,
         nextGuy,
+        guyDepartureFrames,
         newDepartures,
         frame);
 
@@ -193,6 +195,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
     return {
         newDepartures,
         FrameView(std::move(forwardsGlitz), std::move(reverseGlitz), std::move(guyInfo)),
+        guyDepartureFrames,
         currentPlayerFrame,
         nextPlayerFrame,
         winFrame};

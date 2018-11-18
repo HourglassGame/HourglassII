@@ -50,6 +50,7 @@ TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterru
     return RunResult{
         impl->worldState.getCurrentPlayerFrame(),
         impl->worldState.getNextPlayerFrame(),
+        impl->worldState.getGuyFrames(),
         std::move(updatedList)};
 }
 
