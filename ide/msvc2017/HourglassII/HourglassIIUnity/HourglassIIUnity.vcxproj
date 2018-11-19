@@ -171,6 +171,7 @@
     <ClInclude Include="..\..\..\..\src\Glitz.h" />
     <ClInclude Include="..\..\..\..\src\GlitzImplementation.h" />
     <ClInclude Include="..\..\..\..\src\GlitzPersister.h" />
+    <ClInclude Include="..\..\..\..\src\GlobalConst.h" />
     <ClInclude Include="..\..\..\..\src\GlobalOptions.h" />
     <ClInclude Include="..\..\..\..\src\GL\eglew.h" />
     <ClInclude Include="..\..\..\..\src\GL\glew.h" />
