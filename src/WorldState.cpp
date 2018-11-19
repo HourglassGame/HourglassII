@@ -197,10 +197,10 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 */
 void WorldState::addNewInputData(InputList const &newInputData)
 {
-    assert(newInputData.getRelativeGuyIndex() > playerInput_.rbegin()); // Do not send input to negative guys.
+    assert(newInputData.getRelativeGuyIndex() <= playerInput_.size());
     guyArrivalFrames_.push_back(nullptr);
     realPlayerInput_.push_back(newInputData);
-    std::size_t guyInputIndex = playerInput_.size() - newInputData.getRelativeGuyIndex();
+    std::size_t const guyInputIndex = playerInput_.size() - newInputData.getRelativeGuyIndex();
 
     frameUpdateSet_.add(guyArrivalFrames_[playerInput_.size()]);
     if (newInputData.getRelativeGuyIndex() > 0)
