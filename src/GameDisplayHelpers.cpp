@@ -1,5 +1,6 @@
 #include "GameDisplayHelpers.h"
 #include "sfRenderTargetCanvas.h"
+#include <boost/range/algorithm/find_if.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
@@ -265,6 +266,63 @@ void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength) {
 }
 
 
+void DrawPersonalTimeline(
+    sf::RenderTarget &target,
+    hg::TimeEngine const &timeEngine,
+    std::vector<Frame *> const &guyFrames) {
+
+    //Horizontal Axis:
+    // Guy Index
+    //Vertical Axis:
+    // Frame Index
+
+    //Colour/Hat = Position/BoxCarrying
+
+    //Waves/Active Frame TODO
+    //Time Ticks TODO
+    //Special display of dead guy frames? TODO
+    auto const timelineLength(timeEngine.getTimelineLength());
+    auto const topOfTimeline{380};
+    auto const height{75};
+    auto const actualGuyFrames{boost::make_iterator_range(guyFrames.begin(), guyFrames.end() - 1)};
+    auto const guyFramesLength{boost::size(actualGuyFrames)};
+    for(std::size_t i{0}; i != guyFramesLength; ++i) {
+        auto const guyFrame{actualGuyFrames[i]};
+        if (isNullFrame(guyFrame)) continue;
+
+        auto const frameWidth{ float{target.getView().getSize().x / guyFramesLength }};
+        auto const frameHorizontalPosition {float{i*frameWidth}};
+
+        auto const frameHeight{ static_cast<float>(height / static_cast<double>(timelineLength))};
+        auto const frameVerticalPosition{float{topOfTimeline+frameHeight*getFrameNumber(guyFrame)}};
+        hg::GuyOutputInfo guy{*boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i;})};
+
+        //TODO: Share this logic with DrawTimelineContents!
+        double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());
+        double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
+
+        sf::Color const frameColor(guyPositionToColor(xFrac, yFrac));
+        sf::RectangleShape frameLine(sf::Vector2f(frameWidth, std::max(4.f,frameHeight)));
+        frameLine.setPosition(frameHorizontalPosition, frameVerticalPosition);
+        frameLine.setFillColor(frameColor);
+        target.draw(frameLine);
+
+        if (guy.getBoxCarrying()) {
+            sf::Color const boxColor(guy.getBoxCarryDirection() == guy.getTimeDirection() ?
+                sf::Color(255, 0, 255)
+                : sf::Color(0, 255, 0));
+            sf::RectangleShape boxLine(sf::Vector2f(frameWidth, std::max(4.f, frameHeight)/4.f));
+            boxLine.setPosition(frameHorizontalPosition, frameVerticalPosition);
+            boxLine.setFillColor(boxColor);
+            target.draw(boxLine);
+        }
+
+    }
+
+
+
+
+}
 void DrawTimeline(
     sf::RenderTarget &target,
     hg::TimeEngine const &timeEngine,

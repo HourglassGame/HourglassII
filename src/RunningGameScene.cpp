@@ -185,7 +185,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
             }
             else {
                 hg::Wall const &wall(timeEngine.getWall());
-                double scalingFactor(std::max(wall.roomWidth()*1. / window.getSize().x, wall.roomHeight()*1. / window.getSize().y));
+                double const scalingFactor(std::max(wall.roomWidth()*1. / window.getSize().x, wall.roomHeight()*1. / window.getSize().y));
                 input.updateState(window.getInputState(), window.getSize().x, scalingFactor);
                 inputList = input.AsInputList();
                 runningFromReplay = false;
@@ -266,9 +266,6 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 }
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-                    //Currently bugged on windows due to compiler bug:
-                    //https://developercommunity.visualstudio.com/content/problem/118080/c-incorrect-code-generation-destructor-being-calle.html
-                    //futureRunResult.get() crashes when the PlayerVictoryException is thrown
                     runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
                     interrupter.reset();
                 }
@@ -386,10 +383,10 @@ void runStep(
             wallImage,
             positionColoursImage);
     }
-    else if (*(waveInfo.guyFrames.rbegin()+1)) {
+    else if (!isNullFrame(*(waveInfo.guyFrames.rbegin()+1))) {
         hg::FrameView const &view((*(waveInfo.guyFrames.rbegin() + 1))->getView());
         hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation()));
-        hg::TimeDirection currentGuyDirection(currentGuy.getTimeDirection());
+        hg::TimeDirection const currentGuyDirection(currentGuy.getTimeDirection());
         inertia.save(hg::FrameID((*(waveInfo.guyFrames.rbegin() + 1))), currentGuyDirection);
         drawnFrame = hg::FrameID((*(waveInfo.guyFrames.rbegin() + 1)));
         DrawGlitzAndWall(
@@ -453,7 +450,12 @@ void runStep(
         drawnFrame,
         timeEngine.getReplayData().back().getGuyInput().getTimeCursor(),
         timeEngine.getTimelineLength());
-    
+
+    DrawPersonalTimeline(
+        app.getRenderTarget(),
+        timeEngine,
+        waveInfo.guyFrames);
+
     {
         std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;

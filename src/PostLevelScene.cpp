@@ -215,6 +215,11 @@ void runStep(
         }
     }
     DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getGuyInput().getTimeCursor(), timeEngine.getTimelineLength());
+    /*DrawPersonalTimeline( //TODO (Probably needs to be tweaked a bit to be suitable for PostLevelScene)
+        app.getRenderTarget(),
+        timeEngine,
+        waveInfo.guyFrames);
+        */
     {
         std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;

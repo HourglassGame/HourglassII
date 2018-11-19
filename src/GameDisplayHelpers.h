@@ -31,6 +31,10 @@ namespace hg {
         sf::RenderTarget &target,
         hg::TimeEngine const &timeEngine,
         unsigned height);
+    void DrawPersonalTimeline(
+        sf::RenderTarget &target,
+        hg::TimeEngine const &timeEngine,
+        std::vector<Frame *> const &guyFrames);
     void DrawColors(hg::RenderWindow &target, sf::Image const &positionColoursImage);
     void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength);
     void DrawTimeline(
