@@ -201,13 +201,16 @@ void WorldState::addNewInputData(InputList const &newInputData)
     guyArrivalFrames_.push_back(nullptr);
     realPlayerInput_.push_back(newInputData);
     std::size_t const guyInputIndex = playerInput_.size() - newInputData.getRelativeGuyIndex();
-
-    frameUpdateSet_.add(guyArrivalFrames_[playerInput_.size()]);
+    if (!isNullFrame(guyArrivalFrames_[playerInput_.size()])){
+        frameUpdateSet_.add(guyArrivalFrames_[playerInput_.size()]);
+    }
     if (newInputData.getRelativeGuyIndex() > 0)
     {
         playerInput_.push_back(GuyInput());
         playerInput_[guyInputIndex] = newInputData.getGuyInput();
-        frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]); // Frame update always occurs for the oldest guy.
+        if (!isNullFrame(guyArrivalFrames_[guyInputIndex])){
+            frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]); // Frame update always occurs for the oldest guy.
+        }
     }
     else
     {
