@@ -57,7 +57,7 @@ public:
     /**
     * Returns the array mapping guy index to arrival frame.
     */
-    std::vector<Frame *> getGuyFrames() const { return guyArrivalFrames_; };
+    std::vector<Frame *> getGuyFrames() const { return guyProcessedArrivalFrames_; };
 
     std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
 
@@ -79,8 +79,10 @@ private:
     FrameUpdateSet frameUpdateSet_;
     //Stores the physical properties of the world and uses them to turn arrivals into departures.
     PhysicsEngine physics_;
-    //An array indexed by index of the frame at which the guy with that index arrives.
-    std::vector<Frame*> guyArrivalFrames_;
+    //An array indexed by index of the frame at which a guy is known to arrive, but not necessarily processed by physics yet.
+    std::vector<Frame*> guyNewArrivalFrames_;
+    //An array indexed by index of the frame at which the guy with that index has arrived and been processed by physics.
+    std::vector<Frame*> guyProcessedArrivalFrames_;
     //Holds the frame(s) in which the win condition is met in the current universe state.
     //That is - just the frame(s) when a guy actually went through the end portal 
     //(or whatever the win condition is) and not the following frames when the

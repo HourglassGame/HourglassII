@@ -48,7 +48,8 @@ WorldState::WorldState(WorldState const& o) :
         playerInput_(o.playerInput_),
         frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
         physics_(o.physics_),
-        guyArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyArrivalFrames_)),
+        guyNewArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyNewArrivalFrames_)),
+        guyProcessedArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyProcessedArrivalFrames_)),
         currentWinFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_))
 {
 }
@@ -58,7 +59,7 @@ WorldState &WorldState::operator=(WorldState const& o)
     playerInput_ = o.playerInput_;
     frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
     physics_ = o.physics_;
-    guyArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyArrivalFrames_);
+    guyNewArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyNewArrivalFrames_);
     currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
     return *this;
 }
@@ -74,14 +75,16 @@ WorldState::WorldState(
         playerInput_(),
         frameUpdateSet_(),
         physics_(std::move(physics)),
-        guyArrivalFrames_(),
+        guyNewArrivalFrames_(),
+        guyProcessedArrivalFrames_(),
         currentWinFrames_()
 {
     assert(guyStartTime.isValidFrame());
     assert(timelineLength > 0);
 
     Frame *guyStartFrame(timeline_.getFrame(guyStartTime));
-    guyArrivalFrames_.push_back(guyStartFrame);
+    guyNewArrivalFrames_.push_back(guyStartFrame);
+    guyProcessedArrivalFrames_.push_back(nullptr); // The oldest Guy to arrive has no input, but has no impact on the physics of the frame.
     {
         std::map<Frame *, ObjectList<Normal>> initialArrivals;
 
@@ -114,7 +117,8 @@ void WorldState::swap(WorldState &o) noexcept
     boost::swap(playerInput_, o.playerInput_);
     boost::swap(frameUpdateSet_, o.frameUpdateSet_);
     boost::swap(physics_, o.physics_);
-    boost::swap(guyArrivalFrames_, o.guyArrivalFrames_);
+    boost::swap(guyNewArrivalFrames_, o.guyNewArrivalFrames_);
+    boost::swap(guyProcessedArrivalFrames_, o.guyProcessedArrivalFrames_);
     boost::swap(currentWinFrames_, o.currentWinFrames_);
 }
 
@@ -131,15 +135,23 @@ int WorldState::getTimelineLength() const
 PhysicsEngine::FrameDepartureT
     WorldState::getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter)
 {
+    // Adding the guys to the processed arrival frames at this point is ugly. We cannot pass
+    // guyProcessedArrivalFrames_ to executeFrame as it is supposed to have no side effects.
+    // Other solutions are similarly ugly.
+    ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
+    for (Guy const &guy : arrivals.getList<Guy>()) //std::size_t i(0), isize(boost::size()); i < isize; ++i)
+    {
+        guyProcessedArrivalFrames_[guy.getIndex()] = frame;
+    }
     PhysicsEngine::PhysicsReturnT retv(
-        physics_.executeFrame(frame->getPrePhysics(),
-                              frame,
-                              playerInput_,
-                              interrupter));
+        physics_.executeFrame(arrivals,
+            frame,
+            playerInput_,
+            interrupter));
 
     for (unsigned i = 0; i < retv.guyDepartureFrames.size(); ++i)
     {
-        guyArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])] = std::get<1>(retv.guyDepartureFrames[i]);
+        guyNewArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])] = std::get<1>(retv.guyDepartureFrames[i]);
     }
     if (retv.currentWinFrame) {
         currentWinFrames_.add(frame);
@@ -147,7 +159,10 @@ PhysicsEngine::FrameDepartureT
     else {
         currentWinFrames_.remove(frame);
     }
-    frame->setView(std::move(retv.view));
+    // retv.view should be removed and added to a function whose only purpose is to process
+    // the arrivals for the timeline view. This would do frame->setView and also perform the
+    // modification of guyProcessedArrivalFrames_.
+    frame->setView(std::move(retv.view)); 
     return std::move(retv.departures);
 }
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
@@ -198,18 +213,19 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter)
 void WorldState::addNewInputData(InputList const &newInputData)
 {
     assert(newInputData.getRelativeGuyIndex() <= playerInput_.size());
-    guyArrivalFrames_.push_back(nullptr);
+    guyNewArrivalFrames_.push_back(nullptr);
+    guyProcessedArrivalFrames_.push_back(nullptr);
     realPlayerInput_.push_back(newInputData);
     std::size_t const guyInputIndex = playerInput_.size() - newInputData.getRelativeGuyIndex();
-    if (!isNullFrame(guyArrivalFrames_[playerInput_.size()])){
-        frameUpdateSet_.add(guyArrivalFrames_[playerInput_.size()]);
+    if (!isNullFrame(guyNewArrivalFrames_[playerInput_.size()])){
+        frameUpdateSet_.add(guyNewArrivalFrames_[playerInput_.size()]);
     }
     if (newInputData.getRelativeGuyIndex() > 0)
     {
         playerInput_.push_back(GuyInput());
         playerInput_[guyInputIndex] = newInputData.getGuyInput();
-        if (!isNullFrame(guyArrivalFrames_[guyInputIndex])){
-            frameUpdateSet_.add(guyArrivalFrames_[guyInputIndex]); // Frame update always occurs for the oldest guy.
+        if (!isNullFrame(guyNewArrivalFrames_[guyInputIndex])){
+            frameUpdateSet_.add(guyNewArrivalFrames_[guyInputIndex]); // Frame update always occurs for the oldest guy.
         }
     }
     else
