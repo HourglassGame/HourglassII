@@ -37,8 +37,6 @@ void DrawGlitzAndWall(
         static_cast<float>(target.getSize().y / scalingFactor)));
     target.setView(scaledView);
 
-    std::cout << "xFill: " << xFill << ", yFill: " << yFill << "\n";
-
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
     for (hg::Glitz const &particularGlitz : glitz) particularGlitz.display(layeredCanvas);
@@ -70,7 +68,7 @@ void drawInventory(
         sf::Text timeJumpGlyph;
         timeJumpGlyph.setFont(*hg::defaultFont);
         timeJumpGlyph.setString(timeJump.str());
-        timeJumpGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 140);
+        timeJumpGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 140);
         timeJumpGlyph.setCharacterSize(16);
         timeJumpGlyph.setFillColor(uiTextColor);
         timeJumpGlyph.setOutlineColor(uiTextColor);
@@ -82,7 +80,7 @@ void drawInventory(
         sf::Text timeReversesGlyph;
         timeReversesGlyph.setFont(*hg::defaultFont);
         timeReversesGlyph.setString(timeReverses.str());
-        timeReversesGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 110);
+        timeReversesGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 110);
         timeReversesGlyph.setCharacterSize(16);
         timeReversesGlyph.setFillColor(uiTextColor);
         timeReversesGlyph.setOutlineColor(uiTextColor);
@@ -94,7 +92,7 @@ void drawInventory(
         sf::Text timeGunsGlyph;
         timeGunsGlyph.setFont(*hg::defaultFont);
         timeGunsGlyph.setString(timeGuns.str());
-        timeGunsGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 80);
+        timeGunsGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 80);
         timeGunsGlyph.setCharacterSize(16);
         timeGunsGlyph.setFillColor(uiTextColor);
         timeGunsGlyph.setOutlineColor(uiTextColor);
@@ -106,7 +104,7 @@ void drawInventory(
         sf::Text timePausesGlyph;
         timePausesGlyph.setFont(*hg::defaultFont);
         timePausesGlyph.setString(timeGuns.str());
-        timePausesGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 50);
+        timePausesGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 50);
         timePausesGlyph.setCharacterSize(16);
         timePausesGlyph.setFillColor(uiTextColor);
         timePausesGlyph.setOutlineColor(uiTextColor);
@@ -312,7 +310,7 @@ void DrawPersonalTimeline(
     sf::View scaledView(sf::FloatRect(
         0.f,
         0.f,
-        target.getSize().x,
+        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100.),
         85.f));
     scaledView.setViewport(sf::FloatRect(
         static_cast<float>(hg::UI_DIVIDE_X / 100),
@@ -398,7 +396,7 @@ void DrawTimeline(
     sf::View scaledView(sf::FloatRect(
         0.f,
         0.f,
-        target.getSize().x,
+        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100.),
         85.f));
     scaledView.setViewport(sf::FloatRect(
         static_cast<float>(hg::UI_DIVIDE_X / 100),
@@ -468,7 +466,7 @@ struct CompareIndicies {
 
 hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    double const mouseXFraction = (app.getInputState().getMousePosition().x - app.getSize().x*hg::UI_DIVIDE_X / 100)*1. / (app.getSize().x*hg::UI_DIVIDE_X / 100);
+    double const mouseXFraction = (app.getInputState().getMousePosition().x - app.getSize().x*hg::UI_DIVIDE_X / 100)*1. / (app.getSize().x*(100. - hg::UI_DIVIDE_X) / 100);
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }

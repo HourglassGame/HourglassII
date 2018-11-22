@@ -159,15 +159,7 @@ void runStep(
     hg::FrameID drawnFrame;
 
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
-        drawnFrame =
-              hg::FrameID(
-                abs(
-                  static_cast<int>(
-                    hg::flooredModulo(static_cast<long>((sf::Mouse::getPosition(app.getWindow()).x
-                     * static_cast<long>(timeEngine.getTimelineLength())
-                     / app.getSize().x))
-                    , static_cast<long>(timeEngine.getTimelineLength())))),
-                hg::UniverseID(timeEngine.getTimelineLength()));
+        drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
@@ -194,15 +186,7 @@ void runStep(
                 positionColoursImage);
         }
         else {
-            drawnFrame =
-              hg::FrameID(
-                abs(
-                  static_cast<int>(
-                    hg::flooredModulo(static_cast<long>((sf::Mouse::getPosition(app.getWindow()).x
-                     * static_cast<long>(timeEngine.getTimelineLength())
-                     / app.getSize().x))
-                    , static_cast<long>(timeEngine.getTimelineLength())))),
-                hg::UniverseID(timeEngine.getTimelineLength()));
+            drawnFrame = mousePosToFrameID(app, timeEngine);
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
             DrawGlitzAndWall(app,
                 getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
