@@ -464,7 +464,7 @@ struct CompareIndicies {
 
 hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    double const mouseXFraction = app.getInputState().getMousePosition().x*1. / app.getSize().x;
+    double const mouseXFraction = (app.getInputState().getMousePosition().x - app.getSize().x*hg::UI_DIVIDE_X / 100)*1. / (app.getSize().x*hg::UI_DIVIDE_X / 100);
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }

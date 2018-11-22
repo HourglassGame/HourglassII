@@ -27,7 +27,7 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXOfEndOfTimeline, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
     right = input.isKeyPressed(sf::Keyboard::D);
@@ -50,16 +50,16 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXOfE
         abilityCursor = Ability::TIME_PAUSE;
     }
     if (input.isMouseButtonPressed(sf::Mouse::Right)) {
-        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+        mouseTimelinePosition = flooredModulo(static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
     if (input.isMouseButtonPressed(sf::Mouse::Middle)) {
-        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+        mouseTimelinePosition = flooredModulo(static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
     if (input.isMouseButtonPressed(sf::Mouse::XButton1)) {
-        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+        mouseTimelinePosition = flooredModulo(static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
     if (input.isMouseButtonPressed(sf::Mouse::XButton2)) {
-        mouseTimelinePosition = flooredModulo(static_cast<int>(input.getMousePosition().x*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
+        mouseTimelinePosition = flooredModulo(static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
     mouseX = static_cast<int>(std::round(input.getMousePosition().x*mouseScale));
     mouseY = static_cast<int>(std::round(input.getMousePosition().y*mouseScale));
