@@ -1,5 +1,5 @@
 name = "Wacky Tomb"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 8000
 environment =
 {

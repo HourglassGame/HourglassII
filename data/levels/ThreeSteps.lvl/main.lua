@@ -1,5 +1,5 @@
 name = "Three Steps"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 5000
 environment =
 {

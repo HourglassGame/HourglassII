@@ -1,5 +1,5 @@
 name = "Gone with the Time Wave"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 7200
 environment =
 {

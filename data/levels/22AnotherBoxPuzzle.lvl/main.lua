@@ -1,5 +1,5 @@
 name = "Another Box Puzzle"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 6000
 environment = 
 {

@@ -1,5 +1,5 @@
 name = "Wait A Moment"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength =5400
 environment =
 {

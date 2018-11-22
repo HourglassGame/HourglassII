@@ -1,5 +1,5 @@
 name = "Is This Possible?"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 10800
 environment =
 {

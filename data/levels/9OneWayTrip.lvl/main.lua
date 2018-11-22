@@ -1,5 +1,5 @@
 name = "One-Way Trip"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 3600
 environment =
 {

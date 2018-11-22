@@ -1,5 +1,5 @@
 name = "Shafted"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 9000
 environment =
 {

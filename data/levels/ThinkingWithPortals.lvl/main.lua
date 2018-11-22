@@ -1,5 +1,5 @@
 name = "Thinking With Portals"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 7200
 environment =
 {

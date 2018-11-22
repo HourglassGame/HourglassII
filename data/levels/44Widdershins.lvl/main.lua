@@ -1,5 +1,5 @@
 name = "Widdershins"
-speedOfTime = 30
+speedOfTime = 10
 timelineLength = 9000
 environment =
 {

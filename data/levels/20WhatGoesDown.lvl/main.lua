@@ -1,5 +1,5 @@
 name = "What goes down..."
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 5000
 environment =
 {
