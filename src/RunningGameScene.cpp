@@ -408,7 +408,7 @@ void runStep(
             drawInventory(
                 app,
                 currentGuy.getPickups(),
-                timeEngine.getReplayData()[guyIndex].getGuyInput().getAbilityCursor());
+                timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1].getGuyInput().getAbilityCursor());
         }
         else {
             inertia.run();
@@ -446,7 +446,7 @@ void runStep(
         timeEngine,
         waveInfo.updatedFrames,
         drawnFrame,
-        timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1 - relativeGuyIndex].getGuyInput().getTimeCursor(),
+        timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1].getGuyInput().getTimeCursor(),
         timeEngine.getTimelineLength());
 
     DrawPersonalTimeline(
