@@ -47,9 +47,29 @@ namespace hg {
     void DrawInterfaceBorder(
         sf::RenderTarget &target);
     template<typename BidirectionalGuyRange>
-    hg::GuyOutputInfo const &findCurrentGuy(BidirectionalGuyRange const &guyRange)
+    hg::GuyOutputInfo const &findCurrentGuy(BidirectionalGuyRange const &guyRange, std::size_t index)
     {
+        for (GuyOutputInfo const &guyInfo : guyRange)
+        {
+            if (guyInfo.getIndex() == index)
+            {
+                return guyInfo;
+            }
+        }
+        assert(false);
         return *boost::begin(guyRange | boost::adaptors::reversed);
+    }
+    template<typename BidirectionalGuyRange>
+    bool const &guyExists(BidirectionalGuyRange const &guyRange, std::size_t index)
+    {
+        for (GuyOutputInfo const &guyInfo : guyRange)
+        {
+            if (guyInfo.getIndex() == index)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     sf::Color guyPositionToColor(double xFrac, double yFrac);

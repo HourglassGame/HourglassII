@@ -28,7 +28,7 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int personalTimelineLength, int mouseOffX, int mouseOffY, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, std::size_t personalTimelineLength, int mouseOffX, int mouseOffY, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
     right = input.isKeyPressed(sf::Keyboard::D);

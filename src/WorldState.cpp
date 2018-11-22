@@ -135,11 +135,19 @@ int WorldState::getTimelineLength() const
 PhysicsEngine::FrameDepartureT
     WorldState::getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter)
 {
+    ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
+    // The following loop should be replaced with a better data structure.
+    for (std::size_t i(0), isize(guyProcessedArrivalFrames_.size()); i < isize; ++i)
+    {
+        if (guyProcessedArrivalFrames_[i] == frame)
+        {
+            guyProcessedArrivalFrames_[i] = nullptr;
+        }
+    }
     // Adding the guys to the processed arrival frames at this point is ugly. We cannot pass
     // guyProcessedArrivalFrames_ to executeFrame as it is supposed to have no side effects.
     // Other solutions are similarly ugly.
-    ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
-    for (Guy const &guy : arrivals.getList<Guy>()) //std::size_t i(0), isize(boost::size()); i < isize; ++i)
+    for (Guy const &guy : arrivals.getList<Guy>())
     {
         guyProcessedArrivalFrames_[guy.getIndex()] = frame;
     }

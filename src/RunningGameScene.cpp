@@ -386,54 +386,58 @@ void runStep(
             wallImage,
             positionColoursImage);
     }
-    else if (!isNullFrame(*(waveInfo.guyFrames.rbegin()+1))) {
-        hg::FrameView const &view((*(waveInfo.guyFrames.rbegin() + 1))->getView());
-        hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation()));
-        hg::TimeDirection const currentGuyDirection(currentGuy.getTimeDirection());
-        inertia.save(hg::FrameID((*(waveInfo.guyFrames.rbegin() + 1))), currentGuyDirection);
-        drawnFrame = hg::FrameID((*(waveInfo.guyFrames.rbegin() + 1)));
-        DrawGlitzAndWall(
-            app,
-            getGlitzForDirection(view, currentGuyDirection),
-            timeEngine.getWall(),
-            resources,
-            audioPlayingState,
-            audioGlitzManager,
-            wallImage,
-            positionColoursImage);
-
-        drawInventory(
-            app,
-            findCurrentGuy(view.getGuyInformation()).getPickups(),
-            timeEngine.getReplayData().back().getGuyInput().getAbilityCursor());
-    }
     else {
-        inertia.run();
-        hg::FrameID const inertialFrame(inertia.getFrame());
-        if (inertialFrame.isValidFrame()) {
-            drawnFrame = inertialFrame;
-            hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
-            DrawGlitzAndWall(app,
-                getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
-                timeEngine.getWall(),
-                resources,
-                audioPlayingState,
-                audioGlitzManager,
-                wallImage,
-                positionColoursImage);
-        }
-        else {
-            drawnFrame = mousePosToFrameID(app, timeEngine);
-            hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
+        const std::size_t guyIndex = waveInfo.guyFrames.size() - 2 - relativeGuyIndex;
+        hg::Frame *guyFrame = waveInfo.guyFrames[guyIndex];
+        if (!isNullFrame(guyFrame)) {
+            hg::FrameView const &view((guyFrame)->getView());
+            hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation(), guyIndex));
+            hg::TimeDirection const currentGuyDirection(currentGuy.getTimeDirection());
+            inertia.save(hg::FrameID(guyFrame), currentGuyDirection);
+            drawnFrame = hg::FrameID(guyFrame);
             DrawGlitzAndWall(
                 app,
-                getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
+                getGlitzForDirection(view, currentGuyDirection),
                 timeEngine.getWall(),
                 resources,
                 audioPlayingState,
                 audioGlitzManager,
                 wallImage,
                 positionColoursImage);
+
+            drawInventory(
+                app,
+                currentGuy.getPickups(),
+                timeEngine.getReplayData()[guyIndex].getGuyInput().getAbilityCursor());
+        }
+        else {
+            inertia.run();
+            hg::FrameID const inertialFrame(inertia.getFrame());
+            if (inertialFrame.isValidFrame()) {
+                drawnFrame = inertialFrame;
+                hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
+                DrawGlitzAndWall(app,
+                    getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
+                    timeEngine.getWall(),
+                    resources,
+                    audioPlayingState,
+                    audioGlitzManager,
+                    wallImage,
+                    positionColoursImage);
+            }
+            else {
+                drawnFrame = mousePosToFrameID(app, timeEngine);
+                hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
+                DrawGlitzAndWall(
+                    app,
+                    getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
+                    timeEngine.getWall(),
+                    resources,
+                    audioPlayingState,
+                    audioGlitzManager,
+                    wallImage,
+                    positionColoursImage);
+            }
         }
     }
     
@@ -442,7 +446,7 @@ void runStep(
         timeEngine,
         waveInfo.updatedFrames,
         drawnFrame,
-        timeEngine.getReplayData().back().getGuyInput().getTimeCursor(),
+        timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1 - relativeGuyIndex].getGuyInput().getTimeCursor(),
         timeEngine.getTimelineLength());
 
     DrawPersonalTimeline(
