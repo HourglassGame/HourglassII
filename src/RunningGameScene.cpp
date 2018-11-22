@@ -104,6 +104,7 @@ void runStep(
     hg::RenderWindow &app,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
+    std::size_t relativeGuyIndex,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
@@ -152,6 +153,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
     hg::Inertia inertia;
+    std::size_t relativeGuyIndex = 0;
 
     std::vector<hg::InputList>::const_iterator currentReplayIt(replay.begin());
     std::vector<hg::InputList>::const_iterator currentReplayEnd(replay.end());
@@ -193,8 +195,9 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 int mouseOffX = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / 100.);
                 int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / 100.);
                 int timelineOffset = static_cast<int>(window.getSize().x*hg::UI_DIVIDE_X / 100.);
-                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, mouseOffX, mouseOffY, 1. / scalingFactor);
+                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
                 inputList = input.AsInputList();
+                relativeGuyIndex = inputList.getRelativeGuyIndex();
                 runningFromReplay = false;
             }
             saveReplayLog(replayLogOut, inputList);
@@ -273,7 +276,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 }
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-                    runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
+                    runStep(timeEngine, window, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
                     interrupter.reset();
                 }
                 catch (hg::PlayerVictoryException const &) {
@@ -351,6 +354,7 @@ void runStep(
     hg::RenderWindow &app,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
+    std::size_t relativeGuyIndex,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
@@ -454,7 +458,19 @@ void runStep(
         sf::Text currentPlayerGlyph;
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
-        currentPlayerGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 50);
+        currentPlayerGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 55);
+        currentPlayerGlyph.setCharacterSize(16);
+        currentPlayerGlyph.setFillColor(uiTextColor);
+        currentPlayerGlyph.setOutlineColor(uiTextColor);
+        app.draw(currentPlayerGlyph);
+    }
+    {
+        std::stringstream currentPlayerIndex;
+        currentPlayerIndex << "Control: " << timeEngine.getReplayData().size() - 1 - relativeGuyIndex;
+        sf::Text currentPlayerGlyph;
+        currentPlayerGlyph.setFont(*hg::defaultFont);
+        currentPlayerGlyph.setString(currentPlayerIndex.str());
+        currentPlayerGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 35);
         currentPlayerGlyph.setCharacterSize(16);
         currentPlayerGlyph.setFillColor(uiTextColor);
         currentPlayerGlyph.setOutlineColor(uiTextColor);
@@ -466,7 +482,7 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 60);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 60);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
@@ -478,7 +494,7 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 20);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 20);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);

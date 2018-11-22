@@ -21,13 +21,14 @@ Input::Input() :
     mouseLeft(),
     abilityCursor(),
     mouseTimelinePosition(),
+    mousePersonalTimelinePosition(),
     mouseX(),
     mouseY(),
     timelineLength()
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseOffX, int mouseOffY, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int personalTimelineLength, int mouseOffX, int mouseOffY, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
     right = input.isKeyPressed(sf::Keyboard::D);
@@ -48,6 +49,9 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTim
     }
     if (input.isKeyPressed(sf::Keyboard::Num4)) {
         abilityCursor = Ability::TIME_PAUSE;
+    }
+    if (input.isMouseButtonPressed(sf::Mouse::Left) && input.isKeyPressed(sf::Keyboard::LAlt)) {
+        mousePersonalTimelinePosition = flooredModulo(personalTimelineLength - (static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*personalTimelineLength / static_cast<double>(mouseXOfEndOfTimeline))), personalTimelineLength);
     }
     if (input.isMouseButtonPressed(sf::Mouse::Right)) {
         mouseTimelinePosition = flooredModulo(static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
@@ -79,7 +83,7 @@ InputList Input::AsInputList() const
             FrameID(mouseTimelinePosition, UniverseID(timelineLength)),     
             mouseX,
             mouseY),
-        0/*TODO: allow overriding of past inputs*/);
+        mousePersonalTimelinePosition);
 }
 }
 
