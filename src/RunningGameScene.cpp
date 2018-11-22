@@ -185,11 +185,15 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
             }
             else {
                 hg::Wall const &wall(timeEngine.getWall());
-                double const scalingFactor(std::max(wall.roomWidth()*1. / window.getSize().x, wall.roomHeight()*1. / window.getSize().y));
-                int mouseOffX = 0;
-                int mouseOffY = 0;
+                double xScale = (window.getSize().x*(100. - hg::UI_DIVIDE_X) / 100.) / wall.roomWidth();
+                double yScale = (window.getSize().y*hg::UI_DIVIDE_Y / 100.) / wall.roomHeight();
+                double scalingFactor(std::min(xScale, yScale));
+                double xFill = scalingFactor / xScale;
+                double yFill = scalingFactor / yScale;
+                int mouseOffX = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / 100.);
+                int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / 100.);
                 int timelineOffset = static_cast<int>(window.getSize().x*hg::UI_DIVIDE_X / 100.);
-                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, mouseOffX, mouseOffY, scalingFactor);
+                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, mouseOffX, mouseOffY, 1. / scalingFactor);
                 inputList = input.AsInputList();
                 runningFromReplay = false;
             }
