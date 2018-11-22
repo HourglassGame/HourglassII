@@ -13,6 +13,7 @@
 #include <iostream>
 #include "ReplaySelectionScene.h"
 #include "RuntimeErrorScene.h"
+#include "GlobalConst.h"
 
 namespace hg {
 struct RunGameResultVisitor {
@@ -55,7 +56,7 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
 
 int run_hourglassii() {
     //Create window
-    hg::RenderWindow window(sf::VideoMode(640, 480), "Hourglass II");
+    hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), "Hourglass II");
     {
         sf::Image window_icon_image;
         if (window_icon_image.loadFromFile("images/HourglassSwirl_64x64.png")) {

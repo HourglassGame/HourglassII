@@ -14,7 +14,7 @@ struct MenuItem final {
 
 static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &menu, int const currentItem) {
     window.clear();
-    float ypos = 100.f;
+    float ypos = 200.f;
     int i = 0;
     for (auto const& menuItem: menu) {
         sf::Text menuItemGlyph;
@@ -23,9 +23,9 @@ static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &
         auto const menuItemColour = i == currentItem ? sf::Color(0, 255, 255) : sf::Color(255, 255, 255);
         menuItemGlyph.setFillColor(menuItemColour);
         menuItemGlyph.setOutlineColor(menuItemColour);
-        menuItemGlyph.setPosition(200.f, ypos);
+        menuItemGlyph.setPosition(450.f, ypos);
         ypos += 50.f;
-        menuItemGlyph.setCharacterSize(32);
+        menuItemGlyph.setCharacterSize(42);
         window.draw(menuItemGlyph);
         
         ++i;

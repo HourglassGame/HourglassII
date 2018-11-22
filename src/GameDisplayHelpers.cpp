@@ -1,5 +1,6 @@
 #include "GameDisplayHelpers.h"
 #include "sfRenderTargetCanvas.h"
+#include "GlobalConst.h"
 #include <boost/range/algorithm/find_if.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -23,10 +24,17 @@ void DrawGlitzAndWall(
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
     //window.
-    double scalingFactor(std::min(target.getSize().x*100. / wall.roomWidth(), target.getSize().y*100. / wall.roomHeight()));
+    double scalingFactor(std::min(target.getSize().x*(100. - hg::UI_DIVIDE_X) / wall.roomWidth(), target.getSize().y*hg::UI_DIVIDE_Y / wall.roomHeight()));
+    //double xGap = static_cast<float>(target.getSize().x / scalingFactor) - static_cast<float>(wall.roomWidth() / (100. - hg::UI_DIVIDE_X));
+    //double yGap = static_cast<float>(target.getSize().y / scalingFactor) - static_cast<float>(target.getSize().y*hg::UI_DIVIDE_Y / 100.);
     sf::View oldView(target.getView());
-    sf::View scaledView(sf::FloatRect(0.f, 0.f, static_cast<float>(target.getSize().x / scalingFactor), static_cast<float>(target.getSize().y / scalingFactor)));
+    sf::View scaledView(sf::FloatRect(
+        static_cast<float>(-1.*target.getSize().x*hg::UI_DIVIDE_X / (100.*scalingFactor)),
+        0.f,
+        static_cast<float>(target.getSize().x / scalingFactor),
+        static_cast<float>(target.getSize().y / scalingFactor)));
     target.setView(scaledView);
+
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
     for (hg::Glitz const &particularGlitz : glitz) particularGlitz.display(layeredCanvas);
@@ -58,8 +66,8 @@ void drawInventory(
         sf::Text timeJumpGlyph;
         timeJumpGlyph.setFont(*hg::defaultFont);
         timeJumpGlyph.setString(timeJump.str());
-        timeJumpGlyph.setPosition(500, 350);
-        timeJumpGlyph.setCharacterSize(10);
+        timeJumpGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 140);
+        timeJumpGlyph.setCharacterSize(16);
         timeJumpGlyph.setFillColor(uiTextColor);
         timeJumpGlyph.setOutlineColor(uiTextColor);
         app.draw(timeJumpGlyph);
@@ -70,8 +78,8 @@ void drawInventory(
         sf::Text timeReversesGlyph;
         timeReversesGlyph.setFont(*hg::defaultFont);
         timeReversesGlyph.setString(timeReverses.str());
-        timeReversesGlyph.setPosition(500, 370);
-        timeReversesGlyph.setCharacterSize(10);
+        timeReversesGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 110);
+        timeReversesGlyph.setCharacterSize(16);
         timeReversesGlyph.setFillColor(uiTextColor);
         timeReversesGlyph.setOutlineColor(uiTextColor);
         app.draw(timeReversesGlyph);
@@ -82,8 +90,8 @@ void drawInventory(
         sf::Text timeGunsGlyph;
         timeGunsGlyph.setFont(*hg::defaultFont);
         timeGunsGlyph.setString(timeGuns.str());
-        timeGunsGlyph.setPosition(500, 390);
-        timeGunsGlyph.setCharacterSize(10);
+        timeGunsGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 80);
+        timeGunsGlyph.setCharacterSize(16);
         timeGunsGlyph.setFillColor(uiTextColor);
         timeGunsGlyph.setOutlineColor(uiTextColor);
         app.draw(timeGunsGlyph);
@@ -94,8 +102,8 @@ void drawInventory(
         sf::Text timePausesGlyph;
         timePausesGlyph.setFont(*hg::defaultFont);
         timePausesGlyph.setString(timeGuns.str());
-        timePausesGlyph.setPosition(500, 410);
-        timePausesGlyph.setCharacterSize(10);
+        timePausesGlyph.setPosition(20, static_cast<int>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 50);
+        timePausesGlyph.setCharacterSize(16);
         timePausesGlyph.setFillColor(uiTextColor);
         timePausesGlyph.setOutlineColor(uiTextColor);
         app.draw(timePausesGlyph);
@@ -367,6 +375,21 @@ void DrawTimeline(
     DrawTimelineContents(target, timeEngine, height);
 }
 
+
+void DrawInterfaceBorder(
+    sf::RenderTarget &target)
+{
+    sf::Color const borderColor(0, 0, 0);
+    sf::RectangleShape horizontalLine(sf::Vector2f(static_cast<float>(hg::WINDOW_DEFAULT_X), 3.f));
+    horizontalLine.setPosition(0.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 1.5f);
+    horizontalLine.setFillColor(borderColor);
+    target.draw(horizontalLine);
+
+    sf::RectangleShape verticalLine(sf::Vector2f(3.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100)));
+    verticalLine.setPosition(static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X / 100) - 1.5f, 0.f);
+    verticalLine.setFillColor(borderColor);
+    target.draw(verticalLine);
+}
 
 struct CompareIndicies {
     template<typename IndexableType>

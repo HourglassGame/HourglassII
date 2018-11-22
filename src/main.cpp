@@ -289,7 +289,7 @@ int new_run_main(std::vector<std::string> const &args) {
 
 static void run_game(hg::UserInterface &ui) {
     InputStream inputStream(ui.getInputStream());
-    WindowHandle mainWindow(ui.createWindow(sf::VideoMode(640, 480), "Hourglass II"));
+    WindowHandle mainWindow(ui.createWindow(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), "Hourglass II"));
 
     GameState state;
     while (true) {

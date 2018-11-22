@@ -44,6 +44,8 @@ namespace hg {
         hg::FrameID playerFrame,
         hg::FrameID timeCursor,
         int timelineLength);
+    void DrawInterfaceBorder(
+        sf::RenderTarget &target);
     template<typename BidirectionalGuyRange>
     hg::GuyOutputInfo const &findCurrentGuy(BidirectionalGuyRange const &guyRange)
     {

@@ -220,6 +220,8 @@ void runStep(
         timeEngine,
         waveInfo.guyFrames);
         */
+    DrawInterfaceBorder(app.getRenderTarget());
+
     {
         std::stringstream currentPlayerIndex;
         currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
