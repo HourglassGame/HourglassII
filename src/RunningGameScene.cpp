@@ -454,8 +454,8 @@ void runStep(
         sf::Text currentPlayerGlyph;
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
-        currentPlayerGlyph.setPosition(580, 433);
-        currentPlayerGlyph.setCharacterSize(10);
+        currentPlayerGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 50);
+        currentPlayerGlyph.setCharacterSize(16);
         currentPlayerGlyph.setFillColor(uiTextColor);
         currentPlayerGlyph.setOutlineColor(uiTextColor);
         app.draw(currentPlayerGlyph);
@@ -466,8 +466,8 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(580, 445);
-        frameNumberGlyph.setCharacterSize(8);
+        frameNumberGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 60);
+        frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
@@ -478,8 +478,8 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(580, 457);
-        frameNumberGlyph.setCharacterSize(8);
+        frameNumberGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 20);
+        frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
@@ -499,8 +499,8 @@ void runStep(
         sf::Text numberOfFramesExecutedGlyph;
         numberOfFramesExecutedGlyph.setFont(*hg::defaultFont);
         numberOfFramesExecutedGlyph.setString(numberOfFramesExecutedString.str());
-        numberOfFramesExecutedGlyph.setPosition(580, 469);
-        numberOfFramesExecutedGlyph.setCharacterSize(8);
+        numberOfFramesExecutedGlyph.setPosition(50, 330);
+        numberOfFramesExecutedGlyph.setCharacterSize(12);
         numberOfFramesExecutedGlyph.setFillColor(uiTextColor);
         numberOfFramesExecutedGlyph.setOutlineColor(uiTextColor);
         app.draw(numberOfFramesExecutedGlyph);
@@ -514,10 +514,10 @@ void runStep(
         sf::Text fpsglyph;
         fpsglyph.setFont(*hg::defaultFont);
         fpsglyph.setString(fpsstring.str());
-        fpsglyph.setCharacterSize(16);
+        fpsglyph.setCharacterSize(12);
         fpsglyph.setFillColor(uiTextColor);
         fpsglyph.setOutlineColor(uiTextColor);
-        fpsglyph.setPosition(630 - fpsglyph.getLocalBounds().width, 415);
+        fpsglyph.setPosition(50, 300);
         app.draw(fpsglyph);
         //std::cout << "fps: " << fps << "\n";
     }

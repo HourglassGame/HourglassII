@@ -11,7 +11,7 @@ namespace hg {
         levelNameGlyph.setString(selected);
         levelNameGlyph.setFillColor(sf::Color(255, 255, 255));
         levelNameGlyph.setOutlineColor(sf::Color(255, 255, 255));
-        levelNameGlyph.setPosition(150, 120);
+        levelNameGlyph.setPosition(400, 200);
         levelNameGlyph.setCharacterSize(32);
         window.draw(levelNameGlyph);
 

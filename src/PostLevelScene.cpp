@@ -212,7 +212,7 @@ void runStep(
         sf::Text currentPlayerGlyph;
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
-        currentPlayerGlyph.setPosition(580, 433);
+        currentPlayerGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 50);
         currentPlayerGlyph.setCharacterSize(10);
         currentPlayerGlyph.setFillColor(uiTextColor);
         currentPlayerGlyph.setOutlineColor(uiTextColor);
@@ -224,8 +224,8 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(580, 445);
-        frameNumberGlyph.setCharacterSize(8);
+        frameNumberGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 60);
+        frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
@@ -236,8 +236,8 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(580, 457);
-        frameNumberGlyph.setCharacterSize(8);
+        frameNumberGlyph.setPosition(100, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 20);
+        frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
         app.draw(frameNumberGlyph);
