@@ -10,7 +10,7 @@ namespace hg {
 class Input final {
 public:
     Input();
-    void updateState(hg::RenderWindow::InputState const &keyState, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, double mouseScale);
+    void updateState(hg::RenderWindow::InputState const &keyState, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseOffX, int mouseOffY, double mouseScale);
     InputList AsInputList() const;
     void setTimelineLength(int timelineLength_) { this->timelineLength = timelineLength_; }
 private:

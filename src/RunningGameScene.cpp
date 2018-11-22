@@ -186,8 +186,10 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
             else {
                 hg::Wall const &wall(timeEngine.getWall());
                 double const scalingFactor(std::max(wall.roomWidth()*1. / window.getSize().x, wall.roomHeight()*1. / window.getSize().y));
+                int mouseOffX = 0;
+                int mouseOffY = 0;
                 int timelineOffset = static_cast<int>(window.getSize().x*hg::UI_DIVIDE_X / 100.);
-                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, scalingFactor);
+                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, mouseOffX, mouseOffY, scalingFactor);
                 inputList = input.AsInputList();
                 runningFromReplay = false;
             }

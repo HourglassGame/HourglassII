@@ -27,7 +27,7 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseOffX, int mouseOffY, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
     right = input.isKeyPressed(sf::Keyboard::D);
@@ -61,8 +61,8 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTim
     if (input.isMouseButtonPressed(sf::Mouse::XButton2)) {
         mouseTimelinePosition = flooredModulo(static_cast<int>((input.getMousePosition().x - mouseXTimelineOffset)*timelineLength/static_cast<double>(mouseXOfEndOfTimeline)),timelineLength);
     }
-    mouseX = static_cast<int>(std::round(input.getMousePosition().x*mouseScale));
-    mouseY = static_cast<int>(std::round(input.getMousePosition().y*mouseScale));
+    mouseX = static_cast<int>(std::round((input.getMousePosition().x - mouseOffX)*mouseScale));
+    mouseY = static_cast<int>(std::round((input.getMousePosition().y - mouseOffY)*mouseScale));
 }
 
 InputList Input::AsInputList() const

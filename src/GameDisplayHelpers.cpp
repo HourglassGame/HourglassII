@@ -24,16 +24,20 @@ void DrawGlitzAndWall(
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
     //window.
-    double scalingFactor(std::min(target.getSize().x*(100. - hg::UI_DIVIDE_X) / wall.roomWidth(), target.getSize().y*hg::UI_DIVIDE_Y / wall.roomHeight()));
-    //double xGap = static_cast<float>(target.getSize().x / scalingFactor) - static_cast<float>(wall.roomWidth() / (100. - hg::UI_DIVIDE_X));
-    //double yGap = static_cast<float>(target.getSize().y / scalingFactor) - static_cast<float>(target.getSize().y*hg::UI_DIVIDE_Y / 100.);
+    double xScale = target.getSize().x*(100. - hg::UI_DIVIDE_X) / wall.roomWidth();
+    double yScale = target.getSize().y*hg::UI_DIVIDE_Y / wall.roomHeight();
+    double scalingFactor(std::min(xScale, yScale));
+    double xFill = scalingFactor / xScale;
+    double yFill = scalingFactor / yScale;
     sf::View oldView(target.getView());
     sf::View scaledView(sf::FloatRect(
-        static_cast<float>(-1.*target.getSize().x*hg::UI_DIVIDE_X / (100.*scalingFactor)),
-        0.f,
+        static_cast<float>(-1.*target.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / (100.*scalingFactor)),
+        static_cast<float>(-1.*target.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / (100.*scalingFactor)),
         static_cast<float>(target.getSize().x / scalingFactor),
         static_cast<float>(target.getSize().y / scalingFactor)));
     target.setView(scaledView);
+
+    std::cout << "xFill: " << xFill << ", yFill: " << yFill << "\n";
 
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
