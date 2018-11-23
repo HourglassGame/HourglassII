@@ -53,6 +53,7 @@ TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterru
 }
 
 Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const noexcept { return impl->worldState.getFrame(whichFrame); }
+std::vector<GuyInput> const &TimeEngine::getPostOverwriteInput() const noexcept { return impl->worldState.getPostOverwriteInput(); }
 std::vector<InputList> const &TimeEngine::getReplayData() const noexcept { return impl->worldState.getReplayData(); }
 Wall const &TimeEngine::getWall() const noexcept { return impl->wall; }
 int TimeEngine::getTimelineLength() const noexcept { return impl->worldState.getTimelineLength(); }

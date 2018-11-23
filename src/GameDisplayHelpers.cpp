@@ -279,8 +279,14 @@ void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength) {
 void DrawPersonalTimeline(
     sf::RenderTarget &target,
     hg::TimeEngine const &timeEngine,
-    std::vector<Frame *> const &guyFrames) {
+    std::size_t const relativeGuyIndex,
+    std::vector<Frame *> const &guyFrames,
+    std::vector<GuyInput> const &guyInput) {
 
+    auto const padding{ 3.f };
+    auto const bottomSpace{ 9.f };
+    auto const minFrameHeight{ 4.f };
+    auto const height{ static_cast<float>(hg::P_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)*hg::WINDOW_DEFAULT_Y - 2.f*padding - bottomSpace };
     //Horizontal Axis:
     // Guy Index
     //Vertical Axis:
@@ -311,33 +317,61 @@ void DrawPersonalTimeline(
         0.f,
         0.f,
         target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100.),
-        85.f));
+        height + 2.f*padding + bottomSpace));
     scaledView.setViewport(sf::FloatRect(
         static_cast<float>(hg::UI_DIVIDE_X / 100),
         static_cast<float>(hg::UI_DIVIDE_Y / 100) + static_cast<float>(hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100),
         1.f - static_cast<float>(hg::UI_DIVIDE_X / 100),
         static_cast<float>(hg::P_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)));
     target.setView(scaledView);
-
     //Colour/Hat = Position/BoxCarrying
 
     //Waves/Active Frame TODO
     //Time Ticks TODO
     //Special display of dead guy frames? TODO
+    std::size_t skipInputFrames = 0;
     auto const timelineLength(timeEngine.getTimelineLength());
-    auto const topOfTimeline{7.5f};
-    auto const height{70};
     auto const actualGuyFrames{boost::make_iterator_range(guyFrames.begin(), guyFrames.end() - 1)};
     auto const guyFramesLength{boost::size(actualGuyFrames)};
     for(std::size_t i{0}; i != guyFramesLength; ++i) {
-        auto const guyFrame{actualGuyFrames[i]};
+        auto const frameWidth{ float{target.getView().getSize().x / guyFramesLength } };
+        auto const frameHorizontalPosition{ float{i*frameWidth} };
+        auto const frameHeight{ static_cast<float>(height / static_cast<double>(timelineLength)) };
+        
+        if (skipInputFrames > 0)
+        {
+            --skipInputFrames;
+        }
+        else if (guyInput[i].getActionTaken())
+        {
+            sf::RectangleShape inputLine(sf::Vector2f(std::max(frameWidth, 3.f), bottomSpace - minFrameHeight - 1.f + padding / 2.f));
+            if (guyInput[i].getPortalUsed())
+            {
+                inputLine.setFillColor(sf::Color(50, 255, 50));
+                skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
+            }
+            else if (guyInput[i].getAbilityUsed())
+            {
+                inputLine.setFillColor(sf::Color(50, 50, 255));
+                skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
+            }
+            else if (guyInput[i].getDown())
+            {
+                inputLine.setFillColor(sf::Color(0, 0, 0));
+                skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
+            }
+            else
+            {
+                inputLine.setFillColor(sf::Color(120, 120, 120));
+            }
+            inputLine.setPosition(frameHorizontalPosition, padding + height + frameHeight + minFrameHeight + 1.f);
+            target.draw(inputLine);
+        }
+
+        auto const guyFrame{ actualGuyFrames[i] };
         if (isNullFrame(guyFrame)) continue;
 
-        auto const frameWidth{ float{target.getView().getSize().x / guyFramesLength }};
-        auto const frameHorizontalPosition {float{i*frameWidth}};
-
-        auto const frameHeight{ static_cast<float>(height / static_cast<double>(timelineLength))};
-        auto const frameVerticalPosition{float{topOfTimeline + frameHeight*getFrameNumber(guyFrame)}};
+        auto const frameVerticalPosition{float{padding + frameHeight*getFrameNumber(guyFrame)}};
         hg::GuyOutputInfo guy{*boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i;})};
 
         //TODO: Share this logic with DrawTimelineContents!
@@ -345,7 +379,7 @@ void DrawPersonalTimeline(
         double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
 
         sf::Color const frameColor(guyPositionToColor(xFrac, yFrac));
-        sf::RectangleShape frameLine(sf::Vector2f(frameWidth, std::max(4.f,frameHeight)));
+        sf::RectangleShape frameLine(sf::Vector2f(frameWidth, std::max(minFrameHeight,frameHeight)));
         frameLine.setPosition(frameHorizontalPosition, frameVerticalPosition);
         frameLine.setFillColor(frameColor);
         target.draw(frameLine);
@@ -359,8 +393,13 @@ void DrawPersonalTimeline(
             boxLine.setFillColor(boxColor);
             target.draw(boxLine);
         }
-
     }
+
+    sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height + bottomSpace)));
+    playerLine.setPosition((guyFramesLength - relativeGuyIndex)*target.getView().getSize().x / guyFramesLength, padding);
+    playerLine.setFillColor(sf::Color(200, 200, 0));
+    target.draw(playerLine);
+
     target.setView(oldView);
 }
 

@@ -452,7 +452,9 @@ void runStep(
     DrawPersonalTimeline(
         app.getRenderTarget(),
         timeEngine,
-        waveInfo.guyFrames);
+        relativeGuyIndex,
+        waveInfo.guyFrames,
+        timeEngine.getPostOverwriteInput());
 
     DrawInterfaceBorder(app.getRenderTarget());
 

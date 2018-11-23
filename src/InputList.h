@@ -49,6 +49,7 @@ public:
     int getXCursor() const noexcept { return xCursor; }
     int getYCursor() const noexcept { return yCursor; }
 
+    bool getActionTaken() const noexcept { return left || right || up || down || portalUsed || abilityUsed; }
 private:
     friend class InputList;
     friend std::ostream &operator<<(std::ostream &os, InputList const &toPrint);

@@ -59,6 +59,7 @@ public:
     */
     std::vector<Frame *> getGuyFrames() const { return guyProcessedArrivalFrames_; };
 
+    std::vector<GuyInput> const &getPostOverwriteInput() const { return playerInput_; }
     std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
 
     Frame const *getFrame(FrameID const &whichFrame) const;
