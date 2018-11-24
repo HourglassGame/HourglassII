@@ -1,9 +1,9 @@
 name = "Test Reverse"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 3600
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 25,

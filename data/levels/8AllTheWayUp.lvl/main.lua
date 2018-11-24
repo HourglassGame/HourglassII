@@ -1,11 +1,11 @@
 -- THIS LEVEL HAS NOT YET BEEN WRITTEN (IT SHOULD NOT HAVE BEEN COMMITTED)
 
 name = "All The Way Up"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 10800
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 32,

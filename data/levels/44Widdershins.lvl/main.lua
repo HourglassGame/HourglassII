@@ -1,9 +1,9 @@
 name = "Widdershins"
-speedOfTime = 10
+speedOfTime = 1 -- This was 10 as an experiment.
 timelineLength = 9000
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 31,

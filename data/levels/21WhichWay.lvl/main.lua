@@ -1,9 +1,9 @@
 name = "Which Way?"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 6000
 environment = 
 {
-    gravity = 22,
+    gravity = 12,
     wall = 
     {
         width = 27,

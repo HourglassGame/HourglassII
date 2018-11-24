@@ -1,9 +1,9 @@
 name = "Ups and Downs"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 9000
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 28,

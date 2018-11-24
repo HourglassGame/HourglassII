@@ -1,9 +1,9 @@
 name = "Two Boxes?"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 7200
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 32,

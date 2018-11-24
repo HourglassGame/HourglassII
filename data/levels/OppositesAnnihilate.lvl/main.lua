@@ -1,9 +1,9 @@
 name = "Opposites Annihilate"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 5401 -- Important, improves loading time.
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 18,

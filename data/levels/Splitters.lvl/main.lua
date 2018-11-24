@@ -1,9 +1,9 @@
 name = "Splitters"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 5400
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 21,

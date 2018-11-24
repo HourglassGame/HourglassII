@@ -1,9 +1,9 @@
 name = "Stacked High"
-speedOfTime = 3
+speedOfTime = 1
 timelineLength = 10800
 environment =
 {
-    gravity = 22,
+    gravity = 12,
     wall =
     {
         width = 32,
