@@ -333,9 +333,10 @@ void DrawPersonalTimeline(
     auto const timelineLength(timeEngine.getTimelineLength());
     auto const actualGuyFrames{boost::make_iterator_range(guyFrames.begin(), guyFrames.end() - 1)};
     auto const guyFramesLength{boost::size(actualGuyFrames)};
-    for(std::size_t i{0}; i != guyFramesLength; ++i) {
-        auto const frameWidth{ float{target.getView().getSize().x / guyFramesLength } };
-        auto const frameHorizontalPosition{ float{i*frameWidth} };
+    std::size_t const frameInc = static_cast<std::size_t>(std::max(1, static_cast<int>(std::floor(guyFramesLength / target.getView().getSize().x))));
+    for(std::size_t i{0}; i < guyFramesLength; i += frameInc) {
+        auto const frameWidth{ float{target.getView().getSize().x * frameInc / guyFramesLength } };
+        auto const frameHorizontalPosition{ float{i*target.getView().getSize().x / guyFramesLength} };
         auto const frameHeight{ static_cast<float>(height / static_cast<double>(timelineLength)) };
         
         if (skipInputFrames > 0)
