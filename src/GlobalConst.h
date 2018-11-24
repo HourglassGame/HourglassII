@@ -10,6 +10,7 @@ namespace hg {
     inline static const double G_TIME_HEIGHT = 10.*0.0625;
     inline static const double P_TIME_Y = 12.*0.0625;
     inline static const double P_TIME_HEIGHT = 3.*0.0625;
+    inline static const double TIMELINE_PAD_X = 0.02;
     inline static const int WINDOW_DEFAULT_X = 1260;
     inline static const int WINDOW_DEFAULT_Y = 840;
 }

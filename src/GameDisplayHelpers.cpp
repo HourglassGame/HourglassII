@@ -292,8 +292,8 @@ void DrawPersonalTimeline(
     //Vertical Axis:
     // Frame Index
 
-    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X / 100.);
-    float right = static_cast<float>(hg::WINDOW_DEFAULT_X);
+    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
+    float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
     float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.));
     float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.));
 
@@ -316,16 +316,16 @@ void DrawPersonalTimeline(
     sf::View scaledView(sf::FloatRect(
         0.f,
         0.f,
-        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100.),
+        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100. - 2.*hg::TIMELINE_PAD_X),
         height + 2.f*padding + bottomSpace));
     scaledView.setViewport(sf::FloatRect(
-        static_cast<float>(hg::UI_DIVIDE_X / 100),
+        static_cast<float>(hg::UI_DIVIDE_X / 100 + hg::TIMELINE_PAD_X),
         static_cast<float>(hg::UI_DIVIDE_Y / 100) + static_cast<float>(hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100),
-        1.f - static_cast<float>(hg::UI_DIVIDE_X / 100),
+        1.f - static_cast<float>(hg::UI_DIVIDE_X / 100 + 2.*hg::TIMELINE_PAD_X),
         static_cast<float>(hg::P_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)));
     target.setView(scaledView);
-    //Colour/Hat = Position/BoxCarrying
 
+    //Colour/Hat = Position/BoxCarrying
     //Waves/Active Frame TODO
     //Time Ticks TODO
     //Special display of dead guy frames? TODO
@@ -411,8 +411,8 @@ void DrawTimeline(
     hg::FrameID const timeCursor,
     int const timelineLength)
 {
-    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X / 100.);
-    float right = static_cast<float>(hg::WINDOW_DEFAULT_X);
+    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
+    float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
     float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + hg::G_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.));
     float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.));
 
@@ -435,12 +435,12 @@ void DrawTimeline(
     sf::View scaledView(sf::FloatRect(
         0.f,
         0.f,
-        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100.),
+        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100. - 2.*hg::TIMELINE_PAD_X),
         85.f));
     scaledView.setViewport(sf::FloatRect(
-        static_cast<float>(hg::UI_DIVIDE_X / 100),
+        static_cast<float>(hg::UI_DIVIDE_X / 100 + hg::TIMELINE_PAD_X),
         static_cast<float>(hg::UI_DIVIDE_Y / 100) + static_cast<float>(hg::G_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100),
-        1.f - static_cast<float>(hg::UI_DIVIDE_X / 100),
+        1.f - static_cast<float>(hg::UI_DIVIDE_X / 100 + 2.*hg::TIMELINE_PAD_X),
         static_cast<float>(hg::G_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)));
     target.setView(scaledView);
 
