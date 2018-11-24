@@ -80,6 +80,15 @@ local function easyWireGlitz(p)
     return wireGlitz(p)
 end
 local function basicRectangleGlitz(p)
+    return {
+        type = 'basicRectangleGlitz',
+        colour = p.colour,
+        layer = p.layer,
+        x = p.x,
+        y = p.y,
+        width = p.width,
+        height = p.height,
+    }
 end
 local function basicTextGlitz(p)
 end

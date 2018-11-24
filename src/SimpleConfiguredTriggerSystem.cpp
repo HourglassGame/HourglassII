@@ -1055,8 +1055,7 @@ namespace hg {
     }
 
     ProtoGlitz toProtoWireGlitz(
-        lua_State * const L,
-        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+        lua_State * const L)
     {
         std::optional<int> const triggerID{ optionalMap(readFieldOptional<int>(L, "triggerID"), &lua_index_to_C_index<int>) }; 
         bool const useTriggerArrival{readField<bool>(L, "useTriggerArrival")};
@@ -1075,13 +1074,35 @@ namespace hg {
             ));
     }
 
+    ProtoGlitz toProtoBasicRectangleGlitz(
+        lua_State * const L)
+    {
+        unsigned const colour{ readColourField(L, "colour") };
+        int const layer{ readField<int>(L, "layer") };
+        int const x{ readField<int>(L, "x") };
+        int const y{ readField<int>(L, "y") };
+        int const width{ readField<int>(L, "width") };
+        int const height{ readField<int>(L, "height") };
+
+        return ProtoGlitz(mt::std::make_unique<ProtoBasicRectangleGlitzImpl>(
+            colour,
+            layer,
+            x,
+            y,
+            width,
+            height
+            ));
+    }
+
     ProtoGlitz toProtoGlitz(
-        lua_State * const L,
-        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+        lua_State * const L)
     {
         std::string const type(readField<std::string>(L, "type"));
         if (type == "wireGlitz") {
-            return toProtoWireGlitz(L, triggerOffsetsAndDefaults);
+            return toProtoWireGlitz(L);
+        }
+        else if (type == "basicRectangleGlitz"){
+            return toProtoBasicRectangleGlitz(L);
         }
         else {
             assert(false);
@@ -1205,7 +1226,7 @@ namespace hg {
                 luaL_checkstack(L, 1, nullptr);
                 lua_pushinteger(L, i);
                 lua_gettable(L, -2);
-                protoGlitzs_.push_back(toProtoGlitz(L, triggerOffsetsAndDefaults_));
+                protoGlitzs_.push_back(toProtoGlitz(L));
                 lua_pop(L, 1);
             }
         }

@@ -775,6 +775,8 @@ namespace hg {
         ProtoGlitzImpl& operator=(ProtoGlitzImpl&&) = default;
         /*
         1000 ProtoWireGlitzImpl
+        2000 ProtoBasicRectangleGlitzImpl
+        3000 ProtoBasicTextGlitzImpl
         */
         virtual int order_ranking() const = 0;
         virtual bool operator==(ProtoGlitzImpl const &o) const = 0;
@@ -918,6 +920,78 @@ namespace hg {
         PlatformAndPos y2_;
     };
 
+    struct ProtoBasicRectangleGlitzImpl final : ProtoGlitzImpl {
+    private:
+        auto comparison_tuple() const {
+            return std::tie(
+                colour,
+                layer,
+                x,
+                y,
+                width,
+                height
+            );
+        }
+    public:
+        ProtoBasicRectangleGlitzImpl(
+            unsigned const colour,
+            int const layer,
+            int const x,
+            int const y,
+            int const width,
+            int const height
+        ) :
+            colour(colour),
+            layer(layer),
+            x(x),
+            y(y),
+            width(width),
+            height(height)
+        {
+        }
+        void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            PhysicsAffectingStuff const &physicsAffectingStuff,
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const final
+        {
+            DynamicArea const obj{
+                x,
+                y,
+                0,
+                0,
+                width,
+                height,
+                TimeDirection::REVERSE
+            };
+
+            auto[forGlitz, revGlitz] = calculateBidirectionalGlitz(layer, obj, colour, colour);
+
+            forwardsGlitz.emplace_back(std::move(forGlitz));
+            reverseGlitz.emplace_back(std::move(revGlitz));
+        }
+        std::size_t clone_size() const final {
+            return sizeof *this;
+        }
+        ProtoBasicRectangleGlitzImpl *perform_clone(void *memory) const final {
+            return new (memory) ProtoBasicRectangleGlitzImpl(*this);
+        }
+        int order_ranking() const final {
+            return 2000;
+        }
+        bool operator==(ProtoGlitzImpl const &o) const final {
+            auto const &actual_other(*boost::polymorphic_downcast<ProtoBasicRectangleGlitzImpl const*>(&o));
+            return comparison_tuple() == actual_other.comparison_tuple();
+        }
+    private:
+        unsigned colour;
+        int layer;
+        int x;
+        int y;
+        int width;
+        int height;
+    };
     struct ProtoGlitz final {
     private:
         clone_ptr<ProtoGlitzImpl, memory_source_clone<ProtoGlitzImpl, multi_thread_memory_source>> pimpl_;
