@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include <vector>
 #include <string>
+#include <optional>
 #include "mt/std/string"
 #include "InitialGuyArrival.h"
 #include "InitialObjects.h"
@@ -47,6 +48,19 @@ T toWithDefault(lua_State *const L, int index, T defaultValue)
     return isValid<T>(L, index) ? to<T>(L, index) : std::move(defaultValue);
 }
 
+template<typename T>
+std::optional<T> toOptional(lua_State *const L, int index = -1)
+{
+    return isValid<T>(L, index) ? std::optional<T>(to<T>(L, index)) : std::optional<T>();
+}
+template<typename T>
+std::optional<T> readFieldOptional(lua_State *L, char const *fieldName, int index = -1)
+{
+    lua_getfield(L, index, fieldName);
+    std::optional<T> retv(toOptional<T>(L));
+    lua_pop(L, 1);
+    return retv;
+}
 //TODO: change arg order, make index have default value?
 template<typename T>
 T readFieldWithDefault(lua_State *L, char const *fieldName, int index, T defaultValue)

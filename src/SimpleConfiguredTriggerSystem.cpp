@@ -430,21 +430,18 @@ namespace hg {
         reverseGlitz_(),
         buttonFrameStates_(pool),
         mutatorFrameStates_(pool),
-        glitzFrameStates_(pool),
         activeMutators_(pool),
         triggerArrivals_(pool),
         physicsAffectingStuff_(pool),
         protoCollisions_(protoCollisions),
-        protoPortals_(protoPortals)
+        protoPortals_(protoPortals),
+        protoGlitzs_(protoGlitzs)
     {
         buttonFrameStates_.reserve(protoButtons.size());
         for(auto &&a : protoButtons) buttonFrameStates_.push_back(a.getFrameState(pool_));
         
         mutatorFrameStates_.reserve(protoButtons.size());
         for(auto &&a : protoMutators) mutatorFrameStates_.push_back(a.getFrameState(pool_));
-
-        glitzFrameStates_.reserve(protoGlitzs.size());
-        for (auto &&a : protoGlitzs) glitzFrameStates_.push_back(a.getFrameState(pool_));
     }
 
 
@@ -603,8 +600,8 @@ namespace hg {
             mutatorFrameState.calculateGlitz(forwardsGlitz_, reverseGlitz_, additionalGlitzPersisters);
             mutatorFrameState.fillTrigger(outputTriggers_);
         }
-        for (auto const &glitzFrameState : glitzFrameStates_) {
-            glitzFrameState.calculateGlitz(forwardsGlitz_, reverseGlitz_, physicsAffectingStuff_, triggerArrivals_/*, outputTriggers_*/);
+        for (auto const &protoGlitz : protoGlitzs_) {
+            protoGlitz.calculateGlitz(forwardsGlitz_, reverseGlitz_, physicsAffectingStuff_, triggerArrivals_, outputTriggers_);
         }
 
         mp::std::vector<TriggerData> triggerVector(pool_);
@@ -1032,6 +1029,66 @@ namespace hg {
         }
     }
 
+
+    
+
+    template<typename T, typename F>
+    auto optionalMap(std::optional<T> const &o, F &&f) -> std::optional<decltype(f(*o))>{
+        if (o) {
+            return std::optional<decltype(f(*o))>{f(*o)};
+        }
+        else {
+            return std::optional<decltype(f(*o))>{};
+        }
+    }
+
+    template<>
+    PlatformAndPos to<PlatformAndPos>(lua_State *L, int index) {
+        try
+        {
+            return { optionalMap(readFieldOptional<int>(L, "platform", index), &lua_index_to_C_index<int>), readField<int>(L, "pos", index) };
+        }
+        catch (LuaError &e) {
+            add_semantic_callstack_info(e, "to<PlatformAndPos>");
+            throw;
+        }
+    }
+
+    ProtoGlitz toProtoWireGlitz(
+        lua_State * const L,
+        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        std::optional<int> const triggerID{ optionalMap(readFieldOptional<int>(L, "triggerID"), &lua_index_to_C_index<int>) }; 
+        bool const useTriggerArrival{readField<bool>(L, "useTriggerArrival")};
+        PlatformAndPos const x1{readField<PlatformAndPos>(L, "x1")};
+        PlatformAndPos const y1{readField<PlatformAndPos>(L, "y1")};
+        PlatformAndPos const x2{readField<PlatformAndPos>(L, "x2")};
+        PlatformAndPos const y2{readField<PlatformAndPos>(L, "y2")};
+
+        return ProtoGlitz(mt::std::make_unique<ProtoWireGlitzImpl>(
+            triggerID,
+            useTriggerArrival,
+            x1,
+            y1,
+            x2,
+            y2
+            ));
+    }
+
+    ProtoGlitz toProtoGlitz(
+        lua_State * const L,
+        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        std::string const type(readField<std::string>(L, "type"));
+        if (type == "wireGlitz") {
+            return toProtoWireGlitz(L, triggerOffsetsAndDefaults);
+        }
+        else {
+            assert(false);
+        }
+    }
+
+
     SimpleConfiguredTriggerSystem::SimpleConfiguredTriggerSystem(
             std::vector<char> const &mainChunk,
             std::vector<LuaModule> const &extraChunks,
@@ -1134,6 +1191,21 @@ namespace hg {
                 lua_pushinteger(L, i);
                 lua_gettable(L, -2);
                 protoButtons_.push_back(toProtoButton(L, triggerOffsetsAndDefaults_));
+                lua_pop(L, 1);
+            }
+        }
+        lua_pop(L, 1);
+
+        lua_getfield(L, -1, "protoGlitz");
+        if (!lua_isnil(L, -1)) {
+            if (!lua_istable(L, -1)) {
+                BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("protoGlitz must be a table"));
+            }
+            for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+                luaL_checkstack(L, 1, nullptr);
+                lua_pushinteger(L, i);
+                lua_gettable(L, -2);
+                protoGlitzs_.push_back(toProtoGlitz(L, triggerOffsetsAndDefaults_));
                 lua_pop(L, 1);
             }
         }

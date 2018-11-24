@@ -49,7 +49,22 @@ local function spikes(p)
         height = p.height,
     }
 end
+local function clonePlatformAndPos(p)
+    return {
+        platform = p.platform,
+        pos = p.pos,
+    }
+end
 local function wireGlitz(p)
+    return {
+        type = 'wireGlitz',
+        triggerID = p.triggerID,
+        useTriggerArrival = p.useTriggerArrival,
+        x1 = clonePlatformAndPos(p.x1),
+        y1 = clonePlatformAndPos(p.y1),
+        x2 = clonePlatformAndPos(p.x2),
+        y2 = clonePlatformAndPos(p.y2),
+    }
 end
 local function easyWireGlitz(p)
 end
