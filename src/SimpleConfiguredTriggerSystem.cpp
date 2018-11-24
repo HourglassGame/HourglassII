@@ -1093,7 +1093,19 @@ namespace hg {
             height
             ));
     }
+    ProtoGlitz toProtoBasicTextGlitz(
+        lua_State * const L)
+    {
+        int const layer(readField<int>(L, "layer"));
+        auto const text(readField<mt::std::string>(L, "text"));
+        int const x(readField<int>(L, "x"));
+        int const y(readField<int>(L, "y"));
+        int const size(readField<int>(L, "size"));
+        unsigned const colour(readColourField(L, "colour"));
 
+        return ProtoGlitz(mt::std::make_unique<ProtoBasicTextGlitzImpl>(
+            TextGlitz(layer, std::move(text), x, y, size, colour)));
+    }
     ProtoGlitz toProtoGlitz(
         lua_State * const L)
     {
@@ -1103,6 +1115,9 @@ namespace hg {
         }
         else if (type == "basicRectangleGlitz"){
             return toProtoBasicRectangleGlitz(L);
+        }
+        else if (type == "basicTextGlitz") {
+            return toProtoBasicTextGlitz(L);
         }
         else {
             assert(false);

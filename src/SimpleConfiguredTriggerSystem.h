@@ -3,6 +3,7 @@
 #include "TriggerSystemImplementation.h"
 #include "copy_as_new_ptr.h"
 #include "SimpleLuaCpp.h"
+#include "TextGlitz.h"
 #include "ThreadLocal.h"
 #include "ObjectAndTime.h"
 #include "LuaInterruption.h"
@@ -992,6 +993,49 @@ namespace hg {
         int width;
         int height;
     };
+
+    struct ProtoBasicTextGlitzImpl final : ProtoGlitzImpl {
+    private:
+        auto comparison_tuple() const {
+            return std::tie(
+                glitz
+            );
+        }
+    public:
+        ProtoBasicTextGlitzImpl(
+            TextGlitz glitz
+        ) :
+            glitz(std::move(glitz))
+        {
+        }
+        void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            PhysicsAffectingStuff const &physicsAffectingStuff,
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const final
+        {
+            forwardsGlitz.emplace_back(mt::std::make_unique<TextGlitz>(glitz));
+            reverseGlitz.emplace_back(mt::std::make_unique<TextGlitz>(glitz));
+        }
+        std::size_t clone_size() const final {
+            return sizeof *this;
+        }
+        ProtoBasicTextGlitzImpl *perform_clone(void *memory) const final {
+            return new (memory) ProtoBasicTextGlitzImpl(*this);
+        }
+        int order_ranking() const final {
+            return 3000;
+        }
+        bool operator==(ProtoGlitzImpl const &o) const final {
+            auto const &actual_other(*boost::polymorphic_downcast<ProtoBasicTextGlitzImpl const*>(&o));
+            return comparison_tuple() == actual_other.comparison_tuple();
+        }
+    private:
+        TextGlitz glitz;
+    };
+
+
     struct ProtoGlitz final {
     private:
         clone_ptr<ProtoGlitzImpl, memory_source_clone<ProtoGlitzImpl, multi_thread_memory_source>> pimpl_;

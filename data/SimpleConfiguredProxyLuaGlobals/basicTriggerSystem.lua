@@ -91,6 +91,15 @@ local function basicRectangleGlitz(p)
     }
 end
 local function basicTextGlitz(p)
+    return {
+        type = 'basicTextGlitz',
+        x = p.x,
+        y = p.y,
+        text = p.text,
+        size = p.size,
+        layer = p.layer,
+        colour = p.colour,
+    }
 end
 local function calculatePhysicsAffectingStuff(tempStore)
     return tempStore
