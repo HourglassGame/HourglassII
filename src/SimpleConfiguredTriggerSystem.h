@@ -30,7 +30,7 @@ namespace hg {
 
     struct AxisCollisionDestination final {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
                 desiredPosition,
                 acceleration,
@@ -43,13 +43,13 @@ namespace hg {
         int acceleration;
         int deceleration;
         int maxSpeed;
-        bool operator==(AxisCollisionDestination const &o) const {
+        bool operator==(AxisCollisionDestination const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
     struct CollisionDestination final {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
                 xDestination,
                 yDestination
@@ -58,13 +58,13 @@ namespace hg {
     public:
         AxisCollisionDestination xDestination;
         AxisCollisionDestination yDestination;
-        bool operator==(CollisionDestination const &o) const {
+        bool operator==(CollisionDestination const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
     struct ProtoCollision final {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
                 timeDirection,
                 width,
@@ -87,13 +87,13 @@ namespace hg {
         int buttonTriggerID;
         int lastStateTriggerID;
 
-        bool operator==(ProtoCollision const &o) const {
+        bool operator==(ProtoCollision const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
     struct Attachment final {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
                 hasPlatform,
                 platform,
@@ -108,13 +108,13 @@ namespace hg {
         int xOffset;
         int yOffset;
 
-        bool operator==(Attachment const &o) const{
+        bool operator==(Attachment const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
     struct ProtoPortal final {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
                 attachment,
                 index,
@@ -159,7 +159,7 @@ namespace hg {
         bool isLaser;
         bool winner;
 
-        bool operator==(ProtoPortal const &o) const {
+        bool operator==(ProtoPortal const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
@@ -183,13 +183,13 @@ namespace hg {
     struct ProtoMomentarySwitchImpl;
 
     struct MomentarySwitchFrameStateImpl final : ButtonFrameStateImpl {
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const noexcept final {
             return sizeof *this;
         }
-        ButtonFrameStateImpl *perform_clone(void *memory) const override {
+        ButtonFrameStateImpl *perform_clone(void *memory) const final {
             return new (memory) MomentarySwitchFrameStateImpl(*this);
         }
-        ~MomentarySwitchFrameStateImpl() override {}
+        ~MomentarySwitchFrameStateImpl() noexcept final = default;
 
         MomentarySwitchFrameStateImpl(ProtoMomentarySwitchImpl const &proto) :
             proto(&proto),
@@ -199,15 +199,15 @@ namespace hg {
         }
 
 
-        void calcPnV(mp::std::vector<Collision> const &collisions) override;
+        void calcPnV(mp::std::vector<Collision> const &collisions) final;
         void updateState(
             mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-            mp::std::vector<mp::std::vector<int>> const &triggerArrivals) override;
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
         void calculateGlitz(
             mt::std::vector<Glitz> &forwardsGlitz,
             mt::std::vector<Glitz> &reverseGlitz,
-            mt::std::vector<GlitzPersister> &persistentGlitz) const override;
-        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const override;
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
     private:
         ProtoMomentarySwitchImpl const *proto;
         int state;
@@ -223,13 +223,13 @@ namespace hg {
     struct ProtoStickySwitchImpl;
 
     struct StickySwitchFrameStateImpl final : ButtonFrameStateImpl {
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const noexcept final {
             return sizeof *this;
         }
-        ButtonFrameStateImpl *perform_clone(void *memory) const override {
+        ButtonFrameStateImpl *perform_clone(void *memory) const final {
             return new (memory) StickySwitchFrameStateImpl(*this);
         }
-        ~StickySwitchFrameStateImpl() override {}
+        ~StickySwitchFrameStateImpl() noexcept final = default;
 
         StickySwitchFrameStateImpl(ProtoStickySwitchImpl const &proto) :
             proto(&proto),
@@ -237,15 +237,15 @@ namespace hg {
         {
         }
 
-        void calcPnV(mp::std::vector<Collision> const &collisions) override;
+        void calcPnV(mp::std::vector<Collision> const &collisions) final;
         void updateState(
             mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-            mp::std::vector<mp::std::vector<int>> const &triggerArrivals) override;
-        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const override;
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
         void calculateGlitz(
             mt::std::vector<Glitz> &forwardsGlitz,
             mt::std::vector<Glitz> &reverseGlitz,
-            mt::std::vector<GlitzPersister> &persistentGlitz) const override;
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
     private:
         ProtoStickySwitchImpl const *proto;
         int state;
@@ -295,7 +295,7 @@ namespace hg {
     struct ProtoButtonImpl {
         virtual std::size_t clone_size() const = 0;
         virtual ProtoButtonImpl *perform_clone(void *memory) const = 0;
-        virtual ~ProtoButtonImpl() {}
+        virtual ~ProtoButtonImpl() noexcept = default;
         virtual ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const = 0;
 
         virtual int order_ranking() const = 0;
@@ -304,7 +304,7 @@ namespace hg {
 
     struct ProtoMomentarySwitchImpl final : ProtoButtonImpl {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept {
             return std::tie(
                 timeDirection,
                 attachment,
@@ -317,14 +317,14 @@ namespace hg {
         }
     public:
 
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const noexcept final {
             return sizeof *this;
         }
-        ProtoButtonImpl *perform_clone(void *memory) const override {
+        ProtoButtonImpl *perform_clone(void *memory) const final {
             return new (memory) ProtoMomentarySwitchImpl(*this);
         }
-        ~ProtoMomentarySwitchImpl() override {}
-        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const override {
+        ~ProtoMomentarySwitchImpl() noexcept final = default;
+        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const final {
             return ButtonFrameState(new (pool) MomentarySwitchFrameStateImpl(*this), pool);
         }
 
@@ -354,10 +354,10 @@ namespace hg {
         int stateTriggerID;
         std::vector<int> extraTriggerIDs;
 
-        virtual int order_ranking() const override {
+        int order_ranking() const noexcept final {
             return 1000;
         }
-        virtual bool operator==(ProtoButtonImpl const &o) const override {
+        bool operator==(ProtoButtonImpl const &o) const noexcept final {
             ProtoMomentarySwitchImpl const &actual_other(*boost::polymorphic_downcast<ProtoMomentarySwitchImpl const*>(&o));
             return comparison_tuple() == actual_other.comparison_tuple();
         }
@@ -366,7 +366,7 @@ namespace hg {
 
     struct ProtoStickySwitchImpl final : ProtoButtonImpl {
     private:
-        auto comparison_tuple() const -> decltype(auto) {
+        auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
                 timeDirection,
                 attachment,
@@ -378,14 +378,14 @@ namespace hg {
             );
         }
     public:
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const noexcept final {
             return sizeof *this;
         }
-        ProtoButtonImpl *perform_clone(void *memory) const override {
+        ProtoButtonImpl *perform_clone(void *memory) const final {
             return new (memory) ProtoStickySwitchImpl(*this);
         }
-        ~ProtoStickySwitchImpl() override {}
-        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const override {
+        ~ProtoStickySwitchImpl() noexcept final = default;
+        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const final {
             return ButtonFrameState(new (pool) StickySwitchFrameStateImpl(*this), pool);
         }
 
@@ -415,10 +415,10 @@ namespace hg {
         int stateTriggerID;
         std::vector<int> extraTriggerIDs;
 
-        virtual int order_ranking() const override {
+        int order_ranking() const noexcept final {
             return 2000;
         }
-        virtual bool operator==(ProtoButtonImpl const &o) const override {
+        bool operator==(ProtoButtonImpl const &o) const noexcept final {
             ProtoStickySwitchImpl const &actual_other(*boost::polymorphic_downcast<ProtoStickySwitchImpl const*>(&o));
             return comparison_tuple() == actual_other.comparison_tuple();
         }
@@ -457,7 +457,7 @@ namespace hg {
     struct MutatorFrameStateImpl {
         virtual std::size_t clone_size() const = 0;
         virtual MutatorFrameStateImpl *perform_clone(void *memory) const = 0;
-        virtual ~MutatorFrameStateImpl() {}
+        virtual ~MutatorFrameStateImpl() noexcept = default;
 
         virtual void addMutator(
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
@@ -487,32 +487,30 @@ namespace hg {
         PickupFrameStateImpl(ProtoPickupImpl const &proto) :
             proto(&proto),
             active(true),
-            justTaken(false),
-            x_(-100000),//x_ and y_ should not be used before these values are overridden
-            y_(-100000)
+            justTaken(false)
         {}
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const noexcept final {
             return sizeof *this;
         }
-        MutatorFrameStateImpl *perform_clone(void *memory) const override {
+        MutatorFrameStateImpl *perform_clone(void *memory) const final {
             return new (memory) PickupFrameStateImpl(*this);
         }
-        ~PickupFrameStateImpl() override {}
+        ~PickupFrameStateImpl() final {}
 
         void addMutator(
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
             mp::std::vector<Collision> const &collisions,
             mp::std::vector<MutatorArea> &mutators,
             mp::std::vector<MutatorFrameStateImpl *> &activeMutators
-        ) override;
+        ) final;
 
         void calculateGlitz(
             mt::std::vector<Glitz> &forwardsGlitz,
             mt::std::vector<Glitz> &reverseGlitz,
-            mt::std::vector<GlitzPersister> &persistentGlitz) const override;
-        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const override;
-        boost::optional<Guy> effect(Guy const &guy) override;
-        boost::optional<Box> effect(Box const &box) override {
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
+        boost::optional<Guy> effect(Guy const &guy) final;
+        boost::optional<Box> effect(Box const &box) final {
             return box;
         }
     };
@@ -537,28 +535,28 @@ namespace hg {
             xspeed_(),
             yspeed_()
         {}
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const final {
             return sizeof *this;
         }
-        MutatorFrameStateImpl *perform_clone(void *memory) const override {
+        MutatorFrameStateImpl *perform_clone(void *memory) const final {
             return new (memory) SpikesFrameStateImpl(*this);
         }
-        ~SpikesFrameStateImpl() override {}
+        ~SpikesFrameStateImpl() final {}
 
         void addMutator(
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
             mp::std::vector<Collision> const &collisions,
             mp::std::vector<MutatorArea> &mutators,
             mp::std::vector<MutatorFrameStateImpl *> &activeMutators
-        ) override;
+        ) final;
 
         void calculateGlitz(
             mt::std::vector<Glitz> &forwardsGlitz,
             mt::std::vector<Glitz> &reverseGlitz,
-            mt::std::vector<GlitzPersister> &persistentGlitz) const override;
-        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const override;
-        boost::optional<Guy> effect(Guy const &guy) override;
-        boost::optional<Box> effect(Box const &box) override {
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
+        boost::optional<Guy> effect(Guy const &guy) final;
+        boost::optional<Box> effect(Box const &box) final {
             return box;
         }
     };
@@ -629,17 +627,17 @@ namespace hg {
         }
     public:
 
-        MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const override {
+        MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const final {
             return MutatorFrameState(new (pool) PickupFrameStateImpl(*this), pool);
         }
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const final {
             return sizeof *this;
         }
-        ProtoMutatorImpl *perform_clone(void *memory) const override {
+        ProtoMutatorImpl *perform_clone(void *memory) const final {
             return new (memory) ProtoPickupImpl(*this);
         }
 
-        ~ProtoPickupImpl() override {}
+        ~ProtoPickupImpl() final {}
         ProtoPickupImpl(
             TimeDirection const timeDirection,
             Attachment const &attachment,
@@ -666,10 +664,10 @@ namespace hg {
         int pickupNumber;
         int triggerID;
 
-        virtual int order_ranking() const override {
+        int order_ranking() const final {
             return 1000;
         }
-        virtual bool operator==(ProtoMutatorImpl const &o) const override {
+        bool operator==(ProtoMutatorImpl const &o) const final {
             ProtoPickupImpl const &actual_other(*boost::polymorphic_downcast<ProtoPickupImpl const*>(&o));
             return comparison_tuple() == actual_other.comparison_tuple();
         }
@@ -687,17 +685,17 @@ namespace hg {
             );
         }
     public:
-        MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const override {
+        MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const final {
             return MutatorFrameState(new (pool) SpikesFrameStateImpl(*this, pool), pool);
         }
-        std::size_t clone_size() const override {
+        std::size_t clone_size() const final {
             return sizeof *this;
         }
-        ProtoMutatorImpl *perform_clone(void *memory) const override {
+        ProtoMutatorImpl *perform_clone(void *memory) const final {
             return new (memory) ProtoSpikesImpl(*this);
         }
 
-        ~ProtoSpikesImpl() override {}
+        ~ProtoSpikesImpl() final {}
         ProtoSpikesImpl(
             TimeDirection const timeDirection,
             Attachment const &attachment,
@@ -715,10 +713,10 @@ namespace hg {
         int width;
         int height;
 
-        virtual int order_ranking() const override {
+        int order_ranking() const final {
             return 2000;
         }
-        virtual bool operator==(ProtoMutatorImpl const &o) const override {
+        bool operator==(ProtoMutatorImpl const &o) const final {
             ProtoSpikesImpl const &actual_other(*boost::polymorphic_downcast<ProtoSpikesImpl const*>(&o));
             return comparison_tuple() == actual_other.comparison_tuple();
         }
@@ -844,36 +842,36 @@ namespace hg {
             memory_pool<user_allocator_tbb_alloc> &pool,
             OperationInterrupter &interrupter);
 
-        virtual PhysicsAffectingStuff //TODO: Return a reference to the stored PhysicsAffectingStuff, rather than copying it?
+        PhysicsAffectingStuff //TODO: Return a reference to the stored PhysicsAffectingStuff, rather than copying it?
             calculatePhysicsAffectingStuff(
                 Frame const *currentFrame,
                 boost::transformed_range<
                     GetBase<TriggerDataConstPtr>,
-                    mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) override;
+                    mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) final;
 
-        virtual bool shouldArrive(Guy const &potentialArriver) override;
-        virtual bool shouldArrive(Box const &potentialArriver) override;
+        bool shouldArrive(Guy const &potentialArriver) final;
+        bool shouldArrive(Box const &potentialArriver) final;
 
-        virtual bool shouldPort(
+        bool shouldPort(
             int responsiblePortalIndex,
             Guy const &potentialPorter,
-            bool porterActionedPortal) override;
-        virtual bool shouldPort(
+            bool porterActionedPortal) final;
+        bool shouldPort(
             int responsiblePortalIndex,
             Box const &potentialPorter,
-            bool porterActionedPortal) override;
+            bool porterActionedPortal) final;
 
-        virtual boost::optional<Guy> mutateObject(
+        boost::optional<Guy> mutateObject(
             mp::std::vector<int> const &responsibleMutatorIndices,
-            Guy const &objectToManipulate) override;
-        virtual boost::optional<Box> mutateObject(
+            Guy const &objectToManipulate) final;
+        boost::optional<Box> mutateObject(
             mp::std::vector<int> const &responsibleMutatorIndices,
-            Box const &objectToManipulate) override;
+            Box const &objectToManipulate) final;
 
-        virtual DepartureInformation getDepartureInformation(
+        DepartureInformation getDepartureInformation(
             mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-            Frame *currentFrame) override;
-        virtual ~SimpleConfiguredTriggerFrameState() noexcept override;
+            Frame *currentFrame) final;
+        ~SimpleConfiguredTriggerFrameState() noexcept final;
     private:
         memory_pool<user_allocator_tbb_alloc> &pool_;
         OperationInterrupter &interrupter_;
@@ -934,7 +932,7 @@ namespace hg {
                 >
             > triggerOffsetsAndDefaults,
             std::size_t arrivalLocationsSize);
-        virtual TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const override{
+        TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const final{
             return TriggerFrameState(
                 new (pool) SimpleConfiguredTriggerFrameState(
                     triggerOffsetsAndDefaults_,
@@ -947,16 +945,16 @@ namespace hg {
                     pool,
                     interrupter));
         }
-        virtual TriggerSystemImplementation *clone() const override
+        TriggerSystemImplementation *clone() const final
         {
             return new SimpleConfiguredTriggerSystem(*this);
         }
-        virtual bool operator==(TriggerSystemImplementation const &o) const override
+        bool operator==(TriggerSystemImplementation const &o) const final
         {
             SimpleConfiguredTriggerSystem const &actual_other(*boost::polymorphic_downcast<SimpleConfiguredTriggerSystem const*>(&o));
             return comparison_tuple() == actual_other.comparison_tuple();
         }
-        virtual int order_ranking() const override
+        int order_ranking() const final
         {
             return 2000;
         }
