@@ -67,6 +67,17 @@ local function wireGlitz(p)
     }
 end
 local function easyWireGlitz(p)
+    if p.x then
+        p.x1 = {platform = p.x.platform, pos = p.x.pos - 0.05 * 3200}
+        p.x2 = {platform = p.x.platform, pos = p.x.pos + 0.05 * 3200}
+        p.x = nil
+    end
+    if p.y then
+        p.y1 = {platform = p.y.platform, pos = p.y.pos - 0.05 * 3200}
+        p.y2 = {platform = p.y.platform, pos = p.y.pos + 0.05 * 3200}
+        p.y = nil
+    end
+    return wireGlitz(p)
 end
 local function basicRectangleGlitz(p)
 end
