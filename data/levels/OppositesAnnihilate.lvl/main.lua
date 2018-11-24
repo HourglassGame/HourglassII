@@ -1,5 +1,5 @@
 name = "Opposites Annihilate"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 5401 -- Important, improves loading time.
 environment =
 {

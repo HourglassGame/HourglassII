@@ -1,5 +1,5 @@
 name = "Reverse Bootstrap"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 4200
 environment =
 {

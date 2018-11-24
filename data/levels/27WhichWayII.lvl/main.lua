@@ -1,5 +1,5 @@
 name = "Which Way II"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 7200
 environment =
 {

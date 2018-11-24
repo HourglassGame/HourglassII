@@ -1,7 +1,7 @@
 -- THIS LEVEL HAS NOT YET BEEN WRITTEN (IT SHOULD NOT HAVE BEEN COMMITTED)
 
 name = "All The Way Up"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 10800
 environment =
 {

@@ -1,5 +1,5 @@
 name = "Easy Start"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 10800
 environment = 
 {

@@ -25,7 +25,7 @@
 --dynamic generation and definition of glitz.
 
 --This is probably ok.
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 10800
 environment = 
 {

@@ -1,5 +1,5 @@
 name = "Splitters"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 5400
 environment =
 {

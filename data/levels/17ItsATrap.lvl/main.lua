@@ -1,5 +1,5 @@
 name = "It's A Trap!"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 3600
 environment =
 {

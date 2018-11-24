@@ -1,5 +1,5 @@
 name = "Ups and Downs"
-speedOfTime = 1
+speedOfTime = 3
 timelineLength = 9000
 environment =
 {
