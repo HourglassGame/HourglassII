@@ -270,7 +270,7 @@ void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength) {
         float const left(static_cast<float>(frameNo / static_cast<double>(timelineLength)*target.getView().getSize().x));
         sf::RectangleShape tick(sf::Vector2f(2., 10.));
         tick.setFillColor(sf::Color(0, 0, 0));
-        tick.setPosition(sf::Vector2f(left, 0.));
+        tick.setPosition(sf::Vector2f(left - 1.f, 0.));
         target.draw(tick);
     }
 }
@@ -307,9 +307,9 @@ void DrawPersonalTimeline(
 
     sf::RectangleShape verticalLine(sf::Vector2f(3.f, bot - top + 3.f));
     verticalLine.setFillColor(borderColor);
-    verticalLine.setPosition(left - 1.5f, top - 1.5f);
+    verticalLine.setPosition(left - 3.f, top - 1.5f);
     target.draw(verticalLine);
-    verticalLine.setPosition(right - 1.5f, top - 1.5f);
+    verticalLine.setPosition(right, top - 1.5f);
     target.draw(verticalLine);
 
     sf::View oldView(target.getView());
@@ -426,9 +426,9 @@ void DrawTimeline(
 
     sf::RectangleShape verticalLine(sf::Vector2f(3.f, bot - top + 3.f));
     verticalLine.setFillColor(borderColor);
-    verticalLine.setPosition(left - 1.5f, top - 1.5f);
+    verticalLine.setPosition(left - 3.f, top - 1.5f);
     target.draw(verticalLine);
-    verticalLine.setPosition(right - 1.5f, top - 1.5f);
+    verticalLine.setPosition(right, top - 1.5f);
     target.draw(verticalLine);
 
     sf::View oldView(target.getView());
@@ -505,7 +505,7 @@ struct CompareIndicies {
 
 hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    double const mouseXFraction = (app.getInputState().getMousePosition().x - app.getSize().x*hg::UI_DIVIDE_X / 100)*1. / (app.getSize().x*(100. - hg::UI_DIVIDE_X) / 100);
+    double const mouseXFraction = (app.getInputState().getMousePosition().x - app.getSize().x*(hg::UI_DIVIDE_X / 100 + hg::TIMELINE_PAD_X))*1. / (app.getSize().x*((100. - hg::UI_DIVIDE_X) / 100 - 2.*hg::TIMELINE_PAD_X));
     int mouseFrame(hg::flooredModulo(static_cast<int>(mouseXFraction*timelineLength), timelineLength));
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }

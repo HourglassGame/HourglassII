@@ -194,8 +194,9 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 double yFill = scalingFactor / yScale;
                 int mouseOffX = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / 100.);
                 int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / 100.);
-                int timelineOffset = static_cast<int>(window.getSize().x*hg::UI_DIVIDE_X / 100.);
-                input.updateState(window.getInputState(), timelineOffset, window.getSize().x - timelineOffset, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
+                int timelineOffset = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
+                int timelineWidth = static_cast<int>(window.getSize().x*(1.f - hg::UI_DIVIDE_X / 100. - 2.f*hg::TIMELINE_PAD_X));
+                input.updateState(window.getInputState(), timelineOffset, timelineWidth, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
                 inputList = input.AsInputList();
                 relativeGuyIndex = inputList.getRelativeGuyIndex();
                 runningFromReplay = false;
