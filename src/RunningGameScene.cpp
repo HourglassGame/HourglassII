@@ -196,7 +196,33 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / 100.);
                 int timelineOffset = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
                 int timelineWidth = static_cast<int>(window.getSize().x*(1.f - hg::UI_DIVIDE_X / 100. - 2.f*hg::TIMELINE_PAD_X));
-                input.updateState(window.getInputState(), timelineOffset, timelineWidth, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
+
+                ActivePanel mousePanel = ActivePanel::NONE;
+                // Todo, possibly include xFill and yFill.
+                if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X / 100.))
+                {
+                    int mouseY = window.getInputState().getMousePosition().y;
+                    if (mouseY <= window.getSize().y*(hg::UI_DIVIDE_Y / 100.))
+                    {
+                        mousePanel = ActivePanel::WORLD;
+                    }
+                    else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y / 100.) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                    {
+                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y / 100.) + hg::G_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                        {
+                            mousePanel = ActivePanel::GLOBAL_TIME;
+                        }
+                    }
+                    else if (mouseY <= (hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                    {
+                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y / 100.) + hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                        {
+                            mousePanel = ActivePanel::PERSONAL_TIME;
+                        }
+                    }
+                }
+
+                input.updateState(window.getInputState(), mousePanel, timelineOffset, timelineWidth, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
                 inputList = input.AsInputList();
                 relativeGuyIndex = inputList.getRelativeGuyIndex();
                 runningFromReplay = false;

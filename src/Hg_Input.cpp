@@ -28,7 +28,9 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTimelineOffset, int mouseXOfEndOfTimeline, std::size_t personalTimelineLength, int mouseOffX, int mouseOffY, double mouseScale)
+void Input::updateState(hg::RenderWindow::InputState const &input, ActivePanel const mousePanel,
+    int mouseXTimelineOffset, int mouseXOfEndOfTimeline, std::size_t personalTimelineLength,
+    int mouseOffX, int mouseOffY, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
     right = input.isKeyPressed(sf::Keyboard::D);
@@ -36,7 +38,7 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTim
     updatePress(down, input.isKeyPressed(sf::Keyboard::S));
     updatePress(space, input.isKeyPressed(sf::Keyboard::Space));
     
-    updatePress(mouseLeft, input.isMouseButtonPressed(sf::Mouse::Left));
+    updatePress(mouseLeft, input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::WORLD);
 
     if (input.isKeyPressed(sf::Keyboard::Num1)) {
         abilityCursor = Ability::TIME_JUMP;
@@ -61,19 +63,14 @@ void Input::updateState(hg::RenderWindow::InputState const &input, int mouseXTim
         mousePosition = mouseXOfEndOfTimeline - 1;
     }
 
-    if (input.isMouseButtonPressed(sf::Mouse::Left) && input.isKeyPressed(sf::Keyboard::LAlt)) {
+    if (input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::PERSONAL_TIME) {
         mousePersonalTimelinePosition = personalTimelineLength - (static_cast<int>((mousePosition + 1)*personalTimelineLength / static_cast<double>(mouseXOfEndOfTimeline)));
     }
-    if (input.isMouseButtonPressed(sf::Mouse::Right)) {
-        mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
-    }
-    if (input.isMouseButtonPressed(sf::Mouse::Middle)) {
-        mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
-    }
-    if (input.isMouseButtonPressed(sf::Mouse::XButton1)) {
-        mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
-    }
-    if (input.isMouseButtonPressed(sf::Mouse::XButton2)) {
+    if ((input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::GLOBAL_TIME) ||
+        input.isMouseButtonPressed(sf::Mouse::Right) || 
+        input.isMouseButtonPressed(sf::Mouse::Middle) || 
+        input.isMouseButtonPressed(sf::Mouse::XButton1) || 
+        input.isMouseButtonPressed(sf::Mouse::XButton2)) {
         mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
     }
     mouseX = static_cast<int>(std::round((input.getMousePosition().x - mouseOffX)*mouseScale));
