@@ -484,10 +484,12 @@ namespace hg {
         int x_;
         int y_;
     public:
-        PickupFrameStateImpl(ProtoPickupImpl const &proto):
+        PickupFrameStateImpl(ProtoPickupImpl const &proto) :
             proto(&proto),
             active(true),
-            justTaken(false)
+            justTaken(false),
+            x_(-100000),//x_ and y_ should not be used before these values are overridden
+            y_(-100000)
         {}
         std::size_t clone_size() const override {
             return sizeof *this;
@@ -751,7 +753,80 @@ namespace hg {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
-    
+
+    struct GlitzFrameStateImpl {
+        virtual std::size_t clone_size() const = 0;
+        virtual GlitzFrameStateImpl *perform_clone(void *memory) const = 0;
+        virtual ~GlitzFrameStateImpl() {}
+
+        virtual void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            PhysicsAffectingStuff const &physicsAffectingStuff,
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals/*,
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers*/) const = 0;
+    };
+
+    struct GlitzFrameState final {
+        GlitzFrameState(GlitzFrameStateImpl *const impl, hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) :
+            pimpl_(
+                impl,
+                memory_source_clone<GlitzFrameStateImpl, memory_pool_memory_source>(memory_pool_memory_source(pool)))
+        {}
+
+        void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            PhysicsAffectingStuff const &physicsAffectingStuff,
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals/*,
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers*/) const
+        {
+            assert(pimpl_);
+            pimpl_->calculateGlitz(forwardsGlitz, reverseGlitz, physicsAffectingStuff, triggerArrivals/*, outputTriggers*/);
+        }
+    private:
+        clone_ptr<GlitzFrameStateImpl, memory_source_clone<GlitzFrameStateImpl, memory_pool_memory_source>> pimpl_;
+    };
+
+    struct ProtoGlitzImpl {
+        virtual GlitzFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const = 0;
+        virtual std::size_t clone_size() const = 0;
+        virtual ProtoGlitzImpl *perform_clone(void *memory) const = 0;
+        virtual ~ProtoGlitzImpl() {}
+        virtual int order_ranking() const = 0;
+        virtual bool operator==(ProtoGlitzImpl const &o) const = 0;
+    };
+
+    struct ProtoGlitz final {
+    private:
+        clone_ptr<ProtoGlitzImpl, memory_source_clone<ProtoGlitzImpl, multi_thread_memory_source>> pimpl_;
+        
+        typedef
+            std::tuple<
+            decltype(pimpl_->order_ranking()),
+            ProtoGlitzImpl const &>
+            comparison_tuple_type;
+        comparison_tuple_type comparison_tuple() const {
+            return comparison_tuple_type(pimpl_->order_ranking(), *pimpl_);
+        }
+        
+    public:
+        explicit ProtoGlitz(mt::std::unique_ptr<ProtoGlitzImpl> impl)
+            : pimpl_(impl.release())
+        {
+            assert(pimpl_);
+        }
+
+        GlitzFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const {
+            assert(pimpl_);
+            return pimpl_->getFrameState(pool);
+        }
+
+        bool operator==(ProtoGlitz const &o) const {
+            return comparison_tuple() == o.comparison_tuple();
+        }
+    };
+
     class SimpleConfiguredTriggerFrameState final :
         public TriggerFrameStateImplementation
     {
@@ -765,15 +840,16 @@ namespace hg {
             std::vector<ProtoPortal> const &protoPortals,
             std::vector<ProtoButton> const &protoButtons,
             std::vector<ProtoMutator> const &protoMutators,
+            std::vector<ProtoGlitz> const &protoGlitzs,
             memory_pool<user_allocator_tbb_alloc> &pool,
             OperationInterrupter &interrupter);
 
-        virtual PhysicsAffectingStuff
+        virtual PhysicsAffectingStuff //TODO: Return a reference to the stored PhysicsAffectingStuff, rather than copying it?
             calculatePhysicsAffectingStuff(
                 Frame const *currentFrame,
                 boost::transformed_range<
-                GetBase<TriggerDataConstPtr>,
-                mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) override;
+                    GetBase<TriggerDataConstPtr>,
+                    mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) override;
 
         virtual bool shouldArrive(Guy const &potentialArriver) override;
         virtual bool shouldArrive(Box const &potentialArriver) override;
@@ -819,8 +895,11 @@ namespace hg {
         mt::std::vector<Glitz> reverseGlitz_;
         mp::std::vector<ButtonFrameState> buttonFrameStates_;
         mp::std::vector<MutatorFrameState> mutatorFrameStates_;
+        mp::std::vector<GlitzFrameState> glitzFrameStates_;
         mp::std::vector<MutatorFrameStateImpl *> activeMutators_;
         mp::std::vector<mp::std::vector<int>> triggerArrivals_;
+
+        PhysicsAffectingStuff physicsAffectingStuff_;
 
         std::vector<ProtoCollision> const &protoCollisions_;
         std::vector<ProtoPortal> const &protoPortals_;
@@ -840,6 +919,7 @@ namespace hg {
                 protoCollisions_,
                 protoMutators_,
                 protoButtons_,
+                protoGlitzs_,
                 triggerOffsetsAndDefaults_,
                 arrivalLocationsSize_);
         }
@@ -863,6 +943,7 @@ namespace hg {
                     protoPortals_,
                     protoButtons_,
                     protoMutators_,
+                    protoGlitzs_,
                     pool,
                     interrupter));
         }
@@ -886,6 +967,7 @@ namespace hg {
         //Rename Collision -> Collider?
         //TODO: Use boost polymorphic collection rather than vector of clone_ptr?
         std::vector<ProtoMutator> protoMutators_;
+        std::vector<ProtoGlitz> protoGlitzs_;
         std::vector<ProtoButton> protoButtons_;
 
         std::vector<

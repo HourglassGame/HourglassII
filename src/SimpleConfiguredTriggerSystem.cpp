@@ -417,6 +417,7 @@ namespace hg {
         std::vector<ProtoPortal> const &protoPortals,
         std::vector<ProtoButton> const &protoButtons,
         std::vector<ProtoMutator> const &protoMutators,
+        std::vector<ProtoGlitz> const &protoGlitzs,
         memory_pool<user_allocator_tbb_alloc> &pool,
         OperationInterrupter &interrupter)
       :
@@ -429,8 +430,10 @@ namespace hg {
         reverseGlitz_(),
         buttonFrameStates_(pool),
         mutatorFrameStates_(pool),
+        glitzFrameStates_(pool),
         activeMutators_(pool),
         triggerArrivals_(pool),
+        physicsAffectingStuff_(pool),
         protoCollisions_(protoCollisions),
         protoPortals_(protoPortals)
     {
@@ -439,6 +442,9 @@ namespace hg {
         
         mutatorFrameStates_.reserve(protoButtons.size());
         for(auto &&a : protoMutators) mutatorFrameStates_.push_back(a.getFrameState(pool_));
+
+        glitzFrameStates_.reserve(protoGlitzs.size());
+        for (auto &&a : protoGlitzs) glitzFrameStates_.push_back(a.getFrameState(pool_));
     }
 
 
@@ -514,7 +520,6 @@ namespace hg {
 #endif
         triggerArrivals_ = calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals, pool_);
 
-        PhysicsAffectingStuff retv(pool_);
         /*
         mp::std::vector<Box> additionalBoxes;
         mp::std::vector<PortalArea> portals;
@@ -524,32 +529,32 @@ namespace hg {
         //ie- arrivalLocations will always be the same length for a particular TriggerSystem
         mp::std::vector<ArrivalLocation> arrivalLocations;
         */
-        calculateCollisions(retv.collisions, protoCollisions_, triggerArrivals_, /*outputTriggers,*/ currentFrame);
+        calculateCollisions(physicsAffectingStuff_.collisions, protoCollisions_, triggerArrivals_, /*outputTriggers,*/ currentFrame);
 
-        calculateMutators(retv.mutators, activeMutators_, mutatorFrameStates_, retv.collisions, triggerArrivals_);
+        calculateMutators(physicsAffectingStuff_.mutators, activeMutators_, mutatorFrameStates_, physicsAffectingStuff_.collisions, triggerArrivals_);
 
         calculatePortals(
-            retv.portals,
-            retv.arrivalLocations,
+            physicsAffectingStuff_.portals,
+            physicsAffectingStuff_.arrivalLocations,
             forwardsGlitz_,
             reverseGlitz_,
             protoPortals_,
-            retv.collisions,
+            physicsAffectingStuff_.collisions,
             triggerArrivals_,
             currentFrame
         );
 
-        calculateButtonPositionsAndVelocities(buttonFrameStates_, retv.collisions);
+        calculateButtonPositionsAndVelocities(buttonFrameStates_, physicsAffectingStuff_.collisions);
 
-        fillCollisionTriggers(outputTriggers_, protoCollisions_, retv.collisions);
+        fillCollisionTriggers(outputTriggers_, protoCollisions_, physicsAffectingStuff_.collisions);
 
-        for (auto &&collision : retv.collisions) {
+        for (auto &&collision : physicsAffectingStuff_.collisions) {
             auto [forwardsGlitz, reverseGlitz] = calculateCollisionGlitz(collision);
             forwardsGlitz_.push_back(std::move(forwardsGlitz));
             reverseGlitz_.push_back(std::move(reverseGlitz));
         }
 
-        return retv;
+        return physicsAffectingStuff_;
     }
 
 
@@ -598,6 +603,10 @@ namespace hg {
             mutatorFrameState.calculateGlitz(forwardsGlitz_, reverseGlitz_, additionalGlitzPersisters);
             mutatorFrameState.fillTrigger(outputTriggers_);
         }
+        for (auto const &glitzFrameState : glitzFrameStates_) {
+            glitzFrameState.calculateGlitz(forwardsGlitz_, reverseGlitz_, physicsAffectingStuff_, triggerArrivals_/*, outputTriggers_*/);
+        }
+
         mp::std::vector<TriggerData> triggerVector(pool_);
         boost::push_back(triggerVector, outputTriggers_ | boost::adaptors::transformed([](auto &&v) {return TriggerData{v.first, std::move(v.second)};}));
         return {
