@@ -21,7 +21,8 @@ namespace hg {
         AudioPlayingState &audioPlayingState,
         AudioGlitzManager &audioGlitzManager,
         sf::Image const &wallImage,
-        sf::Image const &positionColoursImage);
+        sf::Image const &positionColoursImage,
+        int const guyIndex);
     void DrawWaves(
         sf::RenderTarget &target,
         hg::TimeEngine::FrameListList const &waves,

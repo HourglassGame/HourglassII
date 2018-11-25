@@ -15,13 +15,23 @@ namespace hg {
 class Glitz final : boost::totally_ordered<Glitz> {
 public:
     explicit Glitz(mt::std::unique_ptr<GlitzImplementation> impl)
-      : impl(impl.release())
+      : impl(impl.release()),
+       _index(-1)
+    {
+        assert(this->impl);
+    }
+    explicit Glitz(mt::std::unique_ptr<GlitzImplementation> impl, int index)
+      : impl(impl.release()),
+       _index(index)
     {
         assert(this->impl);
     }
     
-    void display(LayeredCanvas &canvas) const {
-        impl->display(canvas);
+    void display(LayeredCanvas &canvas, int wantedIndex) const {
+        if (_index == -1 || wantedIndex == _index)
+        {
+            impl->display(canvas);
+        }
     }
 
     //Glitz has to be ordered (for sorting arrivals),
@@ -49,6 +59,8 @@ private:
     comparison_tuple_type comparison_tuple() const {
         return comparison_tuple_type(impl->order_ranking(), *impl);
     }
+
+    int _index;
 };
 }//namespace hg
 #endif //HG_GLITZ_H

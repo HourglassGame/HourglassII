@@ -19,7 +19,8 @@ void DrawGlitzAndWall(
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
     sf::Image const &wallImage,
-    sf::Image const &positionColoursImage)
+    sf::Image const &positionColoursImage,
+    int const guyIndex)
 {
     //Number by which all positions are be multiplied
     //to shrink or enlarge the level to the size of the
@@ -39,7 +40,10 @@ void DrawGlitzAndWall(
 
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
-    for (hg::Glitz const &particularGlitz : glitz) particularGlitz.display(layeredCanvas);
+    for (hg::Glitz const &particularGlitz : glitz)
+    {
+        particularGlitz.display(layeredCanvas, guyIndex);
+    }
     hg::Flusher flusher(layeredCanvas.getFlusher());
     flusher.partialFlush(1000);
 

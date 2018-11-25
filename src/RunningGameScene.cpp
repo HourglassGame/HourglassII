@@ -392,6 +392,7 @@ void runStep(
     app.clear(sf::Color(255, 255, 255));
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
+    const std::size_t guyIndex = waveInfo.guyFrames.size() - 2 - relativeGuyIndex;
 
     framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
     for (
@@ -411,10 +412,10 @@ void runStep(
             audioPlayingState,
             audioGlitzManager,
             wallImage,
-            positionColoursImage);
+            positionColoursImage,
+            guyIndex);
     }
     else {
-        const std::size_t guyIndex = waveInfo.guyFrames.size() - 2 - relativeGuyIndex;
         hg::Frame *guyFrame = waveInfo.guyFrames[guyIndex];
         if (!isNullFrame(guyFrame)) {
             hg::FrameView const &view((guyFrame)->getView());
@@ -430,7 +431,8 @@ void runStep(
                 audioPlayingState,
                 audioGlitzManager,
                 wallImage,
-                positionColoursImage);
+                positionColoursImage,
+                guyIndex);
 
             drawInventory(
                 app,
@@ -450,7 +452,8 @@ void runStep(
                     audioPlayingState,
                     audioGlitzManager,
                     wallImage,
-                    positionColoursImage);
+                    positionColoursImage,
+                    guyIndex);
             }
             else {
                 drawnFrame = mousePosToFrameID(app, timeEngine);
@@ -463,7 +466,8 @@ void runStep(
                     audioPlayingState,
                     audioGlitzManager,
                     wallImage,
-                    positionColoursImage);
+                    positionColoursImage,
+                    guyIndex);
             }
         }
     }

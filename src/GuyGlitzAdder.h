@@ -11,7 +11,7 @@
 namespace hg {
 
 inline void addCurrentGuyArrow(
-    mt::std::vector<Glitz> &glitzList, int hmid, int top, int halfwidth, vector2<int> size)
+    mt::std::vector<Glitz> &glitzList, int index, int hmid, int top, int halfwidth, vector2<int> size)
 {
     int tipx = hmid;
     int tipy = top - 400;
@@ -24,7 +24,8 @@ inline void addCurrentGuyArrow(
                 tipx,
                 tipy,
                 width,
-                0xFF000000u)));
+                0xFF000000u),
+            index));
     
     glitzList.push_back(
         Glitz(mt::std::make_unique<LineGlitz>(
@@ -34,7 +35,8 @@ inline void addCurrentGuyArrow(
                 hmid,
                 tipy+200,
                 width,
-                0xFF000000u)));
+                0xFF000000u),
+            index));
     
     glitzList.push_back(
         Glitz(mt::std::make_unique<LineGlitz>(
@@ -44,7 +46,8 @@ inline void addCurrentGuyArrow(
                 hmid,
                 tipy+200,
                 width,
-                0xFF000000u)));
+                0xFF000000u),
+            index));
 }
 
 class GuyGlitzAdder final {
@@ -67,7 +70,8 @@ public:
         bool boxCarrying,
         int boxCarrySize,
         TimeDirection boxCarryDirection,
-        bool currentGuy,
+        bool paused,
+        std::size_t guyIndex,
         bool justPickedUpBox) const
     {
         //Forwards View
@@ -90,9 +94,10 @@ public:
             forwardsGlitz->push_back(Glitz(mt::std::make_unique<ImageGlitz>(
                 600,
                 facing == FacingDirection::RIGHT ?
-                    (timeDirection == TimeDirection::FORWARDS ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
-                    (timeDirection == TimeDirection::FORWARDS ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
-                left, top, size.x, size.y)));
+                (timeDirection == TimeDirection::FORWARDS ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
+                (timeDirection == TimeDirection::FORWARDS ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
+                left, top, size.x, size.y),
+                paused ? static_cast<int>(guyIndex) : -1));
 
             if (boxCarrying)
             {
@@ -104,10 +109,11 @@ public:
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
                             boxCarrySize,
-                            boxCarrySize)));
+                            boxCarrySize),
+                        paused ? static_cast<int>(guyIndex) : -1));
             }
             
-            if (currentGuy) addCurrentGuyArrow(*forwardsGlitz, hmid, top, halfwidth, size);
+            addCurrentGuyArrow(*forwardsGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);
         }
         //Reverse View
         {
@@ -131,7 +137,8 @@ public:
                 facing == FacingDirection::RIGHT ?
                     (timeDirection == TimeDirection::REVERSE ? "global.rhino_right_stop" : "global.rhino_right_stop_r") :
                     (timeDirection == TimeDirection::REVERSE ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
-                left, top, size.x, size.y)));
+                left, top, size.x, size.y),
+                paused ? static_cast<int>(guyIndex) : -1));
             if (boxCarrying)
             {
                 reverseGlitz->push_back(
@@ -142,12 +149,13 @@ public:
                             hmid - boxCarrySize/2,
                             top - boxCarrySize,
                             boxCarrySize,
-                            boxCarrySize)));
+                            boxCarrySize),
+                        paused ? static_cast<int>(guyIndex) : -1));
             }
-            if (currentGuy) addCurrentGuyArrow(*reverseGlitz, hmid, top, halfwidth, size);
+            addCurrentGuyArrow(*reverseGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);
         }
         
-        if (justPickedUpBox) {
+        if (justPickedUpBox && !paused) {
             persistentGlitz->push_back(
                 GlitzPersister(
                     mt::std::make_unique<AudioGlitzPersister>(

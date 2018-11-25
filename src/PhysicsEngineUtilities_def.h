@@ -1366,19 +1366,17 @@ void guyStep(
                 }
             }
 
-            if (!newTimePaused[i] || guyArrivalList[i].getIndex() == playerInput.size() - 1)
-            {
-                guyGlitzAdder.addGlitzForGuy(
-                    vector2<int>(glitzX, glitzY),
-                    vector2<int>(newWidth[i], newHeight[i]),
-                    nextTimeDirection,
-                    facing[i],
-                    carry[i],
-                    carrySize[i],
-                    carryDirection[i],
-                    guyArrivalList[i].getIndex() == playerInput.size() - 1,
-                    justPickedUpBox[i]);
-            }
+            guyGlitzAdder.addGlitzForGuy(
+                vector2<int>(glitzX, glitzY),
+                vector2<int>(newWidth[i], newHeight[i]),
+                nextTimeDirection,
+                facing[i],
+                carry[i],
+                carrySize[i],
+                carryDirection[i],
+                newTimePaused[i],
+                guyArrivalList[i].getIndex(),
+                justPickedUpBox[i]);
 
             if (!normalDeparture)
             {

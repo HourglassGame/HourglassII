@@ -168,7 +168,8 @@ void runStep(
             audioPlayingState,
             audioGlitzManager,
             wallImage,
-            positionColoursImage);
+            positionColoursImage,
+            -1);
     }
     else {
         inertia.run();
@@ -183,7 +184,8 @@ void runStep(
                 audioPlayingState,
                 audioGlitzManager,
                 wallImage,
-                positionColoursImage);
+                positionColoursImage,
+                -1);
         }
         else {
             drawnFrame = mousePosToFrameID(app, timeEngine);
@@ -195,7 +197,8 @@ void runStep(
                 audioPlayingState,
                 audioGlitzManager,
                 wallImage,
-                positionColoursImage);
+                positionColoursImage,
+                -1);
         }
     }
     DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getGuyInput().getTimeCursor(), timeEngine.getTimelineLength());
