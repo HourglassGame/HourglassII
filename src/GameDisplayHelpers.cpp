@@ -32,10 +32,10 @@ void DrawGlitzAndWall(
     double yFill = scalingFactor / yScale;
     sf::View oldView(target.getView());
     sf::View scaledView(sf::FloatRect(
-        static_cast<float>(-1.*target.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / (100.*scalingFactor)),
-        static_cast<float>(-1.*target.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / (100.*scalingFactor)),
-        static_cast<float>(target.getSize().x / scalingFactor),
-        static_cast<float>(target.getSize().y / scalingFactor)));
+        std::floor(static_cast<float>(-1.*target.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / (100.*scalingFactor))),
+        std::floor(static_cast<float>(-1.*target.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / (100.*scalingFactor))),
+        std::ceil(static_cast<float>(target.getSize().x / scalingFactor)),
+        std::ceil(static_cast<float>(target.getSize().y / scalingFactor))));
     target.setView(scaledView);
 
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
