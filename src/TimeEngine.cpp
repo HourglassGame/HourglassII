@@ -48,11 +48,11 @@ TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterru
         updatedList.push_back(impl->worldState.executeWorld(interrupter));
     }
     return RunResult{
-        impl->worldState.getGuyFrames(),
         std::move(updatedList)};
 }
 
 Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const noexcept { return impl->worldState.getFrame(whichFrame); }
+std::vector<Frame *> const &TimeEngine::getGuyFrames() const noexcept { return impl->worldState.getGuyFrames(); }
 std::vector<GuyInput> const &TimeEngine::getPostOverwriteInput() const noexcept { return impl->worldState.getPostOverwriteInput(); }
 std::vector<InputList> const &TimeEngine::getReplayData() const noexcept { return impl->worldState.getReplayData(); }
 Wall const &TimeEngine::getWall() const noexcept { return impl->wall; }

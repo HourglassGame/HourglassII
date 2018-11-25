@@ -392,7 +392,7 @@ void runStep(
     app.clear(sf::Color(255, 255, 255));
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
-    const std::size_t guyIndex = waveInfo.guyFrames.size() - 2 - relativeGuyIndex;
+    const std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
     framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
     for (
@@ -416,7 +416,7 @@ void runStep(
             static_cast<int>(guyIndex));
     }
     else {
-        hg::Frame *guyFrame = waveInfo.guyFrames[guyIndex];
+        hg::Frame *guyFrame = timeEngine.getGuyFrames()[guyIndex];
         if (!isNullFrame(guyFrame)) {
             hg::FrameView const &view((guyFrame)->getView());
             hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation(), guyIndex));
@@ -484,7 +484,7 @@ void runStep(
         app.getRenderTarget(),
         timeEngine,
         relativeGuyIndex,
-        waveInfo.guyFrames,
+        timeEngine.getGuyFrames(),
         timeEngine.getPostOverwriteInput());
 
     DrawInterfaceBorder(app.getRenderTarget());

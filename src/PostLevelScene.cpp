@@ -202,11 +202,13 @@ void runStep(
         }
     }
     DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getGuyInput().getTimeCursor(), timeEngine.getTimelineLength());
-    /*DrawPersonalTimeline( //TODO (Probably needs to be tweaked a bit to be suitable for PostLevelScene)
+    DrawPersonalTimeline(
         app.getRenderTarget(),
         timeEngine,
-        waveInfo.guyFrames);
-        */
+        0/*relativeGuyIndex*/,
+        timeEngine.getGuyFrames(),
+        timeEngine.getPostOverwriteInput());
+        
     DrawInterfaceBorder(app.getRenderTarget());
 
     {

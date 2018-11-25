@@ -57,7 +57,7 @@ public:
     /**
     * Returns the array mapping guy index to arrival frame.
     */
-    std::vector<Frame *> getGuyFrames() const { return guyProcessedArrivalFrames_; };
+    std::vector<Frame *> const &getGuyFrames() const { return guyProcessedArrivalFrames_; };
 
     std::vector<GuyInput> const &getPostOverwriteInput() const { return playerInput_; }
     std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
