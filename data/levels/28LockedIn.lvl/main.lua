@@ -3,7 +3,7 @@ speedOfTime = 1
 timelineLength = 6000
 environment =
 {
-    gravity = 12,
+    gravity = 10,
     wall =
     {
         width = 26,

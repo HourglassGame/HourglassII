@@ -3,7 +3,7 @@
 namespace hg {
     inline static const int FRAMERATE = 60;
     inline static const int GUY_SPEED = 200;
-    inline static const int GUY_JUMP_SPEED_DEFAULT = 300;
+    inline static const int GUY_JUMP_SPEED_DEFAULT = 270;
     inline static const double UI_DIVIDE_X = 17.0;
     inline static const double UI_DIVIDE_Y = 73.0;
     inline static const double G_TIME_Y = 0.0625;

@@ -3,7 +3,7 @@ speedOfTime = 1
 timelineLength = 5401 -- Important, improves loading time.
 environment =
 {
-    gravity = 12,
+    gravity = 10,
     wall =
     {
         width = 18,
