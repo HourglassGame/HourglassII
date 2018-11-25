@@ -413,7 +413,7 @@ void runStep(
             audioGlitzManager,
             wallImage,
             positionColoursImage,
-            guyIndex);
+            static_cast<int>(guyIndex));
     }
     else {
         hg::Frame *guyFrame = waveInfo.guyFrames[guyIndex];
@@ -432,7 +432,7 @@ void runStep(
                 audioGlitzManager,
                 wallImage,
                 positionColoursImage,
-                guyIndex);
+                static_cast<int>(guyIndex));
 
             drawInventory(
                 app,
@@ -453,7 +453,7 @@ void runStep(
                     audioGlitzManager,
                     wallImage,
                     positionColoursImage,
-                    guyIndex);
+                    static_cast<int>(guyIndex));
             }
             else {
                 drawnFrame = mousePosToFrameID(app, timeEngine);
@@ -467,7 +467,7 @@ void runStep(
                     audioGlitzManager,
                     wallImage,
                     positionColoursImage,
-                    guyIndex);
+                    static_cast<int>(guyIndex));
             }
         }
     }

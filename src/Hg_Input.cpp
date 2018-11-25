@@ -64,7 +64,7 @@ void Input::updateState(hg::RenderWindow::InputState const &input, ActivePanel c
     }
 
     if (input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::PERSONAL_TIME) {
-        mousePersonalTimelinePosition = personalTimelineLength - (static_cast<int>((mousePosition + 1)*personalTimelineLength / static_cast<double>(mouseXOfEndOfTimeline)));
+        mousePersonalTimelinePosition = static_cast<int>(personalTimelineLength - (static_cast<int>((mousePosition + 1)*personalTimelineLength / static_cast<double>(mouseXOfEndOfTimeline))));
     }
     if ((input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::GLOBAL_TIME) ||
         input.isMouseButtonPressed(sf::Mouse::Right) || 
