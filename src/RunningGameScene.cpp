@@ -224,9 +224,9 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
 
                 input.updateState(window.getInputState(), mousePanel, timelineOffset, timelineWidth, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
                 inputList = input.AsInputList();
-                relativeGuyIndex = inputList.getRelativeGuyIndex();
                 runningFromReplay = false;
             }
+            relativeGuyIndex = inputList.getRelativeGuyIndex();
             saveReplayLog(replayLogOut, inputList);
             receivedInputs.push_back(inputList);
             interrupter = make_unique<hg::OperationInterrupter>();
