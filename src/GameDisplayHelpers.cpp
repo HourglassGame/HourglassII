@@ -11,6 +11,12 @@ namespace hg {
 
 sf::Color const uiTextColor(100, 100, 200);
 
+template<typename Float>
+constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilon) noexcept
+{
+    return std::abs(a - b) <= std::min(std::abs(a), std::abs(b)) * epsilon;
+}
+
 void DrawGlitzAndWall(
     hg::RenderWindow &target,
     hg::mt::std::vector<hg::Glitz> const &glitz,
@@ -22,22 +28,76 @@ void DrawGlitzAndWall(
     sf::Image const &positionColoursImage,
     int const guyIndex)
 {
-    //Number by which all positions are be multiplied
-    //to shrink or enlarge the level to the size of the
-    //window.
-    double xScale = target.getSize().x*(100. - hg::UI_DIVIDE_X) / wall.roomWidth();
-    double yScale = target.getSize().y*hg::UI_DIVIDE_Y / wall.roomHeight();
-    double scalingFactor(std::min(xScale, yScale));
-    double xFill = scalingFactor / xScale;
-    double yFill = scalingFactor / yScale;
-    sf::View oldView(target.getView());
-    sf::View scaledView(sf::FloatRect(
-        std::floor(static_cast<float>(-1.*target.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / (100.*scalingFactor))),
-        std::floor(static_cast<float>(-1.*target.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / (100.*scalingFactor))),
-        std::ceil(static_cast<float>(target.getSize().x / scalingFactor)),
-        std::ceil(static_cast<float>(target.getSize().y / scalingFactor))));
-    target.setView(scaledView);
+    sf::View const oldView(target.getView());
+    {
+        //Window Aspect Ratio to Viewport Aspect Ratio conversion rate:
+        //Currently the ViewPort is the upper right portion of the window.
+        //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide
+        //the window into quadrants.
+        double const ViewportWidthRatio = ((100. - hg::UI_DIVIDE_X)/100.);
+        double const ViewportHeightRatio = (hg::UI_DIVIDE_Y/100.);
 
+        //Viewport Aspect Ratio is
+        //VWidth : VHeight
+        double const VWidth = target.getSize().x*ViewportWidthRatio;
+        double const VHeight = target.getSize().y*ViewportHeightRatio;
+
+        //Level Aspect Ratio is:
+        //LWidth : LHeight
+        //Divide by 100. since HG object positions/sizes are fixed point divided by 100
+        double const LWidth = wall.roomWidth()/100.;
+        double const LHeight = wall.roomHeight()/100.;
+
+        //World View:
+        //The view of the level should:
+        // Have the same aspect ratio as the ViewPort
+        // Exactly fit the level along one axis
+        // Be larger than or equal in size to the level along the other axis,
+        // and with a <= 0 initial position, such
+        // that the level is centered in the view.
+        double const xScale = VWidth / LWidth;
+        double const yScale = VHeight / LHeight;
+        double const scalingFactor(std::min(xScale, yScale));
+        double const xFill = scalingFactor / xScale;
+        double const yFill = scalingFactor / yScale;
+
+        double const worldViewWidth = LWidth/xFill;
+        double const worldViewHeight = LHeight/yFill;
+
+        double const worldViewXPos = -1.*worldViewWidth*((1. - xFill) / 2.);
+        double const worldViewYPos = -1.*worldViewHeight*((1. - yFill) / 2.);
+
+        //Have the same aspect ratio as the ViewPort
+        assert(essentiallyEqual(worldViewHeight/worldViewWidth, VHeight/VWidth, 0.00001));
+
+        // Exactly fit the level along one axis
+        assert(worldViewWidth == LWidth || worldViewHeight == LHeight);
+        // Be larger than or equal in size to the level along the other axis,
+        assert(worldViewHeight >= LHeight);
+        assert(worldViewWidth >= LWidth);
+        // With a <= initial position
+        assert(worldViewXPos <= 0);
+        assert(worldViewYPos <= 0);
+        // such that the level is centered in the view
+        assert(essentiallyEqual(worldViewXPos + worldViewWidth/2., LWidth/2., 0.00001));
+        assert(essentiallyEqual(worldViewYPos + worldViewHeight/2., LHeight/2., 0.00001));
+
+        sf::View scaledView(sf::FloatRect(
+            worldViewXPos,
+            worldViewYPos,
+            worldViewWidth,
+            worldViewHeight));
+
+        //Game view is top-right quadrant
+        scaledView.setViewport(
+                sf::FloatRect(
+                    static_cast<float>(hg::UI_DIVIDE_X / 100.),
+                    0.f,
+                    static_cast<float>((100. - hg::UI_DIVIDE_X) / 100.),
+                    static_cast<float>(hg::UI_DIVIDE_Y / 100.)));
+
+        target.setView(scaledView);
+    }
     hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
     hg::LayeredCanvas layeredCanvas(canvas);
     for (hg::Glitz const &particularGlitz : glitz)
