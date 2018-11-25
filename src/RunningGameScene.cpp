@@ -187,35 +187,35 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
             }
             else {
                 hg::Wall const &wall(timeEngine.getWall());
-                double xScale = (window.getSize().x*(100. - hg::UI_DIVIDE_X) / 100.) / wall.roomWidth();
-                double yScale = (window.getSize().y*hg::UI_DIVIDE_Y / 100.) / wall.roomHeight();
+                double xScale = (window.getSize().x*(1. - hg::UI_DIVIDE_X)) / wall.roomWidth();
+                double yScale = (window.getSize().y*hg::UI_DIVIDE_Y) / wall.roomHeight();
                 double scalingFactor(std::min(xScale, yScale));
                 double xFill = scalingFactor / xScale;
                 double yFill = scalingFactor / yScale;
-                int mouseOffX = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(100. - hg::UI_DIVIDE_X) / 2.) / 100.);
-                int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.) / 100.);
-                int timelineOffset = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
-                int timelineWidth = static_cast<int>(window.getSize().x*(1.f - hg::UI_DIVIDE_X / 100. - 2.f*hg::TIMELINE_PAD_X));
+                int mouseOffX = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(1. - hg::UI_DIVIDE_X) / 2.));
+                int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.));
+                int timelineOffset = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+                int timelineWidth = static_cast<int>(window.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
 
                 ActivePanel mousePanel = ActivePanel::NONE;
                 // Todo, possibly include xFill and yFill.
-                if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X / 100.))
+                if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X))
                 {
                     int mouseY = window.getInputState().getMousePosition().y;
-                    if (mouseY <= window.getSize().y*(hg::UI_DIVIDE_Y / 100.))
+                    if (mouseY <= window.getSize().y*(hg::UI_DIVIDE_Y))
                     {
                         mousePanel = ActivePanel::WORLD;
                     }
-                    else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y / 100.) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                    else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
                     {
-                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y / 100.) + hg::G_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
                         {
                             mousePanel = ActivePanel::GLOBAL_TIME;
                         }
                     }
-                    else if (mouseY <= (hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                    else if (mouseY <= (hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
                     {
-                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y / 100.) + hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.)))
+                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
                         {
                             mousePanel = ActivePanel::PERSONAL_TIME;
                         }
@@ -519,7 +519,7 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 60);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 60);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
@@ -531,7 +531,7 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 20);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 20);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);

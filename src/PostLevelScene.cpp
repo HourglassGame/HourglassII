@@ -227,7 +227,7 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 60);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 60);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
@@ -239,7 +239,7 @@ void runStep(
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) + 20);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 20);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);

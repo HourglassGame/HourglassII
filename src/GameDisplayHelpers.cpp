@@ -34,8 +34,8 @@ void DrawGlitzAndWall(
         //Currently the ViewPort is the upper right portion of the window.
         //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide
         //the window into quadrants.
-        double const ViewportWidthRatio = ((100. - hg::UI_DIVIDE_X)/100.);
-        double const ViewportHeightRatio = (hg::UI_DIVIDE_Y/100.);
+        double const ViewportWidthRatio = 1. - hg::UI_DIVIDE_X;
+        double const ViewportHeightRatio = hg::UI_DIVIDE_Y;
 
         //Viewport Aspect Ratio is
         //VWidth : VHeight
@@ -91,10 +91,10 @@ void DrawGlitzAndWall(
         //Game view is top-right quadrant
         scaledView.setViewport(
                 sf::FloatRect(
-                    static_cast<float>(hg::UI_DIVIDE_X / 100.),
+                    static_cast<float>(hg::UI_DIVIDE_X),
                     0.f,
-                    static_cast<float>((100. - hg::UI_DIVIDE_X) / 100.),
-                    static_cast<float>(hg::UI_DIVIDE_Y / 100.)));
+                    static_cast<float>(ViewportWidthRatio),
+                    static_cast<float>(ViewportHeightRatio)));
 
         target.setView(scaledView);
     }
@@ -132,7 +132,7 @@ void drawInventory(
         sf::Text timeJumpGlyph;
         timeJumpGlyph.setFont(*hg::defaultFont);
         timeJumpGlyph.setString(timeJump.str());
-        timeJumpGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 140);
+        timeJumpGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 140);
         timeJumpGlyph.setCharacterSize(16);
         timeJumpGlyph.setFillColor(uiTextColor);
         timeJumpGlyph.setOutlineColor(uiTextColor);
@@ -144,7 +144,7 @@ void drawInventory(
         sf::Text timeReversesGlyph;
         timeReversesGlyph.setFont(*hg::defaultFont);
         timeReversesGlyph.setString(timeReverses.str());
-        timeReversesGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 110);
+        timeReversesGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 110);
         timeReversesGlyph.setCharacterSize(16);
         timeReversesGlyph.setFillColor(uiTextColor);
         timeReversesGlyph.setOutlineColor(uiTextColor);
@@ -156,7 +156,7 @@ void drawInventory(
         sf::Text timeGunsGlyph;
         timeGunsGlyph.setFont(*hg::defaultFont);
         timeGunsGlyph.setString(timeGuns.str());
-        timeGunsGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 80);
+        timeGunsGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 80);
         timeGunsGlyph.setCharacterSize(16);
         timeGunsGlyph.setFillColor(uiTextColor);
         timeGunsGlyph.setOutlineColor(uiTextColor);
@@ -168,7 +168,7 @@ void drawInventory(
         sf::Text timePausesGlyph;
         timePausesGlyph.setFont(*hg::defaultFont);
         timePausesGlyph.setString(timeGuns.str());
-        timePausesGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100) - 50);
+        timePausesGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 50);
         timePausesGlyph.setCharacterSize(16);
         timePausesGlyph.setFillColor(uiTextColor);
         timePausesGlyph.setOutlineColor(uiTextColor);
@@ -350,16 +350,16 @@ void DrawPersonalTimeline(
     auto const padding{ 3.f };
     auto const bottomSpace{ 9.f };
     auto const minFrameHeight{ 4.f };
-    auto const height{ static_cast<float>(hg::P_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)*hg::WINDOW_DEFAULT_Y - 2.f*padding - bottomSpace };
+    auto const height{ static_cast<float>(hg::P_TIME_HEIGHT*(1. - hg::UI_DIVIDE_Y))*hg::WINDOW_DEFAULT_Y - 2.f*padding - bottomSpace };
     //Horizontal Axis:
     // Guy Index
     //Vertical Axis:
     // Frame Index
 
-    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
+    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
     float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
-    float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.));
-    float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.));
+    float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y)));
+    float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y)));
 
     sf::Color const borderColor(100, 100, 100);
     sf::RectangleShape horizontalLine(sf::Vector2f(right - left, 3.f));
@@ -380,13 +380,13 @@ void DrawPersonalTimeline(
     sf::View scaledView(sf::FloatRect(
         0.f,
         0.f,
-        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100. - 2.*hg::TIMELINE_PAD_X),
+        target.getSize().x*static_cast<float>((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X),
         height + 2.f*padding + bottomSpace));
     scaledView.setViewport(sf::FloatRect(
-        static_cast<float>(hg::UI_DIVIDE_X / 100 + hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::UI_DIVIDE_Y / 100) + static_cast<float>(hg::P_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100),
-        1.f - static_cast<float>(hg::UI_DIVIDE_X / 100 + 2.*hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::P_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)));
+        static_cast<float>(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X),
+        static_cast<float>(hg::UI_DIVIDE_Y) + static_cast<float>(hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y)),
+        1.f - static_cast<float>(hg::UI_DIVIDE_X + 2.*hg::TIMELINE_PAD_X),
+        static_cast<float>(hg::P_TIME_HEIGHT*(1. - hg::UI_DIVIDE_Y))));
     target.setView(scaledView);
 
     //Colour/Hat = Position/BoxCarrying
@@ -476,10 +476,10 @@ void DrawTimeline(
     hg::FrameID const timeCursor,
     int const timelineLength)
 {
-    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X / 100. + hg::TIMELINE_PAD_X));
+    float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
     float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
-    float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + hg::G_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100.));
-    float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y / 100.) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(100. - hg::UI_DIVIDE_Y) / 100.));
+    float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y)));
+    float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y)));
 
     sf::Color const borderColor(100, 100, 100);
     sf::RectangleShape horizontalLine(sf::Vector2f(right - left, 3.f));
@@ -500,13 +500,13 @@ void DrawTimeline(
     sf::View scaledView(sf::FloatRect(
         0.f,
         0.f,
-        target.getSize().x*static_cast<float>((100 - hg::UI_DIVIDE_X) / 100. - 2.*hg::TIMELINE_PAD_X),
+        target.getSize().x*static_cast<float>((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X),
         85.f));
     scaledView.setViewport(sf::FloatRect(
-        static_cast<float>(hg::UI_DIVIDE_X / 100 + hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::UI_DIVIDE_Y / 100) + static_cast<float>(hg::G_TIME_Y*(100. - hg::UI_DIVIDE_Y) / 100),
-        1.f - static_cast<float>(hg::UI_DIVIDE_X / 100 + 2.*hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::G_TIME_HEIGHT*(100. - hg::UI_DIVIDE_Y) / 100)));
+        static_cast<float>(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X),
+        static_cast<float>(hg::UI_DIVIDE_Y) + static_cast<float>(hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y)),
+        1.f - static_cast<float>(hg::UI_DIVIDE_X + 2.*hg::TIMELINE_PAD_X),
+        static_cast<float>(hg::G_TIME_HEIGHT*(1. - hg::UI_DIVIDE_Y))));
     target.setView(scaledView);
 
     unsigned int const height = 75;
@@ -551,12 +551,12 @@ void DrawInterfaceBorder(
 {
     sf::Color const borderColor(0, 0, 0);
     sf::RectangleShape horizontalLine(sf::Vector2f(static_cast<float>(hg::WINDOW_DEFAULT_X), 3.f));
-    horizontalLine.setPosition(0.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100.) - 1.5f);
+    horizontalLine.setPosition(0.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 1.5f);
     horizontalLine.setFillColor(borderColor);
     target.draw(horizontalLine);
 
-    sf::RectangleShape verticalLine(sf::Vector2f(3.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y / 100.)));
-    verticalLine.setPosition(static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X / 100.) - 1.5f, 0.f);
+    sf::RectangleShape verticalLine(sf::Vector2f(3.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y)));
+    verticalLine.setPosition(static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X) - 1.5f, 0.f);
     verticalLine.setFillColor(borderColor);
     target.draw(verticalLine);
 }
@@ -570,7 +570,7 @@ struct CompareIndicies {
 
 hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    int mouseFrame = static_cast<int>((app.getInputState().getMousePosition().x - app.getSize().x*(hg::UI_DIVIDE_X / 100 + hg::TIMELINE_PAD_X))*1. / (app.getSize().x*((100. - hg::UI_DIVIDE_X) / 100 - 2.*hg::TIMELINE_PAD_X))*timelineLength);
+    int mouseFrame = static_cast<int>((app.getInputState().getMousePosition().x - app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X))*1. / (app.getSize().x*((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X))*timelineLength);
     if (mouseFrame < 0)
     {
         mouseFrame = 0;
