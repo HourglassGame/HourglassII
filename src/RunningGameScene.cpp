@@ -196,7 +196,8 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.));
                 int timelineOffset = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
                 int timelineWidth = static_cast<int>(window.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
-
+                int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, static_cast<int>(timelineWidth*timeEngine.getReplayData().size() / timeEngine.getTimelineLength())) : timelineWidth;
+                
                 ActivePanel mousePanel = ActivePanel::NONE;
                 // Todo, possibly include xFill and yFill.
                 if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X))
@@ -222,7 +223,10 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                     }
                 }
 
-                input.updateState(window.getInputState(), mousePanel, timelineOffset, timelineWidth, timeEngine.getReplayData().size(), mouseOffX, mouseOffY, 1. / scalingFactor);
+                input.updateState(window.getInputState(), mousePanel,
+                    timelineOffset, timelineWidth, personalTimelineWidth,
+                    timeEngine.getReplayData().size(),
+                    mouseOffX, mouseOffY, 1. / scalingFactor);
                 inputList = input.AsInputList();
                 runningFromReplay = false;
             }
@@ -485,7 +489,8 @@ void runStep(
         timeEngine,
         relativeGuyIndex,
         timeEngine.getGuyFrames(),
-        timeEngine.getPostOverwriteInput());
+        timeEngine.getPostOverwriteInput(),
+        static_cast<std::size_t>(timeEngine.getTimelineLength()));
 
     DrawInterfaceBorder(app.getRenderTarget());
 

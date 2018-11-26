@@ -29,7 +29,7 @@ Input::Input() :
 }
 
 void Input::updateState(hg::RenderWindow::InputState const &input, ActivePanel const mousePanel,
-    int mouseXTimelineOffset, int mouseXOfEndOfTimeline, std::size_t personalTimelineLength,
+    int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
     int mouseOffX, int mouseOffY, double mouseScale)
 {
     left = input.isKeyPressed(sf::Keyboard::A);
@@ -53,24 +53,17 @@ void Input::updateState(hg::RenderWindow::InputState const &input, ActivePanel c
         abilityCursor = Ability::TIME_PAUSE;
     }
 
-    int mousePosition = input.getMousePosition().x - mouseXTimelineOffset;
-    if (mousePosition < 0)
-    {
-        mousePosition = 0;
-    }
-    else if (mousePosition >= mouseXOfEndOfTimeline)
-    {
-        mousePosition = mouseXOfEndOfTimeline - 1;
-    }
-
     if (input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::PERSONAL_TIME) {
-        mousePersonalTimelinePosition = static_cast<int>(personalTimelineLength - (static_cast<int>((mousePosition + 1)*personalTimelineLength / static_cast<double>(mouseXOfEndOfTimeline))));
+        int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, input.getMousePosition().x - mouseXTimelineOffset));
+        mousePersonalTimelinePosition = static_cast<int>(personalTimelineLength - (static_cast<int>(mousePosition*personalTimelineLength / static_cast<double>(mouseXOfEndOfPersonalTimeline))));
     }
     if ((input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::GLOBAL_TIME) ||
         input.isMouseButtonPressed(sf::Mouse::Right) || 
         input.isMouseButtonPressed(sf::Mouse::Middle) || 
         input.isMouseButtonPressed(sf::Mouse::XButton1) || 
-        input.isMouseButtonPressed(sf::Mouse::XButton2)) {
+        input.isMouseButtonPressed(sf::Mouse::XButton2)) 
+    {
+        int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, input.getMousePosition().x - mouseXTimelineOffset));
         mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
     }
     mouseX = static_cast<int>(std::round((input.getMousePosition().x - mouseOffX)*mouseScale));

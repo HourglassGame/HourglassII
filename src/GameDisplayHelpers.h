@@ -37,7 +37,8 @@ namespace hg {
         hg::TimeEngine const &timeEngine,
         std::size_t const relativeGuyIndex,
         std::vector<Frame *> const &guyFrames,
-        std::vector<GuyInput> const &guyInput);
+        std::vector<GuyInput> const &guyInput,
+        std::size_t const minTimelineLength);
     void DrawColors(hg::RenderWindow &target, sf::Image const &positionColoursImage);
     void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength);
     void DrawTimeline(

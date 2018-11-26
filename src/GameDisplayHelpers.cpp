@@ -345,7 +345,8 @@ void DrawPersonalTimeline(
     hg::TimeEngine const &timeEngine,
     std::size_t const relativeGuyIndex,
     std::vector<Frame *> const &guyFrames,
-    std::vector<GuyInput> const &guyInput) {
+    std::vector<GuyInput> const &guyInput,
+    std::size_t const minTimelineLength) {
 
     auto const padding{ 3.f };
     auto const bottomSpace{ 9.f };
@@ -394,13 +395,13 @@ void DrawPersonalTimeline(
     //Time Ticks TODO
     //Special display of dead guy frames? TODO
     std::size_t skipInputFrames = 0;
-    auto const timelineLength(timeEngine.getTimelineLength());
     auto const actualGuyFrames{boost::make_iterator_range(guyFrames.begin(), guyFrames.end() - 1)};
     auto const guyFramesLength{boost::size(actualGuyFrames)};
-    std::size_t const frameInc = static_cast<std::size_t>(std::max(1, static_cast<int>(std::floor(guyFramesLength / target.getView().getSize().x))));
+    std::size_t const timelineLength{ std::max(minTimelineLength, guyFramesLength) };
+    std::size_t const frameInc = static_cast<std::size_t>(std::max(1, static_cast<int>(std::floor(timelineLength / target.getView().getSize().x))));
     for(std::size_t i{0}; i < guyFramesLength; i += frameInc) {
-        auto const frameWidth{ float{target.getView().getSize().x * frameInc / guyFramesLength } };
-        auto const frameHorizontalPosition{ float{i*target.getView().getSize().x / guyFramesLength} };
+        auto const frameWidth{ float{target.getView().getSize().x * frameInc / timelineLength } };
+        auto const frameHorizontalPosition{ float{i*target.getView().getSize().x / timelineLength} };
         auto const frameHeight{ static_cast<float>(height / static_cast<double>(timelineLength)) };
         
         if (skipInputFrames > 0)
@@ -461,7 +462,7 @@ void DrawPersonalTimeline(
     }
 
     sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height + bottomSpace)));
-    playerLine.setPosition((guyFramesLength - relativeGuyIndex)*target.getView().getSize().x / guyFramesLength, padding);
+    playerLine.setPosition((guyFramesLength - relativeGuyIndex)*target.getView().getSize().x / timelineLength, padding);
     playerLine.setFillColor(sf::Color(200, 200, 0));
     target.draw(playerLine);
 

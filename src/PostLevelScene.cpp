@@ -207,7 +207,8 @@ void runStep(
         timeEngine,
         0/*relativeGuyIndex*/,
         timeEngine.getGuyFrames(),
-        timeEngine.getPostOverwriteInput());
+        timeEngine.getPostOverwriteInput(),
+        static_cast<std::size_t>(timeEngine.getTimelineLength()));
         
     DrawInterfaceBorder(app.getRenderTarget());
 
