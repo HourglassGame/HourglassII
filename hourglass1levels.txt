@@ -43,19 +43,19 @@ Status: Faithfully remade.
 ### 8. All the way up ###
 Summary: Excersise in leaving guys on sitches to control platforms.
 
-Status: Not immediately worth remaking. No new features.
+Status: Faithfully remade.
 
 
 ### 9. One-way trip ###
 Summary: Similar to (4). Introduces laser switch.
 
-Status: Requires laser switch. Effectively a copy of (4).
+Status: Faithfully remade.
 
 
 ### 10. Triplicate ###
 Summary: Similar to (4) but with timeJump instead of portal.
 
-Status: Faithfully remade (with allowances for changed jump-height)
+Status: Easy enough to make.
 
 
 ### 11. Time and Space ###
