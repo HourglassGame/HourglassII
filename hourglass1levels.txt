@@ -61,13 +61,13 @@ Status: Easy enough to make.
 ### 11. Time and Space ###
 Summary: Introduces portal attached to platform.
 
-Status: A level such as this is worthwhile. More platform antics are possible.
+Status: Faithfully remade.
 
 
 ### 12. Fairly routine ###
 Summary: TimeJump is used to go around player created obstacle.
 
-Status: Simple enough to remake idea.
+Status: Remade, but more difficult as the timejump must also be used for box duplication.
 
 
 ### 13. Fish in a barrel ###
