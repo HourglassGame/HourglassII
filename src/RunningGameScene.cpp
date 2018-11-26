@@ -123,6 +123,35 @@ struct RunningLevelState {
     
 };
 
+ActivePanel const getActivePanel(hg::RenderWindow &window)
+{
+    ActivePanel mousePanel = ActivePanel::NONE;
+    // Todo, possibly include xFill and yFill.
+    if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X))
+    {
+        int mouseY = window.getInputState().getMousePosition().y;
+        if (mouseY <= window.getSize().y*(hg::UI_DIVIDE_Y))
+        {
+            mousePanel = ActivePanel::WORLD;
+        }
+        else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
+        {
+            if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
+            {
+                mousePanel = ActivePanel::GLOBAL_TIME;
+            }
+        }
+        else if (mouseY <= (hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
+        {
+            if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
+            {
+                mousePanel = ActivePanel::PERSONAL_TIME;
+            }
+        }
+    }
+    return mousePanel;
+}
+
 variant<
     GameAborted_tag,
     GameWon_tag,
@@ -198,30 +227,7 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 int timelineWidth = static_cast<int>(window.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
                 int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, static_cast<int>(timelineWidth*timeEngine.getReplayData().size() / timeEngine.getTimelineLength())) : timelineWidth;
                 
-                ActivePanel mousePanel = ActivePanel::NONE;
-                // Todo, possibly include xFill and yFill.
-                if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X))
-                {
-                    int mouseY = window.getInputState().getMousePosition().y;
-                    if (mouseY <= window.getSize().y*(hg::UI_DIVIDE_Y))
-                    {
-                        mousePanel = ActivePanel::WORLD;
-                    }
-                    else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
-                    {
-                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
-                        {
-                            mousePanel = ActivePanel::GLOBAL_TIME;
-                        }
-                    }
-                    else if (mouseY <= (hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
-                    {
-                        if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
-                        {
-                            mousePanel = ActivePanel::PERSONAL_TIME;
-                        }
-                    }
-                }
+                ActivePanel mousePanel = getActivePanel(window);
 
                 input.updateState(window.getInputState(), mousePanel,
                     timelineOffset, timelineWidth, personalTimelineWidth,
@@ -396,7 +402,7 @@ void runStep(
     app.clear(sf::Color(255, 255, 255));
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
-    const std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
+    std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
     framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
     for (
@@ -406,7 +412,8 @@ void runStep(
         framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
     }
 
-    if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
+    ActivePanel mousePanel = getActivePanel(app);
+    if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel != ActivePanel::PERSONAL_TIME) {
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
@@ -420,6 +427,11 @@ void runStep(
             static_cast<int>(guyIndex));
     }
     else {
+        if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel == ActivePanel::PERSONAL_TIME) {
+            guyIndex = mousePosToGuyIndex(app, timeEngine);
+            relativeGuyIndex = timeEngine.getGuyFrames().size() - 2 - guyIndex;
+        }
+
         hg::Frame *guyFrame = timeEngine.getGuyFrames()[guyIndex];
         if (!isNullFrame(guyFrame)) {
             hg::FrameView const &view((guyFrame)->getView());

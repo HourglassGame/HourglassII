@@ -82,6 +82,7 @@ namespace hg {
     hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
         hg::FrameView const &view, hg::TimeDirection timeDirection);
     hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);
+    std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);
 }
 
 #endif //HG_GAME_DISPLAY_HELPERS_H

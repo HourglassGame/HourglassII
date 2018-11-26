@@ -576,10 +576,30 @@ hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const 
     {
         mouseFrame = 0;
     }
-    else if (mouseFrame >= timelineLength)
+    else if (mouseFrame > timelineLength)
     {
         mouseFrame = timelineLength - 1;
     }
     return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
 }
+
+std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
+    int const timelineLength = timeEngine.getTimelineLength();
+    float timelineOffset = static_cast<float>(app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+    float timelineWidth = static_cast<float>(app.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
+    float const guyFrames = static_cast<float>(timeEngine.getGuyFrames().size());
+    int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, timelineWidth*guyFrames / static_cast<float>(timeEngine.getTimelineLength())) : timelineWidth;
+    
+    int mouseGuyIndex = static_cast<int>(guyFrames*(app.getInputState().getMousePosition().x - timelineOffset)*1. / personalTimelineWidth);
+    if (mouseGuyIndex < 0)
+    {
+        mouseGuyIndex = 0;
+    }
+    else if (mouseGuyIndex > guyFrames - 1)
+    {
+        mouseGuyIndex = guyFrames - 2;
+    }
+    return static_cast<std::size_t>(mouseGuyIndex);
+}
+
 }
