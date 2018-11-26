@@ -79,19 +79,19 @@ Status: Faithfully remade.
 ### 14. Wrong way ###
 Summary: Player uses timeJump to go backwards up a down platform.
 
-Status: Level requires Game Pause and is harder to implement due to low jump height. Good UI tools would prevent chance of chronofrag in this level.
+Status: Level requires Game Pause and is harder to implement due to low jump height. Good UI tools would prevent chance of chronofrag in this level. Most of the level is ported by level 15.
 
 
 ### 15. Reverse ###
 Summary: Same as (14) yet implemented with timeReverse. Introduces timeReverse.
 
-Status: Can be made.
+Status: Faithfully remade.
 
 
 ### 16. Don't touch that ###
 Summary: Box duplication to pass spikes. Has timeJump.
 
-Status: Jump physics has changed so faithful implementation is problematic.
+Status: Remade with new physics. In HG1 it is easy to jump 3-wide spikes. In HG2 the widest jumpable spikes are 1.5 blocks wide.
 
 
 ### 17. It's a trap ###
