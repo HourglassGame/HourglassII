@@ -284,7 +284,7 @@ Summary: Going backwards in a forwards world
 
 I have no idea whether the new engine will make this level impossible, trivial, or anywhere in between. It was very specifically designed around the old reverse-time system. ~Jeffrey
 
-Status: WIP, terrain done. Not sure how to proceed.
+Status: Faithfully remade. Appears to work as intended.
 
 ### 45 Omega ###
 Summary: Loadsa programming
