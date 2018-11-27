@@ -900,6 +900,98 @@ local function pickup(p)
     }
 end
 
+
+local powerupGlitzNameMap = {
+    jumpBoots = "global.powerup_jump",
+}
+
+local powerupEffectNameMap = {
+    jumpBoots = function (object)
+        object.jumpSpeed = -500
+    end
+}
+
+local function powerup(p)
+
+    local PnV = nil
+    local active = true
+    local triggerID = p.triggerID
+    local justTaken = false
+    local proto = {
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        width = p.width,
+        height = p.height,
+        powerupType = p.powerupType,
+    }
+
+    return {
+        addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
+            if triggerArrivals[triggerID][1] == 1 then
+                PnV = calculateButtonPositionAndVelocity(proto, collisions)
+                mutators[#mutators+1] = {
+                    x = PnV.x, y = PnV.y,
+                    width = proto.width, height = proto.height,
+                    xspeed = PnV.xspeed, yspeed = PnV.yspeed,
+                    collisionOverlap = 0,
+                    timeDirection = proto.timeDirection
+                }
+                activeMutators[#activeMutators+1] = self
+            else
+                active = false
+            end
+        end,
+        effect = function(self, dynamicObject)
+            if not active then 
+                return dynamicObject 
+            end
+            if dynamicObject.type ~= 'guy' then 
+                return dynamicObject 
+            end
+            powerupEffectNameMap[proto.powerupType](dynamicObject)
+            active = false
+            justTaken = true
+            return dynamicObject
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
+            if active then
+                local forwardsImageGlitz = {
+                    type = "image",
+                    layer = 430,
+                    key = powerupGlitzNameMap[proto.powerupType],
+                    x = PnV.x,
+                    y = PnV.y,
+                    width = proto.height,
+                    height = proto.width
+                }
+
+                local reverseImageGlitz = {
+                    type = "image",
+                    layer = 430,
+                    key = powerupGlitzNameMap[proto.powerupType],
+                    x = PnV.x,
+                    y = PnV.y,
+                    width = proto.height,
+                    height = proto.width
+                }
+                table.insert(forwardsGlitz, forwardsImageGlitz)
+                table.insert(reverseGlitz, reverseImageGlitz)
+            end
+            if justTaken then
+                table.insert(
+                    persistentGlitz,
+                    {type = "audio",
+                     key = "global.pickup_pickup",
+                     duration = 9,
+                     timeDirection = proto.timeDirection})
+            end
+        end,
+        fillTrigger = function(self, outputTriggers)
+            outputTriggers[triggerID] = {active and 1 or 0}
+        end
+    }
+end
+
 local function spikes(p)
     local PnV = nil
     local deathGlitz = {}
@@ -1226,9 +1318,10 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
-	stickyLaserSwitch = stickyLaserSwitch,
+    stickyLaserSwitch = stickyLaserSwitch,
     multiStickySwitch = multiStickySwitch,
     pickup = pickup,
+    powerup = powerup,
     spikes = spikes,
     boxOMatic = boxOMatic,
     wireGlitz = wireGlitz,
