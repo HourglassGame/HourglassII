@@ -782,14 +782,13 @@ void guyStep(
             {
                 bool droppable(false);
 
-                if (input.getDown())
+                if (input.getDown() || input.getBoxLeft() || input.getBoxRight())
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
                     int dropSize(guyArrivalList[i].getBoxCarrySize());
-                    //int dropX(facing[i] ? x[i] + width : x[i] - guyArrivalList[i].getBoxCarrySize());
 
-                    // Initialise bounds on drops based on movement direction
+                    // Initialize bounds on drops based on movement direction
                     int dropY, leftBound, rightBound;
 
                     if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
@@ -805,6 +804,15 @@ void guyStep(
                             leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + width;
                             rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
                         }
+                        if (input.getBoxLeft())
+                        {
+                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + 1;
+
+                        }
+                        else if (input.getBoxRight())
+                        {
+                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() + width - 1;
+                        }
                     }
                     else
                     {
@@ -818,6 +826,15 @@ void guyStep(
                         {
                             leftBound = x[i] - dropSize + width;
                             rightBound = x[i];
+                        }
+                        if (input.getBoxLeft())
+                        {
+                            leftBound = x[i] - dropSize + 1;
+
+                        }
+                        else if (input.getBoxRight())
+                        {
+                            rightBound = x[i] + width - 1;
                         }
                     }
 
@@ -949,11 +966,11 @@ void guyStep(
 
                         // Choose where to drop it within bound
                         int dropX;
-                        if (input.getLeft())
+                        if (input.getBoxLeft())
                         {
                             dropX = leftBound;
                         }
-                        else if (input.getRight())
+                        else if (input.getBoxRight())
                         {
                             dropX = rightBound;
                         }
@@ -1016,7 +1033,7 @@ void guyStep(
             }
             else
             {
-                if (input.getDown())
+                if (input.getDown() || input.getBoxLeft() || input.getBoxRight())
                 {
 
                     int width = guyArrivalList[i].getWidth();

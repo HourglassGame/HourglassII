@@ -26,6 +26,8 @@ private:
     bool right;
     bool up;
     int down;
+    int boxLeft;
+    int boxRight;
     int space;
     int mouseLeft;
     Ability abilityCursor;

@@ -28,6 +28,8 @@ public:
         bool right,
         bool up,
         bool down,
+        bool boxLeft,
+        bool boxRight,
         bool portalUsed,
         bool abilityUsed,
         Ability abilityCursor,
@@ -41,6 +43,8 @@ public:
     bool getRight()      const noexcept { return right; }
     bool getUp()         const noexcept { return up; }
     bool getDown()       const noexcept { return down; }
+    bool getBoxLeft()    const noexcept { return boxLeft; }
+    bool getBoxRight()   const noexcept { return boxRight; }
     bool getPortalUsed() const noexcept { return portalUsed; }
 
     bool getAbilityUsed() const noexcept { return abilityUsed; }
@@ -49,7 +53,7 @@ public:
     int getXCursor() const noexcept { return xCursor; }
     int getYCursor() const noexcept { return yCursor; }
 
-    bool getActionTaken() const noexcept { return left || right || up || down || portalUsed || abilityUsed; }
+    bool getActionTaken() const noexcept { return left || right || up || down || boxLeft || boxRight || portalUsed || abilityUsed; }
 private:
     friend class InputList;
     friend std::ostream &operator<<(std::ostream &os, InputList const &toPrint);
@@ -59,6 +63,8 @@ private:
     bool right;
     bool up;
     bool down;
+    bool boxLeft;
+    bool boxRight;
     bool portalUsed;
     bool abilityUsed;
     Ability abilityCursor;
@@ -130,6 +136,16 @@ private:
         else {
             ar & relativeGuyIndex;
         }
+        if (version < 4) {
+            //Before it was possible to edit old GuyInputs, the InputList would
+            //always alter the latest GuyInput.
+            guyInput.boxLeft = false;
+            guyInput.boxRight = false;
+        }
+        else {
+            ar & guyInput.boxLeft;
+            ar & guyInput.boxRight;
+        }
     }
 
     GuyInput guyInput;
@@ -142,6 +158,8 @@ private:
         os << toPrint.guyInput.right << " ";
         os << toPrint.guyInput.up << " ";
         os << toPrint.guyInput.down << " ";
+        os << toPrint.guyInput.boxLeft << " ";
+        os << toPrint.guyInput.boxRight << " ";
         os << toPrint.guyInput.portalUsed << " ";
         os << toPrint.guyInput.abilityUsed << " ";
         os << static_cast<int>(toPrint.guyInput.abilityCursor) << " ";
@@ -157,6 +175,8 @@ private:
         is >> toRead.guyInput.right;
         is >> toRead.guyInput.up;
         is >> toRead.guyInput.down;
+        is >> toRead.guyInput.boxLeft;
+        is >> toRead.guyInput.boxRight;
         is >> toRead.guyInput.portalUsed;
         is >> toRead.guyInput.abilityUsed;
         int abilityCursor;
@@ -170,5 +190,5 @@ private:
     }
 };
 }
-BOOST_CLASS_VERSION(hg::InputList, 3)
+BOOST_CLASS_VERSION(hg::InputList, 4)
 #endif //HG_INPUT_LIST_H

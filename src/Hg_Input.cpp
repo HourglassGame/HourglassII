@@ -17,6 +17,8 @@ Input::Input() :
     right(),
     up(),
     down(),
+    boxLeft(),
+    boxRight(),
     space(),
     mouseLeft(),
     abilityCursor(),
@@ -36,6 +38,8 @@ void Input::updateState(hg::RenderWindow::InputState const &input, ActivePanel c
     right = input.isKeyPressed(sf::Keyboard::D);
     up = input.isKeyPressed(sf::Keyboard::W);
     updatePress(down, input.isKeyPressed(sf::Keyboard::S));
+    updatePress(boxLeft, input.isKeyPressed(sf::Keyboard::Q));
+    updatePress(boxRight, input.isKeyPressed(sf::Keyboard::E));
     updatePress(space, input.isKeyPressed(sf::Keyboard::Space));
     
     updatePress(mouseLeft, input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::WORLD);
@@ -78,6 +82,8 @@ InputList Input::AsInputList() const
             right,
             up,
             down == 1,
+            boxLeft == 1,
+            boxRight == 1,
             space == 1,     //portalUsed
             mouseLeft == 1, //abilityUsed
             abilityCursor,

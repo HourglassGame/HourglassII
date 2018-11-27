@@ -5,6 +5,8 @@ GuyInput::GuyInput() noexcept :
     right(),
     up(),
     down(),
+    boxLeft(),
+    boxRight(),
     portalUsed(),
     abilityUsed(),
     abilityCursor(Ability::NO_ABILITY),
@@ -18,6 +20,8 @@ GuyInput::GuyInput(
     bool right,
     bool up,
     bool down,
+    bool boxLeft,
+    bool boxRight,
     bool portalUsed,
     bool abilityUsed,
     Ability abilityCursor,
@@ -28,6 +32,8 @@ GuyInput::GuyInput(
         right(right),
         up(up),
         down(down),
+        boxLeft(boxLeft),
+        boxRight(boxRight),
         portalUsed(portalUsed),
         abilityUsed(abilityUsed),
         abilityCursor(abilityCursor),
@@ -42,6 +48,8 @@ bool GuyInput::operator==(GuyInput const &o) const noexcept
         && right == o.right
         && up == o.up
         && down == o.down
+        && boxLeft == o.boxLeft
+        && boxRight == o.boxRight
         && portalUsed == o.portalUsed
         && abilityUsed == o.abilityUsed
         && abilityCursor == o.abilityCursor

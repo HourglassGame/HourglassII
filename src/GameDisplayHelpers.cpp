@@ -421,7 +421,7 @@ void DrawPersonalTimeline(
                 inputLine.setFillColor(sf::Color(50, 50, 255));
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
             }
-            else if (guyInput[i].getDown())
+            else if (guyInput[i].getDown() || guyInput[i].getBoxLeft() || guyInput[i].getBoxRight())
             {
                 inputLine.setFillColor(sf::Color(0, 0, 0));
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
