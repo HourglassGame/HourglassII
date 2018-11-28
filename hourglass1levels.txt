@@ -79,7 +79,7 @@ Status: Faithfully remade.
 ### 14. Wrong way ###
 Summary: Player uses timeJump to go backwards up a down platform.
 
-Status: Level requires Game Pause and is harder to implement due to low jump height. Good UI tools would prevent chance of chronofrag in this level. Most of the level is ported by level 15.
+Status: Remade with jumpy boots to circumvent the jump height changes.
 
 
 ### 15. Reverse ###
@@ -97,13 +97,13 @@ Status: Remade with new physics. In HG1 it is easy to jump 3-wide spikes. In HG2
 ### 17. It's a trap ###
 Summary: Level with timeJump and timeReverse at the same time.
 
-Status: Needs laser switch to remake. Worth doing.
+Status: Faithfully remade.
 
 
 ### 18. Alcatraz ###
 Summary: TimeJump into a moving box to win.
 
-Status: Requires Game Pause to reduce frustration. Jump physics changed but this can still be remade.
+Status: Remade with a trampoline. Level loading takes a while.
 
 
 ### 19. Impossible? ###
@@ -133,7 +133,7 @@ Status: Remade. The old terrain is copied so it is harder to jump up the cliffs.
 ### 23. Blast from your past ###
 Summary: The idea is to shoot a hypothetical future self with the laser so they can get back across the spikes before they happen. There might be an easier way.
 
-Status:
+Status: Faithfully remade. The box starts on the ground to block the easier alternate solution of HG1.
 
 
 ### 24. Get up there ###
@@ -159,11 +159,10 @@ Status:
 
 
 ### 27. Which Way II ###
-Summary: 
-
-Status: As only Jeffrey even knows how to finish this, we can't recreate it at this stage.
-
+Summary: As only Jeffrey even knows how to finish this, we can't recreate it at this stage.
 Here's a hint: If you've changed jump mechanics this level is very likely to be unsolvable as it stands. ~Jeffrey
+
+Status: Faithfully remade? It is possible and all powerups are used. The solution involves a forwards guy riding a reverse box.
 
 ### 28. Locked in ###
 Summary: Programming past guy to get pickup such that present guy can escape.
