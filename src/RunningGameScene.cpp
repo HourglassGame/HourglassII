@@ -123,7 +123,7 @@ struct RunningLevelState {
     
 };
 
-ActivePanel const getActivePanel(hg::RenderWindow &window)
+ActivePanel const getActivePanel(hg::RenderWindow const &window)
 {
     ActivePanel mousePanel = ActivePanel::NONE;
     // Todo, possibly include xFill and yFill.
@@ -141,7 +141,7 @@ ActivePanel const getActivePanel(hg::RenderWindow &window)
                 mousePanel = ActivePanel::GLOBAL_TIME;
             }
         }
-        else if (mouseY <= (hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
+        else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
         {
             if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
             {
