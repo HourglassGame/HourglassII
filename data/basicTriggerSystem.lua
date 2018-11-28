@@ -9,10 +9,10 @@ local function map(f, l)
 end
 
 local function formatTime(frames)
-	if frames%framesPerSecond == 0 then
-		return math.floor(frames/framesPerSecond) .. "s"
-	end
-	return string.format("%.1fs", frames/framesPerSecond)
+    if frames%framesPerSecond == 0 then
+        return math.floor(frames/framesPerSecond) .. "s"
+    end
+    return string.format("%.1fs", frames/framesPerSecond)
 end
 
 local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseColour)
@@ -161,8 +161,8 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             index = protoPortal.index,
             x = x,
             y = y,
-			xaim = protoPortal.xaim,
-			yaim = protoPortal.yaim,
+            xaim = protoPortal.xaim,
+            yaim = protoPortal.yaim,
             width = protoPortal.width,
             height = protoPortal.height,
             xspeed = xspeed,
@@ -178,12 +178,12 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
             fallable = protoPortal.fallable,
-			isLaser = (protoPortal.isLaser or false),
+            isLaser = (protoPortal.isLaser or false),
             winner = false
         }
         
         if protoPortal.winner then
-			-- Not necessary
+            -- Not necessary
             retPortal.winner = true
             retPortal.relativeTime = false
             retPortal.timeDestination = 1
@@ -262,18 +262,18 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             portals[portalCount] = portal
         end
     end
-	--[[
-	if protoLasers then
-		for i, protoLaser in ipairs(protoLasers) do
-			local portal, active = calculatePortal(protoLaser, collisions, true)
-			arrivalLocations[#arrivalLocations + 1] = calculateArrivalLocation(portal)
-			if active then
-				portalCount = portalCount + 1
-				portals[portalCount] = portal
-			end
-		end
-	end
-	]]--
+    --[[
+    if protoLasers then
+        for i, protoLaser in ipairs(protoLasers) do
+            local portal, active = calculatePortal(protoLaser, collisions, true)
+            arrivalLocations[#arrivalLocations + 1] = calculateArrivalLocation(portal)
+            if active then
+                portalCount = portalCount + 1
+                portals[portalCount] = portal
+            end
+        end
+    end
+    ]]--
     return portals, arrivalLocations
 end
 
@@ -395,9 +395,9 @@ end
 
 local function calculateBeamGlitz(proto, beamPositionAndVelocity, buttonState)
     if buttonState then
-		return false
-	end
-	local colour = {r = 255, g = 0, b = 0}
+        return false
+    end
+    local colour = {r = 255, g = 0, b = 0}
 
     return calculateBidirectionalGlitz(400, constructDynamicArea(proto, beamPositionAndVelocity), colour, colour)
 end
@@ -423,11 +423,11 @@ local function momentarySwitch(p)
             PnV = calculateButtonPositionAndVelocity(proto, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-			local oldState = triggerArrivals[stateTriggerID][1]
+            local oldState = triggerArrivals[stateTriggerID][1]
             state = (checkPressed(constructDynamicArea(proto, PnV), departures) and oldState + 1) or 0
-			if state > 2 then
-				state = 2
-			end
+            if state > 2 then
+                state = 2
+            end
             justPressed = oldState == 0 and state > 0
             justReleased = oldState > 0 and state == 0
         end,
@@ -479,11 +479,11 @@ local function stickySwitch(p)
             PnV = calculateButtonPositionAndVelocity(proto, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-			local oldState = triggerArrivals[stateTriggerID][1]
+            local oldState = triggerArrivals[stateTriggerID][1]
             state = (oldState > 0 and oldState + 1) or (checkPressed(constructDynamicArea(proto, PnV), departures) and 1) or 0
-			if state > 2 then
-				state = 2
-			end
+            if state > 2 then
+                state = 2
+            end
             justPressed = oldState == 0 and state > 0
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
@@ -518,110 +518,110 @@ local function stickyLaserSwitch(p)
 
     local triggerID = p.triggerID
     local stateTriggerID = p.stateTriggerID or p.triggerID
-	
+    
     local timeDirection = p.timeDirection
     local attachment = p.attachment
     local beamLength = p.beamLength
     local beamDirection = p.beamDirection
-	local beamWidth = 120
-	
-	local emitterLength = 400
-	local emitterWidth = 1200
-	
-	local protoBeam
-	local protoEmitter
-	
-	if beamDirection == 0 then -- Right
-		protoBeam = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			width = beamLength,
-			height = beamWidth,
-		}
-		protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamWidth/2
-		
-		protoEmitter = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			height = emitterWidth,
-			width = emitterLength,
-		}
-		protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterWidth/2
-	elseif beamDirection == 1 then -- Down (following right hand rule)
-		protoBeam = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			width = beamWidth,
-			height = beamLength,
-		}
-		protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamWidth/2
-		
-		protoEmitter = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			height = emitterLength,
-			width = emitterWidth,
-		}
-		protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
-	elseif beamDirection == 2 then -- Left
-		protoBeam = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			width = beamLength,
-			height = beamWidth,
-		}
-		protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamLength
-		protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamWidth/2
-		
-		protoEmitter = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			height = emitterWidth,
-			width = emitterLength,
-		}
-		protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterLength
-		protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterWidth/2
-	else -- Up
-		protoBeam = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			width = beamWidth,
-			height = beamLength,
-		}
-		protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamWidth/2
-		protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamLength
-		
-		protoEmitter = {
-			timeDirection = timeDirection,
-			attachment = cloneAttachment(attachment),
-			height = emitterLength,
-			width = emitterWidth,
-		}
-		protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
-		protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterLength
-	end
+    local beamWidth = 120
+    
+    local emitterLength = 400
+    local emitterWidth = 1200
+    
+    local protoBeam
+    local protoEmitter
+    
+    if beamDirection == 0 then -- Right
+        protoBeam = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            width = beamLength,
+            height = beamWidth,
+        }
+        protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamWidth/2
+        
+        protoEmitter = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            height = emitterWidth,
+            width = emitterLength,
+        }
+        protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterWidth/2
+    elseif beamDirection == 1 then -- Down (following right hand rule)
+        protoBeam = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            width = beamWidth,
+            height = beamLength,
+        }
+        protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamWidth/2
+        
+        protoEmitter = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            height = emitterLength,
+            width = emitterWidth,
+        }
+        protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
+    elseif beamDirection == 2 then -- Left
+        protoBeam = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            width = beamLength,
+            height = beamWidth,
+        }
+        protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamLength
+        protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamWidth/2
+        
+        protoEmitter = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            height = emitterWidth,
+            width = emitterLength,
+        }
+        protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterLength
+        protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterWidth/2
+    else -- Up
+        protoBeam = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            width = beamWidth,
+            height = beamLength,
+        }
+        protoBeam.attachment.xOffset = protoBeam.attachment.xOffset - beamWidth/2
+        protoBeam.attachment.yOffset = protoBeam.attachment.yOffset - beamLength
+        
+        protoEmitter = {
+            timeDirection = timeDirection,
+            attachment = cloneAttachment(attachment),
+            height = emitterLength,
+            width = emitterWidth,
+        }
+        protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
+        protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterLength
+    end
     
     return {
         calcPnV = function(self, collisions)
             beamPnV = calculateButtonPositionAndVelocity(protoBeam, collisions)
-			emitterPnV = calculateButtonPositionAndVelocity(protoEmitter, collisions)
+            emitterPnV = calculateButtonPositionAndVelocity(protoEmitter, collisions)
         end,
         updateState = function(self, departures, triggerArrivals)
-			local oldState = triggerArrivals[stateTriggerID][1]
+            local oldState = triggerArrivals[stateTriggerID][1]
             state = (oldState > 0 and oldState + 1) or (checkPressed(constructDynamicArea(protoBeam, beamPnV), departures) and 1) or 0
-			if state > 2 then
-				state = 2
-			end
+            if state > 2 then
+                state = 2
+            end
             justPressed = oldState == 0 and state > 0
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             local forGlitzBeam, revGlitzBeam = calculateBeamGlitz(protoBeam, beamPnV, state > 0)
             if forGlitzBeam then
-				table.insert(forwardsGlitz, forGlitzBeam)
-				table.insert(reverseGlitz, revGlitzBeam)
-			end
-			
-			local forGlitz, revGlitz = calculateButtonGlitz(protoEmitter, emitterPnV, state > 0)
+                table.insert(forwardsGlitz, forGlitzBeam)
+                table.insert(reverseGlitz, revGlitzBeam)
+            end
+            
+            local forGlitz, revGlitz = calculateButtonGlitz(protoEmitter, emitterPnV, state > 0)
             table.insert(forwardsGlitz, forGlitz)
             table.insert(reverseGlitz, revGlitz)
             if justPressed then
@@ -653,7 +653,7 @@ local function multiStickySwitch(p)
     
     local triggerID = p.triggerID
     local stateTriggerID = p.stateTriggerID
-	
+    
     local justPressed = {}
     local justReleased = {}
 
@@ -673,7 +673,7 @@ local function multiStickySwitch(p)
             end
         end,
         updateState = function(self, departures, triggerArrivals)
-			state = true
+            state = true
             for i = 1, bCount do
                 if triggerArrivals[stateTriggerID][i] == 0 then
                     state = false
@@ -697,11 +697,11 @@ local function multiStickySwitch(p)
                     justReleased[i] = false
                 end
             end
-			
-			state = (state and triggerArrivals[triggerID][1] + 1) or 0
-			if state > 2 then
-				state = 2
-			end
+            
+            state = (state and triggerArrivals[triggerID][1] + 1) or 0
+            if state > 2 then
+                state = 2
+            end
         end,
         calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
             for i = 1, bCount do
@@ -869,8 +869,8 @@ local function pickup(p)
                     key = pickupGlitzNameMap[proto.pickupType],
                     x = PnV.x,
                     y = PnV.y,
-                    width = proto.height,
-                    height = proto.width
+                    width = proto.width,
+                    height = proto.height
                 }
 
                 local reverseImageGlitz = {
@@ -879,8 +879,8 @@ local function pickup(p)
                     key = pickupGlitzNameMap[proto.pickupType],
                     x = PnV.x,
                     y = PnV.y,
-                    width = proto.height,
-                    height = proto.width
+                    width = proto.width,
+                    height = proto.height
                 }
                 table.insert(forwardsGlitz, forwardsImageGlitz)
                 table.insert(reverseGlitz, reverseImageGlitz)
@@ -961,8 +961,8 @@ local function powerup(p)
                     key = powerupGlitzNameMap[proto.powerupType],
                     x = PnV.x,
                     y = PnV.y,
-                    width = proto.height,
-                    height = proto.width
+                    width = proto.width,
+                    height = proto.height
                 }
 
                 local reverseImageGlitz = {
@@ -971,8 +971,8 @@ local function powerup(p)
                     key = powerupGlitzNameMap[proto.powerupType],
                     x = PnV.x,
                     y = PnV.y,
-                    width = proto.height,
-                    height = proto.width
+                    width = proto.width,
+                    height = proto.height
                 }
                 table.insert(forwardsGlitz, forwardsImageGlitz)
                 table.insert(reverseGlitz, reverseImageGlitz)
@@ -1040,6 +1040,64 @@ local function spikes(p)
             else
                 return dynamicObject 
             end
+        end,
+        fillTrigger = function(self, outputTriggers)
+        end
+    }
+end
+
+local function trampoline(p)
+
+    local PnV = nil
+    local active = true
+    local proto = {
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        width = p.width,
+        height = p.height,
+        bounce = p.bounce,
+    }
+
+    return {
+        addMutator = function(self, triggerArrivals, collisions, mutators, activeMutators) 
+            PnV = calculateButtonPositionAndVelocity(proto, collisions)
+            mutators[#mutators+1] = {
+                x = PnV.x, y = PnV.y,
+                width = proto.width, height = proto.height,
+                xspeed = PnV.xspeed, yspeed = PnV.yspeed,
+                collisionOverlap = 0,
+                timeDirection = proto.timeDirection
+            }
+            activeMutators[#activeMutators+1] = self
+        end,
+        effect = function(self, dynamicObject)
+            if dynamicObject.yspeed > 100 then
+                dynamicObject.yspeed = -1*proto.bounce*dynamicObject.yspeed
+            end
+            return dynamicObject
+        end,
+        calculateGlitz = function(self, forwardsGlitz, reverseGlitz, persistentGlitz)
+            local forwardsImageGlitz = {
+                type = "image",
+                layer = 430,
+                key = "global.trampoline",
+                x = PnV.x,
+                y = PnV.y,
+                width = proto.width,
+                height = proto.height
+            }
+
+            local reverseImageGlitz = {
+                type = "image",
+                layer = 430,
+                key = "global.trampoline",
+                x = PnV.x,
+                y = PnV.y,
+                width = proto.width,
+                height = proto.height
+            }
+            table.insert(forwardsGlitz, forwardsImageGlitz)
+            table.insert(reverseGlitz, reverseImageGlitz)
         end,
         fillTrigger = function(self, outputTriggers)
         end
@@ -1226,14 +1284,14 @@ function calculatePhysicsAffectingStuff(tempStore)
         retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)
         
         local portals, arrivalLocations = calculatePortals(
-			tempStore.forwardsGlitz, 
-			tempStore.reverseGlitz, 
-			tempStore.protoPortals, 
-			--tempStore.protoLasers, 
-			retv.collisions, 
-			triggerArrivals, 
-			tempStore.frameNumber
-		)
+            tempStore.forwardsGlitz, 
+            tempStore.reverseGlitz, 
+            tempStore.protoPortals, 
+            --tempStore.protoLasers, 
+            retv.collisions, 
+            triggerArrivals, 
+            tempStore.frameNumber
+        )
         
         retv.portals = portals
         retv.arrivalLocations = arrivalLocations
@@ -1323,6 +1381,7 @@ return {
     pickup = pickup,
     powerup = powerup,
     spikes = spikes,
+    trampoline = trampoline,
     boxOMatic = boxOMatic,
     wireGlitz = wireGlitz,
     easyWireGlitz = easyWireGlitz,
