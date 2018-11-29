@@ -49,7 +49,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "DirectLua",
+    type = "CompatibleLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],

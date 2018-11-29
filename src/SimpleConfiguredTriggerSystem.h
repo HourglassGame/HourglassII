@@ -19,6 +19,12 @@
 #include <tuple>
 namespace hg {
     class OperationInterrupter;
+    struct PositionAndVelocity2D final {
+        int x;
+        int y;
+        int xspeed;
+        int yspeed;
+    };
     //TODO: Use DynamicArea in more places?
     struct DynamicArea {
         int x;
@@ -116,6 +122,19 @@ namespace hg {
         int yOffset;
 
         bool operator==(Attachment const &o) const noexcept {
+            return comparison_tuple() == o.comparison_tuple();
+        }
+    };
+    struct ButtonSegment final {
+    private:
+        auto comparison_tuple() const {
+            return std::tie(attachment, width, height);
+        }
+    public:
+        Attachment attachment;
+        int width;
+        int height;
+        bool operator==(ButtonSegment const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
     };
@@ -264,6 +283,39 @@ namespace hg {
         int yspeed;
     };
 
+    struct ProtoToggleSwitchImpl;
+
+    struct ToggleSwitchFrameStateImpl final : ButtonFrameStateImpl {
+        std::size_t clone_size() const noexcept final {
+            return sizeof *this;
+        }
+        ButtonFrameStateImpl *perform_clone(void *memory) const final {
+            return new (memory) ToggleSwitchFrameStateImpl(*this);
+        }
+        ~ToggleSwitchFrameStateImpl() noexcept final = default;
+
+        ToggleSwitchFrameStateImpl(ProtoToggleSwitchImpl const &proto) :
+            proto(&proto)
+        {
+        }
+
+        void calcPnV(mp::std::vector<Collision> const &collisions) final;
+        void updateState(
+            mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
+        void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+    private:
+        ProtoToggleSwitchImpl const *proto;//Initialised by ctor
+        PositionAndVelocity2D firstPnV;//Initialised by calcPnV
+        PositionAndVelocity2D secondPnV;//Initialised by calcPnV
+        bool switchState;//Initialised by updateState
+        bool justPressed;//Initialised by updateState
+    };
+
 
     struct ButtonFrameState final {
         template<typename ButtonFrameStateImpl>
@@ -305,6 +357,11 @@ namespace hg {
         virtual ~ProtoButtonImpl() noexcept = default;
         virtual ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const = 0;
 
+        /*
+         1000 ProtoMomentarySwitchImpl
+         2000 ProtoStickySwitchImpl
+         3000 ProtoToggleSwitchImpl
+        */
         virtual int order_ranking() const = 0;
         virtual bool operator==(ProtoButtonImpl const &o) const = 0;
     };
@@ -431,6 +488,64 @@ namespace hg {
         }
     };
 
+
+    struct ProtoToggleSwitchImpl final : ProtoButtonImpl {
+    private:
+        auto comparison_tuple() const noexcept {
+            return std::tie(
+                timeDirection,
+                first,
+                second,
+                triggerID,
+                stateTriggerID,
+                extraTriggerIDs
+            );
+        }
+        
+    public:
+        std::size_t clone_size() const noexcept final {
+            return sizeof *this;
+        }
+        ProtoButtonImpl *perform_clone(void *memory) const final {
+            return new (memory) ProtoToggleSwitchImpl(*this);
+        }
+        ~ProtoToggleSwitchImpl() noexcept final = default;
+        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const final {
+            return ButtonFrameState(new (pool) ToggleSwitchFrameStateImpl(*this), pool);
+        }
+
+        ProtoToggleSwitchImpl(
+            TimeDirection const timeDirection,
+            ButtonSegment const &first,
+            ButtonSegment const &second,
+            int const triggerID,
+            int const stateTriggerID,
+            std::vector<int> extraTriggerIDs
+        ) :
+            timeDirection(timeDirection),
+            first(first),
+            second(second),
+            triggerID(triggerID),
+            stateTriggerID(stateTriggerID),
+            extraTriggerIDs(std::move(extraTriggerIDs))
+        {}
+        
+        TimeDirection timeDirection;
+        ButtonSegment first;
+        ButtonSegment second;
+        int triggerID;
+        int stateTriggerID;
+        std::vector<int> extraTriggerIDs;
+
+        int order_ranking() const noexcept final {
+            return 3000;
+        }
+        
+        bool operator==(ProtoButtonImpl const &o) const noexcept final {
+            auto const &actual_other(*boost::polymorphic_downcast<ProtoToggleSwitchImpl const*>(&o));
+            return comparison_tuple() == actual_other.comparison_tuple();
+        }
+    };
 
     struct ProtoButton final {
     private:

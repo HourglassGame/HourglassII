@@ -14,7 +14,20 @@ local function momentarySwitch(p)
         extraTriggerIDs = p.extraTriggerIDs,
     }
 end
-
+local function toggleSwitch(p)
+    local function cloneButtonSegment(bs)
+        return {attachment = cloneAttachment(bs.attachment), width = bs.width, height = bs.height}
+    end
+    return {
+        type = 'toggleSwitch',
+        timeDirection = p.timeDirection,
+        first = cloneButtonSegment(p.first),
+        second = cloneButtonSegment(p.second),
+        triggerID = p.triggerID,
+        stateTriggerID = p.stateTriggerID,
+        extraTriggerIDs = p.extraTriggerIDs,
+    }
+end
 local function stickySwitch(p)
     return {
         type = 'stickySwitch',
@@ -112,7 +125,7 @@ local function mutateObject(tempStore)
 end
 return {
     momentarySwitch = momentarySwitch,
-    --toggleSwitch = toggleSwitch,
+    toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
     --stickyLaserSwitch = stickyLaserSwitch,
     --multiStickySwitch = multiStickySwitch,
