@@ -178,7 +178,7 @@ Status:
 ### 30. Mixed Bag ###
 Summary: Wasn't this possible with only half the available items? I seem to recall half the reason for this level being so that we could put a picture with all the items into the manual. ~Jeffrey
 
-Not particularly interesting all-in-all.
+Not particularly interesting all-in-all. The timejump is not required in HG1.
 
 Status:
 

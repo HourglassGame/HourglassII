@@ -829,12 +829,11 @@ void guyStep(
                         }
                         if (input.getBoxLeft())
                         {
-                            leftBound = x[i] - dropSize + 1;
-
+                            leftBound = x[i] - dropSize;
                         }
                         else if (input.getBoxRight())
                         {
-                            rightBound = x[i] + width - 1;
+                            rightBound = x[i] + width;
                         }
                     }
 
@@ -1055,7 +1054,8 @@ void guyStep(
                             }
 
                             int boxSize = nextBoxIt->object.getSize();
-                            if ((x[i] < boxX + boxSize) && (x[i] + width > boxX) && (y[i] < boxY + boxSize) && (y[i] + height >= boxY + boxSize))
+                            //The differences in bounds are intentional
+                            if ((x[i] <= boxX + boxSize) && (x[i] + width >= boxX) && (y[i] < boxY + boxSize) && (y[i] + height >= boxY + boxSize))
                             {
                                 carry[i] = true;
                                 carrySize[i] = boxSize;
