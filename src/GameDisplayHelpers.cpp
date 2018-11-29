@@ -215,8 +215,9 @@ void DrawTimelineContents(
 {
     static constexpr int boxLineHeight = 1;
     static constexpr int guyLineHeightStandard = 4;
+    auto const timelineContentsWidth{std::round(target.getView().getSize().x)};
     sf::Image timelineContents;
-    timelineContents.create(static_cast<int>(std::round(target.getView().getSize().x)), height, sf::Color(0, 0, 0, 0));
+    timelineContents.create(static_cast<int>(timelineContentsWidth), height, sf::Color(0, 0, 0, 0));
     //TODO: This can become very slow on HiDPI displays (because the texture width is based on the window width in pixels)(?)
     //      It also looks bad, due to aliasing artefacts.
     //      Check; and reconsider the algorithm/implementation.
@@ -232,7 +233,7 @@ void DrawTimelineContents(
     for (int frameNumber = 0, end = timeEngine.getTimelineLength(); frameNumber != end; ++frameNumber) {
         hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         assert(!isNullFrame(frame));
-        int const left = static_cast<int>(frameNumber*target.getView().getSize().x / timelineLength);
+        int const left = static_cast<int>(frameNumber*timelineContentsWidth / timelineLength);
         for (hg::GuyOutputInfo const &guy : frame->getView().getGuyInformation()) {
             std::size_t const top = static_cast<std::size_t>((height - guyLineHeight)*(guy.getIndex() / static_cast<double>(numberOfGuys)));
 
@@ -283,13 +284,14 @@ void DrawWaves(
     //TODO: This can become slow on HiDPI displays, because it is determined by the width of the display in pixels(?)
     //It also looks bad; due to alisaing artefacts.
     //Come up with a better algorithm.
-    std::vector<char> pixelsWhichHaveBeenDrawnIn(static_cast<std::size_t>(std::round(target.getView().getSize().x)));
+    auto const waveDisplayWidth{std::round(target.getView().getSize().x)};
+    std::vector<char> pixelsWhichHaveBeenDrawnIn(static_cast<std::size_t>(waveDisplayWidth));
     for (hg::FrameUpdateSet const &wave : waves) {
         for (hg::Frame *frame : wave) {
             if (frame) {
                 auto pixelToDrawIn = static_cast<std::size_t>(
                     (static_cast<double>(getFrameNumber(frame)) / timelineLength)
-                    *target.getView().getSize().x);
+                    *waveDisplayWidth);
                 assert(pixelToDrawIn < pixelsWhichHaveBeenDrawnIn.size());
                 pixelsWhichHaveBeenDrawnIn[pixelToDrawIn] = true;
             }
