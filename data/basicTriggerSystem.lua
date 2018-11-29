@@ -1,4 +1,4 @@
-local framesPerSecond = 30
+local framesPerSecond = 60
 
 local function map(f, l)
     local r = {}
