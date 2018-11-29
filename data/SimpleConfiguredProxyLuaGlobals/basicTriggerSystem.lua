@@ -14,10 +14,10 @@ local function momentarySwitch(p)
         extraTriggerIDs = p.extraTriggerIDs,
     }
 end
+local function cloneButtonSegment(bs)
+    return {attachment = cloneAttachment(bs.attachment), width = bs.width, height = bs.height}
+end
 local function toggleSwitch(p)
-    local function cloneButtonSegment(bs)
-        return {attachment = cloneAttachment(bs.attachment), width = bs.width, height = bs.height}
-    end
     return {
         type = 'toggleSwitch',
         timeDirection = p.timeDirection,
@@ -35,6 +35,20 @@ local function stickySwitch(p)
         attachment = cloneAttachment(p.attachment),
         width = p.width,
         height = p.height,
+        triggerID = p.triggerID,
+        stateTriggerID = p.stateTriggerID,
+        extraTriggerIDs = p.extraTriggerIDs,
+    }
+end
+local function multiStickySwitch(p)
+    local buttons = {}
+    for i = 1, #p.buttons do
+        buttons[i] = cloneButtonSegment(p.buttons[i])
+    end
+    return {
+        type = 'multiStickySwitch',
+        timeDirection = p.timeDirection,
+        buttons = buttons,
         triggerID = p.triggerID,
         stateTriggerID = p.stateTriggerID,
         extraTriggerIDs = p.extraTriggerIDs,
@@ -128,7 +142,7 @@ return {
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
     --stickyLaserSwitch = stickyLaserSwitch,
-    --multiStickySwitch = multiStickySwitch,
+    multiStickySwitch = multiStickySwitch,
     pickup = pickup,
     spikes = spikes,
     --boxOMatic = boxOMatic,

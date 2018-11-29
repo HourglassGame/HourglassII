@@ -1079,6 +1079,68 @@ namespace hg {
         ));
     }
 
+    ProtoButton toProtoMultiStickySwitch(
+        lua_State * const L,
+        std::vector<std::pair<int,std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection"));
+
+        int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
+        int const stateTriggerID(lua_index_to_C_index(readField<int>(L, "stateTriggerID")));
+
+        assert(triggerID < triggerOffsetsAndDefaults.size());
+        assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
+
+        assert(stateTriggerID < triggerOffsetsAndDefaults.size());
+
+        std::vector<int> extraTriggerIDs;
+        lua_getfield(L, -1, "extraTriggerIDs");
+        if (!lua_isnil(L, -1)) {
+            assert(lua_istable(L, -1));
+
+            lua_len(L, -1);
+            lua_Integer const tablelen(lua_tointeger(L, -1));
+            lua_pop(L, 1);
+            extraTriggerIDs.reserve(tablelen);
+
+            for (lua_Integer i(0), end(tablelen); i != end; ++i) {
+                lua_rawgeti(L, -1, i + 1);
+                extraTriggerIDs.push_back(lua_index_to_C_index(to<int>(L, -1)));
+                lua_pop(L, 1);
+            }
+        }
+        lua_pop(L, 1);
+
+
+        std::vector<ButtonSegment> buttons;
+        lua_getfield(L, -1, "buttons");
+        if (!lua_isnil(L, -1)) {
+            assert(lua_istable(L, -1));
+
+            lua_len(L, -1);
+            lua_Integer const tablelen(lua_tointeger(L, -1));
+            lua_pop(L, 1);
+            buttons.reserve(tablelen);
+
+            for (lua_Integer i(0), end(tablelen); i != end; ++i) {
+                lua_rawgeti(L, -1, i + 1);
+                buttons.push_back(to<ButtonSegment>(L, -1));
+                lua_pop(L, 1);
+            }
+        }
+        lua_pop(L, 1);
+
+        assert(buttons.size() <= triggerOffsetsAndDefaults[stateTriggerID].second.size());
+
+        return ProtoButton(mt::std::make_unique<ProtoMultiStickySwitchImpl>(
+            timeDirection,
+            std::move(buttons),
+            triggerID,
+            stateTriggerID,
+            std::move(extraTriggerIDs)
+        ));
+    }
+
 
     ProtoButton toProtoButton(
         lua_State * const L,
@@ -1093,6 +1155,9 @@ namespace hg {
         }
         else if (type == "toggleSwitch") {
             return toProtoToggleSwitch(L, triggerOffsetsAndDefaults);
+        }
+        else if (type == "multiStickySwitch") {
+            return toProtoMultiStickySwitch(L, triggerOffsetsAndDefaults);
         }
         else {
             assert(false);
@@ -1892,6 +1957,186 @@ namespace hg {
             persistentGlitz.push_back(
                 GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_toggle", 6, proto->timeDirection))
             );
+        }
+    }
+
+    MultiStickySwitchFrameStateImpl::MultiStickySwitchFrameStateImpl(
+            ProtoMultiStickySwitchImpl const &proto,
+            hg::memory_pool<hg::user_allocator_tbb_alloc> &pool)
+        : proto(&proto)
+        , PnVs(pool)
+        , individualState(pool)
+        , justPressed(pool)
+        , justReleased(pool)
+    {
+        PnVs.reserve(this->proto->buttons.size());
+        individualState.reserve(this->proto->buttons.size());
+        justPressed.reserve(this->proto->buttons.size());
+        justReleased.reserve(this->proto->buttons.size());
+    }
+
+    void MultiStickySwitchFrameStateImpl::calcPnV(mp::std::vector<Collision> const &collisions)
+    {
+        /*
+        for i = 1, bCount do
+            PnV[i] = calculateButtonPositionAndVelocity(proto[i], collisions)
+        end
+        */
+        for (auto const &button : proto->buttons) {
+            auto [x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, button.attachment, collisions);
+            PnVs.push_back(PositionAndVelocity2D{x, y, xspeed, yspeed});
+        }
+        assert(PnVs.size() == proto->buttons.size());
+    }
+    void MultiStickySwitchFrameStateImpl::updateState(
+        mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+        mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
+    {
+        /*
+        state = true
+        for i = 1, bCount do
+            if triggerArrivals[stateTriggerID][i] == 0 then
+                state = false
+                break
+            end
+        end
+
+        if not state then
+            state = true
+            for i = 1, bCount do
+                individualState[i] = checkPressed(constructDynamicArea(proto[i], PnV[i]), departures)
+                if not individualState[i] then 
+                    state = false
+                end
+                justPressed[i] = triggerArrivals[stateTriggerID][i] == 0 and individualState[i]
+                justReleased[i] = triggerArrivals[stateTriggerID][i] > 0 and not individualState[i]
+            end
+        else
+            for i = 1, bCount do
+                justPressed[i] = false
+                justReleased[i] = false
+            end
+        end
+            
+        state = (state and triggerArrivals[triggerID][1] + 1) or 0
+        if state > 2 then
+            state = 2
+        end
+        */
+        assert(0 <= proto->stateTriggerID);
+        assert(proto->stateTriggerID < triggerArrivals.size());
+        auto const &stateTriggerValues = triggerArrivals[proto->stateTriggerID];
+        assert(proto->buttons.size() <= stateTriggerValues.size());
+
+        bool state{true};
+        for (std::size_t i{0}, end{proto->buttons.size()}; i != end; ++i) {
+            if (stateTriggerValues[i] == 0) {
+                state = false;
+                break;
+            }
+        }
+
+        assert(PnVs.size() == proto->buttons.size());
+        if (!state) {
+            state = true;
+            for (std::size_t i{0}, end{proto->buttons.size()}; i != end; ++i) {
+                auto const &button{proto->buttons[i]};
+                auto const &PnV{PnVs[i]};
+                individualState.push_back(
+                    checkPressed(
+                        PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, proto->timeDirection,
+                        departures));
+                if (!individualState[i]) {
+                    state = false;
+                }
+                justPressed.push_back(stateTriggerValues[i] == 0 && individualState[i]);
+                justReleased.push_back(stateTriggerValues[i] > 0 && !individualState[i]);
+            }
+        }
+        else {
+            for (std::size_t i{0}, end{proto->buttons.size()}; i != end; ++i) {
+                justPressed.push_back(false);
+                justReleased.push_back(false);
+            }
+        }
+
+        assert(0 <= proto->triggerID);
+        assert(proto->triggerID < triggerArrivals.size());
+        assert(0 < triggerArrivals[proto->triggerID].size());
+        switchState = std::min(2, state ? triggerArrivals[proto->triggerID][0]+1 : 0);
+        assert(justPressed.size() == proto->buttons.size());
+        assert(justReleased.size() == proto->buttons.size());
+
+    }
+    void MultiStickySwitchFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const
+    {
+        /*
+        outputTriggers[triggerID] = {state}
+        outputTriggers[stateTriggerID] = map(function(val) return val and 1 or 0 end, individualState)
+        if p.extraTriggerIDs then
+            local extraTriggerIDs = p.extraTriggerIDs
+            for i = 1, #extraTriggerIDs do
+                outputTriggers[extraTriggerIDs[i]] = {state}
+            end
+        end
+        */
+        outputTriggers[proto->triggerID] = mt::std::vector<int>{switchState};
+        mt::std::vector<int> stateTriggerData;
+        stateTriggerData.reserve(individualState.size());
+        boost::push_back(stateTriggerData, individualState |  boost::adaptors::transformed([](char val) {return val ? 1 : 0;}));
+        outputTriggers[proto->stateTriggerID] = std::move(stateTriggerData);
+        for (auto const extraTriggerID : proto->extraTriggerIDs) {
+            outputTriggers[extraTriggerID] = mt::std::vector<int>{switchState};
+        }
+    }
+    void MultiStickySwitchFrameStateImpl::calculateGlitz(
+        mt::std::vector<Glitz> &forwardsGlitz,
+        mt::std::vector<Glitz> &reverseGlitz,
+        mt::std::vector<GlitzPersister> &persistentGlitz) const
+    {
+        /*
+        for i = 1, bCount do
+            local forGlitz, revGlitz = calculateButtonGlitz(proto[i], PnV[i], (state > 0) or individualState[i])
+            table.insert(forwardsGlitz, forGlitz)
+            table.insert(reverseGlitz, revGlitz)
+            if justPressed[i] then
+                table.insert(
+                    persistentGlitz,
+                    {type = "audio", key = "global.switch_push_down", duration = 10, timeDirection = proto[i].timeDirection})
+            end
+            if justReleased[i] then
+                table.insert(
+                    persistentGlitz,
+                    {type = "audio", key = "global.switch_push_up", duration = 10, timeDirection = proto[i].timeDirection})
+            end
+        end
+        */
+        assert(switchState > 0 || individualState.size() == proto->buttons.size());
+        assert(PnVs.size() == proto->buttons.size());
+        for (std::size_t i{0}, end{proto->buttons.size()}; i != end; ++i) {
+            auto [forGlitz, revGlitz] = calculateButtonGlitz(
+                DynamicArea{
+                   PnVs[i].x,
+                   PnVs[i].y,
+                   PnVs[i].xspeed,
+                   PnVs[i].yspeed,
+                   proto->buttons[i].width,
+                   proto->buttons[i].height,
+                   proto->timeDirection},
+                (switchState > 0) || individualState[i]);
+            forwardsGlitz.push_back(std::move(forGlitz));
+            reverseGlitz.push_back(std::move(revGlitz));
+            
+            if (justPressed[i]) {
+                persistentGlitz.push_back(
+                    GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_push_down", 10, proto->timeDirection))
+                );
+            }
+            if (justReleased[i]) {
+                persistentGlitz.push_back(
+                    GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_push_up", 10, proto->timeDirection))
+                );
+            }
         }
     }
 
