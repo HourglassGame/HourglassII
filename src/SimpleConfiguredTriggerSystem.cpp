@@ -2026,10 +2026,9 @@ namespace hg {
         assert(0 <= proto->stateTriggerID);
         assert(proto->stateTriggerID < triggerArrivals.size());
         auto const &stateTriggerValues = triggerArrivals[proto->stateTriggerID];
-        assert(proto->buttons.size() <= stateTriggerValues.size());
 
         bool state{true};
-        for (std::size_t i{0}, end{proto->buttons.size()}; i != end; ++i) {
+        for (std::size_t i{0}, end{proto->buttons.size()}, stateTriggerEnd{stateTriggerValues.size()}; i != end && i < stateTriggerEnd; ++i) {
             if (stateTriggerValues[i] == 0) {
                 state = false;
                 break;
