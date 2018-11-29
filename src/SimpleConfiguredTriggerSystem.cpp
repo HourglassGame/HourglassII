@@ -1038,7 +1038,7 @@ namespace hg {
         std::vector<std::pair<int,std::vector<int>>> const &triggerOffsetsAndDefaults)
     {
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection"));
-        
+
         int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
         int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, C_index_to_lua_index(triggerID))));
 
@@ -1813,10 +1813,10 @@ namespace hg {
             (firstPressed && secondPressed) ?
                 stateTriggerValue
             : (stateTriggerValue == 0) ?
-                (firstPressed ? 1 : 0)
-            :   (secondPressed ? 0 : 1);
+                firstPressed
+            :   secondPressed;
 
-        justPressed = switchState != stateTriggerValue;
+        justPressed = (switchState ? 1 : 0) != stateTriggerValue;
     }
     void ToggleSwitchFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const
     {
@@ -1870,7 +1870,7 @@ namespace hg {
                    proto->first.width,
                    proto->first.height,
                    proto->timeDirection},
-                switchState > 0);
+                switchState/*switchState > 0*/);
             forwardsGlitz.push_back(std::move(forGlitz));
             reverseGlitz.push_back(std::move(revGlitz));
         }
@@ -1884,7 +1884,7 @@ namespace hg {
                    proto->second.width,
                    proto->second.height,
                    proto->timeDirection},
-                switchState == 0);
+                !switchState/*switchState == 0*/);
             forwardsGlitz.push_back(std::move(forGlitz));
             reverseGlitz.push_back(std::move(revGlitz));
         }

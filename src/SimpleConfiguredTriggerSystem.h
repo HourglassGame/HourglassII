@@ -449,7 +449,7 @@ namespace hg {
             return new (memory) ProtoStickySwitchImpl(*this);
         }
         ~ProtoStickySwitchImpl() noexcept final = default;
-        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> & pool) const final {
+        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const final {
             return ButtonFrameState(new (pool) StickySwitchFrameStateImpl(*this), pool);
         }
 
