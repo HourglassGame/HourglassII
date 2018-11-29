@@ -104,54 +104,54 @@ local tempStore =
     },
     protoGlitz = {
         bts.wireGlitz{
-            x1 = {platform = nil, pos = 3.25 * 3200},
+            x1 = {platform = nil, pos = 325 * 32},
             y1 = {platform = nil, pos = 7 * 3200 },
-            x2 = {platform = nil, pos = 13.75 * 3200},
-            y2 = {platform = nil, pos = 7.2 * 3200},
+            x2 = {platform = nil, pos = 1375 * 32},
+            y2 = {platform = nil, pos = 72 * 320},
             triggerID = 1,
             useTriggerArrival = false
         },
         bts.wireGlitz{
-            x1 = {platform = nil, pos = 8.2 * 3200},
-            y1 = {platform = nil, pos = 7.2 * 3200 },
-            x2 = {platform = nil, pos = 8.3 * 3200},
-            y2 = {platform = nil, pos = 7.55 * 3200},
+            x1 = {platform = nil, pos = 82 * 320},
+            y1 = {platform = nil, pos = 72 * 320},
+            x2 = {platform = nil, pos = 83 * 320},
+            y2 = {platform = nil, pos = 755 * 32},
             triggerID = 1,
             useTriggerArrival = false
         },
         bts.wireGlitz{
-            x1 = {platform = nil, pos = 21.45 * 3200},
-            y1 = {platform = nil, pos = 7.45 * 3200 },
-            x2 = {platform = nil, pos = 8.3 * 3200},
-            y2 = {platform = nil, pos = 7.55 * 3200},
+            x1 = {platform = nil, pos = 2145 * 32},
+            y1 = {platform = nil, pos = 745 * 32 },
+            x2 = {platform = nil, pos = 83 * 320},
+            y2 = {platform = nil, pos = 755 * 32},
             triggerID = 1,
             useTriggerArrival = false
         },
         bts.wireGlitz{
-            x1 = {platform = nil, pos = 21.45 * 3200},
-            y1 = {platform = nil, pos = 2.45 * 3200 },
-            x2 = {platform = nil, pos = 21.55 * 3200},
-            y2 = {platform = nil, pos = 7.55 * 3200},
+            x1 = {platform = nil, pos = 2145 * 32},
+            y1 = {platform = nil, pos = 245 * 32 },
+            x2 = {platform = nil, pos = 2155 * 32},
+            y2 = {platform = nil, pos = 755 * 32},
             triggerID = 1,
             useTriggerArrival = false
         },
         bts.wireGlitz{
-            x1 = {platform = nil, pos = 16.45 * 3200},
-            y1 = {platform = nil, pos = 2.45 * 3200 },
-            x2 = {platform = nil, pos = 21.55 * 3200},
-            y2 = {platform = nil, pos = 2.55 * 3200},
+            x1 = {platform = nil, pos = 1645 * 32},
+            y1 = {platform = nil, pos = 245 * 32 },
+            x2 = {platform = nil, pos = 2155 * 32},
+            y2 = {platform = nil, pos = 255 * 32},
             triggerID = 1,
             useTriggerArrival = false
         },
         bts.wireGlitz{
-            x1 = {platform = nil, pos = 16.45 * 3200},
+            x1 = {platform = nil, pos = 1645 * 32},
             y1 = {platform = nil, pos = 3 * 3200 },
-            x2 = {platform = nil, pos = 16.55 * 3200},
-            y2 = {platform = nil, pos = 2.55 * 3200},
+            x2 = {platform = nil, pos = 1655 * 32},
+            y2 = {platform = nil, pos = 255 * 32},
             triggerID = 1,
             useTriggerArrival = false
         },
-    }
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
