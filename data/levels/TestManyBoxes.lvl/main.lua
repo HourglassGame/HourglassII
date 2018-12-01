@@ -50,7 +50,7 @@ triggerSystem =
     --DirectLua does a minimum amount of work in C++, before calling
     --Lua with the same arguments and expecting the same return values
     --as the TriggerSystem in C++
-    type = "DirectLua",
+    type = "CompatibleLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     --This describes a lua chunk which will be loaded by TriggerFrameState
