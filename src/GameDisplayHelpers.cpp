@@ -566,16 +566,8 @@ struct CompareIndicies {
 
 hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
     int const timelineLength = timeEngine.getTimelineLength();
-    int mouseFrame = static_cast<int>((app.getInputState().getMousePosition().x - app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X))*1. / (app.getSize().x*((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X))*timelineLength);
-    if (mouseFrame < 0)
-    {
-        mouseFrame = 0;
-    }
-    else if (mouseFrame > timelineLength)
-    {
-        mouseFrame = timelineLength - 1;
-    }
-    return hg::FrameID(mouseFrame, hg::UniverseID(timelineLength));
+    int const mouseFrame = static_cast<int>((app.getInputState().getMousePosition().x - app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X))*1. / (app.getSize().x*((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X))*timelineLength);
+    return hg::FrameID(clamp(0, mouseFrame, timelineLength-1), hg::UniverseID(timelineLength));
 }
 
 std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
