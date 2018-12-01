@@ -800,7 +800,6 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             mt::std::vector<GlitzPersister> &persistentGlitz) const
         {
-            assert(false);
             assert(pimpl_);
             pimpl_->calculateGlitz(forwardsGlitz, reverseGlitz, persistentGlitz);
         }

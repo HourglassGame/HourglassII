@@ -1394,7 +1394,6 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             mt::std::vector<GlitzPersister> &persistentGlitz) const
     {
-        //assert(false);//TODO
         assert(proto);
 
         static std::map<Ability, mt::std::string> const pickupGlitzNameMap{
@@ -1405,11 +1404,12 @@ namespace hg {
         };
 
         assert(proto->pickupType != Ability::NO_ABILITY);
-        if (active) {
+        auto pickupGlitzMapIt = pickupGlitzNameMap.find(proto->pickupType);
+        if (active && pickupGlitzMapIt != pickupGlitzNameMap.end()) {
             forwardsGlitz.push_back(
                 Glitz(mt::std::make_unique<ImageGlitz>(
                     430,
-                    pickupGlitzNameMap.find(proto->pickupType)->second,//TODO: Avoid undefined behaviour on unfound ability
+                    pickupGlitzMapIt->second,
                     x_, y_,
                     proto->width, proto->height
                 ))
@@ -1417,14 +1417,13 @@ namespace hg {
             reverseGlitz.push_back(
                 Glitz(mt::std::make_unique<ImageGlitz>(
                     430,
-                    pickupGlitzNameMap.find(proto->pickupType)->second,//TODO: Avoid undefined behaviour on unfound ability
+                    pickupGlitzMapIt->second,
                     x_, y_,
                     proto->width, proto->height
                 ))
             );
         }
         if (justTaken) {
-            //TODO: Avoid possible memory leak here!
             persistentGlitz.push_back(
                 GlitzPersister(mt::std::make_unique<AudioGlitzPersister>(
                     "global.pickup_pickup",
