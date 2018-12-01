@@ -47,9 +47,6 @@ for x = 1, 9 do
 end
 triggerSystem = 
 {
-    --DirectLua does a minimum amount of work in C++, before calling
-    --Lua with the same arguments and expecting the same return values
-    --as the TriggerSystem in C++
     type = "CompatibleLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
