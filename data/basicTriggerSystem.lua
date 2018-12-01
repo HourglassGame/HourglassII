@@ -518,19 +518,19 @@ local function stickyLaserSwitch(p)
 
     local triggerID = p.triggerID
     local stateTriggerID = p.stateTriggerID or p.triggerID
-    
+
     local timeDirection = p.timeDirection
     local attachment = p.attachment
     local beamLength = p.beamLength
     local beamDirection = p.beamDirection
     local beamWidth = 120
-    
+
     local emitterLength = 400
     local emitterWidth = 1200
-    
+
     local protoBeam
     local protoEmitter
-    
+
     if beamDirection == 0 then -- Right
         protoBeam = {
             timeDirection = timeDirection,
@@ -600,7 +600,7 @@ local function stickyLaserSwitch(p)
         protoEmitter.attachment.xOffset = protoEmitter.attachment.xOffset - emitterWidth/2
         protoEmitter.attachment.yOffset = protoEmitter.attachment.yOffset - emitterLength
     end
-    
+
     return {
         calcPnV = function(self, collisions)
             beamPnV = calculateButtonPositionAndVelocity(protoBeam, collisions)

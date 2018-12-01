@@ -2017,7 +2017,7 @@ namespace hg {
                 justReleased[i] = false
             end
         end
-            
+
         state = (state and triggerArrivals[triggerID][1] + 1) or 0
         if state > 2 then
             state = 2
