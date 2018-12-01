@@ -65,6 +65,24 @@ namespace hg {
 
         return calculateBidirectionalGlitz(400, buttonArea, colour, colour);
     }
+    /*
+    local function calculateBeamGlitz(proto, beamPositionAndVelocity, buttonState)
+        if buttonState then
+            return false
+        end
+        local colour = {r = 255, g = 0, b = 0}
+
+        return calculateBidirectionalGlitz(400, constructDynamicArea(proto, beamPositionAndVelocity), colour, colour)
+    end
+    */
+    std::optional<std::tuple<Glitz, Glitz>> calculateBeamGlitz(DynamicArea const &beamArea, bool const buttonState) {
+        if (buttonState) {
+            return {};
+        }
+
+        auto const colour = asPackedColour(255, 0, 0);
+        return {calculateBidirectionalGlitz(400, beamArea, colour, colour)};
+    }
     struct PositionAndVelocity {
         int position;
         int velocity;
@@ -1142,6 +1160,63 @@ namespace hg {
     }
 
 
+    ProtoButton toProtoStickyLaserSwitch(
+        lua_State * const L,
+        std::vector<std::pair<int,std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        /*
+        type = 'stickyLaserSwitch',
+        timeDirection = p.timeDirection
+        attachment = cloneAttachment(p.attachment)
+        beamLength = p.beamLength
+        beamDirection = p.beamDirection
+        triggerID = p.triggerID,
+        stateTriggerID = p.stateTriggerID,
+        extraTriggerIDs = p.extraTriggerIDs,
+        */
+
+        TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection"));
+
+        Attachment const attachment(readField<Attachment>(L, "attachment"));
+        int const beamLength(readField<int>(L, "beamLength"));
+        int const beamDirection(readField<int>(L, "beamDirection"));
+
+        int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
+        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, C_index_to_lua_index(triggerID))));
+
+        assert(triggerID < triggerOffsetsAndDefaults.size());
+        assert(stateTriggerID < triggerOffsetsAndDefaults.size());
+
+        std::vector<int> extraTriggerIDs;
+        lua_getfield(L, -1, "extraTriggerIDs");
+        if (!lua_isnil(L, -1)) {
+            assert(lua_istable(L, -1));
+
+            lua_len(L, -1);
+            lua_Integer const tablelen(lua_tointeger(L, -1));
+            lua_pop(L, 1);
+            extraTriggerIDs.reserve(tablelen);
+
+            for (lua_Integer i(0), end(tablelen); i != end; ++i) {
+                lua_rawgeti(L, -1, i + 1);
+                extraTriggerIDs.push_back(lua_index_to_C_index(to<int>(L, -1)));
+                lua_pop(L, 1);
+            }
+        }
+        lua_pop(L, 1);
+
+        return ProtoButton(mt::std::make_unique<ProtoStickyLaserSwitchImpl>(
+            timeDirection,
+            attachment,
+            beamLength,
+            beamDirection,
+            triggerID,
+            stateTriggerID,
+            std::move(extraTriggerIDs)
+        ));
+    }
+
+
     ProtoButton toProtoButton(
         lua_State * const L,
         std::vector<std::pair<int,std::vector<int>>> const &triggerOffsetsAndDefaults)
@@ -1158,6 +1233,9 @@ namespace hg {
         }
         else if (type == "multiStickySwitch") {
             return toProtoMultiStickySwitch(L, triggerOffsetsAndDefaults);
+        }
+        else if (type == "stickyLaserSwitch") {
+            return toProtoStickyLaserSwitch(L, triggerOffsetsAndDefaults);
         }
         else {
             assert(false);
@@ -2138,4 +2216,121 @@ namespace hg {
         }
     }
 
+    void StickyLaserSwitchFrameStateImpl::calcPnV(mp::std::vector<Collision> const &collisions)
+    {
+        /*
+        beamPnV = calculateButtonPositionAndVelocity(protoBeam, collisions)
+        emitterPnV = calculateButtonPositionAndVelocity(protoEmitter, collisions)
+        */
+        {
+            auto const [x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->beam.attachment, collisions);
+            beamPnV = PositionAndVelocity2D{x, y, xspeed, yspeed};
+        }
+        {
+            auto const [x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->emitter.attachment, collisions);
+            emitterPnV = PositionAndVelocity2D{x, y, xspeed, yspeed};
+        }
+    }
+    void StickyLaserSwitchFrameStateImpl::updateState(
+        mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+        mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
+    {
+        /*
+        local oldState = triggerArrivals[stateTriggerID][1]
+        state = (oldState > 0 and oldState + 1) or (checkPressed(constructDynamicArea(protoBeam, beamPnV), departures) and 1) or 0
+        if state > 2 then
+            state = 2
+        end
+        justPressed = oldState == 0 and state > 0
+        */
+
+        assert(proto->stateTriggerID < triggerArrivals.size());
+        auto const &stateTriggerValues = triggerArrivals[proto->stateTriggerID];
+        int const oldState = stateTriggerValues.size() >0 ? triggerArrivals[proto->stateTriggerID][0] : 0;
+
+        switchState = std::min(
+            oldState > 0 ?
+               oldState+1
+             : (checkPressed(beamPnV.x, beamPnV.y, beamPnV.xspeed, beamPnV.yspeed, proto->beam.width, proto->beam.height, proto->timeDirection, departures) ? 1 : 0),
+            2);
+
+        justPressed = oldState == 0 && switchState > 0;
+    }
+    void StickyLaserSwitchFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const
+    {
+        /*
+        outputTriggers[triggerID] = {state}
+        outputTriggers[stateTriggerID] = {state}
+        if p.extraTriggerIDs then
+            local extraTriggerIDs = p.extraTriggerIDs
+            for i = 1, #extraTriggerIDs do
+                outputTriggers[extraTriggerIDs[i]] = {state}
+            end
+        end
+        */
+        outputTriggers[proto->triggerID] = mt::std::vector<int>{switchState};
+        outputTriggers[proto->stateTriggerID] = mt::std::vector<int>{switchState};
+        for (auto const extraTriggerID : proto->extraTriggerIDs) {
+            outputTriggers[extraTriggerID] = mt::std::vector<int>{switchState};
+        }
+    }
+
+    void StickyLaserSwitchFrameStateImpl::calculateGlitz(
+        mt::std::vector<Glitz> &forwardsGlitz,
+        mt::std::vector<Glitz> &reverseGlitz,
+        mt::std::vector<GlitzPersister> &persistentGlitz) const
+    {
+        /*
+        local forGlitzBeam, revGlitzBeam = calculateBeamGlitz(protoBeam, beamPnV, state > 0)
+        if forGlitzBeam then
+            table.insert(forwardsGlitz, forGlitzBeam)
+            table.insert(reverseGlitz, revGlitzBeam)
+        end
+
+        local forGlitz, revGlitz = calculateButtonGlitz(protoEmitter, emitterPnV, state > 0)
+        table.insert(forwardsGlitz, forGlitz)
+        table.insert(reverseGlitz, revGlitz)
+        if justPressed then
+            table.insert(
+                persistentGlitz,
+                {type = "audio", key = "global.switch_push_down", duration = 10, timeDirection = timeDirection})
+        end
+        */
+        {
+            auto maybeBeamGlitz = calculateBeamGlitz(
+                DynamicArea{
+                    beamPnV.x,
+                    beamPnV.y,
+                    beamPnV.xspeed,
+                    beamPnV.yspeed,
+                    proto->beam.width,
+                    proto->beam.height,
+                    proto->timeDirection},
+                switchState > 0);
+            if (maybeBeamGlitz) {
+                auto [forGlitz, revGlitz] = *maybeBeamGlitz;
+                forwardsGlitz.push_back(std::move(forGlitz));
+                reverseGlitz.push_back(std::move(revGlitz));
+            }
+        }
+        {
+            auto [forGlitz, revGlitz] = calculateButtonGlitz(
+                DynamicArea{
+                    emitterPnV.x,
+                    emitterPnV.y,
+                    emitterPnV.xspeed,
+                    emitterPnV.yspeed,
+                    proto->emitter.width,
+                    proto->emitter.height,
+                    proto->timeDirection},
+                switchState > 0);
+            forwardsGlitz.push_back(std::move(forGlitz));
+            reverseGlitz.push_back(std::move(revGlitz));
+        }
+        if (justPressed) {
+            persistentGlitz.push_back(
+                GlitzPersister(mt::std::make_unique<AudioGlitzPersister>("global.switch_push_down", 10, proto->timeDirection))
+            );
+        }
+    }
 }

@@ -40,6 +40,18 @@ local function stickySwitch(p)
         extraTriggerIDs = p.extraTriggerIDs,
     }
 end
+local function stickyLaserSwitch(p)
+    return {
+        type = 'stickyLaserSwitch',
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        beamLength = p.beamLength,
+        beamDirection = p.beamDirection,
+        triggerID = p.triggerID,
+        stateTriggerID = p.stateTriggerID,
+        extraTriggerIDs = p.extraTriggerIDs,
+    }
+end
 local function multiStickySwitch(p)
     local buttons = {}
     for i = 1, #p.buttons do
@@ -141,7 +153,7 @@ return {
     momentarySwitch = momentarySwitch,
     toggleSwitch = toggleSwitch,
     stickySwitch = stickySwitch,
-    --stickyLaserSwitch = stickyLaserSwitch,
+    stickyLaserSwitch = stickyLaserSwitch,
     multiStickySwitch = multiStickySwitch,
     pickup = pickup,
     spikes = spikes,

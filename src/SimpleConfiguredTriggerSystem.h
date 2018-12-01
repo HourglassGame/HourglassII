@@ -26,7 +26,7 @@ namespace hg {
         int yspeed;
     };
     //TODO: Use DynamicArea in more places?
-    struct DynamicArea {
+    struct DynamicArea final {
         int x;
         int y;
         int xspeed;
@@ -349,7 +349,39 @@ namespace hg {
         mp::std::vector<char> individualState;//Initialised by ctor/updateState
         mp::std::vector<char> justPressed;//Initialised by ctor/updateState
         mp::std::vector<char> justReleased;//Initialised by ctor/updateState
+    };
 
+    struct ProtoStickyLaserSwitchImpl;
+
+    struct StickyLaserSwitchFrameStateImpl final : ButtonFrameStateImpl {
+        std::size_t clone_size() const noexcept final {
+            return sizeof *this;
+        }
+        ButtonFrameStateImpl *perform_clone(void *memory) const final {
+            return new (memory) StickyLaserSwitchFrameStateImpl(*this);
+        }
+        ~StickyLaserSwitchFrameStateImpl() noexcept final = default;
+
+        StickyLaserSwitchFrameStateImpl(ProtoStickyLaserSwitchImpl const &proto)
+            : proto(&proto)
+        {}
+
+        void calcPnV(mp::std::vector<Collision> const &collisions) final;
+        void updateState(
+            mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
+        void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+    private:
+        ProtoStickyLaserSwitchImpl const *proto;//Initialised by ctor
+        PositionAndVelocity2D beamPnV; //Initialised by calcPnV
+        PositionAndVelocity2D emitterPnV; //Initialised by calcPnV
+
+        char switchState;//Initialised by updateState
+        bool justPressed;//Initialised by updateState
     };
 
 
@@ -398,6 +430,7 @@ namespace hg {
          2000 ProtoStickySwitchImpl
          3000 ProtoToggleSwitchImpl
          4000 ProtoMultiStickySwitchImpl
+         5000 ProtoStickyLaserSwitchImpl
         */
         virtual int order_ranking() const = 0;
         virtual bool operator==(ProtoButtonImpl const &o) const = 0;
@@ -634,6 +667,117 @@ namespace hg {
         
         bool operator==(ProtoButtonImpl const &o) const noexcept final {
             auto const &actual_other(*boost::polymorphic_downcast<ProtoMultiStickySwitchImpl const*>(&o));
+            return comparison_tuple() == actual_other.comparison_tuple();
+        }
+    };
+
+    struct ProtoStickyLaserSwitchImpl final : ProtoButtonImpl {
+    private:
+        auto comparison_tuple() const noexcept {
+            return std::tie(
+                timeDirection,
+                beam,
+                emitter,
+                triggerID,
+                stateTriggerID,
+                extraTriggerIDs
+            );
+        }
+        
+    public:
+        std::size_t clone_size() const noexcept final {
+            return sizeof *this;
+        }
+        ProtoButtonImpl *perform_clone(void *memory) const final {
+            return new (memory) ProtoStickyLaserSwitchImpl(*this);
+        }
+        ~ProtoStickyLaserSwitchImpl() noexcept final = default;
+        ButtonFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const final {
+            return ButtonFrameState(new (pool) StickyLaserSwitchFrameStateImpl(*this), pool);
+        }
+
+        ProtoStickyLaserSwitchImpl(
+            TimeDirection const timeDirection,
+            Attachment const attachment,
+            int const beamLength,
+            int const beamDirection,
+            int const triggerID,
+            int const stateTriggerID,
+            std::vector<int> extraTriggerIDs
+        ) :
+            timeDirection(timeDirection),
+            triggerID(triggerID),
+            stateTriggerID(stateTriggerID),
+            extraTriggerIDs(std::move(extraTriggerIDs))
+        {
+            //beamDirection:
+            //0 Right
+            //1 Down
+            //2 Left
+            //3 Up
+
+            int const beamWidth = 120;
+
+            bool const vertical = beamDirection == 1 || beamDirection == 3;
+            bool const backwards = beamDirection == 2 || beamDirection == 3;
+
+            auto const swapAxis{[vertical](auto const &xVal, auto const &yVal){return vertical ? std::tie(xVal, yVal) : std::tie(yVal, xVal);}};
+
+            auto const makeAttachment{[swapAxis](
+                auto hasPlatform, auto platform, auto aOffset, auto bOffset)
+            {
+                auto [xOffset, yOffset] = swapAxis(aOffset, bOffset);
+                return Attachment{
+                    hasPlatform,
+                    platform,
+                    xOffset,
+                    yOffset
+                };
+            }};
+            auto const [aOffset, bOffset] = swapAxis(attachment.xOffset, attachment.yOffset);
+            {
+                auto const [aSize, bSize] = swapAxis(beamWidth, beamLength);
+                beam = ButtonSegment{
+                    makeAttachment(
+                        attachment.hasPlatform,
+                        attachment.platform,
+                        aOffset - beamWidth/2,
+                        bOffset - (backwards ? beamLength : 0)
+                    ),
+                    aSize,
+                    bSize
+                };
+            }
+            {
+                auto const emitterLength = 400;
+                auto const emitterWidth = 1200;
+                auto const [aSize, bSize] = swapAxis(emitterWidth, emitterLength);
+                emitter = ButtonSegment{
+                    makeAttachment(
+                        attachment.hasPlatform,
+                        attachment.platform,
+                        aOffset - emitterWidth/2,
+                        bOffset - (backwards ? emitterLength : 0)
+                    ),
+                    aSize,
+                    bSize
+                };
+            }
+        }
+        
+        TimeDirection timeDirection;
+        ButtonSegment beam;
+        ButtonSegment emitter;
+        int triggerID;
+        int stateTriggerID;
+        std::vector<int> extraTriggerIDs;
+
+        int order_ranking() const noexcept final {
+            return 5000;
+        }
+        
+        bool operator==(ProtoButtonImpl const &o) const noexcept final {
+            auto const &actual_other(*boost::polymorphic_downcast<ProtoStickyLaserSwitchImpl const*>(&o));
             return comparison_tuple() == actual_other.comparison_tuple();
         }
     };
