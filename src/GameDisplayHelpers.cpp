@@ -176,15 +176,8 @@ void drawInventory(
     }
 }
 
-constexpr double clamp(double const val, double const min, double const max)
-{
-    return val < min ?
-        min
-        : val > max ? max : val;
-}
-
 sf::Color asColor(sf::Vector3<double> const &vec) {
-    return sf::Color(static_cast<sf::Uint8>(clamp(vec.x, 0., 1.) * 255), static_cast<sf::Uint8>(clamp(vec.y, 0., 1.) * 255), static_cast<sf::Uint8>(clamp(vec.z, 0., 1.) * 255));
+    return sf::Color(static_cast<sf::Uint8>(clamp(0., vec.x, 1.) * 255), static_cast<sf::Uint8>(clamp(0., vec.y, 1.) * 255), static_cast<sf::Uint8>(clamp(0., vec.z, 1.) * 255));
 }
 
 
