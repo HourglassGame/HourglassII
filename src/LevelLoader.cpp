@@ -99,8 +99,8 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path
     else if (type == "CompatibleLua") {
         #ifndef NDEBUG
         return hg::make_unique<ComparisonTestTriggerSystem>(
-            loadSimpleConfiguredTriggerSystem(L, levelPath),
-            loadDirectLuaTriggerSystem(L, levelPath)
+            loadDirectLuaTriggerSystem(L, levelPath),
+            loadSimpleConfiguredTriggerSystem(L, levelPath)
             );
         #else
         return loadSimpleConfiguredTriggerSystem(L, levelPath);

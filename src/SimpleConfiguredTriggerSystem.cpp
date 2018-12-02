@@ -2161,10 +2161,10 @@ namespace hg {
             departures)};
         switchState = 
             (firstPressed && secondPressed) ?
-                stateTriggerValue
+                stateTriggerValue == 1
             : (stateTriggerValue == 0) ?
                 firstPressed
-            :   secondPressed;
+            :   !secondPressed;
 
         justPressed = (switchState ? 1 : 0) != stateTriggerValue;
     }
@@ -2180,10 +2180,10 @@ namespace hg {
             end
         end
         */
-        outputTriggers[proto->triggerID] = mt::std::vector<int>{switchState};
-        outputTriggers[proto->stateTriggerID] = mt::std::vector<int>{switchState};
+        outputTriggers[proto->triggerID] = mt::std::vector<int>{switchState ? 1 : 0};
+        outputTriggers[proto->stateTriggerID] = mt::std::vector<int>{switchState ? 1 : 0 };
         for (auto const extraTriggerID : proto->extraTriggerIDs) {
-            outputTriggers[extraTriggerID] = mt::std::vector<int>{switchState};
+            outputTriggers[extraTriggerID] = mt::std::vector<int>{switchState ? 1 : 0 };
         }
     }
     void ToggleSwitchFrameStateImpl::calculateGlitz(

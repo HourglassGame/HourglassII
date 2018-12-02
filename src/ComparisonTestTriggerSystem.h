@@ -128,18 +128,23 @@ class ComparisonTestTriggerFrameState final :
         auto departureInfoB = simpleConfiguredFrameState.getDepartureInformation(departures, currentFrame);
 
         if (departureInfoA.triggerDepartures != departureInfoB.triggerDepartures) {
+            assert(false && "departureInfoA.triggerDepartures != departureInfoB.triggerDepartures");
             throw std::exception("getDepartureInformation.triggerDepartures mismatch");
         }
         if (departureInfoA.forwardsGlitz != departureInfoB.forwardsGlitz) {
+            assert(false && "departureInfoA.forwardsGlitz != departureInfoB.forwardsGlitz");
             throw std::exception("getDepartureInformation.forwardsGlitz mismatch");
         }
         if (departureInfoA.reverseGlitz != departureInfoB.reverseGlitz) {
+            assert(false && "departureInfoA.reverseGlitz != departureInfoB.reverseGlitz");
             throw std::exception("getDepartureInformation.reverseGlitz mismatch");
         }
         if (departureInfoA.additionalGlitzPersisters != departureInfoB.additionalGlitzPersisters) {
+            assert(false && "departureInfoA.additionalGlitzPersisters != departureInfoB.additionalGlitzPersisters");
             throw std::exception("getDepartureInformation.additionalGlitzPersisters mismatch");
         }
         if (departureInfoA.additionalBoxDepartures != departureInfoB.additionalBoxDepartures) {
+            assert(false && "departureInfoA.additionalBoxDepartures != departureInfoB.additionalBoxDepartures");
             throw std::exception("getDepartureInformation.additionalBoxDepartures mismatch");
         }
 
