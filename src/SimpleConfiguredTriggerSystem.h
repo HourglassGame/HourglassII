@@ -9,11 +9,11 @@
 #include "LuaInterruption.h"
 #include "LuaModule.h"
 #include "memory_pool.h"
+#include "Powerup.h"
 #include <string>
 #include <vector>
 #include <mutex>
 #include "mp/std/map"
-#include <boost/optional.hpp>
 #include <optional>
 #include <boost/polymorphic_cast.hpp>
 #include <tuple>
@@ -918,6 +918,45 @@ namespace hg {
         }
     };
 
+
+    struct ProtoPowerupImpl;
+
+    struct PowerupFrameStateImpl final : MutatorFrameStateImpl {
+    private:
+        ProtoPowerupImpl const *proto;
+        bool justTaken;
+        bool active;
+        PositionAndVelocity2D PnV;//If active, initialised by addMutator
+    public:
+        PowerupFrameStateImpl(ProtoPowerupImpl const &proto) noexcept :
+            proto(&proto), justTaken(false), active(true)
+        {}
+        std::size_t clone_size() const final {
+            return sizeof *this;
+        }
+        MutatorFrameStateImpl *perform_clone(void *memory) const final {
+            return new (memory) PowerupFrameStateImpl(*this);
+        }
+        ~PowerupFrameStateImpl() final {}
+
+        void addMutator(
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+            mp::std::vector<Collision> const &collisions,
+            mp::std::vector<MutatorArea> &mutators,
+            mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+        ) final;
+
+        void calculateGlitz(
+            mt::std::vector<Glitz> &forwardsGlitz,
+            mt::std::vector<Glitz> &reverseGlitz,
+            mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+        void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
+        boost::optional<Guy> effect(Guy const &guy) final;
+        boost::optional<Box> effect(Box const &box) final {
+            return box;
+        }
+    };
+
     struct MutatorFrameState final {
         MutatorFrameState(MutatorFrameStateImpl *const impl, hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) :
             pimpl_(
@@ -965,6 +1004,11 @@ namespace hg {
         virtual std::size_t clone_size() const = 0;
         virtual ProtoMutatorImpl *perform_clone(void *memory) const = 0;
         virtual ~ProtoMutatorImpl() {}
+        /*
+        1000 ProtoPickupImpl
+        2000 ProtoSpikesImpl
+        3000 ProtoPowerupImpl
+        */
         virtual int order_ranking() const = 0;
         virtual bool operator==(ProtoMutatorImpl const &o) const = 0;
     };
@@ -1078,6 +1122,59 @@ namespace hg {
         }
     };
 
+    struct ProtoPowerupImpl final : ProtoMutatorImpl {
+    private:
+        auto comparison_tuple() const noexcept {
+            return std::tie(
+                powerupType,
+                timeDirection,
+                attachment,
+                width,
+                height,
+                triggerID
+            );
+        }
+    public:
+        MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const final {
+            return MutatorFrameState(new (pool) PowerupFrameStateImpl(*this), pool);
+        }
+        std::size_t clone_size() const final {
+            return sizeof *this;
+        }
+        ProtoMutatorImpl *perform_clone(void *memory) const final {
+            return new (memory) ProtoPowerupImpl(*this);
+        }
+
+        ~ProtoPowerupImpl() final = default;
+        explicit ProtoPowerupImpl(
+            Powerup const powerupType,
+            TimeDirection const timeDirection,
+            Attachment const attachment,
+            int const width,
+            int const height,
+            int const triggerID
+        ) :
+            powerupType(powerupType),
+            timeDirection(timeDirection),
+            attachment(attachment),
+            width(width),
+            height(height),
+            triggerID(triggerID)
+        {}
+        Powerup powerupType;
+        TimeDirection timeDirection;
+        Attachment attachment;
+        int width;
+        int height;
+        int triggerID;
+        int order_ranking() const final {
+            return 3000;
+        }
+        bool operator==(ProtoMutatorImpl const &o) const final {
+            auto const &actual_other(*boost::polymorphic_downcast<ProtoPowerupImpl const*>(&o));
+            return comparison_tuple() == actual_other.comparison_tuple();
+        }
+    };
 
 
     struct ProtoMutator final {
@@ -1182,7 +1279,7 @@ namespace hg {
             {
                 return p.pos + (
                     p.platformId.has_value()
-                 && *p.platformId >= 0 //TODO: Pre-enforece platformId being in-bounds?
+                 && *p.platformId >= 0 //TODO: Pre-enforce platformId being in-bounds?
                  && *p.platformId < collisions.size() ?
                         getCollisionPos(collisions[*p.platformId]) :
                         0

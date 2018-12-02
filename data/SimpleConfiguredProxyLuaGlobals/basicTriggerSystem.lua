@@ -79,6 +79,17 @@ local function pickup(p)
         pickupNumber = p.pickupNumber,
     }
 end
+local function powerup(p)
+    return {
+        type = 'powerup',
+        powerupType = p.powerupType,
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        width = p.width,
+        height = p.height,
+        triggerID = p.triggerID,
+    }
+end
 local function spikes(p)
     return {
         type = 'spikes',
@@ -156,7 +167,7 @@ return {
     stickyLaserSwitch = stickyLaserSwitch,
     multiStickySwitch = multiStickySwitch,
     pickup = pickup,
-    --powerup = powerup,
+    powerup = powerup,
     spikes = spikes,
     --trampoline = trampoline,
     --boxOMatic = boxOMatic,

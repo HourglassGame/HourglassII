@@ -844,6 +844,45 @@ namespace hg {
             height
         ));
     }
+    template<>
+    Powerup to<Powerup>(lua_State *L, int index) {
+        try {
+            //TODO abstract and combine this with to<TimeDirection>, to<FacingDirection> and to<Ability>
+            if (!lua_isstring(L, index)) {
+                BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("Powerup values must be strings"));
+            }
+            char const * const powerupString(lua_tostring(L, index));
+            if (strcmp(powerupString, "jumpBoots") == 0) {
+                return Powerup::JUMP_BOOTS;
+            }
+            else {
+                std::stringstream ss;
+                ss << "invalid powerup string: " << powerupString;
+                BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
+            }
+        }
+        catch (LuaError &e) {
+            add_semantic_callstack_info(e, "to<Powerup>");
+            throw;
+        }
+    }
+    ProtoMutator toProtoPowerup(
+        lua_State *const L,
+        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
+        assert(triggerID < triggerOffsetsAndDefaults.size());
+        return ProtoMutator(
+            mt::std::make_unique<ProtoPowerupImpl>(
+                readField<Powerup>(L, "powerupType"),
+                readField<TimeDirection>(L, "timeDirection"),
+                readField<Attachment>(L, "attachment"),
+                readField<int>(L, "width"),
+                readField<int>(L, "height"),
+                triggerID
+            )
+        );
+    }
 
     ProtoMutator toProtoMutator(
         lua_State * const L,
@@ -854,6 +893,9 @@ namespace hg {
         }
         else if (type == "spikes") {
             return toProtoSpikes(L);
+        }
+        else if (type == "powerup") {
+            return toProtoPowerup(L, triggerOffsetsAndDefaults);
         }
         else {
             assert(false);
@@ -1705,6 +1747,174 @@ namespace hg {
         #endif
         return {};
     }
+
+
+
+
+    void PowerupFrameStateImpl::addMutator(
+        mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+        mp::std::vector<Collision> const &collisions,
+        mp::std::vector<MutatorArea> &mutators,
+        mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+    )
+    {
+        /*
+        if triggerArrivals[triggerID][1] == 1 then
+            PnV = calculateButtonPositionAndVelocity(proto, collisions)
+            mutators[#mutators+1] = {
+                x = PnV.x, y = PnV.y,
+                width = proto.width, height = proto.height,
+                xspeed = PnV.xspeed, yspeed = PnV.yspeed,
+                collisionOverlap = 0,
+                timeDirection = proto.timeDirection
+            }
+            activeMutators[#activeMutators+1] = self
+        else
+            active = false
+        end
+        */
+        assert(proto->triggerID < std::size(triggerArrivals));
+        auto const &triggerArrival{triggerArrivals[proto->triggerID]};
+        if (0 < std::size(triggerArrival) && triggerArrival[0] == 1) {
+            auto[x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->attachment, collisions);
+            PnV = {x,y,xspeed,yspeed};
+            mutators.emplace_back(
+                x, y,
+                proto->width, proto->height,
+                xspeed, yspeed,
+                0,
+                proto->timeDirection);
+            activeMutators.emplace_back(this);
+        }
+        else {
+            active = false;
+        }
+    }
+
+    void PowerupFrameStateImpl::calculateGlitz(
+        mt::std::vector<Glitz> &forwardsGlitz,
+        mt::std::vector<Glitz> &reverseGlitz,
+        mt::std::vector<GlitzPersister> &persistentGlitz) const
+    {
+        /*
+        if active then
+            local forwardsImageGlitz = {
+                type = "image",
+                layer = 430,
+                key = powerupGlitzNameMap[proto.powerupType],
+                x = PnV.x,
+                y = PnV.y,
+                width = proto.width,
+                height = proto.height
+            }
+
+            local reverseImageGlitz = {
+                type = "image",
+                layer = 430,
+                key = powerupGlitzNameMap[proto.powerupType],
+                x = PnV.x,
+                y = PnV.y,
+                width = proto.width,
+                height = proto.height
+            }
+            table.insert(forwardsGlitz, forwardsImageGlitz)
+            table.insert(reverseGlitz, reverseImageGlitz)
+        end
+        if justTaken then
+            table.insert(
+                persistentGlitz,
+                {type = "audio",
+                    key = "global.pickup_pickup",
+                    duration = 9,
+                    timeDirection = proto.timeDirection})
+        end
+        */
+        static std::map<Powerup, mt::std::string> const powerupGlitzNameMap{
+            {Powerup::JUMP_BOOTS, "global.powerup_jump"}
+        };
+
+        auto const powerupGlitzMapIt = powerupGlitzNameMap.find(proto->powerupType);
+
+        if (active && powerupGlitzMapIt != powerupGlitzNameMap.end()) {
+            forwardsGlitz.emplace_back(
+                mt::std::make_unique<ImageGlitz>(
+                    430,
+                    powerupGlitzMapIt->second,
+                    PnV.x, PnV.y,
+                    proto->width, proto->height
+                    ));
+            reverseGlitz.emplace_back(
+                mt::std::make_unique<ImageGlitz>(
+                    430,
+                    powerupGlitzMapIt->second,
+                    PnV.x, PnV.y,
+                    proto->width, proto->height
+                    ));
+        }
+        if (justTaken) {
+            persistentGlitz.push_back(
+                GlitzPersister(mt::std::make_unique<AudioGlitzPersister>(
+                    "global.pickup_pickup",
+                    9,
+                    proto->timeDirection
+                    )));
+        }
+    }
+
+    void PowerupFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const {
+        /*outputTriggers[triggerID] = {active and 1 or 0}*/
+        outputTriggers[proto->triggerID] = mt::std::vector<int>{ active ? 1 : 0 };
+    }
+    boost::optional<Guy> PowerupFrameStateImpl::effect(Guy const &guy) {
+        /*
+        if not active then
+            return dynamicObject
+        end
+        if dynamicObject.type ~= 'guy' then
+            return dynamicObject
+        end
+        powerupEffectNameMap[proto.powerupType](dynamicObject)
+        active = false
+        justTaken = true
+        return dynamicObject
+        */
+        if (!active) {
+            return {guy};
+        }
+
+        active = false;
+        justTaken = true;
+        switch (proto->powerupType) {
+        case Powerup::JUMP_BOOTS:{
+            return {Guy(
+                guy.getIndex(),
+                guy.getX(), guy.getY(),
+                guy.getXspeed(), guy.getYspeed(),
+                guy.getWidth(), guy.getHeight(),
+                -500,
+
+                guy.getIllegalPortal(),
+                guy.getArrivalBasis(),
+                guy.getSupported(),
+                guy.getSupportedSpeed(),
+
+                guy.getPickups(),
+                guy.getFacing(),
+
+                guy.getBoxCarrying(),
+                guy.getBoxCarrySize(),
+                guy.getBoxCarryDirection(),
+
+                guy.getTimeDirection(),
+                guy.getTimePaused()
+            )};
+        }break;
+        }
+        assert(false);
+        return {guy};
+    }
+
+
 
     //TODO: Does this logic already exist somewhere in C++??
     bool temporalIntersectingExclusive(

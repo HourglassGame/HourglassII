@@ -275,6 +275,7 @@
     <ClInclude Include="..\..\..\..\src\PlayerVictoryException.h" />
     <ClInclude Include="..\..\..\..\src\PortalArea.h" />
     <ClInclude Include="..\..\..\..\src\PostLevelScene.h" />
+    <ClInclude Include="..\..\..\..\src\Powerup.h" />
     <ClInclude Include="..\..\..\..\src\prettyprint.hpp" />
     <ClInclude Include="..\..\..\..\src\prettyprint98.hpp" />
     <ClInclude Include="..\..\..\..\src\RectangleGlitz.h" />
