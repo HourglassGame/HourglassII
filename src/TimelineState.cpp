@@ -30,7 +30,7 @@ TimelineState::TimelineState(std::size_t timelineLength) :
 {
 }
 
-void TimelineState::swap(TimelineState &o)
+void TimelineState::swap(TimelineState &o) noexcept
 {
     boost::swap(universe_, o.universe_);
     boost::swap(permanentDepartures_, o.permanentDepartures_);

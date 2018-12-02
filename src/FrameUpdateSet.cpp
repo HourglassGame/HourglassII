@@ -28,7 +28,7 @@ void FrameUpdateSet::add(FrameUpdateSet const &o)
         o.updateSet_.end());
     isSet_ = false;
 }
-void FrameUpdateSet::swap(FrameUpdateSet &o)
+void FrameUpdateSet::swap(FrameUpdateSet &o) noexcept
 {
     boost::swap(updateSet_, o.updateSet_);
     boost::swap(isSet_, o.isSet_);

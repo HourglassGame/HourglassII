@@ -52,7 +52,7 @@ public:
         return *this;
     }
 
-    void swap(TimelineState &o);
+    void swap(TimelineState &o) noexcept;
     
     /**
      * Updates the timeline with new departures and returns the set of frames
@@ -87,6 +87,6 @@ private:
     Universe universe_;
     boost::container::map<Frame*, ObjectList<Normal>> permanentDepartures_;
 };
-inline void swap(TimelineState &l, TimelineState &r) { l.swap(r); }
+inline void swap(TimelineState &l, TimelineState &r) noexcept { l.swap(r); }
 }
 #endif //HG_ARRIVAL_DEPARTURE_MAP_H

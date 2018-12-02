@@ -37,7 +37,7 @@ public:
 
     void add(Frame *frame);
     void add(FrameUpdateSet const &o);
-    void swap(FrameUpdateSet &o);
+    void swap(FrameUpdateSet &o) noexcept;
 
 
 
