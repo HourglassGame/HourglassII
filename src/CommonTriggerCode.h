@@ -57,6 +57,16 @@ calculateActualTriggerDepartures(
                 getFrameNumber(currentFrame) + triggerOffsetsAndDefaults[trigger.getIndex()].first)]
           .push_back(trigger);
     }
+    //In theory this will be sorted by
+    //SortObjectList at the end of
+    //PhysicsEngine::executeFrame.
+    //However, sorting here allows
+    //different TriggerSystem implementations
+    //to add trigger data in a slightly different order, but
+    //still be considered to have identical behaviour by ComparisonTestTriggerSystem.
+    for (auto &[frame, tdVec] : retv) {
+        boost::sort(tdVec);
+    }
     return retv;
 }
 
