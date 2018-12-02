@@ -1285,8 +1285,6 @@ namespace hg {
     }
 
 
-    
-
     template<typename T, typename F>
     auto optionalMap(std::optional<T> const &o, F &&f) -> std::optional<decltype(f(*o))>{
         if (o) {
