@@ -9,10 +9,12 @@ local function map(f, l)
 end
 
 local function formatTime(frames)
-    if frames%framesPerSecond == 0 then
-        return math.floor(frames/framesPerSecond) .. "s"
+    local withDecimal = string.format("%.1f", frames/framesPerSecond)
+    local withoutDecimal = math.floor(0.5+frames/framesPerSecond)
+    if withDecimal == withoutDecimal .. ".0" then
+        return withoutDecimal .. "s"
     end
-    return string.format("%.1fs", frames/framesPerSecond)
+    return withDecimal.."s"
 end
 
 local function calculateBidirectionalGlitz(layer, obj, forwardsColour, reverseColour)
