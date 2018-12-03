@@ -122,9 +122,6 @@ end
 function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
     return true
 end
-function mutateObject(responsibleManipulatorIndices, dynamicObject)
-    return dynamicObject
-end
 mutateObject = bts.mutateObject(tempStore)
 
 local btsGetDeparture = bts.getDepartureInformation(tempStore)

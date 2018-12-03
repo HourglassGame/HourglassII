@@ -106,8 +106,5 @@ end
 function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
     return true
 end
-function mutateObject(responsibleManipulatorIndices, dynamicObject)
-    return dynamicObject
-end
-
+mutateObject = bts.mutateObject(tempStore)
 getDepartureInformation = bts.getDepartureInformation(tempStore)
