@@ -31,18 +31,23 @@ class ComparisonTestTriggerFrameState final :
         auto physicsAffectingStuffB = simpleConfiguredFrameState.calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
 
         if (physicsAffectingStuffA.additionalBoxes != physicsAffectingStuffB.additionalBoxes) {
+            assert(false && "physicsAffectingStuffA.additionalBoxes != physicsAffectingStuffB.additionalBoxes");
             throw std::exception("calculatePhysicsAffectingStuff.additionalBoxes mismatch");
         }
         if (physicsAffectingStuffA.portals != physicsAffectingStuffB.portals) {
+            assert(false && "physicsAffectingStuffA.portals != physicsAffectingStuffB.portals");
             throw std::exception("calculatePhysicsAffectingStuff.portals mismatch");
         }
         if (physicsAffectingStuffA.collisions != physicsAffectingStuffB.collisions) {
+            assert(false && "physicsAffectingStuffA.collisions != physicsAffectingStuffB.collisions");
             throw std::exception("calculatePhysicsAffectingStuff.collisions mismatch");
         }
         if (physicsAffectingStuffA.mutators != physicsAffectingStuffB.mutators) {
+            assert(false && "physicsAffectingStuffA.mutators != physicsAffectingStuffB.mutators");
             throw std::exception("calculatePhysicsAffectingStuff.mutators mismatch");
         }
         if (physicsAffectingStuffA.arrivalLocations != physicsAffectingStuffB.arrivalLocations) {
+            assert(false && "physicsAffectingStuffA.arrivalLocations != physicsAffectingStuffB.arrivalLocations");
             throw std::exception("calculatePhysicsAffectingStuff.arrivalLocations mismatch");
         }
 
@@ -54,6 +59,7 @@ class ComparisonTestTriggerFrameState final :
         auto shouldArriveB = simpleConfiguredFrameState.shouldArrive(potentialArriver);
 
         if (shouldArriveA != shouldArriveB) {
+            assert(false && "shouldArriveA != shouldArriveB Guy");
             throw std::exception("shouldArrive<Guy> mismatch");
         }
 
@@ -64,6 +70,7 @@ class ComparisonTestTriggerFrameState final :
         auto shouldArriveB = simpleConfiguredFrameState.shouldArrive(potentialArriver);
 
         if (shouldArriveA != shouldArriveB) {
+            assert(false && "shouldArriveA != shouldArriveB Box");
             throw std::exception("shouldArrive<Box> mismatch");
         }
 
@@ -79,6 +86,7 @@ class ComparisonTestTriggerFrameState final :
         auto shouldPortB = simpleConfiguredFrameState.shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
 
         if (shouldPortA != shouldPortB) {
+            assert(false && "shouldPortA != shouldPortB Guy");
             throw std::exception("shouldPort<Guy> mismatch");
         }
         return shouldPortA;
@@ -92,6 +100,7 @@ class ComparisonTestTriggerFrameState final :
         auto shouldPortB = simpleConfiguredFrameState.shouldPort(responsiblePortalIndex, potentialPorter, porterActionedPortal);
 
         if (shouldPortA != shouldPortB) {
+            assert(false && "shouldPortA != shouldPortB Box");
             throw std::exception("shouldPort<Box> mismatch");
         }
         return shouldPortA;
@@ -104,6 +113,7 @@ class ComparisonTestTriggerFrameState final :
         auto mutatedB = simpleConfiguredFrameState.mutateObject(responsibleMutatorIndices, objectToManipulate);
 
         if (mutatedA != mutatedB) {
+            assert(false && "mutatedA != mutatedB Guy");
             throw std::exception("mutateObject<Guy> mismatch");
         }
         return mutatedA;
@@ -115,6 +125,7 @@ class ComparisonTestTriggerFrameState final :
         auto mutatedB = simpleConfiguredFrameState.mutateObject(responsibleMutatorIndices, objectToManipulate);
 
         if (mutatedA != mutatedB) {
+            assert(false && "mutatedA != mutatedB Box");
             throw std::exception("mutateObject<Box> mismatch");
         }
         return mutatedA;
