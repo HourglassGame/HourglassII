@@ -137,8 +137,6 @@ private:
             ar & relativeGuyIndex;
         }
         if (version < 4) {
-            //Before it was possible to edit old GuyInputs, the InputList would
-            //always alter the latest GuyInput.
             guyInput.boxLeft = false;
             guyInput.boxRight = false;
         }
