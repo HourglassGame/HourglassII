@@ -15,6 +15,11 @@
 #include "RuntimeErrorScene.h"
 #include "GlobalConst.h"
 
+#include "GLFWApp.h"
+#include "GLFWWindow.h"
+
+#include "VulkanEngine.h"
+
 namespace hg {
 struct RunGameResultVisitor {
     typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>result_type;
@@ -53,37 +58,64 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
     } visitor = {window, replayLoadingFunction};
     return loading_outcome.visit(visitor);
 }
-
+void error_callback_glfw(int error, const char* description)
+{
+    std::cerr << "GLFW Error: " << error << ", " << description << "\n";
+    throw std::exception("GLFW Error encountered");
+}
 int run_hourglassii() {
-    //Create window
-    hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), "Hourglass II");
-    {
-        sf::Image window_icon_image;
-        if (window_icon_image.loadFromFile("images/HourglassSwirl_64x64.png")) {
-            window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
-        }
-    }
-    window.setVerticalSyncEnabled(true);
-    window.setFramerateLimit(hg::FRAMERATE);
-    //Do stuff!
-    //Need a loop maybe, so that when a level is reset, it can come back to the loading screen.
-    //... or something...?
-    
-    //The real problem here is that `run_level_scene` has highly complex outputs
-    //Inputs:
-    //Access to global realtime I/O (windowing, audio, (filesystem, other?))
-    //
-    //Outputs:
-    //The next desired action, and the data required to perform that action
-    // Quit
-    // Restart Level
-    // Load Replay (replay filepath)
-    // Register Level Success (replay data)
-    // Level Aborted
-    // Error condition encountered (error details)
-    // so on, so forth, need full list.
-    
+
     try {
+        //Create window
+        glfwSetErrorCallback(error_callback_glfw);
+
+        GLFWApp glfw;
+
+        auto const windowTitle{ "Hourglass II" };
+        sf::Image window_icon_image;
+
+        if (!window_icon_image.loadFromFile("images/HourglassSwirl_64x64.png")) {
+            throw std::exception("Couldn't load window icon");
+        }
+
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+        GLFWWindow const windowglfw(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
+        glfwDefaultWindowHints();
+        GLFWimage window_icon_image_glfw{
+                window_icon_image.getSize().x,
+                window_icon_image.getSize().y,
+                const_cast<unsigned char *>(reinterpret_cast<unsigned char const*>(window_icon_image.getPixelsPtr()))
+        };
+        glfwSetWindowIcon(windowglfw.w, 1, &window_icon_image_glfw);
+        glfwShowWindow(windowglfw.w);
+
+
+        hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | /*sf::Style::Resize |*/ sf::Style::Close);
+        window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
+        window.setVerticalSyncEnabled(true);
+        window.setFramerateLimit(hg::FRAMERATE);
+
+        VulkanEngine vulkanEng(*windowglfw.w);
+        //Do stuff!
+        //Need a loop maybe, so that when a level is reset, it can come back to the loading screen.
+        //... or something...?
+    
+        //The real problem here is that `run_level_scene` has highly complex outputs
+        //Inputs:
+        //Access to global realtime I/O (windowing, audio, (filesystem, other?))
+        //
+        //Outputs:
+        //The next desired action, and the data required to perform that action
+        // Quit
+        // Restart Level
+        // Load Replay (replay filepath)
+        // Register Level Success (replay data)
+        // Level Aborted
+        // Error condition encountered (error details)
+        // so on, so forth, need full list.
+
         while (true) {
             variant<RunALevel_tag, RunAReplay_tag, Exit_tag> main_menu_result = run_main_menu(window);
             if (main_menu_result.active<Exit_tag>()) {
@@ -147,21 +179,24 @@ int run_hourglassii() {
                     report_runtime_error(window, e);
                     game_scene_result = GameAborted_tag{};
                 }
-                catch (std::bad_alloc const &) {
-                    //report_out_of_memory();
-                    std::cerr << "oops... ran out of memory ):" << std::endl;
-                    return EXIT_FAILURE;
-                }
-                catch (std::exception const &e) {
-                    //
-                    std::cerr << "A std::exception was caught, e.what() is: " << e.what() << std::endl;
-                    return EXIT_FAILURE;
-                }
             }
         }
     }
     catch (WindowClosed_exception const&) {
         //Do nothing, just exit.
+    }
+    catch (std::bad_alloc const &) {
+        //report_out_of_memory();
+        std::cerr << "oops... ran out of memory ):" << std::endl;
+        return EXIT_FAILURE;
+    }
+    catch (std::exception const &e) {
+        std::cerr << "A std::exception was caught, e.what() is: " << e.what() << std::endl;
+        return EXIT_FAILURE;
+    }
+    catch (...) {
+        std::cerr << "An unknown exception was caught " << std::endl;
+        return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
 }

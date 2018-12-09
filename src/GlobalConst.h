@@ -16,5 +16,14 @@ namespace hg {
     inline static const double TIMELINE_PAD_X = 0.02;
     inline static const int WINDOW_DEFAULT_X = 1260;
     inline static const int WINDOW_DEFAULT_Y = 840;
+
+    inline std::vector<const char*> const validationLayers{
+    "VK_LAYER_LUNARG_standard_validation"
+    };
+#ifdef NDEBUG
+    inline bool const enableValidationLayers = false;
+#else
+    inline bool const enableValidationLayers = true;
+#endif
 }
 #endif //HG_GLOBALCONST_H
