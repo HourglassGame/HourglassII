@@ -23,12 +23,21 @@ namespace hg {
     };
 
     inline bool checkValidationLayerSupport() {
-        uint32_t layerCount;
-        vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
+        uint32_t layerCount = 0;
+        {
+            auto const res{ vkEnumerateInstanceLayerProperties(&layerCount, nullptr) };
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
+                throw std::exception("Failed to read vulkan layer count", res);
+            }
+        }
         std::vector<VkLayerProperties> availableLayers(layerCount);
-        vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
+        {
+            auto const res{ vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data()) };
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
+                throw std::exception("Failed to read vulkan layers", res);
+            }
+        }
+        availableLayers.resize(layerCount);
         auto strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
 
         std::vector<const char*> validationLayersSortUnique(validationLayers);
@@ -100,18 +109,16 @@ namespace hg {
 
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-
+        queueFamilies.resize(queueFamilyCount);
         int i = 0;
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
                 indices.graphicsFamily = i;
             }
 
-            if (indices.isComplete()) {
-                break;
-            }
+            if (indices.isComplete()) break;
 
-            i++;
+            ++i;
         }
 
         return indices;
@@ -127,7 +134,7 @@ namespace hg {
         {
             auto const res{vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr)};
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Failed to read physical device count");
+                throw std::exception("Failed to read physical device count", res);
             }
         }
         if (deviceCount == 0) {
@@ -138,11 +145,11 @@ namespace hg {
         {
             auto const res{vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data())};
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("failed to read physical devices");
+                throw std::exception("failed to read physical devices", res);
             }
         }
         devices.resize(deviceCount);
-        auto const suitableDeviceIt{boost::find_if<boost::return_found>(devices, isDeviceSuitable)};
+        auto const suitableDeviceIt{boost::find_if(devices, isDeviceSuitable)};
         if (suitableDeviceIt == std::end(devices)) {
             throw std::exception("failed to find a suitable GPU!");
         }
