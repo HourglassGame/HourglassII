@@ -2,6 +2,8 @@
 #define HG_VULKANENGINE_H
 #include "VulkanInstance.h"
 #include "VulkanDebugCallback.h"
+#include "VulkanUtil.h"
+#include "VulkanLogicalDevice.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -14,14 +16,6 @@
 #include <optional>
 #include "GlobalConst.h"
 namespace hg {
-    struct QueueFamilyIndices {
-        std::optional<uint32_t> graphicsFamily;
-
-        bool isComplete() {
-            return graphicsFamily.has_value();
-        }
-    };
-
     inline bool checkValidationLayerSupport() {
         uint32_t layerCount = 0;
         {
@@ -101,29 +95,6 @@ namespace hg {
         return info;
     }
 
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
-        QueueFamilyIndices indices;
-
-        uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-        std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-        queueFamilies.resize(queueFamilyCount);
-        int i = 0;
-        for (const auto& queueFamily : queueFamilies) {
-            if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-                indices.graphicsFamily = i;
-            }
-
-            if (indices.isComplete()) break;
-
-            ++i;
-        }
-
-        return indices;
-    }
-
     inline bool isDeviceSuitable(VkPhysicalDevice device) {
         QueueFamilyIndices indices{findQueueFamilies(device)};
         return indices.isComplete();
@@ -164,6 +135,7 @@ namespace hg {
           , instance(makeInstanceCreateInfo(nullptr, getRequiredExtensions()))
           , debugCallback(instance.i)
           , physicalDevice(pickPhysicalDevice(instance.i))
+          , logicalDevice(physicalDevice)
         {
             //createInstance();
             //setupDebugCallback();
@@ -191,6 +163,7 @@ namespace hg {
         VulkanInstance instance;
         VulkanDebugCallback debugCallback;
         VkPhysicalDevice physicalDevice;
+        VulkanLogicalDevice logicalDevice;
     };
 }
 #endif // !HG_VULKANENGINE_H
