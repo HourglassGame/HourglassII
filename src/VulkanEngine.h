@@ -1,5 +1,6 @@
 #ifndef HG_VULKANENGINE_H
 #define HG_VULKANENGINE_H
+#include "VulkanSurface.h"
 #include "VulkanInstance.h"
 #include "VulkanDebugCallback.h"
 #include "VulkanUtil.h"
@@ -95,12 +96,12 @@ namespace hg {
         return info;
     }
 
-    inline bool isDeviceSuitable(VkPhysicalDevice device) {
-        QueueFamilyIndices indices{findQueueFamilies(device)};
+    inline bool isDeviceSuitable(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
+        QueueFamilyIndices indices{findQueueFamilies(device, surface)};
         return indices.isComplete();
     }
 
-    inline VkPhysicalDevice pickPhysicalDevice(VkInstance const &instance) {
+    inline VkPhysicalDevice pickPhysicalDevice(VkInstance const &instance, VkSurfaceKHR const surface) {
         uint32_t deviceCount = 0;
         {
             auto const res{vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr)};
@@ -120,7 +121,7 @@ namespace hg {
             }
         }
         devices.resize(deviceCount);
-        auto const suitableDeviceIt{boost::find_if(devices, isDeviceSuitable)};
+        auto const suitableDeviceIt{boost::find_if(devices, [&surface](VkPhysicalDevice device) {return isDeviceSuitable(device, surface);})};
         if (suitableDeviceIt == std::end(devices)) {
             throw std::exception("failed to find a suitable GPU!");
         }
@@ -134,8 +135,9 @@ namespace hg {
         ) : w(&w)
           , instance(makeInstanceCreateInfo(nullptr, getRequiredExtensions()))
           , debugCallback(instance.i)
-          , physicalDevice(pickPhysicalDevice(instance.i))
-          , logicalDevice(physicalDevice)
+          , surface(instance.i, &w)
+          , physicalDevice(pickPhysicalDevice(instance.i, surface.surface))
+          , logicalDevice(physicalDevice, surface.surface)
         {
             //createInstance();
             //setupDebugCallback();
@@ -162,6 +164,7 @@ namespace hg {
         GLFWwindow *w;
         VulkanInstance instance;
         VulkanDebugCallback debugCallback;
+        VulkanSurface surface;
         VkPhysicalDevice physicalDevice;
         VulkanLogicalDevice logicalDevice;
     };

@@ -8,13 +8,17 @@ namespace hg {
     class VulkanLogicalDevice final {
     public:
         VulkanLogicalDevice(
-            VkPhysicalDevice physicalDevice
+            VkPhysicalDevice const physicalDevice,
+            VkSurfaceKHR const surface
         )
         {
-            QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+            QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
 
-            if (!indices.graphicsFamily.has_value()) {
+            if (!indices.graphicsFamily) {
                 throw std::exception("No graphics queue on physical device, should not have been detected as a valid device selection");
+            }
+            if (!indices.presentFamily) {
+                throw std::exception("No present queue on physical device, should not have been detected as a valid device selection");
             }
 
             VkDeviceQueueCreateInfo queueCreateInfo = {};
@@ -45,6 +49,7 @@ namespace hg {
             }
 
             vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+            vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
         }
         VulkanLogicalDevice(VulkanLogicalDevice const&) = delete;
         VulkanLogicalDevice(VulkanLogicalDevice &&) = delete;
@@ -55,6 +60,7 @@ namespace hg {
         }
         VkDevice device;
         VkQueue graphicsQueue;
+        VkQueue presentQueue;
     };
 }
 #endif // !HG_VULKANLOGICALDEVICE_H

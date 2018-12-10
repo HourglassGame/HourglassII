@@ -24,6 +24,7 @@ target_compile_definitions(HourglassII
         #BOOST_RANGE_ENABLE_CONCEPT_ASSERT=0
         GLEW_BUILD
         BOOST_THREAD_VERSION=4
+        GLFW_INCLUDE_VULKAN
         #Windows and/or MSVC specific:
         _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
         NOMINMAX
