@@ -4,6 +4,10 @@
 #include <vector>
 #include <optional>
 namespace hg {
+    std::vector<const char*> const deviceExtensions{
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
         std::optional<uint32_t> presentFamily;
@@ -22,7 +26,7 @@ namespace hg {
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
         queueFamilies.resize(queueFamilyCount);
-        int i = 0;
+        uint32_t i{0};
         for (const auto& queueFamily : queueFamilies) {
             if (queueFamily.queueCount > 0) {
                 if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
@@ -41,6 +45,55 @@ namespace hg {
         }
 
         return indices;
+    }
+
+    struct SwapChainSupportDetails {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+    };
+    inline SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
+        SwapChainSupportDetails details;
+
+        if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities) != VK_SUCCESS) {
+            throw std::exception("Couldn't Read Surface Capabilities");
+        }
+
+        uint32_t formatCount{};
+        {
+            auto const res{vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr)};
+            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read surface formats count");
+            }
+        }
+
+        details.formats.resize(formatCount);
+        {
+            auto const res{ vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data())};
+            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read surface formats");
+            }
+        }
+        details.formats.resize(formatCount);
+
+        uint32_t presentModeCount{};
+        {
+            auto const res{vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr)};
+            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read presentModes count");
+            }
+        }
+        
+        details.presentModes.resize(presentModeCount);
+        {
+            auto const res{ vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data())};
+            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read presentModes");
+            }
+        }
+        details.presentModes.resize(presentModeCount);
+
+        return details;
     }
 }
 #endif // !HG_VULKANUTIL_H

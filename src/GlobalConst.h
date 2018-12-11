@@ -18,7 +18,7 @@ namespace hg {
     inline static const int WINDOW_DEFAULT_Y = 840;
 
     inline std::vector<const char*> const validationLayers{
-    "VK_LAYER_LUNARG_standard_validation"
+        "VK_LAYER_LUNARG_standard_validation"
     };
 #ifdef NDEBUG
     inline bool const enableValidationLayers = false;

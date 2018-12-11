@@ -1,5 +1,7 @@
 #ifndef HG_VULKANENGINE_H
 #define HG_VULKANENGINE_H
+#include "VulkanSwapChain.h"
+#include "VulkanSwapChainImageView.h"
 #include "VulkanSurface.h"
 #include "VulkanInstance.h"
 #include "VulkanDebugCallback.h"
@@ -17,6 +19,9 @@
 #include <optional>
 #include "GlobalConst.h"
 namespace hg {
+
+    inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
+
     inline bool checkValidationLayerSupport() {
         uint32_t layerCount = 0;
         {
@@ -33,7 +38,6 @@ namespace hg {
             }
         }
         availableLayers.resize(layerCount);
-        auto strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
 
         std::vector<const char*> validationLayersSortUnique(validationLayers);
         boost::erase(validationLayersSortUnique, boost::unique(boost::sort(validationLayersSortUnique, strcmporder), strcmporder));
@@ -95,10 +99,45 @@ namespace hg {
         info.ppEnabledExtensionNames = extensions.data();
         return info;
     }
+    inline bool checkDeviceExtensionSupport(VkPhysicalDevice const device) {
+        uint32_t extensionCount{0};
+        {
+            auto const res{vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr)};
+            if (!(res== VK_SUCCESS || res == VK_INCOMPLETE)) {
+                throw std::exception("Couldn't count Device Extensions vkEnumerateDeviceExtensionProperties");
+            }
+        }
+        
+        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+        {
+            auto const res{vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data())};
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read Device Extensions vkEnumerateDeviceExtensionProperties");
+            }
+            availableExtensions.resize(extensionCount);
+        }
+
+        std::vector<const char*> deviceExtensionsSortUnique(deviceExtensions);
+        boost::erase(deviceExtensionsSortUnique, boost::unique(boost::sort(deviceExtensionsSortUnique, strcmporder), strcmporder));
+
+        std::vector<const char*> availableExtensionsSortUnique;
+        boost::push_back(availableExtensionsSortUnique, availableExtensions | boost::adaptors::transformed([](VkExtensionProperties const &a) {return a.extensionName; }));
+        boost::erase(availableExtensionsSortUnique, boost::unique(boost::sort(availableExtensionsSortUnique, strcmporder), strcmporder));
+
+        return boost::range::includes(
+            availableExtensionsSortUnique,
+            deviceExtensionsSortUnique,
+            strcmporder);
+    }
+
+    inline bool checkSwapChainSupport(SwapChainSupportDetails const &swapChainSupport) {
+        return !(swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty());
+    }
 
     inline bool isDeviceSuitable(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
-        QueueFamilyIndices indices{findQueueFamilies(device, surface)};
-        return indices.isComplete();
+        return findQueueFamilies(device, surface).isComplete()
+            && checkDeviceExtensionSupport(device)
+            && checkSwapChainSupport(querySwapChainSupport(device, surface));
     }
 
     inline VkPhysicalDevice pickPhysicalDevice(VkInstance const &instance, VkSurfaceKHR const surface) {
@@ -127,6 +166,36 @@ namespace hg {
         }
         return *suitableDeviceIt;
     }
+    inline std::vector<VkImage> createSwapChainImages(
+        VkDevice const device,
+        VkSwapchainKHR const swapChain,
+        uint32_t &imageCount)
+    {
+        std::vector<VkImage> swapChainImages;
+        {
+            auto const res{ vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr) };
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read swapchain image count");
+            }
+        }
+        swapChainImages.resize(imageCount);
+        {
+            auto const res{ vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data()) };
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
+                throw std::exception("Couldn't read swapchain images");
+            }
+        }
+        swapChainImages.resize(imageCount);
+        return swapChainImages;
+    }
+    inline std::vector<VulkanSwapChainImageView> createSwapChainImageViews(
+        VkDevice const device, VkFormat const imageFormat, std::vector<VkImage> const &swapChainImages) {
+        std::vector<VulkanSwapChainImageView> swapChainImageViews;
+        auto rng{ swapChainImages | boost::adaptors::transformed([device, imageFormat](auto const &i) {return VulkanSwapChainImageView{device, imageFormat, i}; }) };
+        swapChainImageViews.assign(std::make_move_iterator(std::begin(rng)), std::make_move_iterator(std::end(rng)));
+
+        return swapChainImageViews;
+    }
 
     class VulkanEngine final {
     public:
@@ -138,6 +207,9 @@ namespace hg {
           , surface(instance.i, &w)
           , physicalDevice(pickPhysicalDevice(instance.i, surface.surface))
           , logicalDevice(physicalDevice, surface.surface)
+          , swapChain(physicalDevice, logicalDevice.device, surface.surface)
+          , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
+          , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
         {
             //createInstance();
             //setupDebugCallback();
@@ -167,6 +239,9 @@ namespace hg {
         VulkanSurface surface;
         VkPhysicalDevice physicalDevice;
         VulkanLogicalDevice logicalDevice;
+        VulkanSwapChain swapChain;
+        std::vector<VkImage> swapChainImages;
+        std::vector<VulkanSwapChainImageView> swapChainImageViews;
     };
 }
 #endif // !HG_VULKANENGINE_H
