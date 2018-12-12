@@ -68,6 +68,29 @@ target_link_libraries(HourglassII TBB::tbb TBB::tbbmalloc TBB::tbbmalloc_proxy)
 target_link_libraries(HourglassII glfw)
 target_link_libraries(HourglassII Vulkan::Vulkan)
 
-#Not copying data files or dlls.
-#This should be done manually for now.
-#(Perhaps with a symbolic link to the data folder, so that data files can be edited while they are being used).
+file(GLOB_RECURSE DATA_SOURCE_FILES
+    "${CMAKE_SOURCE_DIR}/data/*"
+    )
+
+STRING(LENGTH "${CMAKE_SOURCE_DIR}/" CMAKE_SOURCE_DIR_LEN)
+
+foreach(DATA_SOURCE_FILE ${DATA_SOURCE_FILES})
+    string(SUBSTRING ${DATA_SOURCE_FILE} ${CMAKE_SOURCE_DIR_LEN} -1 DATA_SOURCE_FILE_REL)
+    list(APPEND DATA_SOURCE_FILES_REL ${DATA_SOURCE_FILE_REL})
+endforeach()
+
+foreach(DATA_SOURCE_FILE_REL ${DATA_SOURCE_FILES_REL})
+    set(DATA_TARGET_FILE "${CMAKE_CURRENT_BINARY_DIR}/${DATA_SOURCE_FILE_REL}")
+    list(APPEND DATA_TARGET_FILES ${DATA_TARGET_FILE})
+endforeach()
+
+add_custom_command(
+    OUTPUT ${DATA_TARGET_FILES}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/data"
+        "$<TARGET_FILE_DIR:HourglassII>/data"
+    DEPENDS ${DATA_SOURCE_FILES}
+)
+#Still not copying DLLs, this needs to be done for a full hands-off build from source to be runnable
+add_custom_target(HourglassIIPackage ALL VERBATIM DEPENDS ${DATA_TARGET_FILES})
+add_dependencies(HourglassIIPackage HourglassII)
