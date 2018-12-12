@@ -68,6 +68,30 @@ target_link_libraries(HourglassII TBB::tbb TBB::tbbmalloc TBB::tbbmalloc_proxy)
 target_link_libraries(HourglassII glfw)
 target_link_libraries(HourglassII Vulkan::Vulkan)
 
+
+set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
+
+file(GLOB_RECURSE GLSL_SOURCE_FILES
+    "${CMAKE_SOURCE_DIR}/shadersrc/*.glsl"
+    )
+
+message(${GLSL_SOURCE_FILES})
+
+foreach(GLSL ${GLSL_SOURCE_FILES})
+  get_filename_component(FILE_NAME ${GLSL} NAME)
+  set(SPIRV "${CMAKE_CURRENT_BINARY_DIR}/data/shaders/${FILE_NAME}.spv")
+  add_custom_command(
+    OUTPUT ${SPIRV}
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/data/shaders/"
+    #glslangValidator.exe only support SPIR-V output at an experimental level
+    #at time of writing, and does not perform any optimization etc.
+    #In the future it might be worth using a different compiler or even a different
+    #shader source language.
+    COMMAND ${GLSL_VALIDATOR} -V ${GLSL} -o ${SPIRV}
+    DEPENDS ${GLSL})
+  list(APPEND SPIRV_BINARY_FILES ${SPIRV})
+endforeach()
+
 file(GLOB_RECURSE DATA_SOURCE_FILES
     "${CMAKE_SOURCE_DIR}/data/*"
     )
@@ -92,5 +116,5 @@ add_custom_command(
     DEPENDS ${DATA_SOURCE_FILES}
 )
 #Still not copying DLLs, this needs to be done for a full hands-off build from source to be runnable
-add_custom_target(HourglassIIPackage ALL VERBATIM DEPENDS ${DATA_TARGET_FILES})
+add_custom_target(HourglassIIPackage ALL VERBATIM DEPENDS ${DATA_TARGET_FILES} ${SPIRV_BINARY_FILES})
 add_dependencies(HourglassIIPackage HourglassII)
