@@ -9,6 +9,7 @@
 #include "VulkanUtil.h"
 #include "VulkanLogicalDevice.h"
 #include "VulkanPipelineLayout.h"
+#include "VulkanFramebuffer.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -198,7 +199,19 @@ namespace hg {
 
         return swapChainImageViews;
     }
-
+    inline std::vector<VulkanFramebuffer> createSwapchainFramebuffers(
+        VkDevice const device,
+        VkRenderPass const renderPass,
+        VkExtent2D const swapChainExtent,
+        std::vector<VulkanSwapChainImageView> const &swapChainImageViews)
+    {
+        std::vector<VulkanFramebuffer> framebuffers;
+        framebuffers.reserve(swapChainImageViews.size());
+        for (auto const &swapChainImageView : swapChainImageViews) {
+            framebuffers.emplace_back(device, swapChainImageView.imageView, renderPass, swapChainExtent);
+        }
+        return framebuffers;
+    }
     class VulkanEngine final {
     public:
         VulkanEngine(
@@ -214,6 +227,7 @@ namespace hg {
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
           , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
           , pipelineLayout(logicalDevice.device, swapChain.extent)
+          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
         {
             //createInstance();
             //setupDebugCallback();
@@ -248,6 +262,7 @@ namespace hg {
         std::vector<VulkanSwapChainImageView> swapChainImageViews;
         VulkanRenderPass renderPass;
         VulkanPipelineLayout pipelineLayout;
+        std::vector<VulkanFramebuffer> swapChainFramebuffers;
     };
 }
 #endif // !HG_VULKANENGINE_H
