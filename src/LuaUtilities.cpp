@@ -24,7 +24,7 @@ std::vector<char> loadFileIntoVector(
 {
     boost::filesystem::ifstream file;
     file.exceptions(std::ifstream::badbit | std::ifstream::failbit | std::ifstream::eofbit);
-    file.open(filename, std::ifstream::in);
+    file.open(filename, std::ifstream::in | std::ifstream::binary);
 
     std::stringstream ss;
     if (!(ss << file.rdbuf())) {

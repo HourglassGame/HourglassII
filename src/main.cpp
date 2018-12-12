@@ -1,5 +1,7 @@
 #include "InitialScene.h"
 #include "TestDriver.h"
+#include "LuaUtilities.h"
+#include "VulkanUtil.h"
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Audio.hpp>
@@ -24,6 +26,13 @@
 namespace hg {
     extern sf::Font const *defaultFont;
            sf::Font const *defaultFont;
+
+
+    extern std::vector<uint32_t> const *demoFragSpv;
+           std::vector<uint32_t> const *demoFragSpv;
+
+    extern std::vector<uint32_t> const *demoVertSpv;
+           std::vector<uint32_t> const *demoVertSpv;
 }
 
 namespace {
@@ -32,16 +41,28 @@ namespace {
     void initialiseStdIO();
     struct GlobalResourceHolder {
         GlobalResourceHolder() :
-            defaultFontHolder()
+            defaultFontHolder(),
+            demoFragSpvHolder(),
+            demoVertSpvHolder()
         {
-            std::string const filename("Arial.ttf");
-            bool const fontLoaded(defaultFontHolder.loadFromFile(filename));
-            assert(fontLoaded);
-            static_cast<void>(fontLoaded);
-            hg::defaultFont = &defaultFontHolder;
+            {
+                std::string const filename("Arial.ttf");
+                bool const fontLoaded(defaultFontHolder.loadFromFile(filename));
+                assert(fontLoaded);
+                static_cast<void>(fontLoaded);
+                hg::defaultFont = &defaultFontHolder;
+            }
+
+            demoFragSpvHolder = hg::reinterpretToUint32Vector(hg::loadFileIntoVector("shaders/demo.frag.glsl.spv"));
+            hg::demoFragSpv = &demoFragSpvHolder;
+
+            demoVertSpvHolder = hg::reinterpretToUint32Vector(hg::loadFileIntoVector("shaders/demo.vert.glsl.spv"));
+            hg::demoVertSpv = &demoVertSpvHolder;
         }
     private:
         sf::Font defaultFontHolder;
+        std::vector<uint32_t> demoFragSpvHolder;
+        std::vector<uint32_t> demoVertSpvHolder;
     };
 }
 

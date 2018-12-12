@@ -7,7 +7,16 @@ namespace hg {
     std::vector<const char*> const deviceExtensions{
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
+    inline std::vector<uint32_t> reinterpretToUint32Vector(std::vector<char> const &data) {
+        static_assert(CHAR_BIT == 8);
+        if (data.size() % sizeof(uint32_t) != 0) {
+            throw std::runtime_error("File size not divisible by uint32_t size");
+        }
 
+        std::vector<uint32_t> out(data.size() / sizeof(uint32_t));
+        memcpy(out.data(), data.data(), data.size());
+        return out;
+    }
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
         std::optional<uint32_t> presentFamily;
@@ -17,7 +26,7 @@ namespace hg {
         }
     };
 
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR const surface) {
+    inline QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR const surface) {
         QueueFamilyIndices indices;
 
         uint32_t queueFamilyCount = 0;
@@ -83,7 +92,7 @@ namespace hg {
                 throw std::exception("Couldn't read presentModes count");
             }
         }
-        
+
         details.presentModes.resize(presentModeCount);
         {
             auto const res{ vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data())};

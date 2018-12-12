@@ -7,6 +7,7 @@
 #include "VulkanDebugCallback.h"
 #include "VulkanUtil.h"
 #include "VulkanLogicalDevice.h"
+#include "VulkanPipelineLayout.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -210,6 +211,7 @@ namespace hg {
           , swapChain(physicalDevice, logicalDevice.device, surface.surface)
           , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
+          , pipelineLayout(logicalDevice.device, swapChain.extent)
         {
             //createInstance();
             //setupDebugCallback();
@@ -242,6 +244,7 @@ namespace hg {
         VulkanSwapChain swapChain;
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanSwapChainImageView> swapChainImageViews;
+        VulkanPipelineLayout pipelineLayout;
     };
 }
 #endif // !HG_VULKANENGINE_H
