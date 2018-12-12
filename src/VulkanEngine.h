@@ -3,6 +3,7 @@
 #include "VulkanSwapChain.h"
 #include "VulkanSwapChainImageView.h"
 #include "VulkanSurface.h"
+#include "VulkanRenderPass.h"
 #include "VulkanInstance.h"
 #include "VulkanDebugCallback.h"
 #include "VulkanUtil.h"
@@ -211,6 +212,7 @@ namespace hg {
           , swapChain(physicalDevice, logicalDevice.device, surface.surface)
           , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
+          , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
           , pipelineLayout(logicalDevice.device, swapChain.extent)
         {
             //createInstance();
@@ -244,6 +246,7 @@ namespace hg {
         VulkanSwapChain swapChain;
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanSwapChainImageView> swapChainImageViews;
+        VulkanRenderPass renderPass;
         VulkanPipelineLayout pipelineLayout;
     };
 }
