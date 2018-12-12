@@ -21,7 +21,6 @@ add_executable(HourglassII WIN32 MACOSX_BUNDLE)
 #TODO: Separate into Debug and Release, and per-platform config?
 target_compile_definitions(HourglassII
     PRIVATE
-        #BOOST_RANGE_ENABLE_CONCEPT_ASSERT=0
         GLEW_BUILD
         BOOST_THREAD_VERSION=4
         GLFW_INCLUDE_VULKAN
@@ -34,6 +33,8 @@ target_compile_definitions(HourglassII
         _WINDOWS
         _UNICODE
         UNICODE
+        VC_EXTRALEAN
+        WIN32_LEAN_AND_MEAN
 )
 
 set_target_properties(HourglassII PROPERTIES
