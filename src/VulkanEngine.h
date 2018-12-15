@@ -11,6 +11,7 @@
 #include "VulkanPipelineLayout.h"
 #include "VulkanFramebuffer.h"
 #include "VulkanCommandPool.h"
+#include "VulkanGraphicsPipeline.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -228,6 +229,7 @@ namespace hg {
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
           , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
           , pipelineLayout(logicalDevice.device, swapChain.extent)
+          , graphicsPipeline(logicalDevice.device, swapChain.extent, pipelineLayout.pipelineLayout, renderPass.renderPass)
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
           , commandPool(logicalDevice.device, physicalDevice, surface.surface)
         {
@@ -249,9 +251,7 @@ namespace hg {
         VulkanEngine(VulkanEngine &&) = delete;
         VulkanEngine &operator=(VulkanEngine const&) = delete;
         VulkanEngine &operator=(VulkanEngine &&) = delete;
-        ~VulkanEngine() noexcept {
-            
-        }
+        ~VulkanEngine() noexcept = default;
     private:
         GLFWwindow *w;
         VulkanInstance instance;
@@ -264,6 +264,7 @@ namespace hg {
         std::vector<VulkanSwapChainImageView> swapChainImageViews;
         VulkanRenderPass renderPass;
         VulkanPipelineLayout pipelineLayout;
+        VulkanGraphicsPipeline graphicsPipeline;
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
         VulkanCommandPool commandPool;
     };
