@@ -214,6 +214,63 @@ namespace hg {
         }
         return framebuffers;
     }
+
+    inline std::vector<VkCommandBuffer> createCommandBuffers(
+        std::vector<VulkanFramebuffer> const &swapChainFramebuffers,
+        VkCommandPool const commandPool,
+        VkDevice const device,
+        VkRenderPass const renderPass,
+        VkExtent2D const swapChainExtent,
+        VkPipeline const graphicsPipeline
+    )
+    {
+        std::vector<VkCommandBuffer> commandBuffers(swapChainFramebuffers.size());
+
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = commandPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+
+        if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
+            throw std::exception("failed to allocate command buffers!");
+        }
+
+        for (std::size_t i{0}, end{commandBuffers.size()}; i < end; ++i) {
+            VkCommandBufferBeginInfo beginInfo = {};
+            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+            beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+            if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
+                throw std::exception("failed to begin recording command buffer!");
+            }
+
+            VkRenderPassBeginInfo renderPassInfo = {};
+            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+            renderPassInfo.renderPass = renderPass;
+            renderPassInfo.framebuffer = swapChainFramebuffers[i].framebuffer;
+            renderPassInfo.renderArea.offset = { 0, 0 };
+            renderPassInfo.renderArea.extent = swapChainExtent;
+
+            VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+            renderPassInfo.clearValueCount = 1;
+            renderPassInfo.pClearValues = &clearColor;
+
+            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+            vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+
+            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
+
+            vkCmdEndRenderPass(commandBuffers[i]);
+
+            if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
+                throw std::exception("failed to record command buffer!");
+            }
+        }
+        return commandBuffers;
+    }
+
     class VulkanEngine final {
     public:
         VulkanEngine(
@@ -232,6 +289,7 @@ namespace hg {
           , graphicsPipeline(logicalDevice.device, swapChain.extent, pipelineLayout.pipelineLayout, renderPass.renderPass)
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
           , commandPool(logicalDevice.device, physicalDevice, surface.surface)
+          , commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
         {
             //createInstance();
             //setupDebugCallback();
@@ -267,6 +325,7 @@ namespace hg {
         VulkanGraphicsPipeline graphicsPipeline;
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
         VulkanCommandPool commandPool;
+        std::vector<VkCommandBuffer> commandBuffers;
     };
 }
 #endif // !HG_VULKANENGINE_H
