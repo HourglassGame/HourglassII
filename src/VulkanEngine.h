@@ -10,6 +10,7 @@
 #include "VulkanLogicalDevice.h"
 #include "VulkanPipelineLayout.h"
 #include "VulkanFramebuffer.h"
+#include "VulkanCommandPool.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -228,6 +229,7 @@ namespace hg {
           , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
           , pipelineLayout(logicalDevice.device, swapChain.extent)
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
+          , commandPool(logicalDevice.device, physicalDevice, surface.surface)
         {
             //createInstance();
             //setupDebugCallback();
@@ -263,6 +265,7 @@ namespace hg {
         VulkanRenderPass renderPass;
         VulkanPipelineLayout pipelineLayout;
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
+        VulkanCommandPool commandPool;
     };
 }
 #endif // !HG_VULKANENGINE_H
