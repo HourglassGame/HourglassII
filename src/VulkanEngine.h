@@ -14,6 +14,8 @@
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanFence.h"
 #include "VulkanSemaphore.h"
+#include "VulkanMemory.h"
+#include "VulkanBuffer.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -313,6 +315,32 @@ namespace hg {
         }
         return f;
     }
+    inline std::vector<VulkanBuffer> createVertexBuffers(VkDevice const device) {
+        std::vector<VulkanBuffer> b;
+        for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
+            b.emplace_back(device);
+        }
+        return b;
+    }
+    inline std::vector<VulkanMemory> createVertexMemories(VkDevice const device) {
+        std::vector<VulkanMemory> m;
+        for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
+            m.emplace_back(device);
+        }
+        return m;
+    }
+    inline uint32_t findMemoryType(VkPhysicalDevice const physicalDevice, uint32_t const typeFilter, VkMemoryPropertyFlags const properties) {
+        VkPhysicalDeviceMemoryProperties memProperties;
+        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+
+        for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
+            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+                return i;
+            }
+        }
+
+        throw std::exception("failed to find suitable memory type!");
+    }
     class VulkanEngine final {
     public:
         VulkanEngine(
@@ -333,13 +361,15 @@ namespace hg {
           , commandPool(logicalDevice.device, physicalDevice, surface.surface)
           //, commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
           , commandBuffers2(createCommandBuffers2(commandPool.commandPool, logicalDevice.device))
+          , vertexBufferMemories(createVertexMemories(logicalDevice.device))
+          , vertexBuffers(createVertexBuffers(logicalDevice.device))
           , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.device))
           , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.device))
           , inFlightFences(createInFlightFences(logicalDevice.device))
           , currentFrame(0)
         {
         }
-        void drawFrame(std::vector<std::tuple<float, float>> const &vertices= std::vector<std::tuple<float, float>>{}) {
+        void drawFrame(std::vector<vec2<float>> const &vertices = std::vector<vec2<float>>{{0.f,-.5f},{0.5f,0.5f},{-0.5f,0.5f},{-1.f,0.f},{-1.f,-1.f},{0.f,-1.f} }) {
             if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
                 throw std::exception("Couldn't wait for fence");
             }
@@ -351,6 +381,39 @@ namespace hg {
             if (vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
                 throw std::exception("Couldn't Acquire next Image");
             }
+
+            auto &vertexBuffer{ vertexBuffers[currentFrame] };
+            vertexBuffer = VulkanBuffer(logicalDevice.device);
+            {
+                VkBufferCreateInfo bufferInfo = {};
+                bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+                bufferInfo.size = sizeof(vertices[0]) * vertices.size();
+                bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+                bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+                vertexBuffer = VulkanBuffer(logicalDevice.device, bufferInfo);
+            }
+            auto &vertexBufferMemory{vertexBufferMemories[currentFrame]};
+            vertexBufferMemory = VulkanMemory(logicalDevice.device);
+            {
+                VkMemoryRequirements memRequirements;
+                vkGetBufferMemoryRequirements(logicalDevice.device, vertexBuffer.buffer, &memRequirements);
+
+                VkMemoryAllocateInfo allocInfo = {};
+                allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+                allocInfo.allocationSize = memRequirements.size;
+                allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+                vertexBufferMemory = VulkanMemory(logicalDevice.device, allocInfo);
+            }
+            if (vkBindBufferMemory(logicalDevice.device, vertexBuffer.buffer, vertexBufferMemory.memory, 0) != VK_SUCCESS) {
+                throw std::exception("Couldn't bind buffer memory");
+            }
+
+            void* data;
+            if (vkMapMemory(logicalDevice.device, vertexBufferMemory.memory, 0, sizeof(vertices[0]) * vertices.size(), 0, &data) != VK_SUCCESS){
+                throw std::exception("Couldn't map memory for vertex buffer");
+            }
+            memcpy(data, vertices.data(), sizeof(vertices[0]) * vertices.size());
+            vkUnmapMemory(logicalDevice.device, vertexBufferMemory.memory);
 
             auto const &commandBuffer{commandBuffers2[currentFrame]};
             {
@@ -380,8 +443,12 @@ namespace hg {
                 vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
                 vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
+                
+                VkBuffer vertexBufferArr[] = { vertexBuffers[currentFrame].buffer };
+                VkDeviceSize offsets[] = { 0 };
+                vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferArr, offsets);
 
-                vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+                vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
                 vkCmdEndRenderPass(commandBuffer);
 
@@ -400,7 +467,6 @@ namespace hg {
             submitInfo.pWaitDstStageMask = waitStages;
 
             submitInfo.commandBufferCount = 1;
-            
             submitInfo.pCommandBuffers = &commandBuffer;
 
             VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };
@@ -434,7 +500,7 @@ namespace hg {
         VulkanEngine &operator=(VulkanEngine const&) = delete;
         VulkanEngine &operator=(VulkanEngine &&) = delete;
         ~VulkanEngine() noexcept {
-            //vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
+            vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
         }
     private:
         GLFWwindow *w;
@@ -453,6 +519,8 @@ namespace hg {
         VulkanCommandPool commandPool;
         //std::vector<VkCommandBuffer> commandBuffers;
         std::vector<VkCommandBuffer> commandBuffers2;
+        std::vector<VulkanMemory> vertexBufferMemories;
+        std::vector<VulkanBuffer> vertexBuffers;
         std::vector<VulkanSemaphore> imageAvailableSemaphores;
         std::vector<VulkanSemaphore> renderFinishedSemaphores;
         std::vector<VulkanFence> inFlightFences;

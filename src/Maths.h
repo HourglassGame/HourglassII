@@ -3,6 +3,24 @@
 #include <algorithm>
 namespace hg {
 
+template<typename T> struct vec2{
+    T a;
+    T b;
+};
+//Should be very standard layout, for interop with Vulkan etc.
+static_assert(sizeof(vec2<float>) == 2 * sizeof(float));
+static_assert(offsetof(vec2<float>, a) == 0);
+static_assert(offsetof(vec2<float>, b) == 0 + sizeof(float));
+static_assert(sizeof(vec2<double>) == 2 * sizeof(double));
+static_assert(offsetof(vec2<double>, a) == 0);
+static_assert(offsetof(vec2<double>, b) == 0 + sizeof(double));
+static_assert(sizeof(vec2<short>) == 2 * sizeof(short));
+static_assert(offsetof(vec2<short>, a) == 0);
+static_assert(offsetof(vec2<short>, b) == 0 + sizeof(short));
+static_assert(sizeof(vec2<int>) == 2 * sizeof(int));
+static_assert(offsetof(vec2<int>, a) == 0);
+static_assert(offsetof(vec2<int>, b) == 0 + sizeof(int));
+
 template<typename Numeric>
 Numeric sign(Numeric a) {
     return a == 0 ? 0 : a < 0 ? -1 : 1;

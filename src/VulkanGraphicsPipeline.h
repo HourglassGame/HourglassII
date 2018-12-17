@@ -1,6 +1,7 @@
 #ifndef HG_VULKANGRAPHICSPIPELINE_H
 #define HG_VULKANGRAPHICSPIPELINE_H
 #include <vulkan/vulkan.h>
+#include "Maths.h"
 namespace hg {
     extern std::vector<uint32_t> const *demoFragSpv;
     extern std::vector<uint32_t> const *demoVertSpv;
@@ -29,11 +30,24 @@ namespace hg {
             fragShaderStageInfo.pName = "main";
 
             VkPipelineShaderStageCreateInfo const shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
+            VkVertexInputBindingDescription bindingDescription = {};
+            bindingDescription.binding = 0;
+            bindingDescription.stride = sizeof(vec2<float>);
+            bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+            VkVertexInputAttributeDescription attributeDescription = {};
+
+            attributeDescription.binding = 0;
+            attributeDescription.location = 0;
+            attributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescription.offset = 0;
 
             VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
             vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-            vertexInputInfo.vertexBindingDescriptionCount = 0;
-            vertexInputInfo.vertexAttributeDescriptionCount = 0;
+            vertexInputInfo.vertexBindingDescriptionCount = 1;
+            vertexInputInfo.vertexAttributeDescriptionCount = 1;
+            vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+            vertexInputInfo.pVertexAttributeDescriptions = &attributeDescription;
 
             VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
             inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
