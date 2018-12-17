@@ -117,7 +117,7 @@ int run_hourglassii() {
         // so on, so forth, need full list.
 
         while (true) {
-            variant<RunALevel_tag, RunAReplay_tag, Exit_tag> main_menu_result = run_main_menu(window);
+            variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, vulkanEng);
             if (main_menu_result.active<Exit_tag>()) {
                 return EXIT_SUCCESS;
             }

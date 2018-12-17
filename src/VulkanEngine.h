@@ -12,6 +12,8 @@
 #include "VulkanFramebuffer.h"
 #include "VulkanCommandPool.h"
 #include "VulkanGraphicsPipeline.h"
+#include "VulkanFence.h"
+#include "VulkanSemaphore.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -24,7 +26,7 @@
 #include <optional>
 #include "GlobalConst.h"
 namespace hg {
-
+    inline int const MAX_FRAMES_IN_FLIGHT = 2;
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
 
     inline bool checkValidationLayerSupport() {
@@ -270,7 +272,27 @@ namespace hg {
         }
         return commandBuffers;
     }
-
+    inline std::vector<VulkanSemaphore> createImageAvailableSemaphores(VkDevice const device) {
+        std::vector<VulkanSemaphore> s;
+        for (auto i{0}; i != MAX_FRAMES_IN_FLIGHT; ++i) {
+            s.emplace_back(device);
+        }
+        return s;
+    }
+    inline std::vector<VulkanSemaphore> createRenderFinishedSemaphores(VkDevice const device) {
+        std::vector<VulkanSemaphore> s;
+        for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
+            s.emplace_back(device);
+        }
+        return s;
+    }
+    inline std::vector<VulkanFence> createInFlightFences(VkDevice const device) {
+        std::vector<VulkanFence> f;
+        for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
+            f.emplace_back(device);
+        }
+        return f;
+    }
     class VulkanEngine final {
     public:
         VulkanEngine(
@@ -290,26 +312,70 @@ namespace hg {
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
           , commandPool(logicalDevice.device, physicalDevice, surface.surface)
           , commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
+          , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.device))
+          , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.device))
+          , inFlightFences(createInFlightFences(logicalDevice.device))
+          , currentFrame(0)
         {
-            //createInstance();
-            //setupDebugCallback();
-            //createSurface();
-            //pickPhysicalDevice();
-            //createLogicalDevice();
-            //createSwapChain();
-            //createImageViews();
-            //createRenderPass();
-            //createGraphicsPipeline();
-            //createFramebuffers();
-            //createCommandPool();
-            //createCommandBuffers();
-            //createSyncObjects();
+        }
+        void drawFrame() {
+            if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
+                throw std::exception("Couldn't wait for fence");
+            }
+            if (vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence) != VK_SUCCESS) {
+                throw std::exception("Couldn't reset fence");
+            }
+
+            uint32_t imageIndex;
+            if (vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
+                throw std::exception("Couldn't Acquire next Image");
+            }
+
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+            VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame].semaphore };
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+
+            VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };
+            submitInfo.signalSemaphoreCount = 1;
+            submitInfo.pSignalSemaphores = signalSemaphores;
+
+            if (vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence) != VK_SUCCESS) {
+                throw std::exception("failed to submit draw command buffer!");
+            }
+
+            VkPresentInfoKHR presentInfo = {};
+            presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+            presentInfo.waitSemaphoreCount = 1;
+            presentInfo.pWaitSemaphores = signalSemaphores;
+
+            VkSwapchainKHR swapChains[] = { swapChain.swapChain };
+            presentInfo.swapchainCount = 1;
+            presentInfo.pSwapchains = swapChains;
+
+            presentInfo.pImageIndices = &imageIndex;
+
+            if (vkQueuePresentKHR(logicalDevice.presentQueue, &presentInfo) != VK_SUCCESS) {
+                throw std::exception("Couldn't present queue");
+            }
+
+            currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
         }
         VulkanEngine(VulkanEngine const&) = delete;
         VulkanEngine(VulkanEngine &&) = delete;
         VulkanEngine &operator=(VulkanEngine const&) = delete;
         VulkanEngine &operator=(VulkanEngine &&) = delete;
-        ~VulkanEngine() noexcept = default;
+        ~VulkanEngine() noexcept {
+            //vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
+        }
     private:
         GLFWwindow *w;
         VulkanInstance instance;
@@ -326,6 +392,10 @@ namespace hg {
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
         VulkanCommandPool commandPool;
         std::vector<VkCommandBuffer> commandBuffers;
+        std::vector<VulkanSemaphore> imageAvailableSemaphores;
+        std::vector<VulkanSemaphore> renderFinishedSemaphores;
+        std::vector<VulkanFence> inFlightFences;
+        size_t currentFrame;
     };
 }
 #endif // !HG_VULKANENGINE_H

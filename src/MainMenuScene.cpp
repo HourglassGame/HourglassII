@@ -34,7 +34,7 @@ static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &
 }
 
 variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
-run_main_menu(hg::RenderWindow &window)
+run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng)
 {
     int currentItem = 0;
     std::vector<MenuItem> const menu {
@@ -45,6 +45,7 @@ run_main_menu(hg::RenderWindow &window)
     
     while (true) {
         drawMainMenu(window, menu, currentItem);
+        vulkanEng.drawFrame();
         bool mainMenuDrawn = true;
         while (mainMenuDrawn) {
             sf::Event event;
