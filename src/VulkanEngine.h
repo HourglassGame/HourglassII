@@ -30,6 +30,7 @@
 namespace hg {
     inline int const MAX_FRAMES_IN_FLIGHT = 2;
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
+    inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
 
     inline bool checkValidationLayerSupport() {
         uint32_t layerCount = 0;
@@ -49,12 +50,11 @@ namespace hg {
         availableLayers.resize(layerCount);
 
         std::vector<const char*> validationLayersSortUnique(validationLayers);
-        boost::erase(validationLayersSortUnique, boost::unique(boost::sort(validationLayersSortUnique, strcmporder), strcmporder));
+        boost::erase(validationLayersSortUnique, boost::unique<boost::return_found_end>(boost::sort(validationLayersSortUnique, strcmporder), strcmpeq));
 
         std::vector<const char*> availableLayersSortUnique;
         boost::push_back(availableLayersSortUnique, availableLayers | boost::adaptors::transformed([](VkLayerProperties const &a) {return a.layerName; }));
-
-        boost::erase(availableLayersSortUnique, boost::unique(boost::sort(availableLayersSortUnique, strcmporder), strcmporder));
+        boost::erase(availableLayersSortUnique, boost::unique<boost::return_found_end>(boost::sort(availableLayersSortUnique, strcmporder), strcmpeq));
 
         return boost::range::includes(
             availableLayersSortUnique,
