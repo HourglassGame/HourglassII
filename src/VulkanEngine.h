@@ -216,7 +216,7 @@ namespace hg {
         }
         return framebuffers;
     }
-
+    /*
     inline std::vector<VkCommandBuffer> createCommandBuffers(
         std::vector<VulkanFramebuffer> const &swapChainFramebuffers,
         VkCommandPool const commandPool,
@@ -272,6 +272,26 @@ namespace hg {
         }
         return commandBuffers;
     }
+    */
+    inline std::vector<VkCommandBuffer> createCommandBuffers2(
+        VkCommandPool const commandPool,
+        VkDevice const device
+    )
+    {
+        std::vector<VkCommandBuffer> commandBuffers(MAX_FRAMES_IN_FLIGHT);
+
+        VkCommandBufferAllocateInfo allocInfo = {};
+        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+        allocInfo.commandPool = commandPool;
+        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
+
+        if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
+            throw std::exception("failed to allocate command buffers!");
+        }
+
+        return commandBuffers;
+    }
     inline std::vector<VulkanSemaphore> createImageAvailableSemaphores(VkDevice const device) {
         std::vector<VulkanSemaphore> s;
         for (auto i{0}; i != MAX_FRAMES_IN_FLIGHT; ++i) {
@@ -311,14 +331,15 @@ namespace hg {
           , graphicsPipeline(logicalDevice.device, swapChain.extent, pipelineLayout.pipelineLayout, renderPass.renderPass)
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
           , commandPool(logicalDevice.device, physicalDevice, surface.surface)
-          , commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
+          //, commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
+          , commandBuffers2(createCommandBuffers2(commandPool.commandPool, logicalDevice.device))
           , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.device))
           , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.device))
           , inFlightFences(createInFlightFences(logicalDevice.device))
           , currentFrame(0)
         {
         }
-        void drawFrame() {
+        void drawFrame(std::vector<std::tuple<float, float>> const &vertices= std::vector<std::tuple<float, float>>{}) {
             if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
                 throw std::exception("Couldn't wait for fence");
             }
@@ -331,6 +352,44 @@ namespace hg {
                 throw std::exception("Couldn't Acquire next Image");
             }
 
+            auto const &commandBuffer{commandBuffers2[currentFrame]};
+            {
+                if (vkResetCommandBuffer(commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS) {
+                    throw std::exception("Couldn't reset command buffer!");
+                }
+
+                VkCommandBufferBeginInfo beginInfo = {};
+                beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+                beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+
+                if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
+                    throw std::exception("failed to begin recording command buffer!");
+                }
+
+                VkRenderPassBeginInfo renderPassInfo = {};
+                renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+                renderPassInfo.renderPass = renderPass.renderPass;
+                renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex].framebuffer;
+                renderPassInfo.renderArea.offset = { 0, 0 };
+                renderPassInfo.renderArea.extent = swapChain.extent;
+
+                VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+                renderPassInfo.clearValueCount = 1;
+                renderPassInfo.pClearValues = &clearColor;
+
+                vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
+
+                vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+                vkCmdEndRenderPass(commandBuffer);
+
+                if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
+                    throw std::exception("failed to record command buffer!");
+                }
+            }
+
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -341,7 +400,8 @@ namespace hg {
             submitInfo.pWaitDstStageMask = waitStages;
 
             submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &commandBuffers[imageIndex];
+            
+            submitInfo.pCommandBuffers = &commandBuffer;
 
             VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };
             submitInfo.signalSemaphoreCount = 1;
@@ -391,7 +451,8 @@ namespace hg {
         VulkanGraphicsPipeline graphicsPipeline;
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
         VulkanCommandPool commandPool;
-        std::vector<VkCommandBuffer> commandBuffers;
+        //std::vector<VkCommandBuffer> commandBuffers;
+        std::vector<VkCommandBuffer> commandBuffers2;
         std::vector<VulkanSemaphore> imageAvailableSemaphores;
         std::vector<VulkanSemaphore> renderFinishedSemaphores;
         std::vector<VulkanFence> inFlightFences;
