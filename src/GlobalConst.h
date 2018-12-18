@@ -20,10 +20,13 @@ namespace hg {
     inline std::vector<const char*> const validationLayers{
         "VK_LAYER_LUNARG_standard_validation"
     };
+    inline bool const enableValidationLayers =
 #ifdef NDEBUG
-    inline bool const enableValidationLayers = false;
+        false
 #else
-    inline bool const enableValidationLayers = true;
+        true
 #endif
+        ;
+
 }
 #endif //HG_GLOBALCONST_H

@@ -2,6 +2,7 @@
 #define HG_VULKANDEBUGCALLBACK_H
 #include "GlobalConst.h"
 #include <vulkan/vulkan.h>
+#include <iostream>
 namespace hg {
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {

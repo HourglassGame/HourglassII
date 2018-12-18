@@ -383,6 +383,7 @@ namespace hg {
             }
 
             auto &vertexBuffer{ vertexBuffers[currentFrame] };
+            //TODO: Don't allocate memory every frame; reuse buffers between frames if they are still large enough!
             vertexBuffer = VulkanBuffer(logicalDevice.device);
             {
                 VkBufferCreateInfo bufferInfo = {};
