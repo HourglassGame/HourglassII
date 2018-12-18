@@ -1,5 +1,6 @@
 #include "GameDisplayHelpers.h"
 #include "sfRenderTargetCanvas.h"
+#include "VulkanCanvas.h"
 #include "GlobalConst.h"
 #include <boost/range/algorithm/find_if.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -99,7 +100,9 @@ void DrawGlitzAndWall(
 
         target.setView(scaledView);
     }
-    hg::sfRenderTargetCanvas canvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
+    hg::sfRenderTargetCanvas sfRTcanvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
+    hg::VulkanCanvas vkCanvas;
+    hg::PairCanvas canvas(sfRTcanvas, vkCanvas);
     hg::LayeredCanvas layeredCanvas(canvas);
     for (hg::Glitz const &particularGlitz : glitz)
     {
@@ -119,6 +122,24 @@ void DrawGlitzAndWall(
     target.setView(oldView);
 
     canvas.flushFrame();
+    auto const &verts{vkCanvas.vertices};
+    std::vector<hg::vec2<float>> projectedVerts;
+    projectedVerts.reserve(verts.size());
+
+    for(auto const &vert : verts) {
+        auto const applyProj{[](float const in) {
+            return in/2000.f;
+        }};
+        auto const projected{target.getView().getTransform().transformPoint(std::get<0>(vert), std::get<1>(vert))};
+        projectedVerts.push_back(
+            vec2<float>{
+                projected.x,
+                -projected.y
+            }
+        );
+    }
+
+    eng.drawFrame(projectedVerts);
 }
 
 void drawInventory(
