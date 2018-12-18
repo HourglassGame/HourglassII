@@ -102,6 +102,7 @@ namespace hg {
 void runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
+    hg::VulkanEngine &eng,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
     std::size_t relativeGuyIndex,
@@ -158,7 +159,7 @@ variant<
     ReloadLevel_tag,
     move_function<std::vector<hg::InputList>()>
 >
-run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
+run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
 {
     std::vector<InputList> receivedInputs;
 
@@ -313,11 +314,11 @@ run_game_scene(hg::RenderWindow &window, LoadedLevel &&loadedLevel, std::vector<
                 }
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-                    runStep(timeEngine, window, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
+                    runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
                     interrupter.reset();
                 }
                 catch (hg::PlayerVictoryException const &) {
-                    run_post_level_scene(window, initialTimeEngine, loadedLevel);
+                    run_post_level_scene(window, eng, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)
                     return GameWon_tag{};
                 }
@@ -389,6 +390,7 @@ hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
 void runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
+    hg::VulkanEngine &eng,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
     std::size_t relativeGuyIndex,
@@ -417,6 +419,7 @@ void runStep(
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
+            eng,
             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
             timeEngine.getWall(),
             resources,
@@ -441,6 +444,7 @@ void runStep(
             drawnFrame = hg::FrameID(guyFrame);
             DrawGlitzAndWall(
                 app,
+                eng,
                 getGlitzForDirection(view, currentGuyDirection),
                 timeEngine.getWall(),
                 resources,
@@ -462,6 +466,7 @@ void runStep(
                 drawnFrame = inertialFrame;
                 hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
                 DrawGlitzAndWall(app,
+                    eng,
                     getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                     timeEngine.getWall(),
                     resources,
@@ -476,6 +481,7 @@ void runStep(
                 hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
                 DrawGlitzAndWall(
                     app,
+                    eng,
                     getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
                     timeEngine.getWall(),
                     resources,

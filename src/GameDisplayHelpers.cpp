@@ -19,6 +19,7 @@ constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilo
 
 void DrawGlitzAndWall(
     hg::RenderWindow &target,
+    hg::VulkanEngine &eng,
     hg::mt::std::vector<hg::Glitz> const &glitz,
     hg::Wall const &wall,
     hg::LevelResources const &resources,

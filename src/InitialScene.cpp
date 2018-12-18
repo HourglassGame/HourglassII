@@ -31,6 +31,7 @@ struct RunGameResultVisitor {
 static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
     loadAndRunLevel(
         hg::RenderWindow &window,
+        VulkanEngine &eng,
         LoadLevelFunction const &levelLoadingFunction,
         hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
 {
@@ -39,6 +40,7 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
     
     struct {
         hg::RenderWindow &window;
+        VulkanEngine &eng;
         hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
         typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
 
@@ -46,16 +48,16 @@ static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std:
         operator()(LoadedLevel &level) const
         {
             if (replayLoadingFunction) {
-                return run_game_scene(window, std::move(level), replayLoadingFunction()).visit(RunGameResultVisitor{});
+                return run_game_scene(window, eng, std::move(level), replayLoadingFunction()).visit(RunGameResultVisitor{});
             }
             else {
-                return run_game_scene(window, std::move(level)).visit(RunGameResultVisitor{});
+                return run_game_scene(window, eng, std::move(level)).visit(RunGameResultVisitor{});
             }
         }
         variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
             return GameAborted_tag{};
         }
-    } visitor = {window, replayLoadingFunction};
+    } visitor = {window, eng, replayLoadingFunction};
     return loading_outcome.visit(visitor);
 }
 void error_callback_glfw(int error, const char* description)
@@ -163,11 +165,12 @@ int run_hourglassii() {
                     {
                         game_scene_result = loadAndRunLevel(
                             window,
+                            vulkanEng,
                             levelLoadFunction,
                             std::move(game_scene_result.get<move_function<std::vector<InputList>()>>()));
                     }
                     else {
-                        game_scene_result = loadAndRunLevel(window, levelLoadFunction, std::move(replayLoader));
+                        game_scene_result = loadAndRunLevel(window, vulkanEng, levelLoadFunction, std::move(replayLoader));
                     }
                     assert( game_scene_result.active<GameAborted_tag>()
                          || game_scene_result.active<GameWon_tag>()

@@ -18,6 +18,7 @@ namespace {
     void runStep(
         hg::TimeEngine const &timeEngine,
         hg::RenderWindow &app,
+        hg::VulkanEngine &eng,
         AudioPlayingState &audioPlayingState,
         AudioGlitzManager &audioGlitzManager,
         hg::Inertia &inertia,
@@ -27,6 +28,7 @@ namespace {
 }
 void run_post_level_scene(
     hg::RenderWindow &window,
+    hg::VulkanEngine &eng,
     TimeEngine const &initialTimeEngine,
     LoadedLevel const &finalLevel)
 {
@@ -100,7 +102,7 @@ void run_post_level_scene(
             if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
                 inertia.reset();
             }
-            runStep(timeEngine, window, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage, positionColoursImage);
+            runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage, positionColoursImage);
             {
                 sf::Text replayGlyph;
                 replayGlyph.setFont(*hg::defaultFont);
@@ -148,6 +150,7 @@ namespace {
 void runStep(
     hg::TimeEngine const &timeEngine,
     hg::RenderWindow &app,
+    hg::VulkanEngine &eng,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
     hg::Inertia &inertia,
@@ -162,6 +165,7 @@ void runStep(
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         DrawGlitzAndWall(app,
+            eng,
             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
             timeEngine.getWall(),
             resources,
@@ -178,6 +182,7 @@ void runStep(
             drawnFrame = inertialFrame;
             hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
             DrawGlitzAndWall(app,
+                eng,
                 getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                 timeEngine.getWall(),
                 resources,
@@ -191,6 +196,7 @@ void runStep(
             drawnFrame = mousePosToFrameID(app, timeEngine);
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
             DrawGlitzAndWall(app,
+                eng,
                 getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
                 timeEngine.getWall(),
                 resources,

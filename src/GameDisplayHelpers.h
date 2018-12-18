@@ -10,11 +10,13 @@
 #include <SFML/Graphics/Image.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include "AudioGlitzManager.h"
+#include "VulkanEngine.h"
 
 namespace hg {
     extern sf::Color const uiTextColor;
     void DrawGlitzAndWall(
         hg::RenderWindow &target,
+        hg::VulkanEngine &eng,
         hg::mt::std::vector<hg::Glitz> const &glitz,
         hg::Wall const &wall,
         hg::LevelResources const &resources,
