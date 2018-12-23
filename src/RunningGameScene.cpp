@@ -401,27 +401,18 @@ void runStep(
     sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point &frameStartTime)
 {
-    app.clear(sf::Color(255, 255, 255));
     hg::FrameID drawnFrame;
+    hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
+    hg::mt::std::map<hg::Ability, int> pickups;
+    hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
+    bool shouldDrawInventory{false};
     bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
     ActivePanel mousePanel = getActivePanel(app);
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel != ActivePanel::PERSONAL_TIME) {
         drawnFrame = mousePosToFrameID(app, timeEngine);
-        hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-        DrawGlitzAndWall(
-            app.getRenderTarget(),
-            eng,
-            getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-            timeEngine.getWall(),
-            resources,
-            audioPlayingState,
-            audioGlitzManager,
-            wallImage,
-            positionColoursImage,
-            static_cast<int>(guyIndex),
-            shouldDrawGuyPositionColours);
+        drawnTimeDirection = TimeDirection::FORWARDS;
     }
     else {
         if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel == ActivePanel::PERSONAL_TIME) {
@@ -429,69 +420,52 @@ void runStep(
             relativeGuyIndex = timeEngine.getGuyFrames().size() - 2 - guyIndex;
         }
 
-        hg::Frame *guyFrame = timeEngine.getGuyFrames()[guyIndex];
-        if (!isNullFrame(guyFrame)) {
-            hg::FrameView const &view((guyFrame)->getView());
-            hg::GuyOutputInfo const &currentGuy(findCurrentGuy(view.getGuyInformation(), guyIndex));
-            hg::TimeDirection const currentGuyDirection(currentGuy.getTimeDirection());
-            inertia.save(hg::FrameID(guyFrame), currentGuyDirection);
-            drawnFrame = hg::FrameID(guyFrame);
-            DrawGlitzAndWall(
-                app.getRenderTarget(),
-                eng,
-                getGlitzForDirection(view, currentGuyDirection),
-                timeEngine.getWall(),
-                resources,
-                audioPlayingState,
-                audioGlitzManager,
-                wallImage,
-                positionColoursImage,
-                static_cast<int>(guyIndex),
-                shouldDrawGuyPositionColours);
+        if (hg::Frame *const guyFrame{timeEngine.getGuyFrames()[guyIndex]}; !isNullFrame(guyFrame)) {
+            hg::GuyOutputInfo const &currentGuy(findCurrentGuy(guyFrame->getView().getGuyInformation(), guyIndex));
 
-            drawInventory(
-                currentGuy.getPickups(),
-                timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor());
-                app.getRenderTarget(),
+            drawnTimeDirection = currentGuy.getTimeDirection();
+            drawnFrame = hg::FrameID(guyFrame);
+            inertia.save(drawnFrame, drawnTimeDirection);
+
+            shouldDrawInventory = true;
+            pickups = currentGuy.getPickups();
+            abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {
             inertia.run();
-            hg::FrameID const inertialFrame(inertia.getFrame());
-            if (inertialFrame.isValidFrame()) {
+            if (hg::FrameID const inertialFrame(inertia.getFrame()); inertialFrame.isValidFrame()) {
                 drawnFrame = inertialFrame;
-                hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
-                DrawGlitzAndWall(
-                    app.getRenderTarget(),
-                    eng,
-                    getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
-                    timeEngine.getWall(),
-                    resources,
-                    audioPlayingState,
-                    audioGlitzManager,
-                    wallImage,
-                    positionColoursImage,
-                    static_cast<int>(guyIndex),
-                    shouldDrawGuyPositionColours);
+                drawnTimeDirection = inertia.getTimeDirection();
             }
             else {
                 drawnFrame = mousePosToFrameID(app, timeEngine);
-                hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-                DrawGlitzAndWall(
-                    app.getRenderTarget(),
-                    eng,
-                    getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-                    timeEngine.getWall(),
-                    resources,
-                    audioPlayingState,
-                    audioGlitzManager,
-                    wallImage,
-                    positionColoursImage,
-                    static_cast<int>(guyIndex),
-                    shouldDrawGuyPositionColours);
+                drawnTimeDirection = TimeDirection::FORWARDS;
             }
         }
     }
-    
+
+    app.clear(sf::Color(255, 255, 255));
+
+    DrawGlitzAndWall(
+        app.getRenderTarget(),
+        eng,
+        getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), drawnTimeDirection),
+        timeEngine.getWall(),
+        resources,
+        audioPlayingState,
+        audioGlitzManager,
+        wallImage,
+        positionColoursImage,
+        static_cast<int>(guyIndex),
+        shouldDrawGuyPositionColours);
+
+    if (shouldDrawInventory) {
+        drawInventory(
+            app.getRenderTarget(),
+            pickups,
+            abilityCursor);
+    }
+
     DrawTimeline(
         app.getRenderTarget(),
         timeEngine,
