@@ -19,7 +19,7 @@ constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilo
 }
 
 void DrawGlitzAndWall(
-    hg::RenderWindow &target,
+    sf::RenderTarget &target,
     hg::VulkanEngine &eng,
     hg::mt::std::vector<hg::Glitz> const &glitz,
     hg::Wall const &wall,
@@ -101,7 +101,7 @@ void DrawGlitzAndWall(
 
         target.setView(scaledView);
     }
-    hg::sfRenderTargetCanvas sfRTcanvas(target.getRenderTarget(), audioPlayingState, audioGlitzManager, resources);
+    hg::sfRenderTargetCanvas sfRTcanvas(target, audioPlayingState, audioGlitzManager, resources);
     hg::VulkanCanvas vkCanvas;
     hg::PairCanvas canvas(sfRTcanvas, vkCanvas);
     hg::LayeredCanvas layeredCanvas(canvas);
@@ -144,7 +144,7 @@ void DrawGlitzAndWall(
 }
 
 void drawInventory(
-    hg::RenderWindow &app,
+    sf::RenderTarget &app,
     hg::mt::std::map<hg::Ability, int> const &pickups,
     hg::Ability abilityCursor)
 {
@@ -216,7 +216,7 @@ sf::Color guyPositionToColor(double xFrac, double yFrac) {
 }
 
 
-void DrawColors(hg::RenderWindow &target, sf::Image const &positionColoursImage)
+void DrawColors(sf::RenderTarget &target, sf::Image const &positionColoursImage)
 {
     sf::Texture tex;
     tex.loadFromImage(positionColoursImage);

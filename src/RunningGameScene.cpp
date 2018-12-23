@@ -419,7 +419,8 @@ void runStep(
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel != ActivePanel::PERSONAL_TIME) {
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-        DrawGlitzAndWall(app,
+        DrawGlitzAndWall(
+            app.getRenderTarget(),
             eng,
             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
             timeEngine.getWall(),
@@ -445,7 +446,7 @@ void runStep(
             inertia.save(hg::FrameID(guyFrame), currentGuyDirection);
             drawnFrame = hg::FrameID(guyFrame);
             DrawGlitzAndWall(
-                app,
+                app.getRenderTarget(),
                 eng,
                 getGlitzForDirection(view, currentGuyDirection),
                 timeEngine.getWall(),
@@ -458,9 +459,9 @@ void runStep(
                 shouldDrawGuyPositionColours);
 
             drawInventory(
-                app,
                 currentGuy.getPickups(),
                 timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor());
+                app.getRenderTarget(),
         }
         else {
             inertia.run();
@@ -468,7 +469,8 @@ void runStep(
             if (inertialFrame.isValidFrame()) {
                 drawnFrame = inertialFrame;
                 hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
-                DrawGlitzAndWall(app,
+                DrawGlitzAndWall(
+                    app.getRenderTarget(),
                     eng,
                     getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                     timeEngine.getWall(),
@@ -484,7 +486,7 @@ void runStep(
                 drawnFrame = mousePosToFrameID(app, timeEngine);
                 hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
                 DrawGlitzAndWall(
-                    app,
+                    app.getRenderTarget(),
                     eng,
                     getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
                     timeEngine.getWall(),

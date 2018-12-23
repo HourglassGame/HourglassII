@@ -166,7 +166,7 @@ void runStep(
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-        DrawGlitzAndWall(app,
+        DrawGlitzAndWall(app.getRenderTarget(),
             eng,
             getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
             timeEngine.getWall(),
@@ -184,7 +184,7 @@ void runStep(
         if (inertialFrame.isValidFrame()) {
             drawnFrame = inertialFrame;
             hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
-            DrawGlitzAndWall(app,
+            DrawGlitzAndWall(app.getRenderTarget(),
                 eng,
                 getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
                 timeEngine.getWall(),
@@ -199,7 +199,7 @@ void runStep(
         else {
             drawnFrame = mousePosToFrameID(app, timeEngine);
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-            DrawGlitzAndWall(app,
+            DrawGlitzAndWall(app.getRenderTarget(),
                 eng,
                 getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
                 timeEngine.getWall(),

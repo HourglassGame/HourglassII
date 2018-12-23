@@ -15,7 +15,7 @@
 namespace hg {
     extern sf::Color const uiTextColor;
     void DrawGlitzAndWall(
-        hg::RenderWindow &target,
+        sf::RenderTarget &target,
         hg::VulkanEngine &eng,
         hg::mt::std::vector<hg::Glitz> const &glitz,
         hg::Wall const &wall,
@@ -42,7 +42,7 @@ namespace hg {
         std::vector<Frame *> const &guyFrames,
         std::vector<GuyInput> const &guyInput,
         std::size_t const minTimelineLength);
-    void DrawColors(hg::RenderWindow &target, sf::Image const &positionColoursImage);
+    void DrawColors(sf::RenderTarget &target, sf::Image const &positionColoursImage);
     void DrawTicks(sf::RenderTarget &target, std::size_t const timelineLength);
     void DrawTimeline(
         sf::RenderTarget &target,
@@ -81,7 +81,7 @@ namespace hg {
 
     sf::Color guyPositionToColor(double xFrac, double yFrac);
     sf::Color asColor(sf::Vector3<double>const &vec);
-    void drawInventory(hg::RenderWindow &app, hg::mt::std::map<hg::Ability, int> const &pickups, hg::Ability abilityCursor);
+    void drawInventory(sf::RenderTarget &app, hg::mt::std::map<hg::Ability, int> const &pickups, hg::Ability abilityCursor);
     hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
         hg::FrameView const &view, hg::TimeDirection timeDirection);
     hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);
