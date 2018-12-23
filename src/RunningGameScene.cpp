@@ -402,18 +402,9 @@ void runStep(
     std::chrono::steady_clock::time_point &frameStartTime)
 {
     app.clear(sf::Color(255, 255, 255));
-    std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
     bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
-
-    framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
-    for (
-        hg::FrameUpdateSet const &updateSet:
-        waveInfo.updatedFrames)
-    {
-        framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
-    }
 
     ActivePanel mousePanel = getActivePanel(app);
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel != ActivePanel::PERSONAL_TIME) {
@@ -568,6 +559,14 @@ void runStep(
         app.draw(frameNumberGlyph);
     }
     {
+        std::vector<int> framesExecutedList;
+        framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
+        for (
+            hg::FrameUpdateSet const &updateSet :
+            waveInfo.updatedFrames)
+        {
+            framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
+        }
         std::stringstream numberOfFramesExecutedString;
         if (!boost::empty(framesExecutedList)) {
             numberOfFramesExecutedString << *boost::begin(framesExecutedList);
