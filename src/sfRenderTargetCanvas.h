@@ -26,22 +26,16 @@ sf::Vector2f normal(sf::Vector2f const vec) {
 }
 }
 
-class sfRenderTargetCanvas final : public Canvas
+class sfRenderTargetVisualCanvas final : public Canvas
 {
 public:
-    explicit sfRenderTargetCanvas(
+    explicit sfRenderTargetVisualCanvas(
         sf::RenderTarget &target,
-        AudioPlayingState &audioPlayingState,
-        AudioGlitzManager &audioGlitzManager,
         LevelResources const &resources) :
     target(&target),
-    audioPlayingState(&audioPlayingState),
-    audioGlitzManager(&audioGlitzManager),
-    resources(&resources),
-    soundsToPlay()
+    resources(&resources)
     {}
     virtual void playSound(std::string const &key, int const n) override {
-        soundsToPlay.push_back(AudioGlitzObject(key,n));
     }
     virtual void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
     {
@@ -92,14 +86,46 @@ public:
         target->draw(sprite);
     }
     virtual void flushFrame() override {
-        audioPlayingState->runStep(audioGlitzManager->updatePlayingState(soundsToPlay));
     }
 private:
     sf::RenderTarget *target;
+    LevelResources const *resources;
+};
+
+
+class sfRenderTargetAudioCanvas final : public Canvas
+{
+public:
+    explicit sfRenderTargetAudioCanvas(
+        AudioPlayingState &audioPlayingState,
+        AudioGlitzManager &audioGlitzManager) :
+    audioPlayingState(&audioPlayingState),
+    audioGlitzManager(&audioGlitzManager),
+    soundsToPlay()
+    {}
+    virtual void playSound(std::string const &key, int const n) override {
+        soundsToPlay.push_back(AudioGlitzObject(key,n));
+    }
+    virtual void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
+    {
+    }
+    virtual void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
+    {
+    }
+    virtual void drawText(std::string const &text, float const x, float const y, float const size, unsigned const colour) override
+    {
+    }
+    virtual void drawImage(std::string const &key, float const x, float const y, float const width, float const height) override
+    {
+    }
+    virtual void flushFrame() override {
+        audioPlayingState->runStep(audioGlitzManager->updatePlayingState(soundsToPlay));
+    }
+private:
     AudioPlayingState *audioPlayingState;
     AudioGlitzManager *audioGlitzManager;
-    LevelResources const *resources;
     std::vector<AudioGlitzObject> soundsToPlay;
 };
+
 }
 #endif //HG_SF_RENDER_TARGET_CANVAS_H

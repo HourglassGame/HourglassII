@@ -444,16 +444,32 @@ void runStep(
         }
     }
 
-    app.clear(sf::Color(255, 255, 255));
+    auto const &glitz{getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), drawnTimeDirection)};
 
-    DrawGlitzAndWall(
-        app.getRenderTarget(),
-        eng,
-        getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), drawnTimeDirection),
-        timeEngine.getWall(),
-        resources,
+    //TODO: Possbily sync with Graphics?, via
+    //Vulkan Timestamp Queries:
+    //https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#queries-timestamps
+
+    //TODO: Support slowing down/stopping sound if game is playing slowly, or speeding up sound
+    //      if game is going fast; Support proper audio rendering of timeline scrubbing.
+    //      Somehow support proper sound in Pause Time.
+    //      etc.
+    PlayAudioGlitz(
+        glitz,
         audioPlayingState,
         audioGlitzManager,
+        static_cast<int>(guyIndex)
+    );
+    //TODO: Play UI Sounds
+
+    app.clear(sf::Color(255, 255, 255));
+
+    DrawVisualGlitzAndWall(
+        app.getRenderTarget(),
+        eng,
+        glitz,
+        timeEngine.getWall(),
+        resources,
         wallImage,
         positionColoursImage,
         static_cast<int>(guyIndex),

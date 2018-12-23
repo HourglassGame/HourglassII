@@ -18,14 +18,30 @@ constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilo
     return std::abs(a - b) <= std::min(std::abs(a), std::abs(b)) * epsilon;
 }
 
-void DrawGlitzAndWall(
+void PlayAudioGlitz(
+    hg::mt::std::vector<hg::Glitz> const &glitz,
+    AudioPlayingState &audioPlayingState,
+    AudioGlitzManager &audioGlitzManager,
+    int const guyIndex)
+{
+    hg::sfRenderTargetAudioCanvas canvas(audioPlayingState, audioGlitzManager);
+
+    hg::LayeredCanvas layeredCanvas(canvas);
+    for (hg::Glitz const &particularGlitz : glitz)
+    {
+        particularGlitz.display(layeredCanvas, guyIndex);
+    }
+    hg::Flusher flusher(layeredCanvas.getFlusher());
+    flusher.partialFlush(std::numeric_limits<int>::max());
+
+    canvas.flushFrame();
+}
+void DrawVisualGlitzAndWall(
     sf::RenderTarget &target,
     hg::VulkanEngine &eng,
     hg::mt::std::vector<hg::Glitz> const &glitz,
     hg::Wall const &wall,
     hg::LevelResources const &resources,
-    AudioPlayingState &audioPlayingState,
-    AudioGlitzManager &audioGlitzManager,
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
     int const guyIndex,
@@ -101,7 +117,7 @@ void DrawGlitzAndWall(
 
         target.setView(scaledView);
     }
-    hg::sfRenderTargetCanvas sfRTcanvas(target, audioPlayingState, audioGlitzManager, resources);
+    hg::sfRenderTargetVisualCanvas sfRTcanvas(target, resources);
     hg::VulkanCanvas vkCanvas;
     hg::PairCanvas canvas(sfRTcanvas, vkCanvas);
     hg::LayeredCanvas layeredCanvas(canvas);

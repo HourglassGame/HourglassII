@@ -166,16 +166,22 @@ void runStep(
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-        DrawGlitzAndWall(app.getRenderTarget(),
-            eng,
-            getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-            timeEngine.getWall(),
-            resources,
+        auto const &glitz{ getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS) };
+        auto const guyIndex{-1};
+        PlayAudioGlitz(
+            glitz,
             audioPlayingState,
             audioGlitzManager,
+            guyIndex
+        );
+        DrawVisualGlitzAndWall(app.getRenderTarget(),
+            eng,
+            glitz,
+            timeEngine.getWall(),
+            resources,
             wallImage,
             positionColoursImage,
-            -1,
+            guyIndex,
             shouldDrawGuyPositionColours);
     }
     else {
@@ -184,31 +190,43 @@ void runStep(
         if (inertialFrame.isValidFrame()) {
             drawnFrame = inertialFrame;
             hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
-            DrawGlitzAndWall(app.getRenderTarget(),
-                eng,
-                getGlitzForDirection(frame->getView(), inertia.getTimeDirection()),
-                timeEngine.getWall(),
-                resources,
+            auto const &glitz{ getGlitzForDirection(frame->getView(), inertia.getTimeDirection()) };
+            auto const guyIndex{-1};
+            PlayAudioGlitz(
+                glitz,
                 audioPlayingState,
                 audioGlitzManager,
+                guyIndex
+                );
+            DrawVisualGlitzAndWall(app.getRenderTarget(),
+                eng,
+                glitz,
+                timeEngine.getWall(),
+                resources,
                 wallImage,
                 positionColoursImage,
-                -1,
+                guyIndex,
                 shouldDrawGuyPositionColours);
         }
         else {
             drawnFrame = mousePosToFrameID(app, timeEngine);
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-            DrawGlitzAndWall(app.getRenderTarget(),
-                eng,
-                getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS),
-                timeEngine.getWall(),
-                resources,
+            auto const &glitz{ getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS) };
+            auto const guyIndex{-1};
+            PlayAudioGlitz(
+                glitz,
                 audioPlayingState,
                 audioGlitzManager,
+                guyIndex
+            );
+            DrawVisualGlitzAndWall(app.getRenderTarget(),
+                eng,
+                glitz,
+                timeEngine.getWall(),
+                resources,
                 wallImage,
                 positionColoursImage,
-                -1,
+                guyIndex,
                 shouldDrawGuyPositionColours);
         }
     }

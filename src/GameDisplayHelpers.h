@@ -14,14 +14,17 @@
 
 namespace hg {
     extern sf::Color const uiTextColor;
-    void DrawGlitzAndWall(
+    void PlayAudioGlitz(
+        hg::mt::std::vector<hg::Glitz> const &glitz,
+        AudioPlayingState &audioPlayingState,
+        AudioGlitzManager &audioGlitzManager,
+        int const guyIndex);
+    void DrawVisualGlitzAndWall(
         sf::RenderTarget &target,
         hg::VulkanEngine &eng,
         hg::mt::std::vector<hg::Glitz> const &glitz,
         hg::Wall const &wall,
         hg::LevelResources const &resources,
-        AudioPlayingState &audioPlayingState,
-        AudioGlitzManager &audioGlitzManager,
         sf::Image const &wallImage,
         sf::Image const &positionColoursImage,
         int const guyIndex,
