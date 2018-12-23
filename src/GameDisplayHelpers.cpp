@@ -28,7 +28,8 @@ void DrawGlitzAndWall(
     AudioGlitzManager &audioGlitzManager,
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
-    int const guyIndex)
+    int const guyIndex,
+    bool const drawPositionColours)
 {
     sf::View const oldView(target.getView());
     {
@@ -116,7 +117,7 @@ void DrawGlitzAndWall(
     target.draw(sf::Sprite(wallTex));
 
     flusher.partialFlush(std::numeric_limits<int>::max());
-    if (target.getInputState().isKeyPressed(sf::Keyboard::LShift)) {
+    if (drawPositionColours) {
         DrawColors(target, positionColoursImage);
     }
     target.setView(oldView);

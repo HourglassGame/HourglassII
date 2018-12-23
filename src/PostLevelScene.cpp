@@ -161,6 +161,8 @@ void runStep(
     app.clear(sf::Color(255, 255, 255));
     hg::FrameID drawnFrame;
 
+    bool const shouldDrawGuyPositionColours{ app.getInputState().isKeyPressed(sf::Keyboard::LShift) };
+
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
         drawnFrame = mousePosToFrameID(app, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
@@ -173,7 +175,8 @@ void runStep(
             audioGlitzManager,
             wallImage,
             positionColoursImage,
-            -1);
+            -1,
+            shouldDrawGuyPositionColours);
     }
     else {
         inertia.run();
@@ -190,7 +193,8 @@ void runStep(
                 audioGlitzManager,
                 wallImage,
                 positionColoursImage,
-                -1);
+                -1,
+                shouldDrawGuyPositionColours);
         }
         else {
             drawnFrame = mousePosToFrameID(app, timeEngine);
@@ -204,7 +208,8 @@ void runStep(
                 audioGlitzManager,
                 wallImage,
                 positionColoursImage,
-                -1);
+                -1,
+                shouldDrawGuyPositionColours);
         }
     }
     DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getGuyInput().getTimeCursor(), timeEngine.getTimelineLength());

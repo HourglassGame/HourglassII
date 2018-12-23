@@ -404,6 +404,7 @@ void runStep(
     app.clear(sf::Color(255, 255, 255));
     std::vector<int> framesExecutedList;
     hg::FrameID drawnFrame;
+    bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
     framesExecutedList.reserve(boost::size(waveInfo.updatedFrames));
@@ -427,7 +428,8 @@ void runStep(
             audioGlitzManager,
             wallImage,
             positionColoursImage,
-            static_cast<int>(guyIndex));
+            static_cast<int>(guyIndex),
+            shouldDrawGuyPositionColours);
     }
     else {
         if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel == ActivePanel::PERSONAL_TIME) {
@@ -452,7 +454,8 @@ void runStep(
                 audioGlitzManager,
                 wallImage,
                 positionColoursImage,
-                static_cast<int>(guyIndex));
+                static_cast<int>(guyIndex),
+                shouldDrawGuyPositionColours);
 
             drawInventory(
                 app,
@@ -474,7 +477,8 @@ void runStep(
                     audioGlitzManager,
                     wallImage,
                     positionColoursImage,
-                    static_cast<int>(guyIndex));
+                    static_cast<int>(guyIndex),
+                    shouldDrawGuyPositionColours);
             }
             else {
                 drawnFrame = mousePosToFrameID(app, timeEngine);
@@ -489,7 +493,8 @@ void runStep(
                     audioGlitzManager,
                     wallImage,
                     positionColoursImage,
-                    static_cast<int>(guyIndex));
+                    static_cast<int>(guyIndex),
+                    shouldDrawGuyPositionColours);
             }
         }
     }
