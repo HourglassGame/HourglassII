@@ -49,18 +49,17 @@ public:
         return comparison_tuple() == o.comparison_tuple();
     }
 private:
-
     clone_ptr<GlitzImplementation, memory_source_clone<GlitzImplementation, multi_thread_memory_source>> impl;
+    int _index;
     typedef
       std::tuple<
         decltype(impl->order_ranking()),
-        GlitzImplementation const &>
+        GlitzImplementation const &,
+        decltype(_index)>
       comparison_tuple_type;
     comparison_tuple_type comparison_tuple() const {
-        return comparison_tuple_type(impl->order_ranking(), *impl);
+        return comparison_tuple_type(impl->order_ranking(), *impl, _index);
     }
-
-    int _index;
 };
 }//namespace hg
 #endif //HG_GLITZ_H
