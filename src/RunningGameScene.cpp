@@ -457,7 +457,7 @@ void runStep(
             drawInventory(
                 app,
                 currentGuy.getPickups(),
-                timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1].getGuyInput().getAbilityCursor());
+                timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor());
         }
         else {
             inertia.run();
