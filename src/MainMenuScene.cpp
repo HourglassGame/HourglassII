@@ -45,9 +45,10 @@ run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng)
     
     while (true) {
         drawMainMenu(window, menu, currentItem);
-        vulkanEng.drawFrame();
+
         bool mainMenuDrawn = true;
         while (mainMenuDrawn) {
+            //vulkanEng.drawFrame();
             sf::Event event;
             if (window.waitEvent(event)) do {
                 switch (event.type) {

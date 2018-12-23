@@ -139,7 +139,7 @@ void DrawGlitzAndWall(
         );
     }
 
-    eng.drawFrame(projectedVerts);
+    //eng.drawFrame(projectedVerts);
 }
 
 void drawInventory(
