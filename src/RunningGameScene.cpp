@@ -99,20 +99,6 @@
 #include "GameDisplayHelpers.h"
 
 namespace hg {
-void runStep(
-    hg::TimeEngine &timeEngine,
-    hg::RenderWindow &app,
-    hg::VulkanEngine &eng,
-    AudioPlayingState &audioPlayingState,
-    AudioGlitzManager &audioGlitzManager,
-    std::size_t relativeGuyIndex,
-    hg::Inertia &inertia,
-    hg::TimeEngine::RunResult const &waveInfo,
-    hg::LevelResources const &resources,
-    sf::Image const &wallImage,
-    sf::Image const &positionColoursImage,
-    std::chrono::steady_clock::time_point &frameStartTime);
-
 
 struct UIFrameState {
     hg::FrameID drawnFrame;
@@ -124,7 +110,24 @@ struct UIFrameState {
     hg::Ability abilityCursor;
     std::size_t relativeGuyIndex;
     hg::TimeEngine::RunResult const *waveInfo;
+    bool runningFromReplay;
 };
+UIFrameState runStep(
+    hg::TimeEngine &timeEngine,
+    hg::RenderWindow &app,
+    hg::VulkanEngine &eng,
+    AudioPlayingState &audioPlayingState,
+    AudioGlitzManager &audioGlitzManager,
+    std::size_t relativeGuyIndex,
+    hg::Inertia &inertia,
+    hg::TimeEngine::RunResult const &waveInfo,
+    hg::LevelResources const &resources,
+    sf::Image const &wallImage,
+    sf::Image const &positionColoursImage,
+    std::chrono::steady_clock::time_point &frameStartTime,
+    bool const runningFromReplay);
+
+
 void drawFrame(
     sf::RenderTarget &target,
     hg::VulkanEngine &eng,
@@ -336,38 +339,55 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                 }
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
-                    runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, futureRunResult.get(), levelResources, wallImage, positionColoursImage, frameStartTime);
+                    auto const waveInfo{futureRunResult.get()};
+                    auto const uiFrameState{runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
                     interrupter.reset();
+
+
+                    //TODO: Possbily sync with Graphics?, via
+                    //Vulkan Timestamp Queries:
+                    //https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#queries-timestamps
+
+                    //TODO: Support slowing down/stopping sound if game is playing slowly, or speeding up sound
+                    //      if game is going fast; Support proper audio rendering of timeline scrubbing.
+                    //      Somehow support proper sound in Pause Time.
+                    //      etc.
+                    PlayAudioGlitz(
+                        getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
+                        audioPlayingState,
+                        audioGlitzManager,
+                        static_cast<int>(uiFrameState.guyIndex)
+                    );
+                    //TODO: Play UI Sounds
+
+                    drawFrame(
+                        window.getRenderTarget(),
+                        eng,
+                        timeEngine,
+                        uiFrameState,
+
+                        levelResources,
+                        wallImage,
+                        positionColoursImage
+                    );
+
+                    if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
+                        window.setFramerateLimit(0);
+                        window.setVerticalSyncEnabled(false);
+                    }
+                    else {
+                        window.setFramerateLimit(hg::FRAMERATE);
+                        window.setVerticalSyncEnabled(true);
+                    }
+                    window.display();
+                    state = RunState::AWAITING_INPUT;
                 }
                 catch (hg::PlayerVictoryException const &) {
                     run_post_level_scene(window, eng, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)
                     return GameWon_tag{};
                 }
-                if (runningFromReplay) {
-                    //TODO: also write some sort of replay progress display here
-                    //currentReplayIt-replay.begin() << "/" << currentReplayEnd-replay.begin()
-
-
-                    sf::Text replayGlyph;
-                    replayGlyph.setFont(*hg::defaultFont);
-                    replayGlyph.setString("R");
-                    replayGlyph.setFillColor(sf::Color(255, 25, 50));
-                    replayGlyph.setOutlineColor(sf::Color(255, 25, 50));
-                    replayGlyph.setPosition(580, 32);
-                    replayGlyph.setCharacterSize(32);
-                    window.draw(replayGlyph);
-                }
-                if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
-                    window.setFramerateLimit(0);
-                    window.setVerticalSyncEnabled(false);
-                }
-                else {
-                    window.setFramerateLimit(hg::FRAMERATE);
-                    window.setVerticalSyncEnabled(true);
-                }
-                window.display();
-                state = RunState::AWAITING_INPUT;
+                
             }
             break;
         }
@@ -409,7 +429,7 @@ hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
 }
 
 
-void runStep(
+UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
     hg::VulkanEngine &eng,
@@ -421,11 +441,12 @@ void runStep(
     hg::LevelResources const &resources,
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
-    std::chrono::steady_clock::time_point &frameStartTime)
+    std::chrono::steady_clock::time_point &frameStartTime,
+    bool const runningFromReplay)
 {
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
-    hg::mt::std::map<hg::Ability, int> pickups;
+    hg::mt::std::map<hg::Ability, int> const *pickups{nullptr};
     hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
     bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};
@@ -450,7 +471,7 @@ void runStep(
             inertia.save(drawnFrame, drawnTimeDirection);
 
             shouldDrawInventory = true;
-            pickups = currentGuy.getPickups();
+            pickups = &currentGuy.getPickups();
             abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {
@@ -466,46 +487,19 @@ void runStep(
         }
     }
 
-    auto const &glitz{getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), drawnTimeDirection)};
-
-    //TODO: Possbily sync with Graphics?, via
-    //Vulkan Timestamp Queries:
-    //https://www.khronos.org/registry/vulkan/specs/1.1-extensions/html/vkspec.html#queries-timestamps
-
-    //TODO: Support slowing down/stopping sound if game is playing slowly, or speeding up sound
-    //      if game is going fast; Support proper audio rendering of timeline scrubbing.
-    //      Somehow support proper sound in Pause Time.
-    //      etc.
-    PlayAudioGlitz(
-        glitz,
-        audioPlayingState,
-        audioGlitzManager,
-        static_cast<int>(guyIndex)
-    );
-    //TODO: Play UI Sounds
-
-
-
-    drawFrame(
-        app.getRenderTarget(),
-        eng,
-        timeEngine,
-        UIFrameState{
+    
+    return UIFrameState{
             drawnFrame,
             drawnTimeDirection,
             guyIndex,
             shouldDrawGuyPositionColours,
             shouldDrawInventory,
-            &pickups,
+            pickups,
             abilityCursor,
             relativeGuyIndex,
-            &waveInfo
-        },
-
-        resources,
-        wallImage,
-        positionColoursImage
-    );
+            &waveInfo,
+            runningFromReplay
+    };
 }
 void drawFrame(
     sf::RenderTarget &target,
@@ -654,6 +648,21 @@ void drawFrame(
         //std::cout << "fps: " << fps << "\n";
     }
 #endif
+
+    if (uiFrameState.runningFromReplay) {
+        //TODO: also write some sort of replay progress display here
+        //currentReplayIt-replay.begin() << "/" << currentReplayEnd-replay.begin()
+
+
+        sf::Text replayGlyph;
+        replayGlyph.setFont(*hg::defaultFont);
+        replayGlyph.setString("R");
+        replayGlyph.setFillColor(sf::Color(255, 25, 50));
+        replayGlyph.setOutlineColor(sf::Color(255, 25, 50));
+        replayGlyph.setPosition(580, 32);
+        replayGlyph.setCharacterSize(32);
+        target.draw(replayGlyph);
+    }
 }
 
 void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend)
