@@ -32,22 +32,36 @@ namespace hg {
             VkPipelineShaderStageCreateInfo const shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
             VkVertexInputBindingDescription bindingDescription = {};
             bindingDescription.binding = 0;
-            bindingDescription.stride = sizeof(vec2<float>);
+            bindingDescription.stride = sizeof(Vertex);
             bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-            VkVertexInputAttributeDescription attributeDescription = {};
 
-            attributeDescription.binding = 0;
-            attributeDescription.location = 0;
-            attributeDescription.format = VK_FORMAT_R32G32_SFLOAT;
-            attributeDescription.offset = 0;
+            /*
+            https://www.khronos.org/registry/vulkan/specs/1.1-extensions/man/html/VkVertexInputAttributeDescription.html
+            format must be allowed as a vertex buffer format, as specified by the VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT flag
+            in VkFormatProperties::bufferFeatures returned by vkGetPhysicalDeviceFormatProperties
+            
+            TODO: Ensure this is true
+            */
+            std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+
+            attributeDescriptions[0].binding = 0;
+            attributeDescriptions[0].location = 0;
+            attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+
+            attributeDescriptions[1].binding = 0;
+            attributeDescriptions[1].location = 1;
+            attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+            attributeDescriptions[1].offset = offsetof(Vertex, colour);
 
             VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
             vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
             vertexInputInfo.vertexBindingDescriptionCount = 1;
-            vertexInputInfo.vertexAttributeDescriptionCount = 1;
             vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-            vertexInputInfo.pVertexAttributeDescriptions = &attributeDescription;
+            vertexInputInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+            vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
             VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
             inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -103,6 +117,16 @@ namespace hg {
             colorBlending.blendConstants[2] = 0.0f;
             colorBlending.blendConstants[3] = 0.0f;
 
+            std::array<VkDynamicState, 1> dynamicStates{
+                VK_DYNAMIC_STATE_VIEWPORT
+            };
+            VkPipelineDynamicStateCreateInfo dynamicState = {};
+            dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+            dynamicState.pNext = nullptr;
+            dynamicState.flags = 0;
+            dynamicState.dynamicStateCount = dynamicStates.size();
+            dynamicState.pDynamicStates = dynamicStates.data();
+
 
             VkGraphicsPipelineCreateInfo pipelineInfo = {};
             pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -114,6 +138,7 @@ namespace hg {
             pipelineInfo.pRasterizationState = &rasterizer;
             pipelineInfo.pMultisampleState = &multisampling;
             pipelineInfo.pColorBlendState = &colorBlending;
+            pipelineInfo.pDynamicState = &dynamicState;
             pipelineInfo.layout = pipelineLayout;
             pipelineInfo.renderPass = renderPass;
             pipelineInfo.subpass = 0;

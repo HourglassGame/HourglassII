@@ -16,6 +16,8 @@
 #include "VulkanSemaphore.h"
 #include "VulkanMemory.h"
 #include "VulkanBuffer.h"
+#include "VulkanDescriptorSetLayout.h"
+#include "RunningGameSceneRenderer.h"
 #include <GLFW/glfw3.h>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
@@ -28,7 +30,6 @@
 #include <optional>
 #include "GlobalConst.h"
 namespace hg {
-    inline int const MAX_FRAMES_IN_FLIGHT = 2;
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
 
@@ -144,6 +145,10 @@ namespace hg {
     }
 
     inline bool isDeviceSuitable(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
+        VkPhysicalDeviceProperties props;
+        vkGetPhysicalDeviceProperties(device, &props);
+
+
         return findQueueFamilies(device, surface).isComplete()
             && checkDeviceExtensionSupport(device)
             && checkSwapChainSupport(querySwapChainSupport(device, surface));
@@ -329,17 +334,20 @@ namespace hg {
         }
         return m;
     }
-    inline uint32_t findMemoryType(VkPhysicalDevice const physicalDevice, uint32_t const typeFilter, VkMemoryPropertyFlags const properties) {
-        VkPhysicalDeviceMemoryProperties memProperties;
-        vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-
-        for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) {
-            if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-                return i;
-            }
-        }
-
-        throw std::exception("failed to find suitable memory type!");
+    inline VkDescriptorSetLayoutBinding makeUboLayoutBinding() {
+        VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+        uboLayoutBinding.binding = 0;
+        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        uboLayoutBinding.descriptorCount = 1;
+        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        return uboLayoutBinding;
+    }
+    inline VkDescriptorSetLayoutCreateInfo makeDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutBinding const &uboLayoutBinding) {
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = 1;
+        layoutInfo.pBindings = &uboLayoutBinding;
+        return layoutInfo;
     }
     class VulkanEngine final {
     public:
@@ -355,7 +363,8 @@ namespace hg {
           , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
           , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
-          , pipelineLayout(logicalDevice.device, swapChain.extent)
+          , descriptorSetLayout(logicalDevice.device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
+          , pipelineLayout(logicalDevice.device, swapChain.extent, descriptorSetLayout.descriptorSetLayout)
           , graphicsPipeline(logicalDevice.device, swapChain.extent, pipelineLayout.pipelineLayout, renderPass.renderPass)
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
           , commandPool(logicalDevice.device, physicalDevice, surface.surface)
@@ -369,6 +378,61 @@ namespace hg {
           , currentFrame(0)
         {
         }
+        void drawFrame(RunningGameSceneRenderer &renderer) {
+            if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
+                throw std::exception("Couldn't wait for fence");
+            }
+            if (vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence) != VK_SUCCESS) {
+                throw std::exception("Couldn't reset fence");
+            }
+
+            uint32_t imageIndex;
+            if (vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
+                throw std::exception("Couldn't Acquire next Image");
+            }
+
+            auto const renderedCommandBuffers{renderer.renderFrame(currentFrame, swapChainFramebuffers[imageIndex].framebuffer)};
+
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+            VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame].semaphore };
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+
+            submitInfo.commandBufferCount = renderedCommandBuffers.size();
+            submitInfo.pCommandBuffers = renderedCommandBuffers.data();
+
+            VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };
+            submitInfo.signalSemaphoreCount = 1;
+            submitInfo.pSignalSemaphores = signalSemaphores;
+
+            if (vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence) != VK_SUCCESS) {
+                throw std::exception("failed to submit draw command buffer!");
+            }
+
+            VkPresentInfoKHR presentInfo = {};
+            presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+            presentInfo.waitSemaphoreCount = 1;
+            presentInfo.pWaitSemaphores = signalSemaphores;
+
+            VkSwapchainKHR swapChains[] = { swapChain.swapChain };
+            presentInfo.swapchainCount = 1;
+            presentInfo.pSwapchains = swapChains;
+
+            presentInfo.pImageIndices = &imageIndex;
+
+            if (vkQueuePresentKHR(logicalDevice.presentQueue, &presentInfo) != VK_SUCCESS) {
+                throw std::exception("Couldn't present queue");
+            }
+
+            currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+        }
+#if 0
         void drawFrame(std::vector<vec2<float>> const &vertices = std::vector<vec2<float>>{{0.f,-.5f},{0.5f,0.5f},{-0.5f,0.5f},{-1.f,0.f},{-1.f,-1.f},{0.f,-1.f} }) {
             if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
                 throw std::exception("Couldn't wait for fence");
@@ -444,7 +508,7 @@ namespace hg {
                 vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
                 vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
-                
+
                 VkBuffer vertexBufferArr[] = { vertexBuffers[currentFrame].buffer };
                 VkDeviceSize offsets[] = { 0 };
                 vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferArr, offsets);
@@ -496,6 +560,7 @@ namespace hg {
 
             currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
         }
+#endif
         VulkanEngine(VulkanEngine const&) = delete;
         VulkanEngine(VulkanEngine &&) = delete;
         VulkanEngine &operator=(VulkanEngine const&) = delete;
@@ -503,7 +568,6 @@ namespace hg {
         ~VulkanEngine() noexcept {
             vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
         }
-    private:
         GLFWwindow *w;
         VulkanInstance instance;
         VulkanDebugCallback debugCallback;
@@ -514,6 +578,7 @@ namespace hg {
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanSwapChainImageView> swapChainImageViews;
         VulkanRenderPass renderPass;
+        VulkanDescriptorSetLayout descriptorSetLayout;
         VulkanPipelineLayout pipelineLayout;
         VulkanGraphicsPipeline graphicsPipeline;
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
@@ -522,10 +587,19 @@ namespace hg {
         std::vector<VkCommandBuffer> commandBuffers2;
         std::vector<VulkanMemory> vertexBufferMemories;
         std::vector<VulkanBuffer> vertexBuffers;
+        //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
+        //vkAcquireNextImageKHR has finished/vkQueueSubmit can start
         std::vector<VulkanSemaphore> imageAvailableSemaphores;
+        //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
+        //vkQueueSubmit has finished/vkQueuePresentKHR can start
         std::vector<VulkanSemaphore> renderFinishedSemaphores;
+        //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
+        //vkQueueSubmit has finished/vkAcquireNextImageKHR for next frame can start
+        //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
         std::vector<VulkanFence> inFlightFences;
         size_t currentFrame;
+
+    private:
     };
 }
 #endif // !HG_VULKANENGINE_H

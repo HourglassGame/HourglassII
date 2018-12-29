@@ -12,11 +12,6 @@ namespace hg {
 
 sf::Color const uiTextColor(100, 100, 200);
 
-template<typename Float>
-constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilon) noexcept
-{
-    return std::abs(a - b) <= std::min(std::abs(a), std::abs(b)) * epsilon;
-}
 
 void PlayAudioGlitz(
     hg::mt::std::vector<hg::Glitz> const &glitz,
@@ -139,6 +134,7 @@ void DrawVisualGlitzAndWall(
     target.setView(oldView);
 
     canvas.flushFrame();
+    /*
     auto const &verts{vkCanvas.vertices};
     std::vector<hg::vec2<float>> projectedVerts;
     projectedVerts.reserve(verts.size());
@@ -155,7 +151,7 @@ void DrawVisualGlitzAndWall(
             }
         );
     }
-
+    */
     //eng.drawFrame(projectedVerts);
 }
 

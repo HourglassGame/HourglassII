@@ -1,4 +1,6 @@
 #include "RunningGameScene.h"
+#include "VulkanRenderTarget.h"
+
 #include "Scene.h"
 #include "Hg_Input.h"
 #include "Inertia.h"
@@ -100,18 +102,6 @@
 
 namespace hg {
 
-struct UIFrameState {
-    hg::FrameID drawnFrame;
-    hg::TimeDirection drawnTimeDirection;
-    std::size_t guyIndex;
-    bool shouldDrawGuyPositionColours;
-    bool shouldDrawInventory;
-    hg::mt::std::map<hg::Ability, int> const *pickups;
-    hg::Ability abilityCursor;
-    std::size_t relativeGuyIndex;
-    hg::TimeEngine::RunResult const *waveInfo;
-    bool runningFromReplay;
-};
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
@@ -186,6 +176,16 @@ variant<
 >
 run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
 {
+    RunningGameSceneRenderer renderer(
+        eng.physicalDevice,
+        eng.logicalDevice.device,
+        eng.surface.surface,
+        eng.renderPass.renderPass,
+        eng.graphicsPipeline.graphicsPipeline,
+        eng.pipelineLayout.pipelineLayout,
+        eng.descriptorSetLayout.descriptorSetLayout,
+        eng.swapChain.extent
+    );
     std::vector<InputList> receivedInputs;
 
     auto frameStartTime = std::chrono::steady_clock().now();
@@ -359,7 +359,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                         static_cast<int>(uiFrameState.guyIndex)
                     );
                     //TODO: Play UI Sounds
-
+                    
                     drawFrame(
                         window.getRenderTarget(),
                         eng,
@@ -370,6 +370,10 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                         wallImage,
                         positionColoursImage
                     );
+                    
+                    renderer.uiFrameState = &uiFrameState;
+                    renderer.timeEngine = &timeEngine;
+                    eng.drawFrame(renderer);
 
                     if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
                         window.setFramerateLimit(0);
@@ -422,11 +426,6 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
 }
 
 
-hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
-    hg::FrameView const &view, hg::TimeDirection timeDirection)
-{
-    return timeDirection == TimeDirection::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
-}
 
 
 UIFrameState runStep(

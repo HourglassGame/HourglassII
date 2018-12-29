@@ -17,6 +17,7 @@ namespace hg {
     inline static const int WINDOW_DEFAULT_X = 1260;
     inline static const int WINDOW_DEFAULT_Y = 840;
 
+    inline int const MAX_FRAMES_IN_FLIGHT = 2;
     inline std::vector<const char*> const validationLayers{
         "VK_LAYER_LUNARG_standard_validation"
     };

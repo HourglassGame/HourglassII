@@ -3,6 +3,7 @@
 #include "ResourceManager.h"
 #include "Canvas.h"
 #include "sfColour.h"
+#include "Maths.h"
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
@@ -13,18 +14,6 @@
 #include <iostream>
 namespace hg {
 
-
-namespace {
-float magnitude(sf::Vector2f const vec) {
-    return std::sqrt(vec.x*vec.x+vec.y*vec.y);
-}
-
-sf::Vector2f normal(sf::Vector2f const vec) {
-    sf::Vector2f direction(vec.y, -vec.x);
-    assert(magnitude(direction));
-    return direction/magnitude(direction);
-}
-}
 
 class sfRenderTargetVisualCanvas final : public Canvas
 {

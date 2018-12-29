@@ -35,6 +35,24 @@ namespace hg {
             renderPassInfo.subpassCount = 1;
             renderPassInfo.pSubpasses = &subpass;
 
+            /*
+            //To satisfy requirements for vkCmdPipelineBarrier in
+            //VulkanRenderTarget
+            std::array<VkSubpassDependency, 1> dependencies{
+                VkSubpassDependency{
+                    0,//srcSubpass
+                    0,//dstSubpass
+                    VK_PIPELINE_STAGE_TRANSFER_BIT,//srcStageMask
+                    VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,//dstStageMask
+                    VK_ACCESS_TRANSFER_WRITE_BIT,//srcAccessMask
+                    VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,//dstAccessMask
+                    0//dependencyFlags
+                }
+            };
+
+            renderPassInfo.dependencyCount = dependencies.size();
+            renderPassInfo.pDependencies = dependencies.data();
+            */
             if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
                 throw std::exception("failed to create render pass!");
             }

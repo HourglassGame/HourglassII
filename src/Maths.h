@@ -1,6 +1,7 @@
 #ifndef HG_MATHS_H
 #define HG_MATHS_H
 #include <algorithm>
+#include <SFML/System/Vector2.hpp>
 namespace hg {
 
 template<typename T> struct vec2{
@@ -20,6 +21,41 @@ static_assert(offsetof(vec2<short>, b) == 0 + sizeof(short));
 static_assert(sizeof(vec2<int>) == 2 * sizeof(int));
 static_assert(offsetof(vec2<int>, a) == 0);
 static_assert(offsetof(vec2<int>, b) == 0 + sizeof(int));
+
+
+template<typename T> struct vec3 {
+    T a;
+    T b;
+    T c;
+};
+//Should be very standard layout, for interop with Vulkan etc.
+static_assert(sizeof(vec3<float>) == 3 * sizeof(float));
+static_assert(offsetof(vec3<float>, a) == 0);
+static_assert(offsetof(vec3<float>, b) == 0 + sizeof(float));
+static_assert(offsetof(vec3<float>, c) == 0 +  2*sizeof(float));
+static_assert(sizeof(vec3<double>) == 3 * sizeof(double));
+static_assert(offsetof(vec3<double>, a) == 0);
+static_assert(offsetof(vec3<double>, b) == 0 + sizeof(double));
+static_assert(offsetof(vec3<double>, c) == 0 + 2*sizeof(double));
+static_assert(sizeof(vec3<short>) == 3 * sizeof(short));
+static_assert(offsetof(vec3<short>, a) == 0);
+static_assert(offsetof(vec3<short>, b) == 0 + sizeof(short));
+static_assert(offsetof(vec3<short>, c) == 0 + 2*sizeof(short));
+static_assert(sizeof(vec3<int>) == 3 * sizeof(int));
+static_assert(offsetof(vec3<int>, a) == 0);
+static_assert(offsetof(vec3<int>, b) == 0 + sizeof(int));
+static_assert(offsetof(vec3<int>, c) == 0 + 2*sizeof(int));
+
+inline float magnitude(sf::Vector2f const vec) {
+    return std::sqrt(vec.x*vec.x + vec.y*vec.y);
+}
+
+inline sf::Vector2f normal(sf::Vector2f const vec) {
+    sf::Vector2f direction(vec.y, -vec.x);
+    assert(magnitude(direction));
+    return direction / magnitude(direction);
+}
+
 
 template<typename Numeric>
 Numeric sign(Numeric a) {
@@ -70,6 +106,11 @@ T const& clamp(T const& lower, T const& val, T const& upper) {
     return std::max(lower, std::min(val, upper));
 }
 
+template<typename Float>
+constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilon) noexcept
+{
+    return std::abs(a - b) <= std::min(std::abs(a), std::abs(b)) * epsilon;
+}
 }//namespace hg
 #endif //HG_MATHS_H
 

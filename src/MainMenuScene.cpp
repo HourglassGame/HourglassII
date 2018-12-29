@@ -4,6 +4,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Time.hpp>
 #include <SFML/System/Sleep.hpp>
+#include <chrono>
+#include <iostream>
 namespace hg {
 extern sf::Font const *defaultFont;
 struct MenuItem final {
@@ -42,15 +44,19 @@ run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng)
         {RunAReplay_tag{}, "Run Replay"},
         {Exit_tag{}, "Exit"}
     };
-    
+    auto frameStart = std::chrono::steady_clock::now();
     while (true) {
         drawMainMenu(window, menu, currentItem);
 
         bool mainMenuDrawn = true;
         while (mainMenuDrawn) {
             //vulkanEng.drawFrame();
+            auto nextFrame = std::chrono::steady_clock::now();
+            std::chrono::duration<double> frameTime = nextFrame - frameStart;
+            //std::cout << std::chrono::duration_cast<std::chrono::microseconds>(frameTime).count() << "\n";
+            frameStart = nextFrame;
             sf::Event event;
-            if (window.waitEvent(event)) do {
+            if (window.pollEvent(event)) do {
                 switch (event.type) {
                   case sf::Event::KeyPressed:
                     switch (event.key.code) {
