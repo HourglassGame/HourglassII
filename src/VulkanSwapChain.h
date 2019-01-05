@@ -4,6 +4,7 @@
 #include "VulkanUtil.h"
 #include "Maths.h"
 #include <vulkan/vulkan.h>
+#include <GLFW/glfw3.h>
 namespace hg {
     inline VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &availableFormats) {
         if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
@@ -39,25 +40,33 @@ namespace hg {
         return bestMode;
     }
 
-    inline VkExtent2D chooseSwapExtent(VkSurfaceCapabilitiesKHR const &capabilities) {
+    inline VkExtent2D chooseSwapExtent(VkExtent2D const glfwFramebufferExtent, VkSurfaceCapabilitiesKHR const &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
             return capabilities.currentExtent;
         }
         else {
-            //TODO: Dynamically change window width/height here!
             return {
-                std::clamp<uint32_t>(WINDOW_DEFAULT_X, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-                std::clamp<uint32_t>(WINDOW_DEFAULT_Y, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+                std::clamp<uint32_t>(glfwFramebufferExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+                std::clamp<uint32_t>(glfwFramebufferExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
             };
         }
     }
 
     class VulkanSwapChain final {
     public:
+        VulkanSwapChain(VkDevice const device)
+            : device(device)
+            , swapChain(VK_NULL_HANDLE)
+            , imageCount()
+            , surfaceFormat()
+            , extent()
+        {}
         VulkanSwapChain(
             VkPhysicalDevice const physicalDevice,
             VkDevice const device,
-            VkSurfaceKHR const surface
+            VkSurfaceKHR const surface,
+            VkExtent2D const glfwFramebufferExtent,
+            VkSwapchainKHR oldSwapchain
         )
           : device(device)
         {
@@ -65,7 +74,7 @@ namespace hg {
 
             surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
             VkPresentModeKHR const presentMode{chooseSwapPresentMode(swapChainSupport.presentModes)};
-            extent = chooseSwapExtent(swapChainSupport.capabilities);
+            extent = chooseSwapExtent(glfwFramebufferExtent, swapChainSupport.capabilities);
 
             imageCount = swapChainSupport.capabilities.minImageCount + 1;
             if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
@@ -100,24 +109,38 @@ namespace hg {
             createInfo.presentMode = presentMode;
             createInfo.clipped = VK_TRUE;
 
-            createInfo.oldSwapchain = VK_NULL_HANDLE;
+            createInfo.oldSwapchain = oldSwapchain;
 
             if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
                 throw std::exception("failed to create swap chain!");
             }
         }
         VulkanSwapChain(VulkanSwapChain const&) = delete;
-        VulkanSwapChain(VulkanSwapChain &&) = delete;
+        VulkanSwapChain(VulkanSwapChain &&o) noexcept
+            : device(o.device)
+            , swapChain(std::exchange(o.swapChain, VkSwapchainKHR{VK_NULL_HANDLE}))
+            , imageCount(o.imageCount)
+            , surfaceFormat(o.surfaceFormat)
+            , extent(o.extent)
+        {
+        }
         VulkanSwapChain &operator=(VulkanSwapChain const&) = delete;
-        VulkanSwapChain &operator=(VulkanSwapChain &&) = delete;
+        VulkanSwapChain &operator=(VulkanSwapChain &&o) noexcept {
+            std::swap(device, o.device);
+            std::swap(swapChain, o.swapChain);
+            std::swap(imageCount, o.imageCount);
+            std::swap(surfaceFormat, o.surfaceFormat);
+            std::swap(extent, o.extent);
+            return *this;
+        }
         ~VulkanSwapChain() noexcept {
             vkDestroySwapchainKHR(device, swapChain, nullptr);
         }
+        VkDevice device;
+        VkSwapchainKHR swapChain;
         uint32_t imageCount;
         VkSurfaceFormatKHR surfaceFormat;
         VkExtent2D extent;
-        VkDevice device;
-        VkSwapchainKHR swapChain;
     };
 }
 #endif // !HG_VULKANSWAPCHAIN_H

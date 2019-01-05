@@ -6,6 +6,9 @@ namespace hg {
     class VulkanPipelineLayout final {
     public:
         VulkanPipelineLayout(
+            VkDevice const device) : device(device), pipelineLayout(VK_NULL_HANDLE)
+        {}
+        VulkanPipelineLayout(
             VkDevice const device,
             VkExtent2D const swapChainExtent,
             VkDescriptorSetLayout const &descriptorSetLayout
@@ -22,9 +25,17 @@ namespace hg {
             }
         }
         VulkanPipelineLayout(VulkanPipelineLayout const&) = delete;
-        VulkanPipelineLayout(VulkanPipelineLayout &&) = delete;
+        VulkanPipelineLayout(VulkanPipelineLayout &&o)
+            : device(o.device)
+            , pipelineLayout(std::exchange(o.pipelineLayout, VkPipelineLayout{VK_NULL_HANDLE}))
+        {
+        }
         VulkanPipelineLayout &operator=(VulkanPipelineLayout const&) = delete;
-        VulkanPipelineLayout &operator=(VulkanPipelineLayout &&) = delete;
+        VulkanPipelineLayout &operator=(VulkanPipelineLayout &&o) {
+            std::swap(device, o.device);
+            std::swap(pipelineLayout, o.pipelineLayout);
+            return *this;
+        }
         ~VulkanPipelineLayout() noexcept {
             vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
         }

@@ -32,6 +32,7 @@
 namespace hg {
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
+    
 
     inline bool checkValidationLayerSupport() {
         uint32_t layerCount = 0;
@@ -280,6 +281,7 @@ namespace hg {
         return commandBuffers;
     }
     */
+    /*
     inline std::vector<VkCommandBuffer> createCommandBuffers2(
         VkCommandPool const commandPool,
         VkDevice const device
@@ -299,6 +301,7 @@ namespace hg {
 
         return commandBuffers;
     }
+    */
     inline std::vector<VulkanSemaphore> createImageAvailableSemaphores(VkDevice const device) {
         std::vector<VulkanSemaphore> s;
         for (auto i{0}; i != MAX_FRAMES_IN_FLIGHT; ++i) {
@@ -320,77 +323,123 @@ namespace hg {
         }
         return f;
     }
+    /*
     inline std::vector<VulkanBuffer> createVertexBuffers(VkDevice const device) {
         std::vector<VulkanBuffer> b;
         for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
             b.emplace_back(device);
         }
         return b;
-    }
+    }*/
+    /*
     inline std::vector<VulkanMemory> createVertexMemories(VkDevice const device) {
         std::vector<VulkanMemory> m;
         for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
             m.emplace_back(device);
         }
         return m;
-    }
-    inline VkDescriptorSetLayoutBinding makeUboLayoutBinding() {
-        VkDescriptorSetLayoutBinding uboLayoutBinding = {};
-        uboLayoutBinding.binding = 0;
-        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        uboLayoutBinding.descriptorCount = 1;
-        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-        return uboLayoutBinding;
-    }
-    inline VkDescriptorSetLayoutCreateInfo makeDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutBinding const &uboLayoutBinding) {
-        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
-        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-        layoutInfo.bindingCount = 1;
-        layoutInfo.pBindings = &uboLayoutBinding;
-        return layoutInfo;
+    }*/
+    inline VkExtent2D getFramebufferSize(GLFWwindow &w) {
+        int width, height;
+        glfwGetFramebufferSize(&w, &width, &height);
+        return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
     }
     class VulkanEngine final {
+        static void framebufferResizeCallback(GLFWwindow* const window, int const width, int const height) {
+            auto eng = static_cast<VulkanEngine*>(glfwGetWindowUserPointer(window));
+            std::lock_guard<std::mutex> lock(eng->frameBufferSizeMutex);
+            //eng->framebufferResized = true;
+            eng->newFramebufferSize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+        }
+
     public:
         VulkanEngine(
             GLFWwindow &w
         ) : w(&w)
           , instance(makeInstanceCreateInfo(nullptr, getRequiredExtensions()))
+          , oldFramebufferSize(getFramebufferSize(w))
+          , newFramebufferSize(getFramebufferSize(w))
           , debugCallback(instance.i)
           , surface(instance.i, &w)
           , physicalDevice(pickPhysicalDevice(instance.i, surface.surface))
           , logicalDevice(physicalDevice, surface.surface)
-          , swapChain(physicalDevice, logicalDevice.device, surface.surface)
+          , swapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
           , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
+            
           , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
+            /*
           , descriptorSetLayout(logicalDevice.device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
           , pipelineLayout(logicalDevice.device, swapChain.extent, descriptorSetLayout.descriptorSetLayout)
           , graphicsPipeline(logicalDevice.device, swapChain.extent, pipelineLayout.pipelineLayout, renderPass.renderPass)
+          */
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
-          , commandPool(logicalDevice.device, physicalDevice, surface.surface)
+          //, commandPool(logicalDevice.device, physicalDevice, surface.surface)
           //, commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
-          , commandBuffers2(createCommandBuffers2(commandPool.commandPool, logicalDevice.device))
-          , vertexBufferMemories(createVertexMemories(logicalDevice.device))
-          , vertexBuffers(createVertexBuffers(logicalDevice.device))
+          //, commandBuffers2(createCommandBuffers2(commandPool.commandPool, logicalDevice.device))
+          //, vertexBufferMemories(createVertexMemories(logicalDevice.device))
+         // , vertexBuffers(createVertexBuffers(logicalDevice.device))
           , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.device))
           , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.device))
           , inFlightFences(createInFlightFences(logicalDevice.device))
           , currentFrame(0)
+          //, framebufferResized(false)
         {
+            glfwSetWindowUserPointer(&w, this);
+            glfwSetFramebufferSizeCallback(&w, framebufferResizeCallback);
+            //glfwSetWindowRefreshCallback(&w, windowRefreshCallback); //TODO
+        }
+
+
+        void recreateSwapChain(RunningGameSceneRenderer &renderer){
+            vkDeviceWaitIdle(logicalDevice.device);
+
+            VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, swapChain.swapChain);
+            std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.device, newSwapChain.swapChain, newSwapChain.imageCount));
+            std::vector<VulkanSwapChainImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.device, newSwapChain.surfaceFormat.format, newSwapChainImages));
+            VulkanRenderPass newRenderPass(logicalDevice.device, newSwapChain.surfaceFormat.format);
+            std::vector<VulkanFramebuffer> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, newRenderPass.renderPass, newSwapChain.extent, newSwapChainImageViews));
+
+            renderer.updateSwapChainData(newRenderPass.renderPass, newSwapChain.extent);
+
+            swapChain = std::move(newSwapChain);
+            swapChainImages = std::move(swapChainImages);
+            swapChainImageViews = std::move(newSwapChainImageViews);
+            renderPass = std::move(newRenderPass);
+            swapChainFramebuffers = std::move(newSwapChainFramebuffers);
+        }
+        bool framebufferResizedCheck() {
+            std::lock_guard<std::mutex> lock(frameBufferSizeMutex);
+            if (oldFramebufferSize.width != newFramebufferSize.width || oldFramebufferSize.height != newFramebufferSize.height) {
+                oldFramebufferSize = newFramebufferSize;
+                return true;
+            }
+            return false;
         }
         void drawFrame(RunningGameSceneRenderer &renderer) {
+            int width, height;
+            glfwGetFramebufferSize(w, &width, &height);
+            if (width == 0 || height == 0) {
+                return;
+            }
             if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
                 throw std::exception("Couldn't wait for fence");
             }
-            if (vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence) != VK_SUCCESS) {
-                throw std::exception("Couldn't reset fence");
-            }
+            
 
             uint32_t imageIndex;
-            if (vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
-                throw std::exception("Couldn't Acquire next Image");
-            }
 
+            while (true) {
+                auto const res{ vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex)};
+                if (res == VK_ERROR_OUT_OF_DATE_KHR) {
+                    recreateSwapChain(renderer);
+                    continue;
+                }
+                else if (!(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)) {
+                    throw std::exception("Couldn't Acquire next Image");
+                }
+                break;
+            }
             auto const renderedCommandBuffers{renderer.renderFrame(currentFrame, swapChainFramebuffers[imageIndex].framebuffer)};
 
             VkSubmitInfo submitInfo = {};
@@ -409,6 +458,10 @@ namespace hg {
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = signalSemaphores;
 
+            if (vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence) != VK_SUCCESS) {
+                throw std::exception("Couldn't reset fence");
+            }
+            
             if (vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence) != VK_SUCCESS) {
                 throw std::exception("failed to submit draw command buffer!");
             }
@@ -425,8 +478,14 @@ namespace hg {
 
             presentInfo.pImageIndices = &imageIndex;
 
-            if (vkQueuePresentKHR(logicalDevice.presentQueue, &presentInfo) != VK_SUCCESS) {
-                throw std::exception("Couldn't present queue");
+            {
+                auto const res{vkQueuePresentKHR(logicalDevice.presentQueue, &presentInfo)};
+                if (res == VK_ERROR_OUT_OF_DATE_KHR || framebufferResizedCheck()) {
+                    recreateSwapChain(renderer);
+                }
+                else if (!(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)) {
+                    throw std::exception("Couldn't present queue");
+                }
             }
 
             currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -569,6 +628,9 @@ namespace hg {
             vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
         }
         GLFWwindow *w;
+        std::mutex frameBufferSizeMutex;
+        VkExtent2D oldFramebufferSize;
+        VkExtent2D newFramebufferSize;
         VulkanInstance instance;
         VulkanDebugCallback debugCallback;
         VulkanSurface surface;
@@ -578,15 +640,17 @@ namespace hg {
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanSwapChainImageView> swapChainImageViews;
         VulkanRenderPass renderPass;
+        /*
         VulkanDescriptorSetLayout descriptorSetLayout;
         VulkanPipelineLayout pipelineLayout;
         VulkanGraphicsPipeline graphicsPipeline;
+        */
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
-        VulkanCommandPool commandPool;
+        //VulkanCommandPool commandPool;
         //std::vector<VkCommandBuffer> commandBuffers;
-        std::vector<VkCommandBuffer> commandBuffers2;
-        std::vector<VulkanMemory> vertexBufferMemories;
-        std::vector<VulkanBuffer> vertexBuffers;
+        //std::vector<VkCommandBuffer> commandBuffers2;
+        //std::vector<VulkanMemory> vertexBufferMemories;
+        //std::vector<VulkanBuffer> vertexBuffers;
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkAcquireNextImageKHR has finished/vkQueueSubmit can start
         std::vector<VulkanSemaphore> imageAvailableSemaphores;
@@ -598,7 +662,7 @@ namespace hg {
         //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
         std::vector<VulkanFence> inFlightFences;
         size_t currentFrame;
-
+        //bool framebufferResized;
     private:
     };
 }

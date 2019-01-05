@@ -121,7 +121,7 @@ UIFrameState runStep(
 void drawFrame(
     sf::RenderTarget &target,
     hg::VulkanEngine &eng,
-    hg::TimeEngine const &timeEngine,
+    //hg::TimeEngine const &timeEngine,
     UIFrameState const &uiFrameState,
 
     hg::LevelResources const &resources,
@@ -181,11 +181,29 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
         eng.logicalDevice.device,
         eng.surface.surface,
         eng.renderPass.renderPass,
-        eng.graphicsPipeline.graphicsPipeline,
-        eng.pipelineLayout.pipelineLayout,
-        eng.descriptorSetLayout.descriptorSetLayout,
+        //eng.graphicsPipeline.graphicsPipeline,
+        //eng.pipelineLayout.pipelineLayout,
+        //eng.descriptorSetLayout.descriptorSetLayout,
         eng.swapChain.extent
     );
+    std::atomic<bool> stopRenderer{false};
+    std::thread renderThread([&renderer, &eng, &stopRenderer]{
+        while(!stopRenderer) {
+            try{
+                eng.drawFrame(renderer);
+            }
+            catch(...){}
+        }
+    });
+    struct RendererCleanupEnforcer final {
+        decltype(stopRenderer) &stopRenderer_;
+        decltype(renderThread) &renderThread_;
+        ~RendererCleanupEnforcer() noexcept {
+            stopRenderer_ = true;
+            renderThread_.join();
+        }
+    } RendererCleanupEnforcer_obj{ stopRenderer, renderThread };
+
     std::vector<InputList> receivedInputs;
 
     auto frameStartTime = std::chrono::steady_clock().now();
@@ -292,6 +310,12 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                 case sf::Event::Closed:
                     window.close();
                     throw WindowClosed_exception{};
+                case sf::Event::Resized:
+                    glfwSetWindowSize(
+                        eng.w,
+                        event.size.width,
+                        event.size.height);
+                    break;
                 case sf::Event::KeyPressed:
                     switch (event.key.code) {
                     case sf::Keyboard::Escape:
@@ -340,7 +364,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto const uiFrameState{runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
+                    auto uiFrameState{runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
                     interrupter.reset();
 
 
@@ -363,17 +387,19 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                     drawFrame(
                         window.getRenderTarget(),
                         eng,
-                        timeEngine,
+                        //timeEngine,
                         uiFrameState,
 
                         levelResources,
                         wallImage,
                         positionColoursImage
                     );
-                    
+                    renderer.setUiFrameState(std::move(uiFrameState));
+                    /*
                     renderer.uiFrameState = &uiFrameState;
                     renderer.timeEngine = &timeEngine;
-                    eng.drawFrame(renderer);
+                    */
+                    //eng.drawFrame(renderer);
 
                     if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
                         window.setFramerateLimit(0);
@@ -445,7 +471,7 @@ UIFrameState runStep(
 {
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
-    hg::mt::std::map<hg::Ability, int> const *pickups{nullptr};
+    hg::mt::std::map<hg::Ability, int> pickups;
     hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
     bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};
@@ -470,7 +496,7 @@ UIFrameState runStep(
             inertia.save(drawnFrame, drawnTimeDirection);
 
             shouldDrawInventory = true;
-            pickups = &currentGuy.getPickups();
+            pickups = currentGuy.getPickups();
             abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {
@@ -486,7 +512,26 @@ UIFrameState runStep(
         }
     }
 
+    auto const &guyFrames{timeEngine.getGuyFrames()};
+    auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
     
+
+    std::vector<std::optional<GuyFrameData>> guyFrameData;
+    guyFrameData.reserve(actualGuyFrames.size());
+    for (std::size_t i{}, end{std::size(actualGuyFrames)}; i != end; ++i) {
+        Frame const *const guyFrame{actualGuyFrames[i]};
+        guyFrameData.push_back(
+            isNullFrame(guyFrame)
+            ? std::optional<GuyFrameData>{}
+            : std::optional<GuyFrameData>{
+                GuyFrameData{
+                    getFrameNumber(guyFrame),
+                    *boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; })
+                }
+              }
+        );
+    }
+
     return UIFrameState{
             drawnFrame,
             drawnTimeDirection,
@@ -496,14 +541,20 @@ UIFrameState runStep(
             pickups,
             abilityCursor,
             relativeGuyIndex,
-            &waveInfo,
-            runningFromReplay
+            waveInfo,
+            runningFromReplay,
+
+            getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), drawnTimeDirection),
+            timeEngine.getWall(),
+            timeEngine.getPostOverwriteInput(),
+            static_cast<std::size_t>(timeEngine.getTimelineLength()),
+            std::move(guyFrameData)
     };
 }
 void drawFrame(
     sf::RenderTarget &target,
     hg::VulkanEngine &eng,
-    hg::TimeEngine const &timeEngine,
+    //hg::TimeEngine const &timeEngine,
     UIFrameState const &uiFrameState,
 
     hg::LevelResources const &resources,
@@ -516,8 +567,8 @@ void drawFrame(
     DrawVisualGlitzAndWall(
         target,
         eng,
-        getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
-        timeEngine.getWall(),
+        uiFrameState.drawnGlitz,//getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
+        uiFrameState.wall,//timeEngine.getWall(),
         resources,
         wallImage,
         positionColoursImage,
@@ -527,14 +578,14 @@ void drawFrame(
     if (uiFrameState.shouldDrawInventory) {
         drawInventory(
             target,
-            *uiFrameState.pickups,
+            uiFrameState.pickups,
             uiFrameState.abilityCursor);
     }
-
+#if 0
     DrawTimeline(
         target,
         timeEngine,
-        uiFrameState.waveInfo->updatedFrames,
+        uiFrameState.waveInfo.updatedFrames,
         uiFrameState.drawnFrame,
         timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1].getGuyInput().getTimeCursor(),
         timeEngine.getTimelineLength());
@@ -573,6 +624,7 @@ void drawFrame(
         currentPlayerGlyph.setOutlineColor(uiTextColor);
         target.draw(currentPlayerGlyph);
     }
+#endif
     {
         std::stringstream frameNumberString;
         frameNumberString << "Frame: " << uiFrameState.drawnFrame.getFrameNumber();
@@ -599,10 +651,10 @@ void drawFrame(
     }
     {
         std::vector<int> framesExecutedList;
-        framesExecutedList.reserve(boost::size(uiFrameState.waveInfo->updatedFrames));
+        framesExecutedList.reserve(boost::size(uiFrameState.waveInfo.updatedFrames));
         for (
             hg::FrameUpdateSet const &updateSet :
-            uiFrameState.waveInfo->updatedFrames)
+            uiFrameState.waveInfo.updatedFrames)
         {
             framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
         }

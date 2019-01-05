@@ -6,8 +6,25 @@
 #include "Maths.h"
 #include "VulkanUtil.h"
 #include "GameDisplayHelpers.h"
+#include <random>
 #include <boost/range/algorithm/find_if.hpp>
+#include <mutex>
 namespace hg {
+    inline VkDescriptorSetLayoutBinding makeUboLayoutBinding() {
+        VkDescriptorSetLayoutBinding uboLayoutBinding = {};
+        uboLayoutBinding.binding = 0;
+        uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        uboLayoutBinding.descriptorCount = 1;
+        uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        return uboLayoutBinding;
+    }
+    inline VkDescriptorSetLayoutCreateInfo makeDescriptorSetLayoutCreateInfo(VkDescriptorSetLayoutBinding const &uboLayoutBinding) {
+        VkDescriptorSetLayoutCreateInfo layoutInfo = {};
+        layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+        layoutInfo.bindingCount = 1;
+        layoutInfo.pBindings = &uboLayoutBinding;
+        return layoutInfo;
+    }
     sf::Color guyPositionToColor(double xFrac, double yFrac);
     inline vec3<float> interpretAsVulkanColour(unsigned const colour)
     {
@@ -133,18 +150,26 @@ namespace hg {
     private:
         VulkanRenderTarget *target;
     };
-
+    struct GuyFrameData {
+        int frameNumber;
+        GuyOutputInfo guyOutputInfo;
+    };
     struct UIFrameState {
         hg::FrameID drawnFrame;
         hg::TimeDirection drawnTimeDirection;
         std::size_t guyIndex;
         bool shouldDrawGuyPositionColours;
         bool shouldDrawInventory;
-        hg::mt::std::map<hg::Ability, int> const *pickups;
+        hg::mt::std::map<hg::Ability, int> pickups;
         hg::Ability abilityCursor;
         std::size_t relativeGuyIndex;
-        hg::TimeEngine::RunResult const *waveInfo;
+        hg::TimeEngine::RunResult waveInfo;
         bool runningFromReplay;
+        hg::mt::std::vector<hg::Glitz> drawnGlitz;
+        Wall wall;
+        std::vector<GuyInput> postOverwriteInput;
+        std::size_t timelineLength;
+        std::vector<std::optional<GuyFrameData>> guyFrames;
     };
 
     inline std::vector<VkCommandBuffer> createCommandBuffersForRenderer(
@@ -198,21 +223,44 @@ namespace hg {
             VkDevice const device,
             VkSurfaceKHR const surface,
             VkRenderPass const renderPass,
-            VkPipeline const graphicsPipeline,
-            VkPipelineLayout const pipelineLayout,
-            VkDescriptorSetLayout const descriptorSetLayout,
+            //VkPipeline const graphicsPipeline,
+            //VkPipelineLayout const pipelineLayout,
+            //VkDescriptorSetLayout const descriptorSetLayout,
             VkExtent2D const &swapChainExtent)
-          : device(device)
+          : physicalDevice(physicalDevice)
+          , device(device)
           , renderPass(renderPass)
-          , graphicsPipeline(graphicsPipeline)
+          //, graphicsPipeline(graphicsPipeline)
           , swapChainExtent(swapChainExtent)
           , commandPool(device, physicalDevice, surface)
           , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
           , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
-          , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout, descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
-          , uiFrameState(nullptr)
-          , timeEngine(nullptr)
+
+          , descriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
+          , pipelineLayout(device, swapChainExtent, descriptorSetLayout.descriptorSetLayout)
+          , graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
+
+          , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, descriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
+          , uiFrameState()
+          //, timeEngine(nullptr)
         {
+        }
+        void updateSwapChainData(
+            VkRenderPass const renderPass,
+            //VkPipeline const graphicsPipeline,
+            //VkPipelineLayout const pipelineLayout,
+            //VkDescriptorSetLayout const descriptorSetLayout,
+            VkExtent2D const &swapChainExtent)
+        {
+            this->renderPass = renderPass;
+            this->swapChainExtent = swapChainExtent;
+            renderTargets.clear();
+            graphicsPipeline = VulkanGraphicsPipeline(device);
+            pipelineLayout = VulkanPipelineLayout(device);
+
+            pipelineLayout = VulkanPipelineLayout(device, swapChainExtent, descriptorSetLayout.descriptorSetLayout);
+            graphicsPipeline = VulkanGraphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass);
+            renderTargets = createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, descriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers);
         }
         std::vector<VkCommandBuffer> renderFrame(
             std::size_t currentFrame,//TODO: Find a better way to manage the lifetimes of things that must be kept alive for the duration of a frame render!
@@ -274,7 +322,7 @@ namespace hg {
             renderPassInfo.pClearValues = &clearColor;
 
             vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+            vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
 
             reallyDoRender(drawCommandBuffer, target, targetFrameBuffer);
 
@@ -286,14 +334,24 @@ namespace hg {
             //vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
             //vkCmdEndRenderPass(drawCommandBuffer);
         }
+        void setUiFrameState(UIFrameState &&newUiFrameState){
+            std::lock_guard<std::mutex> lock{uiFrameStateMutex};
+            uiFrameState = std::make_unique<UIFrameState>(std::move(newUiFrameState));
+        }
+        std::optional<UIFrameState> copyUiFrameState(){
+            std::lock_guard<std::mutex> lock{uiFrameStateMutex};
+            return uiFrameState ? std::optional<UIFrameState>(*uiFrameState) : std::optional<UIFrameState>{};
+        }
         void reallyDoRender(VkCommandBuffer const &drawCommandBuffer, VulkanRenderTarget &target, VkFramebuffer const targetFrameBuffer) {
-
+            
+            auto uiFrameStateLocal{copyUiFrameState()};
+            if (!uiFrameStateLocal) {return;}
             //target.drawVertices(std::vector<vec2<float>>{ {0.f, -.5f}, { 0.5f,0.5f }, { -0.5f,0.5f }, { -1.f,0.f }, { -1.f,-1.f }, { 0.f,-1.f } });
             DrawVisualGlitzAndWall(
                 target,
-                getGlitzForDirection(timeEngine->getFrame(uiFrameState->drawnFrame)->getView(), uiFrameState->drawnTimeDirection),
-                timeEngine->getWall(),
-                static_cast<int>(uiFrameState->guyIndex),
+                uiFrameStateLocal->drawnGlitz/*getGlitzForDirection(timeEngine->getFrame(uiFrameState->drawnFrame)->getView(), uiFrameState->drawnTimeDirection)*/,
+                uiFrameStateLocal->wall/*timeEngine->getWall()*/,
+                static_cast<int>(uiFrameStateLocal->guyIndex),
                 targetFrameBuffer,
                 drawCommandBuffer);
 
@@ -308,24 +366,69 @@ namespace hg {
 #endif
             DrawPersonalTimeline(
                 target,
-                *timeEngine,
+                uiFrameStateLocal->wall,
                 drawCommandBuffer,
-                uiFrameState->relativeGuyIndex,
-                timeEngine->getGuyFrames(),
-                timeEngine->getPostOverwriteInput(),
-                static_cast<std::size_t>(timeEngine->getTimelineLength()));
+                uiFrameStateLocal->relativeGuyIndex,
+                //timeEngine->getGuyFrames(),
+                uiFrameStateLocal->guyFrames,
+                uiFrameStateLocal->postOverwriteInput,//timeEngine->getPostOverwriteInput(),
+                uiFrameStateLocal->timelineLength/*static_cast<std::size_t>(timeEngine->getTimelineLength())*/);
 
             DrawInterfaceBorder(target);
-
+            DrawCrazyTriangle(
+                target,
+                drawCommandBuffer);
         }
 
-
+        void DrawCrazyTriangle(
+            VulkanRenderTarget &target,
+            VkCommandBuffer const &drawCommandBuffer) {
+            target.updateUniformBuffer(
+                UniformBufferObject{
+                    //Out  x    y    z    v
+                         1.0, 0.0, 0.0, 0.0,//In x
+                         0.0, 1.0, 0.0, 0.0,//In y
+                         0.0, 0.0, 1.0, 0.0,//In z
+                         0.0, 0.0, 0.0, 1.0 //In v
+                }
+            );
+            std::array<VkViewport, 1> viewports{
+                    {
+                        0.f,
+                        0.f,
+                        static_cast<float>(swapChainExtent.width),
+                        static_cast<float>(swapChainExtent.height),
+                        0.0f,
+                        1.0f
+                    }
+            };
+            vkCmdSetViewport(
+                drawCommandBuffer,
+                0,
+                viewports.size(),
+                viewports.data()
+            );
+            std::random_device dev;
+            std::uniform_real_distribution<float> pos_dist(-1.0f, -0.9f);
+            std::uniform_real_distribution<float> col_dist;
+            Vertex a{{pos_dist(dev), pos_dist(dev)}, {col_dist(dev),col_dist(dev),col_dist(dev)}};
+            Vertex b{{pos_dist(dev), pos_dist(dev)}, {col_dist(dev),col_dist(dev),col_dist(dev)}};
+            Vertex c{{pos_dist(dev), pos_dist(dev)}, {col_dist(dev),col_dist(dev),col_dist(dev)}};
+            target.drawVertices(
+                std::vector<Vertex>{
+                    a, b, c,
+                    a, c, b
+                }
+            );
+        }
         void DrawPersonalTimeline(
             VulkanRenderTarget &target,
-            hg::TimeEngine const &timeEngine,
+            Wall const &wall,
+            //hg::TimeEngine const &timeEngine,
             VkCommandBuffer const &drawCommandBuffer,
             std::size_t const relativeGuyIndex,
-            std::vector<Frame *> const &guyFrames,
+            //std::vector<Frame *> const &guyFrames,
+            std::vector<std::optional<GuyFrameData>> const &guyFrames,
             std::vector<GuyInput> const &guyInput,
             std::size_t const minTimelineLength) {
 
@@ -455,7 +558,8 @@ namespace hg {
             //Time Ticks TODO
             //Special display of dead guy frames? TODO
             std::size_t skipInputFrames = 0;
-            auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), guyFrames.end() - 1) };
+            //auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
+            auto const &actualGuyFrames{guyFrames};
             auto const guyFramesLength{ boost::size(actualGuyFrames) };
             std::size_t const timelineLength{ std::max(minTimelineLength, guyFramesLength) };
 
@@ -507,14 +611,17 @@ namespace hg {
                 }
 
                 auto const guyFrame{ actualGuyFrames[i] };
-                if (isNullFrame(guyFrame)) continue;
+                //if (isNullFrame(guyFrame)) continue;
+                if (!guyFrame) continue;
 
-                auto const frameVerticalPosition{ float{padding + frameHeight * getFrameNumber(guyFrame)} };
-                hg::GuyOutputInfo guy{ *boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; }) };
+                auto const frameVerticalPosition{ float{padding + frameHeight * guyFrame->frameNumber} };
+                //hg::GuyOutputInfo guy{ *boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; }) };
+
+                hg::GuyOutputInfo guy{guyFrame->guyOutputInfo};
 
                 //TODO: Share this logic with DrawTimelineContents!
-                double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());
-                double const yFrac = (guy.getY() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomHeight() - 2 * timeEngine.getWall().segmentSize());
+                double const xFrac = (guy.getX() - wall.segmentSize()) / static_cast<double>(wall.roomWidth() - 2 * wall.segmentSize());
+                double const yFrac = (guy.getY() - wall.segmentSize()) / static_cast<double>(wall.roomHeight() - 2 * wall.segmentSize());
 
                 sf::Color const frameColor(guyPositionToColor(xFrac, yFrac));
                 vec3<float> frameColourVulkan{ frameColor.r/255.f,  frameColor.g / 255.f, frameColor.b / 255.f };
@@ -777,17 +884,24 @@ namespace hg {
                 );
             }
         }
+        VkPhysicalDevice physicalDevice;
         VkDevice device;
         VkExtent2D swapChainExtent;
         VkRenderPass renderPass;
-        VkPipeline graphicsPipeline;
+        //VkPipeline graphicsPipeline;
 
         VulkanCommandPool commandPool;
         std::vector<VkCommandBuffer> preDrawCommandBuffers;
         std::vector<VkCommandBuffer> drawCommandBuffers;
+        VulkanDescriptorSetLayout descriptorSetLayout;
+        VulkanPipelineLayout pipelineLayout;
+        VulkanGraphicsPipeline graphicsPipeline;
         std::vector<VulkanRenderTarget> renderTargets;
-        TimeEngine const *timeEngine;
-        UIFrameState const *uiFrameState;
+        //TimeEngine const *timeEngine;
+        //UIFrameState const *uiFrameState;
+        private:
+        std::mutex uiFrameStateMutex;
+        std::unique_ptr<UIFrameState> uiFrameState;
     };
 }
 #endif // !HG_RUNNING_GAME_SCENE_RENDERER_H

@@ -7,6 +7,10 @@ namespace hg {
     extern std::vector<uint32_t> const *demoVertSpv;
     class VulkanGraphicsPipeline final {
     public:
+        VulkanGraphicsPipeline(VkDevice const device) :
+            device(device),
+            graphicsPipeline(VK_NULL_HANDLE)
+        {}
         VulkanGraphicsPipeline(
             VkDevice const device,
             VkExtent2D const swapChainExtent,
@@ -149,9 +153,16 @@ namespace hg {
             }
         }
         VulkanGraphicsPipeline(VulkanGraphicsPipeline const&) = delete;
-        VulkanGraphicsPipeline(VulkanGraphicsPipeline &&) = delete;
+        VulkanGraphicsPipeline(VulkanGraphicsPipeline &&o)
+            : device(o.device)
+            , graphicsPipeline(std::exchange(o.graphicsPipeline, VkPipeline{VK_NULL_HANDLE}))
+        {}
         VulkanGraphicsPipeline &operator=(VulkanGraphicsPipeline const&) = delete;
-        VulkanGraphicsPipeline &operator=(VulkanGraphicsPipeline &&) = delete;
+        VulkanGraphicsPipeline &operator=(VulkanGraphicsPipeline &&o) {
+            std::swap(device, o.device);
+            std::swap(graphicsPipeline, o.graphicsPipeline);
+            return *this;
+        }
         ~VulkanGraphicsPipeline() noexcept {
             vkDestroyPipeline(device, graphicsPipeline, nullptr);
         }

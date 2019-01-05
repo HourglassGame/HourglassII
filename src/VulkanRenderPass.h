@@ -4,6 +4,10 @@
 namespace hg {
     class VulkanRenderPass final {
     public:
+        explicit VulkanRenderPass(VkDevice const device)
+            : device(device)
+            , renderPass(VK_NULL_HANDLE)
+        {}
         VulkanRenderPass(
             VkDevice const device,
             VkFormat const swapChainImageFormat
@@ -58,9 +62,16 @@ namespace hg {
             }
         }
         VulkanRenderPass(VulkanRenderPass const&) = delete;
-        VulkanRenderPass(VulkanRenderPass &&) = delete;
+        VulkanRenderPass(VulkanRenderPass &&o) noexcept
+            : device(o.device)
+            , renderPass(std::exchange(o.renderPass, VkRenderPass{VK_NULL_HANDLE}))
+        {}
         VulkanRenderPass &operator=(VulkanRenderPass const&) = delete;
-        VulkanRenderPass &operator=(VulkanRenderPass &&) = delete;
+        VulkanRenderPass &operator=(VulkanRenderPass &&o) noexcept {
+            std::swap(device, o.device);
+            std::swap(renderPass, o.renderPass);
+            return *this;
+        }
         ~VulkanRenderPass() noexcept {
             vkDestroyRenderPass(device, renderPass, nullptr);
         }

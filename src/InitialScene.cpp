@@ -80,10 +80,10 @@ int run_hourglassii() {
             throw std::exception("Couldn't load window icon");
         }
 
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        GLFWWindow const windowglfw(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
+        GLFWWindow const windowglfw(hg::WINDOW_DEFAULT_X, /*10*/hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
         glfwDefaultWindowHints();
         GLFWimage window_icon_image_glfw{
                 window_icon_image.getSize().x,
@@ -94,7 +94,7 @@ int run_hourglassii() {
         glfwShowWindow(windowglfw.w);
 
 
-        hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | /*sf::Style::Resize |*/ sf::Style::Close);
+        hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
         window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
         window.setVerticalSyncEnabled(true);
         window.setFramerateLimit(hg::FRAMERATE);
