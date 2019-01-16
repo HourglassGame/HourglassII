@@ -10,16 +10,9 @@ namespace hg {
         {}
         VulkanPipelineLayout(
             VkDevice const device,
-            VkExtent2D const swapChainExtent,
-            VkDescriptorSetLayout const &descriptorSetLayout
+            VkPipelineLayoutCreateInfo const &pipelineLayoutInfo
         ) : device(device)
         {
-            VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
-            pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-            pipelineLayoutInfo.setLayoutCount = 1;
-            pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-            pipelineLayoutInfo.pushConstantRangeCount = 0;
-
             if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
                 throw std::exception("failed to create pipeline layout!");
             }

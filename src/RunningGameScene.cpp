@@ -184,7 +184,8 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,
-        eng.swapChain.extent
+        eng.swapChain.extent,
+        eng.logicalDevice.graphicsQueue
     );
     std::atomic<bool> stopRenderer{false};
     std::thread renderThread([&renderer, &eng, &stopRenderer]{

@@ -47,18 +47,28 @@ namespace hg {
             
             TODO: Ensure this is true
             */
-            std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
+            std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions = {};
 
             attributeDescriptions[0].binding = 0;
             attributeDescriptions[0].location = 0;
             attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
             attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
-
             attributeDescriptions[1].binding = 0;
             attributeDescriptions[1].location = 1;
             attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
             attributeDescriptions[1].offset = offsetof(Vertex, colour);
+
+            attributeDescriptions[2].binding = 0;
+            attributeDescriptions[2].location = 2;
+            attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+
+            attributeDescriptions[3].binding = 0;
+            attributeDescriptions[3].location = 3;
+            attributeDescriptions[3].format = VK_FORMAT_R8_UINT;
+            attributeDescriptions[3].offset = offsetof(Vertex, useTexture);
 
             VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
             vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -108,7 +118,13 @@ namespace hg {
 
             VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
             colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-            colorBlendAttachment.blendEnable = VK_FALSE;
+            colorBlendAttachment.blendEnable = VK_TRUE;
+            colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+            colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+            colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
+            colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+            colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+            colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
             VkPipelineColorBlendStateCreateInfo colorBlending = {};
             colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

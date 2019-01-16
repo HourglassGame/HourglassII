@@ -8,6 +8,8 @@ namespace hg {
     struct Vertex {
         vec2<float> pos;
         vec3<float> colour;
+        vec2<float> texCoord;
+        unsigned char useTexture;
     };
 
     //typedef vec2<float> Vertex;
