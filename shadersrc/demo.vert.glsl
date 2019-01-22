@@ -9,10 +9,12 @@ layout(location = 0) in vec2 inPosition;
 layout(location = 1) in vec3 inColour;
 layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in uint inUseTexture;
+layout(location = 4) in uint inColourTexture;
 
 layout(location = 0) out vec3 fragColour;
 layout(location = 1) out vec2 fragTexCoord;
 layout(location = 2) out uint fragUseTexture;
+layout(location = 3) out uint fragColourTexture;
 
 void main() {
 /*
@@ -36,4 +38,5 @@ void main() {
     //fragColour = vec3(1.0, 0.0, 1.0);
     fragTexCoord = inTexCoord;//vec2(0.5, 0.5);
     fragUseTexture = inUseTexture;
+    fragColourTexture = inColourTexture;
 }

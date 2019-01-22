@@ -10,6 +10,8 @@
 #include <random>
 #include <boost/range/algorithm/find_if.hpp>
 #include <mutex>
+#include <locale>
+#include <codecvt>
 namespace hg {
     struct TexDescriptorSets {
         VkDescriptorSet fontTexDescriptorSet;
@@ -90,7 +92,8 @@ namespace hg {
         float const width,
         float const height,
         vec3<float> const &colour,
-        unsigned char const useTexture)
+        unsigned char const useTexture,
+        unsigned char const colourTexture)
     {
         float const left{ x };
         float const right{ x + width };
@@ -102,7 +105,8 @@ namespace hg {
                 vec2<float>{left / scaleHackVal, top / scaleHackVal},
                 colour,
                 vec2<float>{0.f, 0.f},
-                useTexture
+                useTexture,
+                colourTexture
             }
         );
         vertices.push_back(
@@ -110,14 +114,16 @@ namespace hg {
                 vec2<float>{right / scaleHackVal, top / scaleHackVal},
                 colour,
                 vec2<float>{1.f, 0.f},
-                useTexture
+                useTexture,
+                colourTexture
             });
         vertices.push_back(
             Vertex{
                 vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
                 colour,
                 vec2<float>{1.f, 1.f},
-                useTexture
+                useTexture,
+                colourTexture
             });
 
         vertices.push_back(
@@ -125,21 +131,24 @@ namespace hg {
                 vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
                 colour,
                 vec2<float>{1.f, 1.f},
-                useTexture
+                useTexture,
+                colourTexture
             });
         vertices.push_back(
             Vertex{
                 vec2<float>{left / scaleHackVal, bottom / scaleHackVal},
                 colour,
                 vec2<float>{0.f, 1.f},
-                useTexture
+                useTexture,
+                colourTexture
             });
         vertices.push_back(
             Vertex{
                 vec2<float>{left / scaleHackVal, top / scaleHackVal},
                 colour,
                 vec2<float>{0.f, 0.f},
-                useTexture
+                useTexture,
+                colourTexture
             });
     }
     inline void drawRect(
@@ -149,12 +158,13 @@ namespace hg {
         float const width,
         float const height,
         vec3<float> const &colour,
-        unsigned char const useTexture
+        unsigned char const useTexture,
+        unsigned char const colourTexture
     )
     {
         std::vector<Vertex> vertices;
         addRectVertices(
-            vertices, x, y, width, height, colour, useTexture
+            vertices, x, y, width, height, colour, useTexture, colourTexture
         );
         target.drawVertices(vertices);
     }
@@ -174,7 +184,7 @@ namespace hg {
         }
         void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
         {
-            hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(colour), 0);
+            hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(colour), 0, 0);
         }
         void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
         {
@@ -190,18 +200,113 @@ namespace hg {
                 sf::Vector2f pbPos{ pb + d };
                 sf::Vector2f paPos{ pa + d };
 
-                vertices.push_back(Vertex{vec2<float>{paNeg.x / scaleHackVal, paNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-                vertices.push_back(Vertex{vec2<float>{pbNeg.x / scaleHackVal, pbNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-                vertices.push_back(Vertex{vec2<float>{pbPos.x / scaleHackVal, pbPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+                vertices.push_back(Vertex{vec2<float>{paNeg.x / scaleHackVal, paNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+                vertices.push_back(Vertex{vec2<float>{pbNeg.x / scaleHackVal, pbNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+                vertices.push_back(Vertex{vec2<float>{pbPos.x / scaleHackVal, pbPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
 
-                vertices.push_back(Vertex{vec2<float>{pbPos.x / scaleHackVal, pbPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-                vertices.push_back(Vertex{vec2<float>{paPos.x / scaleHackVal, paPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-                vertices.push_back(Vertex{vec2<float>{paNeg.x / scaleHackVal, paNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+                vertices.push_back(Vertex{vec2<float>{pbPos.x / scaleHackVal, pbPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+                vertices.push_back(Vertex{vec2<float>{paPos.x / scaleHackVal, paPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+                vertices.push_back(Vertex{vec2<float>{paNeg.x / scaleHackVal, paNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
                 target->drawVertices(vertices);
             }
         }
-        void drawText(std::string const &text, float const x, float const y, float const size, unsigned const colour) override
+        void drawText(std::string const &text, float x, float const y, float const size, unsigned const colour) override
         {
+            auto const vulkanColour{ interpretAsVulkanColour(colour) };
+            float const width{ size/2 };
+            float const height{ size };
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->fontTexDescriptorSet, 0, nullptr);
+
+            std::vector<Vertex> vertices;
+
+            float const top{ y };
+            float const bottom{ y + height };
+
+#if _MSC_VER >= 1900
+            //Workaround for missing support for char32_t codecvt.
+            //https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+            typedef unsigned int utf32_char;
+            static_assert(sizeof(unsigned int) * CHAR_BIT == 32);
+#else
+            typedef char32_t utf32_char;
+#endif
+
+
+            std::wstring_convert<std::codecvt<utf32_char, char, std::mbstate_t>, utf32_char> utf32conv;
+
+            float const fontSize{16};
+            float const textureRectTop{64};
+            float const textureRectLeft{32};
+            auto i{0};
+            bool const useTexture{true};
+            bool const colourTexture{ true };
+            for (char32_t const c : utf32conv.from_bytes(text)) {
+                if (c > 0xFFFF) continue;//We only know how to draw the basic multilingual plane for now.
+                float const left{ x };
+                x += width;
+                float const right{ x };
+
+
+                //TODO: Figure out how texture coordinates work exactly at a pixel level.
+                float const texLeft{textureRectLeft + (c%0xFF)*fontSize};
+                float const texTop{textureRectTop  + (c/0xFF)*fontSize};
+                float const texRight{texLeft + (fontSize/2-1)};
+                float const texBottom{texTop + (fontSize-1)};
+
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{left / scaleHackVal, top / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texLeft, texTop},
+                        useTexture,
+                        colourTexture
+                    }
+                );
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{right / scaleHackVal, top / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texRight, texTop},
+                        useTexture,
+                        colourTexture
+                    });
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texRight, texBottom},
+                        useTexture,
+                        colourTexture
+                    });
+
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texRight, texBottom},
+                        useTexture,
+                        colourTexture
+                    });
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{left / scaleHackVal, bottom / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texLeft, texBottom},
+                        useTexture,
+                        colourTexture
+                    });
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{left / scaleHackVal, top / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texLeft, texTop},
+                        useTexture,
+                        colourTexture
+                    });
+                ++i;
+            }
+
+            target->drawVertices(vertices);
         }
         void drawImage(std::string const &key, float const x, float const y, float const width, float const height) override
         {
@@ -241,7 +346,7 @@ namespace hg {
             else if (key == "global.trampoline") {
                 vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->boxTexDescriptorSet, 0, nullptr);
             }
-            hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(255 << 24 | 0 << 16 | 255 << 8), 1);
+            hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(255 << 24 | 0 << 16 | 255 << 8), 1, 0);
             //drawRect(x, y, width, height, (255 << 24 | 0 << 16 | 255 << 8));
         }
         void flushFrame() override {
@@ -428,43 +533,43 @@ namespace hg {
           , samplerDescriptorPool(createSamplerDescriptorPool(device))
           //, samplerDescriptorPools(createSamplerDescriptorPools(device))
           , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
-          , fontTex("unifont.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , fontTex("unifont.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, true)
           , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 
-          , boxTex("GlitzData/box.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , boxTex("GlitzData/box.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , boxTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxTex))
 
-          , boxRTex("GlitzData/box_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , boxRTex("GlitzData/box_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , boxRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
 
-          , powerupJumpTex("GlitzData/powerup_jump.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , powerupJumpTex("GlitzData/powerup_jump.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , powerupJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, powerupJumpTex))
 
-          , rhinoLeftStopTex("GlitzData/rhino_left_stop.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , rhinoLeftStopTex("GlitzData/rhino_left_stop.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , rhinoLeftStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopTex))
 
-          , rhinoLeftStopRTex("GlitzData/rhino_left_stop_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , rhinoLeftStopRTex("GlitzData/rhino_left_stop_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , rhinoLeftStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopRTex))
 
-          , rhinoRightStopTex("GlitzData/rhino_right_stop.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , rhinoRightStopTex("GlitzData/rhino_right_stop.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , rhinoRightStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopTex))
 
-          , rhinoRightStopRTex("GlitzData/rhino_right_stop_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , rhinoRightStopRTex("GlitzData/rhino_right_stop_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , rhinoRightStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopRTex))
 
-          , timeGunTex("GlitzData/time_gun.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , timeGunTex("GlitzData/time_gun.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , timeGunTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeGunTex))
 
-          , timeJumpTex("GlitzData/time_jump.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , timeJumpTex("GlitzData/time_jump.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , timeJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeJumpTex))
 
-          , timePauseTex("GlitzData/time_pause.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , timePauseTex("GlitzData/time_pause.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , timePauseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timePauseTex))
 
-          , timeReverseTex("GlitzData/time_reverse.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , timeReverseTex("GlitzData/time_reverse.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , timeReverseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeReverseTex))
 
-          , trampolineTex("GlitzData/trampoline.png", device, physicalDevice, commandPool.commandPool, graphicsQueue)
+          , trampolineTex("GlitzData/trampoline.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , trampolineTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, trampolineTex))
             , texDescriptorSets(TexDescriptorSets{
                     fontTexDescriptorSet
@@ -568,7 +673,7 @@ namespace hg {
             renderPassInfo.renderArea.offset = { 0, 0 };
             renderPassInfo.renderArea.extent = swapChainExtent;// viewport;
 
-            VkClearValue clearColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+            VkClearValue clearColor = { 0.5f, 0.5f, 0.5f, 1.0f };
             renderPassInfo.clearValueCount = 1;
             renderPassInfo.pClearValues = &clearColor;
 
@@ -724,8 +829,8 @@ namespace hg {
 
                 vec3<float> borderColor{100.f/255.f, 100.f/255.f, 100.f/255.f};
 
-                addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0);
-                addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0);
+                addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0, 0);
+                addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0, 0);
                 /*
                 sf::RectangleShape horizontalLine(sf::Vector2f(right - left, 3.f));
                 //horizontalLine.setFillColor(borderColor);
@@ -735,8 +840,8 @@ namespace hg {
                 target.draw(horizontalLine);
                 */
 
-                addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0);
-                addRectVertices(vertices, right     , top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0);
+                addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
+                addRectVertices(vertices, right     , top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
                 /*
                 sf::RectangleShape verticalLine(sf::Vector2f(3.f, bot - top + 3.f));
                 //verticalLine.setFillColor(borderColor);
@@ -861,7 +966,7 @@ namespace hg {
                         vertices,
                         frameHorizontalPosition, padding + height + frameHeight + minFrameHeight + 1.f,
                         std::max(frameWidth, 3.f), bottomSpace - minFrameHeight - 1.f + padding / 2.f,
-                        colour, 0
+                        colour, 0, 0
                     );
                 }
 
@@ -888,7 +993,7 @@ namespace hg {
                     vertices,
                     frameHorizontalPosition, frameVerticalPosition,
                     frameWidth, std::max(minFrameHeight, frameHeight),
-                    frameColourVulkan, 0
+                    frameColourVulkan, 0, 0
                 );
 
                 if (guy.getBoxCarrying()) {
@@ -907,7 +1012,7 @@ namespace hg {
                         vertices,
                         frameHorizontalPosition, frameVerticalPosition,
                         frameWidth, std::max(4.f, frameHeight) / 4.f,
-                        boxColourVulkan, 0
+                        boxColourVulkan, 0, 0
                     );
                 }
 
@@ -917,7 +1022,7 @@ namespace hg {
                 vertices,
                 (guyFramesLength - relativeGuyIndex)*width / timelineLength, padding,
                 3.f, static_cast<float>(height + bottomSpace),
-                vec3<float>{200.f/255.f, 200.f / 255.f, 0.f / 255.f}, 0
+                vec3<float>{200.f/255.f, 200.f / 255.f, 0.f / 255.f}, 0, 0
             );
             /*
             sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height + bottomSpace)));
@@ -973,8 +1078,8 @@ namespace hg {
                            c,   d, 0.0, 1.0 //In v
                 }
             );
-            drawRect(target, 0.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 1.5f, static_cast<float>(hg::WINDOW_DEFAULT_X), 3.f, borderColor, 0);
-            drawRect(target, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X) - 1.5f, 0.f, 3.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y), borderColor, 0);
+            drawRect(target, 0.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 1.5f, static_cast<float>(hg::WINDOW_DEFAULT_X), 3.f, borderColor, 0, 0);
+            drawRect(target, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X) - 1.5f, 0.f, 3.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y), borderColor, 0, 0);
         }
         void DrawVisualGlitzAndWall(
             VulkanRenderTarget &target,

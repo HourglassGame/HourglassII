@@ -12,7 +12,8 @@ namespace hg{
             VkDevice const device,
             VkPhysicalDevice const physicalDevice,
             VkCommandPool const commandPool,
-            VkQueue const graphicsQueue
+            VkQueue const graphicsQueue,
+            bool const unnormalizedCoordinates
         )
           : imageMemory(device), image(device), imageView(device), sampler(device)
         {
@@ -213,16 +214,16 @@ namespace hg{
             samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
             samplerInfo.magFilter = VK_FILTER_LINEAR;
             samplerInfo.minFilter = VK_FILTER_LINEAR;
-            samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-            samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-            samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            samplerInfo.addressModeU = unnormalizedCoordinates ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            samplerInfo.addressModeV = unnormalizedCoordinates ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            samplerInfo.addressModeW = unnormalizedCoordinates ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
             samplerInfo.anisotropyEnable = VK_FALSE;
             samplerInfo.maxAnisotropy = 0;
             samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-            samplerInfo.unnormalizedCoordinates = VK_FALSE;
+            samplerInfo.unnormalizedCoordinates = unnormalizedCoordinates ? VK_TRUE : VK_FALSE;
             samplerInfo.compareEnable = VK_FALSE;
             samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-            samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+            samplerInfo.mipmapMode = unnormalizedCoordinates ? VK_SAMPLER_MIPMAP_MODE_NEAREST : VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
             sampler = VulkanSampler{device, samplerInfo};
 #if 0
