@@ -14,6 +14,23 @@
 
 namespace hg {
     extern sf::Color const uiTextColor;
+    void DrawTimeline2(
+        sf::RenderTarget &target,
+        std::size_t const timelineLength,
+        hg::TimeEngine::FrameListList const &waves,
+        hg::FrameID const playerFrame,
+        hg::FrameID const timeCursor,
+        std::vector<std::optional<GuyFrameData>> const &guyFrames,
+        Wall const &wall);
+
+    void DrawPersonalTimeline2(
+        sf::RenderTarget &target,
+        Wall const &wall,
+        std::size_t const relativeGuyIndex,
+        std::vector<std::optional<GuyFrameData>> const &guyFrames,
+        std::vector<GuyInput> const &guyInput,
+        std::size_t const minTimelineLength);
+
     void PlayAudioGlitz(
         hg::mt::std::vector<hg::Glitz> const &glitz,
         AudioPlayingState &audioPlayingState,

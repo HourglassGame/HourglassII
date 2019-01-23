@@ -582,28 +582,28 @@ void drawFrame(
             uiFrameState.pickups,
             uiFrameState.abilityCursor);
     }
-#if 0
-    DrawTimeline(
+    DrawTimeline2(
         target,
-        timeEngine,
+        uiFrameState.timelineLength,
         uiFrameState.waveInfo.updatedFrames,
         uiFrameState.drawnFrame,
-        timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1].getGuyInput().getTimeCursor(),
-        timeEngine.getTimelineLength());
+        uiFrameState.postOverwriteInput.back().getTimeCursor(),
+        uiFrameState.guyFrames,
+        uiFrameState.wall);
 
-    DrawPersonalTimeline(
+    DrawPersonalTimeline2(
         target,
-        timeEngine,
+        uiFrameState.wall,
         uiFrameState.relativeGuyIndex,
-        timeEngine.getGuyFrames(),
-        timeEngine.getPostOverwriteInput(),
-        static_cast<std::size_t>(timeEngine.getTimelineLength()));
+        uiFrameState.guyFrames,
+        uiFrameState.postOverwriteInput,
+        uiFrameState.timelineLength);
 
     DrawInterfaceBorder(target);
 
     {
         std::stringstream currentPlayerIndex;
-        currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
+        currentPlayerIndex << "Index: " << (std::size(uiFrameState.guyFrames) - 1);
         sf::Text currentPlayerGlyph;
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
@@ -615,7 +615,7 @@ void drawFrame(
     }
     {
         std::stringstream currentPlayerIndex;
-        currentPlayerIndex << "Control: " << timeEngine.getReplayData().size() - 1 - uiFrameState.relativeGuyIndex;
+        currentPlayerIndex << "Control: " << (std::size(uiFrameState.guyFrames) - 1) - uiFrameState.relativeGuyIndex;
         sf::Text currentPlayerGlyph;
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
@@ -625,7 +625,6 @@ void drawFrame(
         currentPlayerGlyph.setOutlineColor(uiTextColor);
         target.draw(currentPlayerGlyph);
     }
-#endif
     {
         std::stringstream frameNumberString;
         frameNumberString << "Frame: " << uiFrameState.drawnFrame.getFrameNumber();
