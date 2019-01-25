@@ -872,6 +872,9 @@ namespace hg {
     inline std::size_t getTimelineTextureHeight() {
         return 75;
     }
+    inline std::size_t getTimelineTickHeight() {
+        return 10;
+    }
     struct RunningGameSceneRenderer {
         ~RunningGameSceneRenderer(){
             //TODO: Use a fence instead, so the device can continue being used elsewhere while RunningGameSceneRenderer is destroyed
@@ -1732,7 +1735,7 @@ namespace hg {
             timelineTexture.flushTextureChanges(preDrawCommandBuffer);
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &timelineTexture.descriptorSet, 0, nullptr);
-            hg::drawRect(target, 0, 0, width, height, vec3<float>{0.f,0.f,0.f}, 1, 0);
+            hg::drawRect(target, 0, getTimelineTickHeight(), width, height, vec3<float>{0.f,0.f,0.f}, 1, 0);
 
 #if 0
             sf::Texture tex;
@@ -1753,7 +1756,7 @@ namespace hg {
             vec3<float> tickColour{ 0.f, 0.f, 0.f };
             for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5 * FRAMERATE) {
                 float const left(static_cast<float>(frameNo / static_cast<double>(timelineLength)*targetWidth));
-                addRectVertices(vertices, left-1.f, 0.f, 2.f, 10.f, tickColour, 0, 0);
+                addRectVertices(vertices, left-1.f, 0.f, 2.f, getTimelineTickHeight(), tickColour, 0, 0);
             }
             target.drawVertices(vertices);
         }
@@ -1806,7 +1809,7 @@ namespace hg {
                             wavegroup.setFillColor(sf::Color(250, 0, 0));
                             target.draw(wavegroup);
                             */
-                            addRectVertices(vertices, static_cast<float>(leftOfWaveRegion), 10.f, static_cast<float>(i - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f/255.f, 0.f, 0.f}, 0, 0);
+                            addRectVertices(vertices, static_cast<float>(leftOfWaveRegion), getTimelineTickHeight(), static_cast<float>(i - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f/255.f, 0.f, 0.f}, 0, 0);
 
                             inWaveRegion = false;
                         }
@@ -1820,7 +1823,7 @@ namespace hg {
                     wavegroup.setFillColor(sf::Color(250, 0, 0));
                     target.draw(wavegroup);
                     */
-                    addRectVertices(vertices, static_cast<float>(leftOfWaveRegion), 10.f, static_cast<float>(width - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f / 255.f, 0.f, 0.f}, 0, 0);
+                    addRectVertices(vertices, static_cast<float>(leftOfWaveRegion), getTimelineTickHeight(), static_cast<float>(width - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f / 255.f, 0.f, 0.f}, 0, 0);
 
                 }
             }
@@ -1887,7 +1890,7 @@ namespace hg {
                 float const left = 0.f;
                 float const top = 0.f;
                 float const width2 = width;
-                float const height2 = 85.f;
+                float const height2 = getTimelineTextureHeight() + getTimelineTickHeight();
 
                 float const centerX = left + width2 / 2.f;
                 float const centerY = top + height2 / 2.f;
@@ -1940,7 +1943,7 @@ namespace hg {
                 playerLine.setFillColor(sf::Color(200, 200, 0));
                 target.draw(playerLine);
                 */
-                drawRect(target, getFrameNumber(playerFrame)*width / timelineLength, 10.f, 3.f, static_cast<float>(height), vec3<float>{200.f/255.f, 200.f/255.f, 0.f}, 0, 0);
+                drawRect(target, getFrameNumber(playerFrame)*width / timelineLength, getTimelineTickHeight(), 3.f, static_cast<float>(height), vec3<float>{200.f/255.f, 200.f/255.f, 0.f}, 0, 0);
             }
 
             if (!isNullFrame(timeCursor)) {
@@ -1948,7 +1951,7 @@ namespace hg {
                 vec3<float> const timeCursorColor{0.f, 0.f, 200.f/255.f};
                 float const timeCursorHorizontalPosition{ timeCursor.getFrameNumber()*width / timelineLength };
 
-                drawRect(target, timeCursorHorizontalPosition, 10.f, 3.f, static_cast<float>(height), timeCursorColor, 0, 0);
+                drawRect(target, timeCursorHorizontalPosition, getTimelineTickHeight(), 3.f, static_cast<float>(height), timeCursorColor, 0, 0);
 #if 0
                 //Looks like this is drawn outside the viewport area, so is never displayed, this was also true in the SFML implementation.
                 //Needs to be debugged/rethought
