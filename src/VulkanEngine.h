@@ -32,7 +32,6 @@
 namespace hg {
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
-    
 
     inline bool checkValidationLayerSupport() {
         uint32_t layerCount = 0;

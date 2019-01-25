@@ -12,6 +12,7 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+#include "multi_array.h"
 #include <mutex>
 #include <locale>
 #include <codecvt>
@@ -54,6 +55,15 @@ namespace hg {
 
         vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
         return descriptorSet;
+    }
+
+    inline VkDescriptorSet createDescriptorSet(
+        VkDevice const device,
+        VkDescriptorPool const samplerDescriptorPool,
+        VkDescriptorSetLayout const textureDescriptorSetLayout,
+        VulkanTextureSimple const &texture)
+    {
+        return createDescriptorSet2(device, samplerDescriptorPool, textureDescriptorSetLayout, texture.imageView.imageView, texture.sampler.sampler);
     }
 
     struct VulkanUpdatableTextureSimple {
@@ -737,6 +747,107 @@ namespace hg {
         std::vector<std::optional<GuyFrameData>> guyFrames;
     };
 
+    inline multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> loadWallBlockImages(
+        VkDevice const device,
+        VkPhysicalDevice const physicalDevice,
+        VkCommandPool const commandPool,
+        VkQueue const graphicsQueue)
+    {
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> wallBlockImages;
+        std::string tilesetName{"HourglassI"};//TODO: Don't hardcode tileset name!
+        for (int right(0); right <= 1; ++right) {
+            for (int top(0); top <= 1; ++top) {
+                for (int left(0); left <= 1; ++left) {
+                    for (int bottom(0); bottom <= 1; ++bottom) {
+                        std::stringstream filename;
+                        filename << "Tilesets/" << tilesetName << right << top << left << bottom << ".png";
+                        wallBlockImages[right][top][left][bottom] = std::optional<VulkanTextureSimple>{
+                            VulkanTextureSimple{
+                                filename.str(),
+                                device,
+                                physicalDevice,
+                                commandPool,
+                                graphicsQueue,
+                                false
+                            }
+                        };
+                    }
+                }
+            }
+        }
+        return wallBlockImages;
+    }
+
+    multi_array<VkDescriptorSet, 2, 2, 2, 2> loadWallBlockDescriptorSets(
+        VkDevice const device,
+        VkDescriptorPool const samplerDescriptorPool,
+        VkDescriptorSetLayout const textureDescriptorSetLayout,
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> const &wallBlockImages)
+    {
+        multi_array<VkDescriptorSet, 2, 2, 2, 2> descriptorSets;
+        for (int right(0); right <= 1; ++right) {
+            for (int top(0); top <= 1; ++top) {
+                for (int left(0); left <= 1; ++left) {
+                    for (int bottom(0); bottom <= 1; ++bottom) {
+                        descriptorSets[right][top][left][bottom] = 
+                            createDescriptorSet(
+                                device,
+                                samplerDescriptorPool,
+                                textureDescriptorSetLayout,
+                                *wallBlockImages[right][top][left][bottom]);
+                    }
+                }
+            }
+        }
+        return descriptorSets;
+    }
+
+    inline multi_array<std::optional<VulkanTextureSimple>, 2, 2> loadWallCornerImages(
+        VkDevice const device,
+        VkPhysicalDevice const physicalDevice,
+        VkCommandPool const commandPool,
+        VkQueue const graphicsQueue)
+    {
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2> cornerImages;
+        std::string tilesetName{ "HourglassI" };//TODO: Don't hardcode tileset name!
+        for (int bottom(0); bottom <= 1; ++bottom) {
+            for (int right(0); right <= 1; ++right) {
+                std::stringstream filename;
+                filename << "Tilesets/" << tilesetName << (bottom ? "B" : "T") << (right ? "R" : "L") << ".png";
+                cornerImages[bottom][right] = std::optional<VulkanTextureSimple>{
+                    VulkanTextureSimple{
+                        filename.str(),
+                        device,
+                        physicalDevice,
+                        commandPool,
+                        graphicsQueue,
+                        false
+                    }
+                };
+            }
+        }
+        return cornerImages;
+    }
+    multi_array<VkDescriptorSet, 2, 2> loadWallCornerDescriptorSets(
+        VkDevice const device,
+        VkDescriptorPool const samplerDescriptorPool,
+        VkDescriptorSetLayout const textureDescriptorSetLayout,
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2> const &wallCornerImages)
+    {
+        multi_array<VkDescriptorSet, 2, 2> descriptorSets;
+        for (int bottom(0); bottom <= 1; ++bottom) {
+            for (int right(0); right <= 1; ++right) {
+                descriptorSets[bottom][right] =
+                    createDescriptorSet(
+                        device,
+                        samplerDescriptorPool,
+                        textureDescriptorSetLayout,
+                        *wallCornerImages[bottom][right]);
+            }
+        }
+        return descriptorSets;
+    }
+
     inline std::vector<VkCommandBuffer> createCommandBuffersForRenderer(
         VkDevice const device,
         VkCommandPool const commandPool
@@ -798,7 +909,11 @@ namespace hg {
     }
 
     inline VulkanDescriptorPool createSamplerDescriptorPool(VkDevice const device){
-        uint32_t const maxSets = 13;//TODO; set this to match count of descriptors used in renderer
+        uint32_t const maxSets =
+            13//Glitz Images
+          + 2 * 2 * 2 * 2/*Wall Blocks*/
+          + 2 * 2 /*Wall Corners*/
+            ;//TODO; set this to match count of descriptors used in renderer
 
         VkDescriptorPoolSize poolSize = {};
         poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -840,14 +955,6 @@ namespace hg {
     }
 
 
-    inline VkDescriptorSet createDescriptorSet(
-        VkDevice const device,
-        VkDescriptorPool const samplerDescriptorPool,
-        VkDescriptorSetLayout const textureDescriptorSetLayout,
-        VulkanTextureSimple const &texture)
-    {
-        return createDescriptorSet2(device, samplerDescriptorPool, textureDescriptorSetLayout, texture.imageView.imageView, texture.sampler.sampler);
-    }
     std::vector<VulkanUpdatableTextureSimple> createTimelineTextures(
         VkPhysicalDevice const physicalDevice,
         VkDevice const device,
@@ -948,7 +1055,12 @@ namespace hg {
 
           , trampolineTex("GlitzData/trampoline.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
           , trampolineTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, trampolineTex))
-            , texDescriptorSets(TexDescriptorSets{
+
+          , wallBlockImages(loadWallBlockImages(device, physicalDevice, commandPool.commandPool, graphicsQueue))
+          , wallBlockDescriptorSets(loadWallBlockDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallBlockImages))
+          , wallCornerImages(loadWallCornerImages(device, physicalDevice, commandPool.commandPool, graphicsQueue))
+          , wallCornerDescriptorSets(loadWallCornerDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallCornerImages))
+          , texDescriptorSets(TexDescriptorSets{
                     fontTexDescriptorSet
                   , boxTexDescriptorSet
                   , boxRTexDescriptorSet
@@ -1609,11 +1721,54 @@ namespace hg {
                 particularGlitz.display(layeredCanvas, guyIndex);
             }
             hg::Flusher flusher(layeredCanvas.getFlusher());
-            //flusher.partialFlush(1000);
+            flusher.partialFlush(1000);
 
-            //sf::Texture wallTex;
-            //wallTex.loadFromImage(wallImage);
-            //target.draw(sf::Sprite(wallTex));
+            {
+
+                int const segmentSize = wall.segmentSize() / 100;
+                int const roomWidth = wall.roomWidth() / 100;
+                int const roomHeight = wall.roomHeight() / 100;
+
+                int const roomIndexWidth = roomWidth / segmentSize;
+                int const roomIndexHeight = roomHeight / segmentSize;
+
+                for (int x(0), xend(roomIndexWidth); x != xend; ++x) {
+                    for (int y(0), yend(roomIndexHeight); y != yend; ++y) {
+                        if (wall.atIndex(x, y)) {
+                            vkCmdBindDescriptorSets(
+                                drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.pipelineLayout, 1, 1,
+                                &wallBlockDescriptorSets
+                                    [wall.atIndex(x + 1, y)]
+                                    [wall.atIndex(x, y - 1)]
+                                    [wall.atIndex(x - 1, y)]
+                                    [wall.atIndex(x, y + 1)],
+                                0, nullptr);
+
+                            drawRect(target, x*segmentSize, y*segmentSize, segmentSize, segmentSize, vec3<float>{0.f,0.f,0.f}, 1, 0);
+
+                            for (int vpos(-1); vpos <= 1; vpos += 2) {
+                                for (int hpos(-1); hpos <= 1; hpos += 2) {
+                                    if (wall.atIndex(x + hpos, y)
+                                        && wall.atIndex(x, y + vpos)
+                                        && !wall.atIndex(x + hpos, y + vpos))
+                                    {
+                                        int const bottom((vpos + 1) / 2);
+                                        int const right((hpos + 1) / 2);
+                                        vkCmdBindDescriptorSets(
+                                            drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.pipelineLayout, 1, 1,
+                                            &wallCornerDescriptorSets[bottom][right],
+                                            0, nullptr);
+
+                                        drawRect(target, x*segmentSize + right * segmentSize / 2., y*segmentSize + bottom * segmentSize / 2., segmentSize/2., segmentSize/2., vec3<float>{0.f,0.f,0.f}, 1, 0);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+
 
             flusher.partialFlush(std::numeric_limits<int>::max());
             //if (drawPositionColours) {
@@ -1736,14 +1891,6 @@ namespace hg {
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &timelineTexture.descriptorSet, 0, nullptr);
             hg::drawRect(target, 0, getTimelineTickHeight(), width, height, vec3<float>{0.f,0.f,0.f}, 1, 0);
-
-#if 0
-            sf::Texture tex;
-            tex.loadFromImage(timelineContents);
-            sf::Sprite sprite(tex);
-            sprite.setPosition(0.f, 10.f);
-            target.draw(sprite);
-#endif
         }
         void DrawTicks(
             VulkanRenderTarget &target,
@@ -2105,6 +2252,12 @@ namespace hg {
 
         VulkanTextureSimple trampolineTex;
         VkDescriptorSet trampolineTexDescriptorSet;
+
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> wallBlockImages;
+        multi_array<VkDescriptorSet, 2, 2, 2, 2> wallBlockDescriptorSets;
+
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2> wallCornerImages;
+        multi_array<VkDescriptorSet, 2, 2> wallCornerDescriptorSets;
 
         TexDescriptorSets texDescriptorSets;
         //TimeEngine const *timeEngine;

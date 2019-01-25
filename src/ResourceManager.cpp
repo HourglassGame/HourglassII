@@ -156,7 +156,7 @@ sf::Image loadAndBakeWallImage(Wall const &wall) {
             }
         }
     }
-    
+
     return foregroundImageBuf;
 }
 
