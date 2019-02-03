@@ -1,4 +1,3 @@
-#include "../src/GlobalOptions.cpp"
 #include "../src/AudioGlitzManager.cpp"
 #include "../src/GameDisplayHelpers.cpp"
 #include "../src/Scene.cpp"
@@ -26,7 +25,6 @@
 #include "../src/Maths_test.cpp"
 #include "../src/clone_ptr_test.cpp"
 #include "../src/move_function_test.cpp"
-#include "../src/variant_test.cpp"
 #include "../src/LayeredCanvas.cpp"
 #include "../src/Environment.cpp"
 #include "../src/FrameUpdateSet.cpp"

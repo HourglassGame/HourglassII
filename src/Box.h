@@ -11,13 +11,13 @@ std::ostream &operator<<(std::ostream &str, Box const &b);
 class Box final : boost::totally_ordered<Box>
 {
 public:
-    Box(int x, int y,
+    explicit Box(int x, int y,
         int xspeed, int yspeed,
         int size,
         int illegalPortal,
         int arrivalBasis,
         TimeDirection timeDirection);
-    Box(Box const &o, TimeDirection timeDirection);
+    explicit Box(Box const &o, TimeDirection timeDirection);
 
     int getX()      const { return x; }
     int getY()      const { return y; }
@@ -60,7 +60,7 @@ private:
 class BoxConstPtr final : boost::totally_ordered<BoxConstPtr>
 {
 public:
-    BoxConstPtr(Box const &box) : box_(&box) {}
+    explicit BoxConstPtr(Box const &box) : box_(&box) {}
     typedef Box base_type;
     Box const &get() const  { return *box_; }
     

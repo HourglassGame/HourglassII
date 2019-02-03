@@ -9,7 +9,7 @@
 namespace hg {
 extern sf::Font const *defaultFont;
 struct MenuItem final {
-    variant<RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
+    std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
     std::string text;
 };
 
@@ -35,7 +35,7 @@ static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &
     window.display();
 }
 
-variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
+std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
 run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng)
 {
     int currentItem = 0;

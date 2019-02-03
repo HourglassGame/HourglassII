@@ -1,6 +1,6 @@
 #include "UserDataProxyTable.h"
 #include "lua/lauxlib.h"
-#include "unique_ptr.h"
+#include <memory>
 #include <cassert>
 namespace hg {
 
@@ -168,8 +168,8 @@ int create_proxy_table(lua_State *L) {
     lua_newtable(L);
     
     //Create refs to the base table and the outer table
-    unique_ptr<LuaRef, LuaRefDeleter> outerRef(LuaRef{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
-    unique_ptr<LuaRef, LuaRefDeleter>  baseRef(LuaRef{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
+    std::unique_ptr<LuaRef, LuaRefDeleter> outerRef(LuaRef{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
+    std::unique_ptr<LuaRef, LuaRefDeleter>  baseRef(LuaRef{luaL_ref(L, LUA_REGISTRYINDEX)}, LuaRefDeleter(L));
 
     //Create the proxy table -- give it sufficient size to carry two "references"
     UDPT *rawProxyTable(static_cast<UDPT *>(lua_newuserdata(L, sizeof (UDPT))));
@@ -192,7 +192,8 @@ void set_outer_table(lua_State *L, UDPT const *proxyTable) {
     lua_rawseti(L, LUA_REGISTRYINDEX, proxyTable->outerTable);
 }
 
-int UDPT_wrap_all(lua_State *L) {
+int UDPT_wrap_all(lua_State * const L) {
+    (void)L;
     return 1;
 }
 

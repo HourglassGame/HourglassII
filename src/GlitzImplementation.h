@@ -1,6 +1,5 @@
 #ifndef HG_GLITZ_IMPLEMENTATION_H
 #define HG_GLITZ_IMPLEMENTATION_H
-#include "unique_ptr.h"
 namespace hg {
 class LayeredCanvas;
 class GlitzImplementation {

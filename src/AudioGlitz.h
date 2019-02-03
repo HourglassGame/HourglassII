@@ -5,6 +5,7 @@
 #include <boost/polymorphic_cast.hpp>
 #include "GlitzImplementation.h"
 #include "LayeredCanvas.h"
+#include <gsl/gsl>
 namespace hg {
 //TODO - perhaps separate this into
 //       something other than a
@@ -23,7 +24,7 @@ public:
 
     virtual void display(LayeredCanvas &canvas) const override {
         std::string key_str(std::begin(key), std::end(key));
-        canvas.playSound(key_str, static_cast<int>(n));
+        canvas.playSound(key_str, gsl::narrow<int>(n));
     }
     virtual std::size_t clone_size() const override {
         return sizeof *this;

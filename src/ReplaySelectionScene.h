@@ -4,11 +4,11 @@
 #include "InputList.h"
 #include "Scene.h"
 #include "RenderWindow.h"
-#include "variant.h"
+#include <variant>
 
 #include <vector>
 #include <string>
 namespace hg {
-    variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(hg::RenderWindow &window, std::string const &levelName);
+    std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(hg::RenderWindow &window, std::string const &levelName);
 }
 #endif // HG_REPLAY_SELECTION_SCENE_H

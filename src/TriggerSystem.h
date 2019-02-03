@@ -2,7 +2,7 @@
 #define HG_TRIGGER_SYSTEM_H
 #include "TriggerSystemImplementation.h"
 #include "clone_ptr.h"
-#include "unique_ptr.h"
+#include <memory>
 namespace hg
 {
 class TriggerSystem final {
@@ -20,14 +20,14 @@ public:
     //a TriggerSystem without a TriggerSystemImplementation
     //is only useful for swapping into a TriggerSystem with an implementation
     //as an O(1) operation.
-    TriggerSystem() : impl() {}
+    explicit TriggerSystem() : impl() {}
     //Takes ownership of impl
     template<typename TriggerSystemImplementation>
-    TriggerSystem(unique_ptr<TriggerSystemImplementation> impl) :
+    explicit TriggerSystem(std::unique_ptr<TriggerSystemImplementation> impl) :
         impl(impl.release())
     {}
 
-    void swap(TriggerSystem &o) {
+    void swap(TriggerSystem &o) noexcept {
         impl.swap(o.impl);
     }
     //In a break from the usual OperationInterrupter semantics,
@@ -41,7 +41,7 @@ public:
         return comparison_tuple() == o.comparison_tuple();
     }
 };
-inline void swap(TriggerSystem &l, TriggerSystem &r)
+inline void swap(TriggerSystem &l, TriggerSystem &r) noexcept
 {
     l.swap(r);
 }

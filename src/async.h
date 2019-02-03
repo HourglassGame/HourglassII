@@ -29,12 +29,12 @@ thread_pool &getSharedThreadPool();
 //TODO: Update to use boost::async with an appropriate executor?
 //http://www.boost.org/doc/libs/1_65_1/doc/html/thread/synchronization.html#thread.synchronization.executors
 template<typename F>
-auto async(F &&f) -> boost::future<decltype(f())>
+auto async(F &&f)
 {
-    thread_pool &thread_pool = getSharedThreadPool();
+    thread_pool &thread_pool{getSharedThreadPool()};
 
-    auto task{ boost::packaged_task<decltype(f())()>(std::forward<F>(f)) };
-    auto future{ task.get_future() };
+    auto task{boost::packaged_task<decltype(f())()>(std::forward<F>(f))};
+    auto future{task.get_future()};
 
     thread_pool.pop_or_new(std::move(task));
     return future;

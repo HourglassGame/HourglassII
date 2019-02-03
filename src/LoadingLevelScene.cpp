@@ -22,7 +22,7 @@ static void drawLoadingScreen(hg::RenderWindow &window) {
     window.display();
 }
 
-static hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
+static std::variant<hg::LoadedLevel, LoadingCanceled_tag>
 displayLoadingScreen(
         hg::RenderWindow &window,
         boost::future<TimeEngine> &futureLoadedLevel,
@@ -63,7 +63,7 @@ displayLoadingScreen(
     return std::move(loadedLevel);
 }
 
-hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
+std::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
         hg::RenderWindow &window,
         LoadLevelFunction const &levelLoadingFunction)

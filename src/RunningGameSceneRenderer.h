@@ -17,6 +17,7 @@
 #include <locale>
 #include <codecvt>
 #include <sstream>
+#include <gsl/gsl>
 namespace hg {
 
 
@@ -112,8 +113,8 @@ namespace hg {
             VkImageCreateInfo imageInfo = {};
             imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             imageInfo.imageType = VK_IMAGE_TYPE_2D;
-            imageInfo.extent.width = width;
-            imageInfo.extent.height = height;
+            imageInfo.extent.width = gsl::narrow<uint32_t>(width);
+            imageInfo.extent.height = gsl::narrow<uint32_t>(height);
             imageInfo.extent.depth = 1;
             imageInfo.mipLevels = 1;
             imageInfo.arrayLayers = 1;
@@ -186,7 +187,7 @@ namespace hg {
                     VK_WHOLE_SIZE//size
                 }
             };
-            if (vkFlushMappedMemoryRanges(device, memoryRanges.size(), memoryRanges.data()) != VK_SUCCESS) {
+            if (vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) != VK_SUCCESS) {
                 throw new std::exception("vkFlushMappedMemoryRanges failed");
             }
             //vkCmdPipelineBarrier to transition to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
@@ -434,6 +435,60 @@ namespace hg {
         target.drawVertices(vertices);
     }
 
+    template<typename It>
+    class utf32_from_utf8_iter : public boost::iterator_facade<
+        utf32_from_utf8_iter<It>
+        , char32_t
+        , boost::forward_traversal_tag
+        , char32_t>
+    {
+        static std::optional<char32_t> readVal(It &curr, It const &end) {
+            if (curr == end) return {};
+            using uchar = unsigned char;
+            unsigned char const init{gsl::narrow_cast<uchar>(*curr)};
+
+            auto const length{
+                (uchar{0b1000'0000} & init) == uchar(0b0000'0000) ? 1 :
+                (uchar(0b1110'0000) & init) == uchar(0b1100'0000) ? 2 :
+                (uchar(0b1111'0000) & init) == uchar(0b1110'0000) ? 3 :
+                /* char32_t{0b1111'1000} & init == char32_t{0b1111'0000} ?*/ 4
+            };
+            char32_t val{gsl::narrow_cast<char32_t>(
+                length == 1 ? (init & uchar(0b0111'1111)) :
+                length == 2 ? (init & uchar(0b0001'1111)) :
+                length == 3 ? (init & uchar(0b0000'1111)) :
+                              (init & uchar(0b0000'0111)))
+            };
+            int i{0};
+            while (true) {
+                ++curr;
+                ++i;
+                if (i == length) return {val};
+                if (curr == end) return {};
+                val <<= 6;
+                val |= (*curr & 0b0011'1111);
+            }
+        }
+        It curr;
+        std::optional<char32_t> val;
+        It next;
+        It end;
+    public:
+        utf32_from_utf8_iter(It curr, It end) :
+            curr(curr), val(readVal(curr, end)), next(curr), end(std::move(end))
+        {}
+        char32_t dereference() const {
+            return *val;
+        }
+        bool equal(utf32_from_utf8_iter const &o) const {
+            return curr == o.curr;
+        }
+        void increment() {
+            curr = next;
+            val = readVal(next, end);
+        }
+    };
+
 
     inline void drawText(VulkanRenderTarget &target, VkCommandBuffer const drawCommandBuffer, VkPipelineLayout const pipelineLayout, VkDescriptorSet const fontTexDescriptorSet, std::string const &text, float x, float const y, float const size, vec3<float> const colour) {
         auto const vulkanColour{colour};
@@ -446,25 +501,17 @@ namespace hg {
         float const top{ y };
         float const bottom{ y + height };
 
-#if _MSC_VER >= 1900
-        //Workaround for missing support for char32_t codecvt.
-        //https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
-        typedef unsigned int utf32_char;
-        static_assert(sizeof(unsigned int) * CHAR_BIT == 32);
-#else
-        typedef char32_t utf32_char;
-#endif
-
-
-        std::wstring_convert<std::codecvt<utf32_char, char, std::mbstate_t>, utf32_char> utf32conv;
-
         float const fontSize{ 16 };
         float const textureRectTop{ 64 };
         float const textureRectLeft{ 32 };
         auto i{ 0 };
         bool const useTexture{ true };
         bool const colourTexture{ true };
-        for (char32_t const c : utf32conv.from_bytes(text)) {
+        for (char32_t const c
+          : boost::make_iterator_range(
+              utf32_from_utf8_iter(std::begin(text), std::end(text)),
+              utf32_from_utf8_iter(std::end(text), std::end(text)))
+            ) {
             if (c > 0xFFFF) continue;//We only know how to draw the basic multilingual plane for now.
             float const left{ x };
             x += width;
@@ -714,7 +761,7 @@ namespace hg {
             else if (key == "global.trampoline") {
                 vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->boxTexDescriptorSet, 0, nullptr);
             }
-            hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(255 << 24 | 0 << 16 | 255 << 8), 1, 0);
+            hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(unsigned{255} << 24 | unsigned{0} << unsigned{16} | 255 << 8), 1, 0);
             //drawRect(x, y, width, height, (255 << 24 | 0 << 16 | 255 << 8));
         }
         void flushFrame() override {
@@ -735,12 +782,12 @@ namespace hg {
         std::size_t guyIndex;
         bool shouldDrawGuyPositionColours;
         bool shouldDrawInventory;
-        hg::mt::std::map<hg::Ability, int> pickups;
-        hg::Ability abilityCursor;
+        Pickups pickups;
+        Ability abilityCursor;
         std::size_t relativeGuyIndex;
         hg::TimeEngine::RunResult waveInfo;
         bool runningFromReplay;
-        hg::mt::std::vector<hg::Glitz> drawnGlitz;
+        mt::std::vector<hg::Glitz> drawnGlitz;
         Wall wall;
         std::vector<GuyInput> postOverwriteInput;
         std::size_t timelineLength;
@@ -898,7 +945,7 @@ namespace hg {
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         //TODO: Make 2 set layouts: one for projection uniform and one
         //      for texture.
-        pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+        pipelineLayoutInfo.setLayoutCount = gsl::narrow<uint32_t>(descriptorSetLayouts.size());
         pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
         /*
         pipelineLayoutInfo.setLayoutCount = 1;
@@ -1016,7 +1063,7 @@ namespace hg {
           , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
 
           , timelineTextureDescriptorPool(createTimelineTextureDescriptorPool(device))
-          , timelineTextures(createTimelineTextures(physicalDevice, device, getTimelineTextureWidth(swapChainExtent), getTimelineTextureHeight(), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
+          , timelineTextures(createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
           , fontTex("unifont.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, true)
           , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 
@@ -1096,7 +1143,7 @@ namespace hg {
             graphicsPipeline = VulkanGraphicsPipeline(device);
             //pipelineLayout = VulkanPipelineLayout(device);
 
-            timelineTextures = createTimelineTextures(physicalDevice, device, getTimelineTextureWidth(swapChainExtent), getTimelineTextureHeight(), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout);
+            timelineTextures = createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout);
 
             //pipelineLayout = VulkanPipelineLayout(device, makePipelineLayoutCreateInfo(descriptorSetLayout.descriptorSetLayout));
             graphicsPipeline = VulkanGraphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass);
@@ -1274,7 +1321,7 @@ namespace hg {
             vkCmdSetViewport(
                 drawCommandBuffer,
                 0,
-                viewports.size(),
+                gsl::narrow<uint32_t>(viewports.size()),
                 viewports.data()
             );
             std::random_device dev;
@@ -1329,37 +1376,39 @@ namespace hg {
                     }
                 );
             }
-            float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
-            float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
-            float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y)));
-            float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y)));
             {
-                std::vector<Vertex> vertices;
+                float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+                float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
+                float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y)));
+                float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y)));
+                {
+                    std::vector<Vertex> vertices;
 
-                vec3<float> borderColor{100.f/255.f, 100.f/255.f, 100.f/255.f};
+                    vec3<float> borderColor{100.f/255.f, 100.f/255.f, 100.f/255.f};
 
-                addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0, 0);
-                addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0, 0);
-                /*
-                sf::RectangleShape horizontalLine(sf::Vector2f(right - left, 3.f));
-                //horizontalLine.setFillColor(borderColor);
-                horizontalLine.setPosition(left, top - 1.5f);
-                target.draw(horizontalLine);
-                horizontalLine.setPosition(left, bot - 1.5f);
-                target.draw(horizontalLine);
-                */
+                    addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0, 0);
+                    addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0, 0);
+                    /*
+                    sf::RectangleShape horizontalLine(sf::Vector2f(right - left, 3.f));
+                    //horizontalLine.setFillColor(borderColor);
+                    horizontalLine.setPosition(left, top - 1.5f);
+                    target.draw(horizontalLine);
+                    horizontalLine.setPosition(left, bot - 1.5f);
+                    target.draw(horizontalLine);
+                    */
 
-                addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
-                addRectVertices(vertices, right     , top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
-                /*
-                sf::RectangleShape verticalLine(sf::Vector2f(3.f, bot - top + 3.f));
-                //verticalLine.setFillColor(borderColor);
-                verticalLine.setPosition(left - 3.f, top - 1.5f);
-                target.draw(verticalLine);
-                verticalLine.setPosition(right, top - 1.5f);
-                target.draw(verticalLine);
-                */
-                target.drawVertices(vertices);
+                    addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
+                    addRectVertices(vertices, right     , top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
+                    /*
+                    sf::RectangleShape verticalLine(sf::Vector2f(3.f, bot - top + 3.f));
+                    //verticalLine.setFillColor(borderColor);
+                    verticalLine.setPosition(left - 3.f, top - 1.5f);
+                    target.draw(verticalLine);
+                    verticalLine.setPosition(right, top - 1.5f);
+                    target.draw(verticalLine);
+                    */
+                    target.drawVertices(vertices);
+                }
             }
             /*
             sf::View oldView(target.getView());
@@ -1415,7 +1464,7 @@ namespace hg {
                 vkCmdSetViewport(
                     drawCommandBuffer,
                     0,
-                    viewports.size(),
+                    gsl::narrow<uint32_t>(viewports.size()),
                     viewports.data()
                 );
             }
@@ -1556,7 +1605,7 @@ namespace hg {
                 vkCmdSetViewport(
                     drawCommandBuffer,
                     0,
-                    viewports.size(),
+                    gsl::narrow<uint32_t>(viewports.size()),
                     viewports.data()
                 );
             }
@@ -1676,14 +1725,14 @@ namespace hg {
                     }
                 };
 
-                float const centerX = worldViewXPos+worldViewWidth/2.f;
-                float const centerY = worldViewYPos+worldViewHeight/2.f;
-                float const sizeX = worldViewWidth;
-                float const sizeY = worldViewHeight;
-                float const a = 2.f / sizeX; //scale x
-                float const b = 2.f / sizeY; //scale y
-                float const c = -a * centerX; //translate x
-                float const d = -b * centerY; //translate y
+                float const centerX{gsl::narrow_cast<float>(worldViewXPos+worldViewWidth/2.f)};
+                float const centerY{gsl::narrow_cast<float>(worldViewYPos+worldViewHeight/2.f)};
+                float const sizeX{gsl::narrow_cast<float>(worldViewWidth)};
+                float const sizeY{gsl::narrow_cast<float>(worldViewHeight)};
+                float const a{2.f / sizeX}; //scale x
+                float const b{2.f / sizeY}; //scale y
+                float const c{-a * centerX}; //translate x
+                float const d{-b * centerY}; //translate y
 
                 target.updateUniformBuffer(
                     UniformBufferObject{
@@ -1710,7 +1759,7 @@ namespace hg {
                 vkCmdSetViewport(
                     drawCommandBuffer,
                     0,
-                    viewports.size(),
+                    gsl::narrow<uint32_t>(viewports.size()),
                     viewports.data()
                 );
             }
@@ -1744,7 +1793,7 @@ namespace hg {
                                     [wall.atIndex(x, y + 1)],
                                 0, nullptr);
 
-                            drawRect(target, x*segmentSize, y*segmentSize, segmentSize, segmentSize, vec3<float>{0.f,0.f,0.f}, 1, 0);
+                            drawRect(target, gsl::narrow<float>(x*segmentSize), gsl::narrow<float>(y*segmentSize), gsl::narrow<float>(segmentSize), gsl::narrow<float>(segmentSize), vec3<float>{0.f,0.f,0.f}, 1, 0);
 
                             for (int vpos(-1); vpos <= 1; vpos += 2) {
                                 for (int hpos(-1); hpos <= 1; hpos += 2) {
@@ -1759,7 +1808,7 @@ namespace hg {
                                             &wallCornerDescriptorSets[bottom][right],
                                             0, nullptr);
 
-                                        drawRect(target, x*segmentSize + right * segmentSize / 2., y*segmentSize + bottom * segmentSize / 2., segmentSize/2., segmentSize/2., vec3<float>{0.f,0.f,0.f}, 1, 0);
+                                        drawRect(target, gsl::narrow_cast<float>(x*segmentSize + right * segmentSize / 2.), gsl::narrow_cast<float>(y*segmentSize + bottom * segmentSize / 2.), gsl::narrow_cast<float>(segmentSize/2.), gsl::narrow_cast<float>(segmentSize/2.), vec3<float>{0.f,0.f,0.f}, 1, 0);
                                     }
                                 }
                             }
@@ -1791,7 +1840,7 @@ namespace hg {
                 vkCmdSetViewport(
                     drawCommandBuffer,
                     0,
-                    viewports.size(),
+                    gsl::narrow<uint32_t>(viewports.size()),
                     viewports.data()
                 );
             }
@@ -1838,20 +1887,23 @@ namespace hg {
             );
 
             boost::sort(partitionedFrameData, [](auto const a, auto const b) { return a->frameNumber < b->frameNumber; });
-            auto prevHigh{boost::begin(partitionedFrameData)};
-
-            for (int frameNumber = 0, end = timelineLength; frameNumber != end; ++frameNumber) {
+            auto low{boost::begin(partitionedFrameData)};
+            auto const endIt{boost::end(partitionedFrameData)};
+            for (int frameNumber{0}, end{gsl::narrow<int>(timelineLength)}; frameNumber != end; ++frameNumber) {
                 //hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
                 //assert(!isNullFrame(frame));
                 int const left = static_cast<int>(frameNumber*timelineContentsWidth / timelineLength);
                 //auto const [low, high] = std::equal_range(prevHigh, std::end(partitionedFrameData), frameNumber, [](auto const fn, auto const gfd){return fn < gfd->frameNumber;});
-                auto const low{std::lower_bound(prevHigh, std::end(partitionedFrameData), frameNumber, [](auto const gfd, auto const fn) {return gfd->frameNumber < fn; })};
-                auto const high{std::upper_bound(low, std::end(partitionedFrameData), frameNumber, [](auto const fn, auto const gfd) {return fn < gfd->frameNumber; }) };
-                prevHigh = high;
+                low = std::lower_bound(low, endIt, frameNumber, [](auto const gfd, auto const fn) {return gfd->frameNumber < fn; });
+                auto const high{std::upper_bound(low, endIt, frameNumber, [](auto const fn, auto const gfd) {return fn < gfd->frameNumber; }) };
+                //prevHigh = high;
 
-                for (hg::GuyOutputInfo const &guy :
-                    boost::make_iterator_range(low, high) | boost::adaptors::transformed([](auto const gfd) -> auto const& {return gfd->guyOutputInfo; }))
+                //for (hg::GuyOutputInfo const &guy :
+                //    boost::make_iterator_range(low, high) | boost::adaptors::transformed([](auto const gfd) -> auto const& {return gfd->guyOutputInfo; }))
+                //for (auto const &gfd : boost::make_iterator_range(low, high))
+                for (; low != high; ++low)
                 {
+                    hg::GuyOutputInfo const &guy{(*low)->guyOutputInfo};
                     std::size_t const top = static_cast<std::size_t>((height - guyLineHeight)*(guy.getIndex() / static_cast<double>(numberOfGuys)));
 
                     double const xFrac = (guy.getX() - wall.segmentSize()) / static_cast<double>(wall.roomWidth() - 2 * wall.segmentSize());
@@ -1890,7 +1942,7 @@ namespace hg {
             timelineTexture.flushTextureChanges(preDrawCommandBuffer);
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &timelineTexture.descriptorSet, 0, nullptr);
-            hg::drawRect(target, 0, getTimelineTickHeight(), width, height, vec3<float>{0.f,0.f,0.f}, 1, 0);
+            hg::drawRect(target, 0.f, gsl::narrow<float>(getTimelineTickHeight()), width, gsl::narrow<float>(height), vec3<float>{0.f,0.f,0.f}, 1, 0);
         }
         void DrawTicks(
             VulkanRenderTarget &target,
@@ -1903,7 +1955,7 @@ namespace hg {
             vec3<float> tickColour{ 0.f, 0.f, 0.f };
             for (std::size_t frameNo(0); frameNo < timelineLength; frameNo += 5 * FRAMERATE) {
                 float const left(static_cast<float>(frameNo / static_cast<double>(timelineLength)*targetWidth));
-                addRectVertices(vertices, left-1.f, 0.f, 2.f, getTimelineTickHeight(), tickColour, 0, 0);
+                addRectVertices(vertices, left-1.f, 0.f, 2.f, gsl::narrow<float>(getTimelineTickHeight()), tickColour, 0, 0);
             }
             target.drawVertices(vertices);
         }
@@ -1956,7 +2008,7 @@ namespace hg {
                             wavegroup.setFillColor(sf::Color(250, 0, 0));
                             target.draw(wavegroup);
                             */
-                            addRectVertices(vertices, static_cast<float>(leftOfWaveRegion), getTimelineTickHeight(), static_cast<float>(i - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f/255.f, 0.f, 0.f}, 0, 0);
+                            addRectVertices(vertices, gsl::narrow<float>(leftOfWaveRegion), gsl::narrow<float>(getTimelineTickHeight()), gsl::narrow<float>(i - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f/255.f, 0.f, 0.f}, 0, 0);
 
                             inWaveRegion = false;
                         }
@@ -1970,7 +2022,7 @@ namespace hg {
                     wavegroup.setFillColor(sf::Color(250, 0, 0));
                     target.draw(wavegroup);
                     */
-                    addRectVertices(vertices, static_cast<float>(leftOfWaveRegion), getTimelineTickHeight(), static_cast<float>(width - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f / 255.f, 0.f, 0.f}, 0, 0);
+                    addRectVertices(vertices, gsl::narrow<float>(leftOfWaveRegion), gsl::narrow<float>(getTimelineTickHeight()), gsl::narrow<float>(width - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f / 255.f, 0.f, 0.f}, 0, 0);
 
                 }
             }
@@ -2013,40 +2065,41 @@ namespace hg {
                     }
                 );
             }
-
-            float left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
-            float right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
-            float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y)));
-            float bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y)));
             {
-                std::vector<Vertex> vertices;
+                float const left = static_cast<float>(hg::WINDOW_DEFAULT_X*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+                float const right = static_cast<float>(hg::WINDOW_DEFAULT_X*(1. - hg::TIMELINE_PAD_X));
+                float const top = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y)));
+                float const bot = static_cast<float>(hg::WINDOW_DEFAULT_Y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y)));
+                {
+                    std::vector<Vertex> vertices;
 
-                vec3<float> borderColor{ 100.f / 255.f, 100.f / 255.f, 100.f / 255.f };
+                    vec3<float> borderColor{ 100.f / 255.f, 100.f / 255.f, 100.f / 255.f };
 
-                addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0, 0);
-                addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0, 0);
+                    addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0, 0);
+                    addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0, 0);
 
 
-                addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
-                addRectVertices(vertices, right, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
+                    addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
+                    addRectVertices(vertices, right, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
 
-                target.drawVertices(vertices);
+                    target.drawVertices(vertices);
+                }
             }
             float const width{getTimelineWidth(swapChainExtent)};
             {
-                float const left = 0.f;
-                float const top = 0.f;
-                float const width2 = width;
-                float const height2 = getTimelineTextureHeight() + getTimelineTickHeight();
+                float const left{0.f};
+                float const top{0.f};
+                float const width2{width};
+                float const height2{gsl::narrow<float>(getTimelineTextureHeight() + getTimelineTickHeight())};
 
-                float const centerX = left + width2 / 2.f;
-                float const centerY = top + height2 / 2.f;
-                float const sizeX = width2;
-                float const sizeY = height2;
-                float const a = 2.f / sizeX; //scale x
-                float const b = 2.f / sizeY; //scale y
-                float const c = -a * centerX; //translate x
-                float const d = -b * centerY; //translate y
+                float const centerX{left + width2 / 2.f};
+                float const centerY{top + height2 / 2.f};
+                float const sizeX{width2};
+                float const sizeY{height2};
+                float const a{2.f / sizeX}; //scale x
+                float const b{2.f / sizeY}; //scale y
+                float const c{-a * centerX}; //translate x
+                float const d{-b * centerY}; //translate y
 
                 target.updateUniformBuffer(
                     UniformBufferObject{
@@ -2073,15 +2126,15 @@ namespace hg {
                 vkCmdSetViewport(
                     drawCommandBuffer,
                     0,
-                    viewports.size(),
+                    gsl::narrow<uint32_t>(viewports.size()),
                     viewports.data()
                 );
             }
 
-            unsigned int const height = getTimelineTextureHeight();
+            auto const height{gsl::narrow<unsigned>(getTimelineTextureHeight())};
             DrawTicks(target, drawCommandBuffer, timelineLength, width);
 
-            DrawWaves(target, drawCommandBuffer, waves, timelineLength, height, width);
+            DrawWaves(target, drawCommandBuffer, waves, gsl::narrow<int>(timelineLength), height, width);
 
             if (!isNullFrame(playerFrame)) {
                 /*
@@ -2090,7 +2143,7 @@ namespace hg {
                 playerLine.setFillColor(sf::Color(200, 200, 0));
                 target.draw(playerLine);
                 */
-                drawRect(target, getFrameNumber(playerFrame)*width / timelineLength, getTimelineTickHeight(), 3.f, static_cast<float>(height), vec3<float>{200.f/255.f, 200.f/255.f, 0.f}, 0, 0);
+                drawRect(target, gsl::narrow<float>(getFrameNumber(playerFrame)*width / timelineLength), gsl::narrow<float>(getTimelineTickHeight()), 3.f, gsl::narrow<float>(height), vec3<float>{200.f/255.f, 200.f/255.f, 0.f}, 0, 0);
             }
 
             if (!isNullFrame(timeCursor)) {
@@ -2098,7 +2151,7 @@ namespace hg {
                 vec3<float> const timeCursorColor{0.f, 0.f, 200.f/255.f};
                 float const timeCursorHorizontalPosition{ timeCursor.getFrameNumber()*width / timelineLength };
 
-                drawRect(target, timeCursorHorizontalPosition, getTimelineTickHeight(), 3.f, static_cast<float>(height), timeCursorColor, 0, 0);
+                drawRect(target, timeCursorHorizontalPosition, gsl::narrow<float>(getTimelineTickHeight()), 3.f, gsl::narrow<float>(height), timeCursorColor, 0, 0);
 #if 0
                 //Looks like this is drawn outside the viewport area, so is never displayed, this was also true in the SFML implementation.
                 //Needs to be debugged/rethought
@@ -2136,7 +2189,7 @@ namespace hg {
                 vkCmdSetViewport(
                     drawCommandBuffer,
                     0,
-                    viewports.size(),
+                    gsl::narrow<uint32_t>(viewports.size()),
                     viewports.data()
                 );
             }

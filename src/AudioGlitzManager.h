@@ -13,6 +13,7 @@
 #include <boost/range/adaptor/map.hpp>
 #include <boost/fusion/sequence/comparison.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
+#include <gsl/gsl>
 namespace hg {
 enum class AudioAction {
     Start,
@@ -107,9 +108,9 @@ public:
     AudioPlayingState &operator=(AudioPlayingState const&) = delete;
 private:
     sf::Sound makeSoundForGlitz(AudioGlitzObject const &glitz) const {
-        assert(soundBuffers->find(glitz.key) != soundBuffers->end());
+        Expects(soundBuffers->find(glitz.key) != soundBuffers->end());
         sf::Sound newSound(soundBuffers->find(glitz.key)->second);
-        newSound.setPlayingOffset(sf::seconds(glitz.index * 1.f/static_cast<float>(hg::FRAMERATE)));
+        newSound.setPlayingOffset(sf::seconds(glitz.index * 1.f/float{hg::FRAMERATE}));
         return newSound;
     }
 
@@ -170,7 +171,7 @@ public:
                     if (checkNICompletion()) break;
                 }
                 else {
-                    assert(*oi == *ni);
+                    Expects(*oi == *ni);
                     keepAudio();
                     if (checkOICompletion() || checkNICompletion()) break;
                 }

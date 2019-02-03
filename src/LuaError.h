@@ -29,7 +29,7 @@ namespace hg {
             while (true) {
                 lua_Debug ar;
                 if (lua_getstack(L, n, &ar) == 0) break;
-                int rVal = lua_getinfo(L, "nSl", &ar);
+                int rVal{lua_getinfo(L, "nSl", &ar)};
                 assert(rVal != 0); //TODO: Handle rVal != 0 properly?
                 std::cout << "Frame: " << n << "\n" << std::flush;
                 std::cout << "  name: " << (ar.name ? ar.name : "^__NULL__") << "\n" << std::flush;

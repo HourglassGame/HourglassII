@@ -8,7 +8,129 @@
 #include <cstdlib>
 #include "SortWeakerThanEquality_fwd.h"
 #include "ConstPtr_of_fwd.h"
+#include <type_traits>
+#include <gsl/gsl>
+#include <boost/iterator/iterator_facade.hpp>
+#include <boost/range/algorithm/count_if.hpp>
 namespace hg {
+template<typename ToMatch, typename ToConstQualify>
+using MatchConstness =
+    typename std::conditional_t <std::is_const_v<ToMatch>, ToConstQualify const, ToConstQualify>;
+
+template<typename T>
+class PickupsIt : public boost::iterator_facade<
+      PickupsIt<T>
+    , std::pair<Ability const, MatchConstness<T, int>&>
+    , boost::forward_traversal_tag
+    , std::pair<Ability const, MatchConstness<T, int>&>> {
+private:
+    static Ability nextAbility(Ability const ab) {
+        switch (ab) {
+            case Ability::TIME_JUMP: return Ability::TIME_REVERSE;
+            case Ability::TIME_REVERSE: return Ability::TIME_GUN;
+            case Ability::TIME_GUN: return Ability::TIME_PAUSE;
+            case Ability::TIME_PAUSE: return Ability::NO_ABILITY;
+            case Ability::NO_ABILITY: Expects(false); break;
+        }
+        Expects(false);
+    }
+    static Ability autoIncr(T &pickups, Ability currentAbility){
+        while (currentAbility != Ability::NO_ABILITY) {
+            if (pickups[currentAbility] != 0) break;
+            currentAbility = nextAbility(currentAbility);
+        }
+        return currentAbility;
+    }
+private:
+    T *pickups;
+    Ability currentAbility;
+public:
+
+    PickupsIt(T &pickups, Ability const currentAbility) :
+        pickups(&pickups), currentAbility(autoIncr(pickups, currentAbility))
+    {}
+    std::pair<Ability const, decltype((*pickups)[currentAbility])> dereference() const {
+        return {currentAbility, (*pickups)[currentAbility]};
+    }
+    bool equal(PickupsIt const &o) const {
+        return pickups == o.pickups && currentAbility == o.currentAbility;
+    }
+    void increment() {
+        currentAbility = autoIncr(*pickups, nextAbility(currentAbility));
+    }
+};
+
+class Pickups final : boost::totally_ordered<Pickups> {
+    struct NeqZero{
+        bool operator()(int a) const {
+            return a != 0;
+        }
+    };
+    template<typename PickupsT>
+    static MatchConstness<PickupsT, int> &operatorIdxImpl(PickupsT &p, Ability const ab) {
+        Expects(ab != Ability::NO_ABILITY);
+        switch (ab) {
+            case Ability::TIME_JUMP: return p.pickups[0];
+            case Ability::TIME_REVERSE : return p.pickups[1];
+            case Ability::TIME_GUN : return p.pickups[2];
+            case Ability::TIME_PAUSE : return p.pickups[3];
+            case Ability::NO_ABILITY: Expects(false); break;
+        }
+        Expects(false);
+    }
+    template<typename PickupsT>
+    static PickupsIt<MatchConstness<PickupsT, Pickups>> findImpl(PickupsT &p, Ability const ab) {
+        auto const it{ PickupsIt<MatchConstness<PickupsT, Pickups>>(p, ab) };
+        if (it != p.end() && it->first == ab) return it;
+        else return p.end();
+    }
+    auto comparison_tuple() const noexcept {
+        return std::tie(pickups);
+    }
+public:
+    explicit Pickups() noexcept : pickups() {}
+    PickupsIt<Pickups> begin() {
+        return PickupsIt<Pickups>(*this, Ability::TIME_JUMP);
+    }
+    PickupsIt<Pickups> end() {
+        return PickupsIt<Pickups>(*this, Ability::NO_ABILITY);
+    }
+    PickupsIt<Pickups const> begin() const {
+        return PickupsIt<Pickups const>(*this, Ability::TIME_JUMP);
+    }
+    PickupsIt<Pickups const> end() const {
+        return PickupsIt<Pickups const>(*this, Ability::NO_ABILITY);
+    }
+
+    PickupsIt<Pickups const> find(Ability const ab) const {
+        return findImpl(*this, ab);
+    }
+
+    PickupsIt<Pickups> find(Ability const ab) {
+        return findImpl(*this, ab);
+    }
+
+    std::size_t size() const {
+        return boost::count_if(pickups, [](int const a) { return a != 0; });
+    }
+
+    int const &operator[](Ability const ab) const noexcept {
+        return operatorIdxImpl(*this, ab);
+    }
+    int &operator[](Ability const ab) noexcept {
+        return operatorIdxImpl(*this, ab);
+    }
+
+    bool operator==(Pickups const &o) const noexcept {
+        return comparison_tuple() == o.comparison_tuple();
+    }
+    bool operator<(Pickups const &second) const noexcept {
+        return comparison_tuple() < second.comparison_tuple();
+    }
+private:
+    std::array<int, 4> pickups;
+};
+
 class Guy final : boost::totally_ordered<Guy>
 {
 public:
@@ -17,19 +139,19 @@ public:
         int xspeed, int yspeed,
         int width, int height,
         int jumpSpeed,
-        
+
         int illegalPortal,
         int arrivalBasis,
         bool supported,
         int supportedSpeed,
-        
-        mt::std::map<Ability, int> pickups,
+
+        Pickups pickups,
         FacingDirection facing,
-        
+
         bool boxCarrying,
         int boxCarrySize,
         TimeDirection boxCarryDirection,
-        
+
         TimeDirection timeDirection,
         bool timePaused);
     
@@ -46,8 +168,8 @@ public:
     int getArrivalBasis() const { return arrivalBasis; }
     bool getSupported()       const { return supported; }
     int getSupportedSpeed()   const { return supportedSpeed; }
-    
-    mt::std::map<Ability, int> const &getPickups() const { return pickups; }
+
+    Pickups const &getPickups() const { return pickups; }
 
     FacingDirection getFacing()        const { return facing; }
 
@@ -79,7 +201,7 @@ private:
     bool supported;
     int supportedSpeed;
 
-    mt::std::map<Ability, int> pickups;
+    Pickups pickups;
     FacingDirection facing; // <- 0, -> 1
 
     bool boxCarrying;
@@ -88,7 +210,7 @@ private:
 
     TimeDirection timeDirection;
     bool timePaused;
-    
+
     auto equality_tuple() const -> decltype(auto)
     {
         return std::tie(
@@ -116,13 +238,13 @@ public:
     int getWidth()     const { return guy_->getWidth(); }
     int getHeight()    const { return guy_->getHeight(); }
     int getJumpSpeed() const { return guy_->getJumpSpeed(); }
-    
+
     int getIllegalPortal()    const { return guy_->getIllegalPortal(); }
     int getArrivalBasis() const { return guy_->getArrivalBasis(); }
     bool getSupported()       const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
-    
-    mt::std::map<Ability, int> const &getPickups() const { return guy_->getPickups();}
+
+    Pickups const &getPickups() const { return guy_->getPickups();}
 
     FacingDirection getFacing()        const { return guy_->getFacing();}
 

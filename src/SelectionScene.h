@@ -3,13 +3,13 @@
 
 #include "Scene.h"
 #include "RenderWindow.h"
-#include "variant.h"
+#include <variant>
 
 #include <vector>
 #include <string>
 namespace hg
 {
-    hg::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options);
+    std::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options);
 }
 #endif
 

@@ -17,10 +17,9 @@
 
 #include <boost/polymorphic_cast.hpp>
 #include <boost/ref.hpp>
+#include <gsl/gsl>
 
 #include <iostream>
-
-#include <cassert>
 
 namespace hg {
 
@@ -35,7 +34,7 @@ TriggerFrameState DirectLuaTriggerSystem::getFrameState(memory_pool<user_allocat
     //Reload if status != LUA_OK to clear possible errors in case of previous TriggerFrameState
     //execution being exited through exception. (Should never happen currently, but maybe will in future)
     if (!sharedState.ptr || lua_status(sharedState.ptr) != LUA_OK) {
-        assert(!sharedState.ptr && "if lua_status != LUA_OK, you are doing something unusual; think about what you are doing and perhaps remove this assert");
+        Expects(!sharedState.ptr && "if lua_status != LUA_OK, you are doing something unusual; think about what you are doing and perhaps remove this assert");
         LuaState newLuaState{LuaState::new_state_t()};
         lua_State *L = newLuaState.ptr;
 
@@ -133,7 +132,7 @@ mt::std::string abilityToString(Ability ability)
     switch (ability) {
     default:
     case Ability::NO_ABILITY:
-        assert(false);
+        Expects(false);
         return mt::std::string("noAbility");
     case Ability::TIME_JUMP:
         return mt::std::string("timeJump");
@@ -1156,7 +1155,7 @@ std::vector<char> compileLuaChunk(std::vector<char> const &sourceChunk, char con
         BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(ss.str()));
     }
     if (lua_dump(L.ptr, lua_VectorWriter, &compiledChunk, true)) {
-        assert(false && "Failure to insert into the vector should have resulted in bad_alloc being thrown, rather than a non-zero return value from lua_VectorWriter");
+        Expects(false && "Failure to insert into the vector should have resulted in bad_alloc being thrown, rather than a non-zero return value from lua_VectorWriter");
     }
     return compiledChunk;
 }

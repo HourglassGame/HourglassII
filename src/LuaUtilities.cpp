@@ -422,14 +422,14 @@ FacingDirection to<FacingDirection>(lua_State *L, int index) {
     }
 }
 template<>
-mt::std::map<Ability, int>
-to<mt::std::map<Ability, int>>(lua_State *L, int index) {
+Pickups
+to<Pickups>(lua_State *L, int index) {
     try
     {
         if (!lua_istable(L, index)) {
             BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("pickups must be a table"));
         }
-        mt::std::map<Ability, int> retv;
+        Pickups retv;
         lua_pushnil(L);
         while (lua_next(L, index - 1) != 0) {
             auto abilityQuantity(std::round(lua_tonumber(L, -1)));
@@ -478,7 +478,7 @@ Guy to<Guy>(lua_State* L, int index) {
         lua_pop(L, 1);
         bool const supported(readField<bool>(L, "supported", index));
         int const supportedSpeed(supported ? readField<int>(L, "supportedSpeed", index) : 0);
-        mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
+        Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
         bool const boxCarrying(readField<bool>(L, "boxCarrying", index));
         int const boxCarrySize(boxCarrying ? readField<int>(L, "boxCarrySize", index) : 0);
@@ -522,7 +522,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
         int const width(readFieldWithDefault<int>(L, "width", index, 1600));
         int const height(readFieldWithDefault<int>(L, "height", index, 3200));
         int const jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed", index, -hg::GUY_JUMP_SPEED_DEFAULT));
-        mt::std::map<Ability, int> pickups(readField<mt::std::map<Ability, int>>(L, "pickups", index));
+        Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
         bool const boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
         int const boxCarrySize(boxCarrying ? readField<int>(L, "boxCarrySize", index) : 0);

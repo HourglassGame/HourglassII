@@ -9,7 +9,7 @@ class Collision;
 std::ostream &operator<<(std::ostream &os, Collision const &toPrint);
 class Collision final
 {
-    auto comparison_tuple() const -> decltype(auto)
+    auto comparison_tuple() const
     {
         return std::tie(
             x_,

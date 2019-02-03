@@ -1,8 +1,8 @@
 #ifndef HG_CLONE_PTR_H
 #define HG_CLONE_PTR_H
 #include <boost/swap.hpp>
-#include <cassert>
 #include "default_clone.h"
+#include <gsl/gsl_assert>
 namespace hg {
 //It is desirable for this to be a smart reference
 //(rather than a smart pointer)
@@ -109,11 +109,11 @@ public:
         return obj;
     }
     Cloneable const &get() const noexcept {
-        assert(obj);
+        Expects(obj);
         return *obj;
     }
     Cloneable *operator->() const noexcept {
-        assert(obj);
+        Expects(obj);
         return obj;
     }
     Cloneable &operator*() const noexcept {

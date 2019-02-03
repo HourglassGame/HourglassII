@@ -77,7 +77,7 @@
 #include "DirectLuaTriggerSystem.h"
 #include "LevelLoader.h"
 #include "move_function.h"
-#include "unique_ptr.h"
+#include <memory>
 #include "sfRenderTargetCanvas.h"
 #include "sfColour.h"
 #include "Maths.h"
@@ -97,7 +97,7 @@
 #include <tbb/task_group.h>
 #include <boost/thread/future.hpp>
 #include "LoadedLevel.h"
-#include "variant.h"
+#include <variant>
 #include "GameDisplayHelpers.h"
 
 namespace hg {
@@ -106,8 +106,6 @@ UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
     hg::VulkanEngine &eng,
-    AudioPlayingState &audioPlayingState,
-    AudioGlitzManager &audioGlitzManager,
     std::size_t relativeGuyIndex,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
@@ -168,7 +166,7 @@ ActivePanel const getActivePanel(hg::RenderWindow const &window)
     return mousePanel;
 }
 
-variant<
+std::variant<
     GameAborted_tag,
     GameWon_tag,
     ReloadLevel_tag,
@@ -193,7 +191,12 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
             try{
                 eng.drawFrame(renderer);
             }
-            catch(...){}
+            catch(std::exception &e) {
+                std::cerr << "renderThreadError: " << e.what() << "\n" << std::flush;
+            }
+            catch(...){
+                std::cerr << "unknownRenderThreadError\n" << std::flush;
+            }
         }
     });
     struct RendererCleanupEnforcer final {
@@ -236,7 +239,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
     //Useful for tracking down crashes.
     std::ofstream replayLogOut("replayLogOut");
 
-    auto interrupter = hg::make_unique<hg::OperationInterrupter>();
+    auto interrupter = std::make_unique<hg::OperationInterrupter>();
     boost::future<hg::TimeEngine::RunResult> futureRunResult;
 
     struct TimeEngineCleanupEnforcer final {
@@ -284,7 +287,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
             relativeGuyIndex = inputList.getRelativeGuyIndex();
             saveReplayLog(replayLogOut, inputList);
             receivedInputs.push_back(inputList);
-            interrupter = make_unique<hg::OperationInterrupter>();
+            interrupter = std::make_unique<hg::OperationInterrupter>();
             
             futureRunResult =
                 async(
@@ -365,7 +368,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto uiFrameState{runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
+                    auto uiFrameState{runStep(timeEngine, window, eng, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
                     interrupter.reset();
 
 
@@ -459,8 +462,6 @@ UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
     hg::VulkanEngine &eng,
-    AudioPlayingState &audioPlayingState,
-    AudioGlitzManager &audioGlitzManager,
     std::size_t relativeGuyIndex,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
@@ -472,7 +473,7 @@ UIFrameState runStep(
 {
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
-    hg::mt::std::map<hg::Ability, int> pickups;
+    Pickups pickups;
     hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
     bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};

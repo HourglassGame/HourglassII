@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <vulkan/vulkan.h>
+#include <gsl/gsl>
 namespace hg {
 struct UniformBufferObject {
     float projMatrix[16];
@@ -68,7 +69,7 @@ struct VulkanRenderTarget {
             preDrawCommandBuffer,
             vertexBuffers.back().transferSrcVertexBuffer.buffer,
             vertexBuffers.back().deviceVertexBuffer.buffer,
-            vertexCopyRegions.size(),
+            gsl::narrow<uint32_t>(vertexCopyRegions.size()),
             vertexCopyRegions.data());
 
 
@@ -104,7 +105,7 @@ struct VulkanRenderTarget {
             preDrawCommandBuffer,
             uniformBuffers.back().transferSrcUniformBuffer.buffer,
             uniformBuffers.back().deviceUniformBuffer.buffer,
-            uniformCopyRegions.size(),
+            gsl::narrow<uint32_t>(uniformCopyRegions.size()),
             uniformCopyRegions.data());
 
 
@@ -284,13 +285,13 @@ struct VulkanRenderTarget {
 
         VkDescriptorPoolSize poolSize = {};
         poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSize.descriptorCount = size/sizeof(UniformBufferObject);
+        poolSize.descriptorCount = gsl::narrow<uint32_t>(size/sizeof(UniformBufferObject));
 
         VkDescriptorPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = 1;
         poolInfo.pPoolSizes = &poolSize;
-        poolInfo.maxSets = size / sizeof(UniformBufferObject);
+        poolInfo.maxSets = gsl::narrow<uint32_t>(size / sizeof(UniformBufferObject));
         std::vector<VkDescriptorSet> descriptorSets;
         descriptorSets.reserve(size / sizeof(UniformBufferObject));
         uniformBuffers.push_back(
@@ -342,12 +343,12 @@ struct VulkanRenderTarget {
         })
         );
 
-        if (vkFlushMappedMemoryRanges(device, memoryRanges.size(), memoryRanges.data()) != VK_SUCCESS) {
+        if (vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) != VK_SUCCESS) {
             throw new std::exception("vkFlushMappedMemoryRanges failed");
         }
 
-        std::array<VkMemoryBarrier, 1> memoryBarriers{
-            {
+        std::array memoryBarriers{
+            VkMemoryBarrier{
                 VK_STRUCTURE_TYPE_MEMORY_BARRIER,//sType
                 nullptr,//pNext
                 VK_ACCESS_TRANSFER_WRITE_BIT,//srcAccessMask
@@ -360,7 +361,7 @@ struct VulkanRenderTarget {
             VK_PIPELINE_STAGE_TRANSFER_BIT,      // srcStageMask
             VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,  // dstStageMask
             0,                                   // dependencyFlags
-            memoryBarriers.size(),               // memoryBarrierCount
+            gsl::narrow<uint32_t>(memoryBarriers.size()),  // memoryBarrierCount
             memoryBarriers.data(),               // pMemoryBarriers
             0,                                   // bufferMemoryBarrierCount
             nullptr,                             // pBufferMemoryBarriers
@@ -392,9 +393,9 @@ struct VulkanRenderTarget {
         //    [endPos=endPositionInCurrentVertexBuffer, cmdBuf=commandBuffer, vertSize=vertices.size()]{
                 vkCmdDraw(
                     drawCommandBuffer,
-                    static_cast<uint32_t>(vertices.size()),
+                    gsl::narrow<uint32_t>(vertices.size()),
                     1,//instanceCount
-                    endPositionInCurrentVertexBuffer /sizeof(vertices[0]),//firstVertex
+                    gsl::narrow<uint32_t>(endPositionInCurrentVertexBuffer /sizeof(vertices[0])),//firstVertex
                     0//firstInstance
                 );
         //    }
@@ -463,7 +464,7 @@ struct VulkanRenderTarget {
     void newFrame() {
         //If vertexBuffers.size() > 1, reallocate as single contiguous buffer
         if (vertexBuffers.size() != 1) {
-            auto const fullSize{std::max(initialVertexBufSize, boost::accumulate(vertexBuffers | boost::adaptors::transformed([](auto const &vb){return vb.size;}), 0))};
+            auto const fullSize{std::max(std::size_t{initialVertexBufSize}, boost::accumulate(vertexBuffers | boost::adaptors::transformed([](auto const &vb){return vb.size;}), std::size_t{0}))};
             vertexBuffers.clear();
             prepareBufferAndTransfer(fullSize);
         }
@@ -473,7 +474,7 @@ struct VulkanRenderTarget {
 
         //If uniformBuffers.size() != 1, reallocate as single contiguous buffer
         if (uniformBuffers.size() != 1) {
-            auto const fullSize{ std::max(initialUniformBufSize, boost::accumulate(uniformBuffers | boost::adaptors::transformed([](auto const &buf) {return buf.size; }), 0)) };
+            auto const fullSize{ std::max(std::size_t{initialUniformBufSize}, boost::accumulate(uniformBuffers | boost::adaptors::transformed([](auto const &buf) {return buf.size; }), std::size_t{0})) };
             uniformBuffers.clear();
             prepareUniformBufferAndTransfer(fullSize);
         }

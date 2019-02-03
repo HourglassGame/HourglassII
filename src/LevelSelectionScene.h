@@ -2,12 +2,12 @@
 #define HG_LEVEL_SELECTION_SCENE_H
 #include "move_function.h"
 #include "Scene.h"
-#include "variant.h"
+#include <variant>
 #include "LoadedLevel.h"
 #include "OperationInterrupter.h"
 #include "RenderWindow.h"
 namespace hg {
-    variant<LoadLevelFunction, SceneAborted_tag>
+    std::variant<LoadLevelFunction, SceneAborted_tag>
     run_level_selection_scene(hg::RenderWindow &window);
 }
 #endif //HG_LEVEL_SELECTION_SCENE_H

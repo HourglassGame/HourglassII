@@ -3,12 +3,12 @@
 #include "move_function.h"
 #include "Level.h"
 #include "OperationInterrupter.h"
-#include "variant.h"
+#include <variant>
 #include "LoadedLevel.h"
 #include "Scene.h"
 namespace hg {
     struct RenderWindow;
-    variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
+    std::variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
         hg::RenderWindow &window,
         LoadLevelFunction const &levelLoadingFunction);
 }

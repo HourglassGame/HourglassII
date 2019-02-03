@@ -5,6 +5,7 @@
 #include <boost/range/algorithm/find_if.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <gsl/gsl>
 
 #include <sstream>
 #include "Maths.h"
@@ -33,10 +34,10 @@ void PlayAudioGlitz(
 }
 void DrawVisualGlitzAndWall(
     sf::RenderTarget &target,
-    hg::VulkanEngine &eng,
-    hg::mt::std::vector<hg::Glitz> const &glitz,
-    hg::Wall const &wall,
-    hg::LevelResources const &resources,
+    VulkanEngine &eng,
+    mt::std::vector<hg::Glitz> const &glitz,
+    Wall const &wall,
+    LevelResources const &resources,
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
     int const guyIndex,
@@ -97,10 +98,10 @@ void DrawVisualGlitzAndWall(
         assert(essentiallyEqual(worldViewYPos + worldViewHeight/2., LHeight/2., 0.00001));
 
         sf::View scaledView(sf::FloatRect(
-            worldViewXPos,
-            worldViewYPos,
-            worldViewWidth,
-            worldViewHeight));
+            gsl::narrow_cast<float>(worldViewXPos),
+            gsl::narrow_cast<float>(worldViewYPos),
+            gsl::narrow_cast<float>(worldViewWidth),
+            gsl::narrow_cast<float>(worldViewHeight)));
 
         //Game view is top-right quadrant
         scaledView.setViewport(
@@ -112,9 +113,9 @@ void DrawVisualGlitzAndWall(
 
         target.setView(scaledView);
     }
-    hg::sfRenderTargetVisualCanvas sfRTcanvas(target, resources);
-    hg::VulkanCanvas vkCanvas;
-    hg::PairCanvas canvas(sfRTcanvas, vkCanvas);
+    hg::sfRenderTargetVisualCanvas canvas(target, resources);
+    //hg::VulkanCanvas vkCanvas;
+    //hg::PairCanvas canvas(sfRTcanvas, vkCanvas);
     hg::LayeredCanvas layeredCanvas(canvas);
     for (hg::Glitz const &particularGlitz : glitz)
     {
@@ -157,10 +158,10 @@ void DrawVisualGlitzAndWall(
 
 void drawInventory(
     sf::RenderTarget &app,
-    hg::mt::std::map<hg::Ability, int> const &pickups,
-    hg::Ability abilityCursor)
+    Pickups const &pickups,
+    Ability abilityCursor)
 {
-    hg::mt::std::map<hg::Ability, int> mpickups(pickups);
+    Pickups mpickups(pickups);
     {
         std::stringstream timeJump;
         timeJump << (abilityCursor == Ability::TIME_JUMP ? "-->" : "   ") << "1) timeJumps: " << mpickups[Ability::TIME_JUMP];
@@ -744,7 +745,7 @@ void DrawTimelineContents2(
     boost::sort(partitionedFrameData, [](auto const a, auto const b) { return a->frameNumber < b->frameNumber; });
     auto prevHigh{ boost::begin(partitionedFrameData) };
 
-    for (int frameNumber = 0, end = timelineLength; frameNumber != end; ++frameNumber) {
+    for (int frameNumber{0}, end{gsl::narrow<int>(timelineLength)}; frameNumber != end; ++frameNumber) {
         //hg::Frame const *const frame(timeEngine.getFrame(getArbitraryFrame(universe, frameNumber)));
         //assert(!isNullFrame(frame));
         int const left = static_cast<int>(frameNumber*timelineContentsWidth / timelineLength);
@@ -841,7 +842,7 @@ void DrawTimeline2(
 
     unsigned int const height = 75;
     DrawTicks(target, timelineLength);
-    DrawWaves(target, waves, timelineLength, height);
+    DrawWaves(target, waves, gsl::narrow<int>(timelineLength), height);
 
     if (playerFrame.isValidFrame()) {
         sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height)));
@@ -909,9 +910,9 @@ std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const
     int const timelineLength = timeEngine.getTimelineLength();
     float timelineOffset = static_cast<float>(app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
     float timelineWidth = static_cast<float>(app.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
-    std::size_t const guyFrames = timeEngine.getGuyFrames().size();
-    int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, timelineWidth*static_cast<float>(guyFrames) / static_cast<float>(timeEngine.getTimelineLength())) : timelineWidth;
-    
+    std::size_t const guyFrames{timeEngine.getGuyFrames().size()};
+    int personalTimelineWidth{gsl::narrow_cast<int>((timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, timelineWidth*static_cast<float>(guyFrames) / static_cast<float>(timeEngine.getTimelineLength())) : timelineWidth)};
+
     int mouseGuyIndex = static_cast<int>(static_cast<float>(guyFrames)*(app.getInputState().getMousePosition().x - timelineOffset)*1. / personalTimelineWidth);
     if (mouseGuyIndex < 0)
     {
@@ -919,7 +920,7 @@ std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const
     }
     else if (mouseGuyIndex > guyFrames - 1)
     {
-        mouseGuyIndex = guyFrames - 2;
+        mouseGuyIndex = gsl::narrow<int>(guyFrames) - 2;
     }
     return static_cast<std::size_t>(mouseGuyIndex);
 }

@@ -101,7 +101,7 @@ namespace hg {
 
     sf::Color guyPositionToColor(double xFrac, double yFrac);
     sf::Color asColor(sf::Vector3<double>const &vec);
-    void drawInventory(sf::RenderTarget &app, hg::mt::std::map<hg::Ability, int> const &pickups, hg::Ability abilityCursor);
+    void drawInventory(sf::RenderTarget &app, Pickups const &pickups, hg::Ability abilityCursor);
     hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
         hg::FrameView const &view, hg::TimeDirection timeDirection);
     hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);

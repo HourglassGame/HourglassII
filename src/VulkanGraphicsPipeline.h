@@ -79,7 +79,7 @@ namespace hg {
             vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
             vertexInputInfo.vertexBindingDescriptionCount = 1;
             vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-            vertexInputInfo.vertexAttributeDescriptionCount = attributeDescriptions.size();
+            vertexInputInfo.vertexAttributeDescriptionCount = gsl::narrow<uint32_t>(attributeDescriptions.size());
             vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
             VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
@@ -149,7 +149,7 @@ namespace hg {
             dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
             dynamicState.pNext = nullptr;
             dynamicState.flags = 0;
-            dynamicState.dynamicStateCount = dynamicStates.size();
+            dynamicState.dynamicStateCount = gsl::narrow<uint32_t>(dynamicStates.size());
             dynamicState.pDynamicStates = dynamicStates.data();
 
 

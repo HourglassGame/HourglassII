@@ -746,7 +746,7 @@ namespace hg {
             submitInfo.pWaitSemaphores = waitSemaphores;
             submitInfo.pWaitDstStageMask = waitStages;
 
-            submitInfo.commandBufferCount = renderedCommandBuffers.size();
+            submitInfo.commandBufferCount = gsl::narrow<uint32_t>(renderedCommandBuffers.size());
             submitInfo.pCommandBuffers = renderedCommandBuffers.data();
 
             VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };

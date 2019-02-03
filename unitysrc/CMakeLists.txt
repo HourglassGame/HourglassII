@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.12)
 
 #set(SFML_DIR "${PROJECT_SOURCE_DIR}/ext/SFML/lib/cmake/SFML") #maybe
 
+set(CXXGSL_INCLUDE_DIRS "" CACHE FILEPATH "The location of the C++ Guidelines Support Library headers")
+
 set(SFML_STATIC_LIBRARIES TRUE)
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 
@@ -64,10 +66,11 @@ target_compile_options(HourglassII
 
 target_link_libraries(HourglassII sfml-graphics sfml-audio)
 target_link_libraries(HourglassII Boost::boost Boost::filesystem Boost::thread Boost::serialization)
-target_link_libraries(HourglassII TBB::tbb TBB::tbbmalloc TBB::tbbmalloc_proxy)
+target_link_libraries(HourglassII TBB::tbb TBB::tbbmalloc)
 target_link_libraries(HourglassII glfw)
 target_link_libraries(HourglassII Vulkan::Vulkan)
 
+target_include_directories(HourglassII PRIVATE ${CXXGSL_INCLUDE_DIRS})
 
 set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
 
@@ -116,5 +119,10 @@ add_custom_command(
     DEPENDS ${DATA_SOURCE_FILES}
 )
 #Still not copying DLLs, this needs to be done for a full hands-off build from source to be runnable
+
+#Relevant DLLs are:
+#openal.dll (use openal-soft; https://openal-soft.org/)
+#tbb.dll
+#tbbmalloc.dll
 add_custom_target(HourglassIIPackage ALL VERBATIM DEPENDS ${DATA_TARGET_FILES} ${SPIRV_BINARY_FILES})
 add_dependencies(HourglassIIPackage HourglassII)

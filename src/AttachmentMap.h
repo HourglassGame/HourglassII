@@ -6,13 +6,13 @@ namespace hg
 {
 struct Attachment final
 {
-    Attachment() :
+    explicit Attachment() :
             platformIndex(std::numeric_limits<std::size_t>::max()),
             xOffset(0),
             yOffset(0)
     {
     }
-    Attachment(std::size_t nPlatformIndex,
+    explicit Attachment(std::size_t nPlatformIndex,
                int nxOffset,
                int nyOffset) :
             platformIndex(nPlatformIndex),

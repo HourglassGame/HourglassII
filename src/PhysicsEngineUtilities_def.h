@@ -1086,7 +1086,7 @@ void guyStep(
     mp::std::vector<int> newWidth(guyArrivalList.size(), pool);
     mp::std::vector<int> newHeight(guyArrivalList.size(), pool);
     mp::std::vector<int> newJumpSpeed(guyArrivalList.size(), pool);
-    mp::std::vector<mt::std::map<Ability, int>> newPickups(guyArrivalList.size(), pool);
+    mp::std::vector<Pickups> newPickups(guyArrivalList.size(), pool);
     mp::std::vector<int> illegalPortal(guyArrivalList.size(), pool);
     mp::std::vector<int> newTimePaused(guyArrivalList.size(), pool);
     // arrivalBasis is always -1 for normalDeparture
@@ -1113,7 +1113,7 @@ void guyStep(
             newWidth[i] = guyArrivalList[i].getWidth();
             newHeight[i] = guyArrivalList[i].getHeight();
             newJumpSpeed[i] = guyArrivalList[i].getJumpSpeed();
-            newPickups[i] = mt::std::map<Ability, int>(guyArrivalList[i].getPickups());
+            newPickups[i] = guyArrivalList[i].getPickups();
             newTimePaused[i] = guyArrivalList[i].getTimePaused();
 
             TimeDirection nextTimeDirection = guyArrivalList[i].getTimeDirection();

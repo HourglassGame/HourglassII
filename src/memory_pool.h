@@ -247,6 +247,7 @@ inline void* operator new(std::size_t count, hg::memory_pool<hg::user_allocator_
 
 inline void operator delete(void *p, hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) noexcept {
     //Do Nothing
+    (void)p; (void)pool;
 }
 #else
 inline void* operator new(std::size_t count, hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) {

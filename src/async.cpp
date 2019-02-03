@@ -1,4 +1,5 @@
 #include "async.h"
+#include <gsl/gsl>
 //#include <Windows.h>
 //#include <ProcessThreadsApi.h>
 #include <boost/thread/future.hpp>
@@ -7,17 +8,17 @@
 #include <functional>
 namespace hg {
     class thread_comm_data final {
+        void become_idle() {
+            pool->push_idle_thread(this);
+        }
     public:
-        thread_comm_data(thread_pool *pool, move_function<void()> &&f) :
+        explicit thread_comm_data(thread_pool *pool, move_function<void()> &&f) :
             m(),
             cv(),
             f(std::move(f)),
             pool(pool),
             ended(false) {}
 
-        void become_idle() {
-            pool->push_idle_thread(this);
-        }
         move_function<void()> get_next() {
             std::unique_lock<std::mutex> l(m);
             if (!(f || ended)) {
@@ -31,9 +32,9 @@ namespace hg {
         void set_f(move_function<void()> &&new_f) {
             {
                 std::lock_guard<std::mutex> lock(m);
-                assert(!f);
-                assert(!ended);
-                assert(new_f);
+                Expects(!f);
+                Expects(!ended);
+                Expects(new_f);
                 f = std::move(new_f);
             }
             cv.notify_one();
@@ -41,7 +42,7 @@ namespace hg {
         void end() {
             {
                 std::lock_guard<std::mutex> lock(m);
-                assert(!ended);
+                Expects(!ended);
                 ended = true;
             }
             cv.notify_one();
@@ -56,15 +57,14 @@ namespace hg {
 
     class pool_elem final {
     public:
-        pool_elem(thread_pool *pool, move_function<void()> &&f) :
+        explicit pool_elem(thread_pool * const pool, move_function<void()> &&f) :
             chan(pool, std::move(f)),
             thread([this] {
-                while (auto const f = chan.get_next()) {
+                while (auto const f{chan.get_next()}) {
                     f();
                 }
             })
         {
-        
         }
         pool_elem(pool_elem *&) = delete;
         pool_elem& operator=(pool_elem &&) = delete;
@@ -75,7 +75,7 @@ namespace hg {
     };
 
     void thread_pool::pop_or_new(move_function<void()> &&f) {
-        assert(f);
+        Expects(f);
         //TODO: Add separate lock for pool and idle_threads?
         std::lock_guard<std::mutex> lock(m);
         if (!idle_threads.empty()) {
@@ -88,7 +88,7 @@ namespace hg {
             //SetThreadDescription(pool.back().thread.native_handle(), L"hg::async pool thread");
         }
     }
-    void thread_pool::push_idle_thread(thread_comm_data *thread) {
+    void thread_pool::push_idle_thread(thread_comm_data * const thread) {
         std::lock_guard<std::mutex> lock(m);
         idle_threads.push_back(thread);
     }

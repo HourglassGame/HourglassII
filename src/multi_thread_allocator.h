@@ -11,8 +11,6 @@
 #include <tbb/scalable_allocator.h>
 #include "scalable_allocator.h"
 
-#include "forward.h"
-
 #include <boost/config.hpp>
 
 #include <new>

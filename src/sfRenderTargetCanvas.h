@@ -25,6 +25,7 @@ public:
     resources(&resources)
     {}
     virtual void playSound(std::string const &key, int const n) override {
+        (void)key; (void)n;
     }
     virtual void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
     {
@@ -97,15 +98,19 @@ public:
     }
     virtual void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
     {
+        (void)x; (void)y; (void)width; (void)height; (void)colour;
     }
     virtual void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
     {
+        (void)xa; (void)ya; (void)xb; (void)yb; (void)width; (void)colour;
     }
     virtual void drawText(std::string const &text, float const x, float const y, float const size, unsigned const colour) override
     {
+        (void)text; (void)x; (void)y; (void)size; (void)colour;
     }
     virtual void drawImage(std::string const &key, float const x, float const y, float const width, float const height) override
     {
+        (void)key; (void)x; (void)y; (void)width; (void)height;
     }
     virtual void flushFrame() override {
         audioPlayingState->runStep(audioGlitzManager->updatePlayingState(soundsToPlay));

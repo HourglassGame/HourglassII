@@ -22,43 +22,43 @@
 
 namespace hg {
 struct RunGameResultVisitor {
-    typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>result_type;
+    typedef std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
     template<typename Tag>
-    variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(Tag t) const {
+    std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(Tag t) const {
         return std::move(t);
     }
 };
-static variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
     loadAndRunLevel(
         hg::RenderWindow &window,
         VulkanEngine &eng,
         LoadLevelFunction const &levelLoadingFunction,
         hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
 {
-    hg::variant<hg::LoadedLevel, LoadingCanceled_tag>
+    std::variant<hg::LoadedLevel, LoadingCanceled_tag>
               loading_outcome = load_level_scene(window, levelLoadingFunction);
     
     struct {
         hg::RenderWindow &window;
         VulkanEngine &eng;
         hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
-        typedef variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
+        typedef std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
 
-        variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+        std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
         operator()(LoadedLevel &level) const
         {
             if (replayLoadingFunction) {
-                return run_game_scene(window, eng, std::move(level), replayLoadingFunction()).visit(RunGameResultVisitor{});
+                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, std::move(level), replayLoadingFunction()));
             }
             else {
-                return run_game_scene(window, eng, std::move(level)).visit(RunGameResultVisitor{});
+                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, std::move(level)));
             }
         }
-        variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
+        std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
             return GameAborted_tag{};
         }
     } visitor = {window, eng, replayLoadingFunction};
-    return loading_outcome.visit(visitor);
+    return std::visit(visitor, loading_outcome);
 }
 void error_callback_glfw(int error, const char* description)
 {
@@ -85,10 +85,12 @@ int run_hourglassii() {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         GLFWWindow const windowglfw(hg::WINDOW_DEFAULT_X, /*10*/hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
         glfwDefaultWindowHints();
+        std::vector<unsigned char> icon;
+        boost::push_back(icon, boost::make_iterator_range_n(window_icon_image.getPixelsPtr(), window_icon_image.getSize().x * window_icon_image.getSize().y * 4));
         GLFWimage window_icon_image_glfw{
-                window_icon_image.getSize().x,
-                window_icon_image.getSize().y,
-                const_cast<unsigned char *>(reinterpret_cast<unsigned char const*>(window_icon_image.getPixelsPtr()))
+                gsl::narrow<int>(window_icon_image.getSize().x),
+                gsl::narrow<int>(window_icon_image.getSize().y),
+                icon.data()
         };
         glfwSetWindowIcon(windowglfw.w, 1, &window_icon_image_glfw);
         glfwShowWindow(windowglfw.w);
@@ -119,63 +121,63 @@ int run_hourglassii() {
         // so on, so forth, need full list.
 
         while (true) {
-            variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, vulkanEng);
-            if (main_menu_result.active<Exit_tag>()) {
+            std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, vulkanEng);
+            if (std::holds_alternative<Exit_tag>(main_menu_result)) {
                 return EXIT_SUCCESS;
             }
-            else if (main_menu_result.active<RunAReplay_tag>()) {
+            else if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
             }
             else {
-                assert(main_menu_result.active<RunALevel_tag>());
+                assert(std::holds_alternative<RunALevel_tag>(main_menu_result));
             }
             
-            variant<LoadLevelFunction, SceneAborted_tag> selected_level
+            std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
                 = run_level_selection_scene(window);
             
-            if (selected_level.active<SceneAborted_tag>()) {
+            if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
                 continue;
             }
             else {
-                assert(selected_level.active<LoadLevelFunction>());
+                assert(std::holds_alternative<LoadLevelFunction>(selected_level));
             }
             move_function<std::vector<InputList>()> replayLoader;
-            if (main_menu_result.active<RunAReplay_tag>()) {
-                variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
-                    = run_replay_selection_scene(window, selected_level.get<LoadLevelFunction>().levelName);
-                if (selected_replay.active<SceneAborted_tag>()) {
+            if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
+                std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
+                    = run_replay_selection_scene(window, std::get<LoadLevelFunction>(selected_level).levelName);
+                if (std::holds_alternative<SceneAborted_tag>(selected_replay)) {
                     continue;
                 }
                 else {
-                    assert(selected_replay.active<move_function<std::vector<InputList>()>>());
+                    assert(std::holds_alternative<move_function<std::vector<InputList>()>>(selected_replay));
                 }
                 //TODO: Make failure to use std::move here be a compile time error, rather than
                 //      a stack-overflow.
                 //      (requires enhancement to move_function)
-                replayLoader = std::move(selected_replay.get<move_function<std::vector<InputList>()>>());
+                replayLoader = std::move(std::get<move_function<std::vector<InputList>()>>(selected_replay));
             }
             
-            variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+            std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
                 game_scene_result = ReloadLevel_tag{};
-            while (game_scene_result.active<ReloadLevel_tag>()
-                || game_scene_result.active<move_function<std::vector<InputList>()>>())
+            while (std::holds_alternative<ReloadLevel_tag>(game_scene_result)
+                || std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result))
             {
                 try {
-                    auto& levelLoadFunction = selected_level.get<LoadLevelFunction>();
-                    if (game_scene_result.active<move_function<std::vector<InputList>()>>())
+                    auto& levelLoadFunction = std::get<LoadLevelFunction>(selected_level);
+                    if (std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result))
                     {
                         game_scene_result = loadAndRunLevel(
                             window,
                             vulkanEng,
                             levelLoadFunction,
-                            std::move(game_scene_result.get<move_function<std::vector<InputList>()>>()));
+                            std::move(std::get<move_function<std::vector<InputList>()>>(game_scene_result)));
                     }
                     else {
                         game_scene_result = loadAndRunLevel(window, vulkanEng, levelLoadFunction, std::move(replayLoader));
                     }
-                    assert( game_scene_result.active<GameAborted_tag>()
-                         || game_scene_result.active<GameWon_tag>()
-                         || game_scene_result.active<ReloadLevel_tag>()
-                         || game_scene_result.active<move_function<std::vector<InputList>()>>());
+                    assert( std::holds_alternative<GameAborted_tag>(game_scene_result)
+                         || std::holds_alternative<GameWon_tag>(game_scene_result)
+                         || std::holds_alternative<ReloadLevel_tag>(game_scene_result)
+                         || std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result));
                 }
                 catch (hg::LuaError const &e) {
                     std::cerr << "There was an error in some lua, the error message was:\n" << boost::diagnostic_information(e) << std::endl;

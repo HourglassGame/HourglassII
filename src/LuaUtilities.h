@@ -13,7 +13,7 @@
 #include "TriggerOffsetsAndDefaults.h"
 #include "TriggerSystem.h"
 #include "DirectLuaTriggerSystem.h"
-#include "unique_ptr.h"
+#include <memory>
 #include "OperationInterrupter.h"
 #include <boost/filesystem/path.hpp>
 
@@ -63,7 +63,7 @@ std::optional<T> readFieldOptional(lua_State *L, char const *fieldName, int inde
 }
 //TODO: change arg order, make index have default value?
 template<typename T>
-T readFieldWithDefault(lua_State *L, char const *fieldName, int index, T defaultValue)
+T readFieldWithDefault(lua_State * const L, char const * const fieldName, int  const index, T defaultValue)
 {
     lua_getfield(L, index, fieldName);
     T retv(toWithDefault<T>(L, -1, std::move(defaultValue)));
@@ -155,8 +155,8 @@ FacingDirection to<FacingDirection>(lua_State *L, int index);
 //For pickups
 //I should probably make a Pickup class to make this less ambiguous.
 template<>
-mt::std::map<Ability, int>
-    to<mt::std::map<Ability, int>>(lua_State *L, int index);
+Pickups
+    to<Pickups>(lua_State *L, int index);
 
 template<>
 Guy to<Guy>(lua_State *L, int index);
@@ -165,7 +165,7 @@ template<>
 InitialGuy to<InitialGuy>(lua_State *L, int index);
 
 template<>
-unique_ptr<DirectLuaTriggerSystem> to<unique_ptr<DirectLuaTriggerSystem>>(lua_State *L, int index);
+std::unique_ptr<DirectLuaTriggerSystem> to<std::unique_ptr<DirectLuaTriggerSystem>>(lua_State *L, int index);
 
 template<>
 TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index);

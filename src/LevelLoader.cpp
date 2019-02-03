@@ -60,11 +60,11 @@ static TriggerSystem loadSimpleConfiguredTriggerSystem(lua_State *L, path const 
                 loadFileIntoVector(translateToActualPath(packageName, levelPath, path{"SimpleConfiguredProxyLuaGlobals"})));
         }));
 
-    return hg::make_unique<SimpleConfiguredTriggerSystem>(
+    return TriggerSystem{std::make_unique<SimpleConfiguredTriggerSystem>(
           std::vector<char>(system.begin(), system.end()),
           luaFiles,
           std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
-          readField<int>(L, "arrivalLocationsSize"));
+        readField<int>(L, "arrivalLocationsSize"))};
 }
 
 static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelPath) {
@@ -83,11 +83,11 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelP
         }));
 
     return
-      hg::make_unique<DirectLuaTriggerSystem>(
+        TriggerSystem{std::make_unique<DirectLuaTriggerSystem>(
           std::vector<char>(system.begin(), system.end()),
           luaFiles,
           std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
-          readField<int>(L, "arrivalLocationsSize"));
+            readField<int>(L, "arrivalLocationsSize"))};
 }
 
 static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path const &levelPath) {
@@ -98,10 +98,10 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path
     }
     else if (type == "CompatibleLua") {
         #ifndef NDEBUG
-        return hg::make_unique<ComparisonTestTriggerSystem>(
+        return TriggerSystem{std::make_unique<ComparisonTestTriggerSystem>(
             loadDirectLuaTriggerSystem(L, levelPath),
             loadSimpleConfiguredTriggerSystem(L, levelPath)
-            );
+            )};
         #else
         return loadSimpleConfiguredTriggerSystem(L, levelPath);
         #endif

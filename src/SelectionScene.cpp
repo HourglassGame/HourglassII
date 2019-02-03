@@ -18,7 +18,7 @@ namespace hg {
         window.display();
     }
 
-    hg::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options)
+    std::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options)
     {
         if (options.empty()) //If no options available, just display a blank screen until the user escapes out.
         {

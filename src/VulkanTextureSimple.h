@@ -63,7 +63,7 @@ namespace hg{
                         VK_WHOLE_SIZE//size
                     }
                 };
-                if (vkFlushMappedMemoryRanges(device, memoryRanges.size(), memoryRanges.data()) != VK_SUCCESS) {
+                if (vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) != VK_SUCCESS) {
                     throw new std::exception("vkFlushMappedMemoryRanges failed");
                 }
             }

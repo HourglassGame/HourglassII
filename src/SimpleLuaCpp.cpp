@@ -35,7 +35,7 @@ LuaState::LuaState()
 {
 }
 LuaState::LuaState(new_state_t)
-    : ud(hg::make_unique<LuaUserData>()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
+    : ud(std::make_unique<LuaUserData>()), ptr(lua_newstate(multi_thread_luaalloc, ud.get()))
 {
     if (ptr) {
         lua_atpanic(ptr, &panic);

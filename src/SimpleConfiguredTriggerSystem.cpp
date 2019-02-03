@@ -274,7 +274,7 @@ namespace hg {
         }
         else {
             double const seconds = frames/static_cast<double>(hg::FRAMERATE);
-            ss << std::setprecision(std::ceil(std::log10(std::abs(seconds))));
+            ss << std::setprecision(gsl::narrow<std::streamsize>(std::ceil(std::log10(std::abs(seconds)))));
             ss << frames/static_cast<double>(hg::FRAMERATE) << "s";
         }
         //TODO: Use appropriate allocator here too!!
@@ -898,7 +898,7 @@ namespace hg {
             return toProtoPowerup(L, triggerOffsetsAndDefaults);
         }
         else {
-            assert(false);
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(R"(ProtoMutators must have a type in {"pickup", "spikes", "powerup"})"));
         }
     }
 
@@ -987,7 +987,7 @@ namespace hg {
         int const width(readField<int>(L, "width"));
         int const height(readField<int>(L, "height"));
         int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
-        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, C_index_to_lua_index(triggerID))));
+        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
 
         assert(triggerID < triggerOffsetsAndDefaults.size());
         assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
@@ -1036,7 +1036,7 @@ namespace hg {
         int const width(readField<int>(L, "width"));
         int const height(readField<int>(L, "height"));
         int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
-        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, C_index_to_lua_index(triggerID))));
+        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
 
         assert(triggerID < triggerOffsetsAndDefaults.size());
         assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
@@ -1100,7 +1100,7 @@ namespace hg {
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection"));
 
         int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
-        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, C_index_to_lua_index(triggerID))));
+        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
 
         assert(triggerID < triggerOffsetsAndDefaults.size());
         assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
@@ -1224,7 +1224,7 @@ namespace hg {
         int const beamDirection(readField<int>(L, "beamDirection"));
 
         int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
-        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, C_index_to_lua_index(triggerID))));
+        int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
 
         assert(triggerID < triggerOffsetsAndDefaults.size());
         assert(stateTriggerID < triggerOffsetsAndDefaults.size());
@@ -1280,7 +1280,7 @@ namespace hg {
             return toProtoStickyLaserSwitch(L, triggerOffsetsAndDefaults);
         }
         else {
-            assert(false);
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(R"(ProtoButton must have a type in {"momentarySwitch", "stickySwitch", "toggleSwitch", "multiStickySwitch", "stickyLaserSwitch"})"));
         }
     }
 
@@ -1373,7 +1373,7 @@ namespace hg {
             return toProtoBasicTextGlitz(L);
         }
         else {
-            assert(false);
+            BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(R"(ProtoGlitz must have a type in {"wireGlitz", "basicRectangleGlitz", "basicTextGlitz"})"));
         }
     }
 
@@ -1608,10 +1608,10 @@ namespace hg {
         if (!active) return guy;
         active = false;
         justTaken = true;
-        mt::std::map<Ability, int> pickups(guy.getPickups());
+        auto pickups(guy.getPickups());
         pickups[proto->pickupType] += proto->pickupNumber;
 
-        return Guy(
+        return Guy{
             guy.getIndex(),
             guy.getX(), guy.getY(),
             guy.getXspeed(), guy.getYspeed(),
@@ -1623,7 +1623,7 @@ namespace hg {
             guy.getSupported(),
             guy.getSupportedSpeed(),
 
-            pickups,
+            std::move(pickups),
             guy.getFacing(),
 
             guy.getBoxCarrying(),
@@ -1631,7 +1631,7 @@ namespace hg {
             guy.getBoxCarryDirection(),
 
             guy.getTimeDirection(),
-            guy.getTimePaused());
+            guy.getTimePaused()};
     }
     void PickupFrameStateImpl::addMutator(
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,

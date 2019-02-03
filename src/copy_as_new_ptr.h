@@ -40,7 +40,7 @@ public:
     }
     T *get() const
     {
-        assert(ptr);
+        Expects(ptr);
         return ptr;
     }
 private:

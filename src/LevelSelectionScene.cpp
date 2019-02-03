@@ -34,8 +34,8 @@ struct CachingTimeEngineLoader
             Level(newLevel),
             interrupter);
         {
-            auto timeEngineCopy(make_unique<TimeEngine>(newTimeEngine));//TODO: Add and use 'copy constructor' that accepts interrupter
-            auto levelCopy(make_unique<Level>(newLevel));
+            auto timeEngineCopy(std::make_unique<TimeEngine>(newTimeEngine));//TODO: Add and use 'copy constructor' that accepts interrupter
+            auto levelCopy(std::make_unique<Level>(newLevel));
             previouslyLoadedTimeEngine = std::move(timeEngineCopy);
             previouslyLoadedLevel = std::move(levelCopy);
         }
@@ -48,7 +48,7 @@ private:
     std::unique_ptr<TimeEngine> mutable previouslyLoadedTimeEngine;
 };
 
-variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
+std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
     std::vector<boost::filesystem::path> levelPaths;
     for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
@@ -65,17 +65,17 @@ variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::Rende
 
     std::vector<std::string> optionStrings;
     boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
-    variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings);
+    std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings);
 
-    if (selectedOption.active<SceneAborted_tag>())
+    if (std::holds_alternative<SceneAborted_tag>(selectedOption))
     {
         return SceneAborted_tag{};
     }
     else
     {
-        assert(selectedOption.active<std::size_t>());
+        assert(std::holds_alternative<std::size_t>(selectedOption));
     }
-    boost::filesystem::path selectedPath{ levelPaths[selectedOption.get<std::size_t>()] };
+    boost::filesystem::path selectedPath{ levelPaths[std::get<std::size_t>(selectedOption)] };
     {
         auto levelPathString = selectedPath.string();
         return LoadLevelFunction{

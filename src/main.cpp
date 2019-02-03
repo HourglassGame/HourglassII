@@ -208,7 +208,7 @@ void initialiseStdIO()
     std::ios::sync_with_stdio(false);
 }
 
-int run_main(std::vector<std::string> const &args) {
+int run_main(std::vector<std::string> const &) {
     //Insert argument handling here... (also possible to load from config file)
     //Arguments controlling initial state
     //  (to save developers time navigating menus and unlocking specific amounts of progress)

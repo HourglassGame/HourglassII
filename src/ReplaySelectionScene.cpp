@@ -11,7 +11,7 @@
 
 
 namespace hg {
-    variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(
+    std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(
         hg::RenderWindow &window, std::string const &levelName)
     {
         boost::filesystem::path win_replay = boost::filesystem::path("levels") / levelName / "win.replay";
@@ -45,17 +45,17 @@ namespace hg {
         }
         std::vector<std::string> optionStrings;
         boost::push_back(optionStrings, optionList | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
-        variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings);
+        std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings);
 
-        if (selectedOption.active<SceneAborted_tag>())
+        if (std::holds_alternative<SceneAborted_tag>(selectedOption))
         {
             return SceneAborted_tag{};
         }
         else
         {
-            assert(selectedOption.active<std::size_t>());
+            assert(std::holds_alternative<std::size_t>(selectedOption));
         }
-        boost::filesystem::path selectedPath{ optionList[selectedOption.get<std::size_t>()] };
+        boost::filesystem::path selectedPath{ optionList[std::holds_alternative<std::size_t>(selectedOption)] };
         //return load function for selected replay.
         return move_function<std::vector<InputList>()>{[selectedPath] { return loadReplay(selectedPath.string()); }};
     }

@@ -10,14 +10,14 @@ public:
     explicit GuyOutputInfo(
         std::size_t index,
         TimeDirection timeDirection,
-        mt::std::map<Ability, int> const &pickups,
+        Pickups pickups,
         bool boxCarrying,
         TimeDirection boxCarryDirection,
         int x,
         int y)
     : index(index),
       timeDirection(timeDirection),
-      pickups(pickups),
+      pickups(std::move(pickups)),
       boxCarrying(boxCarrying),
       boxCarryDirection(boxCarryDirection),
       x(x),
@@ -25,7 +25,7 @@ public:
     {}
     std::size_t getIndex() const { return index; }
     TimeDirection getTimeDirection() const { return timeDirection; }
-    mt::std::map<Ability, int> const &getPickups() const { return pickups; }
+    Pickups const &getPickups() const { return pickups; }
     bool getBoxCarrying() const { return boxCarrying; }
     TimeDirection getBoxCarryDirection() const { return boxCarryDirection; }
     int getX() const { return x; }
@@ -33,7 +33,7 @@ public:
 private:
     std::size_t index;
     TimeDirection timeDirection;
-    mt::std::map<Ability, int> pickups;
+    Pickups pickups;
     bool boxCarrying;
     TimeDirection boxCarryDirection;
     int x;

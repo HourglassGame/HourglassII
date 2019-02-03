@@ -1,3 +1,4 @@
+#if 0
 #ifndef HG_VULKAN_CANVAS_H
 #define HG_VULKAN_CANVAS_H
 #include "ResourceManager.h"
@@ -137,3 +138,4 @@ namespace hg {
     };
 }
 #endif //HG_VULKAN_CANVAS_H
+#endif

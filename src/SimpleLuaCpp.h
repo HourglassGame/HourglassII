@@ -2,7 +2,7 @@
 #define HG_SIMPLE_LUA_CPP_H
 #include "lua/lua.h"
 #include <boost/swap.hpp>
-#include "unique_ptr.h"
+#include <memory>
 #include "LuaError.h"
 #include "LuaUserData.h"
 #include "OperationInterruptedException.h"

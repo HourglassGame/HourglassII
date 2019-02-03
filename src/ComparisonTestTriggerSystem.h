@@ -4,6 +4,7 @@
 #include "DirectLuaTriggerSystem.h"
 #include "SimpleConfiguredTriggerSystem.h"
 #include "TriggerSystem.h"
+#include <gsl/gsl>
 
 namespace hg {
 class OperationInterrupter;
@@ -31,23 +32,23 @@ class ComparisonTestTriggerFrameState final :
         auto physicsAffectingStuffB = simpleConfiguredFrameState.calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
 
         if (physicsAffectingStuffA.additionalBoxes != physicsAffectingStuffB.additionalBoxes) {
-            assert(false && "physicsAffectingStuffA.additionalBoxes != physicsAffectingStuffB.additionalBoxes");
+            Expects(false && "physicsAffectingStuffA.additionalBoxes != physicsAffectingStuffB.additionalBoxes");
             throw std::exception("calculatePhysicsAffectingStuff.additionalBoxes mismatch");
         }
         if (physicsAffectingStuffA.portals != physicsAffectingStuffB.portals) {
-            assert(false && "physicsAffectingStuffA.portals != physicsAffectingStuffB.portals");
+            Expects(false && "physicsAffectingStuffA.portals != physicsAffectingStuffB.portals");
             throw std::exception("calculatePhysicsAffectingStuff.portals mismatch");
         }
         if (physicsAffectingStuffA.collisions != physicsAffectingStuffB.collisions) {
-            assert(false && "physicsAffectingStuffA.collisions != physicsAffectingStuffB.collisions");
+            Expects(false && "physicsAffectingStuffA.collisions != physicsAffectingStuffB.collisions");
             throw std::exception("calculatePhysicsAffectingStuff.collisions mismatch");
         }
         if (physicsAffectingStuffA.mutators != physicsAffectingStuffB.mutators) {
-            assert(false && "physicsAffectingStuffA.mutators != physicsAffectingStuffB.mutators");
+            Expects(false && "physicsAffectingStuffA.mutators != physicsAffectingStuffB.mutators");
             throw std::exception("calculatePhysicsAffectingStuff.mutators mismatch");
         }
         if (physicsAffectingStuffA.arrivalLocations != physicsAffectingStuffB.arrivalLocations) {
-            assert(false && "physicsAffectingStuffA.arrivalLocations != physicsAffectingStuffB.arrivalLocations");
+            Expects(false && "physicsAffectingStuffA.arrivalLocations != physicsAffectingStuffB.arrivalLocations");
             throw std::exception("calculatePhysicsAffectingStuff.arrivalLocations mismatch");
         }
 

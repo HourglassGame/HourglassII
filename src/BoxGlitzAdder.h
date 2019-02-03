@@ -12,11 +12,11 @@
 namespace hg {
 class BoxGlitzAdder final {
 public:
-    BoxGlitzAdder(
+    explicit BoxGlitzAdder(
         mt::std::vector<Glitz> &forwardsGlitz,
         mt::std::vector<Glitz> &reverseGlitz,
         mp::std::vector<GlitzPersister> &persistentGlitz) :
-    forwardsGlitz(&forwardsGlitz), 
+    forwardsGlitz(&forwardsGlitz),
     reverseGlitz(&reverseGlitz),
     persistentGlitz(&persistentGlitz)
     {}
