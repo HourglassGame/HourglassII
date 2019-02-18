@@ -55,7 +55,7 @@ namespace hg {
         {
             assert(std::holds_alternative<std::size_t>(selectedOption));
         }
-        boost::filesystem::path selectedPath{ optionList[std::holds_alternative<std::size_t>(selectedOption)] };
+        boost::filesystem::path selectedPath{ optionList[std::get<std::size_t>(selectedOption)] };
         //return load function for selected replay.
         return move_function<std::vector<InputList>()>{[selectedPath] { return loadReplay(selectedPath.string()); }};
     }
