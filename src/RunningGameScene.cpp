@@ -213,7 +213,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
 
     std::vector<InputList> receivedInputs;
 
-    auto frameStartTime = std::chrono::steady_clock().now();
+    auto frameStartTime{std::chrono::steady_clock::now()};
     TimeEngine const initialTimeEngine(loadedLevel.timeEngine);
 
     auto audioPlayingState = AudioPlayingState(loadedLevel.resources.sounds);
@@ -411,10 +411,19 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
                     if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
                         window.setFramerateLimit(0);
                         window.setVerticalSyncEnabled(false);
+                        frameStartTime = std::chrono::steady_clock::now();
                     }
                     else {
                         window.setFramerateLimit(hg::FRAMERATE);
                         window.setVerticalSyncEnabled(true);
+
+                        while (true) {
+                            auto const t{std::chrono::steady_clock::now()};
+                            if (t >= frameStartTime+std::chrono::duration<double>(1./FRAMERATE)) {
+                                frameStartTime = t;
+                                break;
+                            }
+                        }
                     }
                     window.display();
                     state = RunState::AWAITING_INPUT;
