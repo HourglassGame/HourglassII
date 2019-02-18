@@ -71,12 +71,12 @@ namespace hg {
         VulkanUpdatableTextureSimple(
             VkPhysicalDevice const physicalDevice,
             VkDevice const device,
-            std::size_t const width,
-            std::size_t const height,
+            std::size_t const width_,
+            std::size_t const height_,
             VkDescriptorPool const descriptorPool,
             VkDescriptorSetLayout const textureDescriptorSetLayout
             )
-            : width(width), height(height), device(device), stagingMemory(device), stagingBuffer(device), transferSrcMappedRegion(device, stagingMemory.memory), imageMemory(device), image(device), imageView(device), sampler(device)
+            : width(std::max<std::size_t>(width_,1)), height(std::max<std::size_t>(height_,1)), device(device), stagingMemory(device), stagingBuffer(device), transferSrcMappedRegion(device, stagingMemory.memory), imageMemory(device), image(device), imageView(device), sampler(device)
         {
             std::size_t imageSizeBytes{ width*height * 4 };
             //Allocate Staging Buffer/Memory; Host Visible
@@ -1695,6 +1695,12 @@ namespace hg {
                 double const LWidth = wall.roomWidth() / 100.;
                 double const LHeight = wall.roomHeight() / 100.;
 
+                if (VWidth == 0 || VHeight == 0 || LWidth == 0 || LHeight == 0) {
+                    //If the target area has zero size, there is no point drawing anything.
+                    //If the source area has zero size, the scaling onto the target isn't well defined.
+                    return;
+                }
+
                 //World View:
                 //The view of the level should:
                 // Have the same aspect ratio as the ViewPort
@@ -1890,6 +1896,7 @@ namespace hg {
             static constexpr int boxLineHeight = 1;
             static constexpr int guyLineHeightStandard = 4;
             auto const timelineContentsWidth{ std::round(width) };
+            if (timelineContentsWidth == 0) return;
             sf::Image timelineContents;
             timelineContents.create(static_cast<int>(timelineContentsWidth), height, sf::Color(0, 0, 0, 0));
             //TODO: This can become very slow on HiDPI displays (because the texture width is based on the window width in pixels)(?)
@@ -1999,6 +2006,8 @@ namespace hg {
             //It also looks bad; due to alisaing artefacts.
             //Come up with a better algorithm.
             auto const waveDisplayWidth{ std::round(width) };
+            if (waveDisplayWidth == 0) return;
+
             std::vector<char> pixelsWhichHaveBeenDrawnIn(static_cast<std::size_t>(waveDisplayWidth));
 
             std::vector<Vertex> vertices;
