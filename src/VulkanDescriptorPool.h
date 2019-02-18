@@ -13,8 +13,11 @@ namespace hg {
             VkDescriptorPoolCreateInfo const &createInfo
         ) : device(device)
         {
-            if (vkCreateDescriptorPool(device, &createInfo, nullptr, &descriptorPool) != VK_SUCCESS) {
-                throw std::exception("vkCreateDescriptorPool failed!");
+            {
+                auto const res{vkCreateDescriptorPool(device, &createInfo, nullptr, &descriptorPool)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "vkCreateDescriptorPool failed!"));
+                }
             }
         }
         VulkanDescriptorPool(VulkanDescriptorPool const&) = delete;

@@ -13,8 +13,9 @@ namespace hg {
             VkBufferCreateInfo const &bufferInfo
         ) : device(device)
         {
-            if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
-                throw std::exception("failed to create vertex buffer!");
+            auto const res{vkCreateBuffer(device, &bufferInfo, nullptr, &buffer)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create vertex buffer!"));
             }
         }
         VulkanBuffer(VulkanBuffer const&) = delete;

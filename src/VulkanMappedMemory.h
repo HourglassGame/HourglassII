@@ -19,8 +19,11 @@ namespace hg {
             VkMemoryMapFlags const flags
         ) : device(device), memory(memory)
         {
-            if (vkMapMemory(device, memory, offset, size, flags, &mappedMemory) != VK_SUCCESS) {
-                throw std::exception("failed to map memory!");
+            {
+                auto const res{vkMapMemory(device, memory, offset, size, flags, &mappedMemory)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to map memory!"));
+                }
             }
         }
         VulkanMappedMemory(VulkanMappedMemory const&) = delete;

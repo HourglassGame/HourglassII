@@ -57,8 +57,11 @@ namespace hg {
             renderPassInfo.dependencyCount = dependencies.size();
             renderPassInfo.pDependencies = dependencies.data();
             */
-            if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-                throw std::exception("failed to create render pass!");
+            {
+                auto const res{ vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) };
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create render pass!"));
+                }
             }
         }
         VulkanRenderPass(VulkanRenderPass const&) = delete;

@@ -15,8 +15,11 @@ namespace hg {
             VkSamplerCreateInfo const &createInfo
         ) : device(device)
         {
-            if (vkCreateSampler(device, &createInfo, nullptr, &sampler) != VK_SUCCESS) {
-                throw std::exception("failed to create image view!");
+            {
+                auto const res{vkCreateSampler(device, &createInfo, nullptr, &sampler)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create image view!"));
+                }
             }
         }
         VulkanSampler(VulkanSampler const&) = delete;

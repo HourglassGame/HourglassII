@@ -137,9 +137,11 @@ namespace hg {
 
 
             imageMemory = VulkanMemory(device, imageMemoryAllocInfo);
-
-            if (vkBindImageMemory(device, image.image, imageMemory.memory, 0) != VK_SUCCESS) {
-                throw std::exception("vkBindImageMemory failed");
+            {
+                auto const res{vkBindImageMemory(device, image.image, imageMemory.memory, 0)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "vkBindImageMemory failed"));
+                }
             }
 
             //Make ImageView
@@ -187,8 +189,11 @@ namespace hg {
                     VK_WHOLE_SIZE//size
                 }
             };
-            if (vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) != VK_SUCCESS) {
-                throw new std::exception("vkFlushMappedMemoryRanges failed");
+            {
+                auto const res{vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data())};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "vkFlushMappedMemoryRanges failed"));
+                }
             }
             //vkCmdPipelineBarrier to transition to VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
             {
@@ -908,8 +913,11 @@ namespace hg {
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
         allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
 
-        if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
-            throw std::exception("failed to allocate command buffers!");
+        {
+            auto const res{vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data())};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "failed to allocate command buffers!"));
+            }
         }
 
         return commandBuffers;
@@ -1137,8 +1145,11 @@ namespace hg {
             this->swapChainExtent = swapChainExtent;
             renderTargets.clear();
             timelineTextures.clear();
-            if (vkResetDescriptorPool(device, timelineTextureDescriptorPool.descriptorPool, 0) != VK_SUCCESS) {
-                throw std::exception("timelineTextureDescriptorPool vkResetDescriptorPool failed");
+            {
+                auto const res{vkResetDescriptorPool(device, timelineTextureDescriptorPool.descriptorPool, 0)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "timelineTextureDescriptorPool vkResetDescriptorPool failed"));
+                }
             }
             graphicsPipeline = VulkanGraphicsPipeline(device);
             //pipelineLayout = VulkanPipelineLayout(device);
@@ -1157,11 +1168,17 @@ namespace hg {
             auto const &drawCommandBuffer{ drawCommandBuffers[currentFrame] };
             //auto const samplerDescriptorPool{samplerDescriptorPools[currentFrame].descriptorPool};
             {
-                if (vkResetCommandBuffer(preDrawCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS) {
-                    throw std::exception("Couldn't reset pre-draw command buffer!");
+                {
+                    auto const res{vkResetCommandBuffer(preDrawCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset pre-draw command buffer!"));
+                    }
                 }
-                if (vkResetCommandBuffer(drawCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS) {
-                    throw std::exception("Couldn't reset draw command buffer!");
+                {
+                    auto const res{vkResetCommandBuffer(drawCommandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset draw command buffer!"));
+                    }
                 }
                 /*
                 if (vkResetDescriptorPool(device, samplerDescriptorPool, 0) != VK_SUCCESS) {
@@ -1173,14 +1190,19 @@ namespace hg {
                 beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                 beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
 
-                if (vkBeginCommandBuffer(preDrawCommandBuffer, &beginInfo) != VK_SUCCESS) {
-                    throw std::exception("failed to begin recording command buffer!");
+                {
+                    auto const res{vkBeginCommandBuffer(preDrawCommandBuffer, &beginInfo)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to begin recording preDraw command buffer!"));
+                    }
                 }
-                if (vkBeginCommandBuffer(drawCommandBuffer, &beginInfo) != VK_SUCCESS) {
-                    throw std::exception("failed to begin recording command buffer!");
+                {
+                    auto const res{vkBeginCommandBuffer(drawCommandBuffer, &beginInfo)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to begin recording draw command buffer!"));
+                    }
                 }
 
-                
                 /*
                 VkBuffer vertexBufferArr[] = { vertexBuffers[currentFrame].buffer };
                 VkDeviceSize offsets[] = { 0 };
@@ -1189,12 +1211,17 @@ namespace hg {
                 vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
                 */
                 doRender(preDrawCommandBuffer, drawCommandBuffer, renderTargets[currentFrame], targetFrameBuffer, timelineTextures[currentFrame]/*, samplerDescriptorPool*/);
-
-                if (vkEndCommandBuffer(drawCommandBuffer) != VK_SUCCESS) {
-                    throw std::exception("failed to record command buffer!");
+                {
+                    auto const res{vkEndCommandBuffer(drawCommandBuffer)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to record draw command buffer!"));
+                    }
                 }
-                if (vkEndCommandBuffer(preDrawCommandBuffer) != VK_SUCCESS) {
-                    throw std::exception("failed to record command buffer!");
+                {
+                    auto const res{vkEndCommandBuffer(preDrawCommandBuffer)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to record preDraw command buffer!"));
+                    }
                 }
             }
             return { preDrawCommandBuffer, drawCommandBuffer};

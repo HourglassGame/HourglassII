@@ -11,8 +11,11 @@ namespace hg {
             VkInstanceCreateInfo const& createInfo
         )
         {
-            if(vkCreateInstance(&createInfo, nullptr, &i) != VK_SUCCESS) {
-                throw std::exception("Couldn't create Vulkan instance");
+            {
+                auto const res{vkCreateInstance(&createInfo, nullptr, &i)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't create Vulkan instance"));
+                }
             }
         }
         VulkanInstance(VulkanInstance const&) = delete;

@@ -29,6 +29,7 @@
 #include <vector>
 #include <optional>
 #include "GlobalConst.h"
+#include "VulkanExceptions.h"
 namespace hg {
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
@@ -38,14 +39,14 @@ namespace hg {
         {
             auto const res{ vkEnumerateInstanceLayerProperties(&layerCount, nullptr) };
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Failed to read vulkan layer count", res);
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Failed to read vulkan layer count"));
             }
         }
         std::vector<VkLayerProperties> availableLayers(layerCount);
         {
             auto const res{ vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data()) };
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Failed to read vulkan layers", res);
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Failed to read vulkan layers"));
             }
         }
         availableLayers.resize(layerCount);
@@ -65,12 +66,12 @@ namespace hg {
 
     std::vector<const char*> getRequiredExtensions() {
         if (!glfwVulkanSupported()) {
-            throw std::exception("Vulkan support insufficient to run in GLFW");
+            BOOST_THROW_EXCEPTION(std::exception("Vulkan support insufficient to run in GLFW"));
         }
         uint32_t glfwExtensionCount = 0;
         const char ** const glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
         if (!glfwExtensions) {
-            throw std::exception("Couldn't load GLFW vulkan extension list (glfwGetRequiredInstanceExtensions)");
+            BOOST_THROW_EXCEPTION(std::exception("Couldn't load GLFW vulkan extension list (glfwGetRequiredInstanceExtensions)"));
         }
         std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
@@ -83,7 +84,7 @@ namespace hg {
 
     inline VkInstanceCreateInfo makeInstanceCreateInfo(VkApplicationInfo const * const pApplicationInfo, std::vector<char const *> const &extensions) {
         if (enableValidationLayers && !checkValidationLayerSupport()) {
-            throw std::exception("validation layer(s) requested by not supported");
+            BOOST_THROW_EXCEPTION(std::exception("validation layer(s) requested by not supported"));
         }
 
         VkInstanceCreateInfo info{};
@@ -102,7 +103,7 @@ namespace hg {
         }
 
         if (!glfwVulkanSupported()) {
-            throw std::exception("Vulkan support insufficient to run in GLFW");
+            BOOST_THROW_EXCEPTION(std::exception("Vulkan support insufficient to run in GLFW"));
         }
 
         info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
@@ -114,7 +115,7 @@ namespace hg {
         {
             auto const res{vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr)};
             if (!(res== VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Couldn't count Device Extensions vkEnumerateDeviceExtensionProperties");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't count Device Extensions vkEnumerateDeviceExtensionProperties"));
             }
         }
         
@@ -122,7 +123,7 @@ namespace hg {
         {
             auto const res{vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data())};
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read Device Extensions vkEnumerateDeviceExtensionProperties");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read Device Extensions vkEnumerateDeviceExtensionProperties"));
             }
             availableExtensions.resize(extensionCount);
         }
@@ -438,24 +439,24 @@ namespace hg {
         {
             auto const res{vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr)};
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Failed to read physical device count", res);
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Failed to read physical device count"));
             }
         }
         if (deviceCount == 0) {
-            throw std::exception("failed to find GPUs with Vulkan support!");
+            BOOST_THROW_EXCEPTION(std::exception("failed to find GPUs with Vulkan support!"));
         }
 
         std::vector<VkPhysicalDevice> devices(deviceCount);
         {
             auto const res{vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data())};
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("failed to read physical devices", res);
+                BOOST_THROW_EXCEPTION(std::system_error(res, "failed to read physical devices"));
             }
         }
         devices.resize(deviceCount);
         auto const suitableDeviceIt{boost::find_if(devices, [&surface](VkPhysicalDevice device) {return isDeviceSuitable(device, surface);})};
         if (suitableDeviceIt == std::end(devices)) {
-            throw std::exception("failed to find a suitable GPU!");
+            BOOST_THROW_EXCEPTION(std::exception("failed to find a suitable GPU!"));
         }
         return *suitableDeviceIt;
     }
@@ -468,14 +469,14 @@ namespace hg {
         {
             auto const res{ vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr) };
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read swapchain image count");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read swapchain image count"));
             }
         }
         swapChainImages.resize(imageCount);
         {
             auto const res{ vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data()) };
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read swapchain images");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read swapchain images"));
             }
         }
         swapChainImages.resize(imageCount);
@@ -717,11 +718,12 @@ namespace hg {
             if (width == 0 || height == 0) {
                 return;
             }
-            if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
-                throw std::exception("Couldn't wait for fence");
+            {
+                auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max())};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't wait for fence"));
+                }
             }
-            
-
             uint32_t imageIndex;
 
             while (true) {
@@ -731,7 +733,7 @@ namespace hg {
                     continue;
                 }
                 else if (!(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)) {
-                    throw std::exception("Couldn't Acquire next Image");
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't Acquire next Image"));
                 }
                 break;
             }
@@ -753,12 +755,17 @@ namespace hg {
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = signalSemaphores;
 
-            if (vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence) != VK_SUCCESS) {
-                throw std::exception("Couldn't reset fence");
+            {
+                auto const res{vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset fence"));
+                }
             }
-            
-            if (vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence) != VK_SUCCESS) {
-                throw std::exception("failed to submit draw command buffer!");
+            {
+                auto const res{vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to submit draw command buffer!"));
+                }
             }
 
             VkPresentInfoKHR presentInfo = {};
@@ -779,7 +786,7 @@ namespace hg {
                     recreateSwapChain(renderer);
                 }
                 else if (!(res == VK_SUCCESS || res == VK_SUBOPTIMAL_KHR)) {
-                    throw std::exception("Couldn't present queue");
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't present queue"));
                 }
             }
 

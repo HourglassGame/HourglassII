@@ -13,8 +13,9 @@ namespace hg {
             VkImageCreateInfo const &imageInfo
         ) : device(device)
         {
-            if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS) {
-                throw std::exception("vkCreateImage failed");
+            auto const res{vkCreateImage(device, &imageInfo, nullptr, &image)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "vkCreateImage failed"));
             }
         }
         VulkanImage(VulkanImage const&) = delete;

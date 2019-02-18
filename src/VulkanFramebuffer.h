@@ -25,8 +25,11 @@ namespace hg {
             framebufferInfo.height = swapChainExtent.height;
             framebufferInfo.layers = 1;
 
-            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create framebuffer!");
+            {
+                auto const res{ vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create framebuffer!"));
+                }
             }
         }
         VulkanFramebuffer(VulkanFramebuffer const&) = delete;

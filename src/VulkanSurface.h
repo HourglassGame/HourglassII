@@ -13,8 +13,9 @@ namespace hg {
         )
             : i(i)
         {
-            if (glfwCreateWindowSurface(i, window, nullptr, &surface) != VK_SUCCESS) {
-                throw std::exception("failed to create window surface!");
+            auto const res{glfwCreateWindowSurface(i, window, nullptr, &surface)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create window surface!"));
             }
         }
         VulkanSurface(VulkanSurface const&) = delete;

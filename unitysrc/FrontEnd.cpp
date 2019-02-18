@@ -44,3 +44,4 @@
 #include "../src/async_test.cpp"
 #include "../src/StackUnwind_test.cpp"
 #include "../src/multi_vector_test.cpp"
+#include "../src/VulkanExceptions.cpp"

@@ -110,9 +110,11 @@ namespace hg {
             createInfo.clipped = VK_TRUE;
 
             createInfo.oldSwapchain = oldSwapchain;
-
-            if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
-                throw std::exception("failed to create swap chain!");
+            {
+                auto const res{vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create swap chain!"));
+                }
             }
         }
         VulkanSwapChain(VulkanSwapChain const&) = delete;

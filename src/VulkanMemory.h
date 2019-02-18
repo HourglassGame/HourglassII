@@ -15,8 +15,11 @@ namespace hg {
             VkMemoryAllocateInfo const &allocInfo
         ) : device(device)
         {
-            if (vkAllocateMemory(device, &allocInfo, nullptr, &memory) != VK_SUCCESS) {
-                throw std::exception("failed to allocate vertex buffer memory!");
+            {
+                auto const res{vkAllocateMemory(device, &allocInfo, nullptr, &memory)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to allocate vertex buffer memory!"));
+                }
             }
         }
         VulkanMemory(VulkanMemory const&) = delete;

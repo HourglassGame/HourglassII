@@ -22,7 +22,7 @@ namespace hg {
             if (!enableValidationLayers) return;
 
             if (!vkCreateDebugUtilsMessengerEXT || !vkDestroyDebugUtilsMessengerEXT) {
-                throw std::exception("Couldn't load vkCreateDebugUtilsMessengerEXT or vkDestroyDebugUtilsMessengerEXT functions");
+                BOOST_THROW_EXCEPTION(std::exception("Couldn't load vkCreateDebugUtilsMessengerEXT or vkDestroyDebugUtilsMessengerEXT functions"));
             }
 
             VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
@@ -30,9 +30,11 @@ namespace hg {
             createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
             createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
             createInfo.pfnUserCallback = vulkanDebugCallback;
-
-            if (vkCreateDebugUtilsMessengerEXT(i, &createInfo, nullptr, &callback) != VK_SUCCESS) {
-                throw std::runtime_error("Couldn't enable debug callback");
+            {
+                auto const res{vkCreateDebugUtilsMessengerEXT(i, &createInfo, nullptr, &callback)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't enable debug callback"));
+                }
             }
         }
         VulkanDebugCallback(VulkanDebugCallback const&) = delete;

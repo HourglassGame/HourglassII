@@ -169,8 +169,11 @@ namespace hg {
             pipelineInfo.subpass = 0;
             pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-            if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
-                throw std::exception("failed to create graphics pipeline!");
+            {
+                auto const res{vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create graphics pipeline!"));
+                }
             }
         }
         VulkanGraphicsPipeline(VulkanGraphicsPipeline const&) = delete;

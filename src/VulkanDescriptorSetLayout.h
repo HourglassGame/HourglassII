@@ -13,8 +13,11 @@ namespace hg {
             VkDescriptorSetLayoutCreateInfo const &layoutInfo
         ) : device(device)
         {
-            if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS) {
-                throw std::exception("failed to create descriptor set layout!");
+            {
+                auto const res{vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create descriptor set layout!"));
+                }
             }
         }
         VulkanDescriptorSetLayout(VulkanDescriptorSetLayout const&) = delete;

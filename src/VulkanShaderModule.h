@@ -15,9 +15,11 @@ namespace hg {
             createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
             createInfo.codeSize = code.size()*sizeof(decltype(*code.data()));
             createInfo.pCode = code.data();
-
-            if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-                throw std::exception("failed to create shader module!");
+            {
+                auto const res{vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create shader module!"));
+                }
             }
         }
         VulkanShaderModule(VulkanShaderModule const&) = delete;

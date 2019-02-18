@@ -20,7 +20,7 @@ namespace hg{
             //Load Pixels from File
             sf::Image textureImage;
             if (!textureImage.loadFromFile(filename)) {
-                throw std::exception("Image Load From File Failed!");
+                BOOST_THROW_EXCEPTION(std::exception("Image Load From File Failed!"));
             }
             std::size_t imageSizeBytes{textureImage.getSize().x*textureImage.getSize().y * 4};
 
@@ -63,8 +63,11 @@ namespace hg{
                         VK_WHOLE_SIZE//size
                     }
                 };
-                if (vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) != VK_SUCCESS) {
-                    throw new std::exception("vkFlushMappedMemoryRanges failed");
+                {
+                    auto const res{vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) };
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "vkFlushMappedMemoryRanges failed"));
+                    }
                 }
             }
             //Create Texture Image
@@ -95,9 +98,11 @@ namespace hg{
 
 
             imageMemory = VulkanMemory(device, imageMemoryAllocInfo);
-
-            if (vkBindImageMemory(device, image.image, imageMemory.memory, 0) != VK_SUCCESS) {
-                throw std::exception("vkBindImageMemory failed");
+            {
+                auto const res{ vkBindImageMemory(device, image.image, imageMemory.memory, 0) };
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "vkBindImageMemory failed"));
+                }
             }
 
             VkCommandBufferAllocateInfo allocInfo = {};

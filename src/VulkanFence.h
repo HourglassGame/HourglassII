@@ -12,9 +12,11 @@ namespace hg {
             VkFenceCreateInfo fenceInfo = {};
             fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
             fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-            if (vkCreateFence(device, &fenceInfo, nullptr, &fence) != VK_SUCCESS) {
-                throw std::exception("failed to create fence!");
+            {
+                auto const res{vkCreateFence(device, &fenceInfo, nullptr, &fence)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create fence!"));
+                }
             }
         }
         VulkanFence(VulkanFence const&) = delete;

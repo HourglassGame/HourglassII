@@ -13,8 +13,11 @@ namespace hg {
             VkPipelineLayoutCreateInfo const &pipelineLayoutInfo
         ) : device(device)
         {
-            if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-                throw std::exception("failed to create pipeline layout!");
+            {
+                auto const res{vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create pipeline layout!"));
+                }
             }
         }
         VulkanPipelineLayout(VulkanPipelineLayout const&) = delete;

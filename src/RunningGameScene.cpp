@@ -191,8 +191,11 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
             try{
                 eng.drawFrame(renderer);
             }
-            catch(std::exception &e) {
-                std::cerr << "renderThreadError: " << e.what() << "\n" << std::flush;
+            catch(std::system_error const &e) {
+                std::cerr << "renderThreadSystemError: " << boost::diagnostic_information(e) << e.code() << " " << e.code().message() << "\n\n" << std::flush;
+            }
+            catch(std::exception const &e) {
+                std::cerr << "renderThreadError: " << boost::diagnostic_information(e) << "\n" << std::flush;
             }
             catch(...){
                 std::cerr << "unknownRenderThreadError\n" << std::flush;

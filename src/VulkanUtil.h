@@ -1,6 +1,7 @@
 #ifndef HG_VULKANUTIL_H
 #define HG_VULKANUTIL_H
 #include <vulkan/vulkan.h>
+#include "VulkanExceptions.h"
 #include <vector>
 #include <optional>
 #include "Maths.h"
@@ -20,7 +21,7 @@ namespace hg {
     inline std::vector<uint32_t> reinterpretToUint32Vector(std::vector<char> const &data) {
         static_assert(CHAR_BIT == 8);
         if (data.size() % sizeof(uint32_t) != 0) {
-            throw std::runtime_error("File size not divisible by uint32_t size");
+            BOOST_THROW_EXCEPTION(std::exception("File size not divisible by uint32_t size"));
         }
 
         std::vector<uint32_t> out(data.size() / sizeof(uint32_t));
@@ -74,15 +75,18 @@ namespace hg {
     inline SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
         SwapChainSupportDetails details;
 
-        if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities) != VK_SUCCESS) {
-            throw std::exception("Couldn't Read Surface Capabilities");
+        {
+            auto const res{vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't Read Surface Capabilities"));
+            }
         }
 
         uint32_t formatCount{};
         {
             auto const res{vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr)};
             if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read surface formats count");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read surface formats count"));
             }
         }
 
@@ -90,7 +94,7 @@ namespace hg {
         {
             auto const res{ vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data())};
             if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read surface formats");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read surface formats"));
             }
         }
         details.formats.resize(formatCount);
@@ -99,7 +103,7 @@ namespace hg {
         {
             auto const res{vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr)};
             if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read presentModes count");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read presentModes count"));
             }
         }
 
@@ -107,7 +111,7 @@ namespace hg {
         {
             auto const res{ vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data())};
             if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
-                throw std::exception("Couldn't read presentModes");
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read presentModes"));
             }
         }
         details.presentModes.resize(presentModeCount);
@@ -140,7 +144,7 @@ namespace hg {
             }
         }
 
-        throw std::exception("failed to find suitable memory type!");
+        BOOST_THROW_EXCEPTION(std::exception("failed to find suitable memory type!"));
     }
 }
 #endif // !HG_VULKANUTIL_H

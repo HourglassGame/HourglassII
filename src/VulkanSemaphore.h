@@ -11,9 +11,11 @@ namespace hg {
         {
             VkSemaphoreCreateInfo semaphoreInfo = {};
             semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-            if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &semaphore) != VK_SUCCESS) {
-                throw std::exception("failed to create semaphore!");
+            {
+                auto const res{vkCreateSemaphore(device, &semaphoreInfo, nullptr, &semaphore)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create semaphore!"));
+                }
             }
         }
         VulkanSemaphore(VulkanSemaphore const&) = delete;

@@ -15,10 +15,10 @@ namespace hg {
             QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
 
             if (!indices.graphicsFamily) {
-                throw std::exception("No graphics queue on physical device, should not have been detected as a valid device selection");
+                BOOST_THROW_EXCEPTION(std::exception("No graphics queue on physical device, should not have been detected as a valid device selection"));
             }
             if (!indices.presentFamily) {
-                throw std::exception("No present queue on physical device, should not have been detected as a valid device selection");
+                BOOST_THROW_EXCEPTION(std::exception("No present queue on physical device, should not have been detected as a valid device selection"));
             }
 
             VkDeviceQueueCreateInfo queueCreateInfo = {};
@@ -52,9 +52,11 @@ namespace hg {
 
             createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
             createInfo.ppEnabledExtensionNames = deviceExtensions.data();
-
-            if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
-                throw std::exception("failed to create logical device!");
+            {
+                auto const res{ vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) };
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create logical device!"));
+                }
             }
 
             vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);

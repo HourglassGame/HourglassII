@@ -15,8 +15,11 @@ namespace hg {
             VkImageViewCreateInfo const &createInfo
         ) : device(device)
         {
-            if (vkCreateImageView(device, &createInfo, nullptr, &imageView) != VK_SUCCESS) {
-                throw std::exception("failed to create image view!");
+            {
+                auto const res{vkCreateImageView(device, &createInfo, nullptr, &imageView)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create image view!"));
+                }
             }
         }
         VulkanImageView(VulkanImageView const&) = delete;

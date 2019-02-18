@@ -155,8 +155,11 @@ struct VulkanRenderTarget {
                 findMemoryType(physicalDevice, transferSrcMemRequirements.size, transferSrcMemRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT /*| VK_MEMORY_PROPERTY_HOST_COHERENT_BIT*/) //memoryTypeIndex
             });
 
-        if (vkBindBufferMemory(device, transferSrcVertexBuffer.buffer, transferSrcMemory.memory, 0/*memoryOffset*/) != VK_SUCCESS) {
-            throw std::exception("vkBindBufferMemory failed");
+        {
+            auto const res{vkBindBufferMemory(device, transferSrcVertexBuffer.buffer, transferSrcMemory.memory, 0/*memoryOffset*/)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "vkBindBufferMemory failed"));
+            }
         }
 
         VulkanMappedMemory transferSrcMappedRegion(
@@ -192,9 +195,11 @@ struct VulkanRenderTarget {
                 findMemoryType(physicalDevice, deviceVertexBufferMemRequirements.size, deviceVertexBufferMemRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
             }
         );
-
-        if (vkBindBufferMemory(device, deviceVertexBuffer.buffer, deviceMemory.memory, 0/*memoryOffset*/) != VK_SUCCESS) {
-            throw std::exception("vkBindBufferMemory failed");
+        {
+            auto const res{vkBindBufferMemory(device, deviceVertexBuffer.buffer, deviceMemory.memory, 0/*memoryOffset*/)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "vkBindBufferMemory failed"));
+            }
         }
 
         vertexBuffers.push_back(
@@ -241,8 +246,11 @@ struct VulkanRenderTarget {
                 findMemoryType(physicalDevice, transferSrcMemRequirements.size, transferSrcMemRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT /*| VK_MEMORY_PROPERTY_HOST_COHERENT_BIT*/) //memoryTypeIndex
             });
 
-        if (vkBindBufferMemory(device, transferSrcUniformBuffer.buffer, transferSrcMemory.memory, 0/*memoryOffset*/) != VK_SUCCESS) {
-            throw std::exception("vkBindBufferMemory failed");
+        {
+            auto const res{vkBindBufferMemory(device, transferSrcUniformBuffer.buffer, transferSrcMemory.memory, 0/*memoryOffset*/)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "vkBindBufferMemory failed"));
+            }
         }
 
         VulkanMappedMemory transferSrcMappedRegion(
@@ -278,9 +286,11 @@ struct VulkanRenderTarget {
                 findMemoryType(physicalDevice, deviceUniformBufferMemRequirements.size, deviceUniformBufferMemRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT)
             }
         );
-
-        if (vkBindBufferMemory(device, deviceUniformBuffer.buffer, deviceMemory.memory, 0/*memoryOffset*/) != VK_SUCCESS) {
-            throw std::exception("vkBindBufferMemory failed");
+        {
+            auto const res{vkBindBufferMemory(device, deviceUniformBuffer.buffer, deviceMemory.memory, 0/*memoryOffset*/)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "vkBindBufferMemory failed"));
+            }
         }
 
         VkDescriptorPoolSize poolSize = {};
@@ -343,8 +353,11 @@ struct VulkanRenderTarget {
         })
         );
 
-        if (vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data()) != VK_SUCCESS) {
-            throw new std::exception("vkFlushMappedMemoryRanges failed");
+        {
+            auto const res{vkFlushMappedMemoryRanges(device, gsl::narrow<uint32_t>(memoryRanges.size()), memoryRanges.data())};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "vkFlushMappedMemoryRanges failed"));
+            }
         }
 
         std::array memoryBarriers{
@@ -434,8 +447,11 @@ struct VulkanRenderTarget {
         allocInfo.pSetLayouts = &descriptorSetLayout;
 
         VkDescriptorSet descriptorSet;
-        if (vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
-            throw std::runtime_error("failed to allocate descriptor sets!");
+        {
+            auto const res{vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "failed to allocate descriptor sets!"));
+            }
         }
         //vkUpdateDescriptorSets
         VkDescriptorBufferInfo bufferInfo = {};
@@ -480,8 +496,11 @@ struct VulkanRenderTarget {
         }
         else {
             uniformBuffers.back().descriptorSets.clear();
-            if (vkResetDescriptorPool(device, uniformBuffers.back().descriptorPool.descriptorPool, 0) != VK_SUCCESS){
-                throw std::exception("vkResetDescriptorPool failed");
+            {
+                auto const res{vkResetDescriptorPool(device, uniformBuffers.back().descriptorPool.descriptorPool, 0)};
+                if (res != VK_SUCCESS){
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "vkResetDescriptorPool failed"));
+                }
             }
             enqueueUniformBufferCopy();
         }

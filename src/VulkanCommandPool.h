@@ -14,15 +14,17 @@ namespace hg {
         {
             QueueFamilyIndices const queueFamilyIndices{findQueueFamilies(physicalDevice, surface)};
             if (!queueFamilyIndices.graphicsFamily) {
-                throw std::exception("Couldn't find graphics queue when creating command pool, physical device shouldn't have been selected");
+                BOOST_THROW_EXCEPTION(std::exception("Couldn't find graphics queue when creating command pool, physical device shouldn't have been selected"));
             }
             VkCommandPoolCreateInfo poolInfo{};
             poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
             poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
             poolInfo.queueFamilyIndex = *queueFamilyIndices.graphicsFamily;
-
-            if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
-                throw std::exception("failed to create command pool!");
+            {
+                auto const res{vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create command pool!"));
+                }
             }
         }
         VulkanCommandPool(VulkanCommandPool const&) = delete;
