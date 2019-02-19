@@ -53,8 +53,13 @@ namespace hg {
                     indices.graphicsFamily = i;
                 }
 
-                VkBool32 presentSupport = VK_FALSE;
-                vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+                VkBool32 presentSupport{VK_FALSE};
+                {
+                    auto  const res{vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read present support for queue"));
+                    }
+                }
 
                 if (presentSupport) {
                     indices.presentFamily = i;
