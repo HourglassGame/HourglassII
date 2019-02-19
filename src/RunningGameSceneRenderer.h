@@ -19,8 +19,6 @@
 #include <sstream>
 #include <gsl/gsl>
 namespace hg {
-
-
     inline VkDescriptorSet createDescriptorSet2(
         VkDevice const device,
         VkDescriptorPool const samplerDescriptorPool,
@@ -1253,7 +1251,6 @@ namespace hg {
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.pipelineLayout, 1, 1, &fontTexDescriptorSet, 0, nullptr);
 
-
             reallyDoRender(preDrawCommandBuffer, drawCommandBuffer, target, targetFrameBuffer, timelineTexture);
 
             vkCmdEndRenderPass(drawCommandBuffer);
@@ -1277,7 +1274,8 @@ namespace hg {
             VkCommandBuffer const &drawCommandBuffer,
             VulkanRenderTarget &target,
             VkFramebuffer const targetFrameBuffer,
-            VulkanUpdatableTextureSimple &timelineTexture) {
+            VulkanUpdatableTextureSimple &timelineTexture)
+        {
             auto uiFrameStateLocal{copyUiFrameState()};
             if (!uiFrameStateLocal) {return;}
             //target.drawVertices(std::vector<vec2<float>>{ {0.f, -.5f}, { 0.5f,0.5f }, { -0.5f,0.5f }, { -1.f,0.f }, { -1.f,-1.f }, { 0.f,-1.f } });
@@ -1351,6 +1349,7 @@ namespace hg {
                 gsl::narrow<uint32_t>(viewports.size()),
                 viewports.data()
             );
+
             std::random_device dev;
             std::uniform_real_distribution<float> pos_dist(-1.0f, -0.9f);
             std::uniform_real_distribution<float> col_dist;

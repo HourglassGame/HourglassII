@@ -791,7 +791,6 @@ namespace hg {
             }
 
             currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-
         }
 #if 0
         void drawFrame(std::vector<vec2<float>> const &vertices = std::vector<vec2<float>>{{0.f,-.5f},{0.5f,0.5f},{-0.5f,0.5f},{-1.f,0.f},{-1.f,-1.f},{0.f,-1.f} }) {
@@ -963,7 +962,7 @@ namespace hg {
         //vkQueueSubmit has finished/vkAcquireNextImageKHR for next frame can start
         //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
         std::vector<VulkanFence> inFlightFences;
-        size_t currentFrame;
+        std::size_t currentFrame;
         //bool framebufferResized;
     private:
     };
