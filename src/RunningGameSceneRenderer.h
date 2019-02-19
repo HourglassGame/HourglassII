@@ -1315,7 +1315,8 @@ namespace hg {
                 uiFrameStateLocal->postOverwriteInput,//timeEngine->getPostOverwriteInput(),
                 uiFrameStateLocal->timelineLength/*static_cast<std::size_t>(timeEngine->getTimelineLength())*/);
 
-            DrawInterfaceBorder(target);
+            DrawInterfaceBorder(target, drawCommandBuffer);
+
             DrawCrazyTriangle(
                 target,
                 drawCommandBuffer);
@@ -1323,7 +1324,8 @@ namespace hg {
 
         void DrawCrazyTriangle(
             VulkanRenderTarget &target,
-            VkCommandBuffer const &drawCommandBuffer) {
+            VkCommandBuffer const &drawCommandBuffer)
+        {
             target.updateUniformBuffer(
                 UniformBufferObject{
                     //Out  x    y    z    v
@@ -1640,7 +1642,8 @@ namespace hg {
 
 
         void DrawInterfaceBorder(
-            VulkanRenderTarget &target)
+            VulkanRenderTarget &target,
+            VkCommandBuffer const drawCommandBuffer)
         {
             auto const borderColor{vec3<float>{0.f, 0.f, 0.f}};
 
@@ -1662,6 +1665,24 @@ namespace hg {
                            c,   d, 0.0, 1.0 //In v
                 }
             );
+
+            std::array<VkViewport, 1> viewports{
+                    {
+                        0.f,
+                        0.f,
+                        static_cast<float>(swapChainExtent.width),
+                        static_cast<float>(swapChainExtent.height),
+                        0.0f,
+                        1.0f
+                    }
+            };
+            vkCmdSetViewport(
+                drawCommandBuffer,
+                0,
+                gsl::narrow<uint32_t>(viewports.size()),
+                viewports.data()
+            );
+
             drawRect(target, 0.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 1.5f, static_cast<float>(hg::WINDOW_DEFAULT_X), 3.f, borderColor, 0, 0);
             drawRect(target, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X) - 1.5f, 0.f, 3.f, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y), borderColor, 0, 0);
         }
