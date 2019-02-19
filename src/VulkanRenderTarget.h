@@ -22,6 +22,21 @@ struct UniformBufferObject {
 //TODO: Investigate a typical size and preallocate to it from the start.
 inline int const initialVertexBufSize{ 1 };
 inline int const initialUniformBufSize{ sizeof(UniformBufferObject) };
+
+inline VkDeviceSize readMinUniformBufferOffsetAlignment(VkPhysicalDevice const physicalDevice) {
+    VkPhysicalDeviceProperties props{};
+    vkGetPhysicalDeviceProperties(physicalDevice, &props);
+    return props.limits.minUniformBufferOffsetAlignment;
+}
+
+inline VkDeviceSize vulkanAlignAs(std::size_t objectSize, VkDeviceSize minAlignment) {
+    VkDeviceSize alignedSize{0};
+    while (alignedSize < objectSize) {
+        alignedSize += minAlignment;
+    }
+    return alignedSize;
+}
+
 struct VulkanRenderTarget {
 
     VulkanRenderTarget(
@@ -33,6 +48,7 @@ struct VulkanRenderTarget {
         VkCommandBuffer const preDrawCommandBuffer,
         VkCommandBuffer const drawCommandBuffer)
         : physicalDevice(physicalDevice)
+        , uniformBufferOffset(vulkanAlignAs(sizeof (UniformBufferObject), readMinUniformBufferOffsetAlignment(physicalDevice)))
         , device(device)
         , pipelineLayout(pipelineLayout)
         , descriptorSetLayout(descriptorSetLayout)
@@ -295,15 +311,15 @@ struct VulkanRenderTarget {
 
         VkDescriptorPoolSize poolSize = {};
         poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        poolSize.descriptorCount = gsl::narrow<uint32_t>(size/sizeof(UniformBufferObject));
+        poolSize.descriptorCount = gsl::narrow<uint32_t>(size/uniformBufferOffset);
 
         VkDescriptorPoolCreateInfo poolInfo = {};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
         poolInfo.poolSizeCount = 1;
         poolInfo.pPoolSizes = &poolSize;
-        poolInfo.maxSets = gsl::narrow<uint32_t>(size / sizeof(UniformBufferObject));
+        poolInfo.maxSets = gsl::narrow<uint32_t>(size /uniformBufferOffset);
         std::vector<VkDescriptorSet> descriptorSets;
-        descriptorSets.reserve(size / sizeof(UniformBufferObject));
+        descriptorSets.reserve(size /uniformBufferOffset);
         uniformBuffers.push_back(
             SizedStagedUniformBuffer{
                 size,
@@ -365,7 +381,7 @@ struct VulkanRenderTarget {
                 VK_STRUCTURE_TYPE_MEMORY_BARRIER,//sType
                 nullptr,//pNext
                 VK_ACCESS_TRANSFER_WRITE_BIT,//srcAccessMask
-                VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT//dstAccessMask
+                VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT | VK_ACCESS_UNIFORM_READ_BIT //dstAccessMask TODO: is VK_ACCESS_UNIFORM_READ_BIT needed here?
             }
         };
 
@@ -423,19 +439,19 @@ struct VulkanRenderTarget {
         //prepareUniformBufferAndTransfer
         auto const growthFactor{ 2 };
 
-        auto const requiredSizeForUniformBuffer{sizeof(newUbo)};
+        auto const requiredSizeForUniformBuffer{uniformBufferOffset};
 
         //find appropriate spot at end of transferSrcVertexBuffers
         //if not enough space, allocate another src/dst buffer
         //TODO: Use leftover space in earlier buffers, if a large allocation requires a new buffer,
         // but there is still space in the earlier buffers for smaller allocations.
-        if (uniformBuffers.empty() || uniformBuffers.back().size < (uniformBuffers.back().descriptorSets.size() * sizeof(UniformBufferObject))+requiredSizeForUniformBuffer) {
+        if (uniformBuffers.empty() || uniformBuffers.back().size < (uniformBuffers.back().descriptorSets.size() * uniformBufferOffset)+requiredSizeForUniformBuffer) {
             prepareUniformBufferAndTransfer(std::max((uniformBuffers.empty() ? initialUniformBufSize : uniformBuffers.back().size*growthFactor), requiredSizeForUniformBuffer));
         }
         //memcpy
         memcpy(static_cast<char *>(
             uniformBuffers.back().transferSrcMappedRegion.mappedMemory)
-          + (uniformBuffers.back().descriptorSets.size() * sizeof(UniformBufferObject)),
+          + (uniformBuffers.back().descriptorSets.size() * uniformBufferOffset),
             &newUbo,
             sizeof(newUbo));
 
@@ -456,7 +472,7 @@ struct VulkanRenderTarget {
         //vkUpdateDescriptorSets
         VkDescriptorBufferInfo bufferInfo = {};
         bufferInfo.buffer = uniformBuffers.back().deviceUniformBuffer.buffer;
-        bufferInfo.offset = uniformBuffers.back().descriptorSets.size() * sizeof(UniformBufferObject);
+        bufferInfo.offset = uniformBuffers.back().descriptorSets.size() * uniformBufferOffset;
         bufferInfo.range = sizeof(UniformBufferObject);
 
         VkWriteDescriptorSet descriptorWrite = {};
@@ -527,6 +543,7 @@ struct VulkanRenderTarget {
     };
 
     VkPhysicalDevice physicalDevice;
+    VkDeviceSize uniformBufferOffset;
     VkDevice device;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSetLayout descriptorSetLayout;
