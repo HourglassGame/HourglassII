@@ -112,7 +112,7 @@ UIFrameState runStep(
     hg::LevelResources const &resources,
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
-    std::chrono::steady_clock::time_point &frameStartTime,
+    std::chrono::steady_clock::time_point const &frameStartTime,
     bool const runningFromReplay);
 
 
@@ -480,7 +480,7 @@ UIFrameState runStep(
     hg::LevelResources const &resources,
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
-    std::chrono::steady_clock::time_point &frameStartTime,
+    std::chrono::steady_clock::time_point const &frameStartTime,
     bool const runningFromReplay)
 {
     hg::FrameID drawnFrame;
