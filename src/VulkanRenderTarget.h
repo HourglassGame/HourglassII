@@ -29,7 +29,7 @@ inline VkDeviceSize readMinUniformBufferOffsetAlignment(VkPhysicalDevice const p
     return props.limits.minUniformBufferOffsetAlignment;
 }
 
-inline VkDeviceSize vulkanAlignAs(std::size_t objectSize, VkDeviceSize minAlignment) {
+inline VkDeviceSize vulkanAlignAs(std::size_t const objectSize, VkDeviceSize const minAlignment) {
     VkDeviceSize alignedSize{0};
     while (alignedSize < objectSize) {
         alignedSize += minAlignment;
@@ -381,14 +381,14 @@ struct VulkanRenderTarget {
                 VK_STRUCTURE_TYPE_MEMORY_BARRIER,//sType
                 nullptr,//pNext
                 VK_ACCESS_TRANSFER_WRITE_BIT,//srcAccessMask
-                VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT | VK_ACCESS_UNIFORM_READ_BIT //dstAccessMask TODO: is VK_ACCESS_UNIFORM_READ_BIT needed here?
+                VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT | VK_ACCESS_UNIFORM_READ_BIT //dstAccessMask
             }
         };
 
         vkCmdPipelineBarrier(
             preDrawCommandBuffer,
             VK_PIPELINE_STAGE_TRANSFER_BIT,      // srcStageMask
-            VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,  // dstStageMask
+            VK_PIPELINE_STAGE_VERTEX_INPUT_BIT | VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,  // dstStageMask
             0,                                   // dependencyFlags
             gsl::narrow<uint32_t>(memoryBarriers.size()),  // memoryBarrierCount
             memoryBarriers.data(),               // pMemoryBarriers
