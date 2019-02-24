@@ -5,6 +5,7 @@
 #include <vector>
 #include <optional>
 #include "Maths.h"
+#include <boost/range/algorithm/copy.hpp>
 namespace hg {
     struct Vertex {
         vec2<float> pos;
@@ -25,7 +26,7 @@ namespace hg {
         }
 
         std::vector<uint32_t> out(data.size() / sizeof(uint32_t));
-        memcpy(out.data(), data.data(), data.size());
+        boost::copy(data, static_cast<char *>(static_cast<void *>(out.data())));
         return out;
     }
     struct QueueFamilyIndices {

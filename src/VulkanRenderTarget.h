@@ -14,6 +14,7 @@
 
 #include <vulkan/vulkan.h>
 #include <gsl/gsl>
+#include "memory_util.h"
 namespace hg {
 struct UniformBufferObject {
     float projMatrix[16];
@@ -73,8 +74,8 @@ struct VulkanRenderTarget {
 
         //push memory barrier and buffer transfer commands to queue
 
-        std::array<VkBufferCopy, 1> vertexCopyRegions{
-            {
+        std::array vertexCopyRegions{
+            VkBufferCopy{
                 0,//srcOffset
                 0,//dstOffset
                 vertexBuffers.back().size
@@ -109,8 +110,8 @@ struct VulkanRenderTarget {
 
         //push memory barrier and buffer transfer commands to queue
 
-        std::array<VkBufferCopy, 1> uniformCopyRegions{
-            {
+        std::array uniformCopyRegions{
+            VkBufferCopy{
                 0,//srcOffset
                 0,//dstOffset
                 uniformBuffers.back().size
@@ -415,20 +416,15 @@ struct VulkanRenderTarget {
         }
         //write to spot in transferSrcVertexBuffers
         //enqueue vertex draw commands (buffer bind, texture bind, etc)
+        copy_pod_to_storage(std::begin(vertices), std::end(vertices), static_cast<char *>(vertexBuffers.back().transferSrcMappedRegion.mappedMemory) + endPositionInCurrentVertexBuffer);
 
-
-        memcpy(static_cast<char *>(vertexBuffers.back().transferSrcMappedRegion.mappedMemory)+endPositionInCurrentVertexBuffer, vertices.data(), sizeof(vertices[0]) * vertices.size());
-        //renderOps.emplace_back(
-        //    [endPos=endPositionInCurrentVertexBuffer, cmdBuf=commandBuffer, vertSize=vertices.size()]{
-                vkCmdDraw(
-                    drawCommandBuffer,
-                    gsl::narrow<uint32_t>(vertices.size()),
-                    1,//instanceCount
-                    gsl::narrow<uint32_t>(endPositionInCurrentVertexBuffer /sizeof(vertices[0])),//firstVertex
-                    0//firstInstance
-                );
-        //    }
-        //);
+        vkCmdDraw(
+            drawCommandBuffer,
+            gsl::narrow<uint32_t>(vertices.size()),
+            1,//instanceCount
+            gsl::narrow<uint32_t>(endPositionInCurrentVertexBuffer /sizeof(vertices[0])),//firstVertex
+            0//firstInstance
+        );
 
 
         endPositionInCurrentVertexBuffer += requiredSizeForVertices;
@@ -448,12 +444,12 @@ struct VulkanRenderTarget {
         if (uniformBuffers.empty() || uniformBuffers.back().size < (uniformBuffers.back().descriptorSets.size() * uniformBufferOffset)+requiredSizeForUniformBuffer) {
             prepareUniformBufferAndTransfer(std::max((uniformBuffers.empty() ? initialUniformBufSize : uniformBuffers.back().size*growthFactor), requiredSizeForUniformBuffer));
         }
-        //memcpy
-        memcpy(static_cast<char *>(
-            uniformBuffers.back().transferSrcMappedRegion.mappedMemory)
-          + (uniformBuffers.back().descriptorSets.size() * uniformBufferOffset),
-            &newUbo,
-            sizeof(newUbo));
+
+        new
+            (  static_cast<char *>(uniformBuffers.back().transferSrcMappedRegion.mappedMemory)
+             + (uniformBuffers.back().descriptorSets.size() * uniformBufferOffset)
+            )
+            UniformBufferObject{newUbo};
 
         //vkAllocateDescriptorSets
         VkDescriptorSetAllocateInfo allocInfo = {};

@@ -19,6 +19,7 @@
 #include <sstream>
 #include <gsl/gsl>
 #include "VulkanRenderer.h"
+#include "memory_util.h"
 namespace hg {
     inline VkDescriptorSet createDescriptorSet2(
         VkDevice const device,
@@ -2147,8 +2148,10 @@ namespace hg {
                 }
             }
 
-
-            memcpy(timelineTexture.transferSrcMappedRegion.mappedMemory, timelineContents.getPixelsPtr(), timelineContents.getSize().x*timelineContents.getSize().y*4);
+            copy_pod_to_storage(
+                timelineContents.getPixelsPtr(), timelineContents.getPixelsPtr()+timelineContents.getSize().x*timelineContents.getSize().y * 4,
+                timelineTexture.transferSrcMappedRegion.mappedMemory
+            );
             timelineTexture.flushTextureChanges(preDrawCommandBuffer);
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &timelineTexture.descriptorSet, 0, nullptr);
