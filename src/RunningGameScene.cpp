@@ -172,7 +172,7 @@ std::variant<
     ReloadLevel_tag,
     move_function<std::vector<hg::InputList>()>
 >
-run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
+run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRenderer, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
 {
     RunningGameSceneRenderer renderer(
         eng.physicalDevice,
@@ -185,7 +185,16 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
         eng.swapChain.extent,
         eng.logicalDevice.graphicsQueue
     );
+    vkRenderer.StartScene(renderer);
+    struct RendererCleanupEnforcer final {
+        decltype(vkRenderer) &vkRenderer_;
+        ~RendererCleanupEnforcer() noexcept {
+            vkRenderer_.EndScene();
+        }
+    } RendererCleanupEnforcer_obj{ vkRenderer };
+#if 0
     std::atomic<bool> stopRenderer{false};
+    //TODO
     std::thread renderThread([&renderer, &eng, &stopRenderer]{
         while(!stopRenderer) {
             try{
@@ -204,12 +213,14 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, LoadedLevel &&loaded
     });
     struct RendererCleanupEnforcer final {
         decltype(stopRenderer) &stopRenderer_;
-        decltype(renderThread) &renderThread_;
+        //decltype(renderThread) &renderThread_;
         ~RendererCleanupEnforcer() noexcept {
             stopRenderer_ = true;
-            renderThread_.join();
+            //renderThread_.join();
         }
-    } RendererCleanupEnforcer_obj{ stopRenderer, renderThread };
+    } RendererCleanupEnforcer_obj{ stopRenderer/*, renderThread */};
+
+#endif
 
     std::vector<InputList> receivedInputs;
 

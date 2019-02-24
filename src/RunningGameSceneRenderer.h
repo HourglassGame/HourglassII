@@ -18,6 +18,7 @@
 #include <codecvt>
 #include <sstream>
 #include <gsl/gsl>
+#include "VulkanRenderer.h"
 namespace hg {
     inline VkDescriptorSet createDescriptorSet2(
         VkDevice const device,
@@ -1035,7 +1036,161 @@ namespace hg {
     inline std::size_t getTimelineTickHeight() {
         return 10;
     }
-    struct RunningGameSceneRenderer {
+    
+    struct RunningGameSceneSharedVulkanData {
+        RunningGameSceneSharedVulkanData(
+            VkPhysicalDevice const physicalDevice,
+            VkDevice const device,
+            VkSurfaceKHR const surface,
+            VkRenderPass const renderPass,
+            VkExtent2D const &swapChainExtent,
+            VkQueue const graphicsQueue
+        )
+            : commandPool(device, physicalDevice, surface)
+            , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
+            , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
+            , projUniformDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
+            , textureDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeSamplerLayoutBinding()))
+            , pipelineLayout(device, makePipelineLayoutCreateInfo({ projUniformDescriptorSetLayout.descriptorSetLayout, textureDescriptorSetLayout.descriptorSetLayout }))
+            , graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
+
+            , samplerDescriptorPool(createSamplerDescriptorPool(device))
+            //, samplerDescriptorPools(createSamplerDescriptorPools(device))
+            , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
+
+            , timelineTextureDescriptorPool(createTimelineTextureDescriptorPool(device))
+            , timelineTextures(createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
+            , fontTex("unifont.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, true)
+            , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
+
+            , boxTex("GlitzData/box.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , boxTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxTex))
+
+            , boxRTex("GlitzData/box_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , boxRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
+
+            , powerupJumpTex("GlitzData/powerup_jump.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , powerupJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, powerupJumpTex))
+
+            , rhinoLeftStopTex("GlitzData/rhino_left_stop.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , rhinoLeftStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopTex))
+
+            , rhinoLeftStopRTex("GlitzData/rhino_left_stop_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , rhinoLeftStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopRTex))
+
+            , rhinoRightStopTex("GlitzData/rhino_right_stop.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , rhinoRightStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopTex))
+
+            , rhinoRightStopRTex("GlitzData/rhino_right_stop_r.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , rhinoRightStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopRTex))
+
+            , timeGunTex("GlitzData/time_gun.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , timeGunTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeGunTex))
+
+            , timeJumpTex("GlitzData/time_jump.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , timeJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeJumpTex))
+
+            , timePauseTex("GlitzData/time_pause.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , timePauseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timePauseTex))
+
+            , timeReverseTex("GlitzData/time_reverse.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , timeReverseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeReverseTex))
+
+            , trampolineTex("GlitzData/trampoline.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, false)
+            , trampolineTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, trampolineTex))
+
+            , wallBlockImages(loadWallBlockImages(device, physicalDevice, commandPool.commandPool, graphicsQueue))
+            , wallBlockDescriptorSets(loadWallBlockDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallBlockImages))
+            , wallCornerImages(loadWallCornerImages(device, physicalDevice, commandPool.commandPool, graphicsQueue))
+            , wallCornerDescriptorSets(loadWallCornerDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallCornerImages))
+            , texDescriptorSets(TexDescriptorSets{
+                      fontTexDescriptorSet
+                    , boxTexDescriptorSet
+                    , boxRTexDescriptorSet
+                    , powerupJumpTexDescriptorSet
+                    , rhinoLeftStopTexDescriptorSet
+                    , rhinoLeftStopRTexDescriptorSet
+                    , rhinoRightStopTexDescriptorSet
+                    , rhinoRightStopRTexDescriptorSet
+                    , timeGunTexDescriptorSet
+                    , timeJumpTexDescriptorSet
+                    , timePauseTexDescriptorSet
+                    , timeReverseTexDescriptorSet
+                    , trampolineTexDescriptorSet
+                })
+        {
+        }
+
+        VulkanCommandPool commandPool;
+        std::vector<VkCommandBuffer> preDrawCommandBuffers;
+        std::vector<VkCommandBuffer> drawCommandBuffers;
+
+        VulkanDescriptorSetLayout projUniformDescriptorSetLayout;
+        VulkanDescriptorSetLayout textureDescriptorSetLayout;
+        VulkanPipelineLayout pipelineLayout;
+        VulkanGraphicsPipeline graphicsPipeline;
+        VulkanDescriptorPool samplerDescriptorPool;
+        //std::vector<VulkanDescriptorPool> samplerDescriptorPools;
+        std::vector<VulkanRenderTarget> renderTargets;
+        VulkanDescriptorPool timelineTextureDescriptorPool;
+
+        std::vector<VulkanUpdatableTextureSimple> timelineTextures;
+        //std::vector<>
+        VulkanTextureSimple fontTex;
+        VkDescriptorSet fontTexDescriptorSet;
+
+        VulkanTextureSimple boxTex;
+        VkDescriptorSet boxTexDescriptorSet;
+
+        VulkanTextureSimple boxRTex;
+        VkDescriptorSet boxRTexDescriptorSet;
+
+        VulkanTextureSimple powerupJumpTex;
+        VkDescriptorSet powerupJumpTexDescriptorSet;
+
+        VulkanTextureSimple rhinoLeftStopTex;
+        VkDescriptorSet rhinoLeftStopTexDescriptorSet;
+
+        VulkanTextureSimple rhinoLeftStopRTex;
+        VkDescriptorSet rhinoLeftStopRTexDescriptorSet;
+
+        VulkanTextureSimple rhinoRightStopTex;
+        VkDescriptorSet rhinoRightStopTexDescriptorSet;
+
+        VulkanTextureSimple rhinoRightStopRTex;
+        VkDescriptorSet rhinoRightStopRTexDescriptorSet;
+
+        VulkanTextureSimple timeGunTex;
+        VkDescriptorSet timeGunTexDescriptorSet;
+
+        VulkanTextureSimple timeJumpTex;
+        VkDescriptorSet timeJumpTexDescriptorSet;
+
+        VulkanTextureSimple timePauseTex;
+        VkDescriptorSet timePauseTexDescriptorSet;
+
+        VulkanTextureSimple timeReverseTex;
+        VkDescriptorSet timeReverseTexDescriptorSet;
+
+        VulkanTextureSimple trampolineTex;
+        VkDescriptorSet trampolineTexDescriptorSet;
+
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> wallBlockImages;
+        multi_array<VkDescriptorSet, 2, 2, 2, 2> wallBlockDescriptorSets;
+
+        multi_array<std::optional<VulkanTextureSimple>, 2, 2> wallCornerImages;
+        multi_array<VkDescriptorSet, 2, 2> wallCornerDescriptorSets;
+
+        TexDescriptorSets texDescriptorSets;
+
+    };
+
+    struct RunningGameSceneFrameVulkanData {
+    };
+
+
+    class RunningGameSceneRenderer : public SceneRenderer {
+    public:
         ~RunningGameSceneRenderer(){
             //TODO: Use a fence instead, so the device can continue being used elsewhere while RunningGameSceneRenderer is destroyed
             vkDeviceWaitIdle(device);
@@ -1045,16 +1200,27 @@ namespace hg {
             VkDevice const device,
             VkSurfaceKHR const surface,
             VkRenderPass const renderPass,
-            //VkPipeline const graphicsPipeline,
-            //VkPipelineLayout const pipelineLayout,
-            //VkDescriptorSetLayout const descriptorSetLayout,
             VkExtent2D const &swapChainExtent,
             VkQueue const graphicsQueue)
           : physicalDevice(physicalDevice)
           , device(device)
           , renderPass(renderPass)
-          //, graphicsPipeline(graphicsPipeline)
           , swapChainExtent(swapChainExtent)
+          , sceneData(std::make_shared<RunningGameSceneSharedVulkanData>(
+              physicalDevice,
+              device,
+              surface,
+              renderPass,
+              swapChainExtent,
+              graphicsQueue))
+          , frameData([]{
+                std::vector<std::shared_ptr<RunningGameSceneFrameVulkanData>> frameData;
+                for (auto i{0}; i != MAX_FRAMES_IN_FLIGHT; ++i) {
+                    frameData.emplace_back(std::make_shared<RunningGameSceneFrameVulkanData>());
+                }
+                return frameData;
+            }())
+#if 0
           , commandPool(device, physicalDevice, surface)
           , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
           , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
@@ -1113,57 +1279,62 @@ namespace hg {
           , wallBlockDescriptorSets(loadWallBlockDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallBlockImages))
           , wallCornerImages(loadWallCornerImages(device, physicalDevice, commandPool.commandPool, graphicsQueue))
           , wallCornerDescriptorSets(loadWallCornerDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallCornerImages))
-          , texDescriptorSets(TexDescriptorSets{
-                    fontTexDescriptorSet
-                  , boxTexDescriptorSet
-                  , boxRTexDescriptorSet
-                  , powerupJumpTexDescriptorSet
-                  , rhinoLeftStopTexDescriptorSet
-                  , rhinoLeftStopRTexDescriptorSet
-                  , rhinoRightStopTexDescriptorSet
-                  , rhinoRightStopRTexDescriptorSet
-                  , timeGunTexDescriptorSet
-                  , timeJumpTexDescriptorSet
-                  , timePauseTexDescriptorSet
-                  , timeReverseTexDescriptorSet
-                  , trampolineTexDescriptorSet
-                })
+
+#endif
+        , texDescriptorSets(TexDescriptorSets{
+              sceneData->fontTexDescriptorSet
+            , sceneData->boxTexDescriptorSet
+            , sceneData->boxRTexDescriptorSet
+            , sceneData->powerupJumpTexDescriptorSet
+            , sceneData->rhinoLeftStopTexDescriptorSet
+            , sceneData->rhinoLeftStopRTexDescriptorSet
+            , sceneData->rhinoRightStopTexDescriptorSet
+            , sceneData->rhinoRightStopRTexDescriptorSet
+            , sceneData->timeGunTexDescriptorSet
+            , sceneData->timeJumpTexDescriptorSet
+            , sceneData->timePauseTexDescriptorSet
+            , sceneData->timeReverseTexDescriptorSet
+            , sceneData->trampolineTexDescriptorSet
+        })
           , uiFrameState()
           //, timeEngine(nullptr)
         {
         }
+        VulkanDataKeepAlive getSharedVulkanData() override {
+            return VulkanDataKeepAlive{sceneData};
+        }
+        VulkanDataKeepAlive getFrameVulkanData(std::size_t const currentFrame) override {
+            return VulkanDataKeepAlive{frameData[currentFrame]};
+        }
         void updateSwapChainData(
             VkRenderPass const renderPass,
-            //VkPipeline const graphicsPipeline,
-            //VkPipelineLayout const pipelineLayout,
-            //VkDescriptorSetLayout const descriptorSetLayout,
-            VkExtent2D const &swapChainExtent)
+            VkExtent2D const &swapChainExtent) override
         {
             this->renderPass = renderPass;
             this->swapChainExtent = swapChainExtent;
-            renderTargets.clear();
-            timelineTextures.clear();
+            sceneData->renderTargets.clear();
+            sceneData->timelineTextures.clear();
             {
-                auto const res{vkResetDescriptorPool(device, timelineTextureDescriptorPool.descriptorPool, 0)};
+                auto const res{vkResetDescriptorPool(device, sceneData->timelineTextureDescriptorPool.descriptorPool, 0)};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "timelineTextureDescriptorPool vkResetDescriptorPool failed"));
                 }
             }
-            graphicsPipeline = VulkanGraphicsPipeline(device);
+            sceneData->graphicsPipeline = VulkanGraphicsPipeline(device);
             //pipelineLayout = VulkanPipelineLayout(device);
 
-            timelineTextures = createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout);
+            sceneData->timelineTextures = createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), sceneData->timelineTextureDescriptorPool.descriptorPool, sceneData->textureDescriptorSetLayout.descriptorSetLayout);
 
             //pipelineLayout = VulkanPipelineLayout(device, makePipelineLayoutCreateInfo(descriptorSetLayout.descriptorSetLayout));
-            graphicsPipeline = VulkanGraphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass);
-            renderTargets = createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers);
+            sceneData->graphicsPipeline = VulkanGraphicsPipeline(device, swapChainExtent, sceneData->pipelineLayout.pipelineLayout, renderPass);
+            sceneData->renderTargets = createRenderTargets(physicalDevice, device, sceneData->pipelineLayout.pipelineLayout, sceneData->projUniformDescriptorSetLayout.descriptorSetLayout, sceneData->preDrawCommandBuffers, sceneData->drawCommandBuffers);
         }
         std::vector<VkCommandBuffer> renderFrame(
             std::size_t currentFrame,//TODO: Find a better way to manage the lifetimes of things that must be kept alive for the duration of a frame render!
-            VkFramebuffer const targetFrameBuffer)
+            VkFramebuffer const targetFrameBuffer) override
         {
-            auto const &preDrawCommandBuffer{ preDrawCommandBuffers[currentFrame] };
-            auto const &drawCommandBuffer{ drawCommandBuffers[currentFrame] };
+            auto const &preDrawCommandBuffer{ sceneData->preDrawCommandBuffers[currentFrame] };
+            auto const &drawCommandBuffer{ sceneData->drawCommandBuffers[currentFrame] };
             //auto const samplerDescriptorPool{samplerDescriptorPools[currentFrame].descriptorPool};
             {
                 {
@@ -1208,7 +1379,7 @@ namespace hg {
 
                 vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
                 */
-                doRender(preDrawCommandBuffer, drawCommandBuffer, renderTargets[currentFrame], targetFrameBuffer, timelineTextures[currentFrame]/*, samplerDescriptorPool*/);
+                doRender(preDrawCommandBuffer, drawCommandBuffer, sceneData->renderTargets[currentFrame], targetFrameBuffer, sceneData->timelineTextures[currentFrame]/*, samplerDescriptorPool*/);
                 {
                     auto const res{vkEndCommandBuffer(drawCommandBuffer)};
                     if (res != VK_SUCCESS) {
@@ -1222,7 +1393,7 @@ namespace hg {
                     }
                 }
             }
-            return { preDrawCommandBuffer, drawCommandBuffer};
+            return {preDrawCommandBuffer, drawCommandBuffer};
         }
         void doRender(
             VkCommandBuffer const &preDrawCommandBuffer,
@@ -1246,20 +1417,14 @@ namespace hg {
             renderPassInfo.pClearValues = &clearColor;
 
             vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
+            vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->graphicsPipeline.graphicsPipeline);
 
-
-            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.pipelineLayout, 1, 1, &fontTexDescriptorSet, 0, nullptr);
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1, &sceneData->fontTexDescriptorSet, 0, nullptr);
 
             reallyDoRender(preDrawCommandBuffer, drawCommandBuffer, target, targetFrameBuffer, timelineTexture);
 
             vkCmdEndRenderPass(drawCommandBuffer);
             target.flushBuffersToDevice();
-
-            //vkCmdEndRenderPass(drawCommandBuffer);
-
-            //vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            //vkCmdEndRenderPass(drawCommandBuffer);
         }
         void setUiFrameState(UIFrameState &&newUiFrameState){
             std::lock_guard<std::mutex> lock{uiFrameStateMutex};
@@ -1278,7 +1443,7 @@ namespace hg {
         {
             auto uiFrameStateLocal{copyUiFrameState()};
             if (!uiFrameStateLocal) {return;}
-            //target.drawVertices(std::vector<vec2<float>>{ {0.f, -.5f}, { 0.5f,0.5f }, { -0.5f,0.5f }, { -1.f,0.f }, { -1.f,-1.f }, { 0.f,-1.f } });
+
             DrawVisualGlitzAndWall(
                 target,
                 uiFrameStateLocal->drawnGlitz/*getGlitzForDirection(timeEngine->getFrame(uiFrameState->drawnFrame)->getView(), uiFrameState->drawnTimeDirection)*/,
@@ -1297,23 +1462,16 @@ namespace hg {
                 uiFrameStateLocal->drawnFrame,
                 uiFrameStateLocal->postOverwriteInput.back().getTimeCursor(),
                 uiFrameStateLocal->guyFrames,
-                uiFrameStateLocal->wall
-                /*,
-                timeEngine,
-                uiFrameState.waveInfo->updatedFrames,
-                uiFrameState.drawnFrame,
-                timeEngine.getReplayData()[timeEngine.getReplayData().size() - 1].getGuyInput().getTimeCursor(),
-                timeEngine.getTimelineLength()*/);
+                uiFrameStateLocal->wall);
 
             DrawPersonalTimeline(
                 target,
                 uiFrameStateLocal->wall,
                 drawCommandBuffer,
                 uiFrameStateLocal->relativeGuyIndex,
-                //timeEngine->getGuyFrames(),
                 uiFrameStateLocal->guyFrames,
-                uiFrameStateLocal->postOverwriteInput,//timeEngine->getPostOverwriteInput(),
-                uiFrameStateLocal->timelineLength/*static_cast<std::size_t>(timeEngine->getTimelineLength())*/);
+                uiFrameStateLocal->postOverwriteInput,
+                uiFrameStateLocal->timelineLength);
 
             DrawInterfaceBorder(target, drawCommandBuffer);
 
@@ -1335,15 +1493,15 @@ namespace hg {
                          0.0, 0.0, 0.0, 1.0 //In v
                 }
             );
-            std::array<VkViewport, 1> viewports{
-                    {
-                        0.f,
-                        0.f,
-                        static_cast<float>(swapChainExtent.width),
-                        static_cast<float>(swapChainExtent.height),
-                        0.0f,
-                        1.0f
-                    }
+            std::array viewports{
+                VkViewport{
+                    0.f,
+                    0.f,
+                    static_cast<float>(swapChainExtent.width),
+                    static_cast<float>(swapChainExtent.height),
+                    0.0f,
+                    1.0f
+                }
             };
             vkCmdSetViewport(
                 drawCommandBuffer,
@@ -1368,10 +1526,8 @@ namespace hg {
         void DrawPersonalTimeline(
             VulkanRenderTarget &target,
             Wall const &wall,
-            //hg::TimeEngine const &timeEngine,
             VkCommandBuffer const &drawCommandBuffer,
             std::size_t const relativeGuyIndex,
-            //std::vector<Frame *> const &guyFrames,
             std::vector<std::optional<GuyFrameData>> const &guyFrames,
             std::vector<GuyInput> const &guyInput,
             std::size_t const minTimelineLength) {
@@ -1816,7 +1972,7 @@ namespace hg {
                     viewports.data()
                 );
             }
-            hg::VulkanCanvas2 vkCanvas(target, texDescriptorSets, drawCommandBuffer, pipelineLayout.pipelineLayout);
+            hg::VulkanCanvas2 vkCanvas(target, texDescriptorSets, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout);
             hg::LayeredCanvas layeredCanvas(vkCanvas);
             for (hg::Glitz const &particularGlitz : glitz)
             {
@@ -1838,8 +1994,8 @@ namespace hg {
                     for (int y(0), yend(roomIndexHeight); y != yend; ++y) {
                         if (wall.atIndex(x, y)) {
                             vkCmdBindDescriptorSets(
-                                drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.pipelineLayout, 1, 1,
-                                &wallBlockDescriptorSets
+                                drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1,
+                                &sceneData->wallBlockDescriptorSets
                                     [wall.atIndex(x + 1, y)]
                                     [wall.atIndex(x, y - 1)]
                                     [wall.atIndex(x - 1, y)]
@@ -1857,8 +2013,8 @@ namespace hg {
                                         int const bottom((vpos + 1) / 2);
                                         int const right((hpos + 1) / 2);
                                         vkCmdBindDescriptorSets(
-                                            drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout.pipelineLayout, 1, 1,
-                                            &wallCornerDescriptorSets[bottom][right],
+                                            drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1,
+                                            &sceneData->wallCornerDescriptorSets[bottom][right],
                                             0, nullptr);
 
                                         drawRect(target, gsl::narrow_cast<float>(x*segmentSize + right * segmentSize / 2.), gsl::narrow_cast<float>(y*segmentSize + bottom * segmentSize / 2.), gsl::narrow_cast<float>(segmentSize/2.), gsl::narrow_cast<float>(segmentSize/2.), vec3<float>{0.f,0.f,0.f}, 1, 0);
@@ -2229,7 +2385,7 @@ namespace hg {
                 }
 #endif
             }
-            DrawTimelineContents(target, timelineTexture, preDrawCommandBuffer, drawCommandBuffer, pipelineLayout.pipelineLayout, height, width, timelineLength, guyFrames, wall);
+            DrawTimelineContents(target, timelineTexture, preDrawCommandBuffer, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, height, width, timelineLength, guyFrames, wall);
 
             {
                 std::array<VkViewport, 1> viewports{
@@ -2308,6 +2464,7 @@ namespace hg {
         VkRenderPass renderPass;
         //VkPipeline graphicsPipeline;
 
+#if 0
         VulkanCommandPool commandPool;
         std::vector<VkCommandBuffer> preDrawCommandBuffers;
         std::vector<VkCommandBuffer> drawCommandBuffers;
@@ -2367,10 +2524,16 @@ namespace hg {
 
         multi_array<std::optional<VulkanTextureSimple>, 2, 2> wallCornerImages;
         multi_array<VkDescriptorSet, 2, 2> wallCornerDescriptorSets;
-
-        TexDescriptorSets texDescriptorSets;
+#endif
         //TimeEngine const *timeEngine;
         //UIFrameState const *uiFrameState;
+
+
+        std::shared_ptr<RunningGameSceneSharedVulkanData> sceneData;
+        std::vector<std::shared_ptr<RunningGameSceneFrameVulkanData>> frameData;
+
+        TexDescriptorSets texDescriptorSets;
+
         private:
         std::mutex uiFrameStateMutex;
         std::unique_ptr<UIFrameState> uiFrameState;

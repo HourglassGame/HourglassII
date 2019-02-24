@@ -30,6 +30,7 @@
 #include <optional>
 #include "GlobalConst.h"
 #include "VulkanExceptions.h"
+#include "VulkanRenderer.h"
 namespace hg {
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
@@ -435,7 +436,7 @@ namespace hg {
     }
 
     inline VkPhysicalDevice pickPhysicalDevice(VkInstance const &instance, VkSurfaceKHR const surface) {
-        uint32_t deviceCount = 0;
+        uint32_t deviceCount{0};
         {
             auto const res{vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr)};
             if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
@@ -520,84 +521,6 @@ namespace hg {
         }
         return framebuffers;
     }
-    /*
-    inline std::vector<VkCommandBuffer> createCommandBuffers(
-        std::vector<VulkanFramebuffer> const &swapChainFramebuffers,
-        VkCommandPool const commandPool,
-        VkDevice const device,
-        VkRenderPass const renderPass,
-        VkExtent2D const swapChainExtent,
-        VkPipeline const graphicsPipeline
-    )
-    {
-        std::vector<VkCommandBuffer> commandBuffers(swapChainFramebuffers.size());
-
-        VkCommandBufferAllocateInfo allocInfo = {};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool = commandPool;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
-
-        if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
-            throw std::exception("failed to allocate command buffers!");
-        }
-
-        for (std::size_t i{0}, end{commandBuffers.size()}; i < end; ++i) {
-            VkCommandBufferBeginInfo beginInfo = {};
-            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-            beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-
-            if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-                throw std::exception("failed to begin recording command buffer!");
-            }
-
-            VkRenderPassBeginInfo renderPassInfo = {};
-            renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassInfo.renderPass = renderPass;
-            renderPassInfo.framebuffer = swapChainFramebuffers[i].framebuffer;
-            renderPassInfo.renderArea.offset = { 0, 0 };
-            renderPassInfo.renderArea.extent = swapChainExtent;
-
-            VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-            renderPassInfo.clearValueCount = 1;
-            renderPassInfo.pClearValues = &clearColor;
-
-            vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-            vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-            vkCmdDraw(commandBuffers[i], 3, 1, 0, 0);
-
-            vkCmdEndRenderPass(commandBuffers[i]);
-
-            if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-                throw std::exception("failed to record command buffer!");
-            }
-        }
-        return commandBuffers;
-    }
-    */
-    /*
-    inline std::vector<VkCommandBuffer> createCommandBuffers2(
-        VkCommandPool const commandPool,
-        VkDevice const device
-    )
-    {
-        std::vector<VkCommandBuffer> commandBuffers(MAX_FRAMES_IN_FLIGHT);
-
-        VkCommandBufferAllocateInfo allocInfo = {};
-        allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-        allocInfo.commandPool = commandPool;
-        allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-        allocInfo.commandBufferCount = static_cast<uint32_t>(commandBuffers.size());
-
-        if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data()) != VK_SUCCESS) {
-            throw std::exception("failed to allocate command buffers!");
-        }
-
-        return commandBuffers;
-    }
-    */
     inline std::vector<VulkanSemaphore> createImageAvailableSemaphores(VkDevice const device) {
         std::vector<VulkanSemaphore> s;
         for (auto i{0}; i != MAX_FRAMES_IN_FLIGHT; ++i) {
@@ -619,22 +542,6 @@ namespace hg {
         }
         return f;
     }
-    /*
-    inline std::vector<VulkanBuffer> createVertexBuffers(VkDevice const device) {
-        std::vector<VulkanBuffer> b;
-        for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
-            b.emplace_back(device);
-        }
-        return b;
-    }*/
-    /*
-    inline std::vector<VulkanMemory> createVertexMemories(VkDevice const device) {
-        std::vector<VulkanMemory> m;
-        for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
-            m.emplace_back(device);
-        }
-        return m;
-    }*/
     inline VkExtent2D getFramebufferSize(GLFWwindow &w) {
         int width, height;
         glfwGetFramebufferSize(&w, &width, &height);
@@ -642,9 +549,8 @@ namespace hg {
     }
     class VulkanEngine final {
         static void framebufferResizeCallback(GLFWwindow* const window, int const width, int const height) {
-            auto eng = static_cast<VulkanEngine*>(glfwGetWindowUserPointer(window));
+            auto const eng{static_cast<VulkanEngine*>(glfwGetWindowUserPointer(window))};
             std::lock_guard<std::mutex> lock(eng->frameBufferSizeMutex);
-            //eng->framebufferResized = true;
             eng->newFramebufferSize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
         }
 
@@ -662,24 +568,12 @@ namespace hg {
           , swapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
           , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
-            
           , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
-            /*
-          , descriptorSetLayout(logicalDevice.device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
-          , pipelineLayout(logicalDevice.device, swapChain.extent, descriptorSetLayout.descriptorSetLayout)
-          , graphicsPipeline(logicalDevice.device, swapChain.extent, pipelineLayout.pipelineLayout, renderPass.renderPass)
-          */
           , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
-          //, commandPool(logicalDevice.device, physicalDevice, surface.surface)
-          //, commandBuffers(createCommandBuffers(swapChainFramebuffers, commandPool.commandPool, logicalDevice.device, renderPass.renderPass, swapChain.extent, graphicsPipeline.graphicsPipeline))
-          //, commandBuffers2(createCommandBuffers2(commandPool.commandPool, logicalDevice.device))
-          //, vertexBufferMemories(createVertexMemories(logicalDevice.device))
-         // , vertexBuffers(createVertexBuffers(logicalDevice.device))
           , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.device))
           , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.device))
           , inFlightFences(createInFlightFences(logicalDevice.device))
           , currentFrame(0)
-          //, framebufferResized(false)
         {
             glfwSetWindowUserPointer(&w, this);
             glfwSetFramebufferSizeCallback(&w, framebufferResizeCallback);
@@ -687,8 +581,9 @@ namespace hg {
         }
 
 
-        void recreateSwapChain(RunningGameSceneRenderer &renderer){
+        void recreateSwapChain(VulkanRenderer &renderer){
             vkDeviceWaitIdle(logicalDevice.device);
+            framebufferResizedCheck();
 
             VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, swapChain.swapChain);
             std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.device, newSwapChain.swapChain, newSwapChain.imageCount));
@@ -712,19 +607,14 @@ namespace hg {
             }
             return false;
         }
-        void drawFrame(RunningGameSceneRenderer &renderer) {
-            int width, height;
-            glfwGetFramebufferSize(w, &width, &height);
-            if (width == 0 || height == 0) {
-                return;
-            }
+        void drawFrame(VulkanRenderer &renderer) {
             {
                 auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't wait for fence"));
                 }
             }
-            uint32_t imageIndex;
+            uint32_t imageIndex{};
 
             while (true) {
                 auto const res{ vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex)};
@@ -774,9 +664,9 @@ namespace hg {
             presentInfo.waitSemaphoreCount = 1;
             presentInfo.pWaitSemaphores = signalSemaphores;
 
-            VkSwapchainKHR swapChains[] = { swapChain.swapChain };
-            presentInfo.swapchainCount = 1;
-            presentInfo.pSwapchains = swapChains;
+            auto const swapChains{std::array{swapChain.swapChain}};
+            presentInfo.swapchainCount = gsl::narrow<uint32_t>(swapChains.size());
+            presentInfo.pSwapchains = swapChains.data();
 
             presentInfo.pImageIndices = &imageIndex;
 
@@ -792,135 +682,9 @@ namespace hg {
 
             currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
         }
-#if 0
-        void drawFrame(std::vector<vec2<float>> const &vertices = std::vector<vec2<float>>{{0.f,-.5f},{0.5f,0.5f},{-0.5f,0.5f},{-1.f,0.f},{-1.f,-1.f},{0.f,-1.f} }) {
-            if (vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max()) != VK_SUCCESS) {
-                throw std::exception("Couldn't wait for fence");
-            }
-            if (vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence) != VK_SUCCESS) {
-                throw std::exception("Couldn't reset fence");
-            }
-
-            uint32_t imageIndex;
-            if (vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex) != VK_SUCCESS) {
-                throw std::exception("Couldn't Acquire next Image");
-            }
-
-            auto &vertexBuffer{ vertexBuffers[currentFrame] };
-            //TODO: Don't allocate memory every frame; reuse buffers between frames if they are still large enough!
-            vertexBuffer = VulkanBuffer(logicalDevice.device);
-            {
-                VkBufferCreateInfo bufferInfo = {};
-                bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-                bufferInfo.size = sizeof(vertices[0]) * vertices.size();
-                bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-                bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-                vertexBuffer = VulkanBuffer(logicalDevice.device, bufferInfo);
-            }
-            auto &vertexBufferMemory{vertexBufferMemories[currentFrame]};
-            vertexBufferMemory = VulkanMemory(logicalDevice.device);
-            {
-                VkMemoryRequirements memRequirements;
-                vkGetBufferMemoryRequirements(logicalDevice.device, vertexBuffer.buffer, &memRequirements);
-
-                VkMemoryAllocateInfo allocInfo = {};
-                allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-                allocInfo.allocationSize = memRequirements.size;
-                allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-                vertexBufferMemory = VulkanMemory(logicalDevice.device, allocInfo);
-            }
-            if (vkBindBufferMemory(logicalDevice.device, vertexBuffer.buffer, vertexBufferMemory.memory, 0) != VK_SUCCESS) {
-                throw std::exception("Couldn't bind buffer memory");
-            }
-
-            void* data;
-            if (vkMapMemory(logicalDevice.device, vertexBufferMemory.memory, 0, sizeof(vertices[0]) * vertices.size(), 0, &data) != VK_SUCCESS){
-                throw std::exception("Couldn't map memory for vertex buffer");
-            }
-            memcpy(data, vertices.data(), sizeof(vertices[0]) * vertices.size());
-            vkUnmapMemory(logicalDevice.device, vertexBufferMemory.memory);
-
-            auto const &commandBuffer{commandBuffers2[currentFrame]};
-            {
-                if (vkResetCommandBuffer(commandBuffer, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT) != VK_SUCCESS) {
-                    throw std::exception("Couldn't reset command buffer!");
-                }
-
-                VkCommandBufferBeginInfo beginInfo = {};
-                beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-                beginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-
-                if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-                    throw std::exception("failed to begin recording command buffer!");
-                }
-
-                VkRenderPassBeginInfo renderPassInfo = {};
-                renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-                renderPassInfo.renderPass = renderPass.renderPass;
-                renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex].framebuffer;
-                renderPassInfo.renderArea.offset = { 0, 0 };
-                renderPassInfo.renderArea.extent = swapChain.extent;
-
-                VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
-                renderPassInfo.clearValueCount = 1;
-                renderPassInfo.pClearValues = &clearColor;
-
-                vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-                vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline.graphicsPipeline);
-
-                VkBuffer vertexBufferArr[] = { vertexBuffers[currentFrame].buffer };
-                VkDeviceSize offsets[] = { 0 };
-                vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBufferArr, offsets);
-
-                vkCmdDraw(commandBuffer, static_cast<uint32_t>(vertices.size()), 1, 0, 0);
-
-                vkCmdEndRenderPass(commandBuffer);
-
-                if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-                    throw std::exception("failed to record command buffer!");
-                }
-            }
-
-            VkSubmitInfo submitInfo = {};
-            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-            VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame].semaphore };
-            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-            submitInfo.waitSemaphoreCount = 1;
-            submitInfo.pWaitSemaphores = waitSemaphores;
-            submitInfo.pWaitDstStageMask = waitStages;
-
-            submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = &commandBuffer;
-
-            VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };
-            submitInfo.signalSemaphoreCount = 1;
-            submitInfo.pSignalSemaphores = signalSemaphores;
-
-            if (vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence) != VK_SUCCESS) {
-                throw std::exception("failed to submit draw command buffer!");
-            }
-
-            VkPresentInfoKHR presentInfo = {};
-            presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-            presentInfo.waitSemaphoreCount = 1;
-            presentInfo.pWaitSemaphores = signalSemaphores;
-
-            VkSwapchainKHR swapChains[] = { swapChain.swapChain };
-            presentInfo.swapchainCount = 1;
-            presentInfo.pSwapchains = swapChains;
-
-            presentInfo.pImageIndices = &imageIndex;
-
-            if (vkQueuePresentKHR(logicalDevice.presentQueue, &presentInfo) != VK_SUCCESS) {
-                throw std::exception("Couldn't present queue");
-            }
-
-            currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+        bool waitForFences(std::vector<int> const &frameNumbers) {
+            //TODO
         }
-#endif
         VulkanEngine(VulkanEngine const&) = delete;
         VulkanEngine(VulkanEngine &&) = delete;
         VulkanEngine &operator=(VulkanEngine const&) = delete;
@@ -929,6 +693,7 @@ namespace hg {
             vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
         }
         GLFWwindow *w;
+
         std::mutex frameBufferSizeMutex;
         VkExtent2D oldFramebufferSize;
         VkExtent2D newFramebufferSize;
@@ -941,17 +706,9 @@ namespace hg {
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanImageView> swapChainImageViews;
         VulkanRenderPass renderPass;
-        /*
-        VulkanDescriptorSetLayout descriptorSetLayout;
-        VulkanPipelineLayout pipelineLayout;
-        VulkanGraphicsPipeline graphicsPipeline;
-        */
+
         std::vector<VulkanFramebuffer> swapChainFramebuffers;
-        //VulkanCommandPool commandPool;
-        //std::vector<VkCommandBuffer> commandBuffers;
-        //std::vector<VkCommandBuffer> commandBuffers2;
-        //std::vector<VulkanMemory> vertexBufferMemories;
-        //std::vector<VulkanBuffer> vertexBuffers;
+
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkAcquireNextImageKHR has finished/vkQueueSubmit can start
         std::vector<VulkanSemaphore> imageAvailableSemaphores;
@@ -963,7 +720,6 @@ namespace hg {
         //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
         std::vector<VulkanFence> inFlightFences;
         std::size_t currentFrame;
-        //bool framebufferResized;
     private:
     };
 }

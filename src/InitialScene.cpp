@@ -14,7 +14,7 @@
 #include "ReplaySelectionScene.h"
 #include "RuntimeErrorScene.h"
 #include "GlobalConst.h"
-
+#include "VulkanRenderer.h"
 #include "GLFWApp.h"
 #include "GLFWWindow.h"
 
@@ -32,6 +32,7 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
     loadAndRunLevel(
         hg::RenderWindow &window,
         VulkanEngine &eng,
+        VulkanRenderer &vkRenderer,
         LoadLevelFunction const &levelLoadingFunction,
         hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
 {
@@ -41,6 +42,7 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
     struct {
         hg::RenderWindow &window;
         VulkanEngine &eng;
+        VulkanRenderer &vkRenderer;
         hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
         typedef std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
 
@@ -48,16 +50,16 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
         operator()(LoadedLevel &level) const
         {
             if (replayLoadingFunction) {
-                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, std::move(level), replayLoadingFunction()));
+                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, vkRenderer, std::move(level), replayLoadingFunction()));
             }
             else {
-                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, std::move(level)));
+                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, vkRenderer, std::move(level)));
             }
         }
         std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
             return GameAborted_tag{};
         }
-    } visitor = {window, eng, replayLoadingFunction};
+    } visitor = {window, eng, vkRenderer, replayLoadingFunction};
     return std::visit(visitor, loading_outcome);
 }
 void error_callback_glfw(int error, const char* description)
@@ -102,6 +104,32 @@ int run_hourglassii() {
         window.setFramerateLimit(hg::FRAMERATE);
 
         VulkanEngine vulkanEng(*windowglfw.w);
+        std::atomic<bool> stopRenderer{false};
+        VulkanRenderer vkRenderer;
+        std::thread renderThread(
+            [&]{
+                while (!stopRenderer) {
+                    //TODO: allow for single-stepping/not re-rendering identical scenes?
+                    //maybe by giving each scene a 'waitForRenderReady' function?
+                    //or some other design.
+
+                    SceneLock lock{ vkRenderer.lockScene()};
+                    if (lock.shouldDraw()) {
+                        //TODO: when !shouldDraw(); wait on a conditional variable for both
+                        //stopRenderer and shouldDraw, to avoid wasteful busy wait loop.
+                        vulkanEng.drawFrame(vkRenderer);
+                    }
+                }
+            }
+        );
+        struct CleanupEnforcer final {
+            decltype(stopRenderer) &stopRenderer_;
+            decltype(renderThread) &renderThread_;
+            ~CleanupEnforcer() noexcept {
+                stopRenderer_ = true;
+                renderThread_.join();
+            }
+        } CleanupEnforcer_obj{ stopRenderer, renderThread };
         //Do stuff!
         //Need a loop maybe, so that when a level is reset, it can come back to the loading screen.
         //... or something...?
@@ -168,11 +196,12 @@ int run_hourglassii() {
                         game_scene_result = loadAndRunLevel(
                             window,
                             vulkanEng,
+                            vkRenderer,
                             levelLoadFunction,
                             std::move(std::get<move_function<std::vector<InputList>()>>(game_scene_result)));
                     }
                     else {
-                        game_scene_result = loadAndRunLevel(window, vulkanEng, levelLoadFunction, std::move(replayLoader));
+                        game_scene_result = loadAndRunLevel(window, vulkanEng, vkRenderer, levelLoadFunction, std::move(replayLoader));
                     }
                     assert( std::holds_alternative<GameAborted_tag>(game_scene_result)
                          || std::holds_alternative<GameWon_tag>(game_scene_result)

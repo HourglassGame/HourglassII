@@ -5,6 +5,7 @@
 #include <boost/range/algorithm/find_if.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include "VulkanEngine.h"
 #include <gsl/gsl>
 
 #include <sstream>
