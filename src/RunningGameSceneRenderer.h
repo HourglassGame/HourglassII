@@ -1194,7 +1194,7 @@ namespace hg {
     public:
         ~RunningGameSceneRenderer(){
             //TODO: Use a fence instead, so the device can continue being used elsewhere while RunningGameSceneRenderer is destroyed
-            vkDeviceWaitIdle(device);
+            //vkDeviceWaitIdle(device);
         }
         RunningGameSceneRenderer(
             VkPhysicalDevice const physicalDevice,
@@ -1401,8 +1401,7 @@ namespace hg {
             VkCommandBuffer const &drawCommandBuffer,
             VulkanRenderTarget &target,
             VkFramebuffer const targetFrameBuffer,
-            VulkanUpdatableTextureSimple &timelineTexture/*,
-            VkDescriptorPool samplerDescriptorPool*/)
+            VulkanUpdatableTextureSimple &timelineTexture)
         {
             target.newFrame();
 

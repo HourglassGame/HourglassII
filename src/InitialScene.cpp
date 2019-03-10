@@ -108,16 +108,24 @@ int run_hourglassii() {
         VulkanRenderer vkRenderer;
         std::thread renderThread(
             [&]{
-                while (!stopRenderer) {
+                while (!(stopRenderer && vkRenderer.hasNoKeepAlives())) {
                     //TODO: allow for single-stepping/not re-rendering identical scenes?
                     //maybe by giving each scene a 'waitForRenderReady' function?
                     //or some other design.
 
-                    SceneLock lock{ vkRenderer.lockScene()};
+                    //TODO: Avoid busy wait, reduce number of calls related to vulkanEng.idle
+                    //(only currently alive frames actually need to be checked, not every frame every time)
+
+                    SceneLock lock{vkRenderer.lockScene()};
                     if (lock.shouldDraw()) {
                         //TODO: when !shouldDraw(); wait on a conditional variable for both
                         //stopRenderer and shouldDraw, to avoid wasteful busy wait loop.
                         vulkanEng.drawFrame(vkRenderer);
+                    }
+                    else {
+                        //TODO: don't lockScene during idle???
+                        //(would need rework elsewhere too)
+                        vulkanEng.idle(vkRenderer);
                     }
                 }
             }
@@ -149,7 +157,7 @@ int run_hourglassii() {
         // so on, so forth, need full list.
 
         while (true) {
-            std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, vulkanEng);
+            std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, vulkanEng, vkRenderer);
             if (std::holds_alternative<Exit_tag>(main_menu_result)) {
                 return EXIT_SUCCESS;
             }

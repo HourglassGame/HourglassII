@@ -401,7 +401,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
                         static_cast<int>(uiFrameState.guyIndex)
                     );
                     //TODO: Play UI Sounds
-                    
+#if 0
                     drawFrame(
                         window.getRenderTarget(),
                         eng,
@@ -412,6 +412,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
                         wallImage,
                         positionColoursImage
                     );
+#endif
                     renderer.setUiFrameState(std::move(uiFrameState));
                     /*
                     renderer.uiFrameState = &uiFrameState;
@@ -436,7 +437,8 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
                             }
                         }
                     }
-                    window.display();
+                    //window.display();
+                    
                     state = RunState::AWAITING_INPUT;
                 }
                 catch (hg::PlayerVictoryException const &) {

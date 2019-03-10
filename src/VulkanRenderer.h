@@ -2,7 +2,8 @@
 #define HG_VULKAN_RENDERER_H
 
 #include <boost/range/algorithm_ext/erase.hpp>
-
+#include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/algorithm/find.hpp>
 namespace hg {
     /*
     The renderer thread wants to:
@@ -90,11 +91,16 @@ namespace hg {
         {
             Expects(scene);
             Expects(currentFrame < MAX_FRAMES_IN_FLIGHT);
-            sceneKeepAlives.back().framesInUse.insert(currentFrame);
-            std::for_each(sceneKeepAlives.begin(), sceneKeepAlives.end()-1, [currentFrame](auto &s){s.framesInUse.erase(currentFrame);});
-            boost::remove_erase_if(sceneKeepAlives, [](auto const&s){return s.framesInUse.empty();});
+            frameEnded(currentFrame);
+            currentSceneKeepAlive->framesInUse.insert(currentFrame);
             frameKeepAlives[currentFrame] = std::optional(scene->getFrameVulkanData(currentFrame));
             return scene->renderFrame(currentFrame, targetFrameBuffer);
+        }
+        void frameEnded(std::size_t const frame)
+        {
+            frameKeepAlives[frame].reset();
+            boost::for_each(sceneKeepAlives, [frame](auto &s) {s.framesInUse.erase(frame); });
+            boost::remove_erase_if(sceneKeepAlives, [](auto const&s) {return s.framesInUse.empty(); });
         }
 #if 0
         void frameDone(std::size_t const currentFrame) {
@@ -110,12 +116,24 @@ namespace hg {
         void StartScene(SceneRenderer &newScene) {
             std::lock_guard l{sceneMutex};
             scene = &newScene;
-            sceneKeepAlives.push_back(SceneKeepAlive{std::set<std::size_t>{}, scene->getSharedVulkanData()});
+            currentSceneKeepAlive = SceneKeepAlive{std::set<std::size_t>{}, scene->getSharedVulkanData()};
         }
         //TODO: Make helper object that calls EndScene in its destructor?
         void EndScene() {
             std::lock_guard l{sceneMutex};
             scene = nullptr;
+            sceneKeepAlives.emplace_back(std::move(*currentSceneKeepAlive));
+            currentSceneKeepAlive.reset();
+        }
+        bool hasNoKeepAlives(){
+            std::lock_guard l{ sceneMutex };
+            return boost::find_if(frameKeepAlives, [](auto const&a) {return a.has_value(); }) == boost::end(frameKeepAlives)
+                && sceneKeepAlives.empty()
+                && !currentSceneKeepAlive.has_value();
+        }
+
+        ~VulkanRenderer() {
+            while (!hasNoKeepAlives()) {}
         }
     private:
         mutable std::mutex sceneMutex;
@@ -127,6 +145,7 @@ namespace hg {
             VulkanDataKeepAlive sceneKeepAlive;
         };
         //TODO: Use (circular?) queue rather than vector?
+        std::optional<SceneKeepAlive> currentSceneKeepAlive;
         std::vector<SceneKeepAlive> sceneKeepAlives;
     };
 }

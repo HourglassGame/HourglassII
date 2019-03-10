@@ -5,7 +5,7 @@
 #include "RenderWindow.h"
 #include "VulkanEngine.h"
 namespace hg {
-    std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng);
+    std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng, VulkanRenderer &vkRenderer);
 }
 
 #endif //HG_MAIN_MENU_SCENE_H

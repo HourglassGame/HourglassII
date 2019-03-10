@@ -565,6 +565,9 @@ namespace hg {
           , surface(instance.i, &w)
           , physicalDevice(pickPhysicalDevice(instance.i, surface.surface))
           , logicalDevice(physicalDevice, surface.surface)
+            //TODO: if frameBufferWidth or Height is 0, don't create the swapChain; rather than
+            //making an invalid swapChain!
+            //Attempting to make a swapChain with width or height 0 violates the vulkan spec!
           , swapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
           , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
@@ -584,7 +587,10 @@ namespace hg {
         void recreateSwapChain(VulkanRenderer &renderer){
             vkDeviceWaitIdle(logicalDevice.device);
             framebufferResizedCheck();
-
+            if (oldFramebufferSize.width == 0 || oldFramebufferSize.height == 0) {
+                //Can't render into 0-size swapchain.
+                return;
+            }
             VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, swapChain.swapChain);
             std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.device, newSwapChain.swapChain, newSwapChain.imageCount));
             std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.device, newSwapChain.surfaceFormat.format, newSwapChainImages));
@@ -681,6 +687,19 @@ namespace hg {
             }
 
             currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+        }
+        void idle(VulkanRenderer &vkRenderer) {
+            for(int f{0}; f != MAX_FRAMES_IN_FLIGHT; ++f) {
+                {
+                    auto const res{vkGetFenceStatus(logicalDevice.device, inFlightFences[f].fence)};
+                    if (res == VK_SUCCESS) {
+                        vkRenderer.frameEnded(f);
+                    }
+                    else if (!(res == VK_SUCCESS || res == VK_NOT_READY)) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "Idle getFenceStatus failed"));
+                    }
+                }
+            }
         }
         bool waitForFences(std::vector<int> const &frameNumbers) {
             //TODO
