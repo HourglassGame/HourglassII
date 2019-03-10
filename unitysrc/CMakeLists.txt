@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.12)
 set(CXXGSL_INCLUDE_DIRS "" CACHE FILEPATH "The location of the C++ Guidelines Support Library headers")
 
 set(SFML_STATIC_LIBRARIES TRUE)
-find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
+find_package(SFML 2.5.1 COMPONENTS graphics audio REQUIRED)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
