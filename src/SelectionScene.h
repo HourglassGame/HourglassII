@@ -9,7 +9,7 @@
 #include <string>
 namespace hg
 {
-    std::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options);
+    std::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer);
 }
 #endif
 

@@ -8,6 +8,6 @@
 #include "RenderWindow.h"
 namespace hg {
     std::variant<LoadLevelFunction, SceneAborted_tag>
-    run_level_selection_scene(hg::RenderWindow &window);
+    run_level_selection_scene(hg::RenderWindow &window, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer);
 }
 #endif //HG_LEVEL_SELECTION_SCENE_H

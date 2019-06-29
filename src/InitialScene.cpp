@@ -168,7 +168,7 @@ int run_hourglassii() {
             }
             
             std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-                = run_level_selection_scene(window);
+                = run_level_selection_scene(window, vulkanEng, vkRenderer);
             
             if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
                 continue;
@@ -179,7 +179,7 @@ int run_hourglassii() {
             move_function<std::vector<InputList>()> replayLoader;
             if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
                 std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
-                    = run_replay_selection_scene(window, std::get<LoadLevelFunction>(selected_level).levelName);
+                    = run_replay_selection_scene(window, std::get<LoadLevelFunction>(selected_level).levelName, vulkanEng, vkRenderer);
                 if (std::holds_alternative<SceneAborted_tag>(selected_replay)) {
                     continue;
                 }

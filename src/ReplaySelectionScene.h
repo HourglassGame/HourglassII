@@ -9,6 +9,6 @@
 #include <vector>
 #include <string>
 namespace hg {
-    std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(hg::RenderWindow &window, std::string const &levelName);
+    std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(hg::RenderWindow &window, std::string const &levelName, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer);
 }
 #endif // HG_REPLAY_SELECTION_SCENE_H

@@ -48,7 +48,7 @@ private:
     std::unique_ptr<TimeEngine> mutable previouslyLoadedTimeEngine;
 };
 
-std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window) {
+std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::RenderWindow &window, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer) {
     std::vector<boost::filesystem::path> levelPaths;
     for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
         if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
@@ -65,7 +65,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::
 
     std::vector<std::string> optionStrings;
     boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
-    std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings);
+    std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings, vulkanEng, vkRenderer);
 
     if (std::holds_alternative<SceneAborted_tag>(selectedOption))
     {
