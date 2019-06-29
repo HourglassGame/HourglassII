@@ -19,7 +19,7 @@ namespace hg {
 
     inline int const MAX_FRAMES_IN_FLIGHT = 2;
     inline std::vector<const char*> const validationLayers{
-        "VK_LAYER_LUNARG_standard_validation"
+        "VK_LAYER_KHRONOS_validation"
     };
     inline bool const enableValidationLayers =
 #ifdef NDEBUG
