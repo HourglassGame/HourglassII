@@ -1,5 +1,7 @@
 #ifndef HG_GLOBALCONST_H
 #define HG_GLOBALCONST_H
+#include "Maths.h"
+#include <vector>
 namespace hg {
     inline static const int FRAMERATE = 60;
     inline static const int GUY_SPEED = 200;
@@ -21,6 +23,7 @@ namespace hg {
     inline std::vector<const char*> const validationLayers{
         "VK_LAYER_KHRONOS_validation"
     };
+    inline hg::vec3<float> const UI_TEXT_COLOR{ 100.f / 255.f, 100.f / 255.f, 200.f / 255.f };
     inline bool const enableValidationLayers =
 #ifdef NDEBUG
         false

@@ -13,6 +13,7 @@
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include "multi_array.h"
+#include <boost/range/adaptor/sliced.hpp>
 #include <mutex>
 #include <locale>
 #include <codecvt>
@@ -1452,6 +1453,14 @@ namespace hg {
                 targetFrameBuffer,
                 drawCommandBuffer);
 
+            if (uiFrameStateLocal->shouldDrawInventory) {
+                DrawInventory(
+                    target,
+                    drawCommandBuffer,
+                    uiFrameStateLocal->pickups,
+                    uiFrameStateLocal->abilityCursor);
+            }
+
             DrawTimeline(
                 target,
                 preDrawCommandBuffer,
@@ -1478,6 +1487,169 @@ namespace hg {
             DrawCrazyTriangle(
                 target,
                 drawCommandBuffer);
+
+            {
+                float const centerX = WINDOW_DEFAULT_X / 2.f;
+                float const centerY = WINDOW_DEFAULT_Y / 2.f;
+                float const sizeX = WINDOW_DEFAULT_X;
+                float const sizeY = WINDOW_DEFAULT_Y;
+                float const a = 2.f / sizeX; //scale x
+                float const b = 2.f / sizeY; //scale y
+                float const c = -a * centerX; //translate x
+                float const d = -b * centerY; //translate y
+
+                target.updateUniformBuffer(
+                    UniformBufferObject{
+                        //Out  x    y    z    v
+                        a, 0.0, 0.0, 0.0,//In x
+                        0.0, b, 0.0, 0.0,//In y
+                        0.0, 0.0, 1.0, 0.0,//In z
+                        c, d, 0.0, 1.0 //In v
+                    }
+                );
+
+                std::array<VkViewport, 1> viewports{
+                    {
+                        static_cast<float>(0),
+                        static_cast<float>(0),
+                        static_cast<float>(swapChainExtent.width),
+                        static_cast<float>(swapChainExtent.height),
+                        0.0f,
+                        1.0f
+                    }
+                };
+                vkCmdSetViewport(
+                    drawCommandBuffer,
+                    0,
+                    gsl::narrow<uint32_t>(viewports.size()),
+                    viewports.data()
+                );
+            }
+            {
+                std::stringstream currentPlayerIndex;
+                currentPlayerIndex << "Index: " << (std::size(uiFrameStateLocal->guyFrames) - 1);
+
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    currentPlayerIndex.str(),
+                    90.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y) - 55.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::stringstream currentPlayerIndex;
+                currentPlayerIndex << "Control: " << (std::size(uiFrameStateLocal->guyFrames) - 1) - uiFrameStateLocal->relativeGuyIndex;
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    currentPlayerIndex.str(),
+                    90.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y) - 35.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::stringstream frameNumberString;
+                frameNumberString << "Frame: " << uiFrameStateLocal->drawnFrame.getFrameNumber();
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    frameNumberString.str(),
+                    90.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y* hg::UI_DIVIDE_Y) + 60.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::stringstream timeString;
+                timeString << "Time: " << (uiFrameStateLocal->drawnFrame.getFrameNumber() * 10 / hg::FRAMERATE) / 10. << "s";
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    timeString.str(),
+                    90.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y* hg::UI_DIVIDE_Y) + 20.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::vector<int> framesExecutedList;
+                framesExecutedList.reserve(boost::size(uiFrameStateLocal->waveInfo.updatedFrames));
+                for (
+                    hg::FrameUpdateSet const& updateSet :
+                    uiFrameStateLocal->waveInfo.updatedFrames)
+                {
+                    framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
+                }
+                std::stringstream numberOfFramesExecutedString;
+                if (!boost::empty(framesExecutedList)) {
+                    numberOfFramesExecutedString << *boost::begin(framesExecutedList);
+                    for (
+                        int num :
+                    framesExecutedList
+                        | boost::adaptors::sliced(1, boost::size(framesExecutedList)))
+                    {
+                        numberOfFramesExecutedString << ":" << num;
+                    }
+                }
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    numberOfFramesExecutedString.str(),
+                    50.f,
+                    330.f,
+                    12.f,
+                    UI_TEXT_COLOR);
+            }
+            //TODO: Rething FPS measurements, now that
+            //GUI and TimeEngine frames can be independent
+            //(in the near future they will be)
+#if 0
+            {
+                auto newFrameStartTime = std::chrono::steady_clock().now();
+                std::stringstream fpsstring;
+                auto const fps = (1. / std::chrono::duration<double>(newFrameStartTime - frameStartTime).count());
+                fpsstring << (fps > 5 ? std::round(fps) : fps);
+                frameStartTime = newFrameStartTime;
+                sf::Text fpsglyph;
+                fpsglyph.setFont(*hg::defaultFont);
+                fpsglyph.setString(fpsstring.str());
+                fpsglyph.setCharacterSize(12);
+                fpsglyph.setFillColor(uiTextColor);
+                fpsglyph.setOutlineColor(uiTextColor);
+                fpsglyph.setPosition(50, 300);
+                app.draw(fpsglyph);
+                //std::cout << "fps: " << fps << "\n";
+            }
+#endif
+
+            if (uiFrameStateLocal->runningFromReplay) {
+                //TODO: also write some sort of replay progress display here
+                //currentReplayIt-replay.begin() << "/" << currentReplayEnd-replay.begin()
+
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    "R",
+                    580.f,
+                    32.f,
+                    32.f,
+                    vec3<float>{ 255.f/255.f, 25.f / 255.f, 50.f / 255.f });
+            }
         }
 
         void DrawCrazyTriangle(
@@ -2458,6 +2630,114 @@ namespace hg {
             target.setView(oldView);
 #endif
         }
+
+
+
+
+        void DrawInventory(
+            VulkanRenderTarget& target,
+            VkCommandBuffer const& drawCommandBuffer,
+            Pickups const& pickups,
+            Ability abilityCursor)
+        {
+            Pickups mpickups(pickups);
+
+            {
+                float const centerX = WINDOW_DEFAULT_X / 2.f;
+                float const centerY = WINDOW_DEFAULT_Y / 2.f;
+                float const sizeX = WINDOW_DEFAULT_X;
+                float const sizeY = WINDOW_DEFAULT_Y;
+                float const a = 2.f / sizeX; //scale x
+                float const b = 2.f / sizeY; //scale y
+                float const c = -a * centerX; //translate x
+                float const d = -b * centerY; //translate y
+
+                target.updateUniformBuffer(
+                    UniformBufferObject{
+                        //Out  x    y    z    v
+                          a, 0.0, 0.0, 0.0,//In x
+                        0.0,   b, 0.0, 0.0,//In y
+                        0.0, 0.0, 1.0, 0.0,//In z
+                          c,   d, 0.0, 1.0 //In v
+                    }
+                );
+
+                std::array<VkViewport, 1> viewports{
+                    {
+                        static_cast<float>(0),
+                        static_cast<float>(0),
+                        static_cast<float>(swapChainExtent.width),
+                        static_cast<float>(swapChainExtent.height),
+                        0.0f,
+                        1.0f
+                    }
+                };
+                vkCmdSetViewport(
+                    drawCommandBuffer,
+                    0,
+                    gsl::narrow<uint32_t>(viewports.size()),
+                    viewports.data()
+                );
+            }
+            {
+                std::stringstream timeJump;
+                timeJump << (abilityCursor == Ability::TIME_JUMP ? "-->" : "   ") << "1) timeJumps: " << mpickups[Ability::TIME_JUMP];
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    timeJump.str(),
+                    20.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 140.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::stringstream timeReverses;
+                timeReverses << (abilityCursor == Ability::TIME_REVERSE ? "-->" : "   ") << "2) timeReverses: " << mpickups[Ability::TIME_REVERSE];
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    timeReverses.str(),
+                    20.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 110.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::stringstream timeGuns;
+                timeGuns << (abilityCursor == Ability::TIME_GUN ? "-->" : "   ") << "3) timeGuns: " << mpickups[Ability::TIME_GUN];
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    timeGuns.str(),
+                    20.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 80.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
+                std::stringstream timePauses;
+                timePauses << (abilityCursor == Ability::TIME_PAUSE ? "-->" : "   ") << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    timePauses.str(),
+                    20.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y* hg::UI_DIVIDE_Y) - 50.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+        }
+
+
 
 
         VkPhysicalDevice physicalDevice;
