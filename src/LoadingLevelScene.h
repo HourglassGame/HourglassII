@@ -10,7 +10,9 @@ namespace hg {
     struct RenderWindow;
     std::variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
         hg::RenderWindow &window,
-        LoadLevelFunction const &levelLoadingFunction);
+        LoadLevelFunction const &levelLoadingFunction,
+        VulkanEngine& vulkanEng,
+        VulkanRenderer& vkRenderer);
 }
 
 #endif // HG_LOADING_LEVEL_SCENE_H

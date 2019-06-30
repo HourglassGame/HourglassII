@@ -37,8 +37,8 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
         hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
 {
     std::variant<hg::LoadedLevel, LoadingCanceled_tag>
-              loading_outcome = load_level_scene(window, levelLoadingFunction);
-    
+              loading_outcome = load_level_scene(window, levelLoadingFunction, eng, vkRenderer);
+
     struct {
         hg::RenderWindow &window;
         VulkanEngine &eng;
