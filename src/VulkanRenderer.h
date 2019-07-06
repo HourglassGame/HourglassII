@@ -4,6 +4,7 @@
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm/find.hpp>
+#include <atomic>
 namespace hg {
     /*
     The renderer thread wants to:
@@ -91,16 +92,18 @@ namespace hg {
         {
             Expects(scene);
             Expects(currentFrame < MAX_FRAMES_IN_FLIGHT);
-            frameEnded(currentFrame);
-            currentSceneKeepAlive->framesInUse.insert(currentFrame);
-            frameKeepAlives[currentFrame] = std::optional(scene->getFrameVulkanData(currentFrame));
+            {
+                std::scoped_lock l{ keepAliveMutex };
+                frameEndedNoLock(currentFrame);
+                currentSceneKeepAlive->framesInUse.insert(currentFrame);
+                frameKeepAlives[currentFrame] = std::optional(scene->getFrameVulkanData(currentFrame));
+            }
             return scene->renderFrame(currentFrame, targetFrameBuffer);
         }
         void frameEnded(std::size_t const frame)
         {
-            frameKeepAlives[frame].reset();
-            boost::for_each(sceneKeepAlives, [frame](auto &s) {s.framesInUse.erase(frame); });
-            boost::remove_erase_if(sceneKeepAlives, [](auto const&s) {return s.framesInUse.empty(); });
+            std::scoped_lock l{keepAliveMutex};
+            frameEndedNoLock(frame);
         }
 #if 0
         void frameDone(std::size_t const currentFrame) {
@@ -109,41 +112,63 @@ namespace hg {
         }
 #endif
         SceneLock lockScene() {
-            std::unique_lock l{sceneMutex};
-            return {std::move(l), gsl::narrow_cast<bool>(scene)};
+            bool const hasScene{sceneAlive};
+            if (hasScene) {
+                std::unique_lock l{ sceneMutex };
+                return { std::move(l), gsl::narrow_cast<bool>(scene) };
+            }
+            else {
+                return { {}, false };
+            }
         }
 
         void StartScene(SceneRenderer &newScene) {
             std::lock_guard l{sceneMutex};
+            std::lock_guard l2{keepAliveMutex};
             scene = &newScene;
             currentSceneKeepAlive = SceneKeepAlive{std::set<std::size_t>{}, scene->getSharedVulkanData()};
+            sceneAlive = true;
         }
         //TODO: Make helper object that calls EndScene in its destructor?
         void EndScene() {
+            sceneAlive = false;
             std::lock_guard l{sceneMutex};
-            scene = nullptr;
-            sceneKeepAlives.emplace_back(std::move(*currentSceneKeepAlive));
-            currentSceneKeepAlive.reset();
+            {
+                std::lock_guard l2{ keepAliveMutex };
+                scene = nullptr;
+                sceneKeepAlives.emplace_back(std::move(*currentSceneKeepAlive));
+                currentSceneKeepAlive.reset();
+            }
         }
         bool hasNoKeepAlives(){
-            std::lock_guard l{ sceneMutex };
+            std::lock_guard l{keepAliveMutex};
             return boost::find_if(frameKeepAlives, [](auto const&a) {return a.has_value(); }) == boost::end(frameKeepAlives)
                 && sceneKeepAlives.empty()
                 && !currentSceneKeepAlive.has_value();
         }
 
         ~VulkanRenderer() {
+            //TODO: use non-locking version of hasNoKeepAlives, for performance?
             while (!hasNoKeepAlives()) {}
         }
     private:
+        void frameEndedNoLock(std::size_t const frame)
+        {
+            frameKeepAlives[frame].reset();
+            boost::for_each(sceneKeepAlives, [frame](auto& s) {s.framesInUse.erase(frame); });
+            boost::remove_erase_if(sceneKeepAlives, [](auto const& s) {return s.framesInUse.empty(); });
+        }
         mutable std::mutex sceneMutex;
+        std::atomic<bool> sceneAlive;
         SceneRenderer *scene;
 
+        mutable std::mutex keepAliveMutex;
         std::vector<std::optional<VulkanDataKeepAlive>> frameKeepAlives;
         struct SceneKeepAlive{
             std::set<std::size_t> framesInUse;
             VulkanDataKeepAlive sceneKeepAlive;
         };
+
         //TODO: Use (circular?) queue rather than vector?
         std::optional<SceneKeepAlive> currentSceneKeepAlive;
         std::vector<SceneKeepAlive> sceneKeepAlives;
