@@ -38,7 +38,7 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
         hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
 {
     std::variant<hg::LoadedLevel, LoadingCanceled_tag>
-              loading_outcome = load_level_scene(window, levelLoadingFunction, eng, vkRenderer);
+              loading_outcome = load_level_scene(window, windowglfw, levelLoadingFunction, eng, vkRenderer);
 
     struct {
         hg::RenderWindow &window;
@@ -84,6 +84,12 @@ int run_hourglassii() {
             throw std::exception("Couldn't load window icon");
         }
 
+        // 'window' is the SDL instance and window
+        hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
+        window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
+        window.setVerticalSyncEnabled(true);
+        window.setFramerateLimit(hg::FRAMERATE);
+
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -103,12 +109,6 @@ int run_hourglassii() {
         };
         glfwSetWindowIcon(windowglfw.w, 1, &window_icon_image_glfw);
         glfwShowWindow(windowglfw.w);
-
-        // 'window' is the SDL instance and window
-        hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
-        window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
-        window.setVerticalSyncEnabled(true);
-        window.setFramerateLimit(hg::FRAMERATE);
 
         VulkanEngine vulkanEng(*windowglfw.w);
         std::atomic<bool> stopRenderer{false};
@@ -164,7 +164,7 @@ int run_hourglassii() {
         // so on, so forth, need full list.
 
         while (true) {
-            std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, vulkanEng, vkRenderer);
+            std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(window, windowglfw, vulkanEng, vkRenderer);
             if (std::holds_alternative<Exit_tag>(main_menu_result)) {
                 return EXIT_SUCCESS;
             }
@@ -175,7 +175,7 @@ int run_hourglassii() {
             }
             
             std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-                = run_level_selection_scene(window, vulkanEng, vkRenderer);
+                = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer);
             
             if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
                 continue;
@@ -186,7 +186,8 @@ int run_hourglassii() {
             move_function<std::vector<InputList>()> replayLoader;
             if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
                 std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
-                    = run_replay_selection_scene(window, std::get<LoadLevelFunction>(selected_level).levelName, vulkanEng, vkRenderer);
+                    = run_replay_selection_scene(window, windowglfw,
+                        std::get<LoadLevelFunction>(selected_level).levelName, vulkanEng, vkRenderer);
                 if (std::holds_alternative<SceneAborted_tag>(selected_replay)) {
                     continue;
                 }
@@ -226,7 +227,7 @@ int run_hourglassii() {
                 }
                 catch (hg::LuaError const &e) {
                     std::cerr << "There was an error in some lua, the error message was:\n" << boost::diagnostic_information(e) << std::endl;
-                    report_runtime_error(window, e);
+                    report_runtime_error(window, windowglfw, e);
                     game_scene_result = GameAborted_tag{};
                 }
             }

@@ -426,7 +426,11 @@ static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &
 }
 
 std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
-run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng, VulkanRenderer &vkRenderer)
+run_main_menu(
+    hg::RenderWindow &window, 
+    GLFWWindow &windowglfw, 
+    VulkanEngine &vulkanEng, 
+    VulkanRenderer &vkRenderer)
 {
     int currentItem = 0;
     std::vector<MenuItem> const menu {
@@ -466,6 +470,27 @@ run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng, VulkanRenderer 
             std::chrono::duration<double> frameTime = nextFrame - frameStart;
             //std::cout << std::chrono::duration_cast<std::chrono::microseconds>(frameTime).count() << "\n";
             frameStart = nextFrame;
+
+            if (glfwWindowShouldClose(windowglfw.w)) {
+                window.close();
+                throw WindowClosed_exception{};
+            }
+
+            if ((glfwGetKey(windowglfw.w, GLFW_KEY_ENTER) == GLFW_PRESS) || 
+                    (glfwGetKey(windowglfw.w, GLFW_KEY_KP_ENTER) == GLFW_PRESS)) {
+                return menu[currentItem].tag;
+            }
+            if ((glfwGetKey(windowglfw.w, GLFW_KEY_UP) == GLFW_PRESS) ||
+                    (glfwGetKey(windowglfw.w, GLFW_KEY_W) == GLFW_PRESS)) {
+                currentItem = flooredModulo(currentItem - 1, static_cast<int>(menu.size()));
+                mainMenuDrawn = false;
+            }
+            if ((glfwGetKey(windowglfw.w, GLFW_KEY_DOWN) == GLFW_PRESS) ||
+                    (glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS)) {
+                currentItem = flooredModulo(currentItem + 1, static_cast<int>(menu.size()));
+                mainMenuDrawn = false;
+            }
+
             sf::Event event;
             if (window.pollEvent(event)) do {
                 switch (event.type) {

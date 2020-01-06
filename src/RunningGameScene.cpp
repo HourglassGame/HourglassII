@@ -505,6 +505,17 @@ run_game_scene(hg::RenderWindow &window,
         {
             {
                 sf::Event event;
+
+                if (glfwWindowShouldClose(windowglfw.w)) {
+                    window.close();
+                    throw WindowClosed_exception{};
+                }
+
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_P) == GLFW_PRESS) {
+                    state = RunState::RUNNING_LEVEL;
+                    goto continuemainloop;
+                }
+
                 while (window.waitEvent(event))
                 {
                     switch (event.type) {

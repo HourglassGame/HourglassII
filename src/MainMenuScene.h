@@ -4,8 +4,14 @@
 #include <variant>
 #include "RenderWindow.h"
 #include "VulkanEngine.h"
+#include "GLFWWindow.h"
+
 namespace hg {
-    std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> run_main_menu(hg::RenderWindow &window, VulkanEngine &vulkanEng, VulkanRenderer &vkRenderer);
+    std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> run_main_menu(
+        hg::RenderWindow &window, 
+        GLFWWindow &windowglfw,
+        VulkanEngine &vulkanEng, 
+        VulkanRenderer &vkRenderer);
 }
 
 #endif //HG_MAIN_MENU_SCENE_H

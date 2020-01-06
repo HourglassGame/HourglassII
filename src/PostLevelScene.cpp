@@ -61,6 +61,18 @@ void run_post_level_scene(
     //bool runningFromReplay(false);
     while (window.isOpen()) {
         {
+            if (glfwWindowShouldClose(windowglfw.w)) {
+                window.close();
+                throw WindowClosed_exception{};
+            }
+
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                return;
+            }
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_K) == GLFW_PRESS) {
+                saveReplay("replay", finalLevel.timeEngine.getReplayData());
+            }
+
             sf::Event event;
             while (window.pollEvent(event))
             {

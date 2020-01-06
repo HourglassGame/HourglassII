@@ -1,6 +1,8 @@
 #include "RuntimeErrorScene.h"
 #include <SFML/Graphics/Text.hpp>
 #include "Scene.h"
+#include "GLFWWindow.h"
+
 namespace hg {
 extern sf::Font const *defaultFont;
 static void draw_runtime_error_scene(hg::RenderWindow &window, LuaError const &e) {
@@ -8,7 +10,7 @@ static void draw_runtime_error_scene(hg::RenderWindow &window, LuaError const &e
     window.draw(sf::Text(boost::diagnostic_information(e), *defaultFont, 8));
     window.display();
 }
-void report_runtime_error(hg::RenderWindow &window, LuaError const &e)
+void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, LuaError const &e)
 {
     //TODO: Significantly improve the error reporting (Capture more info, and present it in a more understandable and useful fashion).
     //LuaError can be:
@@ -33,6 +35,15 @@ void report_runtime_error(hg::RenderWindow &window, LuaError const &e)
     //
 
     draw_runtime_error_scene(window, e);
+
+    if (glfwWindowShouldClose(windowglfw.w)) {
+        window.close();
+        throw WindowClosed_exception{};
+    }
+    if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        return;
+    }
+
     while (true) {
         sf::Event event;
         if (window.waitEvent(event)) do {

@@ -272,6 +272,7 @@ static void drawLoadingScreen(hg::RenderWindow &window) {
 static std::variant<hg::LoadedLevel, LoadingCanceled_tag>
 displayLoadingScreen(
         hg::RenderWindow &window,
+        GLFWWindow &windowglfw,
         boost::future<TimeEngine> &futureLoadedLevel,
         OperationInterrupter &interrupter,
         hg::move_function<LoadedLevel(TimeEngine &&)> const &resourceLoadFun,
@@ -303,6 +304,17 @@ displayLoadingScreen(
             drawLoadingScreen(window);
         }
         {
+            if (glfwWindowShouldClose(windowglfw.w)) {
+                window.close();
+                throw WindowClosed_exception{};
+            }
+
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                interrupter.interrupt();
+                futureLoadedLevel.wait();
+                return LoadingCanceled_tag{};
+            }
+
             sf::Event event;
             while (window.pollEvent(event))
             {
@@ -334,6 +346,7 @@ displayLoadingScreen(
 std::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
         hg::RenderWindow &window,
+        GLFWWindow &windowglfw,
         LoadLevelFunction const &levelLoadingFunction,
         VulkanEngine& vulkanEng,
         VulkanRenderer& vkRenderer)
@@ -342,6 +355,6 @@ load_level_scene(
 
     auto futureLoadedLevel = async([&]() {return levelLoadingFunction.timeEngineLoadFun(interruptor); });
 
-    return displayLoadingScreen(window, futureLoadedLevel, interruptor, levelLoadingFunction.glitzLoadFun, vulkanEng, vkRenderer);
+    return displayLoadingScreen(window, windowglfw, futureLoadedLevel, interruptor, levelLoadingFunction.glitzLoadFun, vulkanEng, vkRenderer);
 }
 }

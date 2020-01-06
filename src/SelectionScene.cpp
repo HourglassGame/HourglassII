@@ -289,6 +289,7 @@ namespace hg {
 
     std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
         hg::RenderWindow &window,
+        GLFWWindow &windowglfw,
         std::vector<std::string> const &options,
         VulkanEngine& vulkanEng,
         VulkanRenderer& vkRenderer)
@@ -316,6 +317,15 @@ namespace hg {
             window.clear();
             window.display();
             while (true) {
+                if (glfwWindowShouldClose(windowglfw.w)) {
+                    window.close();
+                    throw WindowClosed_exception{};
+                }
+
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                    return SceneAborted_tag{};
+                }
+
                 sf::Event event;
                 if (window.waitEvent(event)) do {
                     switch (event.type) {
@@ -349,6 +359,29 @@ namespace hg {
             drawOptionSelection(window, options[selectedItem]);
             bool menuDrawn = true;
             while (menuDrawn) {
+                if (glfwWindowShouldClose(windowglfw.w)) {
+                    window.close();
+                    throw WindowClosed_exception{};
+                }
+
+                if ((glfwGetKey(windowglfw.w, GLFW_KEY_ENTER) == GLFW_PRESS) ||
+                    (glfwGetKey(windowglfw.w, GLFW_KEY_KP_ENTER) == GLFW_PRESS)) {
+                    return static_cast<std::size_t>(selectedItem);
+                }
+                if ((glfwGetKey(windowglfw.w, GLFW_KEY_UP) == GLFW_PRESS) ||
+                    (glfwGetKey(windowglfw.w, GLFW_KEY_W) == GLFW_PRESS)) {
+                    selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
+                    menuDrawn = false;
+                }
+                if ((glfwGetKey(windowglfw.w, GLFW_KEY_DOWN) == GLFW_PRESS) ||
+                    (glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS)) {
+                    selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
+                    menuDrawn = false;
+                }
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                    return SceneAborted_tag{};
+                }
+
                 sf::Event event;
                 if (window.waitEvent(event)) do {
                     switch (event.type) {
