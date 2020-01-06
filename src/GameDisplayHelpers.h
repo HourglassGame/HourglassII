@@ -11,6 +11,7 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include "AudioGlitzManager.h"
 #include "VulkanEngine.h"
+#include "GLFWWindow.h"
 
 namespace hg {
     extern sf::Color const uiTextColor;
@@ -104,8 +105,8 @@ namespace hg {
     void drawInventory(sf::RenderTarget &app, Pickups const &pickups, hg::Ability abilityCursor);
     hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
         hg::FrameView const &view, hg::TimeDirection timeDirection);
-    hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);
-    std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine);
+    hg::FrameID mousePosToFrameID(GLFWWindow &windowglfw, hg::TimeEngine const &timeEngine);
+    std::size_t mousePosToGuyIndex(GLFWWindow &windowglfw, hg::TimeEngine const &timeEngine);
 }
 
 #endif //HG_GAME_DISPLAY_HELPERS_H

@@ -30,48 +30,52 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, ActivePanel const mousePanel,
+void Input::updateState(hg::RenderWindow::InputState const &input, GLFWWindow &windowglfw, ActivePanel const mousePanel,
     int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
     int mouseOffX, int mouseOffY, double mouseScale)
 {
-    left = input.isKeyPressed(sf::Keyboard::A);
-    right = input.isKeyPressed(sf::Keyboard::D);
-    up = input.isKeyPressed(sf::Keyboard::W);
-    updatePress(down, input.isKeyPressed(sf::Keyboard::S));
-    updatePress(boxLeft, input.isKeyPressed(sf::Keyboard::Q));
-    updatePress(boxRight, input.isKeyPressed(sf::Keyboard::E));
-    updatePress(space, input.isKeyPressed(sf::Keyboard::Space));
-    
-    updatePress(mouseLeft, input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::WORLD);
+    left = (glfwGetKey(windowglfw.w, GLFW_KEY_A) == GLFW_PRESS);
+    right = (glfwGetKey(windowglfw.w, GLFW_KEY_D) == GLFW_PRESS);
+    up = (glfwGetKey(windowglfw.w, GLFW_KEY_W) == GLFW_PRESS);
+    updatePress(down, glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS);
+    updatePress(boxLeft, glfwGetKey(windowglfw.w, GLFW_KEY_Q) == GLFW_PRESS);
+    updatePress(boxRight, glfwGetKey(windowglfw.w, GLFW_KEY_E) == GLFW_PRESS);
 
-    if (input.isKeyPressed(sf::Keyboard::Num1)) {
+    bool mouseLeftPressed = (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+
+    double mX, mY;
+    glfwGetCursorPos(windowglfw.w, &mX, &mY);
+
+    updatePress(mouseLeft, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
+
+    if (glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS) {
         abilityCursor = Ability::TIME_JUMP;
     }
-    if (input.isKeyPressed(sf::Keyboard::Num2)) {
+    if (glfwGetKey(windowglfw.w, GLFW_KEY_2) == GLFW_PRESS) {
         abilityCursor = Ability::TIME_REVERSE;
     }
-    if (input.isKeyPressed(sf::Keyboard::Num3)) {
+    if (glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS) {
         abilityCursor = Ability::TIME_GUN;
     }
-    if (input.isKeyPressed(sf::Keyboard::Num4)) {
+    if (glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS) {
         abilityCursor = Ability::TIME_PAUSE;
     }
 
-    if (input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::PERSONAL_TIME) {
-        int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, input.getMousePosition().x - mouseXTimelineOffset));
+    if (mouseLeftPressed && mousePanel == ActivePanel::PERSONAL_TIME) {
+        int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
         mousePersonalTimelinePosition = static_cast<int>(personalTimelineLength - (static_cast<int>(mousePosition*personalTimelineLength / static_cast<double>(mouseXOfEndOfPersonalTimeline))));
     }
-    if ((input.isMouseButtonPressed(sf::Mouse::Left) && mousePanel == ActivePanel::GLOBAL_TIME) ||
-        input.isMouseButtonPressed(sf::Mouse::Right) || 
-        input.isMouseButtonPressed(sf::Mouse::Middle) || 
-        input.isMouseButtonPressed(sf::Mouse::XButton1) || 
-        input.isMouseButtonPressed(sf::Mouse::XButton2)) 
+    if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
+        (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
+        (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||
+        (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) ||
+        (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS))
     {
-        int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, input.getMousePosition().x - mouseXTimelineOffset));
-        mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength/static_cast<double>(mouseXOfEndOfTimeline));
+        int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
+        mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
     }
-    mouseX = static_cast<int>(std::round((input.getMousePosition().x - mouseOffX)*mouseScale));
-    mouseY = static_cast<int>(std::round((input.getMousePosition().y - mouseOffY)*mouseScale));
+    mouseX = static_cast<int>(std::round((mX - mouseOffX)*mouseScale));
+    mouseY = static_cast<int>(std::round((mY - mouseOffY)*mouseScale));
 }
 
 InputList Input::AsInputList() const

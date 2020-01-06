@@ -901,20 +901,30 @@ struct CompareIndicies {
     }
 };
 
-hg::FrameID mousePosToFrameID(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
+hg::FrameID mousePosToFrameID(GLFWWindow &windowglfw, hg::TimeEngine const &timeEngine) {
+    double mouseX, mouseY;
+    glfwGetCursorPos(windowglfw.w, &mouseX, &mouseY);
+    int width, height;
+    glfwGetWindowSize(windowglfw.w, &width, &height);
+
     int const timelineLength = timeEngine.getTimelineLength();
-    int const mouseFrame = static_cast<int>((app.getInputState().getMousePosition().x - app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X))*1. / (app.getSize().x*((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X))*timelineLength);
+    int const mouseFrame = static_cast<int>((mouseX - width*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X))*1. / (width*((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X))*timelineLength);
     return hg::FrameID(clamp(0, mouseFrame, timelineLength-1), hg::UniverseID(timelineLength));
 }
 
-std::size_t mousePosToGuyIndex(hg::RenderWindow const &app, hg::TimeEngine const &timeEngine) {
+std::size_t mousePosToGuyIndex(GLFWWindow &windowglfw, hg::TimeEngine const &timeEngine) {
+    double mouseX, mouseY;
+    glfwGetCursorPos(windowglfw.w, &mouseX, &mouseY);
+    int width, height;
+    glfwGetWindowSize(windowglfw.w, &width, &height);
+
     int const timelineLength = timeEngine.getTimelineLength();
-    float timelineOffset = static_cast<float>(app.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
-    float timelineWidth = static_cast<float>(app.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
+    float timelineOffset = static_cast<float>(width*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+    float timelineWidth = static_cast<float>(width*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
     std::size_t const guyFrames{timeEngine.getGuyFrames().size()};
     int personalTimelineWidth{gsl::narrow_cast<int>((timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, timelineWidth*static_cast<float>(guyFrames) / static_cast<float>(timeEngine.getTimelineLength())) : timelineWidth)};
 
-    int mouseGuyIndex = static_cast<int>(static_cast<float>(guyFrames)*(app.getInputState().getMousePosition().x - timelineOffset)*1. / personalTimelineWidth);
+    int mouseGuyIndex = static_cast<int>(static_cast<float>(guyFrames)*(mouseX - timelineOffset)*1. / personalTimelineWidth);
     if (mouseGuyIndex < 0)
     {
         mouseGuyIndex = 0;

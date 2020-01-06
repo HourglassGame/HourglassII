@@ -65,7 +65,8 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(hg::
 
     std::vector<std::string> optionStrings;
     boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
-    std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings, vulkanEng, vkRenderer);
+    std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(
+        window, optionStrings, vulkanEng, vkRenderer);
 
     if (std::holds_alternative<SceneAborted_tag>(selectedOption))
     {

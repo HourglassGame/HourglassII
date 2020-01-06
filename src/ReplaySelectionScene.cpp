@@ -12,7 +12,10 @@
 
 namespace hg {
     std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(
-        hg::RenderWindow &window, std::string const &levelName, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer)
+        hg::RenderWindow &window,
+        std::string const &levelName,
+        VulkanEngine& vulkanEng,
+        VulkanRenderer& vkRenderer)
     {
         boost::filesystem::path win_replay = boost::filesystem::path("levels") / levelName / "win.replay";
         //Get levels/levelName.lvl/win.replay
@@ -45,7 +48,8 @@ namespace hg {
         }
         std::vector<std::string> optionStrings;
         boost::push_back(optionStrings, optionList | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
-        std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(window, optionStrings, vulkanEng, vkRenderer);
+        std::variant<std::size_t, SceneAborted_tag> selectedOption = 
+            run_selection_scene(window, optionStrings, vulkanEng, vkRenderer);
 
         if (std::holds_alternative<SceneAborted_tag>(selectedOption))
         {

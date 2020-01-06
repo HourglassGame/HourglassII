@@ -5,6 +5,7 @@
 
 #include "RenderWindow.h"
 #include "InputList_fwd.h"
+#include "GLFWWindow.h"
 
 namespace hg {
 enum class ActivePanel { NONE, WORLD, GLOBAL_TIME, PERSONAL_TIME };
@@ -14,6 +15,7 @@ public:
     Input();
     void updateState(
         hg::RenderWindow::InputState const &keyState,
+        GLFWWindow &windowglfw,
         ActivePanel const mousePanel,
         int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline,
         std::size_t personalTimelineLength, 

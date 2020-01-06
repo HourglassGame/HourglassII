@@ -105,6 +105,7 @@ namespace hg {
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
+    GLFWWindow &windowglfw,
     hg::VulkanEngine &eng,
     std::size_t relativeGuyIndex,
     hg::Inertia &inertia,
@@ -137,27 +138,31 @@ struct RunningLevelState {
     
 };
 
-ActivePanel const getActivePanel(hg::RenderWindow const &window)
+ActivePanel const getActivePanel(GLFWWindow &windowglfw)
 {
     ActivePanel mousePanel = ActivePanel::NONE;
     // Todo, possibly include xFill and yFill.
-    if (window.getInputState().getMousePosition().x > window.getSize().x*(hg::UI_DIVIDE_X))
+    double mouseX, mouseY;
+    glfwGetCursorPos(windowglfw.w, &mouseX, &mouseY);
+    int width, height;
+    glfwGetWindowSize(windowglfw.w, &width, &height);
+
+    if (mouseX > width*(hg::UI_DIVIDE_X))
     {
-        int mouseY = window.getInputState().getMousePosition().y;
-        if (mouseY <= window.getSize().y*(hg::UI_DIVIDE_Y))
+        if (mouseY <= height*(hg::UI_DIVIDE_Y))
         {
             mousePanel = ActivePanel::WORLD;
         }
-        else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
+        else if (mouseY <= (height*((hg::UI_DIVIDE_Y) + (hg::G_TIME_Y + hg::G_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
         {
-            if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
+            if (mouseY >= (height*((hg::UI_DIVIDE_Y) + hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
             {
                 mousePanel = ActivePanel::GLOBAL_TIME;
             }
         }
-        else if (mouseY <= (window.getSize().y*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
+        else if (mouseY <= (height*((hg::UI_DIVIDE_Y) + (hg::P_TIME_Y + hg::P_TIME_HEIGHT)*(1. - hg::UI_DIVIDE_Y))))
         {
-            if (mouseY >= (window.getSize().y*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
+            if (mouseY >= (height*((hg::UI_DIVIDE_Y) + hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y))))
             {
                 mousePanel = ActivePanel::PERSONAL_TIME;
             }
@@ -172,7 +177,12 @@ std::variant<
     ReloadLevel_tag,
     move_function<std::vector<hg::InputList>()>
 >
-run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRenderer, LoadedLevel &&loadedLevel, std::vector<hg::InputList> const& replay)
+run_game_scene(hg::RenderWindow &window,
+    GLFWWindow &windowglfw,
+    VulkanEngine &eng,
+    VulkanRenderer &vkRenderer,
+    LoadedLevel &&loadedLevel,
+    std::vector<hg::InputList> const& replay)
 {
     RunningGameSceneRenderer renderer(
         eng.physicalDevice,
@@ -267,6 +277,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
     bool runningFromReplay(false);
 
     while (true) {
+        glfwPollEvents();
         switch (state) {
         case RunState::AWAITING_INPUT:
         {
@@ -277,21 +288,25 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
                 runningFromReplay = true;
             }
             else {
+                int width, height;
+                glfwGetWindowSize(windowglfw.w, &width, &height);
+
+
                 hg::Wall const &wall(timeEngine.getWall());
-                double xScale = (window.getSize().x*(1. - hg::UI_DIVIDE_X)) / wall.roomWidth();
-                double yScale = (window.getSize().y*hg::UI_DIVIDE_Y) / wall.roomHeight();
+                double xScale = (width*(1. - hg::UI_DIVIDE_X)) / wall.roomWidth();
+                double yScale = (height*hg::UI_DIVIDE_Y) / wall.roomHeight();
                 double scalingFactor(std::min(xScale, yScale));
                 double xFill = scalingFactor / xScale;
                 double yFill = scalingFactor / yScale;
-                int mouseOffX = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + (1. - xFill)*(1. - hg::UI_DIVIDE_X) / 2.));
-                int mouseOffY = static_cast<int>(window.getSize().y*((1. - yFill)*hg::UI_DIVIDE_Y / 2.));
-                int timelineOffset = static_cast<int>(window.getSize().x*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
-                int timelineWidth = static_cast<int>(window.getSize().x*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
+                int mouseOffX = static_cast<int>(width*(hg::UI_DIVIDE_X + (1. - xFill)*(1. - hg::UI_DIVIDE_X) / 2.));
+                int mouseOffY = static_cast<int>(height*((1. - yFill)*hg::UI_DIVIDE_Y / 2.));
+                int timelineOffset = static_cast<int>(width*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+                int timelineWidth = static_cast<int>(width*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
                 int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, static_cast<int>(timelineWidth*timeEngine.getReplayData().size() / timeEngine.getTimelineLength())) : timelineWidth;
                 
-                ActivePanel mousePanel = getActivePanel(window);
+                ActivePanel mousePanel = getActivePanel(windowglfw);
 
-                input.updateState(window.getInputState(), mousePanel,
+                input.updateState(window.getInputState(), windowglfw, mousePanel,
                     timelineOffset, timelineWidth, personalTimelineWidth,
                     timeEngine.getReplayData().size(),
                     mouseOffX, mouseOffY, 1. / scalingFactor);
@@ -313,6 +328,42 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
 
         case RunState::RUNNING_LEVEL:
         {
+            if (glfwWindowShouldClose(windowglfw.w)) {
+                window.close();
+                throw WindowClosed_exception{};
+            }
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+                return GameAborted_tag{};
+            }
+
+            //Restart
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_R) == GLFW_PRESS) {
+                return ReloadLevel_tag{};
+            }
+
+            //Load replay
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_L) == GLFW_PRESS) {
+                return move_function<std::vector<InputList>()>([] {return loadReplay("replay"); });
+            }
+            //Interrupt replay and begin Playing
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_C) == GLFW_PRESS) {
+                currentReplayIt = replay.end();
+                currentReplayEnd = replay.end();
+            }
+            //Save replay
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_K) == GLFW_PRESS) {
+                saveReplay("replay", receivedInputs);
+            }
+            //Generate a replay from replayLogIn
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_G) == GLFW_PRESS) {
+                generateReplay();
+            }
+            //Pause
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_P) == GLFW_PRESS) {
+                state = RunState::PAUSED;
+                goto continuemainloop;
+            }
+
             sf::Event event;
             while (window.pollEvent(event))
             {
@@ -370,19 +421,19 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
                 }
             }
             if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (hg::FRAMERATE))) == boost::future_status::ready) {
-                if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
-                    inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_PERIOD) == GLFW_PRESS) {
+                    inertia.save(mousePosToFrameID(windowglfw, timeEngine), TimeDirection::FORWARDS);
                 }
-                if (window.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
-                    inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::REVERSE);
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_COMMA) == GLFW_PRESS) {
+                    inertia.save(mousePosToFrameID(windowglfw, timeEngine), TimeDirection::REVERSE);
                 }
-                if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_SLASH) == GLFW_PRESS) {
                     inertia.reset();
                 }
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto uiFrameState{runStep(timeEngine, window, eng, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
+                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
                     interrupter.reset();
 
 
@@ -442,7 +493,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
                     state = RunState::AWAITING_INPUT;
                 }
                 catch (hg::PlayerVictoryException const &) {
-                    run_post_level_scene(window, eng, initialTimeEngine, loadedLevel);
+                    run_post_level_scene(window, windowglfw, eng, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)
                     return GameWon_tag{};
                 }
@@ -486,6 +537,7 @@ run_game_scene(hg::RenderWindow &window, VulkanEngine &eng, VulkanRenderer &vkRe
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
+    GLFWWindow &windowglfw,
     hg::VulkanEngine &eng,
     std::size_t relativeGuyIndex,
     hg::Inertia &inertia,
@@ -501,17 +553,17 @@ UIFrameState runStep(
     Pickups pickups;
     hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
-    bool const shouldDrawGuyPositionColours{app.getInputState().isKeyPressed(sf::Keyboard::LShift)};
+    bool const shouldDrawGuyPositionColours{(glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)};
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
-    ActivePanel mousePanel = getActivePanel(app);
-    if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel != ActivePanel::PERSONAL_TIME) {
-        drawnFrame = mousePosToFrameID(app, timeEngine);
+    ActivePanel mousePanel = getActivePanel(windowglfw);
+    if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel != ActivePanel::PERSONAL_TIME) {
+        drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
         drawnTimeDirection = TimeDirection::FORWARDS;
     }
     else {
-        if (app.getInputState().isKeyPressed(sf::Keyboard::LControl) && mousePanel == ActivePanel::PERSONAL_TIME) {
-            guyIndex = mousePosToGuyIndex(app, timeEngine);
+        if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel == ActivePanel::PERSONAL_TIME) {
+            guyIndex = mousePosToGuyIndex(windowglfw, timeEngine);
             relativeGuyIndex = timeEngine.getGuyFrames().size() - 2 - guyIndex;
         }
 
@@ -533,7 +585,7 @@ UIFrameState runStep(
                 drawnTimeDirection = inertia.getTimeDirection();
             }
             else {
-                drawnFrame = mousePosToFrameID(app, timeEngine);
+                drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
                 drawnTimeDirection = TimeDirection::FORWARDS;
             }
         }

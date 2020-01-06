@@ -31,6 +31,7 @@ struct RunGameResultVisitor {
 static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
     loadAndRunLevel(
         hg::RenderWindow &window,
+        GLFWWindow &windowglfw,
         VulkanEngine &eng,
         VulkanRenderer &vkRenderer,
         LoadLevelFunction const &levelLoadingFunction,
@@ -41,6 +42,7 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
 
     struct {
         hg::RenderWindow &window;
+        GLFWWindow &windowglfw;
         VulkanEngine &eng;
         VulkanRenderer &vkRenderer;
         hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
@@ -50,16 +52,16 @@ static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function
         operator()(LoadedLevel &level) const
         {
             if (replayLoadingFunction) {
-                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, vkRenderer, std::move(level), replayLoadingFunction()));
+                return std::visit(RunGameResultVisitor{}, run_game_scene(window, windowglfw, eng, vkRenderer, std::move(level), replayLoadingFunction()));
             }
             else {
-                return std::visit(RunGameResultVisitor{}, run_game_scene(window, eng, vkRenderer, std::move(level)));
+                return std::visit(RunGameResultVisitor{}, run_game_scene(window, windowglfw, eng, vkRenderer, std::move(level)));
             }
         }
         std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
             return GameAborted_tag{};
         }
-    } visitor = {window, eng, vkRenderer, replayLoadingFunction};
+    } visitor = {window, windowglfw, eng, vkRenderer, replayLoadingFunction};
     return std::visit(visitor, loading_outcome);
 }
 void error_callback_glfw(int error, const char* description)
@@ -85,7 +87,12 @@ int run_hourglassii() {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        GLFWWindow const windowglfw(hg::WINDOW_DEFAULT_X, /*10*/hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
+        // windowglfw holds the Vulkan instance
+        GLFWWindow windowglfw(hg::WINDOW_DEFAULT_X, /*10*/hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
+        // Set key and mouse presses to be saved until the next poll events
+        glfwSetInputMode(windowglfw.w, GLFW_STICKY_KEYS, GLFW_TRUE);
+        glfwSetInputMode(windowglfw.w, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+
         glfwDefaultWindowHints();
         std::vector<unsigned char> icon;
         boost::push_back(icon, boost::make_iterator_range_n(window_icon_image.getPixelsPtr(), window_icon_image.getSize().x * window_icon_image.getSize().y * 4));
@@ -97,7 +104,7 @@ int run_hourglassii() {
         glfwSetWindowIcon(windowglfw.w, 1, &window_icon_image_glfw);
         glfwShowWindow(windowglfw.w);
 
-
+        // 'window' is the SDL instance and window
         hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
         window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
         window.setVerticalSyncEnabled(true);
@@ -203,13 +210,14 @@ int run_hourglassii() {
                     {
                         game_scene_result = loadAndRunLevel(
                             window,
+                            windowglfw,
                             vulkanEng,
                             vkRenderer,
                             levelLoadFunction,
                             std::move(std::get<move_function<std::vector<InputList>()>>(game_scene_result)));
                     }
                     else {
-                        game_scene_result = loadAndRunLevel(window, vulkanEng, vkRenderer, levelLoadFunction, std::move(replayLoader));
+                        game_scene_result = loadAndRunLevel(window, windowglfw, vulkanEng, vkRenderer, levelLoadFunction, std::move(replayLoader));
                     }
                     assert( std::holds_alternative<GameAborted_tag>(game_scene_result)
                          || std::holds_alternative<GameWon_tag>(game_scene_result)

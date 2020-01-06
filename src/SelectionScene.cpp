@@ -287,7 +287,11 @@ namespace hg {
         window.display();
     }
 
-    std::variant<std::size_t, SceneAborted_tag> run_selection_scene(hg::RenderWindow &window, std::vector<std::string> const &options, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer)
+    std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
+        hg::RenderWindow &window,
+        std::vector<std::string> const &options,
+        VulkanEngine& vulkanEng,
+        VulkanRenderer& vkRenderer)
     {
         SelectionSceneRenderer renderer{
             vulkanEng.physicalDevice,

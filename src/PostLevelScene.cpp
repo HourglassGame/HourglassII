@@ -18,6 +18,7 @@ namespace {
     void runStep(
         hg::TimeEngine const &timeEngine,
         hg::RenderWindow &app,
+        GLFWWindow &windowglfw,
         hg::VulkanEngine &eng,
         AudioPlayingState &audioPlayingState,
         AudioGlitzManager &audioGlitzManager,
@@ -28,6 +29,7 @@ namespace {
 }
 void run_post_level_scene(
     hg::RenderWindow &window,
+    GLFWWindow &windowglfw,
     hg::VulkanEngine &eng,
     TimeEngine const &initialTimeEngine,
     LoadedLevel const &finalLevel)
@@ -93,16 +95,16 @@ void run_post_level_scene(
                 }
             }
             //Inertia Forwards/Backwards
-            if (window.getInputState().isKeyPressed(sf::Keyboard::Period)) {
-                inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::FORWARDS);
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_PERIOD) == GLFW_PRESS) {
+                inertia.save(mousePosToFrameID(windowglfw, timeEngine), TimeDirection::FORWARDS);
             }
-            if (window.getInputState().isKeyPressed(sf::Keyboard::Comma)) {
-                inertia.save(mousePosToFrameID(window, timeEngine), TimeDirection::REVERSE);
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_COMMA) == GLFW_PRESS) {
+                inertia.save(mousePosToFrameID(windowglfw, timeEngine), TimeDirection::REVERSE);
             }
-            if (window.getInputState().isKeyPressed(sf::Keyboard::Slash)) {
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_SLASH) == GLFW_PRESS) {
                 inertia.reset();
             }
-            runStep(timeEngine, window, eng, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage, positionColoursImage);
+            runStep(timeEngine, window, windowglfw, eng, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage, positionColoursImage);
             {
                 sf::Text replayGlyph;
                 replayGlyph.setFont(*hg::defaultFont);
@@ -124,7 +126,7 @@ void run_post_level_scene(
                 window.draw(replayGlyph);
             }
             //Fast-Forward
-            if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
+            if (glfwGetKey(windowglfw.w, GLFW_KEY_F) == GLFW_PRESS) {
                 window.setFramerateLimit(0);
                 window.setVerticalSyncEnabled(false);
             }
@@ -150,6 +152,7 @@ namespace {
 void runStep(
     hg::TimeEngine const &timeEngine,
     hg::RenderWindow &app,
+    GLFWWindow &windowglfw,
     hg::VulkanEngine &eng,
     AudioPlayingState &audioPlayingState,
     AudioGlitzManager &audioGlitzManager,
@@ -164,7 +167,7 @@ void runStep(
     bool const shouldDrawGuyPositionColours{ app.getInputState().isKeyPressed(sf::Keyboard::LShift) };
 
     if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
-        drawnFrame = mousePosToFrameID(app, timeEngine);
+        drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
         hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
         auto const &glitz{ getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS) };
         auto const guyIndex{-1};
@@ -209,7 +212,7 @@ void runStep(
                 shouldDrawGuyPositionColours);
         }
         else {
-            drawnFrame = mousePosToFrameID(app, timeEngine);
+            drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
             hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
             auto const &glitz{ getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS) };
             auto const guyIndex{-1};
