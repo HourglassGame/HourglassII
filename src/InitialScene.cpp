@@ -17,7 +17,6 @@
 #include "VulkanRenderer.h"
 #include "GLFWApp.h"
 #include "GLFWWindow.h"
-#include "InputHandler.h"
 
 #include "VulkanEngine.h"
 
@@ -99,7 +98,9 @@ int run_hourglassii() {
         // Set key and mouse presses to be saved until the next poll events
         glfwSetInputMode(windowglfw.w, GLFW_STICKY_KEYS, GLFW_TRUE);
         glfwSetInputMode(windowglfw.w, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
-        InputHandler::SetWindow(windowglfw.w);
+
+        glfwSetWindowUserPointer(windowglfw.w, (void *)&windowglfw);
+        glfwSetKeyCallback(windowglfw.w, GLFWWindow::key_callback);
 
         glfwDefaultWindowHints();
         std::vector<unsigned char> icon;

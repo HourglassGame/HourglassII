@@ -2,6 +2,8 @@
 #define HG_GLFWWINDOW_H
 
 #include <GLFW/glfw3.h>
+#include <iostream>
+
 namespace hg {
     class GLFWWindow final {
     public:
@@ -24,6 +26,35 @@ namespace hg {
             glfwDestroyWindow(w);
         }
         GLFWwindow *w;
+
+        int lastKey;
+        int prevLastKey;
+
+        static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
+            std::cout << "Key: " << key << "\n" << std::flush;
+            GLFWWindow *datas;
+            datas = (GLFWWindow *)glfwGetWindowUserPointer(window);
+            if (key == GLFW_RELEASE) {
+                if (key == datas->lastKey) {
+                    datas->lastKey = 0;
+                }
+                return;
+            }
+            datas->lastKey = key;
+        }
+
+        int HasLastKey()
+        {
+            return lastKey;
+        }
+
+        int UseLastKey()
+        {
+            prevLastKey = lastKey;
+            lastKey = 0;
+            return prevLastKey;
+        }
     };
 }
 #endif // !HG_GLFWWINDOW_H
