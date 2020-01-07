@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+int GLFWWindow_Global_lastKey;
+
 namespace hg {
     class GLFWWindow final {
     public:
@@ -25,34 +27,33 @@ namespace hg {
         ~GLFWWindow() noexcept {
             glfwDestroyWindow(w);
         }
-        GLFWwindow *w;
 
-        int lastKey;
-        int prevLastKey;
+        GLFWwindow *w;
 
         static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
         {
-            std::cout << "Key: " << key << "\n" << std::flush;
-            GLFWWindow *datas;
-            datas = (GLFWWindow *)glfwGetWindowUserPointer(window);
-            if (key == GLFW_RELEASE) {
-                if (key == datas->lastKey) {
-                    datas->lastKey = 0;
+            // glfwGetWindowUserPointer would allow lastKey to be accessed as a member of GLFWWindow,
+            //  however, Vulkan uses the Window User Pointer for its own purposes.
+            //GLFWWindow *datas;
+            //datas = (GLFWWindow *)glfwGetWindowUserPointer(window);
+            if (action == GLFW_RELEASE) {
+                if (key == GLFWWindow_Global_lastKey) {
+                    GLFWWindow_Global_lastKey = 0;
                 }
                 return;
             }
-            datas->lastKey = key;
+            GLFWWindow_Global_lastKey = key;
         }
 
-        int HasLastKey()
+        bool hasLastKey()
         {
-            return lastKey;
+            return (GLFWWindow_Global_lastKey > 0);
         }
 
-        int UseLastKey()
+        int useLastKey()
         {
-            prevLastKey = lastKey;
-            lastKey = 0;
+            int prevLastKey = GLFWWindow_Global_lastKey;
+            GLFWWindow_Global_lastKey = 0;
             return prevLastKey;
         }
     };

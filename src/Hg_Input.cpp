@@ -40,6 +40,7 @@ void Input::updateState(hg::RenderWindow::InputState const &input, GLFWWindow &w
     updatePress(down, glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS);
     updatePress(boxLeft, glfwGetKey(windowglfw.w, GLFW_KEY_Q) == GLFW_PRESS);
     updatePress(boxRight, glfwGetKey(windowglfw.w, GLFW_KEY_E) == GLFW_PRESS);
+    updatePress(space, glfwGetKey(windowglfw.w, GLFW_KEY_SPACE) == GLFW_PRESS);
 
     bool mouseLeftPressed = (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
 

@@ -472,23 +472,25 @@ run_main_menu(
             frameStart = nextFrame;
 
             if (glfwWindowShouldClose(windowglfw.w)) {
+                std::cout << "Main Menu windowglfw Pointer: " << &windowglfw << "\n" << std::flush;
+                std::cout << "Main Menu windowglfw.w Pointer: " << (windowglfw.w) << "\n" << std::flush;
                 window.close();
                 throw WindowClosed_exception{};
             }
 
-            if ((glfwGetKey(windowglfw.w, GLFW_KEY_ENTER) == GLFW_PRESS) || 
-                    (glfwGetKey(windowglfw.w, GLFW_KEY_KP_ENTER) == GLFW_PRESS)) {
-                return menu[currentItem].tag;
-            }
-            if ((glfwGetKey(windowglfw.w, GLFW_KEY_UP) == GLFW_PRESS) ||
-                    (glfwGetKey(windowglfw.w, GLFW_KEY_W) == GLFW_PRESS)) {
-                currentItem = flooredModulo(currentItem - 1, static_cast<int>(menu.size()));
-                mainMenuDrawn = false;
-            }
-            if ((glfwGetKey(windowglfw.w, GLFW_KEY_DOWN) == GLFW_PRESS) ||
-                    (glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS)) {
-                currentItem = flooredModulo(currentItem + 1, static_cast<int>(menu.size()));
-                mainMenuDrawn = false;
+            if (windowglfw.hasLastKey()) {
+                int key = windowglfw.useLastKey();
+                if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+                    return menu[currentItem].tag;
+                }
+                if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
+                    currentItem = flooredModulo(currentItem - 1, static_cast<int>(menu.size()));
+                    mainMenuDrawn = false;
+                }
+                if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
+                    currentItem = flooredModulo(currentItem + 1, static_cast<int>(menu.size()));
+                    mainMenuDrawn = false;
+                }
             }
 
             sf::Event event;

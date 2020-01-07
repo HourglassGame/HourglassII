@@ -17,6 +17,7 @@
 #include "VulkanRenderer.h"
 #include "GLFWApp.h"
 #include "GLFWWindow.h"
+#include <iostream>
 
 #include "VulkanEngine.h"
 
@@ -99,8 +100,10 @@ int run_hourglassii() {
         glfwSetInputMode(windowglfw.w, GLFW_STICKY_KEYS, GLFW_TRUE);
         glfwSetInputMode(windowglfw.w, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
 
-        glfwSetWindowUserPointer(windowglfw.w, (void *)&windowglfw);
-        glfwSetKeyCallback(windowglfw.w, GLFWWindow::key_callback);
+        glfwSetKeyCallback(windowglfw.w, &GLFWWindow::key_callback);
+        // glfwSetWindowUserPointer is not used, since Vulkan requires it and there is only one User Pointer.
+        // Using a pointer for both would require edits to Vulkan.
+        //glfwSetWindowUserPointer(windowglfw.w, (void *)&windowglfw);
 
         glfwDefaultWindowHints();
         std::vector<unsigned char> icon;

@@ -471,7 +471,7 @@ run_game_scene(hg::RenderWindow &window,
                     */
                     //eng.drawFrame(renderer);
 
-                    if (window.getInputState().isKeyPressed(sf::Keyboard::F)) {
+                    if (window.getInputState().isKeyPressed(sf::Keyboard::F) || (glfwGetKey(windowglfw.w, GLFW_KEY_F) == GLFW_PRESS)) {
                         window.setFramerateLimit(0);
                         window.setVerticalSyncEnabled(false);
                         frameStartTime = std::chrono::steady_clock::now();
@@ -516,7 +516,7 @@ run_game_scene(hg::RenderWindow &window,
                     goto continuemainloop;
                 }
 
-                while (window.waitEvent(event))
+                while (window.pollEvent(event))
                 {
                     switch (event.type) {
                     case sf::Event::Closed:

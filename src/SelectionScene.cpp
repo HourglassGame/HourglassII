@@ -327,7 +327,8 @@ namespace hg {
                 }
 
                 sf::Event event;
-                if (window.waitEvent(event)) do {
+                while (window.pollEvent(event))
+                {
                     switch (event.type) {
                     case sf::Event::KeyPressed:
                         switch (event.key.code) {
@@ -347,7 +348,7 @@ namespace hg {
                     default:
                         break;
                     }
-                } while (window.pollEvent(event));
+                }
             }
         }
 
@@ -364,26 +365,27 @@ namespace hg {
                     throw WindowClosed_exception{};
                 }
 
-                if ((glfwGetKey(windowglfw.w, GLFW_KEY_ENTER) == GLFW_PRESS) ||
-                    (glfwGetKey(windowglfw.w, GLFW_KEY_KP_ENTER) == GLFW_PRESS)) {
-                    return static_cast<std::size_t>(selectedItem);
-                }
-                if ((glfwGetKey(windowglfw.w, GLFW_KEY_UP) == GLFW_PRESS) ||
-                    (glfwGetKey(windowglfw.w, GLFW_KEY_W) == GLFW_PRESS)) {
-                    selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
-                    menuDrawn = false;
-                }
-                if ((glfwGetKey(windowglfw.w, GLFW_KEY_DOWN) == GLFW_PRESS) ||
-                    (glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS)) {
-                    selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
-                    menuDrawn = false;
-                }
-                if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                    return SceneAborted_tag{};
+                if (windowglfw.hasLastKey()) {
+                    int key = windowglfw.useLastKey();
+                    if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+                        return static_cast<std::size_t>(selectedItem);
+                    }
+                    if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
+                        selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
+                        menuDrawn = false;
+                    }
+                    if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
+                        selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
+                        menuDrawn = false;
+                    }
+                    if (key == GLFW_KEY_ESCAPE) {
+                        return SceneAborted_tag{};
+                    }
                 }
 
                 sf::Event event;
-                if (window.waitEvent(event)) do {
+                while (window.pollEvent(event))
+                {
                     switch (event.type) {
                     case sf::Event::KeyPressed:
                         switch (event.key.code) {
@@ -414,7 +416,7 @@ namespace hg {
                     default:
                         break;
                     }
-                } while (window.pollEvent(event));
+                }
             }
         }
     }
