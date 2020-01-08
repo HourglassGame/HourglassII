@@ -806,12 +806,12 @@ void guyStep(
                         }
                         if (input.getBoxLeft())
                         {
-                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + 1;
+                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize;
 
                         }
                         else if (input.getBoxRight())
                         {
-                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() + width - 1;
+                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() + width;
                         }
                     }
                     else
