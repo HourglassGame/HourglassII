@@ -290,6 +290,7 @@ namespace hg {
     std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
         hg::RenderWindow &window,
         GLFWWindow &windowglfw,
+        int defaultOption,
         std::vector<std::string> const &options,
         VulkanEngine& vulkanEng,
         VulkanRenderer& vkRenderer)
@@ -333,7 +334,7 @@ namespace hg {
         }
 
         //TODO: Use size_t rather than int.
-        int selectedItem = 0;
+        int selectedItem = defaultOption;
 
         while (true) {
             renderer.setUiFrameState(std::string{ options[selectedItem] });

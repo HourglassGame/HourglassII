@@ -22,54 +22,96 @@
 #include "VulkanEngine.h"
 
 namespace hg {
-struct RunGameResultVisitor {
-    typedef std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
-    template<typename Tag>
-    std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(Tag t) const {
-        return std::move(t);
-    }
-};
-static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-    loadAndRunLevel(
-        hg::RenderWindow &window,
-        GLFWWindow &windowglfw,
-        VulkanEngine &eng,
-        VulkanRenderer &vkRenderer,
-        LoadLevelFunction const &levelLoadingFunction,
-        hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
-{
-    std::variant<hg::LoadedLevel, LoadingCanceled_tag>
-              loading_outcome = load_level_scene(window, windowglfw, levelLoadingFunction, eng, vkRenderer);
-
-    struct {
-        hg::RenderWindow &window;
-        GLFWWindow &windowglfw;
-        VulkanEngine &eng;
-        VulkanRenderer &vkRenderer;
-        hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
+    struct RunGameResultVisitor {
         typedef std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
+        template<typename Tag>
+        std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(Tag t) const {
+            return std::move(t);
+        }
+    };
+    static std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+        loadAndRunLevel(
+            hg::RenderWindow &window,
+            GLFWWindow &windowglfw,
+            VulkanEngine &eng,
+            VulkanRenderer &vkRenderer,
+            LoadLevelFunction const &levelLoadingFunction,
+            hg::move_function<std::vector<InputList>()> const& replayLoadingFunction = {})
+    {
+        std::variant<hg::LoadedLevel, LoadingCanceled_tag>
+            loading_outcome = load_level_scene(window, windowglfw, levelLoadingFunction, eng, vkRenderer);
 
-        std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-        operator()(LoadedLevel &level) const
-        {
-            if (replayLoadingFunction) {
-                return std::visit(RunGameResultVisitor{}, run_game_scene(window, windowglfw, eng, vkRenderer, std::move(level), replayLoadingFunction()));
+        struct {
+            hg::RenderWindow &window;
+            GLFWWindow &windowglfw;
+            VulkanEngine &eng;
+            VulkanRenderer &vkRenderer;
+            hg::move_function<std::vector<InputList>()> const &replayLoadingFunction;
+            typedef std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> result_type;
+
+            std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+                operator()(LoadedLevel &level) const
+            {
+                if (replayLoadingFunction) {
+                    return std::visit(RunGameResultVisitor{}, run_game_scene(window, windowglfw, eng, vkRenderer, std::move(level), replayLoadingFunction()));
+                }
+                else {
+                    return std::visit(RunGameResultVisitor{}, run_game_scene(window, windowglfw, eng, vkRenderer, std::move(level)));
+                }
+            }
+            std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
+                return GameAborted_tag{};
+            }
+        } visitor = { window, windowglfw, eng, vkRenderer, replayLoadingFunction };
+        return std::visit(visitor, loading_outcome);
+    }
+    void error_callback_glfw(int error, const char* description)
+    {
+        std::cerr << "GLFW Error: " << error << ", " << description << "\n";
+        throw std::exception("GLFW Error encountered");
+    }
+
+std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> runLevel(
+    hg::RenderWindow &window,
+    GLFWWindow &windowglfw,
+    VulkanEngine &vulkanEng,
+    VulkanRenderer &vkRenderer,
+    std::variant<LoadLevelFunction, SceneAborted_tag> &selected_level,
+    move_function<std::vector<InputList>()> &replayLoader)
+{
+    std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> game_scene_result = ReloadLevel_tag{};
+    while (std::holds_alternative<ReloadLevel_tag>(game_scene_result)
+        || std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result))
+    {
+        try {
+            auto& levelLoadFunction = std::get<LoadLevelFunction>(selected_level);
+            if (std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result))
+            {
+                game_scene_result = loadAndRunLevel(
+                    window,
+                    windowglfw,
+                    vulkanEng,
+                    vkRenderer,
+                    levelLoadFunction,
+                    std::move(std::get<move_function<std::vector<InputList>()>>(game_scene_result)));
             }
             else {
-                return std::visit(RunGameResultVisitor{}, run_game_scene(window, windowglfw, eng, vkRenderer, std::move(level)));
+                game_scene_result = loadAndRunLevel(window, windowglfw, vulkanEng, vkRenderer, levelLoadFunction, std::move(replayLoader));
             }
+            assert(std::holds_alternative<GameAborted_tag>(game_scene_result)
+                || std::holds_alternative<GameWon_tag>(game_scene_result)
+                || std::holds_alternative<ReloadLevel_tag>(game_scene_result)
+                || std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result));
         }
-        std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>> operator()(LoadingCanceled_tag) const {
+        catch (hg::LuaError const &e) {
+            std::cerr << "There was an error in some lua, the error message was:\n" << boost::diagnostic_information(e) << std::endl;
+            report_runtime_error(window, windowglfw, e);
             return GameAborted_tag{};
         }
-    } visitor = {window, windowglfw, eng, vkRenderer, replayLoadingFunction};
-    return std::visit(visitor, loading_outcome);
+    }
+    return game_scene_result;
 }
-void error_callback_glfw(int error, const char* description)
-{
-    std::cerr << "GLFW Error: " << error << ", " << description << "\n";
-    throw std::exception("GLFW Error encountered");
-}
+
 int run_hourglassii() {
 
     try {
@@ -179,18 +221,20 @@ int run_hourglassii() {
             else {
                 assert(std::holds_alternative<RunALevel_tag>(main_menu_result));
             }
-            
-            std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-                = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer);
-            
-            if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
-                continue;
-            }
-            else {
-                assert(std::holds_alternative<LoadLevelFunction>(selected_level));
-            }
-            move_function<std::vector<InputList>()> replayLoader;
+
+            // Run a Replay
             if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
+                std::string str = "";
+                std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
+                    = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer, str);
+
+                if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
+                    continue;
+                }
+                else {
+                    assert(std::holds_alternative<LoadLevelFunction>(selected_level));
+                }
+                move_function<std::vector<InputList>()> replayLoader;
                 std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
                     = run_replay_selection_scene(window, windowglfw,
                         std::get<LoadLevelFunction>(selected_level).levelName, vulkanEng, vkRenderer);
@@ -204,38 +248,27 @@ int run_hourglassii() {
                 //      a stack-overflow.
                 //      (requires enhancement to move_function)
                 replayLoader = std::move(std::get<move_function<std::vector<InputList>()>>(selected_replay));
+
+                std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+                    game_scene_result = runLevel(window, windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
             }
-            
-            std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-                game_scene_result = ReloadLevel_tag{};
-            while (std::holds_alternative<ReloadLevel_tag>(game_scene_result)
-                || std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result))
-            {
-                try {
-                    auto& levelLoadFunction = std::get<LoadLevelFunction>(selected_level);
-                    if (std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result))
-                    {
-                        game_scene_result = loadAndRunLevel(
-                            window,
-                            windowglfw,
-                            vulkanEng,
-                            vkRenderer,
-                            levelLoadFunction,
-                            std::move(std::get<move_function<std::vector<InputList>()>>(game_scene_result)));
-                    }
-                    else {
-                        game_scene_result = loadAndRunLevel(window, windowglfw, vulkanEng, vkRenderer, levelLoadFunction, std::move(replayLoader));
-                    }
-                    assert( std::holds_alternative<GameAborted_tag>(game_scene_result)
-                         || std::holds_alternative<GameWon_tag>(game_scene_result)
-                         || std::holds_alternative<ReloadLevel_tag>(game_scene_result)
-                         || std::holds_alternative<move_function<std::vector<InputList>()>>(game_scene_result));
+
+            // Run a Level
+            if (std::holds_alternative<RunALevel_tag>(main_menu_result)) {
+                std::string str = "";
+                std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
+                    = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer, str);
+
+                if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
+                    continue;
                 }
-                catch (hg::LuaError const &e) {
-                    std::cerr << "There was an error in some lua, the error message was:\n" << boost::diagnostic_information(e) << std::endl;
-                    report_runtime_error(window, windowglfw, e);
-                    game_scene_result = GameAborted_tag{};
+                else {
+                    assert(std::holds_alternative<LoadLevelFunction>(selected_level));
                 }
+                move_function<std::vector<InputList>()> replayLoader;
+
+                std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+                    game_scene_result = runLevel(window, windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
             }
         }
     }

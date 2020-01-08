@@ -11,6 +11,7 @@
 #include "natural_sort.h"
 #include "LevelLoader.h"
 #include "SelectionScene.h"
+#include <algorithm>
 
 namespace hg {
 struct CachingTimeEngineLoader
@@ -52,7 +53,8 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
     hg::RenderWindow &window,
     GLFWWindow &windowglfw,
     VulkanEngine& vulkanEng,
-    VulkanRenderer& vkRenderer) 
+    VulkanRenderer& vkRenderer,
+    std::string &levelName)
 {
     std::vector<boost::filesystem::path> levelPaths;
     for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
@@ -68,10 +70,20 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
             return natural_less(l.stem().string(), r.stem().string());
         });
 
+
     std::vector<std::string> optionStrings;
     boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
+
+    int levelIndex = 0;
+    for (auto it = optionStrings.begin(); it != optionStrings.end(); ++it) {
+        if (*it == levelName) {
+            levelIndex = it - optionStrings.begin();
+            break;
+        }
+    }
+
     std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(
-        window, windowglfw, optionStrings, vulkanEng, vkRenderer);
+        window, windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer);
 
     if (std::holds_alternative<SceneAborted_tag>(selectedOption))
     {

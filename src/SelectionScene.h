@@ -13,6 +13,7 @@ namespace hg
     std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
         hg::RenderWindow &window,
         GLFWWindow &windowglfw,
+        int defaultOption,
         std::vector<std::string> const &options,
         VulkanEngine& vulkanEng,
         VulkanRenderer& vkRenderer);

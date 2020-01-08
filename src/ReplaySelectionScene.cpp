@@ -50,7 +50,7 @@ namespace hg {
         std::vector<std::string> optionStrings;
         boost::push_back(optionStrings, optionList | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
         std::variant<std::size_t, SceneAborted_tag> selectedOption = 
-            run_selection_scene(window, windowglfw, optionStrings, vulkanEng, vkRenderer);
+            run_selection_scene(window, windowglfw, 0, optionStrings, vulkanEng, vkRenderer);
 
         if (std::holds_alternative<SceneAborted_tag>(selectedOption))
         {
