@@ -16,7 +16,7 @@ void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, LuaE
     //LuaError can be:
     // illegal call occurred in lua code (Currently this is the only place it is used)
     // lua produced invalid value
-    
+
     //In each case, we want to report on:
     // What was wrong
     // The back trace (lua and c++)
@@ -35,35 +35,18 @@ void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, LuaE
     //
 
     draw_runtime_error_scene(window, e);
-
-    if (glfwWindowShouldClose(windowglfw.w)) {
-        window.close();
-        throw WindowClosed_exception{};
-    }
-    if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        return;
-    }
-
     while (true) {
-        sf::Event event;
-        if (window.waitEvent(event)) do {
-            switch (event.type) {
-            case sf::Event::KeyPressed:
-                switch (event.key.code) {
-                case sf::Keyboard::Escape:
-                    return;
-                default: break;
-                }
-                break;
-            case sf::Event::Closed:
-                throw WindowClosed_exception{};
-            case sf::Event::Resized:
-                draw_runtime_error_scene(window, e);
-                break;
-            default:
-                break;
+        glfwPollEvents();
+        if (glfwWindowShouldClose(windowglfw.w)) {
+            window.close();
+            throw WindowClosed_exception{};
+        }
+        if (windowglfw.hasLastKey()) {
+            int key = windowglfw.useLastKey();
+            if (key == GLFW_KEY_ESCAPE) {
+                return;
             }
-        } while (window.pollEvent(event));
+        }
     }
 }
 }

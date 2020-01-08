@@ -60,52 +60,30 @@ void run_post_level_scene(
     //boost::future<hg::TimeEngine::RunResult> futureRunResult;
     //bool runningFromReplay(false);
     while (window.isOpen()) {
+        glfwPollEvents();
         {
             if (glfwWindowShouldClose(windowglfw.w)) {
                 window.close();
                 throw WindowClosed_exception{};
             }
 
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                return;
-            }
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_K) == GLFW_PRESS) {
-                saveReplay("replay", finalLevel.timeEngine.getReplayData());
+            if (windowglfw.hasLastKey()) {
+                int key = windowglfw.useLastKey();
+                //Leave level
+                if (key == GLFW_KEY_ESCAPE) {
+                    return;
+                }
+                //Save replay
+                if (key == GLFW_KEY_L) {
+                    saveReplay("replay", finalLevel.timeEngine.getReplayData());
+                }
+                //Restart Replay
+
+                //Pause Relative Replay
+
+                //Resume Relative Replay
             }
 
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                switch (event.type) {
-                    //Window Closed
-                    case sf::Event::Closed:
-                        window.close();
-                        throw WindowClosed_exception{};
-                    case sf::Event::KeyPressed:
-                    switch (event.key.code) {
-                      //Esc Pressed
-                      case sf::Keyboard::Escape:
-                        return;
-                      //Save Replay
-                      case sf::Keyboard::K:
-                        saveReplay("replay", finalLevel.timeEngine.getReplayData());
-                      break;
-                      //Restart Replay
-                    
-                      //Pause Relative Replay
-                    
-                      //Resume Relative Replay
-                    
-                      default:
-                        break;
-                    }
-                    
-                   
-                    break;
-                default:
-                    break;
-                }
-            }
             //Inertia Forwards/Backwards
             if (glfwGetKey(windowglfw.w, GLFW_KEY_PERIOD) == GLFW_PRESS) {
                 inertia.save(mousePosToFrameID(windowglfw, timeEngine), TimeDirection::FORWARDS);

@@ -278,6 +278,7 @@ run_game_scene(hg::RenderWindow &window,
 
     while (true) {
         glfwPollEvents();
+
         switch (state) {
         case RunState::AWAITING_INPUT:
         {
@@ -332,92 +333,38 @@ run_game_scene(hg::RenderWindow &window,
                 window.close();
                 throw WindowClosed_exception{};
             }
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                return GameAborted_tag{};
-            }
 
-            //Restart
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_R) == GLFW_PRESS) {
-                return ReloadLevel_tag{};
-            }
-
-            //Load replay
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_L) == GLFW_PRESS) {
-                return move_function<std::vector<InputList>()>([] {return loadReplay("replay"); });
-            }
-            //Interrupt replay and begin Playing
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_C) == GLFW_PRESS) {
-                currentReplayIt = replay.end();
-                currentReplayEnd = replay.end();
-            }
-            //Save replay
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_K) == GLFW_PRESS) {
-                saveReplay("replay", receivedInputs);
-            }
-            //Generate a replay from replayLogIn
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_G) == GLFW_PRESS) {
-                generateReplay();
-            }
-            //Pause
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_P) == GLFW_PRESS) {
-                state = RunState::PAUSED;
-                goto continuemainloop;
-            }
-
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                //States + transitions:
-                //Not really a state machine!
-                //Playing game -> new game + playing game               Keybinding: R
-                //playing game -> new game + playing replay             Keybinding: L
-
-                //playing replay -> new game + playing game             Keybinding: R
-                //playing replay -> new game + playing replay           Keybinding: L
-                //playing replay -> playing game                        Keybinding: C or <get to end of replay>
-                switch (event.type) {
-                case sf::Event::Closed:
-                    window.close();
-                    throw WindowClosed_exception{};
-                case sf::Event::Resized:
-                    glfwSetWindowSize(
-                        eng.w,
-                        event.size.width,
-                        event.size.height);
-                    break;
-                case sf::Event::KeyPressed:
-                    switch (event.key.code) {
-                    case sf::Keyboard::Escape:
-                        return GameAborted_tag{};
-                    //Restart
-                    case sf::Keyboard::R:
-                        return ReloadLevel_tag{};
-                    //Load replay
-                    case sf::Keyboard::L:
-                        return move_function<std::vector<InputList>()>([] {return loadReplay("replay");});
-                    //Interrupt replay and begin Playing
-                    case sf::Keyboard::C:
-                        currentReplayIt = replay.end();
-                        currentReplayEnd = replay.end();
-                        break;
-                    //Save replay
-                    case sf::Keyboard::K:
-                        saveReplay("replay", receivedInputs);
-                        break;
-                    //Generate a replay from replayLogIn
-                    case sf::Keyboard::G:
-                        generateReplay();
-                        break;
-                    case sf::Keyboard::P:
-                        state = RunState::PAUSED;
-                        goto continuemainloop;
-
-                    default:
-                        break;
-                    }
-                    break;
-                default:
-                    break;
+            if (windowglfw.hasLastKey()) {
+                int key = windowglfw.useLastKey();
+                //Leave level
+                if (key == GLFW_KEY_ESCAPE) {
+                    return GameAborted_tag{};
+                }
+                //Restart
+                if (key == GLFW_KEY_R) {
+                    return ReloadLevel_tag{};
+                }
+                //Load replay
+                if (key == GLFW_KEY_L) {
+                    return move_function<std::vector<InputList>()>([] {return loadReplay("replay"); });
+                }
+                //Interrupt replay and begin Playing
+                if (key == GLFW_KEY_C) {
+                    currentReplayIt = replay.end();
+                    currentReplayEnd = replay.end();
+                }
+                //Save replay
+                if (key == GLFW_KEY_K) {
+                    saveReplay("replay", receivedInputs);
+                }
+                //Generate a replay from replayLogIn
+                if (key == GLFW_KEY_G) {
+                    generateReplay();
+                }
+                //Pause
+                if (key == GLFW_KEY_P) {
+                    state = RunState::PAUSED;
+                    goto continuemainloop;
                 }
             }
             if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (hg::FRAMERATE))) == boost::future_status::ready) {
@@ -504,33 +451,16 @@ run_game_scene(hg::RenderWindow &window,
         case RunState::PAUSED:
         {
             {
-                sf::Event event;
-
                 if (glfwWindowShouldClose(windowglfw.w)) {
                     window.close();
                     throw WindowClosed_exception{};
                 }
 
-                if (glfwGetKey(windowglfw.w, GLFW_KEY_P) == GLFW_PRESS) {
-                    state = RunState::RUNNING_LEVEL;
-                    goto continuemainloop;
-                }
-
-                while (window.pollEvent(event))
-                {
-                    switch (event.type) {
-                    case sf::Event::Closed:
-                        window.close();
-                        throw WindowClosed_exception{};
-                    case sf::Event::KeyPressed:
-                        switch (event.key.code) {
-                        case sf::Keyboard::P:
-                            state = RunState::RUNNING_LEVEL;
-                            goto continuemainloop;
-                        default: break;
-                        }
-                        break;
-                    default: break;
+                if (windowglfw.hasLastKey()) {
+                    int key = windowglfw.useLastKey();
+                    if (key == GLFW_KEY_P) {
+                        state = RunState::RUNNING_LEVEL;
+                        goto continuemainloop;
                     }
                 }
             }

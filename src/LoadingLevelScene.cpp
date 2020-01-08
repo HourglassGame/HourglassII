@@ -300,6 +300,8 @@ displayLoadingScreen(
 
     bool sceneDrawn = false;
     while (futureLoadedLevel.wait_for(boost::chrono::milliseconds(100)) != boost::future_status::ready) {
+        glfwPollEvents();
+
         if (!sceneDrawn) {
             drawLoadingScreen(window);
         }
@@ -309,31 +311,12 @@ displayLoadingScreen(
                 throw WindowClosed_exception{};
             }
 
-            if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                interrupter.interrupt();
-                futureLoadedLevel.wait();
-                return LoadingCanceled_tag{};
-            }
-
-            sf::Event event;
-            while (window.pollEvent(event))
-            {
-                switch(event.type) {
-                case sf::Event::Closed:
+            if (windowglfw.hasLastKey()) {
+                int key = windowglfw.useLastKey();
+                if (key == GLFW_KEY_ESCAPE) {
                     interrupter.interrupt();
                     futureLoadedLevel.wait();
-                    throw WindowClosed_exception{};
-                case sf::Event::KeyPressed:
-                    if (event.key.code == sf::Keyboard::Escape) {
-                        interrupter.interrupt();
-                        futureLoadedLevel.wait();
-                        return LoadingCanceled_tag{};
-                    }
-                    break;
-                case sf::Event::Resized:
-                    sceneDrawn = false;
-                break;
-                default: break;
+                    return LoadingCanceled_tag{};
                 }
             }
         }

@@ -465,6 +465,8 @@ run_main_menu(
 
         bool mainMenuDrawn = true;
         while (mainMenuDrawn) {
+            glfwPollEvents();
+
             //vulkanEng.drawFrame();
             auto nextFrame = std::chrono::steady_clock::now();
             std::chrono::duration<double> frameTime = nextFrame - frameStart;
@@ -492,37 +494,6 @@ run_main_menu(
                     mainMenuDrawn = false;
                 }
             }
-
-            sf::Event event;
-            if (window.pollEvent(event)) do {
-                switch (event.type) {
-                  case sf::Event::KeyPressed:
-                    switch (event.key.code) {
-                      case sf::Keyboard::Return:
-                        return menu[currentItem].tag;
-                      case sf::Keyboard::Up:
-                      case sf::Keyboard::W:
-                        currentItem = flooredModulo(currentItem-1, static_cast<int>(menu.size()));
-                        mainMenuDrawn = false;
-                      break;
-                      case sf::Keyboard::Down:
-                      case sf::Keyboard::S:
-                        currentItem = flooredModulo(currentItem+1, static_cast<int>(menu.size()));
-                        mainMenuDrawn = false;
-                      break;
-                      default:
-                        break;
-                    }
-                    break;
-                  case sf::Event::Closed:
-                    throw WindowClosed_exception{};
-                  case sf::Event::Resized:
-                    mainMenuDrawn = false;
-                  break;
-                  default:
-                    break;
-                }
-            } while (window.pollEvent(event));
         }
     }
 }

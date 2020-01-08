@@ -317,36 +317,16 @@ namespace hg {
             window.clear();
             window.display();
             while (true) {
+                glfwPollEvents();
                 if (glfwWindowShouldClose(windowglfw.w)) {
                     window.close();
                     throw WindowClosed_exception{};
                 }
 
-                if (glfwGetKey(windowglfw.w, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-                    return SceneAborted_tag{};
-                }
-
-                sf::Event event;
-                while (window.pollEvent(event))
-                {
-                    switch (event.type) {
-                    case sf::Event::KeyPressed:
-                        switch (event.key.code) {
-                        case sf::Keyboard::Escape:
-                            return SceneAborted_tag{};
-                            break;
-                        default: break;
-                        }
-                        break;
-                    case sf::Event::Closed:
-                        throw WindowClosed_exception{};
-                        break;
-                    case sf::Event::Resized:
-                        window.clear();
-                        window.display();
-                        break;
-                    default:
-                        break;
+                if (windowglfw.hasLastKey()) {
+                    int key = windowglfw.useLastKey();
+                    if (key == GLFW_KEY_ESCAPE) {
+                        return SceneAborted_tag{};
                     }
                 }
             }
@@ -360,6 +340,8 @@ namespace hg {
             drawOptionSelection(window, options[selectedItem]);
             bool menuDrawn = true;
             while (menuDrawn) {
+                glfwPollEvents();
+
                 if (glfwWindowShouldClose(windowglfw.w)) {
                     window.close();
                     throw WindowClosed_exception{};
@@ -380,41 +362,6 @@ namespace hg {
                     }
                     if (key == GLFW_KEY_ESCAPE) {
                         return SceneAborted_tag{};
-                    }
-                }
-
-                sf::Event event;
-                while (window.pollEvent(event))
-                {
-                    switch (event.type) {
-                    case sf::Event::KeyPressed:
-                        switch (event.key.code) {
-                        case sf::Keyboard::Return:
-                        {
-                            return static_cast<std::size_t>(selectedItem);
-                        }
-                        case sf::Keyboard::Up:
-                        case sf::Keyboard::W:
-                            selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
-                            menuDrawn = false;
-                            break;
-                        case sf::Keyboard::Down:
-                        case sf::Keyboard::S:
-                            selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
-                            menuDrawn = false;
-                            break;
-                        case sf::Keyboard::Escape:
-                            return SceneAborted_tag{};
-                        default: break;
-                        }
-                        break;
-                    case sf::Event::Closed:
-                        throw WindowClosed_exception{};
-                    case sf::Event::Resized:
-                        menuDrawn = false;
-                        break;
-                    default:
-                        break;
                     }
                 }
             }
