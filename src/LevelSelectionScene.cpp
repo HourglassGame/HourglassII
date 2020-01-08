@@ -11,7 +11,7 @@
 #include "natural_sort.h"
 #include "LevelLoader.h"
 #include "SelectionScene.h"
-#include <algorithm>
+#include <regex>
 
 namespace hg {
 struct CachingTimeEngineLoader
@@ -75,9 +75,11 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
     boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
 
     int levelIndex = 0;
+    std::regex e(".lvl");
+    levelName = std::regex_replace(levelName, e, "");
     for (auto it = optionStrings.begin(); it != optionStrings.end(); ++it) {
         if (*it == levelName) {
-            levelIndex = it - optionStrings.begin();
+            levelIndex = static_cast<int>(it - optionStrings.begin());
             break;
         }
     }

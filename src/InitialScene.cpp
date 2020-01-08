@@ -224,51 +224,58 @@ int run_hourglassii() {
 
             // Run a Replay
             if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
-                std::string str = "";
-                std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-                    = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer, str);
+                std::string levelName = "";
+                while (true) {
+                    std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
+                        = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer, levelName);
 
-                if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
-                    continue;
-                }
-                else {
-                    assert(std::holds_alternative<LoadLevelFunction>(selected_level));
-                }
-                move_function<std::vector<InputList>()> replayLoader;
-                std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
-                    = run_replay_selection_scene(window, windowglfw,
-                        std::get<LoadLevelFunction>(selected_level).levelName, vulkanEng, vkRenderer);
-                if (std::holds_alternative<SceneAborted_tag>(selected_replay)) {
-                    continue;
-                }
-                else {
-                    assert(std::holds_alternative<move_function<std::vector<InputList>()>>(selected_replay));
-                }
-                //TODO: Make failure to use std::move here be a compile time error, rather than
-                //      a stack-overflow.
-                //      (requires enhancement to move_function)
-                replayLoader = std::move(std::get<move_function<std::vector<InputList>()>>(selected_replay));
+                    if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
+                        break;
+                    }
+                    else {
+                        assert(std::holds_alternative<LoadLevelFunction>(selected_level));
+                    }
+                    levelName = std::get<LoadLevelFunction>(selected_level).levelName;
+                    move_function<std::vector<InputList>()> replayLoader;
+                    std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> selected_replay
+                        = run_replay_selection_scene(window, windowglfw,
+                            std::get<LoadLevelFunction>(selected_level).levelName, vulkanEng, vkRenderer);
+                    if (std::holds_alternative<SceneAborted_tag>(selected_replay)) {
+                        continue;
+                    }
+                    else {
+                        assert(std::holds_alternative<move_function<std::vector<InputList>()>>(selected_replay));
+                    }
+                    //TODO: Make failure to use std::move here be a compile time error, rather than
+                    //      a stack-overflow.
+                    //      (requires enhancement to move_function)
+                    replayLoader = std::move(std::get<move_function<std::vector<InputList>()>>(selected_replay));
 
-                std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-                    game_scene_result = runLevel(window, windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
+                    std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+                        game_scene_result = runLevel(window, windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
+
+                }
             }
 
             // Run a Level
             if (std::holds_alternative<RunALevel_tag>(main_menu_result)) {
-                std::string str = "";
-                std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-                    = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer, str);
+                std::string levelName = "";
+                while (true) {
+                    std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
+                        = run_level_selection_scene(window, windowglfw, vulkanEng, vkRenderer, levelName);
 
-                if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
-                    continue;
-                }
-                else {
-                    assert(std::holds_alternative<LoadLevelFunction>(selected_level));
-                }
-                move_function<std::vector<InputList>()> replayLoader;
+                    if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
+                        break;
+                    }
+                    else {
+                        assert(std::holds_alternative<LoadLevelFunction>(selected_level));
+                    }
+                    levelName = std::get<LoadLevelFunction>(selected_level).levelName;
+                    move_function<std::vector<InputList>()> replayLoader;
 
-                std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-                    game_scene_result = runLevel(window, windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
+                    std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+                        game_scene_result = runLevel(window, windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
+                }
             }
         }
     }
