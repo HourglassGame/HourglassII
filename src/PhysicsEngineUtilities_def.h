@@ -782,171 +782,159 @@ void guyStep(
             if (carry[i])
             {
                 bool droppable(false);
-
                 if (input.getDown() || input.getBoxLeft() || input.getBoxRight())
                 {
+                    int gX(guyArrivalList[i].getX());
+                    int gY(guyArrivalList[i].getY());
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
                     int dropSize(guyArrivalList[i].getBoxCarrySize());
 
-                    // Initialize bounds on drops based on movement direction
-                    int dropY, leftBound, rightBound;
+                    int dropYReverseMod = 0;
+                    if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
+                        dropYReverseMod = -guyArrivalList[i].getYspeed();
+                    }
 
-                    if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                    int dropY = gY + dropYReverseMod + height;
+                    while (dropY >= gY + dropYReverseMod + height - dropSize && !droppable)
                     {
-                        dropY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed() + height - dropSize;
-                        if (dropSize < width)
+                        std::cerr << "Try" << "\n";
+                        // Track next attempted drop height
+                        int nextDropY = gY + dropYReverseMod + height - dropSize - 1;
+
+                        // Initialize bounds on drops based on movement direction
+                        int leftBound, rightBound;
+
+                        if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
                         {
-                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
-                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + width;
+                            if (dropSize < width)
+                            {
+                                leftBound = gX - guyArrivalList[i].getXspeed();
+                                rightBound = gX - guyArrivalList[i].getXspeed() - dropSize + width;
+                            }
+                            else
+                            {
+                                leftBound = gX - guyArrivalList[i].getXspeed() - dropSize + width;
+                                rightBound = gX - guyArrivalList[i].getXspeed();
+                            }
+                            if (input.getBoxLeft())
+                            {
+                                leftBound = gX - guyArrivalList[i].getXspeed() - dropSize;
+
+                            }
+                            else if (input.getBoxRight())
+                            {
+                                rightBound = gX - guyArrivalList[i].getXspeed() + width;
+                            }
                         }
                         else
                         {
-                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize + width;
-                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
-                        }
-                        if (input.getBoxLeft())
-                        {
-                            leftBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() - dropSize;
-
-                        }
-                        else if (input.getBoxRight())
-                        {
-                            rightBound = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() + width;
-                        }
-                    }
-                    else
-                    {
-                        dropY = y[i] + height - dropSize;
-                        if (dropSize < width)
-                        {
-                            leftBound = x[i];
-                            rightBound = x[i] - dropSize + width;
-                        }
-                        else
-                        {
-                            leftBound = x[i] - dropSize + width;
-                            rightBound = x[i];
-                        }
-                        if (input.getBoxLeft())
-                        {
-                            leftBound = x[i] - dropSize;
-                        }
-                        else if (input.getBoxRight())
-                        {
-                            rightBound = x[i] + width;
-                        }
-                    }
-
-                    //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
-
-                    // Narrow drop bounds with wall collision
-                    int cx = rightBound - rightBound % env.wall.segmentSize();
-                    int initial_cy = dropY - dropY % env.wall.segmentSize();
-                    while (cx < rightBound + dropSize)
-                    {
-                        int cy = initial_cy;
-                        while (cy < dropY + dropSize)
-                        {
-                            if (env.wall.at(cx, cy))
+                            if (dropSize < width)
                             {
-                                rightBound = cx - dropSize;
-                                goto rightBoundCheckDoubleBreak;
+                                leftBound = x[i];
+                                rightBound = x[i] - dropSize + width;
                             }
-                            cy += env.wall.segmentSize();
-                        }
-                        cx += env.wall.segmentSize();
-                    }
-                rightBoundCheckDoubleBreak:
-
-                    //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
-
-                    cx = (leftBound + dropSize) - (leftBound + dropSize) % env.wall.segmentSize() - 1;
-                    while (cx > leftBound)
-                    {
-                        int cy = initial_cy;
-                        while (cy < dropY + dropSize)
-                        {
-                            if (env.wall.at(cx, cy))
+                            else
                             {
-                                leftBound = cx + 1;
-                                goto leftBoundCheckDoubleBreak;
+                                leftBound = x[i] - dropSize + width;
+                                rightBound = x[i];
                             }
-                            cy += env.wall.segmentSize();
-                        }
-                        cx -= env.wall.segmentSize();
-                    }
-                leftBoundCheckDoubleBreak:
-
-                    //std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
-
-                    // Check bounds imposed by platforms
-                    if (rightBound >= leftBound)
-                    {
-                        for (std::size_t j(0), jsize(nextPlatform.size()); j < jsize; ++j)
-                        {
-                            int px = nextPlatform[j].getX();
-                            int py = nextPlatform[j].getY();
-                            int pw = nextPlatform[j].getWidth();
-                            int ph = nextPlatform[j].getHeight();
-
-                            if (guyArrivalList[i].getBoxCarryDirection()*nextPlatform[j].getTimeDirection() == TimeDirection::REVERSE)
+                            if (input.getBoxLeft())
                             {
-                                px -= nextPlatform[j].getXspeed() + nextPlatform[j].getPrevXspeed();
-                                py -= nextPlatform[j].getYspeed() + nextPlatform[j].getPrevYspeed();
+                                leftBound = x[i] - dropSize;
                             }
-
-                            if (IntersectingRectanglesExclusive(
-                                px, py, pw, ph,
-                                leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+                            else if (input.getBoxRight())
                             {
-                                if (px + pw > leftBound + dropSize && px < rightBound + dropSize)
-                                {
-                                    rightBound = px - dropSize;
-                                }
-                                if (px < rightBound && px + pw > leftBound)
-                                {
-                                    leftBound = px + pw;
-                                }
-                                if (rightBound < leftBound)
-                                {
-                                    break;
-                                }
+                                rightBound = x[i] + width;
                             }
                         }
-                    }
-                    //std::cerr << "After Plat " << leftBound << ", " << rightBound << "\n";
 
-                    // Check bounds imposed by boxes
-                    if (rightBound >= leftBound)
-                    {
-                        for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
+                        //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
+
+                        // Narrow drop bounds with wall collision
+                        int cx = rightBound - rightBound % env.wall.segmentSize();
+                        int initial_cy = dropY + dropSize - (dropY + dropSize) % env.wall.segmentSize(); // Top of lowest wall
+                        if ((dropY + dropSize) % env.wall.segmentSize() == 0) {
+                            initial_cy -= env.wall.segmentSize();
+                        }
+                        while (cx < rightBound + dropSize)
                         {
-                            if (nextBoxNormalDeparture[j])
+                            int cy = initial_cy;
+                            while (cy >= dropY)
                             {
-                                int bx = nextBox[j].object.getX();
-                                int by = nextBox[j].object.getY();
-                                int bs = nextBox[j].object.getSize();
-
-                                if (guyArrivalList[i].getBoxCarryDirection()*nextBox[j].object.getTimeDirection() == TimeDirection::REVERSE)
+                                if (env.wall.at(cx, cy))
                                 {
-                                    bx -= nextBox[j].object.getXspeed();
-                                    by -= nextBox[j].object.getYspeed();
+                                    rightBound = cx - dropSize;
+                                    if (cy - dropSize > nextDropY) {
+                                        nextDropY = cy - dropSize;
+                                    }
+                                    goto rightBoundCheckDoubleBreak;
+                                }
+                                cy -= env.wall.segmentSize();
+                            }
+                            cx += env.wall.segmentSize();
+                        }
+                    rightBoundCheckDoubleBreak:;
+
+                        std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
+                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+
+                        cx = (leftBound + dropSize) - (leftBound + dropSize) % env.wall.segmentSize() - 1;
+                        while (cx > leftBound)
+                        {
+                            int cy = initial_cy;
+                            while (cy >= dropY)
+                            {
+                                if (env.wall.at(cx, cy))
+                                {
+                                    leftBound = cx + 1;
+                                    if (cy - dropSize > nextDropY) {
+                                        nextDropY = cy - dropSize;
+                                    }
+                                    goto leftBoundCheckDoubleBreak;
+                                }
+                                cy -= env.wall.segmentSize();
+                            }
+                            cx -= env.wall.segmentSize();
+                        }
+                    leftBoundCheckDoubleBreak:;
+
+                        std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
+                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+
+                        // Check bounds imposed by platforms
+                        if (rightBound >= leftBound)
+                        {
+                            for (std::size_t j(0), jsize(nextPlatform.size()); j < jsize; ++j)
+                            {
+                                int px = nextPlatform[j].getX();
+                                int py = nextPlatform[j].getY();
+                                int pw = nextPlatform[j].getWidth();
+                                int ph = nextPlatform[j].getHeight();
+
+                                if (guyArrivalList[i].getBoxCarryDirection()*nextPlatform[j].getTimeDirection() == TimeDirection::REVERSE)
+                                {
+                                    px -= nextPlatform[j].getXspeed() + nextPlatform[j].getPrevXspeed();
+                                    py -= nextPlatform[j].getYspeed() + nextPlatform[j].getPrevYspeed();
                                 }
 
-                                //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
-                                //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
                                 if (IntersectingRectanglesExclusive(
-                                    bx, by, bs, bs,
+                                    px, py, pw, ph,
                                     leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
                                 {
-                                    if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
+                                    if (px + pw > leftBound + dropSize && px < rightBound + dropSize)
                                     {
-                                        rightBound = bx - dropSize;
+                                        rightBound = px - dropSize;
+                                        if (py - dropSize > nextDropY) {
+                                            nextDropY = py - dropSize;
+                                        }
                                     }
-                                    if (bx <= rightBound && bx + bs >= leftBound)
+                                    if (px < rightBound && px + pw > leftBound)
                                     {
-                                        leftBound = bx + bs;
+                                        leftBound = px + pw;
+                                        if (py - dropSize > nextDropY) {
+                                            nextDropY = py - dropSize;
+                                        }
                                     }
                                     if (rightBound < leftBound)
                                     {
@@ -955,73 +943,123 @@ void guyStep(
                                 }
                             }
                         }
-                    }
+                        //std::cerr << "After Plat " << leftBound << ", " << rightBound << "\n";
 
-                    //std::cerr << "After Box " << leftBound << ", " << rightBound << "\n";
-
-                    droppable = rightBound >= leftBound;
-
-                    if (droppable)
-                    {
-
-                        // Choose where to drop it within bound
-                        int dropX;
-                        if (input.getBoxLeft())
+                        // Check bounds imposed by boxes
+                        if (rightBound >= leftBound)
                         {
-                            dropX = leftBound;
-                        }
-                        else if (input.getBoxRight())
-                        {
-                            dropX = rightBound;
-                        }
-                        else
-                        {
-                            int midX;
-                            if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                            for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
                             {
-                                midX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed() + width / 2 - dropSize / 2;
-                            }
-                            else
-                            {
-                                midX = x[i] + width / 2 - dropSize / 2;
-                            }
-                            if (leftBound <= midX)
-                            {
-                                if (midX <= rightBound)
+                                if (nextBoxNormalDeparture[j])
                                 {
-                                    dropX = midX;
-                                }
-                                else
-                                {
-                                    dropX = rightBound;
+                                    int bx = nextBox[j].object.getX();
+                                    int by = nextBox[j].object.getY();
+                                    int bs = nextBox[j].object.getSize();
+
+                                    if (guyArrivalList[i].getBoxCarryDirection()*nextBox[j].object.getTimeDirection() == TimeDirection::REVERSE)
+                                    {
+                                        bx -= nextBox[j].object.getXspeed();
+                                        by -= nextBox[j].object.getYspeed();
+                                    }
+
+                                    //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
+                                    //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
+                                    if (IntersectingRectanglesExclusive(
+                                        bx, by, bs, bs,
+                                        leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+                                    {
+                                        if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
+                                        {
+                                            rightBound = bx - dropSize;
+                                            if (by - dropSize > nextDropY) {
+                                                nextDropY = by - dropSize;
+                                            }
+                                        }
+                                        if (bx <= rightBound && bx + bs >= leftBound)
+                                        {
+                                            if (by - dropSize > nextDropY) {
+                                                nextDropY = by - dropSize;
+                                            }
+                                            leftBound = bx + bs;
+                                        }
+                                        if (rightBound < leftBound)
+                                        {
+                                            break;
+                                        }
+                                    }
                                 }
                             }
-                            else
+                        }
+
+                        //std::cerr << "After Box " << leftBound << ", " << rightBound << "\n";
+
+                        droppable = rightBound >= leftBound;
+
+                        if (droppable)
+                        {
+                            // Choose where to drop it within bound
+                            int dropX;
+                            if (input.getBoxLeft())
                             {
                                 dropX = leftBound;
                             }
+                            else if (input.getBoxRight())
+                            {
+                                dropX = rightBound;
+                            }
+                            else
+                            {
+                                int midX;
+                                if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                                {
+                                    midX = x[i] - guyArrivalList[i].getXspeed() + width / 2 - dropSize / 2;
+                                }
+                                else
+                                {
+                                    midX = x[i] + width / 2 - dropSize / 2;
+                                }
+                                if (leftBound <= midX)
+                                {
+                                    if (midX <= rightBound)
+                                    {
+                                        dropX = midX;
+                                    }
+                                    else
+                                    {
+                                        dropX = rightBound;
+                                    }
+                                }
+                                else
+                                {
+                                    dropX = leftBound;
+                                }
+                            }
+
+                            // Add box
+                            makeBoxAndTimeWithPortalsAndMutators(
+                                nextBox,
+                                nextBoxNormalDeparture,
+                                nextPortal,
+                                mutators,
+                                dropX,
+                                dropY,
+                                0,
+                                0,
+                                dropSize,
+                                -1,
+                                guyArrivalList[i].getBoxCarryDirection(),
+                                triggerFrameState,
+                                frame,
+                                pool);
+
+                            carry[i] = false;
+                            carrySize[i] = 0;
+                            carryDirection[i] = TimeDirection::INVALID;
                         }
-
-                        // Add box
-                        makeBoxAndTimeWithPortalsAndMutators(
-                            nextBox,
-                            nextBoxNormalDeparture,
-                            nextPortal,
-                            mutators,
-                            dropX,
-                            dropY,
-                            0,
-                            yspeed[i],
-                            dropSize,
-                            -1,
-                            guyArrivalList[i].getBoxCarryDirection(),
-                            triggerFrameState,
-                            frame,
-                            pool);
-
-                        carry[i] = false;
-                        carrySize[i] = 0;
-                        carryDirection[i] = TimeDirection::INVALID;
+                        else // !droppable
+                        {
+                            dropY = nextDropY;
+                        }
                     }
                 }
 
