@@ -247,7 +247,7 @@ void guyStep(
             x.push_back(guyArrivalList[i].getX());
             y.push_back(guyArrivalList[i].getY());
             xspeed.push_back(0);
-            yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
+            yspeed.push_back(guyArrivalList[i].getYspeed());
         }
         else
         {
@@ -257,31 +257,39 @@ void guyStep(
             xspeed.push_back(0);
             if (guyArrivalList[i].getTimePaused())
             {
-                yspeed.push_back(guyArrivalList[i].getYspeed() + env.gravity);
+                yspeed.push_back(guyArrivalList[i].getYspeed());
             }
             else
             {
                 //std::cerr << "Arrival Loc Speed " << getFrameNumber(frame) << ": " << relativePortal.getYspeed() << "\n";
                 if (relativePortal.getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
                 {
-                    yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed() + env.gravity);
+                    yspeed.push_back(guyArrivalList[i].getYspeed() + relativePortal.getYspeed());
                     y[i] = y[i] - relativePortal.getYspeed();
                 }
                 else
                 {
-                    yspeed.push_back(guyArrivalList[i].getYspeed() - relativePortal.getYspeed() + env.gravity);
+                    yspeed.push_back(guyArrivalList[i].getYspeed() - relativePortal.getYspeed());
                     y[i] = y[i] + relativePortal.getYspeed();
                 }
             }
         }
 
+        if (yspeed[i] > 0) {
+            yspeed[i] += hg::UP_GRAVITY;
+        }
+        else {
+            yspeed[i] += hg::DOWN_GRAVITY;
+        }
+
         // Floaty behaviour
-        if (yspeed[i] > 0 && yspeed[i] < 10*env.gravity) {
-            yspeed[i] -= env.gravity * (10 * env.gravity - yspeed[i])/(18 * env.gravity);
-        }
-        else if (-yspeed[i] > 0 && -yspeed[i] < 10 * env.gravity) {
-            yspeed[i] += env.gravity * (10 * env.gravity + yspeed[i]) / (18 * env.gravity);
-        }
+        //if (yspeed[i] > 0 && yspeed[i] < 12 * env.gravity) {
+        //    yspeed[i] -= env.gravity * (12 * env.gravity - yspeed[i]) / (18 * env.gravity);
+        //}
+        //else if (-yspeed[i] > 0 && -yspeed[i] < 12 * env.gravity) {
+        //    yspeed[i] += env.gravity * (12 * env.gravity + yspeed[i]) / (18 * env.gravity);
+        //}
+        //std::cerr << jumpHold[i] << ", " << yspeed[i] << "\n";
 
         // Soft speed limit
         yspeed[i] += -yspeed[i] * yspeed[i] * yspeed[i] / hg::VERT_AIR_RESISTANCE;
@@ -369,10 +377,10 @@ void guyStep(
                 {
                     if (jumpHold[i] > 1) {
                         if (guyArrivalList[i].getBoxCarrying()) {
-                            yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i]*3/2)/3;
+                            yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2) / 3;
                         }
                         else {
-                            yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i]*3/2;
+                            yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2;
                         }
                     }
                     jumpHold[i] += 1;
@@ -418,8 +426,8 @@ void guyStep(
 
                     int boxSize(boxArrivalList[j].getSize());
 
-                    // -env.gravity feels like hax but probably isn't. The print out shows that it is a requirement
-                    if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - env.gravity <= boxY + boxYspeed)
+                    // -hg::DOWN_GRAVITY feels like hax but probably isn't. The print out shows that it is a requirement
+                    if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - hg::DOWN_GRAVITY <= boxY + boxYspeed)
                     {
                         newY = boxY - height;
                         xspeed[i] = -boxXspeed;
@@ -861,7 +869,7 @@ void guyStep(
             if (carry[i])
             {
                 bool droppable(false);
-                if (input.getDown() || input.getBoxLeft() || input.getBoxRight())
+                if (input.getDown())
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
@@ -869,13 +877,14 @@ void guyStep(
 
                     int gX(x[i]);
                     int gY(y[i]);
+                    int dropY = gY + height - 1; // No jumping off your own dropped box.
                     if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
                         gX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
                         gY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed();
+                        dropY = gY + height; // Avoid cliff dropping paradoxes
                     }
                     //std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 
-                    int dropY = gY + height - 1; // The -1 prevents jumping off your own dropped box with frame-perfect control.
                     while (dropY >= gY + height - dropSize && !droppable)
                     {
                         //std::cerr << "Try: " << gX << ", " << gY << "\n";
@@ -895,13 +904,12 @@ void guyStep(
                             leftBound = gX - dropSize + width;
                             rightBound = gX;
                         }
-                        if (input.getBoxLeft())
-                        {
-                            leftBound = gX - dropSize;
+
+                        if (facing[i] == FacingDirection::LEFT) {
+                            leftBound = gX - dropSize + width / 2;
                         }
-                        else if (input.getBoxRight())
-                        {
-                            rightBound = gX + width;
+                        else if (facing[i] == FacingDirection::RIGHT) {
+                            rightBound = gX + width / 2;
                         }
 
                         //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
@@ -1055,19 +1063,17 @@ void guyStep(
                         {
                             // Choose where to drop it within bound
                             int dropX;
-                            if (input.getBoxLeft())
-                            {
+                            if (facing[i] == FacingDirection::LEFT) {
                                 dropX = leftBound;
                             }
-                            else if (input.getBoxRight())
-                            {
+                            else if (facing[i] == FacingDirection::RIGHT) {
                                 dropX = rightBound;
                             }
-                            else
-                            {
+                            else {
+                                // Never seen?
+                                assert(false);
                                 int midX = gX + width / 2 - dropSize / 2;
-                                if (leftBound <= midX)
-                                {
+                                if (leftBound <= midX) {
                                     if (midX <= rightBound)
                                     {
                                         dropX = midX;
@@ -1120,7 +1126,7 @@ void guyStep(
             }
             else
             {
-                if (input.getDown() || input.getBoxLeft() || input.getBoxRight())
+                if (input.getDown())
                 {
 
                     int width = guyArrivalList[i].getWidth();
@@ -2526,7 +2532,7 @@ template <
             xTemp[i] = oldBoxList[i].getX();
             yTemp[i] = oldBoxList[i].getY();
             x[i] = xTemp[i] + oldBoxList[i].getXspeed();
-            y[i] = yTemp[i] + oldBoxList[i].getYspeed() + env.gravity;
+            y[i] = yTemp[i] + oldBoxList[i].getYspeed();
         }
         else
         {
@@ -2538,17 +2544,23 @@ template <
                 xTemp[i] = relx - relativePortal.getXspeed();
                 yTemp[i] = rely - relativePortal.getYspeed();
                 x[i] = relx + oldBoxList[i].getXspeed();
-                y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
+                y[i] = rely + oldBoxList[i].getYspeed();
             }
             else
             {
                 xTemp[i] = relx + relativePortal.getXspeed();
                 yTemp[i] = rely + relativePortal.getYspeed();
                 x[i] = relx + oldBoxList[i].getXspeed();
-                y[i] = rely + oldBoxList[i].getYspeed() + env.gravity;
+                y[i] = rely + oldBoxList[i].getYspeed();
             }
         }
         size[i] = oldBoxList[i].getSize();
+        if (oldBoxList[i].getYspeed() > 0) {
+            y[i] += hg::UP_GRAVITY;
+        }
+        else {
+            y[i] += hg::DOWN_GRAVITY;
+        }
         y[i] += -oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() / hg::VERT_AIR_RESISTANCE;
     }
 
