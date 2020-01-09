@@ -784,69 +784,45 @@ void guyStep(
                 bool droppable(false);
                 if (input.getDown() || input.getBoxLeft() || input.getBoxRight())
                 {
-                    int gX(guyArrivalList[i].getX());
-                    int gY(guyArrivalList[i].getY());
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
                     int dropSize(guyArrivalList[i].getBoxCarrySize());
 
-                    int dropYReverseMod = 0;
+                    int gX(x[i]);
+                    int gY(y[i]);
                     if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
-                        dropYReverseMod = -guyArrivalList[i].getYspeed();
+                        gX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
+                        gY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed();
                     }
+                    //std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 
-                    int dropY = gY + dropYReverseMod + height - 1; // The -1 prevents jumping off your own dropped box with frame-perfect control.
-                    while (dropY >= gY + dropYReverseMod + height - dropSize && !droppable)
+                    int dropY = gY + height - 1; // The -1 prevents jumping off your own dropped box with frame-perfect control.
+                    while (dropY >= gY + height - dropSize && !droppable)
                     {
-                        std::cerr << "Try" << "\n";
+                        //std::cerr << "Try: " << gX << ", " << gY << "\n";
                         // Track next attempted drop height
-                        int nextDropY = gY + dropYReverseMod + height - dropSize - 1;
+                        int nextDropY = gY + height - dropSize - 1;
 
                         // Initialize bounds on drops based on movement direction
                         int leftBound, rightBound;
 
-                        if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                        if (dropSize < width)
                         {
-                            if (dropSize < width)
-                            {
-                                leftBound = gX - guyArrivalList[i].getXspeed();
-                                rightBound = gX - guyArrivalList[i].getXspeed() - dropSize + width;
-                            }
-                            else
-                            {
-                                leftBound = gX - guyArrivalList[i].getXspeed() - dropSize + width;
-                                rightBound = gX - guyArrivalList[i].getXspeed();
-                            }
-                            if (input.getBoxLeft())
-                            {
-                                leftBound = gX - guyArrivalList[i].getXspeed() - dropSize;
-
-                            }
-                            else if (input.getBoxRight())
-                            {
-                                rightBound = gX - guyArrivalList[i].getXspeed() + width;
-                            }
+                            leftBound = gX;
+                            rightBound = gX - dropSize + width;
                         }
                         else
                         {
-                            if (dropSize < width)
-                            {
-                                leftBound = x[i];
-                                rightBound = x[i] - dropSize + width;
-                            }
-                            else
-                            {
-                                leftBound = x[i] - dropSize + width;
-                                rightBound = x[i];
-                            }
-                            if (input.getBoxLeft())
-                            {
-                                leftBound = x[i] - dropSize;
-                            }
-                            else if (input.getBoxRight())
-                            {
-                                rightBound = x[i] + width;
-                            }
+                            leftBound = gX - dropSize + width;
+                            rightBound = gX;
+                        }
+                        if (input.getBoxLeft())
+                        {
+                            leftBound = gX - dropSize;
+                        }
+                        else if (input.getBoxRight())
+                        {
+                            rightBound = gX + width;
                         }
 
                         //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
@@ -944,6 +920,7 @@ void guyStep(
                             }
                         }
                         //std::cerr << "After Plat " << leftBound << ", " << rightBound << "\n";
+                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         // Check bounds imposed by boxes
                         if (rightBound >= leftBound)
@@ -1009,15 +986,7 @@ void guyStep(
                             }
                             else
                             {
-                                int midX;
-                                if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
-                                {
-                                    midX = x[i] - guyArrivalList[i].getXspeed() + width / 2 - dropSize / 2;
-                                }
-                                else
-                                {
-                                    midX = x[i] + width / 2 - dropSize / 2;
-                                }
+                                int midX = gX + width / 2 - dropSize / 2;
                                 if (leftBound <= midX)
                                 {
                                     if (midX <= rightBound)
@@ -1034,6 +1003,7 @@ void guyStep(
                                     dropX = leftBound;
                                 }
                             }
+                            //std::cerr << "Dropped Box " << dropX << ", " << dropY << "\n";
 
                             // Add box
                             makeBoxAndTimeWithPortalsAndMutators(
@@ -1044,7 +1014,7 @@ void guyStep(
                                 dropX,
                                 dropY,
                                 0,
-                                0,
+                                guyArrivalList[i].getSupportedSpeed(),
                                 dropSize,
                                 -1,
                                 guyArrivalList[i].getBoxCarryDirection(),
