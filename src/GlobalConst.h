@@ -4,10 +4,14 @@
 #include <vector>
 namespace hg {
     inline static const int FRAMERATE = 60;
+    inline static const int GRAVITY = 20;
     inline static const int GUY_SPEED = 200;
-    inline static const int GUY_HOR_ACCEL = 35;
+    inline static const int GUY_HOR_ACCEL = 40;
     inline static const int GUY_HOR_SLOW = 70;
-    inline static const int GUY_JUMP_SPEED_DEFAULT = 270;
+    inline static const int GUY_JUMP_SPEED_DEFAULT = 380;
+    inline static const int GUY_JUMP_HOLD_MAX = 12;
+    inline static const int GUY_JUMP_HOLD_SPEED = -30;
+    inline static const int VERT_AIR_RESISTANCE = 22000000;
     //The game window is divided into 4 quadrants.
     //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide
     //the window into quadrants, as ratios of the window width/height.

@@ -218,6 +218,7 @@ void guyStep(
     mp::std::vector<int> xspeed(pool);
     mp::std::vector<int> yspeed(pool);
     mp::std::vector<int> walkSpeed(pool);
+    mp::std::vector<int> jumpHold(pool);
     mp::std::vector<char> supported(pool);
     mp::std::vector<int> supportedSpeed(pool);
     mp::std::vector<char> finishedWith(pool);
@@ -228,6 +229,7 @@ void guyStep(
     xspeed.reserve(boost::size(guyArrivalList));
     yspeed.reserve(boost::size(guyArrivalList));
     walkSpeed.reserve(boost::size(guyArrivalList));
+    jumpHold.reserve(boost::size(guyArrivalList));
     supported.reserve(boost::size(guyArrivalList));
     supportedSpeed.reserve(boost::size(guyArrivalList));
     finishedWith.reserve(boost::size(guyArrivalList));
@@ -238,6 +240,7 @@ void guyStep(
     for (std::size_t i(0), isize(boost::size(guyArrivalList)); i < isize; ++i)
     {
         walkSpeed.push_back(guyArrivalList[i].getWalkSpeed());
+        jumpHold.push_back(guyArrivalList[i].getJumpHold());
         // initialise positions with arrivalBasis
         if (guyArrivalList[i].getArrivalBasis() == -1)
         {
@@ -271,6 +274,18 @@ void guyStep(
                 }
             }
         }
+
+        // Floaty behaviour
+        if (yspeed[i] > 0 && yspeed[i] < 10*env.gravity) {
+            yspeed[i] -= env.gravity * (10 * env.gravity - yspeed[i])/(18 * env.gravity);
+        }
+        else if (-yspeed[i] > 0 && -yspeed[i] < 10 * env.gravity) {
+            yspeed[i] += env.gravity * (10 * env.gravity + yspeed[i]) / (18 * env.gravity);
+        }
+
+        // Soft speed limit
+        yspeed[i] += -yspeed[i] * yspeed[i] * yspeed[i] / hg::VERT_AIR_RESISTANCE;
+
         supported.push_back(false);
         supportedSpeed.push_back(0);
         finishedWith.push_back(false);
@@ -343,9 +358,25 @@ void guyStep(
             //std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
             // jump
-            if (guyArrivalList[i].getSupported() && input.getUp())
+            if (input.getUp())
             {
-                yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+                if (guyArrivalList[i].getSupported())
+                {
+                    yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+                    jumpHold[i] = 1;
+                }
+                else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
+                {
+                    if (jumpHold[i] > 1) {
+                        if (guyArrivalList[i].getBoxCarrying()) {
+                            yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i]*3/2)/3;
+                        }
+                        else {
+                            yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i]*3/2;
+                        }
+                    }
+                    jumpHold[i] += 1;
+                }
             }
 
             // Y direction collisions
@@ -572,6 +603,8 @@ void guyStep(
 
             x[i] = newX;
             y[i] = newY;
+
+            //std::cerr << "Speed: " << xspeed[i] << ", Pos: " << newX << "\n";
         }
     }
     
@@ -580,11 +613,11 @@ void guyStep(
     assert(boost::size(xspeed) == boost::size(guyArrivalList));
     assert(boost::size(yspeed) == boost::size(guyArrivalList));
     assert(boost::size(walkSpeed) == boost::size(guyArrivalList));
+    assert(boost::size(jumpHold) == boost::size(guyArrivalList));
     assert(boost::size(supported) == boost::size(guyArrivalList));
     assert(boost::size(supportedSpeed) == boost::size(guyArrivalList));
     assert(boost::size(finishedWith) == boost::size(guyArrivalList));
     assert(boost::size(facing) == boost::size(guyArrivalList));
-
 
     mp::std::vector<char> carry(guyArrivalList.size(), pool);
     mp::std::vector<int> carrySize(guyArrivalList.size(), pool);
@@ -634,9 +667,25 @@ void guyStep(
             //std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
             // jump
-            if (guyArrivalList[i].getSupported() && input.getUp())
+            if (input.getUp())
             {
-                yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+                if (guyArrivalList[i].getSupported())
+                {
+                    yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+                    jumpHold[i] = 1;
+                }
+                else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
+                {
+                    if (jumpHold[i] > 1) {
+                        if (guyArrivalList[i].getBoxCarrying()) {
+                            yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2) / 3;
+                        }
+                        else {
+                            yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2;
+                        }
+                    }
+                    jumpHold[i] += 1;
+                }
             }
 
             // Y direction collisions
@@ -728,18 +777,14 @@ void guyStep(
                 if (walkSpeed[i] > 0) {
                     walkSpeed[i] += -hg::GUY_HOR_SLOW;
                 }
-                else {
-                    walkSpeed[i] = std::max(-hg::GUY_SPEED, walkSpeed[i] - hg::GUY_HOR_ACCEL);
-                }
+                walkSpeed[i] = std::max(-hg::GUY_SPEED, walkSpeed[i] - hg::GUY_HOR_ACCEL);
             }
             else if (input.getRight()) {
                 facing[i] = FacingDirection::RIGHT;
                 if (walkSpeed[i] < 0) {
                     walkSpeed[i] += hg::GUY_HOR_SLOW;
                 }
-                else {
-                    walkSpeed[i] = std::min(hg::GUY_SPEED, walkSpeed[i] + hg::GUY_HOR_ACCEL);
-                }
+                walkSpeed[i] = std::min(hg::GUY_SPEED, walkSpeed[i] + hg::GUY_HOR_ACCEL);
             }
             else if (walkSpeed[i] > 0) {
                 walkSpeed[i] = std::max(0, walkSpeed[i] - hg::GUY_HOR_SLOW);
@@ -1185,7 +1230,7 @@ void guyStep(
                     Guy(relativeIndex,
                         x[i], y[i],
                         xspeed[i], yspeed[i],
-                        walkSpeed[i],
+                        walkSpeed[i], jumpHold[i],
                         newWidth[i], newHeight[i],
                         newJumpSpeed[i],
                         guyArrivalList[i].getIllegalPortal(),
@@ -1253,7 +1298,8 @@ void guyStep(
                         }
                         else if (triggerFrameState.shouldPort(
                             j,
-                            Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], walkSpeed[i], newWidth[i], newHeight[i],
+                            Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i],
+                                walkSpeed[i], jumpHold[i], newWidth[i], newHeight[i],
                                 newJumpSpeed[i],
                                 illegalPortal[i], -1,
                                 supported[i], supportedSpeed[i], newPickups[i], facing[i],
@@ -1367,7 +1413,8 @@ void guyStep(
                             nextPortal[j].getWidth(), nextPortal[j].getHeight(),
                             nextPortal[j].getCollisionOverlap())
                             && (triggerFrameState.shouldPort(j,
-                                Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], walkSpeed[i], newWidth[i], newHeight[i],
+                                Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i],
+                                    walkSpeed[i], jumpHold[i], newWidth[i], newHeight[i],
                                     newJumpSpeed[i],
                                     illegalPortal[i], -1,
                                     supported[i], supportedSpeed[i], newPickups[i], facing[i],
@@ -1448,7 +1495,7 @@ void guyStep(
                             relativeIndex + 1,
                             x[i], y[i],
                             xspeed[i], yspeed[i],
-                            walkSpeed[i],
+                            walkSpeed[i], jumpHold[i],
                             newWidth[i], newHeight[i],
                             newJumpSpeed[i],
 
@@ -1581,7 +1628,7 @@ void guyStep(
                             guyArrivalList[shot.targetId].getIndex() + 1,
                             x[shot.targetId], y[shot.targetId],
                             xspeed[shot.targetId], yspeed[shot.targetId],
-                            walkSpeed[shot.targetId],
+                            walkSpeed[shot.targetId], jumpHold[shot.targetId],
                             newWidth[shot.targetId], newHeight[shot.targetId],
                             newJumpSpeed[shot.targetId],
 
@@ -1743,7 +1790,7 @@ void guyStep(
                             guyArrivalList[shot.targetId].getIndex() + 1,
                             x[shot.targetId], y[shot.targetId],
                             xspeed[shot.targetId], yspeed[shot.targetId],
-                            walkSpeed[shot.targetId],
+                            walkSpeed[shot.targetId], jumpHold[shot.targetId],
                             newWidth[shot.targetId], newHeight[shot.targetId],
                             newJumpSpeed[shot.targetId],
 
@@ -1800,7 +1847,7 @@ void guyStep(
                     guyArrivalList[i].getIndex() + 1,
                     x[i], y[i],
                     xspeed[i], yspeed[i],
-                    walkSpeed[i],
+                    walkSpeed[i], jumpHold[i],
                     newWidth[i], newHeight[i],
                     newJumpSpeed[i],
 
@@ -2502,6 +2549,7 @@ template <
             }
         }
         size[i] = oldBoxList[i].getSize();
+        y[i] += -oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() / hg::VERT_AIR_RESISTANCE;
     }
 
     // Destroy boxes that are overlapping with platforms and walls

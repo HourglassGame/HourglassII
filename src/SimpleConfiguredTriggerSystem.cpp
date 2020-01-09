@@ -1616,6 +1616,7 @@ namespace hg {
             guy.getX(), guy.getY(),
             guy.getXspeed(), guy.getYspeed(),
             guy.getWalkSpeed(),
+            guy.getJumpHold(),
             guy.getWidth(), guy.getHeight(),
             guy.getJumpSpeed(),
 
@@ -1890,6 +1891,7 @@ namespace hg {
                 guy.getX(), guy.getY(),
                 guy.getXspeed(), guy.getYspeed(),
                 guy.getWalkSpeed(),
+                guy.getJumpHold(),
                 guy.getWidth(), guy.getHeight(),
                 -500,
 

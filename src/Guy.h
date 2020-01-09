@@ -138,6 +138,7 @@ public:
         int x, int y,
         int xspeed, int yspeed,
         int walkSpeed,
+        int jumpHold,
         int width, int height,
         int jumpSpeed,
 
@@ -162,6 +163,7 @@ public:
     int getXspeed()    const { return xspeed; }
     int getYspeed()    const { return yspeed; }
     int getWalkSpeed() const { return walkSpeed; }
+    int getJumpHold()  const { return jumpHold; }
     int getWidth()     const { return width; }
     int getHeight()    const { return height; }
     int getJumpSpeed() const { return jumpSpeed; }
@@ -195,6 +197,7 @@ private:
     int xspeed;
     int yspeed;
     int walkSpeed;
+	int jumpHold;
     int width;
     int height;
     int jumpSpeed;
@@ -218,7 +221,7 @@ private:
     {
         return std::tie(
             index, 
-            x, y, xspeed, yspeed, walkSpeed, width, height, jumpSpeed,
+            x, y, xspeed, yspeed, walkSpeed, jumpHold, width, height, jumpSpeed,
             illegalPortal, arrivalBasis, supported, supportedSpeed,
             pickups, facing,
             boxCarrying, boxCarrySize, boxCarryDirection,
@@ -239,6 +242,7 @@ public:
     int getXspeed()    const { return guy_->getXspeed(); }
     int getYspeed()    const { return guy_->getYspeed(); }
     int getWalkSpeed() const { return guy_->getWalkSpeed(); }
+    int getJumpHold()  const { return guy_->getJumpHold(); }
     int getWidth()     const { return guy_->getWidth(); }
     int getHeight()    const { return guy_->getHeight(); }
     int getJumpSpeed() const { return guy_->getJumpSpeed(); }

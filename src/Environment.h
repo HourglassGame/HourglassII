@@ -94,13 +94,11 @@ namespace hg {
     private:
         auto equality_tuple() const -> decltype(auto)
         {
-            return std::tie(wall, gravity, upResistence, downResistence);
+            return std::tie(wall, gravity);
         }
     public:
         Wall wall;
         int gravity;
-        int upResistence;
-        int downResistence;
         bool operator==(Environment const &o) const {
             return equality_tuple() == o.equality_tuple();
         }
