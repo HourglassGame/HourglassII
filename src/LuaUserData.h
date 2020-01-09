@@ -1,6 +1,6 @@
 #ifndef HG_LUA_USER_DATA_H
 #define HG_LUA_USER_DATA_H
-#include <tbb/atomic.h>
+#include <atomic>
 #include "lua/lua.h"
 #include <iostream>
 #include <string>
@@ -23,7 +23,7 @@ struct LuaUserData final {
     bool is_interrupted() const { return is_interrupted_; }
 private:
     bool is_out_of_memory_;
-    tbb::atomic<bool> is_interrupted_;
+    std::atomic<bool> is_interrupted_;
 };
 inline LuaUserData &getUserData(lua_State *L) {
     void *ud;
