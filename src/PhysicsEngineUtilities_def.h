@@ -217,6 +217,7 @@ void guyStep(
     mp::std::vector<int> y(pool);
     mp::std::vector<int> xspeed(pool);
     mp::std::vector<int> yspeed(pool);
+    mp::std::vector<int> walkSpeed(pool);
     mp::std::vector<char> supported(pool);
     mp::std::vector<int> supportedSpeed(pool);
     mp::std::vector<char> finishedWith(pool);
@@ -226,6 +227,7 @@ void guyStep(
     y.reserve(boost::size(guyArrivalList));
     xspeed.reserve(boost::size(guyArrivalList));
     yspeed.reserve(boost::size(guyArrivalList));
+    walkSpeed.reserve(boost::size(guyArrivalList));
     supported.reserve(boost::size(guyArrivalList));
     supportedSpeed.reserve(boost::size(guyArrivalList));
     finishedWith.reserve(boost::size(guyArrivalList));
@@ -235,6 +237,7 @@ void guyStep(
     // check collisions in Y direction then do the same in X direction
     for (std::size_t i(0), isize(boost::size(guyArrivalList)); i < isize; ++i)
     {
+        walkSpeed.push_back(guyArrivalList[i].getWalkSpeed());
         // initialise positions with arrivalBasis
         if (guyArrivalList[i].getArrivalBasis() == -1)
         {
@@ -474,16 +477,31 @@ void guyStep(
             int newX(x[i] + xspeed[i]);
 
             //check wall collision in X direction
-            if (input.getLeft())
-            {
+            if (input.getLeft()) {
                 facing[i] = FacingDirection::LEFT;
-                newX += -hg::GUY_SPEED;
+                if (walkSpeed[i] > 0) {
+                    walkSpeed[i] += -hg::GUY_HOR_SLOW;
+                }
+                else {
+                    walkSpeed[i] = std::max(-hg::GUY_SPEED, walkSpeed[i] - hg::GUY_HOR_ACCEL);
+                }
             }
-            else if (input.getRight())
-            {
+            else if (input.getRight()) {
                 facing[i] = FacingDirection::RIGHT;
-                newX += hg::GUY_SPEED;
+                if (walkSpeed[i] < 0) {
+                    walkSpeed[i] += hg::GUY_HOR_SLOW;
+                }
+                else {
+                    walkSpeed[i] = std::min(hg::GUY_SPEED, walkSpeed[i] + hg::GUY_HOR_ACCEL);
+                }
             }
+            else if (walkSpeed[i] > 0) {
+                walkSpeed[i] = std::max(0, walkSpeed[i] - hg::GUY_HOR_SLOW);
+            }
+            else if (walkSpeed[i] < 0) {
+                walkSpeed[i] = std::min(0, walkSpeed[i] + hg::GUY_HOR_SLOW);
+            }
+            newX += walkSpeed[i];
 
             // platform collision
             for (Collision const &platform : nextPlatform)
@@ -556,11 +574,12 @@ void guyStep(
             y[i] = newY;
         }
     }
-
+    
     assert(boost::size(x) == boost::size(guyArrivalList));
     assert(boost::size(y) == boost::size(guyArrivalList));
     assert(boost::size(xspeed) == boost::size(guyArrivalList));
     assert(boost::size(yspeed) == boost::size(guyArrivalList));
+    assert(boost::size(walkSpeed) == boost::size(guyArrivalList));
     assert(boost::size(supported) == boost::size(guyArrivalList));
     assert(boost::size(supportedSpeed) == boost::size(guyArrivalList));
     assert(boost::size(finishedWith) == boost::size(guyArrivalList));
@@ -704,16 +723,31 @@ void guyStep(
             int newX(x[i] + xspeed[i]);
 
             //check wall collision in X direction
-            if (input.getLeft())
-            {
+            if (input.getLeft()) {
                 facing[i] = FacingDirection::LEFT;
-                newX += -hg::GUY_SPEED;
+                if (walkSpeed[i] > 0) {
+                    walkSpeed[i] += -hg::GUY_HOR_SLOW;
+                }
+                else {
+                    walkSpeed[i] = std::max(-hg::GUY_SPEED, walkSpeed[i] - hg::GUY_HOR_ACCEL);
+                }
             }
-            else if (input.getRight())
-            {
+            else if (input.getRight()) {
                 facing[i] = FacingDirection::RIGHT;
-                newX += hg::GUY_SPEED;
+                if (walkSpeed[i] < 0) {
+                    walkSpeed[i] += hg::GUY_HOR_SLOW;
+                }
+                else {
+                    walkSpeed[i] = std::min(hg::GUY_SPEED, walkSpeed[i] + hg::GUY_HOR_ACCEL);
+                }
             }
+            else if (walkSpeed[i] > 0) {
+                walkSpeed[i] = std::max(0, walkSpeed[i] - hg::GUY_HOR_SLOW);
+            }
+            else if (walkSpeed[i] < 0) {
+                walkSpeed[i] = std::min(0, walkSpeed[i] + hg::GUY_HOR_SLOW);
+            }
+            newX += walkSpeed[i];
 
             // platform collision
             for (Collision const &platform : nextPlatform)
@@ -1151,6 +1185,7 @@ void guyStep(
                     Guy(relativeIndex,
                         x[i], y[i],
                         xspeed[i], yspeed[i],
+                        walkSpeed[i],
                         newWidth[i], newHeight[i],
                         newJumpSpeed[i],
                         guyArrivalList[i].getIllegalPortal(),
@@ -1174,6 +1209,7 @@ void guyStep(
                 y[i] = newGuy->getY();
                 xspeed[i] = newGuy->getXspeed();
                 yspeed[i] = newGuy->getYspeed();
+                walkSpeed[i] = newGuy->getWalkSpeed();
                 newWidth[i] = newGuy->getWidth();
                 newHeight[i] = newGuy->getHeight();
                 newJumpSpeed[i] = newGuy->getJumpSpeed();
@@ -1217,7 +1253,7 @@ void guyStep(
                         }
                         else if (triggerFrameState.shouldPort(
                             j,
-                            Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+                            Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], walkSpeed[i], newWidth[i], newHeight[i],
                                 newJumpSpeed[i],
                                 illegalPortal[i], -1,
                                 supported[i], supportedSpeed[i], newPickups[i], facing[i],
@@ -1331,7 +1367,7 @@ void guyStep(
                             nextPortal[j].getWidth(), nextPortal[j].getHeight(),
                             nextPortal[j].getCollisionOverlap())
                             && (triggerFrameState.shouldPort(j,
-                                Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], newWidth[i], newHeight[i],
+                                Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i], walkSpeed[i], newWidth[i], newHeight[i],
                                     newJumpSpeed[i],
                                     illegalPortal[i], -1,
                                     supported[i], supportedSpeed[i], newPickups[i], facing[i],
@@ -1412,6 +1448,7 @@ void guyStep(
                             relativeIndex + 1,
                             x[i], y[i],
                             xspeed[i], yspeed[i],
+                            walkSpeed[i],
                             newWidth[i], newHeight[i],
                             newJumpSpeed[i],
 
@@ -1544,6 +1581,7 @@ void guyStep(
                             guyArrivalList[shot.targetId].getIndex() + 1,
                             x[shot.targetId], y[shot.targetId],
                             xspeed[shot.targetId], yspeed[shot.targetId],
+                            walkSpeed[shot.targetId],
                             newWidth[shot.targetId], newHeight[shot.targetId],
                             newJumpSpeed[shot.targetId],
 
@@ -1705,6 +1743,7 @@ void guyStep(
                             guyArrivalList[shot.targetId].getIndex() + 1,
                             x[shot.targetId], y[shot.targetId],
                             xspeed[shot.targetId], yspeed[shot.targetId],
+                            walkSpeed[shot.targetId],
                             newWidth[shot.targetId], newHeight[shot.targetId],
                             newJumpSpeed[shot.targetId],
 
@@ -1761,6 +1800,7 @@ void guyStep(
                     guyArrivalList[i].getIndex() + 1,
                     x[i], y[i],
                     xspeed[i], yspeed[i],
+                    walkSpeed[i],
                     newWidth[i], newHeight[i],
                     newJumpSpeed[i],
 

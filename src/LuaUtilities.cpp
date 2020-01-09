@@ -284,7 +284,7 @@ template<>
 Environment to<Environment>(lua_State *L, int index) {
     try
     {
-        return { readField<Wall>(L, "wall", index), readField<int>(L, "gravity", index) };
+        return { readField<Wall>(L, "wall", index), readField<int>(L, "gravity", index), 10, 10 };
     }
     catch (LuaError &e) {
         add_semantic_callstack_info(e, "to<Environment>");
@@ -489,6 +489,7 @@ Guy to<Guy>(lua_State* L, int index) {
             relativeIndex,
             x, y,
             xspeed, yspeed,
+            0,
             width, height,
             jumpSpeed,
             illegalPortal,
@@ -535,6 +536,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
                     0,
                     x, y,
                     xspeed, yspeed,
+                    0,
                     width, height,
                     jumpSpeed,
                     -1,

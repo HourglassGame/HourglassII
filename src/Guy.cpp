@@ -5,6 +5,7 @@ Guy::Guy(
     std::size_t index,
     int x, int y,
     int xspeed, int yspeed,
+    int walkSpeed,
     int width, int height,
     int jumpSpeed,
     
@@ -25,6 +26,7 @@ Guy::Guy(
         index(index),
         x(x), y(y),
         xspeed(xspeed), yspeed(yspeed),
+        walkSpeed(walkSpeed),
         width(width), height(height),
         jumpSpeed(jumpSpeed),
 

@@ -5,6 +5,8 @@
 namespace hg {
     inline static const int FRAMERATE = 60;
     inline static const int GUY_SPEED = 200;
+    inline static const int GUY_HOR_ACCEL = 35;
+    inline static const int GUY_HOR_SLOW = 70;
     inline static const int GUY_JUMP_SPEED_DEFAULT = 270;
     //The game window is divided into 4 quadrants.
     //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide
