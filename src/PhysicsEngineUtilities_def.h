@@ -1,3 +1,4 @@
+#include "GlobalConst.h"
 namespace hg {
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(
