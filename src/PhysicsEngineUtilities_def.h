@@ -795,7 +795,7 @@ void guyStep(
                         dropYReverseMod = -guyArrivalList[i].getYspeed();
                     }
 
-                    int dropY = gY + dropYReverseMod + height;
+                    int dropY = gY + dropYReverseMod + height - 1; // The -1 prevents jumping off your own dropped box with frame-perfect control.
                     while (dropY >= gY + dropYReverseMod + height - dropSize && !droppable)
                     {
                         std::cerr << "Try" << "\n";
@@ -876,8 +876,8 @@ void guyStep(
                         }
                     rightBoundCheckDoubleBreak:;
 
-                        std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
-                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
+                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         cx = (leftBound + dropSize) - (leftBound + dropSize) % env.wall.segmentSize() - 1;
                         while (cx > leftBound)
@@ -899,8 +899,8 @@ void guyStep(
                         }
                     leftBoundCheckDoubleBreak:;
 
-                        std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
-                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        //std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
+                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         // Check bounds imposed by platforms
                         if (rightBound >= leftBound)
