@@ -378,13 +378,11 @@ void guyStep(
                 }
                 else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
                 {
-                    if (jumpHold[i] > 1) {
-                        if (guyArrivalList[i].getBoxCarrying()) {
-                            yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2) / 3;
-                        }
-                        else {
-                            yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2;
-                        }
+                    if (guyArrivalList[i].getBoxCarrying()) {
+                        yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
+                    }
+                    else {
+                        yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32;
                     }
                     jumpHold[i] += 1;
                 }
@@ -697,13 +695,11 @@ void guyStep(
                 }
                 else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
                 {
-                    if (jumpHold[i] > 1) {
-                        if (guyArrivalList[i].getBoxCarrying()) {
-                            yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2) / 3;
-                        }
-                        else {
-                            yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * 3 / 2;
-                        }
+                    if (guyArrivalList[i].getBoxCarrying()) {
+                        yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
+                    }
+                    else {
+                        yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32;
                     }
                     jumpHold[i] += 1;
                 }
