@@ -790,6 +790,7 @@ namespace hg {
         bool shouldDrawInventory;
         Pickups pickups;
         Ability abilityCursor;
+        hg::FrameID timeCursor;
         std::size_t relativeGuyIndex;
         hg::TimeEngine::RunResult waveInfo;
         bool runningFromReplay;
@@ -1469,7 +1470,7 @@ namespace hg {
                 uiFrameStateLocal->timelineLength,
                 uiFrameStateLocal->waveInfo.updatedFrames,
                 uiFrameStateLocal->drawnFrame,
-                uiFrameStateLocal->postOverwriteInput.back().getTimeCursor(),
+                uiFrameStateLocal->timeCursor,
                 uiFrameStateLocal->guyFrames,
                 uiFrameStateLocal->wall);
 

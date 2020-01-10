@@ -492,6 +492,7 @@ UIFrameState runStep(
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
     Pickups pickups;
+    hg::FrameID timeCursor;
     hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
     bool const shouldDrawGuyPositionColours{(glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)};
@@ -517,6 +518,7 @@ UIFrameState runStep(
 
             shouldDrawInventory = true;
             pickups = currentGuy.getPickups();
+            timeCursor = timeEngine.getPostOverwriteInput()[guyIndex].getTimeCursor();
             abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {
@@ -560,6 +562,7 @@ UIFrameState runStep(
             shouldDrawInventory,
             pickups,
             abilityCursor,
+            timeCursor,
             relativeGuyIndex,
             waveInfo,
             runningFromReplay,
