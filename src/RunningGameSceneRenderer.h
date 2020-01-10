@@ -1414,7 +1414,7 @@ namespace hg {
             renderPassInfo.renderArea.offset = { 0, 0 };
             renderPassInfo.renderArea.extent = swapChainExtent;// viewport;
 
-            VkClearValue clearColor = { 0.5f, 0.5f, 0.5f, 1.0f };
+            VkClearValue clearColor = { 0.6f, 0.6f, 0.6f, 1.0f };
             renderPassInfo.clearValueCount = 1;
             renderPassInfo.pClearValues = &clearColor;
 
