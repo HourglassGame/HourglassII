@@ -388,6 +388,12 @@ void guyStep(
                     }
                     jumpHold[i] += 1;
                 }
+                else {
+                    jumpHold[i] = 0;
+                }
+            }
+            else {
+                jumpHold[i] = 0;
             }
 
             // Y direction collisions
@@ -701,6 +707,12 @@ void guyStep(
                     }
                     jumpHold[i] += 1;
                 }
+                else {
+                    jumpHold[i] = 0;
+                }
+            }
+            else {
+                jumpHold[i] = 0;
             }
 
             // Y direction collisions
