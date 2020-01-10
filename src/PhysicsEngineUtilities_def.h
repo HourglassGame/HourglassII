@@ -292,7 +292,7 @@ void guyStep(
         //std::cerr << jumpHold[i] << ", " << yspeed[i] << "\n";
 
         // Soft speed limit
-        yspeed[i] += -yspeed[i] * yspeed[i] * yspeed[i] / hg::VERT_AIR_RESISTANCE;
+        yspeed[i] += -guyArrivalList[i].getYspeed() * guyArrivalList[i].getYspeed() * guyArrivalList[i].getYspeed() / hg::VERT_AIR_RESISTANCE;
 
         supported.push_back(false);
         supportedSpeed.push_back(0);
