@@ -597,7 +597,7 @@ void pushGuy(lua_State *L, Guy const &guy)
         lua_pushinteger(L, guy.getArrivalBasis() + 1);
         lua_setfield(L, -2, "arrivalBasis");
     }
-    lua_pushboolean(L, guy.getSupported());
+    lua_pushinteger(L, guy.getSupported());
     lua_setfield(L, -2, "supported");
     if (guy.getSupported()) {
         lua_pushinteger(L, guy.getSupportedSpeed());

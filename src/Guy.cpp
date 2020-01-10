@@ -12,7 +12,7 @@ Guy::Guy(
     
     int illegalPortal,
     int arrivalBasis,
-    bool supported,
+    int supported,
     int supportedSpeed,
 
     Pickups pickups,

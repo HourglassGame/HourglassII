@@ -11,8 +11,9 @@ namespace hg {
     inline static const int GUY_HOR_ACCEL = 40;
     inline static const int GUY_HOR_SLOW = 70;
     inline static const int GUY_JUMP_SPEED_DEFAULT = 360;
-    inline static const int GUY_JUMP_HOLD_MAX = 12;
-    inline static const int GUY_JUMP_HOLD_SPEED = -32;
+    inline static const int GUY_JUMP_HOLD_MAX = 11;
+    inline static const int GUY_JUMP_HOLD_SPEED = -34;
+    inline static const int GUY_MAX_SUPPORTED = 60;
     inline static const int VERT_AIR_RESISTANCE = 22000000;
     //The game window is divided into 4 quadrants.
     //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide

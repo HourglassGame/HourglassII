@@ -144,7 +144,7 @@ public:
 
         int illegalPortal,
         int arrivalBasis,
-        bool supported,
+        int supported,
         int supportedSpeed,
 
         Pickups pickups,
@@ -169,8 +169,8 @@ public:
     int getJumpSpeed() const { return jumpSpeed; }
     
     int getIllegalPortal()    const { return illegalPortal; }
-    int getArrivalBasis() const { return arrivalBasis; }
-    bool getSupported()       const { return supported; }
+    int getArrivalBasis()     const { return arrivalBasis; }
+    int getSupported()        const { return supported; }
     int getSupportedSpeed()   const { return supportedSpeed; }
 
     Pickups const &getPickups() const { return pickups; }
@@ -197,14 +197,14 @@ private:
     int xspeed;
     int yspeed;
     int walkSpeed;
-	int jumpHold;
+    int jumpHold;
     int width;
     int height;
     int jumpSpeed;
 
     int illegalPortal;
     int arrivalBasis;
-    bool supported;
+    int supported;
     int supportedSpeed;
 
     Pickups pickups;
@@ -248,8 +248,8 @@ public:
     int getJumpSpeed() const { return guy_->getJumpSpeed(); }
 
     int getIllegalPortal()    const { return guy_->getIllegalPortal(); }
-    int getArrivalBasis() const { return guy_->getArrivalBasis(); }
-    bool getSupported()       const { return guy_->getSupported(); }
+    int getArrivalBasis()     const { return guy_->getArrivalBasis(); }
+    int getSupported()        const { return guy_->getSupported(); }
     int getSupportedSpeed()   const { return guy_->getSupportedSpeed(); }
 
     Pickups const &getPickups() const { return guy_->getPickups();}

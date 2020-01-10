@@ -476,7 +476,7 @@ Guy to<Guy>(lua_State* L, int index) {
             arrivalBasis = to<int>(L);
         }
         lua_pop(L, 1);
-        bool const supported(readField<bool>(L, "supported", index));
+        int const supported(readField<bool>(L, "supported", index));
         int const supportedSpeed(supported ? readField<int>(L, "supportedSpeed", index) : 0);
         Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));

@@ -294,7 +294,7 @@ void guyStep(
         // Soft speed limit
         yspeed[i] += -guyArrivalList[i].getYspeed() * guyArrivalList[i].getYspeed() * guyArrivalList[i].getYspeed() / hg::VERT_AIR_RESISTANCE;
 
-        supported.push_back(false);
+        supported.push_back(0);
         supportedSpeed.push_back(0);
         finishedWith.push_back(false);
         facing.push_back(guyArrivalList[i].getFacing());
@@ -368,7 +368,7 @@ void guyStep(
             // jump
             if (input.getUp())
             {
-                if (guyArrivalList[i].getSupported())
+                if (guyArrivalList[i].getSupported() >= 9)
                 {
                     yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
                     jumpHold[i] = 1;
@@ -406,7 +406,7 @@ void guyStep(
                         //boxThatIamStandingOn = j;
                         newY = boxY - height;
                         xspeed[i] = boxXspeed;
-                        supported[i] = true;
+                        supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                         bottom = true;
                         supportedSpeed[i] = boxYspeed; 
                     }
@@ -416,7 +416,7 @@ void guyStep(
             // Reverse box collision
             for (std::size_t j(0), jsize(boxArrivalList.size()); j < jsize; ++j)
             {
-                if (boxArrivalList[j].getTimeDirection() *guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+                if (boxArrivalList[j].getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
                 {
                     int boxXspeed(boxArrivalList[j].getXspeed());
                     int boxYspeed(boxArrivalList[j].getYspeed());
@@ -431,7 +431,7 @@ void guyStep(
                     {
                         newY = boxY - height;
                         xspeed[i] = -boxXspeed;
-                        supported[i] = true;
+                        supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                         bottom = true;
                         supportedSpeed[i] = -boxYspeed;
                     }
@@ -463,7 +463,7 @@ void guyStep(
                     {
                         newY = pY - height;
                         xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
-                        supported[i] = true;
+                        supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                         bottom = true;
                         supportedSpeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getYspeed();
                     }
@@ -481,7 +481,7 @@ void guyStep(
                 if (env.wall.at(x[i], newY + height) || (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height)))
                 {
                     newY = ((newY + height) / env.wall.segmentSize())*env.wall.segmentSize() - height;
-                    supported[i] = true;
+                    supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                     bottom = true;
                     supportedSpeed[i] = 0;
                     while (newY > 0 && (env.wall.at(x[i], newY + height - 1) ||
@@ -714,7 +714,7 @@ void guyStep(
                             //boxThatIamStandingOn = j;
                             newY = boxY - height;
                             xspeed[i] = 0;
-                            supported[i] = true;
+                            supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                             bottom = true;
                             supportedSpeed[i] = 0;
                         }
@@ -738,7 +738,7 @@ void guyStep(
                     {
                         newY = pY - height;
                         xspeed[i] = 0;
-                        supported[i] = true;
+                        supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                         bottom = true;
                         supportedSpeed[i] = 0;
                     }
@@ -756,7 +756,7 @@ void guyStep(
                 if (env.wall.at(x[i], newY + height) || (x[i] - (x[i] / env.wall.segmentSize())*env.wall.segmentSize() > env.wall.segmentSize() - width && env.wall.at(x[i] + width, newY + height)))
                 {
                     newY = ((newY + height) / env.wall.segmentSize())*env.wall.segmentSize() - height;
-                    supported[i] = true;
+                    supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
                     bottom = true;
                     supportedSpeed[i] = 0;
                 }
