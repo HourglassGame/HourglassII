@@ -368,10 +368,13 @@ void guyStep(
             // jump
             if (input.getUp())
             {
-                if (guyArrivalList[i].getSupported() >= 9)
+                if (guyArrivalList[i].getSupported())
                 {
-                    yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
-                    jumpHold[i] = 1;
+                    if (guyArrivalList[i].getSupported() >= hg::GUY_SUPPORT_JUMP_REQ)
+                    {
+                        yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+                        jumpHold[i] = 1;
+                    }
                 }
                 else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
                 {
@@ -388,6 +391,7 @@ void guyStep(
             }
 
             // Y direction collisions
+            //std::cerr << "Guy " << guyArrivalList[i].getIndex() << " Pos: " << y[i] << ", " << yspeed[i] << ", Sup: " << guyArrivalList[i].getSupported() << "\n";
             int newY(y[i] + yspeed[i]);
 
             // Forwards box collision (only occurs in Y direction)
@@ -679,8 +683,11 @@ void guyStep(
             {
                 if (guyArrivalList[i].getSupported())
                 {
-                    yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
-                    jumpHold[i] = 1;
+                    if (guyArrivalList[i].getSupported() >= hg::GUY_SUPPORT_JUMP_REQ)
+                    {
+                        yspeed[i] = guyArrivalList[i].getSupportedSpeed() + jumpSpeed;
+                        jumpHold[i] = 1;
+                    }
                 }
                 else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
                 {
