@@ -583,6 +583,10 @@ void pushGuy(lua_State *L, Guy const &guy)
     lua_setfield(L, -2, "xspeed");
     lua_pushinteger(L, guy.getYspeed());
     lua_setfield(L, -2, "yspeed");
+    lua_pushinteger(L, guy.getWalkSpeed());
+    lua_setfield(L, -2, "walkSpeed");
+    lua_pushinteger(L, guy.getJumpHold());
+    lua_setfield(L, -2, "jumpHold");
     lua_pushinteger(L, guy.getWidth());
     lua_setfield(L, -2, "width");
     lua_pushinteger(L, guy.getHeight());

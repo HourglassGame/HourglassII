@@ -458,6 +458,8 @@ Guy to<Guy>(lua_State* L, int index) {
         int const y(readField<int>(L, "y", index));
         int const xspeed(readField<int>(L, "xspeed", index));
         int const yspeed(readField<int>(L, "yspeed", index));
+        int const walkSpeed(readField<int>(L, "walkSpeed", index));
+        int const jumpHold(readField<int>(L, "jumpHold", index));
         int const width(readField<int>(L, "width", index));
         int const height(readField<int>(L, "height", index));
         int const jumpSpeed(readField<int>(L, "jumpSpeed", index));
@@ -489,7 +491,7 @@ Guy to<Guy>(lua_State* L, int index) {
             relativeIndex,
             x, y,
             xspeed, yspeed,
-            0, 0,
+            walkSpeed, jumpHold,
             width, height,
             jumpSpeed,
             illegalPortal,

@@ -7,7 +7,7 @@ namespace hg {
     inline static const int GRAVITY = 20;
     inline static const int UP_GRAVITY = 20;
     inline static const int DOWN_GRAVITY = 20;
-    inline static const int GUY_SPEED = 200;
+    inline static const int GUY_SPEED = 230;
     inline static const int GUY_HOR_ACCEL = 40;
     inline static const int GUY_HOR_SLOW = 70;
     inline static const int GUY_JUMP_SPEED_DEFAULT = 360;

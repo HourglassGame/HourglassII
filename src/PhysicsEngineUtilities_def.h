@@ -1261,6 +1261,7 @@ void guyStep(
                 xspeed[i] = newGuy->getXspeed();
                 yspeed[i] = newGuy->getYspeed();
                 walkSpeed[i] = newGuy->getWalkSpeed();
+                jumpHold[i] = newGuy->getJumpHold();
                 newWidth[i] = newGuy->getWidth();
                 newHeight[i] = newGuy->getHeight();
                 newJumpSpeed[i] = newGuy->getJumpSpeed();
