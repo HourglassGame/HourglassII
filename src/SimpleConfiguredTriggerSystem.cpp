@@ -10,6 +10,7 @@
 #include "LuaError.h"
 #include "LuaStackManager.h"
 #include "LuaSandbox.h"
+#include "TriggerClause.h"
 #include "mt/std/memory"
 #include "lua/lauxlib.h"
 #include <cmath>
@@ -149,18 +150,18 @@ namespace hg {
         Frame const *const currentFrame
     )
     {
-        auto const calculateCollision = [&triggerArrivals](ProtoCollision const &protoCollision){
+        auto const calculateCollision = [&triggerArrivals, &currentFrame](ProtoCollision const &protoCollision){
             /*
             //TODO
             if (protoCollision.rawCollisionFunction) {
                 return protoCollision.rawCollisionFunction(triggerArrivals, outputTriggers, frameNumber);
             }
             */
-
+            
 
             bool const active =
-                (protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] > 0)/*
-              ||(protoCollisions.hasTriggerFunction() && self.getTriggerFunction(triggerArrivals, frameNumber)*/ //TODO
+                (protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] > 0)
+                || (protoCollision.hasTriggerClause && (protoCollision.triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0))
                 ;
 
             CollisionDestination const &destination =
@@ -961,8 +962,14 @@ namespace hg {
         bool const hasButtonTriggerID(!lua_isnil(L, -1));
         int buttonTriggerID(hasButtonTriggerID ?lua_index_to_C_index(to<int>(L)):0);
         lua_pop(L, 1);
-        int const lastStateTriggerID(lua_index_to_C_index(readField<int>(L, "lastStateTriggerID")));
 
+        lua_getfield(L, -1, "triggerClause");
+        bool const hasTriggerClause(!lua_isnil(L, -1));
+        std::string triggerClauseString(hasTriggerClause ? to<std::string>(L) : "0");
+        TriggerClause triggerClause(triggerClauseString);
+        lua_pop(L, 1);
+
+        int const lastStateTriggerID(lua_index_to_C_index(readField<int>(L, "lastStateTriggerID")));
         assert(lastStateTriggerID < triggerOffsetsAndDefaults.size());
         assert(3 < triggerOffsetsAndDefaults[lastStateTriggerID].second.size());//Must have room for [x, y, xspeed, yspeed]
 
@@ -974,6 +981,8 @@ namespace hg {
             offDestination,
             hasButtonTriggerID,
             buttonTriggerID,
+            hasTriggerClause,
+            triggerClause,
             lastStateTriggerID
         };
     }
@@ -1453,7 +1462,6 @@ namespace hg {
             }
         }
         lua_pop(L, 1);
-
 
         lua_getfield(L, -1, "protoCollisions");
         if (!lua_isnil(L, -1)) {

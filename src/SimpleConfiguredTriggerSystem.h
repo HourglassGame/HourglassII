@@ -10,6 +10,7 @@
 #include "LuaModule.h"
 #include "memory_pool.h"
 #include "Powerup.h"
+#include "TriggerClause.h"
 #include <string>
 #include <vector>
 #include <mutex>
@@ -86,6 +87,8 @@ namespace hg {
                 offDestination,
                 hasButtonTriggerID,
                 buttonTriggerID,
+                //hasTriggerClause,
+                //triggerClause,
                 lastStateTriggerID
             );
         }
@@ -98,6 +101,8 @@ namespace hg {
         //TODO: More elegant handling of hasButtonTriggerID
         bool hasButtonTriggerID;
         int buttonTriggerID;
+        bool hasTriggerClause;
+        TriggerClause triggerClause;
         int lastStateTriggerID;
 
         bool operator==(ProtoCollision const &o) const noexcept {
