@@ -38,8 +38,7 @@ void TimeEngine::swap(TimeEngine &o) noexcept {
     std::swap(impl, o.impl);
 }
 
-TimeEngine::RunResult
-TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterrupter &interrupter)
+TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterrupter &interrupter)
 {
     impl->worldState.addNewInputData(newInputData);
     FrameListList updatedList;
@@ -47,8 +46,13 @@ TimeEngine::runToNextPlayerFrame(InputList const &newInputData, OperationInterru
     for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
         updatedList.push_back(impl->worldState.executeWorld(interrupter));
     }
-    return RunResult{
-        std::move(updatedList)};
+    prevRunResult = RunResult{ std::move(updatedList) };
+    return prevRunResult;
+}
+
+TimeEngine::RunResult TimeEngine::getPrevRunResult()
+{
+    return prevRunResult;
 }
 
 Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const noexcept { return impl->worldState.getFrame(whichFrame); }

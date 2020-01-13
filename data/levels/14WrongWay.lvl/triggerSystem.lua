@@ -83,33 +83,33 @@ local tempStore =
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
-            triggerID = 6,
-            pickupType = 'timeJump'
-        },
-        bts.pickup{
-            attachment = {platform = nil, xOffset = 10.75 * 3200, yOffset = 13.25 * 3200},
-            width = 1600,
-            height = 1600,
-            timeDirection = 'forwards',
             triggerID = 1,
             pickupType = 'timeJump'
         },
-        bts.pickup{
-            attachment = {platform = nil, xOffset = 11.75 * 3200, yOffset = 14.25 * 3200},
-            width = 1600,
-            height = 1600,
-            timeDirection = 'forwards',
-            triggerID = 7,
-            pickupType = 'timeJump'
-        },
-        bts.pickup{
-            attachment = {platform = nil, xOffset = 12.75 * 3200, yOffset = 15.25 * 3200},
-            width = 1600,
-            height = 1600,
-            timeDirection = 'forwards',
-            triggerID = 8,
-            pickupType = 'timeJump'
-        },
+        --bts.pickup{
+        --    attachment = {platform = nil, xOffset = 10.75 * 3200, yOffset = 13.25 * 3200},
+        --    width = 1600,
+        --    height = 1600,
+        --    timeDirection = 'forwards',
+        --    triggerID = 6,
+        --    pickupType = 'timeJump'
+        --},
+        --bts.pickup{
+        --    attachment = {platform = nil, xOffset = 11.75 * 3200, yOffset = 14.25 * 3200},
+        --    width = 1600,
+        --    height = 1600,
+        --    timeDirection = 'forwards',
+        --    triggerID = 7,
+        --    pickupType = 'timeJump'
+        --},
+        --bts.pickup{
+        --    attachment = {platform = nil, xOffset = 12.75 * 3200, yOffset = 15.25 * 3200},
+        --    width = 1600,
+        --    height = 1600,
+        --    timeDirection = 'forwards',
+        --    triggerID = 8,
+        --    pickupType = 'timeJump'
+        --},
     },
     protoButtons = {
         bts.stickySwitch{

@@ -22,7 +22,11 @@ public:
         int mouseOffX, int mouseOffY, double mouseScale
     );
     InputList AsInputList() const;
+    FrameID getTimeCursor() const;
     void setTimelineLength(int timelineLength_) { this->timelineLength = timelineLength_; }
+
+    bool getAbilityChanged() const { return abilityChanged; }
+
 private:
     bool left;
     bool right;
@@ -33,6 +37,7 @@ private:
     int space;
     int mouseLeft;
     Ability abilityCursor;
+    bool abilityChanged;
     int mouseTimelinePosition;
     int mousePersonalTimelinePosition;
     int mouseX;

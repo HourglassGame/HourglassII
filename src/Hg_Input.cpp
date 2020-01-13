@@ -22,6 +22,7 @@ Input::Input() :
     space(),
     mouseLeft(),
     abilityCursor(),
+    abilityChanged(),
     mouseTimelinePosition(),
     mousePersonalTimelinePosition(),
     mouseX(),
@@ -49,6 +50,7 @@ void Input::updateState(hg::RenderWindow::InputState const &input, GLFWWindow &w
 
     updatePress(mouseLeft, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
 
+    Ability oldAbility = abilityCursor;
     if (glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS) {
         abilityCursor = Ability::TIME_JUMP;
     }
@@ -61,6 +63,7 @@ void Input::updateState(hg::RenderWindow::InputState const &input, GLFWWindow &w
     if (glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS) {
         abilityCursor = Ability::TIME_PAUSE;
     }
+    abilityChanged = (abilityCursor != oldAbility);
 
     if (mouseLeftPressed && mousePanel == ActivePanel::PERSONAL_TIME) {
         int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
@@ -89,13 +92,19 @@ InputList Input::AsInputList() const
             down == 1,
             boxLeft == 1,
             boxRight == 1,
-            space == 1,     //portalUsed
+            space == 1, //portalUsed
             mouseLeft == 1, //abilityUsed
             abilityCursor,
-            FrameID(mouseTimelinePosition, UniverseID(timelineLength)),     
+            FrameID(mouseTimelinePosition, UniverseID(timelineLength)),
             mouseX,
             mouseY),
         mousePersonalTimelinePosition);
 }
+
+FrameID Input::getTimeCursor() const
+{
+    return FrameID(mouseTimelinePosition, UniverseID(timelineLength));
+}
+
 }
 

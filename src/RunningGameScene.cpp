@@ -108,6 +108,7 @@ UIFrameState runStep(
     GLFWWindow &windowglfw,
     hg::VulkanEngine &eng,
     std::size_t relativeGuyIndex,
+    hg::FrameID const &uiTimeCursor,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
@@ -248,8 +249,10 @@ run_game_scene(hg::RenderWindow &window,
     sf::Image const &wallImage = *loadedLevel.bakedWall;
     sf::Image const &positionColoursImage = *loadedLevel.bakedPositionColours;
 
-    enum class RunState { AWAITING_INPUT, RUNNING_LEVEL, PAUSED };
+    enum class RunState { AWAITING_INPUT, RUNNING_LEVEL };
     RunState state(RunState::AWAITING_INPUT);
+    bool paused = false;
+    bool runNextPausedFrame = false;
 
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
@@ -292,7 +295,6 @@ run_game_scene(hg::RenderWindow &window,
                 int width, height;
                 glfwGetWindowSize(windowglfw.w, &width, &height);
 
-
                 hg::Wall const &wall(timeEngine.getWall());
                 double xScale = (width*(1. - hg::UI_DIVIDE_X)) / wall.roomWidth();
                 double yScale = (height*hg::UI_DIVIDE_Y) / wall.roomHeight();
@@ -315,14 +317,30 @@ run_game_scene(hg::RenderWindow &window,
                 runningFromReplay = false;
             }
             relativeGuyIndex = inputList.getRelativeGuyIndex();
-            saveReplayLog(replayLogOut, inputList);
-            receivedInputs.push_back(inputList);
             interrupter = std::make_unique<hg::OperationInterrupter>();
-            
-            futureRunResult =
-                async(
-                    [inputList, &timeEngine, &interrupter] {
-                return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter);});
+
+            if (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken() || input.getAbilityChanged())) {
+                futureRunResult =
+                    async(
+                        [&timeEngine] {
+                    return timeEngine.getPrevRunResult(); });
+            }
+            else {
+                if (paused && inputList.getGuyInput().getPauseActionTaken()) {
+                    runNextPausedFrame = true;
+                }
+                else {
+                    runNextPausedFrame = false;
+                }
+
+                saveReplayLog(replayLogOut, inputList);
+                receivedInputs.push_back(inputList);
+                futureRunResult =
+                    async(
+                        [inputList, &timeEngine, &interrupter] {
+                    return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter); });
+            }
+
             state = RunState::RUNNING_LEVEL;
             break;
         }
@@ -363,8 +381,7 @@ run_game_scene(hg::RenderWindow &window,
                 }
                 //Pause
                 if (key == GLFW_KEY_P) {
-                    state = RunState::PAUSED;
-                    goto continuemainloop;
+                    paused = !paused;
                 }
             }
             if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (hg::FRAMERATE))) == boost::future_status::ready) {
@@ -380,7 +397,7 @@ run_game_scene(hg::RenderWindow &window,
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex, inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
+                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex, input.getTimeCursor(), inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
                     interrupter.reset();
 
 
@@ -392,12 +409,14 @@ run_game_scene(hg::RenderWindow &window,
                     //      if game is going fast; Support proper audio rendering of timeline scrubbing.
                     //      Somehow support proper sound in Pause Time.
                     //      etc.
-                    PlayAudioGlitz(
-                        getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
-                        audioPlayingState,
-                        audioGlitzManager,
-                        static_cast<int>(uiFrameState.guyIndex)
-                    );
+                    if (!paused) {
+                        PlayAudioGlitz(
+                            getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
+                            audioPlayingState,
+                            audioGlitzManager,
+                            static_cast<int>(uiFrameState.guyIndex)
+                        );
+                    }
                     //TODO: Play UI Sounds
 #if 0
                     drawFrame(
@@ -448,26 +467,7 @@ run_game_scene(hg::RenderWindow &window,
             }
             break;
         }
-        case RunState::PAUSED:
-        {
-            {
-                if (glfwWindowShouldClose(windowglfw.w)) {
-                    window.close();
-                    throw WindowClosed_exception{};
-                }
-
-                if (windowglfw.hasLastKey()) {
-                    int key = windowglfw.useLastKey();
-                    if (key == GLFW_KEY_P) {
-                        state = RunState::RUNNING_LEVEL;
-                        goto continuemainloop;
-                    }
-                }
-            }
-            sf::sleep(sf::seconds(.1f));
         }
-        }
-    continuemainloop:;
     }
     assert(false && "should be unreachable");
 }
@@ -481,6 +481,7 @@ UIFrameState runStep(
     GLFWWindow &windowglfw,
     hg::VulkanEngine &eng,
     std::size_t relativeGuyIndex,
+    hg::FrameID const &uiTimeCursor,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     hg::LevelResources const &resources,
@@ -518,7 +519,7 @@ UIFrameState runStep(
 
             shouldDrawInventory = true;
             pickups = currentGuy.getPickups();
-            timeCursor = timeEngine.getPostOverwriteInput()[guyIndex].getTimeCursor();
+            timeCursor = uiTimeCursor; // timeEngine.getPostOverwriteInput()[guyIndex].getTimeCursor();
             abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {

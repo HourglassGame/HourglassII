@@ -57,6 +57,9 @@ public:
         InputList const &newInputData,
         OperationInterrupter &interrupter = as_lvalue(NullOperationInterrupter()));
 
+    // Output the previous run result, for the purpose of pausing.
+    RunResult getPrevRunResult();
+
     /**
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
      */
@@ -68,6 +71,7 @@ public:
     int getTimelineLength() const noexcept;// { return worldState.getTimelineLength(); }
 private:
     clone_ptr<TimeEngineImpl> impl;
+    RunResult prevRunResult;
 };
 }
 #endif //HG_TIME_ENGINE_H

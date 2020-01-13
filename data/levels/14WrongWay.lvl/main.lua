@@ -76,18 +76,18 @@ triggerSystem =
             offset = 1,
             default = {1}
         },
-        {
-            offset = 1,
-            default = {1}
-        },
-        {
-            offset = 1,
-            default = {1}
-        },
-        {
-            offset = 1,
-            default = {1}
-        },
+        --{
+        --    offset = 1,
+        --    default = {1}
+        --},
+        --{
+        --    offset = 1,
+        --    default = {1}
+        --},
+        --{
+        --    offset = 1,
+        --    default = {1}
+        --},
     },
     arrivalLocationsSize = 1,
 }

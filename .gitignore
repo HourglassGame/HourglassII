@@ -28,3 +28,5 @@
 /ext/MSVCToolpackv0.7z
 /ext/readme.txt
 /data/levels - Shortcut.lnk
+/data/shaders/demo.frag.glsl.spv
+/data/shaders/demo.vert.glsl.spv
