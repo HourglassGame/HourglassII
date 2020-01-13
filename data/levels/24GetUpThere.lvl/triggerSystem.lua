@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 28 * 3200, yOffset = 7 * 3200},
+            attachment = {platform = nil, xOffset = 20.5 * 3200, yOffset = 8 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -25,15 +25,15 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 12.25 * 3200},
+            attachment = {platform = nil, xOffset = 12.25 * 3200, yOffset = 14.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
-            pickupType = 'timeJump'
+            pickupType = 'timeGun'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 16.25 * 3200, yOffset = 12.25 * 3200},
+            attachment = {platform = nil, xOffset = 11.25 * 3200, yOffset = 14.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',

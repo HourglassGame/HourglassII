@@ -40,6 +40,14 @@ local tempStore =
             triggerID = 2,
             pickupType = 'timeJump'
         },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 21.75 * 3200, yOffset = 8.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 3,
+            pickupType = 'timeGun'
+        },
     },
     protoButtons = {
     }
