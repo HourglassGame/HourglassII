@@ -199,6 +199,40 @@ namespace hg {
         }
     };
 
+    struct ProtoTriggerMod final {
+    private:
+        auto comparison_tuple() const noexcept -> decltype(auto) {
+            return std::tie(
+                triggerID,
+                //triggerClause
+                useTriggerArrival
+            );
+        }
+
+    public:
+
+        int const triggerID;
+        TriggerClause const triggerClause;
+        bool const useTriggerArrival;
+
+        void modifyTrigger(
+            mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+            mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
+            Frame const *const currentFrame) const
+        {
+            if (useTriggerArrival) {
+                outputTriggers[triggerID] = mt::std::vector<int>{ triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) };
+            }
+            else
+            {
+                outputTriggers[triggerID] = mt::std::vector<int>{ triggerClause.GetOutput(outputTriggers, getFrameNumber(currentFrame)) };
+            }
+        }
+        bool operator==(ProtoTriggerMod const &o) const noexcept {
+            return comparison_tuple() == o.comparison_tuple();
+        }
+    };
+
     struct ButtonFrameStateImpl {
         virtual std::size_t clone_size() const = 0;
         virtual ButtonFrameStateImpl *perform_clone(void *memory) const = 0;
@@ -1220,7 +1254,8 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             PhysicsAffectingStuff const &physicsAffectingStuff,
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
-            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const = 0;
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers,
+            Frame const *const currentFrame) const = 0;
         virtual std::size_t clone_size() const = 0;
         virtual ProtoGlitzImpl *perform_clone(void *memory) const = 0;
         ProtoGlitzImpl() = default;
@@ -1253,12 +1288,16 @@ namespace hg {
     private:
         auto comparison_tuple() const {
             return std::tie(
-                triggerID_, useTriggerArrival_, x1_, y1_, x2_, y2_
+                triggerID_, 
+                //hasTriggerClause_, triggerClause_,
+                useTriggerArrival_, x1_, y1_, x2_, y2_
             );
         }
     public:
         ProtoWireGlitzImpl(
             std::optional<int> const triggerID,
+            bool const hasTriggerClause,
+            TriggerClause const triggerClause,
             bool const useTriggerArrival,
             PlatformAndPos const &x1,
             PlatformAndPos const &y1,
@@ -1266,6 +1305,8 @@ namespace hg {
             PlatformAndPos const &y2
         ) :
             triggerID_(triggerID),
+            hasTriggerClause_(hasTriggerClause),
+            triggerClause_(triggerClause),
             useTriggerArrival_(useTriggerArrival),
             x1_(x1),
             y1_(y1),
@@ -1278,7 +1319,8 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             PhysicsAffectingStuff const &physicsAffectingStuff,
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
-            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const final
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers,
+            Frame const *const currentFrame) const final
         {
             auto const &collisions{ physicsAffectingStuff.collisions };
             auto const computePosition{[&collisions](
@@ -1338,9 +1380,14 @@ namespace hg {
                         }
                         
                     }
-                    /*else if triggerFunction {
-                    
-                    }*/
+                    else if (hasTriggerClause_) {
+                        if (useTriggerArrival_) {
+                            return triggerClause_.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0;
+                        }
+                        else {
+                            return triggerClause_.GetOutput(outputTriggers, getFrameNumber(currentFrame)) > 0;
+                        }
+                    }
                     else {
                         return false;
                     }
@@ -1368,7 +1415,8 @@ namespace hg {
         }
         private:
         std::optional<int> triggerID_;
-        //triggerFunction; //TODO
+        bool hasTriggerClause_;
+        TriggerClause triggerClause_;
         bool useTriggerArrival_;
         PlatformAndPos x1_;
         PlatformAndPos y1_;
@@ -1410,7 +1458,8 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             PhysicsAffectingStuff const &physicsAffectingStuff,
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
-            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const final
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers,
+            Frame const *const currentFrame) const final
         {
             DynamicArea const obj{
                 x,
@@ -1468,7 +1517,8 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             PhysicsAffectingStuff const &physicsAffectingStuff,
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
-            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const final
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers,
+            Frame const *const currentFrame) const final
         {
             forwardsGlitz.emplace_back(mt::std::make_unique<TextGlitz>(glitz));
             reverseGlitz.emplace_back(mt::std::make_unique<TextGlitz>(glitz));
@@ -1515,9 +1565,10 @@ namespace hg {
             mt::std::vector<Glitz> &reverseGlitz,
             PhysicsAffectingStuff const &physicsAffectingStuff,
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
-            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers) const
+            mp::std::map<std::size_t, mt::std::vector<int>> const& outputTriggers,
+            Frame const *const currentFrame) const
         {
-            return pimpl_->calculateGlitz(forwardsGlitz, reverseGlitz, physicsAffectingStuff, triggerArrivals,outputTriggers);
+            return pimpl_->calculateGlitz(forwardsGlitz, reverseGlitz, physicsAffectingStuff, triggerArrivals,outputTriggers, currentFrame);
         }
         bool operator==(ProtoGlitz const &o) const {
             return comparison_tuple() == o.comparison_tuple();
@@ -1537,6 +1588,7 @@ namespace hg {
             std::vector<ProtoPortal> const &protoPortals,
             std::vector<ProtoButton> const &protoButtons,
             std::vector<ProtoMutator> const &protoMutators,
+            std::vector<ProtoTriggerMod> const &protoTriggerMods,
             std::vector<ProtoGlitz> const &protoGlitzs,
             memory_pool<user_allocator_tbb_alloc> &pool,
             OperationInterrupter &interrupter);
@@ -1599,6 +1651,7 @@ namespace hg {
 
         std::vector<ProtoCollision> const &protoCollisions_;
         std::vector<ProtoPortal> const &protoPortals_;
+        std::vector<ProtoTriggerMod> const &protoTriggerMods_;
         std::vector<ProtoGlitz> const &protoGlitzs_;
 
         SimpleConfiguredTriggerFrameState(SimpleConfiguredTriggerFrameState &o) = delete;
@@ -1616,6 +1669,7 @@ namespace hg {
                 protoCollisions_,
                 protoMutators_,
                 protoButtons_,
+                protoTriggerMods_,
                 protoGlitzs_,
                 triggerOffsetsAndDefaults_,
                 arrivalLocationsSize_);
@@ -1640,6 +1694,7 @@ namespace hg {
                     protoPortals_,
                     protoButtons_,
                     protoMutators_,
+                    protoTriggerMods_,
                     protoGlitzs_,
                     pool,
                     interrupter));
@@ -1663,9 +1718,10 @@ namespace hg {
         std::vector<ProtoCollision> protoCollisions_;
         //Rename Collision -> Collider?
         //TODO: Use boost polymorphic collection rather than vector of clone_ptr?
-        std::vector<ProtoMutator> protoMutators_;
-        std::vector<ProtoGlitz> protoGlitzs_;
         std::vector<ProtoButton> protoButtons_;
+        std::vector<ProtoMutator> protoMutators_;
+        std::vector<ProtoTriggerMod> protoTriggerMods_;
+        std::vector<ProtoGlitz> protoGlitzs_;
 
         std::vector<
             std::pair<int, std::vector<int>>

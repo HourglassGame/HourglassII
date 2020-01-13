@@ -440,6 +440,7 @@ namespace hg {
         std::vector<ProtoPortal> const &protoPortals,
         std::vector<ProtoButton> const &protoButtons,
         std::vector<ProtoMutator> const &protoMutators,
+        std::vector<ProtoTriggerMod> const &protoTriggerMods,
         std::vector<ProtoGlitz> const &protoGlitzs,
         memory_pool<user_allocator_tbb_alloc> &pool,
         OperationInterrupter &interrupter)
@@ -458,6 +459,7 @@ namespace hg {
         physicsAffectingStuff_(pool),
         protoCollisions_(protoCollisions),
         protoPortals_(protoPortals),
+        protoTriggerMods_(protoTriggerMods),
         protoGlitzs_(protoGlitzs)
     {
         buttonFrameStates_.reserve(protoButtons.size());
@@ -598,7 +600,7 @@ namespace hg {
 
         if tempStore.protoGlitz then
             for protoGlitz in list_iter(tempStore.protoGlitz) do
-                protoGlitz:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.physicsAffectingStuff, tempStore.triggerArrivals, tempStore.outputTriggers)
+                protoGlitz:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.physicsAffectingStuff, tempStore.triggerArrivals, tempStore.outputTriggers, currentFrame)
             end
         end
 
@@ -624,7 +626,10 @@ namespace hg {
             mutatorFrameState.fillTrigger(outputTriggers_);
         }
         for (auto const &protoGlitz : protoGlitzs_) {
-            protoGlitz.calculateGlitz(forwardsGlitz_, reverseGlitz_, physicsAffectingStuff_, triggerArrivals_, outputTriggers_);
+            protoGlitz.calculateGlitz(forwardsGlitz_, reverseGlitz_, physicsAffectingStuff_, triggerArrivals_, outputTriggers_, currentFrame);
+        }
+        for (auto const  &protoTriggerMod : protoTriggerMods_) {
+            protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, currentFrame);
         }
 
         mp::std::vector<TriggerData> triggerVector(pool_);
@@ -1001,6 +1006,33 @@ namespace hg {
         };
     }
 
+    ProtoTriggerMod toProtoTriggerMod(
+        lua_State * const L,
+        std::vector<std::pair<int,std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        lua_getfield(L, -1, "triggerID");
+        assert(!lua_isnil(L, -1) && "TriggerMod missing triggerID.");
+        int triggerID(lua_index_to_C_index(to<int>(L)));
+        lua_pop(L, 1);
+
+        assert(triggerID < triggerOffsetsAndDefaults.size());
+        assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
+
+        lua_getfield(L, -1, "triggerClause");
+        assert(!lua_isnil(L, -1) & "TriggerMod missing triggerClause.");
+        std::string triggerClauseString(to<std::string>(L));
+        TriggerClause triggerClause(triggerClauseString);
+        lua_pop(L, 1);
+
+        bool const useTriggerArrival{ readField<bool>(L, "useTriggerArrival") };
+
+        return {
+            triggerID,
+            triggerClause,
+            useTriggerArrival
+        };
+    }
+
     ProtoButton toProtoMomentarySwitch(
         lua_State * const L,
         std::vector<std::pair<int,std::vector<int>>> const &triggerOffsetsAndDefaults)
@@ -1334,6 +1366,13 @@ namespace hg {
         lua_State * const L)
     {
         std::optional<int> const triggerID{ optionalMap(readFieldOptional<int>(L, "triggerID"), &lua_index_to_C_index<int>) }; 
+
+        lua_getfield(L, -1, "triggerClause");
+        bool const hasTriggerClause(!lua_isnil(L, -1));
+        std::string triggerClauseString(hasTriggerClause ? to<std::string>(L) : "0");
+        TriggerClause triggerClause(triggerClauseString);
+        lua_pop(L, 1);
+
         bool const useTriggerArrival{readField<bool>(L, "useTriggerArrival")};
         PlatformAndPos const x1{readField<PlatformAndPos>(L, "x1")};
         PlatformAndPos const y1{readField<PlatformAndPos>(L, "y1")};
@@ -1342,6 +1381,8 @@ namespace hg {
 
         return ProtoGlitz(mt::std::make_unique<ProtoWireGlitzImpl>(
             triggerID,
+            hasTriggerClause,
+            triggerClause,
             useTriggerArrival,
             x1,
             y1,
@@ -1416,6 +1457,7 @@ namespace hg {
         protoCollisions_(),
         protoMutators_(),
         protoButtons_(),
+        protoTriggerMods_(),
         triggerOffsetsAndDefaults_(std::move(triggerOffsetsAndDefaults)),
         arrivalLocationsSize_(arrivalLocationsSize)
     {
@@ -1502,6 +1544,21 @@ namespace hg {
                 lua_pushinteger(L, i);
                 lua_gettable(L, -2);
                 protoButtons_.push_back(toProtoButton(L, triggerOffsetsAndDefaults_));
+                lua_pop(L, 1);
+            }
+        }
+        lua_pop(L, 1);
+
+        lua_getfield(L, -1, "protoTriggerMods");
+        if (!lua_isnil(L, -1)) {
+            if (!lua_istable(L, -1)) {
+                BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("protoTriggerMods must be a table"));
+            }
+            for (std::size_t i(1), end(lua_rawlen(L, -1)); i <= end; ++i) {
+                luaL_checkstack(L, 1, nullptr);
+                lua_pushinteger(L, i);
+                lua_gettable(L, -2);
+                protoTriggerMods_.push_back(toProtoTriggerMod(L, triggerOffsetsAndDefaults_));
                 lua_pop(L, 1);
             }
         }

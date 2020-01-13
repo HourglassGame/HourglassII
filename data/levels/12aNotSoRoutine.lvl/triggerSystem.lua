@@ -5,82 +5,81 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {xOffset = 21.5 * 3200, yOffset = 5 * 3200},
+            attachment = {platform = nil, xOffset = 26.5 * 3200, yOffset = 6 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = nil,
+            destinationIndex = 1,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = nil,
+            illegalDestination = 1,
             fallable = false,
             winner = true
-        },
+        }
     },
     protoCollisions = {
         {
-            width = 12 * 3200,
-            height = 1 * 3200,
+            width = 2 * 3200,
+            height = 2 * 3200,
             timeDirection = 'forwards',
-            lastStateTriggerID = 2,
-            buttonTriggerID = 1,
+            lastStateTriggerID = 3,
+            buttonTriggerID = 2,
             destinations =
             {
                 onDestination = {
                     xDestination = {
                         desiredPosition = 10 * 3200,
                         maxSpeed = 200,
-                        acceleration = 20,
-                        deceleration = 18
+                        acceleration = 10,
+                        deceleration = 10
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 20,
-                        deceleration = 18
+                        desiredPosition = 10 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 10,
+                        deceleration = 10
                     }
                 },
                 offDestination = {
                     xDestination = {
                         desiredPosition = 10 * 3200,
                         maxSpeed = 200,
-                        acceleration = 20,
-                        deceleration = 18
+                        acceleration = 10,
+                        deceleration = 10
                     },
                     yDestination = {
-                        desiredPosition = 15 * 3200,
-                        maxSpeed = 300,
-                        acceleration = 20,
-                        deceleration = 18
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 10,
+                        deceleration = 10
                     }
                 }
             }
-        },
+        }
     },
     protoMutators = {
-    },
-    protoButtons = {
-        bts.toggleSwitch{
-            triggerID = 1,
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 5.25 * 3200, yOffset = 11.25 * 3200},
+            width = 1600,
+            height = 1600,
             timeDirection = 'forwards',
-            first = {
-                attachment = {platform = nil, xOffset = 20.75 * 3200, yOffset = 14.25 * 3200},
-                width = 800,
-                height = 1600,
-            },
-            second = {
-                attachment = {platform = nil, xOffset = 20.75 * 3200, yOffset = 7.25 * 3200},
-                width = 800,
-                height = 1600,
-            }
+            triggerID = 1,
+            pickupType = 'timeJump'
         },
     },
-    protoGlitz = {
-    },
+    protoButtons = {
+        bts.stickySwitch{
+            attachment = {platform = nil, xOffset = 21.75 * 3200, yOffset = 11 * 3200},
+            width = 800,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 2
+        },
+    }
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

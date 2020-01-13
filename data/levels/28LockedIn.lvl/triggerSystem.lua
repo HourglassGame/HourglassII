@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 17 * 3200, yOffset = 4 * 3200},
+            attachment = {platform = nil, xOffset = 17 * 3200, yOffset = 6 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -21,7 +21,7 @@ local tempStore =
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 22 * 3200, yOffset = 2 * 3200},
+            attachment = {platform = nil, xOffset = 22 * 3200, yOffset = 3 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -51,13 +51,13 @@ local tempStore =
                         desiredPosition = 8 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 6 * 3200,
+                        desiredPosition = 8 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
@@ -65,13 +65,13 @@ local tempStore =
                         desiredPosition = 8 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 6 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 }
             }
@@ -79,7 +79,7 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 1.25 * 3200, yOffset = 5.25 * 3200},
+            attachment = {platform = nil, xOffset = 1.25 * 3200, yOffset = 7.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -87,17 +87,25 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 2.25 * 3200, yOffset = 5.25 * 3200},
+            attachment = {platform = nil, xOffset = 2.25 * 3200, yOffset = 7.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 2,
             pickupType = 'timeJump'
         },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 7.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 5,
+            pickupType = 'timeJump'
+        },
     },
     protoButtons = {
         bts.stickySwitch{
-            attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 8.25 * 3200},
+            attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 10.25 * 3200},
             width = 800,
             height = 1600,
             timeDirection = 'forwards',

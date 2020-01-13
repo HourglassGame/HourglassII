@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 8 * 3200, yOffset = 14 * 3200},
+            attachment = {platform = nil, xOffset = 8.5 * 3200, yOffset = 14 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,

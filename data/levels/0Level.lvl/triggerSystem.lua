@@ -1,132 +1,131 @@
 local bts = require "global.basicTriggerSystem"
 
-local tempStore = 
+local tempStore =
 {
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 10 * 3200},
-            index = 1,
+            attachment = {xOffset = 21.5 * 3200, yOffset = 5 * 3200},
+            index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 1,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
             illegalDestination = 1,
             fallable = false,
-            winner = false,
-			triggerClause = "t5 t4 ! &"
+            winner = true
         },
         {
-            attachment = {platform = nil, xOffset = 45 * 1600, yOffset = 10 * 3200},
+            attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
             index = 2,
-            width = 2 * 3200,
-            height = 2 * 3200,
+            xaim = 5 * 3200,
+            yaim = 20 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 2,
+            destinationIndex = nil,
             xDestination = 0,
             yDestination = 0,
             relativeTime = true,
-            timeDestination = -8 * 60,
+            timeDestination = -600,
             illegalDestination = 1,
             fallable = false,
-            winner = true
-        }
+            winner = false,
+            isLaser = true,
+			triggerFunction = function(triggerArrivals, frameNumber)
+				return triggerArrivals[1][1] == 1
+			end
+        },
     },
+    --[[
+    protoLasers =
+    {
+        {
+            attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
+            index = 2,
+            xaim = 5 * 3200,
+            yaim = 20 * 3200,
+            collisionOverlap = 50,
+            timeDirection = 'forwards',
+            destinationIndex = nil,
+            xDestination = 0,
+            yDestination = 0,
+            relativeTime = true,
+            timeDestination = -600,
+            illegalDestination = 1,
+            fallable = false,
+            winner = false,
+			triggerFunction = function(triggerArrivals, frameNumber)
+				return triggerArrivals[1][1] == 1
+			end
+        },
+    },
+    ]]--
     protoCollisions = {
         {
-            width = 3200,
-            height = 4 * 3200,
+            width = 3 * 3200,
+            height = 5 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
-            triggerClause = "f 40 % 22 - t3 & t1 | t4 ! &",
+            buttonTriggerID = 1,
             destinations =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 200,
-                        acceleration = 50,
-                        deceleration = 50
+                        acceleration = 20,
+                        deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 41 * 1600,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 200,
-                        acceleration = 50,
-                        deceleration = 50
+                        acceleration = 20,
+                        deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 300,
-                        acceleration = 50,
-                        deceleration = 50
+                        acceleration = 20,
+                        deceleration = 18
                     }
                 }
             }
-        }
+        },
     },
     protoMutators = {
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 27 * 1600, yOffset = 12 * 3200 - 800},
+            attachment = {xOffset = 7 * 3200, yOffset = 10.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
-            triggerID = 1
+            triggerID = 1,
         },
-        bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 30 * 1600, yOffset = 12 * 3200 - 800},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 3
-        },
-        bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 33 * 1600, yOffset = 12 * 3200 - 800},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 4
-        },
-        bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 8.5 * 3200, yOffset = 12 * 3200 - 800},
-            width = 3200,
-            height = 800,
-            timeDirection = 'forwards',
-            triggerID = 5
-        },
-    }
+    },
+    protoGlitz = {
+    },
 }
 
---==Callin Definitions==--
---triggerArrivals have already had default values inserted by C++
---for trigger indices that did not arrive by the time this is called
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)
 
---responsible*Index gives the position in the list of the thing that
---is responsible for the callin happening.
---By 'the list' I mean the list of objects returned from calculatePhysicsAffectingStuff
---corresponding to the callin type (portals/pickups/killers)
---in particular, this means that this does *not* correspond to the 'index' field
---of a portal (the 'index' field for identifying illegal portals, but not for this)
 function shouldArrive(dynamicObject)
     return true
 end
-function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal) 
+function shouldPort(responsiblePortalIndex, dynamicObject, porterActionedPortal)
     return true
 end
 mutateObject = bts.mutateObject(tempStore)

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string.h> 
 #include <regex>
+#include "mp/std/map"
 
 namespace hg {
 enum class TriggerOperator : unsigned int {
@@ -363,6 +364,135 @@ public:
                     evalStack.push_back(val2 < val1 ? 1 : 0);
                     break;
                 }
+            }
+        }
+        val1 = evalStack.back();
+        evalStack.pop_back();
+        assert(evalStack.empty() && "Trigger clause not empty");
+        return val1;
+    }
+
+    int GetOutput(mp::std::map<std::size_t, mt::std::vector<int>> const &outputTriggers, int frameNum) const {
+        std::vector<int> evalStack;
+        evalStack.reserve(maxEvalDepth);
+        int val1;
+        int val2;
+
+        for (unsigned int i = 0; i < clauseOps.size(); ++i) {
+            switch (clauseOps[i]) {
+            case TriggerOperator::TRIGGER: {
+                auto const outputTriggerIt{ outputTriggers.find(clauseValues[i]) };
+                if (outputTriggerIt == outputTriggers.end()) {
+                    evalStack.push_back(0);
+                }
+                if (outputTriggerIt->second.size() < 1) {
+                    evalStack.push_back(0);
+                }
+                evalStack.push_back(outputTriggerIt->second[0]);
+                break;
+            }
+            case TriggerOperator::CONSTANT: {
+                evalStack.push_back(clauseValues[i]);
+                break;
+            }
+            case TriggerOperator::FRAME_NUM: {
+                evalStack.push_back(frameNum);
+                break;
+            }
+            case TriggerOperator::NOT: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val1 > 0 ? 0 : 1);
+                break;
+            }
+            case TriggerOperator::AND: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 > 0 && val1 > 0);
+                break;
+            }
+            case TriggerOperator::OR: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 > 0 || val1 > 0);
+                break;
+            }
+            case TriggerOperator::XOR: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 > 0 != val1 > 0);
+                break;
+            }
+            case TriggerOperator::ADD: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 + val1);
+                break;
+            }
+            case TriggerOperator::SUBTRACT: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 - val1);
+                break;
+            }
+            case TriggerOperator::MULT: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 * val1);
+                break;
+            }
+            case TriggerOperator::DIVIDE: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 / val1);
+                break;
+            }
+            case TriggerOperator::MOD: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 % val1);
+                break;
+            }
+            case TriggerOperator::EQUAL: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 == val1 ? 1 : 0);
+                break;
+            }
+            case TriggerOperator::GREATER: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 > val1 ? 1 : 0);
+                break;
+            }
+            case TriggerOperator::LESS: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val2 < val1 ? 1 : 0);
+                break;
+            }
             }
         }
         val1 = evalStack.back();

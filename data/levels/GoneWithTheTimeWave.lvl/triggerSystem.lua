@@ -54,13 +54,13 @@ local tempStore =
                         desiredPosition = 19.5 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
                         desiredPosition = 3 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
@@ -68,13 +68,13 @@ local tempStore =
                         desiredPosition = 19.5 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
                         desiredPosition = 6 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 }
             }

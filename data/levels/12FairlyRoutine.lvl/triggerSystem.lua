@@ -24,7 +24,7 @@ local tempStore =
     protoCollisions = {
         {
             width = 2 * 3200,
-            height = 1 * 3200,
+            height = 2 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 3,
             buttonTriggerID = 2,
@@ -53,44 +53,6 @@ local tempStore =
                     },
                     yDestination = {
                         desiredPosition = 8 * 3200,
-                        maxSpeed = 200,
-                        acceleration = 10,
-                        deceleration = 10
-                    }
-                }
-            }
-        },
-        {
-            width = 2 * 3200,
-            height = 1 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 4,
-            buttonTriggerID = 2,
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 9 * 3200,
-                        maxSpeed = 200,
-                        acceleration = 10,
-                        deceleration = 10
-                    },
-                    yDestination = {
-                        desiredPosition = 11 * 3200,
-                        maxSpeed = 200,
-                        acceleration = 10,
-                        deceleration = 10
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 9 * 3200,
-                        maxSpeed = 200,
-                        acceleration = 10,
-                        deceleration = 10
-                    },
-                    yDestination = {
-                        desiredPosition = 9 * 3200,
                         maxSpeed = 200,
                         acceleration = 10,
                         deceleration = 10

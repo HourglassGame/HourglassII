@@ -33,13 +33,13 @@ local tempStore =
                 onDestination = {
                     xDestination = {
                         desiredPosition = 18 * 3200,
-                        maxSpeed = 80,
+                        maxSpeed = 30,
                         acceleration = 10,
                         deceleration = 10
                     },
                     yDestination = {
                         desiredPosition = 17 * 3200,
-                        maxSpeed = 80,
+                        maxSpeed = 30,
                         acceleration = 10,
                         deceleration = 10
                     }
@@ -47,13 +47,13 @@ local tempStore =
                 offDestination = {
                     xDestination = {
                         desiredPosition = 18 * 3200,
-                        maxSpeed = 80,
+                        maxSpeed = 40,
                         acceleration = 10,
                         deceleration = 10
                     },
                     yDestination = {
                         desiredPosition = 10 * 3200,
-                        maxSpeed = 80,
+                        maxSpeed = 40,
                         acceleration = 10,
                         deceleration = 10
                     }
@@ -62,14 +62,6 @@ local tempStore =
         }
     },
     protoMutators = {
-        bts.powerup{
-            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 16.25 * 3200},
-            width = 1600,
-            height = 1600,
-            timeDirection = 'forwards',
-            powerupType = 'jumpBoots',
-            triggerID = 1,
-        },
         bts.pickup{
             attachment = {platform = nil, xOffset = 4.75 * 3200, yOffset = 6.25 * 3200},
             width = 1600,
@@ -84,6 +76,38 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 5,
+            pickupType = 'timeJump'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 3.75 * 3200, yOffset = 5.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 6,
+            pickupType = 'timeJump'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 10.75 * 3200, yOffset = 13.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 1,
+            pickupType = 'timeJump'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 11.75 * 3200, yOffset = 14.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 7,
+            pickupType = 'timeJump'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 12.75 * 3200, yOffset = 15.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 8,
             pickupType = 'timeJump'
         },
     },

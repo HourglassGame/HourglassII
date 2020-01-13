@@ -32,7 +32,7 @@ environment =
 }
 initialGuy =
 {
-    arrivalTime = 0,
+    arrivalTime = 5 * 60,
     arrival =
     {
         x = 26.25 * 3200,

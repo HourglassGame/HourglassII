@@ -32,20 +32,6 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 17.5 * 3200,
-                        maxSpeed = 120,
-                        acceleration = 15,
-                        deceleration = 15
-                    },
-                    yDestination = {
-                        desiredPosition = 5 * 3200,
-                        maxSpeed = 120,
-                        acceleration = 15,
-                        deceleration = 15
-                    }
-                },
-                offDestination = {
-                    xDestination = {
                         desiredPosition = 9.5 * 3200,
                         maxSpeed = 120,
                         acceleration = 15,
@@ -57,25 +43,32 @@ local tempStore =
                         acceleration = 15,
                         deceleration = 15
                     }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 17.5 * 3200,
+                        maxSpeed = 120,
+                        acceleration = 15,
+                        deceleration = 15
+                    },
+                    yDestination = {
+                        desiredPosition = 5 * 3200,
+                        maxSpeed = 120,
+                        acceleration = 15,
+                        deceleration = 15
+                    }
                 }
             }
         },
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 19.75 * 3200, yOffset = 10.25 * 3200},
+            attachment = {platform = nil, xOffset = 17.25 * 3200, yOffset = 12.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 1,
             pickupType = 'timeJump'
-        },
-        bts.trampoline{
-            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 14.25 * 3200},
-            width = 3*3200,
-            height = 0.75*3200,
-            timeDirection = 'forwards',
-            bounce = 1.25,
         },
         bts.spikes{
             attachment = {platform = 1, xOffset = 0 * 3200, yOffset = 0.5 * 3200},
@@ -103,7 +96,14 @@ local tempStore =
         },
     },
     protoButtons = {
-    }
+    },
+    protoTriggerMods = {
+        {
+            triggerID = 2,
+            triggerClause = "t2 !",
+            useTriggerArrival = true,
+        }
+    },
 }
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++

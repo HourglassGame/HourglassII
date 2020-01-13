@@ -27,9 +27,10 @@ local tempStore =
             height = 2 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 3,
-            triggerFunction = function (triggers)
-                return triggers[1][1] > 0 and triggers[2][1] > 0
-            end,
+            triggerClause = "t1 t2 &",
+            --triggerFunction = function (triggers)
+            --    return triggers[1][1] > 0 and triggers[2][1] > 0
+            --end,
             destinations =
             {
                 onDestination = {
@@ -37,13 +38,13 @@ local tempStore =
                         desiredPosition = 15 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
                         desiredPosition = 17 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
@@ -51,13 +52,13 @@ local tempStore =
                         desiredPosition = 15 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
                         desiredPosition = 11 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 }
             }

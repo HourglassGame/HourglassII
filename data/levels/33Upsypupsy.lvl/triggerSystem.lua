@@ -35,13 +35,13 @@ local tempStore =
                         desiredPosition = 4 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
                         desiredPosition = 3 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
@@ -49,13 +49,13 @@ local tempStore =
                         desiredPosition = 4 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     },
                     yDestination = {
                         desiredPosition = 5 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 }
             }
@@ -71,7 +71,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 11.25 * 3200},
+            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 12.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -87,7 +87,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 22.5 * 3200, yOffset = 13.25 * 3200},
+            attachment = {platform = nil, xOffset = 22.5 * 3200, yOffset = 14.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',

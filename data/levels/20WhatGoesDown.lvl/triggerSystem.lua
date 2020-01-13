@@ -27,9 +27,10 @@ local tempStore =
             height = 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 6,
-            triggerFunction = function(triggers)
-                return triggers[3][1] > 0 and triggers[5][1] > 0
-            end,
+            triggerClause = "t3 t5 &",
+            --triggerFunction = function(triggers)
+            --    return triggers[3][1] > 0 and triggers[5][1] > 0
+            --end,
             destinations =
             {
                 onDestination = {

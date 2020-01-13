@@ -21,7 +21,7 @@ local tempStore =
             winner = false
         },
         {
-            attachment = {platform = nil, xOffset = 22 * 3200, yOffset = 16 * 3200},
+            attachment = {platform = nil, xOffset = 22.5 * 3200, yOffset = 16 * 3200},
             index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -57,7 +57,7 @@ local tempStore =
                         desiredPosition = 4 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
@@ -95,7 +95,7 @@ local tempStore =
                         desiredPosition = 14 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
-                        deceleration = 20
+                        deceleration = 18
                     }
                 },
                 offDestination = {
