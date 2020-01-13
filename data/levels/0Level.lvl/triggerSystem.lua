@@ -43,8 +43,7 @@ local tempStore =
             height = 4 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
-            buttonTriggerID = 1,
-            triggerClause = "22 40 f % -",
+            triggerClause = "f 40 % 22 - t3 & t1 | t4 ! &",
             destinations =
             {
                 onDestination = {
@@ -87,7 +86,21 @@ local tempStore =
             height = 800,
             timeDirection = 'forwards',
             triggerID = 1
-        }
+        },
+        bts.momentarySwitch{
+            attachment = {platform = nil, xOffset = 30 * 1600, yOffset = 12 * 3200 - 800},
+            width = 3200,
+            height = 800,
+            timeDirection = 'forwards',
+            triggerID = 3
+        },
+        bts.momentarySwitch{
+            attachment = {platform = nil, xOffset = 33 * 1600, yOffset = 12 * 3200 - 800},
+            width = 3200,
+            height = 800,
+            timeDirection = 'forwards',
+            triggerID = 4
+        },
     }
 }
 

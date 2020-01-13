@@ -280,7 +280,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 > 0 && val2 > 0);
+                    evalStack.push_back(val2 > 0 && val1 > 0);
                     break;
                 }
                 case TriggerOperator::OR: {
@@ -288,7 +288,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 > 0 || val2 > 0);
+                    evalStack.push_back(val2 > 0 || val1 > 0);
                     break;
                 }
                 case TriggerOperator::XOR: {
@@ -296,7 +296,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 > 0 != val2 > 0);
+                    evalStack.push_back(val2 > 0 != val1 > 0);
                     break;
                 }
                 case TriggerOperator::ADD: {
@@ -304,7 +304,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 + val2);
+                    evalStack.push_back(val2 + val1);
                     break;
                 }
                 case TriggerOperator::SUBTRACT: {
@@ -312,7 +312,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 - val2);
+                    evalStack.push_back(val2 - val1);
                     break;
                 }
                 case TriggerOperator::MULT: {
@@ -320,7 +320,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 * val2);
+                    evalStack.push_back(val2 * val1);
                     break;
                 }
                 case TriggerOperator::DIVIDE: {
@@ -328,7 +328,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 / val2);
+                    evalStack.push_back(val2 / val1);
                     break;
                 }
                 case TriggerOperator::MOD: {
@@ -336,7 +336,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 % val2);
+                    evalStack.push_back(val2 % val1);
                     break;
                 }
                 case TriggerOperator::EQUAL: {
@@ -344,7 +344,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 == val2 ? 1 : 0);
+                    evalStack.push_back(val2 == val1 ? 1 : 0);
                     break;
                 }
                 case TriggerOperator::GREATER: {
@@ -352,7 +352,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 > val2 ? 1 : 0);
+                    evalStack.push_back(val2 > val1 ? 1 : 0);
                     break;
                 }
                 case TriggerOperator::LESS: {
@@ -360,7 +360,7 @@ public:
                     evalStack.pop_back();
                     val2 = evalStack.back();
                     evalStack.pop_back();
-                    evalStack.push_back(val1 < val2 ? 1 : 0);
+                    evalStack.push_back(val2 < val1 ? 1 : 0);
                     break;
                 }
             }
