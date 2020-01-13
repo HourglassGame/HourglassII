@@ -163,6 +163,8 @@ namespace hg {
                 relativeDirection,
                 destinationDirection,
                 illegalDestination,
+                //hasTriggerClause,
+                //triggerClause,
                 fallable,
                 isLaser,
                 winner
@@ -186,6 +188,8 @@ namespace hg {
         bool relativeDirection;
         TimeDirection destinationDirection;
         int illegalDestination;
+        bool hasTriggerClause;
+        TriggerClause triggerClause;
         bool fallable;
         bool isLaser;
         bool winner;

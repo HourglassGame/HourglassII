@@ -18,7 +18,8 @@ local tempStore =
             timeDestination = 0,
             illegalDestination = 1,
             fallable = false,
-            winner = false
+            winner = false,
+			triggerClause = "t5 t4 ! &"
         },
         {
             attachment = {platform = nil, xOffset = 45 * 1600, yOffset = 10 * 3200},
@@ -43,8 +44,7 @@ local tempStore =
             height = 4 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
-            triggerClause = "f 40 % 22 - t3 & t3 | t4 ! &",
-			-- ((((Frame Number % 40) - 22) > 0 && t3) || t3) && !t4
+            triggerClause = "f 40 % 22 - t3 & t1 | t4 ! &",
             destinations =
             {
                 onDestination = {
@@ -101,6 +101,13 @@ local tempStore =
             height = 800,
             timeDirection = 'forwards',
             triggerID = 4
+        },
+        bts.momentarySwitch{
+            attachment = {platform = nil, xOffset = 8.5 * 3200, yOffset = 12 * 3200 - 800},
+            width = 3200,
+            height = 800,
+            timeDirection = 'forwards',
+            triggerID = 5
         },
     }
 }

@@ -232,7 +232,11 @@ namespace hg {
         }
     }
 
-    std::tuple<PortalArea, bool> calculatePortal(ProtoPortal const &protoPortal, mp::std::vector<Collision> const &collisions)
+    std::tuple<PortalArea, bool> calculatePortal(
+        ProtoPortal const &protoPortal,
+        mp::std::vector<Collision> const &collisions,
+        mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+        Frame const *const currentFrame)
     {
         auto [x, y, xspeed, yspeed] = snapAttachment(protoPortal.timeDirection, protoPortal.attachment, collisions);
         PortalArea retPortal(
@@ -260,10 +264,10 @@ namespace hg {
             protoPortal.winner// bool winner
         );
         
-        //TODO: if protoPortal.triggerFunction, call triggerFunction!
+        bool const active = (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0));
 
         return {
-            retPortal, true
+            retPortal, active
         };
     }
 
@@ -368,12 +372,12 @@ namespace hg {
         mt::std::vector<Glitz> &reverseGlitz,
         std::vector<ProtoPortal> const &protoPortals,
         mp::std::vector<Collision> const &collisions,
-        mp::std::vector<mp::std::vector<int>> const &apparentTriggers,
+        mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
         Frame const *const currentFrame
     )
     {
         for (auto &&protoPortal : protoPortals) {
-            auto [portal, active] = calculatePortal(protoPortal, collisions);
+            auto [portal, active] = calculatePortal(protoPortal, collisions, triggerArrivals, currentFrame);
             if (!protoPortal.isLaser) {
                 calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active);//TODO
             }
@@ -730,6 +734,8 @@ namespace hg {
             int timeDestination;
             bool relativeDirection;
             TimeDirection destinationDirection;
+            bool hasTriggerClause;
+            TriggerClause triggerClause;
             int illegalDestination;
             bool fallable;
             bool isLaser;
@@ -760,6 +766,12 @@ namespace hg {
         bool const relativeDirection(readFieldWithDefault<bool>(L, "relativeDirection", -1, true));
         TimeDirection const destinationDirection(readFieldWithDefault<TimeDirection>(L, "destinationDirection", -1, TimeDirection::FORWARDS));
         
+        lua_getfield(L, -1, "triggerClause");
+        bool const hasTriggerClause(!lua_isnil(L, -1));
+        std::string triggerClauseString(hasTriggerClause ? to<std::string>(L) : "0");
+        TriggerClause triggerClause(triggerClauseString);
+        lua_pop(L, 1);
+
         //TODO: Centralise this logic?
         lua_getfield(L, -1, "illegalDestination");
         int illegalDestination;
@@ -801,6 +813,8 @@ namespace hg {
             relativeDirection,
             destinationDirection,
             illegalDestination,
+            hasTriggerClause,
+            triggerClause,
             fallable,
             isLaser,
             winner
