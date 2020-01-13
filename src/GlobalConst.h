@@ -4,15 +4,16 @@
 #include <vector>
 namespace hg {
     inline static const int FRAMERATE = 60;
-    inline static const int GRAVITY = 20;
-    inline static const int UP_GRAVITY = 20;
-    inline static const int DOWN_GRAVITY = 20;
+    inline static const int GRAVITY = 17;
+    inline static const int UP_GRAVITY = 17;
+    inline static const int DOWN_GRAVITY = 17;
     inline static const int GUY_SPEED = 230;
     inline static const int GUY_HOR_ACCEL = 40;
     inline static const int GUY_HOR_SLOW = 70;
-    inline static const int GUY_JUMP_SPEED_DEFAULT = 370;
+    inline static const int GUY_JUMP_SPEED_DEFAULT = 320;
     inline static const int GUY_JUMP_HOLD_MAX = 16;
-    inline static const int GUY_JUMP_HOLD_SPEED = -18;
+    inline static const int GUY_JUMP_HOLD_MIN = 5;
+    inline static const int GUY_JUMP_HOLD_SPEED = -16;
     inline static const int GUY_SUPPORT_JUMP_REQ = 6;
     inline static const int GUY_MAX_SUPPORTED = 60;
     inline static const int VERT_AIR_RESISTANCE = 22000000;

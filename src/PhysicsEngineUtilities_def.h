@@ -366,7 +366,7 @@ void guyStep(
             //std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
             // jump
-            if (input.getUp())
+            if (input.getUp() || (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MIN && !guyArrivalList[i].getSupported()))
             {
                 if (guyArrivalList[i].getSupported())
                 {
@@ -379,7 +379,7 @@ void guyStep(
                 else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
                 {
                     if (guyArrivalList[i].getBoxCarrying()) {
-                        yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
+                        yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 2;
                     }
                     else {
                         yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32;
