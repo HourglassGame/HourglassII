@@ -43,7 +43,8 @@ local tempStore =
             height = 4 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
-            triggerClause = "f 40 % 22 - t3 & t1 | t4 ! &",
+            triggerClause = "f 40 % 22 - t3 & t3 | t4 ! &",
+			-- ((((Frame Number % 40) - 22) > 0 && t3) || t3) && !t4
             destinations =
             {
                 onDestination = {

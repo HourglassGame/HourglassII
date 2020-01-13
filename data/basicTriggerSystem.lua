@@ -858,7 +858,7 @@ local function pickup(p)
                 return dynamicObject 
             end
             dynamicObject.pickups[proto.pickupType] =
-                dynamicObject.pickups[proto.pickupType] + (proto.pickupNumber or 1)
+                (dynamicObject.pickups[proto.pickupType] or 0) + (proto.pickupNumber or 1)
             active = false
             justTaken = true
             return dynamicObject
