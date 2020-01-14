@@ -163,6 +163,7 @@ namespace hg {
                 relativeDirection,
                 destinationDirection,
                 illegalDestination,
+                chargeTriggerID,
                 //hasTriggerClause,
                 //triggerClause,
                 fallable,
@@ -188,6 +189,7 @@ namespace hg {
         bool relativeDirection;
         TimeDirection destinationDirection;
         int illegalDestination;
+        int chargeTriggerID;
         bool hasTriggerClause;
         TriggerClause triggerClause;
         bool fallable;
@@ -1646,6 +1648,7 @@ namespace hg {
         mp::std::vector<MutatorFrameState> mutatorFrameStates_;
         mp::std::vector<MutatorFrameStateImpl *> activeMutators_;
         mp::std::vector<mp::std::vector<int>> triggerArrivals_;
+        mp::std::vector<int> portalCharges_;
 
         PhysicsAffectingStuff physicsAffectingStuff_;
 

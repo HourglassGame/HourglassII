@@ -232,7 +232,7 @@ namespace hg {
         }
     }
 
-    std::tuple<PortalArea, bool> calculatePortal(
+    std::tuple<PortalArea, bool, int> calculatePortal(
         ProtoPortal const &protoPortal,
         mp::std::vector<Collision> const &collisions,
         mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
@@ -264,10 +264,14 @@ namespace hg {
             protoPortal.winner// bool winner
         );
         
-        bool const active = (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0));
+        int charges = -1;
+        if (protoPortal.chargeTriggerID != -1) {
+            charges = triggerArrivals[protoPortal.chargeTriggerID][0];
+        }
+        bool const active = (charges != 0) && (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0));
 
         return {
-            retPortal, active
+            retPortal, active, charges
         };
     }
 
@@ -373,14 +377,17 @@ namespace hg {
         std::vector<ProtoPortal> const &protoPortals,
         mp::std::vector<Collision> const &collisions,
         mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+        mp::std::vector<int> &portalCharges,
         Frame const *const currentFrame
     )
     {
+        portalCharges.resize(protoPortals.size());
         for (auto &&protoPortal : protoPortals) {
-            auto [portal, active] = calculatePortal(protoPortal, collisions, triggerArrivals, currentFrame);
+            auto [portal, active, charges] = calculatePortal(protoPortal, collisions, triggerArrivals, currentFrame);
             if (!protoPortal.isLaser) {
                 calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active);//TODO
             }
+            portalCharges[protoPortal.index] = charges;
             arrivalLocations.push_back(calculateArrivalLocation(portal));
             if (active) {
                 portals.push_back(portal);
@@ -456,6 +463,7 @@ namespace hg {
         mutatorFrameStates_(pool),
         activeMutators_(pool),
         triggerArrivals_(pool),
+        portalCharges_(pool),
         physicsAffectingStuff_(pool),
         protoCollisions_(protoCollisions),
         protoPortals_(protoPortals),
@@ -563,6 +571,7 @@ namespace hg {
             protoPortals_,
             physicsAffectingStuff_.collisions,
             triggerArrivals_,
+            portalCharges_,
             currentFrame
         );
 
@@ -632,6 +641,13 @@ namespace hg {
             protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, currentFrame);
         }
 
+        for (auto const &protoPortal : protoPortals_) {
+            int triggerID = protoPortal.chargeTriggerID;
+            if (triggerID != -1) {
+                outputTriggers_[triggerID] = mt::std::vector<int>{ portalCharges_[protoPortal.index] };
+            }
+        }
+
         mp::std::vector<TriggerData> triggerVector(pool_);
         boost::push_back(triggerVector, outputTriggers_ | boost::adaptors::transformed([](auto &&v) {return TriggerData{v.first, std::move(v.second)};}));
         return {
@@ -649,7 +665,17 @@ namespace hg {
     bool SimpleConfiguredTriggerFrameState::shouldPort(
         int responsiblePortalIndex,
         Guy const &potentialPorter,
-        bool porterActionedPortal) { return true; }
+        bool porterActionedPortal) 
+    {
+        if (portalCharges_[responsiblePortalIndex] == 0) {
+            return false;
+        }
+        else if (portalCharges_[responsiblePortalIndex] > 0) {
+            portalCharges_[responsiblePortalIndex] -= 1;
+        }
+        return true; 
+    }
+
     bool SimpleConfiguredTriggerFrameState::shouldPort(
         int responsiblePortalIndex,
         Box const &potentialPorter,
@@ -796,6 +822,10 @@ namespace hg {
         }
         lua_pop(L, 1);
 
+        lua_getfield(L, -1, "chargeTriggerID");
+        int const chargeTriggerID = (!lua_isnil(L, -1) ? lua_index_to_C_index(to<int>(L)) : -1);
+        lua_pop(L, 1);
+
         bool const fallable(readField<bool>(L, "fallable"));
         bool const isLaser(readFieldWithDefault<bool>(L, "isLaser", -1, false));
         int const xaim(isLaser?readField<int>(L, "xaim"):0);
@@ -818,6 +848,7 @@ namespace hg {
             relativeDirection,
             destinationDirection,
             illegalDestination,
+            chargeTriggerID,
             hasTriggerClause,
             triggerClause,
             fallable,
