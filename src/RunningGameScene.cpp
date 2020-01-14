@@ -115,7 +115,8 @@ UIFrameState runStep(
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point const &frameStartTime,
-    bool const runningFromReplay);
+    bool const runningFromReplay,
+    bool const frameRun);
 
 
 void drawFrame(
@@ -252,6 +253,7 @@ run_game_scene(hg::RenderWindow &window,
     enum class RunState { AWAITING_INPUT, RUNNING_LEVEL };
     RunState state(RunState::AWAITING_INPUT);
     bool paused = false;
+    bool frameRun = false;
     bool runNextPausedFrame = false;
 
     hg::Input input;
@@ -320,12 +322,14 @@ run_game_scene(hg::RenderWindow &window,
             interrupter = std::make_unique<hg::OperationInterrupter>();
 
             if (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken() || input.getAbilityChanged())) {
+                frameRun = false;
                 futureRunResult =
                     async(
                         [&timeEngine] {
                     return timeEngine.getPrevRunResult(); });
             }
             else {
+                frameRun = true;
                 if (paused && inputList.getGuyInput().getPauseActionTaken()) {
                     runNextPausedFrame = true;
                 }
@@ -397,7 +401,9 @@ run_game_scene(hg::RenderWindow &window,
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex, input.getTimeCursor(), inertia, waveInfo, levelResources, wallImage, positionColoursImage, frameStartTime, runningFromReplay)};
+                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex, 
+                        input.getTimeCursor(), inertia, waveInfo, levelResources, wallImage, 
+                        positionColoursImage, frameStartTime, runningFromReplay, frameRun)};
                     interrupter.reset();
 
 
@@ -473,8 +479,6 @@ run_game_scene(hg::RenderWindow &window,
 }
 
 
-
-
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
@@ -488,7 +492,8 @@ UIFrameState runStep(
     sf::Image const &wallImage,
     sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point const &frameStartTime,
-    bool const runningFromReplay)
+    bool const runningFromReplay,
+    bool const frameRun)
 {
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
@@ -523,7 +528,9 @@ UIFrameState runStep(
             abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {
-            inertia.run();
+            if (frameRun) {
+                inertia.run();
+            }
             if (hg::FrameID const inertialFrame(inertia.getFrame()); inertialFrame.isValidFrame()) {
                 drawnFrame = inertialFrame;
                 drawnTimeDirection = inertia.getTimeDirection();

@@ -1,6 +1,6 @@
 name = "It's A Trap!"
 speedOfTime = 1
-timelineLength = 3600
+timelineLength = 10800
 environment =
 {
     gravity = 10,

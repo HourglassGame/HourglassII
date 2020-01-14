@@ -32,7 +32,7 @@ local tempStore =
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = 2,
             fallable = false,
             winner = true
         }
