@@ -5,8 +5,8 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {xOffset = 1.5 * 3200, yOffset = 6 * 3200},
-            index = 1,
+            attachment = {xOffset = 3.5 * 3200, yOffset = 4.5 * 3200},
+            index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
@@ -32,13 +32,13 @@ local tempStore =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7.5 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 2 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -46,13 +46,13 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7.5 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 5 * 3200,
+                        desiredPosition = 4 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 18
@@ -101,7 +101,7 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 11.75 * 3200, yOffset = 10.25 * 3200},
+            attachment = {platform = nil, xOffset = 18.75 * 3200, yOffset = 6 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -109,15 +109,15 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.spikes{
-            attachment = {platform = 2, xOffset = 1 * 3200, yOffset = 8.5 * 3200},
-            width = 7 * 3200,
+            attachment = {platform = 2, xOffset = 9 * 3200, yOffset = 9.5 * 3200},
+            width = 8 * 3200,
             height = 0.5 * 3200,
             timeDirection = 'forwards',
         },
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {xOffset = 27.75 * 3200, yOffset = 6.5 * 3200},
+            attachment = {xOffset = 30.75 * 3200, yOffset = 2.5 * 3200},
             width = 800,
             height = 3200,
             timeDirection = 'forwards',
@@ -126,7 +126,7 @@ local tempStore =
         bts.stickyLaserSwitch{
             triggerID = 2,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 18 * 3200, yOffset = 12 * 3200 },
+            attachment = {platform = nil, xOffset = 26.75 * 3200, yOffset = 7 * 3200 },
             beamLength = 2*3200,
             beamDirection = 1,
         },

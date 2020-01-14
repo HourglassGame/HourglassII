@@ -294,7 +294,8 @@ namespace hg {
         PortalArea const &portal,
         mt::std::vector<Glitz> &forwardsGlitz,
         mt::std::vector<Glitz> &reverseGlitz,
-        bool const active)
+        bool const active,
+        int const charges)
     {
         #if 0
         local colour
@@ -357,8 +358,8 @@ namespace hg {
         auto textGlitz = Glitz(mt::std::make_unique<TextGlitz>(
             440,
             text,
-            portal.getX()+portal.getWidth()/2-1600,
-            portal.getY()-2400,
+            portal.getX() + portal.getWidth()/2-1600,
+            portal.getY() - 2400,
             2000,
             asPackedColour(0,0,0)
         ));
@@ -367,6 +368,23 @@ namespace hg {
 
         forwardsGlitz.push_back(textGlitz);
         reverseGlitz.push_back(textGlitz);
+
+        if (charges != -1) {
+            std::stringstream ss;
+            ss << "Uses " << charges;
+            auto s = ss.str();
+            mt::std::string text = { s.begin(), s.end() };
+            auto chargeText = Glitz(mt::std::make_unique<TextGlitz>(
+                440,
+                text,
+                portal.getX() + portal.getWidth() / 2 - 2700,
+                portal.getY() + 200,
+                1600,
+                asPackedColour(0, 0, 0)
+            ));
+            forwardsGlitz.push_back(chargeText);
+            reverseGlitz.push_back(chargeText);
+        }
     }
 
     void calculatePortals(
@@ -385,7 +403,7 @@ namespace hg {
         for (auto &&protoPortal : protoPortals) {
             auto [portal, active, charges] = calculatePortal(protoPortal, collisions, triggerArrivals, currentFrame);
             if (!protoPortal.isLaser) {
-                calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active);//TODO
+                calculatePortalGlitz(portal, forwardsGlitz, reverseGlitz, active, charges);//TODO
             }
             portalCharges[protoPortal.index] = charges;
             arrivalLocations.push_back(calculateArrivalLocation(portal));
