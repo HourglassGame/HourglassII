@@ -174,10 +174,86 @@ local tempStore =
                 }
             }
         },
+        {
+            width = 1 * 3200,
+            height = 1 * 3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 13,
+            triggerClause = "t10 19200 =",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 5 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                }
+            }
+        },
+        {
+            width = 1 * 3200,
+            height = 1 * 3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 14,
+            triggerClause = "t10 64000 =",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 24 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 26 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                }
+            }
+        },
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 4.25 * 3200, yOffset = 7.25 * 3200},
+            attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 8.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -185,7 +261,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 27.25 * 3200, yOffset = 7.25 * 3200},
+            attachment = {platform = nil, xOffset = 28.25 * 3200, yOffset = 8.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -218,14 +294,14 @@ local tempStore =
         bts.stickySwitch{
             triggerID = 4,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 3 * 3200, yOffset = 9.25 * 3200 },
+            attachment = {platform = nil, xOffset = 3 * 3200, yOffset = 6.75 * 3200 },
             width = 800,
             height = 1600,
         },
         bts.stickySwitch{
             triggerID = 5,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 28.75 * 3200, yOffset = 9.25 * 3200 },
+            attachment = {platform = nil, xOffset = 28.75 * 3200, yOffset = 6.75 * 3200 },
             width = 800,
             height = 1600,
         },
@@ -233,7 +309,7 @@ local tempStore =
     protoTriggerMods = {
         {
             triggerID = 10,
-            triggerClause = "o2 12800 & o3 70400 & | t10 |",
+            triggerClause = "o2 19200 & o3 64000 & | t10 |",
         }
     },
 }
