@@ -49,7 +49,11 @@ namespace hg {
                 desiredPosition,
                 acceleration,
                 deceleration,
-                maxSpeed
+                maxSpeed,
+                hasClauseDesiredPosition,
+                hasClauseAcceleration,
+                hasClauseDeceleration,
+                hasClauseMaxSpeed
             );
         }
     public:
@@ -57,6 +61,17 @@ namespace hg {
         int acceleration;
         int deceleration;
         int maxSpeed;
+
+        bool hasClauseDesiredPosition;
+        bool hasClauseAcceleration;
+        bool hasClauseDeceleration;
+        bool hasClauseMaxSpeed;
+
+        TriggerClause clauseDesiredPosition;
+        TriggerClause clauseAcceleration;
+        TriggerClause clauseDeceleration;
+        TriggerClause clauseMaxSpeed;
+
         bool operator==(AxisCollisionDestination const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
         }
@@ -205,9 +220,8 @@ namespace hg {
     private:
         auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
-                triggerID,
+                triggerID
                 //triggerClause
-                useTriggerArrival
             );
         }
 
@@ -215,20 +229,13 @@ namespace hg {
 
         int const triggerID;
         TriggerClause const triggerClause;
-        bool const useTriggerArrival;
 
         void modifyTrigger(
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
             mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
             Frame const *const currentFrame) const
         {
-            if (useTriggerArrival) {
-                outputTriggers[triggerID] = mt::std::vector<int>{ triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) };
-            }
-            else
-            {
-                outputTriggers[triggerID] = mt::std::vector<int>{ triggerClause.GetOutput(outputTriggers, getFrameNumber(currentFrame)) };
-            }
+            outputTriggers[triggerID] = mt::std::vector<int>{ triggerClause.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame)) };
         }
         bool operator==(ProtoTriggerMod const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
@@ -1383,12 +1390,7 @@ namespace hg {
                         
                     }
                     else if (hasTriggerClause_) {
-                        if (useTriggerArrival_) {
-                            return triggerClause_.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0;
-                        }
-                        else {
-                            return triggerClause_.GetOutput(outputTriggers, getFrameNumber(currentFrame)) > 0;
-                        }
+                        return triggerClause_.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame)) > 0;
                     }
                     else {
                         return false;

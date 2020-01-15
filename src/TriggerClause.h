@@ -10,20 +10,21 @@
 namespace hg {
 enum class TriggerOperator : unsigned int {
     TRIGGER = 0,
-    CONSTANT = 1,
-    FRAME_NUM = 2,
-    NOT = 3,
-    AND = 4,
-    OR = 5,
-    XOR = 6,
-    ADD = 7,
-    SUBTRACT = 8,
-    MULT = 9,
-    DIVIDE = 10,
-    MOD = 11,
-    EQUAL = 12,
-    GREATER = 13,
-    LESS = 14
+    TRIGGER_OUT = 1,
+    CONSTANT = 2,
+    FRAME_NUM = 3,
+    NOT = 4,
+    AND = 5,
+    OR = 6,
+    XOR = 7,
+    ADD = 8,
+    SUBTRACT = 9,
+    MULT = 10,
+    DIVIDE = 11,
+    MOD = 12,
+    EQUAL = 13,
+    GREATER = 14,
+    LESS = 15
 };
 
 class TriggerClause {
@@ -41,15 +42,15 @@ public:
         unsigned int maxEvalDepth = 0;
         for (unsigned int i = 0; i < splitClause.size(); ++i) {
             //std::cerr << rawClause << " splitClause[i] " << i << ", " << splitClause[i] << "\n";
-            if (std::regex_match(splitClause[i], std::regex("t[0-9]+"))) {
-                clauseOps[i] = TriggerOperator::TRIGGER;
+            if (std::regex_match(splitClause[i], std::regex("[to][0-9]+"))) {
+                clauseOps[i] = (splitClause[i].at(0) == 't' ? TriggerOperator::TRIGGER : TriggerOperator::TRIGGER_OUT);
                 clauseValues.push_back(lua_index_to_C_index(std::stoi(splitClause[i].substr(1, splitClause[i].length()))));
                 clauseValues.push_back(0);
                 evalDepth += 1;
                 maxEvalDepth = std::max(maxEvalDepth, evalDepth);
             }
-            else if (std::regex_match(splitClause[i], std::regex("t[0-9]+,[0-9]+"))) {
-                clauseOps[i] = TriggerOperator::TRIGGER;
+            else if (std::regex_match(splitClause[i], std::regex("[to][0-9]+,[0-9]+"))) {
+                clauseOps[i] = (splitClause[i].at(0) == 't' ? TriggerOperator::TRIGGER : TriggerOperator::TRIGGER_OUT);
                 size_t found = splitClause[i].find(",");
                 //std::cerr << "first " << splitClause[i].substr(1, found - 1) << ", second " << splitClause[i].substr(found + 1, splitClause[i].length()) << "\n";
                 clauseValues.push_back(lua_index_to_C_index(std::stoi(splitClause[i].substr(1, found - 1))));
@@ -122,7 +123,7 @@ public:
         switch (op) {
         case TriggerOperator::AND: {
             if (val2 > 0 && val1 > 0) {
-                return val2;
+                return val1;
             }
             return 0;
         }
@@ -171,7 +172,7 @@ public:
         }
     }
 
-    int GetOutput(mp::std::vector<mp::std::vector<int>> const &triggers, int frameNum) const {
+    int execute(mp::std::vector<mp::std::vector<int>> const &triggers, int frameNum) const {
         std::vector<int> evalStack;
         evalStack.reserve(maxEvalDepth);
         int val1;
@@ -218,7 +219,7 @@ public:
         return val1;
     }
 
-    int GetOutput(mp::std::map<std::size_t, mt::std::vector<int>> const &outputTriggers, int frameNum) const {
+    int executeOnArrivalAndOut(mp::std::vector<mp::std::vector<int>> const &triggers, mp::std::map<std::size_t, mt::std::vector<int>> const &outputTriggers, int frameNum) const {
         std::vector<int> evalStack;
         evalStack.reserve(maxEvalDepth);
         int val1;
@@ -227,7 +228,7 @@ public:
 
         for (unsigned int i = 0; i < clauseOps.size(); ++i) {
             switch (clauseOps[i]) {
-            case TriggerOperator::TRIGGER: {
+            case TriggerOperator::TRIGGER_OUT: {
                 int firstIndex = clauseValues[cIndex];
                 int secondIndex = clauseValues[cIndex + 1];
                 cIndex += 2;
@@ -241,6 +242,13 @@ public:
                     break;
                 }
                 evalStack.push_back(outputTriggerIt->second[secondIndex]);
+                break;
+            }
+            case TriggerOperator::TRIGGER: {
+                int firstIndex = clauseValues[cIndex];
+                int secondIndex = clauseValues[cIndex + 1];
+                cIndex += 2;
+                evalStack.push_back(triggers[firstIndex][secondIndex]);
                 break;
             }
             case TriggerOperator::CONSTANT: {

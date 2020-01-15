@@ -892,11 +892,11 @@ void guyStep(
 
                     int gX(x[i]);
                     int gY(y[i]);
-                    int dropY = gY + height - 1; // No jumping off your own dropped box.
+                    int dropY = gY + height;
                     if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
                         gX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
                         gY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed();
-                        dropY = gY + height; // Avoid cliff dropping paradoxes
+                        dropY = gY + height;
                     }
                     //std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 

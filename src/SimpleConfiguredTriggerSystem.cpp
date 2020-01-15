@@ -88,14 +88,25 @@ namespace hg {
         int position;
         int velocity;
     };
-    PositionAndVelocity solvePDEquation(AxisCollisionDestination const &destination, int const position, double velocity)
+    PositionAndVelocity solvePDEquation(
+        AxisCollisionDestination const &dest,
+        int const position,
+        double velocity,
+        mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+        Frame const *const currentFrame
+        )
     {
-        auto const desiredPosition = destination.desiredPosition;
-        auto const acceleration = destination.acceleration;
-        auto const deceleration = destination.deceleration;
+        auto const desiredPosition = (dest.hasClauseDesiredPosition ? 
+            dest.clauseDesiredPosition.execute(triggerArrivals, getFrameNumber(currentFrame)) : dest.desiredPosition);
+        auto const acceleration = (dest.hasClauseAcceleration ? 
+            dest.clauseAcceleration.execute(triggerArrivals, getFrameNumber(currentFrame)) : dest.acceleration);
+        auto const deceleration = (dest.hasClauseDeceleration ? 
+            dest.clauseDeceleration.execute(triggerArrivals, getFrameNumber(currentFrame)) : dest.deceleration);
+        auto const maxSpeed = (dest.hasClauseMaxSpeed ? 
+            dest.clauseMaxSpeed.execute(triggerArrivals, getFrameNumber(currentFrame)) : dest.maxSpeed);
+
         if (desiredPosition != position) {
-            if (abs(desiredPosition-position) <= abs(velocity)
-             && abs(velocity) <= deceleration)
+            if (abs(desiredPosition - position) <= abs(velocity) && abs(velocity) <= deceleration)
             {
                 velocity = desiredPosition - position;
             }
@@ -132,7 +143,7 @@ namespace hg {
                 velocity += sign(velocity)*deceleration;
             }
         }
-        auto const maxSpeed = destination.maxSpeed;
+
         if (abs(velocity) > maxSpeed) {
             velocity = sign(velocity) * maxSpeed;
         }
@@ -161,7 +172,7 @@ namespace hg {
 
             bool const active =
                 (protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] > 0)
-                || (protoCollision.hasTriggerClause && (protoCollision.triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0))
+                || (protoCollision.hasTriggerClause && (protoCollision.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) > 0))
                 ;
 
             CollisionDestination const &destination =
@@ -170,10 +181,10 @@ namespace hg {
             mp::std::vector<int> const &lastStateTrigger = triggerArrivals[protoCollision.lastStateTriggerID];
             assert(3 < lastStateTrigger.size());
             auto const horizontalPosAndVel = solvePDEquation(
-                destination.xDestination, lastStateTrigger[0], lastStateTrigger[2]);
+                destination.xDestination, lastStateTrigger[0], lastStateTrigger[2], triggerArrivals, currentFrame);
 
             auto const verticalPosAndVel = solvePDEquation(
-                destination.yDestination, lastStateTrigger[1], lastStateTrigger[3]);
+                destination.yDestination, lastStateTrigger[1], lastStateTrigger[3], triggerArrivals, currentFrame);
 
             return Collision(
                 /*int x*/horizontalPosAndVel.position,/*int y*/verticalPosAndVel.position,
@@ -268,7 +279,7 @@ namespace hg {
         if (protoPortal.chargeTriggerID != -1) {
             charges = triggerArrivals[protoPortal.chargeTriggerID][0];
         }
-        bool const active = (charges != 0) && (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.GetOutput(triggerArrivals, getFrameNumber(currentFrame)) > 0));
+        bool const active = (charges != 0) && (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) > 0));
 
         return {
             retPortal, active, charges
@@ -979,11 +990,47 @@ namespace hg {
                 BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("AxisCollisionDestinations must be tables"));
             }
 
+            lua_getfield(L, -1, "desiredPosition");
+            bool const hasClauseDesiredPosition(lua_isstring(L, -1));
+            int const desiredPosition(hasClauseDesiredPosition ? 0 : to<int>(L));
+            std::string clauseDesiredPositionString(hasClauseDesiredPosition ? to<std::string>(L) : "0");
+            TriggerClause clauseDesiredPosition(clauseDesiredPositionString);
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "acceleration");
+            bool const hasClauseAcceleration(lua_isstring(L, -1));
+            int const acceleration(hasClauseAcceleration ? 0 : to<int>(L));
+            std::string clauseAccelerationString(hasClauseAcceleration ? to<std::string>(L) : "0");
+            TriggerClause clauseAcceleration(clauseAccelerationString);
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "deceleration");
+            bool const hasClauseDeceleration(lua_isstring(L, -1));
+            int const deceleration(hasClauseDeceleration ? 0 : to<int>(L));
+            std::string clauseDecelerationString(hasClauseDeceleration ? to<std::string>(L) : "0");
+            TriggerClause clauseDeceleration(clauseDecelerationString);
+            lua_pop(L, 1);
+
+            lua_getfield(L, -1, "maxSpeed");
+            bool const hasClauseMaxSpeed(lua_isstring(L, -1));
+            int const maxSpeed(hasClauseMaxSpeed ? 0 : to<int>(L));
+            std::string clauseMaxSpeedString(hasClauseMaxSpeed ? to<std::string>(L) : "0");
+            TriggerClause clauseMaxSpeed(clauseMaxSpeedString);
+            lua_pop(L, 1);
+
             return {
-                readField<int>(L, "desiredPosition", index),
-                readField<int>(L, "acceleration", index),
-                readField<int>(L, "deceleration", index),
-                readField<int>(L, "maxSpeed", index)
+                desiredPosition,
+                acceleration,
+                deceleration,
+                maxSpeed,
+                hasClauseDesiredPosition,
+                hasClauseAcceleration,
+                hasClauseDeceleration,
+                hasClauseMaxSpeed,
+                clauseDesiredPosition,
+                clauseAcceleration,
+                clauseDeceleration,
+                clauseMaxSpeed
             };
         }
         catch (LuaError &e) {
@@ -1073,12 +1120,9 @@ namespace hg {
         TriggerClause triggerClause(triggerClauseString);
         lua_pop(L, 1);
 
-        bool const useTriggerArrival{ readField<bool>(L, "useTriggerArrival") };
-
         return {
             triggerID,
-            triggerClause,
-            useTriggerArrival
+            triggerClause
         };
     }
 
