@@ -250,6 +250,59 @@ public:
         clauseOps(RawClauseToOps(rawClause)), 
         maxEvalDepth(RawClauseToEvalDepth(rawClause)) {}
 
+    int doBinaryOperation(TriggerOperator op, int val1, int val2) const {
+        switch (op) {
+        case TriggerOperator::AND: {
+            if (val2 > 0 && val1 > 0) {
+                return val2;
+            }
+            return 0;
+        }
+        case TriggerOperator::OR: {
+            if (val2 > 0 && val1 <= 0) {
+                return val2;
+            }
+            if (val1 > 0) {
+                return val1;
+            }
+            return 0;
+        }
+        case TriggerOperator::XOR: {
+            if (val2 > 0 && val1 <= 0) {
+                return val2;
+            }
+            if (val1 > 0 && val2 <= 0) {
+                return val1;
+            }
+            return 0;
+        }
+        case TriggerOperator::ADD: {
+            return val2 + val1;
+        }
+        case TriggerOperator::SUBTRACT: {
+            return val2 - val1;
+        }
+        case TriggerOperator::MULT: {
+            return val2 * val1;
+        }
+        case TriggerOperator::DIVIDE: {
+            return val2 / val1;
+        }
+        case TriggerOperator::MOD: {
+            return val2 % val1;
+        }
+        case TriggerOperator::EQUAL: {
+            return (val2 == val1 ? 1 : 0);
+        }
+        case TriggerOperator::GREATER: {
+            return (val2 > val1 ? 1 : 0);
+        }
+        case TriggerOperator::LESS: {
+            return (val2 < val1 ? 1 : 0);
+        }
+        }
+    }
+
     int GetOutput(mp::std::vector<mp::std::vector<int>> const &triggers, int frameNum) const {
         std::vector<int> evalStack;
         evalStack.reserve(maxEvalDepth);
@@ -258,112 +311,32 @@ public:
 
         for (unsigned int i = 0; i < clauseOps.size(); ++i) {
             switch (clauseOps[i]) {
-                case TriggerOperator::TRIGGER: {
-                    evalStack.push_back(triggers[clauseValues[i]][0]);
-                    break;
-                }
-                case TriggerOperator::CONSTANT: {
-                    evalStack.push_back(clauseValues[i]);
-                    break;
-                }
-                case TriggerOperator::FRAME_NUM: {
-                    evalStack.push_back(frameNum);
-                    break;
-                }
-                case TriggerOperator::NOT: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val1 > 0 ? 0 : 1);
-                    break;
-                }
-                case TriggerOperator::AND: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 > 0 && val1 > 0);
-                    break;
-                }
-                case TriggerOperator::OR: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 > 0 || val1 > 0);
-                    break;
-                }
-                case TriggerOperator::XOR: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 > 0 != val1 > 0);
-                    break;
-                }
-                case TriggerOperator::ADD: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 + val1);
-                    break;
-                }
-                case TriggerOperator::SUBTRACT: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 - val1);
-                    break;
-                }
-                case TriggerOperator::MULT: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 * val1);
-                    break;
-                }
-                case TriggerOperator::DIVIDE: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 / val1);
-                    break;
-                }
-                case TriggerOperator::MOD: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 % val1);
-                    break;
-                }
-                case TriggerOperator::EQUAL: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 == val1 ? 1 : 0);
-                    break;
-                }
-                case TriggerOperator::GREATER: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 > val1 ? 1 : 0);
-                    break;
-                }
-                case TriggerOperator::LESS: {
-                    val1 = evalStack.back();
-                    evalStack.pop_back();
-                    val2 = evalStack.back();
-                    evalStack.pop_back();
-                    evalStack.push_back(val2 < val1 ? 1 : 0);
-                    break;
-                }
+            case TriggerOperator::TRIGGER: {
+                evalStack.push_back(triggers[clauseValues[i]][0]);
+                break;
+            }
+            case TriggerOperator::CONSTANT: {
+                evalStack.push_back(clauseValues[i]);
+                break;
+            }
+            case TriggerOperator::FRAME_NUM: {
+                evalStack.push_back(frameNum);
+                break;
+            }
+            case TriggerOperator::NOT: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(val1 > 0 ? 0 : 1);
+                break;
+            }
+            default: {
+                val1 = evalStack.back();
+                evalStack.pop_back();
+                val2 = evalStack.back();
+                evalStack.pop_back();
+                evalStack.push_back(doBinaryOperation(clauseOps[i], val1, val2));
+                break;
+            }
             }
         }
         val1 = evalStack.back();
@@ -405,92 +378,12 @@ public:
                 evalStack.push_back(val1 > 0 ? 0 : 1);
                 break;
             }
-            case TriggerOperator::AND: {
+            default: {
                 val1 = evalStack.back();
                 evalStack.pop_back();
                 val2 = evalStack.back();
                 evalStack.pop_back();
-                evalStack.push_back(val2 > 0 && val1 > 0);
-                break;
-            }
-            case TriggerOperator::OR: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 > 0 || val1 > 0);
-                break;
-            }
-            case TriggerOperator::XOR: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 > 0 != val1 > 0);
-                break;
-            }
-            case TriggerOperator::ADD: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 + val1);
-                break;
-            }
-            case TriggerOperator::SUBTRACT: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 - val1);
-                break;
-            }
-            case TriggerOperator::MULT: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 * val1);
-                break;
-            }
-            case TriggerOperator::DIVIDE: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 / val1);
-                break;
-            }
-            case TriggerOperator::MOD: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 % val1);
-                break;
-            }
-            case TriggerOperator::EQUAL: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 == val1 ? 1 : 0);
-                break;
-            }
-            case TriggerOperator::GREATER: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 > val1 ? 1 : 0);
-                break;
-            }
-            case TriggerOperator::LESS: {
-                val1 = evalStack.back();
-                evalStack.pop_back();
-                val2 = evalStack.back();
-                evalStack.pop_back();
-                evalStack.push_back(val2 < val1 ? 1 : 0);
+                evalStack.push_back(doBinaryOperation(clauseOps[i], val1, val2));
                 break;
             }
             }
