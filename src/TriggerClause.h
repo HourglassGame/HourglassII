@@ -29,7 +29,7 @@ enum class TriggerOperator : unsigned int {
 class TriggerClause {
 public:
 
-    std::vector<int> RawClauseToValues(std::string &rawClause)
+    std::tuple<std::vector<int>, std::vector<TriggerOperator>, int> processClauseString(std::string &rawClause)
     {
         std::istringstream iss(rawClause);
         std::vector<std::string> splitClause(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
@@ -98,157 +98,14 @@ public:
                 }
             }
         }
-        return clauseValues;
-    }
 
-    std::vector<TriggerOperator> RawClauseToOps(std::string &rawClause)
-    {
-        std::istringstream iss(rawClause);
-        std::vector<std::string> splitClause(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
-
-        std::vector<int> clauseValues(splitClause.size());
-        std::vector<TriggerOperator> clauseOps(splitClause.size());
-
-        unsigned int evalDepth = 0;
-        unsigned int maxEvalDepth = 0;
-        for (unsigned int i = 0; i < splitClause.size(); ++i) {
-            if (std::regex_match(splitClause[i], std::regex("t[0-9]+"))) {
-                clauseOps[i] = TriggerOperator::TRIGGER;
-                clauseValues[i] = lua_index_to_C_index(std::stoi(splitClause[i].substr(1, splitClause[i].length())));
-                evalDepth += 1;
-                maxEvalDepth = std::max(maxEvalDepth, evalDepth);
-            }
-            else if (std::regex_match(splitClause[i], std::regex("-?[0-9]+"))) {
-                clauseOps[i] = TriggerOperator::CONSTANT;
-                clauseValues[i] = std::stoi(splitClause[i]);
-                evalDepth += 1;
-                maxEvalDepth = std::max(maxEvalDepth, evalDepth);
-            }
-            else if (!splitClause[i].compare("f")) {
-                clauseOps[i] = TriggerOperator::FRAME_NUM;
-                evalDepth += 1;
-                maxEvalDepth = std::max(maxEvalDepth, evalDepth);
-            }
-            else if (!splitClause[i].compare("!")) {
-                clauseOps[i] = TriggerOperator::NOT;
-                evalDepth += 0;
-            }
-            else {
-                evalDepth += -1; // All the rest are binary operations
-                if (!splitClause[i].compare("&")) {
-                    clauseOps[i] = TriggerOperator::AND;
-                }
-                if (!splitClause[i].compare("|")) {
-                    clauseOps[i] = TriggerOperator::OR;
-                }
-                if (!splitClause[i].compare("~")) {
-                    clauseOps[i] = TriggerOperator::XOR;
-                }
-                if (!splitClause[i].compare("+")) {
-                    clauseOps[i] = TriggerOperator::ADD;
-                }
-                if (!splitClause[i].compare("-")) {
-                    clauseOps[i] = TriggerOperator::SUBTRACT;
-                }
-                if (!splitClause[i].compare("*")) {
-                    clauseOps[i] = TriggerOperator::MULT;
-                }
-                if (!splitClause[i].compare("/")) {
-                    clauseOps[i] = TriggerOperator::DIVIDE;
-                }
-                if (!splitClause[i].compare("%")) {
-                    clauseOps[i] = TriggerOperator::MOD;
-                }
-                if (!splitClause[i].compare("=")) {
-                    clauseOps[i] = TriggerOperator::EQUAL;
-                }
-                if (!splitClause[i].compare(">")) {
-                    clauseOps[i] = TriggerOperator::GREATER;
-                }
-                if (!splitClause[i].compare("<")) {
-                    clauseOps[i] = TriggerOperator::LESS;
-                }
-            }
-        }
-        return clauseOps;
-    }
-
-    int RawClauseToEvalDepth(std::string &rawClause)
-    {
-        std::istringstream iss(rawClause);
-        std::vector<std::string> splitClause(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
-
-        std::vector<int> clauseValues(splitClause.size());
-        std::vector<TriggerOperator> clauseOps(splitClause.size());
-
-        unsigned int evalDepth = 0;
-        unsigned int maxEvalDepth = 0;
-        for (unsigned int i = 0; i < splitClause.size(); ++i) {
-            if (std::regex_match(splitClause[i], std::regex("t[0-9]+"))) {
-                clauseOps[i] = TriggerOperator::TRIGGER;
-                clauseValues[i] = lua_index_to_C_index(std::stoi(splitClause[i].substr(1, splitClause[i].length())));
-                evalDepth += 1;
-                maxEvalDepth = std::max(maxEvalDepth, evalDepth);
-            }
-            else if (std::regex_match(splitClause[i], std::regex("-?[0-9]+"))) {
-                clauseOps[i] = TriggerOperator::CONSTANT;
-                clauseValues[i] = std::stoi(splitClause[i]);
-                evalDepth += 1;
-                maxEvalDepth = std::max(maxEvalDepth, evalDepth);
-            }
-            else if (!splitClause[i].compare("f")) {
-                clauseOps[i] = TriggerOperator::FRAME_NUM;
-                evalDepth += 1;
-                maxEvalDepth = std::max(maxEvalDepth, evalDepth);
-            }
-            else if (!splitClause[i].compare("!")) {
-                clauseOps[i] = TriggerOperator::NOT;
-                evalDepth += 0;
-            }
-            else {
-                evalDepth += -1; // All the rest are binary operations
-                if (!splitClause[i].compare("&")) {
-                    clauseOps[i] = TriggerOperator::AND;
-                }
-                if (!splitClause[i].compare("|")) {
-                    clauseOps[i] = TriggerOperator::OR;
-                }
-                if (!splitClause[i].compare("~")) {
-                    clauseOps[i] = TriggerOperator::XOR;
-                }
-                if (!splitClause[i].compare("+")) {
-                    clauseOps[i] = TriggerOperator::ADD;
-                }
-                if (!splitClause[i].compare("-")) {
-                    clauseOps[i] = TriggerOperator::SUBTRACT;
-                }
-                if (!splitClause[i].compare("*")) {
-                    clauseOps[i] = TriggerOperator::MULT;
-                }
-                if (!splitClause[i].compare("/")) {
-                    clauseOps[i] = TriggerOperator::DIVIDE;
-                }
-                if (!splitClause[i].compare("%")) {
-                    clauseOps[i] = TriggerOperator::MOD;
-                }
-                if (!splitClause[i].compare("=")) {
-                    clauseOps[i] = TriggerOperator::EQUAL;
-                }
-                if (!splitClause[i].compare(">")) {
-                    clauseOps[i] = TriggerOperator::GREATER;
-                }
-                if (!splitClause[i].compare("<")) {
-                    clauseOps[i] = TriggerOperator::LESS;
-                }
-            }
-        }
-        return maxEvalDepth;
+        return { clauseValues, clauseOps, maxEvalDepth };
     }
 
     TriggerClause(std::string &rawClause) :
-        clauseValues(RawClauseToValues(rawClause)),
-        clauseOps(RawClauseToOps(rawClause)), 
-        maxEvalDepth(RawClauseToEvalDepth(rawClause)) {}
+        clauseValues(std::get<0>(processClauseString(rawClause))),
+        clauseOps(std::get<1>(processClauseString(rawClause))),
+        maxEvalDepth(std::get<2>(processClauseString(rawClause))) {}
 
     int doBinaryOperation(TriggerOperator op, int val1, int val2) const {
         switch (op) {
