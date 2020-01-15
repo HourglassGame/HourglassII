@@ -67,7 +67,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "DirectLua",
+    type = "CompatibleLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],
@@ -83,5 +83,5 @@ triggerSystem =
             default = {12 * 3200, 12 * 3200, 0, 0}
         },
     },
-    arrivalLocationsSize = 2,
+    arrivalLocationsSize = 1,
 }

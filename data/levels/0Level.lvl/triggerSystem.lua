@@ -20,51 +20,27 @@ local tempStore =
             fallable = false,
             winner = true
         },
-        {
-            attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
-            index = 2,
-            xaim = 5 * 3200,
-            yaim = 20 * 3200,
-            collisionOverlap = 50,
-            timeDirection = 'forwards',
-            destinationIndex = nil,
-            xDestination = 0,
-            yDestination = 0,
-            relativeTime = true,
-            timeDestination = -600,
-            illegalDestination = 1,
-            fallable = false,
-            winner = false,
-            isLaser = true,
-			triggerFunction = function(triggerArrivals, frameNumber)
-				return triggerArrivals[1][1] == 1
-			end
-        },
+        --{
+        --    attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
+        --    index = 2,
+        --    xaim = 5 * 3200,
+        --    yaim = 20 * 3200,
+        --    collisionOverlap = 50,
+        --    timeDirection = 'forwards',
+        --    destinationIndex = nil,
+        --    xDestination = 0,
+        --    yDestination = 0,
+        --    relativeTime = true,
+        --    timeDestination = -600,
+        --    illegalDestination = 1,
+        --    fallable = false,
+        --    winner = false,
+        --    isLaser = true,
+		--	triggerFunction = function(triggerArrivals, frameNumber)
+		--		return triggerArrivals[1][1] == 1
+		--	end
+        --},
     },
-    --[[
-    protoLasers =
-    {
-        {
-            attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
-            index = 2,
-            xaim = 5 * 3200,
-            yaim = 20 * 3200,
-            collisionOverlap = 50,
-            timeDirection = 'forwards',
-            destinationIndex = nil,
-            xDestination = 0,
-            yDestination = 0,
-            relativeTime = true,
-            timeDestination = -600,
-            illegalDestination = 1,
-            fallable = false,
-            winner = false,
-			triggerFunction = function(triggerArrivals, frameNumber)
-				return triggerArrivals[1][1] == 1
-			end
-        },
-    },
-    ]]--
     protoCollisions = {
         {
             width = 3 * 3200,
@@ -72,6 +48,7 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
+            triggerClause = "t2,2 35200 >",
             destinations =
             {
                 onDestination = {
@@ -82,7 +59,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 12 * 3200,
+                        desiredPosition = 10 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
