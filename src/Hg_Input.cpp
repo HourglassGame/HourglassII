@@ -31,8 +31,13 @@ Input::Input() :
 {
 }
 
-void Input::updateState(hg::RenderWindow::InputState const &input, GLFWWindow &windowglfw, ActivePanel const mousePanel,
-    int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
+void Input::updateState(
+    hg::RenderWindow::InputState const &input,
+    GLFWWindow &windowglfw,
+    ActivePanel const mousePanel,
+    bool waitingForWave,
+    int mouseXTimelineOffset, int mouseXOfEndOfTimeline,
+    int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
     int mouseOffX, int mouseOffY, double mouseScale)
 {
     left = (glfwGetKey(windowglfw.w, GLFW_KEY_A) == GLFW_PRESS);
@@ -69,6 +74,10 @@ void Input::updateState(hg::RenderWindow::InputState const &input, GLFWWindow &w
         int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
         mousePersonalTimelinePosition = static_cast<int>(personalTimelineLength - (static_cast<int>(mousePosition*personalTimelineLength / static_cast<double>(mouseXOfEndOfPersonalTimeline))));
     }
+    else if (waitingForWave) {
+        mousePersonalTimelinePosition += 1;
+    }
+
     if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
         (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
         (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||

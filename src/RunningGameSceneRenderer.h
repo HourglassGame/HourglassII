@@ -794,6 +794,7 @@ namespace hg {
         std::size_t relativeGuyIndex;
         hg::TimeEngine::RunResult waveInfo;
         bool runningFromReplay;
+        bool guyFrameUpdated;
         mt::std::vector<hg::Glitz> drawnGlitz;
         Wall wall;
         std::vector<GuyInput> postOverwriteInput;

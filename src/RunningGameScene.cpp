@@ -255,6 +255,8 @@ run_game_scene(hg::RenderWindow &window,
     bool paused = false;
     bool frameRun = false;
     bool runNextPausedFrame = false;
+    int waitingForWavePress = 0;
+    bool waitingForWave = false;
 
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
@@ -311,7 +313,7 @@ run_game_scene(hg::RenderWindow &window,
                 
                 ActivePanel mousePanel = getActivePanel(windowglfw);
 
-                input.updateState(window.getInputState(), windowglfw, mousePanel,
+                input.updateState(window.getInputState(), windowglfw, mousePanel, waitingForWave,
                     timelineOffset, timelineWidth, personalTimelineWidth,
                     timeEngine.getReplayData().size(),
                     mouseOffX, mouseOffY, 1. / scalingFactor);
@@ -388,6 +390,27 @@ run_game_scene(hg::RenderWindow &window,
                     paused = !paused;
                 }
             }
+
+            //Wait for wave
+            // This would be better off in Hg_Input.cpp, but for now it interacts with too many other things.
+            if (!runningFromReplay) {
+                if (glfwGetKey(windowglfw.w, GLFW_KEY_V) == GLFW_PRESS) {
+                    if (waitingForWavePress >= 0) {
+                        waitingForWave = true;
+                        if (waitingForWavePress < 2) {
+                            waitingForWavePress += 1;
+                        }
+                    }
+                    else {
+                        waitingForWave = false;
+                    }
+                }
+                else {
+                    waitingForWavePress = 0;
+                    waitingForWave = false;
+                }
+            }
+
             if (futureRunResult.wait_for(boost::chrono::duration<double>(1.f / (hg::FRAMERATE))) == boost::future_status::ready) {
                 if (glfwGetKey(windowglfw.w, GLFW_KEY_PERIOD) == GLFW_PRESS) {
                     inertia.save(mousePosToFrameID(windowglfw, timeEngine), TimeDirection::FORWARDS);
@@ -406,6 +429,9 @@ run_game_scene(hg::RenderWindow &window,
                         positionColoursImage, frameStartTime, runningFromReplay, frameRun)};
                     interrupter.reset();
 
+                    if (waitingForWavePress >= 2 && uiFrameState.guyFrameUpdated) {
+                        waitingForWavePress = -1;
+                    }
 
                     //TODO: Possbily sync with Graphics?, via
                     //Vulkan Timestamp Queries:
@@ -443,7 +469,7 @@ run_game_scene(hg::RenderWindow &window,
                     */
                     //eng.drawFrame(renderer);
 
-                    if (window.getInputState().isKeyPressed(sf::Keyboard::F) || (glfwGetKey(windowglfw.w, GLFW_KEY_F) == GLFW_PRESS)) {
+                    if ((waitingForWave) || (glfwGetKey(windowglfw.w, GLFW_KEY_F) == GLFW_PRESS)) {
                         window.setFramerateLimit(0);
                         window.setVerticalSyncEnabled(false);
                         frameStartTime = std::chrono::steady_clock::now();
@@ -501,6 +527,7 @@ UIFrameState runStep(
     hg::FrameID timeCursor;
     hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
+    bool guyFrameUpdated(false);
     bool const shouldDrawGuyPositionColours{(glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)};
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
@@ -542,10 +569,22 @@ UIFrameState runStep(
         }
     }
 
+    // This has potentially terrible performance, and the work may be duplicated elsewhere
+    for (hg::FrameUpdateSet const &updateSet : waveInfo.updatedFrames) {
+        for (Frame *frame : updateSet) {
+            if (drawnFrame.getFrameNumber() == getFrameNumber(frame)) {
+                guyFrameUpdated = true;
+                break;
+            }
+        }
+        if (guyFrameUpdated) {
+            break;
+        }
+    }
+
     auto const &guyFrames{timeEngine.getGuyFrames()};
     auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
     
-
     std::vector<std::optional<GuyFrameData>> guyFrameData;
     guyFrameData.reserve(actualGuyFrames.size());
     for (std::size_t i{}, end{std::size(actualGuyFrames)}; i != end; ++i) {
@@ -574,6 +613,7 @@ UIFrameState runStep(
             relativeGuyIndex,
             waveInfo,
             runningFromReplay,
+            guyFrameUpdated,
 
             getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), drawnTimeDirection),
             timeEngine.getWall(),

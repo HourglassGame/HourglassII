@@ -17,6 +17,7 @@ public:
         hg::RenderWindow::InputState const &keyState,
         GLFWWindow &windowglfw,
         ActivePanel const mousePanel,
+        bool waitingForWave,
         int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline,
         std::size_t personalTimelineLength, 
         int mouseOffX, int mouseOffY, double mouseScale

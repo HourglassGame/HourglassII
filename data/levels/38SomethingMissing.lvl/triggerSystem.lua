@@ -5,8 +5,8 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 4 * 1600, yOffset = 4 * 3200},
-            index = 2,
+            attachment = {platform = nil, xOffset = 14 * 1600, yOffset = 9 * 3200},
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
@@ -24,7 +24,7 @@ local tempStore =
     protoCollisions = {},
      protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 16 * 3200, yOffset = 9.25 * 3200},
+            attachment = {platform = nil, xOffset = 18 * 3200, yOffset = 14.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
