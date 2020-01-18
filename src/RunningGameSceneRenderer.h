@@ -509,7 +509,7 @@ namespace hg {
 
         float const fontSize{ 16 };
         float const textureRectTop{ 64 };
-        float const textureRectLeft{ 32 };
+        float const textureRectLeft{ 33 };
         auto i{ 0 };
         bool const useTexture{ true };
         bool const colourTexture{ true };
@@ -527,7 +527,7 @@ namespace hg {
             //TODO: Figure out how texture coordinates work exactly at a pixel level.
             float const texLeft{ textureRectLeft + (c % 0xFF)*fontSize };
             float const texTop{ textureRectTop + (c / 0xFF)*fontSize };
-            float const texRight{ texLeft + (fontSize / 2 - 1) };
+            float const texRight{ texLeft + (fontSize / 2) };
             float const texBottom{ texTop + (fontSize - 1) };
 
             vertices.push_back(
