@@ -991,28 +991,29 @@ namespace hg {
             }
 
             lua_getfield(L, -1, "desiredPosition");
-            bool const hasClauseDesiredPosition(lua_isstring(L, -1));
+            bool const hasClauseDesiredPosition(!lua_isnumber(L, -1));
+            std::cerr << "hasClauseDesiredPosition " << hasClauseDesiredPosition << "\n";
             int const desiredPosition(hasClauseDesiredPosition ? 0 : to<int>(L));
             std::string clauseDesiredPositionString(hasClauseDesiredPosition ? to<std::string>(L) : "0");
             TriggerClause clauseDesiredPosition(clauseDesiredPositionString);
             lua_pop(L, 1);
 
             lua_getfield(L, -1, "acceleration");
-            bool const hasClauseAcceleration(lua_isstring(L, -1));
+            bool const hasClauseAcceleration(!lua_isnumber(L, -1));
             int const acceleration(hasClauseAcceleration ? 0 : to<int>(L));
             std::string clauseAccelerationString(hasClauseAcceleration ? to<std::string>(L) : "0");
             TriggerClause clauseAcceleration(clauseAccelerationString);
             lua_pop(L, 1);
 
             lua_getfield(L, -1, "deceleration");
-            bool const hasClauseDeceleration(lua_isstring(L, -1));
+            bool const hasClauseDeceleration(!lua_isnumber(L, -1));
             int const deceleration(hasClauseDeceleration ? 0 : to<int>(L));
             std::string clauseDecelerationString(hasClauseDeceleration ? to<std::string>(L) : "0");
             TriggerClause clauseDeceleration(clauseDecelerationString);
             lua_pop(L, 1);
 
             lua_getfield(L, -1, "maxSpeed");
-            bool const hasClauseMaxSpeed(lua_isstring(L, -1));
+            bool const hasClauseMaxSpeed(!lua_isnumber(L, -1));
             int const maxSpeed(hasClauseMaxSpeed ? 0 : to<int>(L));
             std::string clauseMaxSpeedString(hasClauseMaxSpeed ? to<std::string>(L) : "0");
             TriggerClause clauseMaxSpeed(clauseMaxSpeedString);
