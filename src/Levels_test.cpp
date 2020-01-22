@@ -151,13 +151,13 @@ bool testLevels() {
             try {
                 for (auto const& input : replay) {
                     outReplay.push_back(input);
-                    timeEngine.runToNextPlayerFrame(input);
+                    timeEngine.runToNextPlayerFrame(input, 0);
                 }
                 if (rewrite_replay) {
                     std::cout << " Extending replay ..." << std::flush;
                     while (true) {
                         outReplay.push_back(InputList());
-                        timeEngine.runToNextPlayerFrame(outReplay.back());
+                        timeEngine.runToNextPlayerFrame(outReplay.back(), 0);
                     }
                 }
             }

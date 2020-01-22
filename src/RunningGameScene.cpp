@@ -257,6 +257,7 @@ run_game_scene(hg::RenderWindow &window,
     bool runNextPausedFrame = false;
     int waitingForWavePress = 0;
     bool waitingForWave = false;
+    bool levelLost = false;
 
     hg::Input input;
     input.setTimelineLength(timeEngine.getTimelineLength());
@@ -291,8 +292,10 @@ run_game_scene(hg::RenderWindow &window,
         {
             hg::InputList inputList;
             if (currentReplayIt != currentReplayEnd) {
-                inputList = *currentReplayIt;
-                ++currentReplayIt;
+                if (!paused) {
+                    inputList = *currentReplayIt;
+                    ++currentReplayIt;
+                }
                 runningFromReplay = true;
             }
             else {
@@ -323,7 +326,7 @@ run_game_scene(hg::RenderWindow &window,
             relativeGuyIndex = inputList.getRelativeGuyIndex();
             interrupter = std::make_unique<hg::OperationInterrupter>();
 
-            if (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken() || input.getAbilityChanged())) {
+            if (levelLost || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken() || input.getAbilityChanged()))) {
                 frameRun = false;
                 futureRunResult =
                     async(
@@ -343,8 +346,8 @@ run_game_scene(hg::RenderWindow &window,
                 receivedInputs.push_back(inputList);
                 futureRunResult =
                     async(
-                        [inputList, &timeEngine, &interrupter] {
-                    return timeEngine.runToNextPlayerFrame(std::move(inputList), *interrupter); });
+                        [inputList, &timeEngine, relativeGuyIndex, &interrupter] {
+                    return timeEngine.runToNextPlayerFrame(std::move(inputList), relativeGuyIndex, *interrupter); });
             }
 
             state = RunState::RUNNING_LEVEL;
@@ -429,6 +432,10 @@ run_game_scene(hg::RenderWindow &window,
                         positionColoursImage, frameStartTime, runningFromReplay, frameRun)};
                     interrupter.reset();
 
+                    if (waveInfo.paradoxPressure >= hg::PARADOX_PRESSURE_MAX) {
+                        levelLost = true;
+                    }
+
                     if (waitingForWavePress >= 2 && uiFrameState.guyFrameUpdated) {
                         waitingForWavePress = -1;
                     }
@@ -441,7 +448,7 @@ run_game_scene(hg::RenderWindow &window,
                     //      if game is going fast; Support proper audio rendering of timeline scrubbing.
                     //      Somehow support proper sound in Pause Time.
                     //      etc.
-                    if (!paused) {
+                    if (!(paused || levelLost)) {
                         PlayAudioGlitz(
                             getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
                             audioPlayingState,
@@ -652,6 +659,12 @@ void drawFrame(
             uiFrameState.pickups,
             uiFrameState.abilityCursor);
     }
+
+    DrawParadoxPressure(
+        target,
+        uiFrameState.waveInfo.paradoxPressure,
+        uiFrameState.waveInfo.minWaveChanges);
+
     DrawTimeline2(
         target,
         uiFrameState.timelineLength,

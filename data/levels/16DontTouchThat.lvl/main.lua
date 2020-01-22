@@ -1,6 +1,6 @@
 name = "Don't touch that"
 speedOfTime = 1
-timelineLength = 2*60*60
+timelineLength = 10800
 environment =
 {
     gravity = 10,

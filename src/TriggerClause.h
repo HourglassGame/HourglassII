@@ -170,6 +170,7 @@ public:
             return (val2 < val1 ? 1 : 0);
         }
         }
+        return 0;
     }
 
     int execute(mp::std::vector<mp::std::vector<int>> const &triggers, int frameNum) const {

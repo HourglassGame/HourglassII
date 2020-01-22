@@ -25,6 +25,8 @@ public:
     struct RunResult
     {
         FrameListList updatedFrames;
+        int paradoxPressure;
+        int minWaveChanges;
     };
     /**
      * Constructs a new TimeEngine with the given Level
@@ -55,6 +57,7 @@ public:
      */
     RunResult runToNextPlayerFrame(
         InputList const &newInputData,
+        size_t const relativeGuyIndex,
         OperationInterrupter &interrupter = as_lvalue(NullOperationInterrupter()));
 
     // Output the previous run result, for the purpose of pausing.
@@ -72,6 +75,10 @@ public:
 private:
     clone_ptr<TimeEngineImpl> impl;
     RunResult prevRunResult;
+    int paradoxPressure;
+    int paradoxPressureDecay;
+    TimeDirection guyDirection;
+    int guyFrameNumber;
 };
 }
 #endif //HG_TIME_ENGINE_H

@@ -127,7 +127,7 @@ Level loadLevelFromFile(
 
     lua_call(L, 0, 0);
 
-    unsigned speedOfTime(readGlobal<int>(L, "speedOfTime"));
+    unsigned speedOfTime(hg::SPEED_OF_TIME_OVERRIDE > 0 ? SPEED_OF_TIME_OVERRIDE : readGlobal<int>(L, "speedOfTime"));
     int timelineLength(readGlobal<int>(L, "timelineLength"));
     Environment environment(readGlobal<Environment>(L, "environment"));
     ObjectList<NonGuyDynamic> initialArrivals(readGlobal<InitialObjects>(L, "initialArrivals").list);

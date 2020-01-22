@@ -992,7 +992,6 @@ namespace hg {
 
             lua_getfield(L, -1, "desiredPosition");
             bool const hasClauseDesiredPosition(!lua_isnumber(L, -1));
-            std::cerr << "hasClauseDesiredPosition " << hasClauseDesiredPosition << "\n";
             int const desiredPosition(hasClauseDesiredPosition ? 0 : to<int>(L));
             std::string clauseDesiredPositionString(hasClauseDesiredPosition ? to<std::string>(L) : "0");
             TriggerClause clauseDesiredPosition(clauseDesiredPositionString);

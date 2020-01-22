@@ -1,6 +1,6 @@
 name = "Which Way?"
 speedOfTime = 1
-timelineLength = 6000
+timelineLength = 10800
 environment = 
 {
     gravity = 10,

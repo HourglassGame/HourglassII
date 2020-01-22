@@ -238,6 +238,26 @@ void DrawColors(sf::RenderTarget &target, sf::Image const &positionColoursImage)
     target.draw(sf::Sprite(tex));
 }
 
+void DrawParadoxPressure(
+    sf::RenderTarget &app,
+    int const paradoxPressure,
+    int const minWaveChanges)
+{
+    std::stringstream pressureStr;
+    pressureStr << "Pressure: " << paradoxPressure << " / " << hg::PARADOX_PRESSURE_MAX;
+    sf::Text pressureGlyph;
+    pressureGlyph.setFont(*hg::defaultFont);
+    pressureGlyph.setString(pressureStr.str());
+    pressureGlyph.setPosition(20, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) - 300);
+    pressureGlyph.setCharacterSize(16);
+    pressureGlyph.setFillColor(uiTextColor);
+    pressureGlyph.setOutlineColor(uiTextColor);
+    app.draw(pressureGlyph);
+
+    std::cerr << "paradoxPressure " << paradoxPressure << "\n";
+
+}
+
 void DrawTimelineContents(
     sf::RenderTarget &target,
     hg::TimeEngine const &timeEngine,

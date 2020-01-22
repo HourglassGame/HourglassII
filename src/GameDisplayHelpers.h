@@ -15,6 +15,12 @@
 
 namespace hg {
     extern sf::Color const uiTextColor;
+
+    void DrawParadoxPressure(
+        sf::RenderTarget &target,
+        int const paradoxPressure,
+        int const minWaveChanges);
+
     void DrawTimeline2(
         sf::RenderTarget &target,
         std::size_t const timelineLength,

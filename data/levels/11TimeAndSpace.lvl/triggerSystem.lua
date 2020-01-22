@@ -16,23 +16,24 @@ local tempStore =
             yDestination = 0,
             relativeTime = true,
             timeDestination = -5 * 60,
+            triggerClause = "f 300 >",
             illegalDestination = 1,
             fallable = false,
             winner = false
         },
         {
             attachment = {platform = nil, xOffset = 2.5 * 3200, yOffset = 8 * 3200},
-            index = 1,
+            index = 2,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = 1,
+            destinationIndex = 2,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = 2,
             fallable = false,
             winner = true
         }

@@ -6,7 +6,7 @@ local tempStore =
     {
         {
             attachment = {platform = nil, xOffset = 2.2 * 3200, yOffset = 4 * 3200},
-            index = 2,
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,

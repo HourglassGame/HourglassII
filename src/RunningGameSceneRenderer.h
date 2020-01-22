@@ -1463,6 +1463,12 @@ namespace hg {
                     uiFrameStateLocal->abilityCursor);
             }
 
+            DrawParadoxPressure(
+                target,
+                drawCommandBuffer,
+                uiFrameStateLocal->waveInfo.paradoxPressure,
+                uiFrameStateLocal->waveInfo.minWaveChanges);
+
             DrawTimeline(
                 target,
                 preDrawCommandBuffer,
@@ -1610,8 +1616,8 @@ namespace hg {
                     sceneData->pipelineLayout.pipelineLayout,
                     texDescriptorSets.fontTexDescriptorSet,
                     numberOfFramesExecutedString.str(),
-                    50.f,
-                    330.f,
+                    10.f,
+                    826.f,
                     12.f,
                     UI_TEXT_COLOR);
             }
@@ -2740,7 +2746,81 @@ namespace hg {
         }
 
 
+        void DrawParadoxPressure(
+            VulkanRenderTarget& target,
+            VkCommandBuffer const& drawCommandBuffer,
+            int const paradoxPressure,
+            int const minWaveChanges)
+        {
+            float const centerX = WINDOW_DEFAULT_X / 2.f;
+            float const centerY = WINDOW_DEFAULT_Y / 2.f;
+            float const sizeX = WINDOW_DEFAULT_X;
+            float const sizeY = WINDOW_DEFAULT_Y;
+            float const a = 2.f / sizeX; //scale x
+            float const b = 2.f / sizeY; //scale y
+            float const c = -a * centerX; //translate x
+            float const d = -b * centerY; //translate y
 
+            target.updateUniformBuffer(
+                UniformBufferObject{
+                    //Out  x    y    z    v
+                        a, 0.0, 0.0, 0.0,//In x
+                    0.0,   b, 0.0, 0.0,//In y
+                    0.0, 0.0, 1.0, 0.0,//In z
+                        c,   d, 0.0, 1.0 //In v
+                }
+            );
+
+            std::array<VkViewport, 1> viewports{
+                {
+                    static_cast<float>(0),
+                    static_cast<float>(0),
+                    static_cast<float>(swapChainExtent.width),
+                    static_cast<float>(swapChainExtent.height),
+                    0.0f,
+                    1.0f
+                }
+            };
+            vkCmdSetViewport(
+                drawCommandBuffer,
+                0,
+                gsl::narrow<uint32_t>(viewports.size()),
+                viewports.data()
+            );
+
+            float top = static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y)*0.1f;
+            float bottom = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 315.f;
+            float pressureProportion = std::min(1.f, static_cast<float>(paradoxPressure) / static_cast<float>(hg::PARADOX_PRESSURE_MAX));
+
+            vec3<float> backgroundColor{ 50.f / 255.f, 50.f / 255.f, 50.f / 255.f };
+            vec3<float> pressureColor{ (200.f + 50.f * pressureProportion) / 255.f, 200.f / 255.f, 200.f / 255.f };
+
+            drawRect(target, 
+                static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.35f,
+                top,
+                static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f,
+                bottom - top,
+                backgroundColor, 0, 0);
+            drawRect(target,
+                static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.35f,
+                top + (bottom - top)*(1.f - pressureProportion),
+                static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f,
+                (bottom - top)*pressureProportion,
+                pressureColor, 0, 0);
+
+            std::stringstream pressureStr;
+            pressureStr << "Pressure: " << static_cast<int>(static_cast<float>(100 * paradoxPressure) /  static_cast<float>(hg::PARADOX_PRESSURE_MAX)) << "%";
+            hg::drawText(
+                target,
+                drawCommandBuffer,
+                sceneData->pipelineLayout.pipelineLayout,
+                texDescriptorSets.fontTexDescriptorSet,
+                pressureStr.str(),
+                20.f,
+                static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 300.f,
+                16.f,
+                UI_TEXT_COLOR);
+        }
 
         VkPhysicalDevice physicalDevice;
         VkDevice device;

@@ -1,6 +1,6 @@
 name = "Wrong way"
 speedOfTime = 1
-timelineLength = 60*60
+timelineLength = 10800
 environment =
 {
     gravity = 10,
