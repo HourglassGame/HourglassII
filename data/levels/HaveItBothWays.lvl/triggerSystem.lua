@@ -76,7 +76,7 @@ local tempStore =
                         deceleration = 40
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 250,
                         acceleration = 18,
                         deceleration = 18
@@ -90,7 +90,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 8 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 250,
                         acceleration = 18,
                         deceleration = 18
@@ -250,10 +250,86 @@ local tempStore =
                 }
             }
         },
+        {
+            width = 2 * 3200,
+            height = 1 * 3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 15,
+            triggerClause = "t10 19200 =",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 5 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                }
+            }
+        },
+        {
+            width = 2 * 3200,
+            height = 1 * 3200,
+            timeDirection = 'forwards',
+            lastStateTriggerID = 16,
+            triggerClause = "t10 64000 =",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 23 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 25 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 50,
+                        acceleration = 18,
+                        deceleration = 18
+                    }
+                }
+            }
+        },
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 8.25 * 3200},
+            attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 8.75 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -261,7 +337,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 28.25 * 3200, yOffset = 8.25 * 3200},
+            attachment = {platform = nil, xOffset = 28.25 * 3200, yOffset = 8.75 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -280,28 +356,28 @@ local tempStore =
         bts.stickySwitch{
             triggerID = 2,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 13.25 * 3200, yOffset = 11 * 3200 },
+            attachment = {platform = nil, xOffset = 13.25 * 3200, yOffset = 12 * 3200 },
             width = 1600,
             height = 800,
         },
         bts.stickySwitch{
             triggerID = 3,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 18.25 * 3200, yOffset = 11 * 3200 },
+            attachment = {platform = nil, xOffset = 18.25 * 3200, yOffset = 12 * 3200 },
             width = 1600,
             height = 800,
         },
         bts.stickySwitch{
             triggerID = 4,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 3 * 3200, yOffset = 6.75 * 3200 },
+            attachment = {platform = nil, xOffset = 3 * 3200, yOffset = 7.25 * 3200 },
             width = 800,
             height = 1600,
         },
         bts.stickySwitch{
             triggerID = 5,
             timeDirection = 'forwards',
-            attachment = {platform = nil, xOffset = 28.75 * 3200, yOffset = 6.75 * 3200 },
+            attachment = {platform = nil, xOffset = 28.75 * 3200, yOffset = 7.25 * 3200 },
             width = 800,
             height = 1600,
         },

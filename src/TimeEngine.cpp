@@ -72,6 +72,9 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
         guyDirection = currentGuy.getTimeDirection();
         guyFrameNumber = getFrameNumber(guyFrame);
     }
+    else {
+        guyFrameNumber = guyFrameNumber + guyDirection;
+    }
 
     size_t minWaveChanges = 0;
     bool first = true;
