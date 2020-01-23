@@ -1,6 +1,6 @@
 name = "Door Number Three"
 speedOfTime = 1
-timelineLength = 5000
+timelineLength = 10800
 environment =
 {
     gravity = 10,

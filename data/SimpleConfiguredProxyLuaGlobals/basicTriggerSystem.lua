@@ -109,6 +109,7 @@ local function wireGlitz(p)
     return {
         type = 'wireGlitz',
         triggerID = p.triggerID,
+        triggerClause = p.triggerClause,
         useTriggerArrival = p.useTriggerArrival,
         x1 = clonePlatformAndPos(p.x1),
         y1 = clonePlatformAndPos(p.y1),

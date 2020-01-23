@@ -1,6 +1,6 @@
 name = "Wacky Tomb"
 speedOfTime = 1
-timelineLength = 8000
+timelineLength = 10800
 environment =
 {
     gravity = 10,
@@ -28,7 +28,7 @@ environment =
 }
 initialGuy =
 {
-    arrivalTime = 4000,
+    arrivalTime = 10800 - 1,
     arrival =
     {
         x = 3.5 * 3200,
@@ -46,7 +46,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "DirectLua",
+    type = "CompatibleLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],
