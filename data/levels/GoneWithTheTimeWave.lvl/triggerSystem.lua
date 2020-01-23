@@ -35,9 +35,10 @@ local tempStore =
             illegalDestination = 2,
             fallable = true,
             winner = false,
-            triggerFunction = function (triggers)
-                return triggers[1][1] > 0
-            end,
+            triggerClause = "t1",
+            --triggerFunction = function (triggers)
+            --    return triggers[1][1] > 0
+            --end,
         }
     },
     protoCollisions = {
@@ -80,42 +81,80 @@ local tempStore =
             }
         },
         {
+            width = 1 * 3200,
+            height = 1 * 3200,
+            timeDirection = 'forwards',
             lastStateTriggerID = 3,
-            rawCollisionFunction = function(triggerArrivals, outputTriggers)
-                if triggerArrivals[1][1] == 0 and triggerArrivals[4][1] == 0 then
-                    return {
-                        x = 19.75 * 3200,
-                        y = 10 * 3200,
-                        xspeed = 0,
-                        yspeed = 0,
-                        prevXspeed = 0,
-                        prevYspeed = 0,
-                        width = 1600,
-                        height = 2000,
-                        timeDirection = 'forwards'
+            triggerClause = "t1 t4 |",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = -19.75 * 3200,
+                        maxSpeed = 128,
+                        acceleration = 128,
+                        deceleration = 128
+                    },
+                    yDestination = {
+                        desiredPosition = 10 * 3200,
+                        maxSpeed = 128,
+                        acceleration = 128,
+                        deceleration = 128
                     }
-                end
-                
-                -- 600 frames to sweep map (10 seconds)
-                local x = triggerArrivals[3][1]
-                x = x - 128
-                if x < 1600 then
-                    x = x + 24 * 3200
-                end
-                return {
-                        x = x,
-                        y = 10 * 3200,
-                        xspeed = -128,
-                        yspeed = 0,
-                        prevXspeed = -128,
-                        prevYspeed = 0,
-                        width = 1500,
-                        height = 2000,
-                        timeDirection = 'forwards'
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 19.75 * 3200,
+                        maxSpeed = 128,
+                        acceleration = 128,
+                        deceleration = 128
+                    },
+                    yDestination = {
+                        desiredPosition = 10 * 3200,
+                        maxSpeed = 128,
+                        acceleration = 128,
+                        deceleration = 128
                     }
-                
-            end
+                }
+            }
         },
+        --{
+        --    lastStateTriggerID = 3,
+        --    rawCollisionFunction = function(triggerArrivals, outputTriggers)
+        --        if triggerArrivals[1][1] == 0 and triggerArrivals[4][1] == 0 then
+        --            return {
+        --                x = 19.75 * 3200,
+        --                y = 10 * 3200,
+        --                xspeed = 0,
+        --                yspeed = 0,
+        --                prevXspeed = 0,
+        --                prevYspeed = 0,
+        --                width = 1600,
+        --                height = 2000,
+        --                timeDirection = 'forwards'
+        --            }
+        --        end
+        --        
+        --        -- 600 frames to sweep map (10 seconds)
+        --        local x = triggerArrivals[3][1]
+        --        x = x - 128
+        --        if x < 1600 then
+        --            x = x + 24 * 3200
+        --        end
+        --        return {
+        --                x = x,
+        --                y = 10 * 3200,
+        --                xspeed = -128,
+        --                yspeed = 0,
+        --                prevXspeed = -128,
+        --                prevYspeed = 0,
+        --                width = 1500,
+        --                height = 2000,
+        --                timeDirection = 'forwards'
+        --            }
+        --        
+        --    end
+        --},
     },
     protoMutators = {
     },
@@ -130,6 +169,12 @@ local tempStore =
         },
     },
     protoGlitz = {
+    },
+    protoTriggerMods = {
+        {
+            triggerID = 3,
+            triggerClause = "o3,1 1600 < o3,1 24 3200 * + & o3,1 |",
+        }
     },
 }
 

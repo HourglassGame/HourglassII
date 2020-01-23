@@ -6,7 +6,7 @@ local tempStore =
     {
         {
             attachment = {xOffset = 14.5 * 3200, yOffset = 6 * 3200},
-            index = 2,
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
@@ -27,9 +27,10 @@ local tempStore =
             height = 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 4,
-            triggerFunction = function(triggers)
-                return triggers[1][1] > 0 or triggers[2][1] > 0
-            end,
+            --triggerFunction = function(triggers)
+            --    return triggers[1][1] > 0 or triggers[2][1] > 0
+            --end,
+            triggerClause = "t1 t2 |",
             destinations =
             {
                 onDestination = {
@@ -138,9 +139,11 @@ local tempStore =
             x = {pos = 7.5 * 3200},
             y1 = {pos = 5.45 * 3200},
             y2 = {pos = 10.55 * 3200},
-            triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[1][1] > 0 or triggerArrivals[2][1] > 0
-            end,
+            triggerClause = "t1 t2 |",
+            useTriggerArrival = false
+            --triggerFunction = function (triggerArrivals, outputTriggers)
+            --    return triggerArrivals[1][1] > 0 or triggerArrivals[2][1] > 0
+            --end,
         },
         bts.basicRectangleGlitz{
             x = 6.2 * 3200,

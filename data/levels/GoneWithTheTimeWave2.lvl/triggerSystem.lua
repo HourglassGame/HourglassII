@@ -35,9 +35,10 @@ local tempStore =
             illegalDestination = 2,
             fallable = true,
             winner = false,
-            triggerFunction = function (triggers)
-                return triggers[4][1] > 0
-            end,
+            --triggerFunction = function (triggers)
+            --    return triggers[4][1] > 0
+            --end,
+            triggerClause = "t4",
         }
     },
     protoCollisions = {
@@ -80,23 +81,61 @@ local tempStore =
             }
         },
         {
+            width = 1 * 3200,
+            height = 1 * 3200,
+            timeDirection = 'forwards',
             lastStateTriggerID = 3,
-            rawCollisionFunction = function(triggerArrivals, outputTriggers, frameNumber)
-                -- 600 frames to sweep map (10 seconds)
-                return {
-                        x = -frameNumber%600 * 128 + 1600,
-                        y = 10 * 3200,
-                        xspeed = -128,
-                        yspeed = 0,
-                        prevXspeed = -128,
-                        prevYspeed = 0,
-                        width = 1500,
-                        height = 2000,
-                        timeDirection = 'forwards'
+            triggerClause = "0",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 0,
+                        maxSpeed = 0,
+                        acceleration = 0,
+                        deceleration = 0
+                    },
+                    yDestination = {
+                        desiredPosition = 0,
+                        maxSpeed = 0,
+                        acceleration = 0,
+                        deceleration = 0
                     }
-                
-            end
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 0,
+                        maxSpeed = 0,
+                        acceleration = 0,
+                        deceleration = 0
+                    },
+                    yDestination = {
+                        desiredPosition = 0,
+                        maxSpeed = 0,
+                        acceleration = 0,
+                        deceleration = 0
+                    }
+                }
+            }
         },
+        --{
+        --    lastStateTriggerID = 3,
+        --    rawCollisionFunction = function(triggerArrivals, outputTriggers, frameNumber)
+        --        -- 600 frames to sweep map (10 seconds)
+        --        return {
+        --                x = -frameNumber%600 * 128 + 1600,
+        --                y = 10 * 3200,
+        --                xspeed = -128,
+        --                yspeed = 0,
+        --                prevXspeed = -128,
+        --                prevYspeed = 0,
+        --                width = 1500,
+        --                height = 2000,
+        --                timeDirection = 'forwards'
+        --            }
+        --        
+        --    end
+        --},
     },
     protoMutators = {
     },
@@ -111,11 +150,27 @@ local tempStore =
     },
     protoGlitz = {
     },
-    triggerManipulationFunction = function (triggerArrivals, outputTriggers, frameNumber)
-        if triggerArrivals[1][1] > 0 and (frameNumber%600 == 116 or triggerArrivals[4][1] > 0) then
-            outputTriggers[4] = {triggerArrivals[4][1] == 0 and 1 or 2}
-        end
-    end
+    --triggerManipulationFunction = function (triggerArrivals, outputTriggers, frameNumber)
+    --    if triggerArrivals[1][1] > 0 and (frameNumber%600 == 116 or triggerArrivals[4][1] > 0) then
+    --        outputTriggers[4] = {triggerArrivals[4][1] == 0 and 1 or 2}
+    --    end
+    --end
+    protoTriggerMods = {
+        {
+            triggerID = 3,
+            triggerSubindex = 1, -- The default is 1
+            triggerClause = "f 600 % -128 * 78400 +",
+        },
+        --{
+        --    triggerID = 3,
+        --    triggerSubindex = 3,
+        --    triggerClause = "-128",
+        --},
+        {
+            triggerID = 4,
+            triggerClause = "t1 f 600 % 116 = t4 | & t4 0 = 1 & 2 | & o4 |",
+        },
+    },
 }
 
 calculatePhysicsAffectingStuff = bts.calculatePhysicsAffectingStuff(tempStore)

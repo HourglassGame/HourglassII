@@ -667,7 +667,7 @@ namespace hg {
             protoGlitz.calculateGlitz(forwardsGlitz_, reverseGlitz_, physicsAffectingStuff_, triggerArrivals_, outputTriggers_, currentFrame);
         }
         for (auto const  &protoTriggerMod : protoTriggerMods_) {
-            protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, currentFrame);
+            protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, triggerOffsetsAndDefaults_, currentFrame);
         }
 
         for (auto const &protoPortal : protoPortals_) {
@@ -1120,8 +1120,11 @@ namespace hg {
         TriggerClause triggerClause(triggerClauseString);
         lua_pop(L, 1);
 
+        int const triggerSubindex(lua_index_to_C_index(readFieldWithDefault<int>(L, "triggerSubindex", -1, 1)));
+
         return {
             triggerID,
+            triggerSubindex,
             triggerClause
         };
     }

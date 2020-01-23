@@ -186,6 +186,7 @@ public:
                 int firstIndex = clauseValues[cIndex];
                 int secondIndex = clauseValues[cIndex + 1];
                 cIndex += 2;
+
                 evalStack.push_back(triggers[firstIndex][secondIndex]);
                 break;
             }
@@ -233,6 +234,7 @@ public:
                 int firstIndex = clauseValues[cIndex];
                 int secondIndex = clauseValues[cIndex + 1];
                 cIndex += 2;
+
                 auto const outputTriggerIt{ outputTriggers.find(firstIndex) };
                 if (outputTriggerIt == outputTriggers.end()) {
                     evalStack.push_back(0);

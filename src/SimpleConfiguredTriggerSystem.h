@@ -220,7 +220,8 @@ namespace hg {
     private:
         auto comparison_tuple() const noexcept -> decltype(auto) {
             return std::tie(
-                triggerID
+                triggerID,
+                triggerSubindex
                 //triggerClause
             );
         }
@@ -228,14 +229,23 @@ namespace hg {
     public:
 
         int const triggerID;
+        int const triggerSubindex;
         TriggerClause const triggerClause;
 
         void modifyTrigger(
             mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
             mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
+            std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults,
             Frame const *const currentFrame) const
         {
-            outputTriggers[triggerID] = mt::std::vector<int>{ triggerClause.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame)) };
+            auto const outputTriggerIt{ outputTriggers.find(triggerID) };
+            if (outputTriggerIt == outputTriggers.end()) {
+                outputTriggers[triggerID] = mt::std::vector<int>(triggerOffsetsAndDefaults[triggerID].second.begin(), triggerOffsetsAndDefaults[triggerID].second.end());
+            } else if (outputTriggerIt->second.size() < triggerSubindex + 1) {
+                std::cerr << "Trigger modifying partially filled output trigger " << triggerID << ", " << triggerSubindex << "\n";
+                assert(false && " Trigger modifying partially filled output trigger.");
+            }
+            outputTriggers[triggerID][triggerSubindex] = triggerClause.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame));
         }
         bool operator==(ProtoTriggerMod const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();

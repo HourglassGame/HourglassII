@@ -101,7 +101,6 @@ local tempStore =
         {
             triggerID = 2,
             triggerClause = "t2 !",
-            useTriggerArrival = true,
         }
     },
 }
