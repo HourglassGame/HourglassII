@@ -69,7 +69,7 @@ public:
 
 private:
     PhysicsEngine::FrameDepartureT
-        getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter);
+        getDeparturesFromFrameAndUpdateSpeedOfTime(Frame *frame, OperationInterrupter &interrupter);
     
     TimelineState timeline_;
     //Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to

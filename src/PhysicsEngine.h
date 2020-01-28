@@ -35,6 +35,7 @@ public:
         FrameDepartureT departures;
         FrameView view;
         mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
+        int speedOfTime;
         bool currentWinFrame;
     };
 

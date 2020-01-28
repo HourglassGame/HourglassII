@@ -26,7 +26,7 @@ void DepartureMap::setDeparture(Frame *frame, MapType::mapped_type &&departingOb
 
 unsigned DepartureMap::size() const
 {
-    return map.size();
+    return static_cast<unsigned>(map.size());
 }
 DepartureMap::iterator DepartureMap::begin()
 {

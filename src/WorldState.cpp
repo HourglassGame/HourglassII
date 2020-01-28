@@ -135,7 +135,7 @@ int WorldState::getTimelineLength() const
 }
 
 PhysicsEngine::FrameDepartureT
-    WorldState::getDeparturesFromFrame(Frame *frame, OperationInterrupter &interrupter)
+    WorldState::getDeparturesFromFrameAndUpdateSpeedOfTime(Frame *frame, OperationInterrupter &interrupter)
 {
     ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
     // The following loop should be replaced with a better data structure.
@@ -172,7 +172,13 @@ PhysicsEngine::FrameDepartureT
     // retv.view should be removed and added to a function whose only purpose is to process
     // the arrivals for the timeline view. This would do frame->setView and also perform the
     // modification of guyProcessedArrivalFrames_.
-    frame->setView(std::move(retv.view)); 
+    frame->setView(std::move(retv.view));
+
+    // Update speed of time
+    if (retv.speedOfTime >= 0) {
+        frame->setSpeedOfTime(retv.speedOfTime);
+    }
+
     return std::move(retv.departures);
 }
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsigned executionCount)
@@ -207,7 +213,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
             [&](Frame *frame) { 
                 if (getFrameSpeedOfTime(frame) > executionCount) {
                     //std::cerr << "setDeparture: " << getFrameNumber(frame) << "\n";
-                    newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame, interrupter));
+                    newDepartures.setDeparture(frame, this->getDeparturesFromFrameAndUpdateSpeedOfTime(frame, interrupter));
                 }
                 else {
                     //std::cerr << "DoChange: " << getFrameNumber(frame) << "\n";

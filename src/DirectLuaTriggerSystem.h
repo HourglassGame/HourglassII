@@ -107,6 +107,8 @@ public:
                     std::vector<int>
                 >
         > triggerOffsetsAndDefaults,
+        bool hasSpeedOfTimeTrigger,
+        int speedOfTimeTriggerID,
         std::size_t arrivalLocationsSize);
     virtual TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const override;
     virtual TriggerSystemImplementation *clone() const override
@@ -140,8 +142,9 @@ private:
             std::vector<int>
         >
     > triggerOffsetsAndDefaults_;
+    bool hasSpeedOfTimeTrigger_;
+    int speedOfTimeTriggerID_;
     std::size_t arrivalLocationsSize_;
-
 };
 }
 #endif //HG_DIRECT_LUA_TRIGGER_SYSTEM_H

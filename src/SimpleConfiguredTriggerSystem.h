@@ -1597,6 +1597,8 @@ namespace hg {
             std::vector<
                 std::pair<int, std::vector<int>>
             > const &triggerOffsetsAndDefaults,
+            bool hasSpeedOfTimeTrigger_,
+            int speedOfTimeTriggerID_,
             std::size_t arrivalLocationsSize,
             std::vector<ProtoCollision> const &protoCollisions,
             std::vector<ProtoPortal> const &protoPortals,
@@ -1647,6 +1649,8 @@ namespace hg {
             std::vector<int>
             >
         > const &triggerOffsetsAndDefaults_;
+        bool hasSpeedOfTimeTrigger_;
+        int speedOfTimeTriggerID_;
         //Gives the size that arrivalLocations must always be,
         //for script-validation purposes.
         //If a portal specifies an destinationIndex that is
@@ -1687,6 +1691,8 @@ namespace hg {
                 protoTriggerMods_,
                 protoGlitzs_,
                 triggerOffsetsAndDefaults_,
+                hasSpeedOfTimeTrigger_,
+                speedOfTimeTriggerID_,
                 arrivalLocationsSize_);
         }
     public:
@@ -1699,11 +1705,15 @@ namespace hg {
                     std::vector<int>
                 >
             > triggerOffsetsAndDefaults,
+            bool hasSpeedOfTimeTrigger_,
+            int speedOfTimeTriggerID_,
             std::size_t arrivalLocationsSize);
         TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const final{
             return TriggerFrameState(
                 new (pool) SimpleConfiguredTriggerFrameState(
                     triggerOffsetsAndDefaults_,
+                    hasSpeedOfTimeTrigger_,
+                    speedOfTimeTriggerID_,
                     arrivalLocationsSize_,
                     protoCollisions_,
                     protoPortals_,
@@ -1741,6 +1751,8 @@ namespace hg {
         std::vector<
             std::pair<int, std::vector<int>>
         > triggerOffsetsAndDefaults_;
+        bool hasSpeedOfTimeTrigger_;
+        int speedOfTimeTriggerID_;
         std::size_t arrivalLocationsSize_;
     };
 

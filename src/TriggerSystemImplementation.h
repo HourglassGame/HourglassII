@@ -62,6 +62,7 @@ class TriggerFrameStateImplementation
         mt::std::vector<Glitz> reverseGlitz;
         mt::std::vector<GlitzPersister> additionalGlitzPersisters;
         mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
+        int speedOfTime;
     };
 
     virtual DepartureInformation getDepartureInformation(

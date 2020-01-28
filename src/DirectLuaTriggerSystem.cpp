@@ -1137,7 +1137,8 @@ TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState
         forwardsGlitz,
         reverseGlitz,
         glitzPersisters,
-        newBox};
+        newBox,
+        -1};
 }
 
 DirectLuaTriggerFrameState::~DirectLuaTriggerFrameState() noexcept
@@ -1173,10 +1174,14 @@ DirectLuaTriggerSystem::DirectLuaTriggerSystem(
                 std::vector<int>
             >
     > triggerOffsetsAndDefaults,
+    bool hasSpeedOfTimeTrigger,
+    int speedOfTimeTriggerID,
     std::size_t arrivalLocationsSize) :
         compiledMainChunk_(compileLuaChunk(mainChunk, "Main Chunk")),
         compiledExtraChunks_(extraChunks),
         triggerOffsetsAndDefaults_(std::move(triggerOffsetsAndDefaults)),
+        hasSpeedOfTimeTrigger_(hasSpeedOfTimeTrigger),
+        speedOfTimeTriggerID_(speedOfTimeTriggerID),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
     for (LuaModule &module: compiledExtraChunks_) {

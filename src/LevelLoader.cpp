@@ -60,11 +60,19 @@ static TriggerSystem loadSimpleConfiguredTriggerSystem(lua_State *L, path const 
                 loadFileIntoVector(translateToActualPath(packageName, levelPath, path{"SimpleConfiguredProxyLuaGlobals"})));
         }));
 
+    lua_getfield(L, -1, "speedOfTimeTriggerID");
+    bool hasSpeedOfTimeTrigger = !lua_isnil(L, -1);
+    int speedOfTimeTriggerID = hasSpeedOfTimeTrigger ? lua_index_to_C_index(to<int>(L)) : -1;
+    lua_pop(L, 1);
+
     return TriggerSystem{std::make_unique<SimpleConfiguredTriggerSystem>(
-          std::vector<char>(system.begin(), system.end()),
-          luaFiles,
-          std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
-        readField<int>(L, "arrivalLocationsSize"))};
+        std::vector<char>(system.begin(), system.end()),
+        luaFiles,
+        std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
+        hasSpeedOfTimeTrigger,
+        speedOfTimeTriggerID,
+        readField<int>(L, "arrivalLocationsSize")
+    )};
 }
 
 static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelPath) {
@@ -82,12 +90,20 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelP
                 loadFileIntoVector(translateToActualPath(packageName, levelPath, path{})));
         }));
 
+    lua_getfield(L, -1, "speedOfTimeTriggerID");
+    bool hasSpeedOfTimeTrigger = !lua_isnil(L, -1);
+    int speedOfTimeTriggerID = hasSpeedOfTimeTrigger ? lua_index_to_C_index(to<int>(L)) : -1;
+    lua_pop(L, 1);
+
     return
         TriggerSystem{std::make_unique<DirectLuaTriggerSystem>(
-          std::vector<char>(system.begin(), system.end()),
-          luaFiles,
-          std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
-            readField<int>(L, "arrivalLocationsSize"))};
+            std::vector<char>(system.begin(), system.end()),
+            luaFiles,
+            std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
+            hasSpeedOfTimeTrigger,
+            speedOfTimeTriggerID,
+            readField<int>(L, "arrivalLocationsSize")
+        )};
 }
 
 static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path const &levelPath) {

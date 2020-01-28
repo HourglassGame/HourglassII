@@ -58,6 +58,8 @@ public:
     //newDeparture may get its contents pilfered
     FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT &&newDeparture);
 
+    void setSpeedOfTime(int newSpeedOfTime) { frameSpeedOfTime = newSpeedOfTime; }
+
     void setView(FrameView &&newView) { view.swap(newView); }
     FrameView const &getView() const { return view; }
     /**

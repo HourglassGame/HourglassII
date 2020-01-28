@@ -464,6 +464,17 @@ namespace hg {
         }
     }
 
+    int calculateSpeedOfTime(
+        mp::std::vector<TriggerData> const &triggerVector,
+        bool hasSpeedOfTimeTrigger,
+        int speedOfTimeTriggerID)
+    {
+        if (!hasSpeedOfTimeTrigger) {
+            return -1;
+        }
+        return -1;
+    }
+
     SimpleConfiguredTriggerFrameState::SimpleConfiguredTriggerFrameState(
         std::vector<
             std::pair<
@@ -471,6 +482,8 @@ namespace hg {
                 std::vector<int>
             >
         > const &triggerOffsetsAndDefaults,
+        bool hasSpeedOfTimeTrigger,
+        int speedOfTimeTriggerID,
         std::size_t arrivalLocationsSize,
         std::vector<ProtoCollision> const &protoCollisions,
         std::vector<ProtoPortal> const &protoPortals,
@@ -484,6 +497,8 @@ namespace hg {
         pool_(pool),
         interrupter_(interrupter),
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
+        hasSpeedOfTimeTrigger_(hasSpeedOfTimeTrigger),
+        speedOfTimeTriggerID_(speedOfTimeTriggerID),
         arrivalLocationsSize_(arrivalLocationsSize),
         outputTriggers_(pool),
         forwardsGlitz_(),
@@ -679,12 +694,14 @@ namespace hg {
 
         mp::std::vector<TriggerData> triggerVector(pool_);
         boost::push_back(triggerVector, outputTriggers_ | boost::adaptors::transformed([](auto &&v) {return TriggerData{v.first, std::move(v.second)};}));
+
         return {
             calculateActualTriggerDepartures(triggerVector, triggerOffsetsAndDefaults_, currentFrame),
             forwardsGlitz_,
             reverseGlitz_,
             additionalGlitzPersisters,
-            additionalBoxDepartures };
+            additionalBoxDepartures, 
+            calculateSpeedOfTime(triggerVector, hasSpeedOfTimeTrigger_, speedOfTimeTriggerID_) };
     }
 
 
@@ -1547,6 +1564,8 @@ namespace hg {
                     std::vector<int>
                 >
             > triggerOffsetsAndDefaults,
+            bool hasSpeedOfTimeTrigger,
+            int speedOfTimeTriggerID,
             std::size_t arrivalLocationsSize)
         :
         protoPortals_(),
@@ -1555,6 +1574,8 @@ namespace hg {
         protoButtons_(),
         protoTriggerMods_(),
         triggerOffsetsAndDefaults_(std::move(triggerOffsetsAndDefaults)),
+        hasSpeedOfTimeTrigger_(hasSpeedOfTimeTrigger),
+        speedOfTimeTriggerID_(speedOfTimeTriggerID),
         arrivalLocationsSize_(arrivalLocationsSize)
     {
         //#if 0
