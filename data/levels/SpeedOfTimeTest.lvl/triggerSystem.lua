@@ -89,12 +89,12 @@ local tempStore =
             triggerID = 1
         }
     },
-    --protoTriggerMods = {
-    --    {
-    --        triggerID = 3,
-    --        triggerClause = "f 1000 > 1 & 30 |",
-    --    }
-    --},
+    protoTriggerMods = {
+        {
+            triggerID = 3,
+            triggerClause = "f 1000 > 1 & 30 |",
+        }
+    },
 }
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++

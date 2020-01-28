@@ -246,6 +246,7 @@ namespace hg {
                 assert(false && " Trigger modifying partially filled output trigger.");
             }
             outputTriggers[triggerID][triggerSubindex] = triggerClause.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame));
+            std::cerr << "trigger " << outputTriggers[triggerID][triggerSubindex] << ", frame " << getFrameNumber(currentFrame) << "\n";
         }
         bool operator==(ProtoTriggerMod const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
