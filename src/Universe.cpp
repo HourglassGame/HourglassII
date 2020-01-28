@@ -12,13 +12,13 @@
 #include <utility>
 
 namespace hg {
-Universe::Universe(int timelineLength) :
+Universe::Universe(int timelineLength, unsigned defaultSpeedOfTime) :
     frames()
 {
     assert(timelineLength > 0);
     frames.reserve(timelineLength);
     for (int i: boost::irange<int>(0, timelineLength)) {
-        frames.push_back(Frame(i, *this));
+        frames.push_back(Frame(i, defaultSpeedOfTime, *this));
     }
     assert(!frames.empty());
 }

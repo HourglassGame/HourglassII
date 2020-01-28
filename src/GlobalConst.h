@@ -18,7 +18,7 @@ namespace hg {
     inline static const int GUY_MAX_SUPPORTED = 60;
     inline static const int VERT_AIR_RESISTANCE = 22000000;
 
-    inline static const int SPEED_OF_TIME_OVERRIDE = 30;
+    inline static const int SPEED_OF_TIME_OVERRIDE = 5;
     inline static const int PARADOX_PRESSURE_MAX = 100000;
     inline static const int PARADOX_PRESSURE_ADD_MIN = 130;
     inline static const int PARADOX_PRESSURE_DECAY_BUILDUP = 1;

@@ -51,7 +51,7 @@ int getTimelineLength(Universe const &universe);
 
 class Universe final {
 public:
-    explicit Universe(int timelineLength);
+    explicit Universe(int timelineLength, unsigned defaultSpeedOfTime);
 
     Universe(Universe const &o);
     Universe &operator=(Universe const &o);

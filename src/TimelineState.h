@@ -6,6 +6,7 @@
 #include "ObjectList.h"
 #include "ObjectPtrList.h"
 #include "ObjectListTypes.h"
+#include "ConcurrentFrameUpdateSet.h"
 
 #include <tbb/task.h>
 
@@ -28,7 +29,7 @@ public:
     /**
      * Constructs a timeline state of length timeLength containing no arrivals or departures.
      */
-    explicit TimelineState(std::size_t timelineLength);
+    explicit TimelineState(std::size_t timelineLength, unsigned defaultSpeedOfTime);
     
     TimelineState(TimelineState const& o) :
         universe_(o.universe_),
@@ -59,7 +60,8 @@ public:
      * whose arrivals have changed.
      */
     FrameUpdateSet updateWithNewDepartures(
-        DepartureMap &newDepartures/*, tbb::task_group_context &context*/);
+        DepartureMap &newDepartures,
+        ConcurrentFrameUpdateSet &framesWithChangedArrivals /*, tbb::task_group_context &context */);
 
     /**
      * Creates the arrivals for those objects initially in the level.

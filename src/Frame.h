@@ -34,12 +34,13 @@ bool nextFrameInSameUniverse(Frame const *frame, TimeDirection direction);
 Universe &getUniverse(Frame *frame);
 Universe const &getUniverse(Frame const *frame);
 int getFrameNumber(Frame const *frame);
+unsigned getFrameSpeedOfTime(Frame const *frame);
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame final {
 public:
     typedef mt::std::map<Frame *, ObjectList<Normal>> FrameDeparturesT;
     typedef tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *> FrameArrivalsT;
-    Frame(int frameNumber, Universe &universe);
+    Frame(int frameNumber, unsigned frameSpeedOfTime, Universe &universe);
     #if 0
     Frame(Frame const &o) :
         frameNumber(o.frameNumber),
@@ -91,6 +92,7 @@ private:
     Universe const &getUniverse() const;
     Universe &getUniverse();
     int getFrameNumber() const;
+    unsigned getFrameSpeedOfTime() const;
     //Valid to call with NullFrame {
     friend bool isNullFrame(Frame const *frame);
     //}
@@ -101,6 +103,7 @@ private:
     friend Universe &getUniverse(Frame *frame);
     friend Universe const &getUniverse(Frame const *frame);
     friend int getFrameNumber(Frame const *frame);
+    friend unsigned getFrameSpeedOfTime(Frame const *frame);
     //}
     void insertArrival(FrameArrivalsT::value_type const &toInsert);
     void changeArrival(FrameArrivalsT::value_type const &toChange);
@@ -108,6 +111,8 @@ private:
 
     // Position of frame within universe_
     int frameNumber;
+    // Speed of time on frame
+    unsigned frameSpeedOfTime;
     // Back-link to universe which this frame is in
     Universe *universe;
     #if 0

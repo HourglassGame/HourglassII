@@ -5,10 +5,10 @@
 #include "ParallelForEach.h"
 #include "Frame.h"
 #include "FrameID.h"
-#include "ConcurrentFrameUpdateSet.h"
 #include <boost/swap.hpp>
 #include <cassert>
 #include <algorithm>
+#include <iostream>
 
 namespace hg {
 boost::container::map<Frame *, ObjectList<Normal>>
@@ -25,8 +25,8 @@ TimelineState::fixPermanentDepartures(
     return newPermanentDepartures;
 }
 
-TimelineState::TimelineState(std::size_t timelineLength) :
-        universe_(static_cast<int>(timelineLength))
+TimelineState::TimelineState(std::size_t timelineLength, unsigned defaultSpeedOfTime) :
+        universe_(static_cast<int>(timelineLength), defaultSpeedOfTime)
 {
 }
 
@@ -38,13 +38,14 @@ void TimelineState::swap(TimelineState &o) noexcept
 
 FrameUpdateSet
 TimelineState::updateWithNewDepartures(
-    DepartureMap &newDepartures)
+    DepartureMap &newDepartures,
+    ConcurrentFrameUpdateSet &framesWithChangedArrivals)
 {
-    ConcurrentFrameUpdateSet framesWithChangedArrivals;
     parallel_for_each(
         newDepartures,
         [&](DepartureMap::value_type &newDeparture)
         {
+        std::cerr << "newDeparture.first: " << getFrameNumber(newDeparture.first) << "\n";
             framesWithChangedArrivals.add(
                 newDeparture.first->updateDeparturesFromHere(std::move(newDeparture.second)));
         });

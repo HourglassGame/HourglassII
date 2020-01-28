@@ -9,6 +9,12 @@ void ConcurrentFrameUpdateSet::add(FrameUpdateSet const &toAdd)
 {
     threadLocalMap_.local().add(toAdd);
 }
+void ConcurrentFrameUpdateSet::add(Frame *frameToAdd)
+{
+    FrameUpdateSet toAdd;
+    toAdd.add(frameToAdd);
+    threadLocalMap_.local().add(toAdd);
+}
 
 FrameUpdateSet ConcurrentFrameUpdateSet::merge()
 {

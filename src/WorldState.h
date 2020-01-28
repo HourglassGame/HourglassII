@@ -28,6 +28,7 @@ public:
     //Exception Safety: Strong
     WorldState(
         int timelineLength,
+        unsigned defaultSpeedOfTime,
         Guy const &initialGuy,
         FrameID const &guyStartTime,
         PhysicsEngine&& physics,
@@ -47,7 +48,7 @@ public:
      * in exactly one frame and there are no waves.
      * Returns the set of frames that were executed (had different arrivals).
      */
-    FrameUpdateSet executeWorld(OperationInterrupter &interrupter);
+    FrameUpdateSet executeWorld(OperationInterrupter &interrupter, unsigned executionCount);
 
     /**
      * Stores the given input data, allowing the player to exist for another step.

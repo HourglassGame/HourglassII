@@ -7,6 +7,7 @@ class ConcurrentFrameUpdateSet final {
 public:
     ConcurrentFrameUpdateSet();
     void add(FrameUpdateSet const &toAdd);
+    void add(Frame *frame);
     FrameUpdateSet merge();
 private:
     typedef tbb::enumerable_thread_specific<FrameUpdateSet> MapType;

@@ -27,6 +27,7 @@ TimeEngine::TimeEngine(Level &&level, OperationInterrupter &interrupter) :
         level.speedOfTime,
         WorldState(
             level.timelineLength,
+            level.speedOfTime,
             std::move(level.initialGuy),
             std::move(level.guyStartTime),
             PhysicsEngine(Environment(level.environment), std::move(level.triggerSystem)),
@@ -61,7 +62,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
     FrameListList updatedList;
     updatedList.reserve(impl->speedOfTime);
     for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
-        updatedList.push_back(impl->worldState.executeWorld(interrupter));
+        updatedList.push_back(impl->worldState.executeWorld(interrupter, i));
     }
 
     // Only generate paradox pressure for waves behind the current guy

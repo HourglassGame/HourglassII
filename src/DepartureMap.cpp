@@ -16,6 +16,10 @@ void DepartureMap::setDeparture(Frame *frame, MapType::mapped_type &&departingOb
     map.find(frame)->second = std::move(departingObjects);
 }
 
+unsigned DepartureMap::size() const
+{
+    return map.size();
+}
 DepartureMap::iterator DepartureMap::begin()
 {
     return map.begin();
