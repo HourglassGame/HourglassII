@@ -467,12 +467,16 @@ namespace hg {
     int calculateSpeedOfTime(
         mp::std::vector<TriggerData> const &triggerVector,
         bool hasSpeedOfTimeTrigger,
-        int speedOfTimeTriggerID)
+        int speedOfTimeTriggerID,
+        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
     {
         if (!hasSpeedOfTimeTrigger) {
             return -1;
         }
-        return -1;
+        if (triggerVector[speedOfTimeTriggerID].getValue().size() == 0) {
+            return triggerOffsetsAndDefaults[speedOfTimeTriggerID].second[0];
+        }
+        return -1; // triggerVector[speedOfTimeTriggerID].getValue()[0]; access violation
     }
 
     SimpleConfiguredTriggerFrameState::SimpleConfiguredTriggerFrameState(
@@ -701,7 +705,7 @@ namespace hg {
             reverseGlitz_,
             additionalGlitzPersisters,
             additionalBoxDepartures, 
-            calculateSpeedOfTime(triggerVector, hasSpeedOfTimeTrigger_, speedOfTimeTriggerID_) };
+            calculateSpeedOfTime(triggerVector, hasSpeedOfTimeTrigger_, speedOfTimeTriggerID_, triggerOffsetsAndDefaults_) };
     }
 
 
