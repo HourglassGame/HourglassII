@@ -177,7 +177,7 @@ PhysicsEngine::FrameDepartureT
 }
 FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsigned executionCount)
 {
-    std::cerr << "START: " << executionCount << "\n";
+    //std::cerr << "START: " << executionCount << "\n";
     DepartureMap newDepartures;
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
     newDepartures.makeSpaceFor(frameUpdateSet_, executionCount);
@@ -206,11 +206,11 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
             returnSet,
             [&](Frame *frame) { 
                 if (getFrameSpeedOfTime(frame) > executionCount) {
-                    std::cerr << "setDeparture: " << getFrameNumber(frame) << "\n";
+                    //std::cerr << "setDeparture: " << getFrameNumber(frame) << "\n";
                     newDepartures.setDeparture(frame, this->getDeparturesFromFrame(frame, interrupter));
                 }
                 else {
-                    std::cerr << "DoChange: " << getFrameNumber(frame) << "\n";
+                    //std::cerr << "DoChange: " << getFrameNumber(frame) << "\n";
                     framesWithChangedArrivals.add(frame);
                 }
             },
@@ -225,34 +225,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
         throw boost::enable_current_exception(PlayerVictoryException());
     }
 
-    {
-        tbb::task_group_context group;
-        auto group_interruption_scope =
-            interrupter.addInterruptionFunction(
-                [&] {
-            //This was previously implemented via group.register_pending_exception()
-            //Previously there was a comment here warning:
-            //'''
-            //Do not directly call `group.cancel_group_execution()`, as this can lead
-            //to a failure to propagate exceptions from ExecuteFrame, which can lead to
-            //the world continuing to be run while in an invalid state.
-            //'''
-            //I was unable to figure out why this was considered a problem; but maybe this comment can be a clue
-            //if the problem reapppears. (If no problem reappears, or you prove the non-existence of any problem,
-            //remove this comment.)
-            //Note that `group.register_pending_exception()` seems to be buggy in MSVC++, and will sometimes
-            //just throw the pending exception, rather than capturing it. (It is also an undocumented feature).
-            group.cancel_group_execution();
-        });
-        parallel_for_each(
-            frameUpdateSet_,
-            [&](Frame *frame) {
-                std::cerr << "frameUpdateSet_: " << getFrameNumber(frame) << "\n";
-            },
-            group);
-    }
-
-    std::cerr << "executionCount: " << executionCount << ", newDepartures: " << newDepartures.size() << ", returnSet: " << returnSet.size() << "\n";
+    //std::cerr << "executionCount: " << executionCount << ", newDepartures: " << newDepartures.size() << ", returnSet: " << returnSet.size() << "\n";
     return returnSet;
 }
 

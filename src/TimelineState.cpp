@@ -45,7 +45,7 @@ TimelineState::updateWithNewDepartures(
         newDepartures,
         [&](DepartureMap::value_type &newDeparture)
         {
-        std::cerr << "newDeparture.first: " << getFrameNumber(newDeparture.first) << "\n";
+        //std::cerr << "newDeparture.first: " << getFrameNumber(newDeparture.first) << "\n";
             framesWithChangedArrivals.add(
                 newDeparture.first->updateDeparturesFromHere(std::move(newDeparture.second)));
         });

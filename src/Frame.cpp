@@ -13,7 +13,7 @@
 namespace hg {
 Frame::Frame(int frameNumber, unsigned frameSpeedOfTime, Universe &universe):
         frameNumber(frameNumber),
-        frameSpeedOfTime(frameNumber < 1000 ? frameSpeedOfTime : 1),
+        frameSpeedOfTime(frameSpeedOfTime),
         universe(&universe),
         departures(),
         arrivals(),
