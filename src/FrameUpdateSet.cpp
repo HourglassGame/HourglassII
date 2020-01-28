@@ -43,6 +43,15 @@ void FrameUpdateSet::make_set() const
     }
 }
 
+void FrameUpdateSet::filterSpeedOfTime(unsigned speedOfTime)
+{
+    make_set();
+    auto toRemove = [&speedOfTime](Frame *frame) {
+        return getFrameSpeedOfTime(frame) < speedOfTime;
+    };
+    boost::range::remove_erase_if(updateSet_, toRemove);
+}
+
 FrameUpdateSet::const_iterator
     FrameUpdateSet::begin() const
 {

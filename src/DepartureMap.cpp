@@ -2,13 +2,21 @@
 #include "FrameUpdateSet.h"
 #include <utility>
 namespace hg {
-void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor)
+void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor, unsigned speedOfTimeFilter)
 {
-    map.rehash(toMakeSpaceFor.size());
+    size_t spaceRequired = 0;
+    for (Frame *frame : toMakeSpaceFor) {
+        if (speedOfTimeFilter < getFrameSpeedOfTime(frame)) {
+            ++spaceRequired;
+        }
+    }
+    map.rehash(spaceRequired);
     //removes the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
     for (Frame *frame: toMakeSpaceFor)
     {
-        map.insert(value_type(frame, MapType::mapped_type()));
+        if (speedOfTimeFilter < getFrameSpeedOfTime(frame)) {
+            map.insert(value_type(frame, MapType::mapped_type()));
+        }
     }
 }
 void DepartureMap::setDeparture(Frame *frame, MapType::mapped_type &&departingObjects)

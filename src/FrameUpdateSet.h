@@ -62,6 +62,7 @@ public:
     iterator begin();
     iterator end();
     std::size_t size() const;
+    void filterSpeedOfTime(unsigned speedOfTime);
     bool empty() const;
     //make_set() may be used to force the vector to be made into a set.
     //The only visible result of this is that it eliminates race conditions

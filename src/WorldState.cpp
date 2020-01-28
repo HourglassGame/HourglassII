@@ -180,7 +180,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
     std::cerr << "START: " << executionCount << "\n";
     DepartureMap newDepartures;
     ConcurrentFrameUpdateSet framesWithChangedArrivals;
-    newDepartures.makeSpaceFor(frameUpdateSet_);
+    newDepartures.makeSpaceFor(frameUpdateSet_, executionCount);
     FrameUpdateSet returnSet;
     frameUpdateSet_.swap(returnSet);
     {
