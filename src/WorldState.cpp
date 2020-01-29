@@ -50,6 +50,7 @@ static std::vector<ConcurrentTimeSet> fixFrameVector(
 WorldState::WorldState(WorldState const& o) :
         timeline_(o.timeline_),
         playerInput_(o.playerInput_),
+        realPlayerInput_(o.realPlayerInput_),
         frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
         physics_(o.physics_),
         guyNewArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyNewArrivalFrames_)),
@@ -62,9 +63,12 @@ WorldState &WorldState::operator=(WorldState const& o)
 {
     timeline_ = o.timeline_;
     playerInput_ = o.playerInput_;
+    realPlayerInput_ = o.realPlayerInput_;
     frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
     physics_ = o.physics_;
     guyNewArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyNewArrivalFrames_);
+    guyProcessedArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyProcessedArrivalFrames_);
+    processedGuyByFrame_ = o.processedGuyByFrame_;
     currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
     return *this;
 }
