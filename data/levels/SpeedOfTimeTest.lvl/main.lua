@@ -1,6 +1,6 @@
 name = "Standard Box Puzzle"
 speedOfTime = 1
-timelineLength = 2000
+timelineLength = 10800
 environment =
 {
     gravity = 10,

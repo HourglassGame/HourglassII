@@ -171,8 +171,8 @@ namespace hg {
             
 
             bool const active =
-                (protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] > 0)
-                || (protoCollision.hasTriggerClause && (protoCollision.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) > 0))
+                (protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] != 0)
+                || (protoCollision.hasTriggerClause && (protoCollision.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) != 0))
                 ;
 
             CollisionDestination const &destination =
@@ -279,7 +279,7 @@ namespace hg {
         if (protoPortal.chargeTriggerID != -1) {
             charges = triggerArrivals[protoPortal.chargeTriggerID][0];
         }
-        bool const active = (charges != 0) && (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) > 0));
+        bool const active = (charges != 0) && (!protoPortal.hasTriggerClause || (protoPortal.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) != 0));
 
         return {
             retPortal, active, charges
@@ -2210,8 +2210,8 @@ namespace hg {
         state = std::min(
             checkPressed(x, y, xspeed, yspeed, proto->width, proto->height, proto->timeDirection, departures) ? oldState+1 : 0,
             2);
-        justPressed = oldState == 0 && state > 0;
-        justReleased = oldState > 0 && state == 0;
+        justPressed = oldState == 0 && state != 0;
+        justReleased = oldState != 0 && state == 0;
     }
     void MomentarySwitchFrameStateImpl::calculateGlitz(
             mt::std::vector<Glitz> &forwardsGlitz,
@@ -2244,7 +2244,7 @@ namespace hg {
                proto->width,
                proto->height,
                proto->timeDirection},
-            state > 0);
+            state != 0);
         forwardsGlitz.push_back(std::move(forGlitz));
         reverseGlitz.push_back(std::move(revGlitz));
 
@@ -2280,11 +2280,11 @@ namespace hg {
         assert(0 < triggerArrivals[proto->stateTriggerID].size());
         int const oldState = triggerArrivals[proto->stateTriggerID][0];
         state = std::min(
-            oldState > 0 ?
-              oldState+1
+            oldState != 0 ?
+              oldState + 1
             : (checkPressed(x, y, xspeed, yspeed, proto->width, proto->height, proto->timeDirection, departures) ? 1 : 0),
             2);
-        justPressed = oldState == 0 && state > 0;
+        justPressed = oldState == 0 && state != 0;
     }
     void StickySwitchFrameStateImpl::calculateGlitz(
             mt::std::vector<Glitz> &forwardsGlitz,
@@ -2300,7 +2300,7 @@ namespace hg {
                proto->width,
                proto->height,
                proto->timeDirection},
-            state > 0);
+            state != 0);
         forwardsGlitz.push_back(std::move(forGlitz));
         reverseGlitz.push_back(std::move(revGlitz));
 
@@ -2425,7 +2425,7 @@ namespace hg {
                    proto->first.width,
                    proto->first.height,
                    proto->timeDirection},
-                switchState/*switchState > 0*/);
+                switchState/*switchState != 0*/);
             forwardsGlitz.push_back(std::move(forGlitz));
             reverseGlitz.push_back(std::move(revGlitz));
         }
@@ -2539,7 +2539,7 @@ namespace hg {
                     state = false;
                 }
                 justPressed.push_back(stateTriggerValues[i] == 0 && individualState[i]);
-                justReleased.push_back(stateTriggerValues[i] > 0 && !individualState[i]);
+                justReleased.push_back(stateTriggerValues[i] != 0 && !individualState[i]);
             }
         }
         else {
@@ -2600,7 +2600,7 @@ namespace hg {
             end
         end
         */
-        assert(switchState > 0 || individualState.size() == proto->buttons.size());
+        assert(switchState != 0 || individualState.size() == proto->buttons.size());
         assert(PnVs.size() == proto->buttons.size());
         for (std::size_t i{0}, end{proto->buttons.size()}; i != end; ++i) {
             auto [forGlitz, revGlitz] = calculateButtonGlitz(
@@ -2612,7 +2612,7 @@ namespace hg {
                    proto->buttons[i].width,
                    proto->buttons[i].height,
                    proto->timeDirection},
-                (switchState > 0) || individualState[i]);
+                (switchState != 0) || individualState[i]);
             forwardsGlitz.push_back(std::move(forGlitz));
             reverseGlitz.push_back(std::move(revGlitz));
             
@@ -2659,15 +2659,15 @@ namespace hg {
 
         assert(proto->stateTriggerID < triggerArrivals.size());
         auto const &stateTriggerValues = triggerArrivals[proto->stateTriggerID];
-        int const oldState = stateTriggerValues.size() >0 ? triggerArrivals[proto->stateTriggerID][0] : 0;
+        int const oldState = stateTriggerValues.size() != 0 ? triggerArrivals[proto->stateTriggerID][0] : 0;
 
         switchState = std::min(
-            oldState > 0 ?
-               oldState+1
+            oldState != 0 ?
+               oldState + 1
              : (checkPressed(beamPnV.x, beamPnV.y, beamPnV.xspeed, beamPnV.yspeed, proto->beam.width, proto->beam.height, proto->timeDirection, departures) ? 1 : 0),
             2);
 
-        justPressed = oldState == 0 && switchState > 0;
+        justPressed = oldState == 0 && switchState != 0;
     }
     void StickyLaserSwitchFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const
     {
@@ -2719,7 +2719,7 @@ namespace hg {
                     proto->beam.width,
                     proto->beam.height,
                     proto->timeDirection},
-                switchState > 0);
+                switchState != 0);
             if (maybeBeamGlitz) {
                 auto [forGlitz, revGlitz] = *maybeBeamGlitz;
                 forwardsGlitz.push_back(std::move(forGlitz));
@@ -2736,7 +2736,7 @@ namespace hg {
                     proto->emitter.width,
                     proto->emitter.height,
                     proto->timeDirection},
-                switchState > 0);
+                switchState != 0);
             forwardsGlitz.push_back(std::move(forGlitz));
             reverseGlitz.push_back(std::move(revGlitz));
         }

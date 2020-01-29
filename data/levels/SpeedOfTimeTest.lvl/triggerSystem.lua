@@ -92,7 +92,7 @@ local tempStore =
     protoTriggerMods = {
         {
             triggerID = 3,
-            triggerClause = "f 1000 > 1 & 30 |",
+            triggerClause = "f 5000 > 1 & 30 |",
         }
     },
 }

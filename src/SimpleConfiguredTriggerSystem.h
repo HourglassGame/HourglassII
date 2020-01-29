@@ -238,7 +238,7 @@ namespace hg {
             std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults,
             Frame const *const currentFrame) const
         {
-            auto const outputTriggerIt{ outputTriggers.find(triggerID) };
+            auto const outputTriggerIt{ outputTriggers.find(triggerID) }; 
             if (outputTriggerIt == outputTriggers.end()) {
                 outputTriggers[triggerID] = mt::std::vector<int>(triggerOffsetsAndDefaults[triggerID].second.begin(), triggerOffsetsAndDefaults[triggerID].second.end());
             } else if (outputTriggerIt->second.size() < triggerSubindex + 1) {
@@ -246,7 +246,7 @@ namespace hg {
                 assert(false && " Trigger modifying partially filled output trigger.");
             }
             outputTriggers[triggerID][triggerSubindex] = triggerClause.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame));
-            std::cerr << "trigger " << outputTriggers[triggerID][triggerSubindex] << ", frame " << getFrameNumber(currentFrame) << "\n";
+            //std::cerr << "trigger " << outputTriggers[triggerID][triggerSubindex] << ", frame " << getFrameNumber(currentFrame) << "\n";
         }
         bool operator==(ProtoTriggerMod const &o) const noexcept {
             return comparison_tuple() == o.comparison_tuple();
@@ -1386,7 +1386,7 @@ namespace hg {
                             if (triggerArrivals[*triggerID_].size() < 1) {
                                 return false;
                             }
-                            return triggerArrivals[*triggerID_][0] > 0;
+                            return triggerArrivals[*triggerID_][0] != 0;
                         }
                         else {
                             auto const outputTriggerIt{ outputTriggers.find(*triggerID_) };
@@ -1396,12 +1396,12 @@ namespace hg {
                             if (outputTriggerIt->second.size() < 1) {
                                 return false;
                             }
-                            return outputTriggerIt->second[0] > 0;
+                            return outputTriggerIt->second[0] != 0;
                         }
                         
                     }
                     else if (hasTriggerClause_) {
-                        return triggerClause_.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame)) > 0;
+                        return triggerClause_.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame)) != 0;
                     }
                     else {
                         return false;

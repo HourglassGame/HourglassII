@@ -122,25 +122,25 @@ public:
     int doBinaryOperation(TriggerOperator op, int val1, int val2) const {
         switch (op) {
         case TriggerOperator::AND: {
-            if (val2 > 0 && val1 > 0) {
+            if (val2 != 0 && val1 != 0) {
                 return val1;
             }
             return 0;
         }
         case TriggerOperator::OR: {
-            if (val2 > 0 && val1 <= 0) {
+            if (val2 != 0) {
                 return val2;
             }
-            if (val1 > 0) {
+            if (val1 != 0) {
                 return val1;
             }
             return 0;
         }
         case TriggerOperator::XOR: {
-            if (val2 > 0 && val1 <= 0) {
+            if (val2 != 0 && val1 == 0) {
                 return val2;
             }
-            if (val1 > 0 && val2 <= 0) {
+            if (val1 != 0 && val2 == 0) {
                 return val1;
             }
             return 0;
@@ -202,7 +202,7 @@ public:
             case TriggerOperator::NOT: {
                 val1 = evalStack.back();
                 evalStack.pop_back();
-                evalStack.push_back(val1 > 0 ? 0 : 1);
+                evalStack.push_back(val1 != 0 ? 0 : 1);
                 break;
             }
             default: {
@@ -228,7 +228,13 @@ public:
         int val2;
         int cIndex = 0;
 
+        //std::cerr << "Top:";
+
         for (unsigned int i = 0; i < clauseOps.size(); ++i) {
+            //if (!evalStack.empty()) {
+            //    std::cerr << " (" << i << ", " << evalStack.back() << "),";
+            //}
+
             switch (clauseOps[i]) {
             case TriggerOperator::TRIGGER_OUT: {
                 int firstIndex = clauseValues[cIndex];
@@ -266,7 +272,7 @@ public:
             case TriggerOperator::NOT: {
                 val1 = evalStack.back();
                 evalStack.pop_back();
-                evalStack.push_back(val1 > 0 ? 0 : 1);
+                evalStack.push_back(val1 != 0 ? 0 : 1);
                 break;
             }
             default: {
@@ -279,6 +285,12 @@ public:
             }
             }
         }
+
+        //if (!evalStack.empty()) {
+        //    std::cerr << " (end, " << evalStack.back() << "),";
+        //}
+        //std::cerr << "\n";
+
         val1 = evalStack.back();
         evalStack.pop_back();
         assert(evalStack.empty() && "Trigger clause not empty");
