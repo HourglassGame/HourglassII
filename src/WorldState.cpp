@@ -177,7 +177,9 @@ PhysicsEngine::FrameDepartureT
 
     for (unsigned i = 0; i < retv.guyDepartureFrames.size(); ++i)
     {
-        guyNewArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])].add(std::get<1>(retv.guyDepartureFrames[i]));
+        if (!isNullFrame(std::get<1>(retv.guyDepartureFrames[i]))) {
+            guyNewArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])].add(std::get<1>(retv.guyDepartureFrames[i]));
+        }
     }
     if (retv.currentWinFrame) {
         currentWinFrames_.add(frame);
