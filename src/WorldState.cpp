@@ -94,7 +94,7 @@ WorldState::WorldState(
     guyNewArrivalFrames_.back().add(guyStartFrame);
     guyProcessedArrivalFrames_.push_back({}); // The oldest Guy to arrive has no input, but has no impact on the physics of the frame.
 
-    for (int i = 1; i < timelineLength; ++i) {
+    for (int i = 0; i < timelineLength; ++i) {
         processedGuyByFrame_.push_back({});
     }
 
@@ -152,21 +152,23 @@ PhysicsEngine::FrameDepartureT
     ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
     std::vector<int> &processedGuys = processedGuyByFrame_[getFrameNumber(frame)];
 
-    // Remove g
+    // Update the vector of guys that have arrived and been proccessed by this frame.
     for (std::size_t i(0), isize(processedGuys.size()); i < isize; ++i)
     {
         guyProcessedArrivalFrames_[processedGuys[i]].remove(frame);
     }
-    // Adding the guys to the processed arrival frames at this point is ugly. We cannot pass
-    // guyProcessedArrivalFrames_ to executeFrame as it is supposed to have no side effects.
-    // Other solutions are similarly ugly.
-    processedGuys.empty();
+
+    processedGuys.resize(arrivals.getList<Guy>().size());
+    int guyFrameIndex = 0;
     for (Guy const &guy : arrivals.getList<Guy>())
     {
         guyProcessedArrivalFrames_[guy.getIndex()].add(frame);
-        processedGuys.push_back(guy.getIndex());
+        processedGuys[guyFrameIndex] = guy.getIndex();
+        ++guyFrameIndex;
     }
 
+    // Run physics to turn the changed arrivals into departures.
+    // executeFrame as it is supposed to have no side effects.
     PhysicsEngine::PhysicsReturnT retv(
         physics_.executeFrame(arrivals,
             frame,
