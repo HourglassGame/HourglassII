@@ -42,7 +42,7 @@ static std::vector<ConcurrentTimeSet> fixFrameVector(
     {
         newVector.push_back({});
         for (hg::Frame *frame : oldVector[i]) {
-            newVector[i].add(frame);
+            newVector[i].add(frameUpdater.updateFrame(frame));
         }
     }
     return newVector;
