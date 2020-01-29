@@ -379,7 +379,7 @@ void guyStep(
                 else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
                 {
                     if (guyArrivalList[i].getBoxCarrying()) {
-                        yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 2;
+                        yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
                     }
                     else {
                         yspeed[i] += hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32;
