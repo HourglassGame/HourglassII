@@ -34,7 +34,7 @@ namespace hg {
         sf::RenderTarget &target,
         Wall const &wall,
         std::size_t const relativeGuyIndex,
-        std::vector<std::optional<GuyFrameData>> const &guyFrames,
+        std::vector<std::vector<GuyFrameData>> const &guyFrames,
         std::vector<GuyInput> const &guyInput,
         std::size_t const minTimelineLength);
 
@@ -66,7 +66,7 @@ namespace hg {
         sf::RenderTarget &target,
         hg::TimeEngine const &timeEngine,
         std::size_t const relativeGuyIndex,
-        std::vector<Frame *> const &guyFrames,
+        std::vector<std::vector<Frame *> > const &guyFrames,
         std::vector<GuyInput> const &guyInput,
         std::size_t const minTimelineLength);
     void DrawColors(sf::RenderTarget &target, sf::Image const &positionColoursImage);

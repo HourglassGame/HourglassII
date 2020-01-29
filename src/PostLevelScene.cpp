@@ -223,12 +223,25 @@ void runStep(
                 shouldDrawGuyPositionColours);
         }
     }
+
+    auto const &guyFrames{ timeEngine.getGuyFrames() };
+    auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
+
+    std::vector<std::vector<hg::Frame*>> guyFrameDataRaw;
+    guyFrameDataRaw.reserve(actualGuyFrames.size());
+    for (std::size_t i{}, end{ std::size(actualGuyFrames) }; i != end; ++i) {
+        guyFrameDataRaw.push_back({});
+        for (hg::Frame *frame : actualGuyFrames[i]) {
+            guyFrameDataRaw[i].push_back(frame);
+        }
+    }
+
     DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getGuyInput().getTimeCursor(), timeEngine.getTimelineLength());
     DrawPersonalTimeline(
         app.getRenderTarget(),
         timeEngine,
         0/*relativeGuyIndex*/,
-        timeEngine.getGuyFrames(),
+        guyFrameDataRaw,
         timeEngine.getPostOverwriteInput(),
         static_cast<std::size_t>(timeEngine.getTimelineLength()));
         

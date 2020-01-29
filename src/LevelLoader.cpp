@@ -113,14 +113,14 @@ static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path
         return loadDirectLuaTriggerSystem(L, levelPath);
     }
     else if (type == "CompatibleLua") {
-        #ifndef NDEBUG
-        return TriggerSystem{std::make_unique<ComparisonTestTriggerSystem>(
-            loadDirectLuaTriggerSystem(L, levelPath),
-            loadSimpleConfiguredTriggerSystem(L, levelPath)
-            )};
-        #else
+        //#ifndef NDEBUG
+        //return TriggerSystem{std::make_unique<ComparisonTestTriggerSystem>(
+        //    loadDirectLuaTriggerSystem(L, levelPath),
+        //    loadSimpleConfiguredTriggerSystem(L, levelPath)
+        //    )};
+        //#else
         return loadSimpleConfiguredTriggerSystem(L, levelPath);
-        #endif
+        //#endif
     }
     else {
         std::stringstream ss;

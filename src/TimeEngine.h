@@ -67,7 +67,7 @@ public:
      * Returns a pointer to the frame in the TimeEngine which corresponds to whichFrame
      */
     Frame const *getFrame(FrameID const &whichFrame) const noexcept;// { return worldState.getFrame(whichFrame); }
-    std::vector<Frame *> const &getGuyFrames() const noexcept;// { return worldState.getGuyFrames(); }
+    std::vector<ConcurrentTimeSet> const &getGuyFrames() const noexcept;// { return worldState.getGuyFrames(); }
     std::vector<GuyInput> const &getPostOverwriteInput() const noexcept;// { return worldState.getPostOverwriteInput(); }
     std::vector<InputList> const &getReplayData() const noexcept;// { return worldState.getReplayData(); }
     Wall const &getWall() const noexcept;// { return wall; }

@@ -67,11 +67,40 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 
     // Only generate paradox pressure for waves behind the current guy
     std::size_t guyIndex = getGuyFrames().size() - 2 - relativeGuyIndex;
-    hg::Frame *const guyFrame{ getGuyFrames()[guyIndex] };
-    if (!isNullFrame(guyFrame)) {
-        hg::GuyOutputInfo const &currentGuy(findCurrentGuy(guyFrame->getView().getGuyInformation(), guyIndex));
-        guyDirection = currentGuy.getTimeDirection();
-        guyFrameNumber = getFrameNumber(guyFrame);
+    if (!getGuyFrames()[guyIndex].empty()) {
+        bool directionSet = false;
+        for (hg::Frame *frame : getGuyFrames()[guyIndex])
+        {
+            hg::GuyOutputInfo const &currentGuy(findCurrentGuy(frame->getView().getGuyInformation(), guyIndex));
+            if (!directionSet) {
+                guyDirection = currentGuy.getTimeDirection();
+            }
+            else if (guyDirection != currentGuy.getTimeDirection()) {
+                guyDirection = TimeDirection::INVALID;
+                // If two guys exist going in opposite directions, sum paradoxes across the whole timeline.
+                break;
+            }
+
+            // Paradox wave sum is from the guy furthest in the personal future, when all guys progate in the same direction.
+            if (guyDirection == TimeDirection::FORWARDS) {
+                if (directionSet) {
+                    guyFrameNumber = std::max(guyFrameNumber, getFrameNumber(frame));
+                }
+                else {
+                    guyFrameNumber = getFrameNumber(frame);
+                }
+            }
+            else if (guyDirection == TimeDirection::REVERSE) {
+                if (directionSet) {
+                    guyFrameNumber = std::min(guyFrameNumber, getFrameNumber(frame));
+                }
+                else {
+                    guyFrameNumber = getFrameNumber(frame);
+                }
+            }
+
+            directionSet = true;
+        }
     }
     else {
         guyFrameNumber = guyFrameNumber + guyDirection;
@@ -91,6 +120,9 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
                 if (getFrameNumber(frame) > guyFrameNumber) {
                     waveChanges += 1;
                 }
+            }
+            else if (guyDirection == TimeDirection::INVALID) {
+                waveChanges += 1;
             }
         }
         //std::cerr << "updateSize " << updateSize << "\n";
@@ -121,7 +153,7 @@ TimeEngine::RunResult TimeEngine::getPrevRunResult()
 }
 
 Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const noexcept { return impl->worldState.getFrame(whichFrame); }
-std::vector<Frame *> const &TimeEngine::getGuyFrames() const noexcept { return impl->worldState.getGuyFrames(); }
+std::vector<ConcurrentTimeSet> const &TimeEngine::getGuyFrames() const noexcept { return impl->worldState.getGuyFrames(); }
 std::vector<GuyInput> const &TimeEngine::getPostOverwriteInput() const noexcept { return impl->worldState.getPostOverwriteInput(); }
 std::vector<InputList> const &TimeEngine::getReplayData() const noexcept { return impl->worldState.getReplayData(); }
 Wall const &TimeEngine::getWall() const noexcept { return impl->wall; }

@@ -45,7 +45,7 @@ namespace hg {
 #ifdef NDEBUG
         false
 #else
-        true
+        false
 #endif
         ;
 

@@ -799,7 +799,7 @@ namespace hg {
         Wall wall;
         std::vector<GuyInput> postOverwriteInput;
         std::size_t timelineLength;
-        std::vector<std::optional<GuyFrameData>> guyFrames;
+        std::vector<std::vector<GuyFrameData>> guyFrames;
     };
 
     inline multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> loadWallBlockImages(
@@ -1708,7 +1708,7 @@ namespace hg {
             Wall const &wall,
             VkCommandBuffer const &drawCommandBuffer,
             std::size_t const relativeGuyIndex,
-            std::vector<std::optional<GuyFrameData>> const &guyFrames,
+            std::vector<std::vector<GuyFrameData>> const &guyFrames,
             std::vector<GuyInput> const &guyInput,
             std::size_t const minTimelineLength) {
 
@@ -1892,14 +1892,14 @@ namespace hg {
                     );
                 }
 
-                auto const guyFrame{ actualGuyFrames[i] };
                 //if (isNullFrame(guyFrame)) continue;
-                if (!guyFrame) continue;
+                if (actualGuyFrames[i].empty()) continue;
+                auto const guyFrame{ actualGuyFrames[i][0] };
 
-                auto const frameVerticalPosition{ float{padding + frameHeight * guyFrame->frameNumber} };
+                auto const frameVerticalPosition{ float{padding + frameHeight * guyFrame.frameNumber} };
                 //hg::GuyOutputInfo guy{ *boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; }) };
 
-                hg::GuyOutputInfo guy{guyFrame->guyOutputInfo};
+                hg::GuyOutputInfo guy{guyFrame.guyOutputInfo};
 
                 //TODO: Share this logic with DrawTimelineContents!
                 double const xFrac = (guy.getX() - wall.segmentSize()) / static_cast<double>(wall.roomWidth() - 2 * wall.segmentSize());
@@ -2246,7 +2246,7 @@ namespace hg {
             unsigned const height,
             float const width,
             std::size_t const timelineLength,
-            std::vector<std::optional<GuyFrameData>> const &guyFrames,
+            std::vector<std::vector<GuyFrameData>> const &guyFrames,
             Wall const &wall)
         {
             static constexpr int boxLineHeight = 1;
@@ -2269,12 +2269,25 @@ namespace hg {
             assert(numberOfGuys > 0);
             const int guyLineHeight = std::max(static_cast<int>(std::ceil(static_cast<double>(height) / numberOfGuys)), guyLineHeightStandard);
 
+            //std::cerr << "start partition" << "\n";
             std::vector<GuyFrameData const*> partitionedFrameData;
-            boost::push_back(partitionedFrameData,
-                guyFrames
-                | boost::adaptors::filtered([](std::optional<GuyFrameData> const &gfd) {return gfd.has_value(); })
-                | boost::adaptors::transformed([](std::optional<GuyFrameData> const &gfd) -> auto const* {return &*gfd; })
-            );
+            for (unsigned int i = 0; i < guyFrames.size(); ++i)
+            {
+                for (unsigned int j = 0; j < guyFrames[i].size(); ++j)
+                {
+                    partitionedFrameData.push_back(&guyFrames[i][j]);
+                    //if (guyFrames[i].size() > 1) {
+                    //    std::cerr << i << ": " << guyFrames[i][j].frameNumber << "\n";
+                    //}
+                }
+            }
+            //std::cerr << "end partition" << "\n";
+
+            //boost::push_back(partitionedFrameData,
+            //    guyFrames
+            //    | boost::adaptors::filtered([](std::optional<GuyFrameData> const &gfd) {return gfd.has_value(); })
+            //    | boost::adaptors::transformed([](std::optional<GuyFrameData> const &gfd) -> auto const* {return &*gfd; })
+            //);
 
             boost::sort(partitionedFrameData, [](auto const a, auto const b) { return a->frameNumber < b->frameNumber; });
             auto low{boost::begin(partitionedFrameData)};
@@ -2335,6 +2348,7 @@ namespace hg {
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &timelineTexture.descriptorSet, 0, nullptr);
             hg::drawRect(target, 0.f, gsl::narrow<float>(getTimelineTickHeight()), width, gsl::narrow<float>(height), vec3<float>{0.f,0.f,0.f}, 1, 0);
+            //std::cerr << "end Draw Timeline" << "\n";
         }
         void DrawTicks(
             VulkanRenderTarget &target,
@@ -2432,7 +2446,7 @@ namespace hg {
             hg::TimeEngine::FrameListList const &waves,
             hg::FrameID const playerFrame,
             hg::FrameID const timeCursor,
-            std::vector<std::optional<GuyFrameData>> const &guyFrames,
+            std::vector<std::vector<GuyFrameData>> const &guyFrames,
             Wall const &wall/*,
             hg::TimeEngine const &timeEngine,
             hg::TimeEngine::FrameListList const &waves,

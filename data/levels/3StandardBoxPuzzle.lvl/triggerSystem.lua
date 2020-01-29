@@ -19,7 +19,8 @@ local tempStore =
             timeDestination = -10 * 60,
             illegalDestination = 1,
             fallable = false,
-            winner = false
+            winner = false,
+            triggerClause = "f 600 >",
         },
         {
             attachment = {platform = nil, xOffset = 3 * 1600, yOffset = 27 * 1600},

@@ -1137,7 +1137,7 @@ namespace hg {
         assert(0 < triggerOffsetsAndDefaults[triggerID].second.size());
 
         lua_getfield(L, -1, "triggerClause");
-        assert(!lua_isnil(L, -1) & "TriggerMod missing triggerClause.");
+        assert(!lua_isnil(L, -1) && "TriggerMod missing triggerClause.");
         std::string triggerClauseString(to<std::string>(L));
         TriggerClause triggerClause(triggerClauseString);
         lua_pop(L, 1);

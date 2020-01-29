@@ -549,7 +549,17 @@ UIFrameState runStep(
             relativeGuyIndex = timeEngine.getGuyFrames().size() - 2 - guyIndex;
         }
 
-        if (hg::Frame *const guyFrame{timeEngine.getGuyFrames()[guyIndex]}; !isNullFrame(guyFrame)) {
+        if (!timeEngine.getGuyFrames()[guyIndex].empty()) {
+            size_t frameChoice = guyIndex % timeEngine.getGuyFrames()[guyIndex].size();
+            hg::Frame *guyFrame{ 0 };
+            for (hg::Frame *frame : timeEngine.getGuyFrames()[guyIndex]) {
+                if (frameChoice == 0) {
+                    guyFrame = frame;
+                    break;
+                }
+                --frameChoice;
+            }
+
             hg::GuyOutputInfo const &currentGuy(findCurrentGuy(guyFrame->getView().getGuyInformation(), guyIndex));
 
             drawnTimeDirection = currentGuy.getTimeDirection();
@@ -592,20 +602,18 @@ UIFrameState runStep(
     auto const &guyFrames{timeEngine.getGuyFrames()};
     auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
     
-    std::vector<std::optional<GuyFrameData>> guyFrameData;
+    std::vector<std::vector<GuyFrameData>> guyFrameData;
     guyFrameData.reserve(actualGuyFrames.size());
     for (std::size_t i{}, end{std::size(actualGuyFrames)}; i != end; ++i) {
-        Frame const *const guyFrame{actualGuyFrames[i]};
-        guyFrameData.push_back(
-            isNullFrame(guyFrame)
-            ? std::optional<GuyFrameData>{}
-            : std::optional<GuyFrameData>{
+        guyFrameData.push_back({});
+        for (hg::Frame *frame : actualGuyFrames[i]) {
+            guyFrameData[i].push_back(
                 GuyFrameData{
-                    getFrameNumber(guyFrame),
-                    *boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; })
+                    getFrameNumber(frame),
+                    *boost::find_if(frame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; })
                 }
-              }
-        );
+            );
+        }
     }
 
     return UIFrameState{
