@@ -202,7 +202,7 @@ namespace hg{
             submitInfo.pCommandBuffers = &commandBuffer;
 
             vkQueueSubmit(graphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-            vkQueueWaitIdle(graphicsQueue);
+            vkQueueWaitIdle(graphicsQueue);//TODO: use a fence in vkQueueSubmit, rather than using a separate fence here...
 
             vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 

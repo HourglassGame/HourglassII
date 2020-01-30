@@ -163,6 +163,223 @@ int run_hourglassii() {
         VulkanRenderer vkRenderer;
         std::thread renderThread(
             [&]{
+                //TODO!!!{
+//Render thread needs to rerun renderer whenever
+//    Scene wants to re-render (and it hasn't already done so)
+// OR Swap-chain recreated/renderTarget size changed/vulkan engine reset/etc
+//
+//(Idle process waits for previously rendered frames to complete, and
+// frees any resources those frames were using)
+//Render thread needs to run idle process whenever
+//   There are pending frames, but there is no need to re-run the renderer.
+
+
+//Render thread should exit once told to do so, and once all pending frames have been
+//flushed.
+
+
+//Render thread can block pending (possibly more than one of...):
+//(not necessarily a hard block)
+// Scene wanting to re-render
+// Frames needing to complete to flush them in the idle process
+// Frames needing to complete so that the relevant frame data becomes available to render a new frame
+// Rendering stopped
+// Frame being available
+//}
+
+
+//TODO:
+// How exactly should the 'Wants to re-render' flag work?
+// In the common case, there is some data attached to the flag,
+// but if Render Thread is not aware of this data, there is probably
+// a race condition between Render Thread saying that the latest data has been renderered
+// and the scene thread (or wherever) updating the data and setting the re-render flag.
+
+//Possibly just have an atomic bool.
+//The contract can be that when it is set to true,
+//the renderer is guaranteed to run at least once, using the state of the world
+//at (or after) the time that the flag was set to true (appropriate memory order flag 
+// could do this?)
+//The render thread could then just safely set the boolean to false just before running the renderer.
+//Either the renderer will run twice on the same data (with the second render fulfilling the contract for sure; if the setter sets the bool to true afterwards),
+//or the setter set the bool before the renderer did, and so the first render fulfills the contract)
+
+
+//Render thread needs to be able to tell the main thread
+//when it is and is not safe to destory a scene
+
+//TODO:
+// Include a mode that always re-renders, even if not asked for (for performance testing)?
+#if 0
+                //render thread state machine?
+                //
+                //FrameResourcesBecameAvailable event == FrameFinishedRendering == exists f: vkGetFenceStatus(logicalDevice.device, inFlightFences[f].fence)
+                //ThereArePendingFrames == AllFrameFinishedRendering == forall f: vkGetFenceStatus(logicalDevice.device, inFlightFences[f].fence)
+                if RunRenderer then
+                    if FrameResourcesAvailable then
+                        if shouldRerenderScene then
+                            Add something to handle swapchain recreation here ?
+                            RerenderScene; FrameResourcesAvailable = AreFrameResourcesStillAvailable()
+                        else
+                            while await event
+                                | SceneWantsRerender->shouldRerenderScene = true break;
+                | EngineWantsRerender->shouldRerenderScene = true break;
+                | StopRenderer->RunRenderer = false; break;
+                    else
+                        while await event with
+                            | FrameResourcesBecameAvailable->FrameResourcesAvailable = true break;
+                | StopRenderer->RunRenderer = false; break;
+                | SceneWantsRerender->shouldRerenderScene = true; break;
+                | EngineWantsRerender->shouldRerenderScene = true break;
+                end
+                else
+                    while ThereArePendingFrames
+                        waitForPendingFrames
+                        end
+
+
+
+                        await event with
+                        | SceneWantsToRender ->
+                        await event with
+
+                        |
+
+
+#endif
+
+
+#if 0
+                        //THIS IS THE ACTUALLY GOOD DESIGN:
+
+                        //Possible calls
+
+                        //TryDrawFrame
+                        // Prerequisites
+                        //  Current Frame inFlightFence must have already been signaled
+                        //  (indicating that the previous in-flight frame for the index that will be reused
+                        //   has already compelted)
+                        //  stopRenderer must be false
+                        //  There must be a scene (i.e. the Game thread must be somewhere
+                        //   betweeen StartScene and EndScene, and any concurrent calls to
+                        //   EndScene must be blocked until after TryDrawFrame has completed
+                        //  Either scene must have requested a re-draw, or the swap-chain must have been recreated
+                        //  since the last re-draw
+                        //  Any prior swap-chain size changes must have already be handled.
+                        //   (i.e. a failure here must not loop back to calling this again, without an intermediate call to "RecreateSwapChain")
+                        //  The latest swapchain framebuffer must not be zero sized
+                        // Notes
+                        //  May fail if vkAcquireNextImageKHR or vkQueuePresentKHR fail and indicate that the swapchain must be recreated
+                        //  (or if a direct check notices that the window size has changed).
+
+                        //RecreateSwapChain
+                        // Prerequisites
+                        //  stopRenderer must be false
+                        //  There must be a scene (i.e. the Game thread must be somewhere
+                        //   betweeen StartScene and EndScene, and any concurrent calls to
+                        //   EndScene must be blocked until after RecreateSwapChain has completed
+                        //  There must be a need to recreate the swap chain
+                        //   (detected either via a failure when calling TryDrawFrame, or
+                        ///   direct detection of window size changes (need to support both detection methods,
+                        //    since the window being resized should trigger a redraw, even if the Scene does not
+                        //    explicitly request it in order to trigger a TryDrawFrame))
+
+                        //Clear frame keep-alive
+                        // Prerequisites
+                        //  Must be at least one in-flight frame that has not yet been cleaned up; and
+                        //  which has ended (inFlightFence signalled)
+                        //  SceneKeepAlives (etc.) must have somehow been protected
+                        //   from concurrent updates by StartScene/EndScene in the Game thread
+
+                        //Idle/Wait for update
+                        // Prerequisites
+                        //  Must not already have met prerequisites for any other calls
+                        //  Must have set up interruptions for all prerequisite conditions that could change
+
+                        //Exit
+                        // stopRenderer must be true
+                        // There must be no frames that have not completed rendering (aka hasNoKeepAlives)
+                        //   (if there are, Clear frame keep-alive should be called instead)
+
+
+
+                        //Events
+                        // Current Frame inFlightFence must have already been signaled
+                        // stopRenderer
+                        // SceneExists (and is locked; somewhat as a linked event?)
+                        // SceneRequestedRedraw
+                        // Framebuffer Size Changed
+                        // 
+
+
+                        //await (StopRenderer | SceneExists) A
+                        //|SceneExists ->
+                        //    await (StopRenderer | SceneEnded | SceneRequestedRender | SceneShouldRender | FramebufferResized)
+                        //    | StopRenderer -> return
+                        //    | SceneEnded -> goto A
+                        //    | SceneRequestedRender | SceneShouldRender ->
+                        //        SceneShouldRender=false; TryDoRender
+                        //        | RenderFinished -> AddCurrentFrameToUsedFrameData; goto B
+                        //        | NeedsNewSwapchain -> goto K
+                        //    | FramebufferResized(newWidth, newHeight) -> :K
+                        //        if newWidth || newHeight == 0 goto F
+                        //|StopRenderer -> return
+
+
+                        //F: await 
+
+
+
+
+
+                        //Initially no frameData is in use and no keepAlives are present
+
+                        //await (StopRenderer
+
+
+
+                        //TODO: Avoid blocking on vkAcquireNextImageKHR
+                        //      (do this by passing a Fence to the call, and subsequently waiting on the fence at the same time as waiting on the other fences??)
+                        //      (I don't think this would work, I'm pretty sure the fence only gets signalled if the call to vkAcquireNextImageKHR didn't time out)
+                        //      (It might be necessary to do some polling here)
+
+                        //Possibly add another thread that just blocks on vulkan
+                        //and signal it (via vkQueueSubmit?) when non-vulkan events signal
+                        //This would avoid the need to poll two different signal sources
+                        let rendererShouldStop = false
+                        let frameBufferSize = { 0, 0 }
+                        let sceneShouldRender = false
+                        while !rendererShouldStop && framesInUse
+                            if !rendererShouldStop
+                                let toAwaitList = [stopRenderer]
+                                toAwaitList += FrameBufferResized(frameBufferSize)
+                                if (exists frameNotInUse)
+                                    toAwaitList += SceneRequestedReRender
+                                    end
+                                    for frameDataInUse in framesInUse
+                                        toAwaitList += FrameFinishedRendereing(frameDataInUse)
+
+                                        await toAwaitList
+                                        | FrameFinishedRendering(frame) ->
+                                        framesInUse -= frame
+                                        | FrameBufferResized(newWidth, newHeight) ->
+                                        frameBufferSize = { newWidth, newHeight }
+                                        engine.UpdateSwapChain(frameBufferSize) //Engine internally locks scene and calls updateSwapChain on scene if it exists
+                                        sceneShouldRender = true
+                                        //TODO: Additionally check for glfwSetWindowRefreshCallback
+                                        // using logic pretty much identical to FrameBufferResized
+                                        | SceneRequestedReRender ->
+                                        sceneShouldRender = true
+                                        | StopRenderer ->
+                                        rendererShouldStop = true
+
+                                        if !rendererShouldStop
+                                            if sceneShouldReRender&& exists frameNotInUse
+                                                frameBufferSize = engine.DrawScene(frameNotInUse) //Engine internally locks scene and only draws if the scene actually exists
+                                                                                                  //If the scene does not exist, it means that the scene that requested
+                                                                                                  //rendering no longer exists, so it is safe to make no further attempt to render that scene
+                                                sceneShouldRender = false
+#endif
                 while (!(stopRenderer && vkRenderer.hasNoKeepAlives())) {
                     //TODO: allow for single-stepping/not re-rendering identical scenes?
                     //maybe by giving each scene a 'waitForRenderReady' function?
@@ -178,6 +395,7 @@ int run_hourglassii() {
                         vulkanEng.drawFrame(vkRenderer);
                     }
                     else {
+                        //lock.l.unlock();//DONT JUST DO THIS!
                         //TODO: don't lockScene during idle???
                         //(would need rework elsewhere too)
                         vulkanEng.idle(vkRenderer);
