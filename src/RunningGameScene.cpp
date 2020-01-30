@@ -628,22 +628,25 @@ UIFrameState runStep(
         }
     }
 
+    int maxNewGuyIndex = timeEngine.getGuyFrames().size() - 1; // The last guy arrival does not have input
     for (hg::FrameUpdateSet const &updateSet : waveInfo.updatedFrames) {
         for (Frame *frame : updateSet) {
             std::vector<int> const &changedGuyIndicies = frameGuys[getFrameNumber(frame)];
             std::vector<int> &rgs_frameGuyData = run_game_scene_frameGuyData[getFrameNumber(frame)];
             for (size_t i = 0; i < changedGuyIndicies.size(); ++i) {
                 int gi = changedGuyIndicies[i];
-                while (run_game_scene_guyFrameData.size() <= gi) {
-                    run_game_scene_guyFrameData.push_back(std::vector<GuyFrameData>());
-                }
-                run_game_scene_guyFrameData[gi].push_back(
-                    GuyFrameData{
-                        getFrameNumber(frame),
-                        *boost::find_if(frame->getView().getGuyInformation(), [gi](auto const& guyInfo) {return guyInfo.getIndex() == gi; })
+                if (gi < maxNewGuyIndex) {
+                    while (run_game_scene_guyFrameData.size() <= gi) {
+                        run_game_scene_guyFrameData.push_back(std::vector<GuyFrameData>());
                     }
-                );
-                rgs_frameGuyData.push_back(gi);
+                    run_game_scene_guyFrameData[gi].push_back(
+                        GuyFrameData{
+                            getFrameNumber(frame),
+                            *boost::find_if(frame->getView().getGuyInformation(), [gi](auto const& guyInfo) {return guyInfo.getIndex() == gi; })
+                        }
+                    );
+                    rgs_frameGuyData.push_back(gi);
+                }
             }
         }
     }
