@@ -5,6 +5,6 @@
 #include "GLFWWindow.h"
 
 namespace hg {
-    void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, LuaError const &e);
+    void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer, LuaError const &e);
 }
 #endif //HG_RUNTIME_ERROR_SCENE_H

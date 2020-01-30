@@ -496,7 +496,7 @@ namespace hg {
     };
 
 
-    inline void drawText(VulkanRenderTarget &target, VkCommandBuffer const drawCommandBuffer, VkPipelineLayout const pipelineLayout, VkDescriptorSet const fontTexDescriptorSet, std::string const &text, float x, float const y, float const size, vec3<float> const colour) {
+    inline void drawText(VulkanRenderTarget &target, VkCommandBuffer const drawCommandBuffer, VkPipelineLayout const pipelineLayout, VkDescriptorSet const fontTexDescriptorSet, std::string const &text, float x, float y, float const size, vec3<float> const colour) {
         auto const vulkanColour{colour};
         float const width{ size / 2 };
         float const height{ size };
@@ -504,13 +504,11 @@ namespace hg {
 
         std::vector<Vertex> vertices;
 
-        float const top{ y };
-        float const bottom{ y + height };
+        auto wasCR_ext{ false };
 
         float const fontSize{ 16 };
         float const textureRectLeft{ 33 };
         float const textureRectTop{ 64 };
-        auto i{ 0 };
         bool const useTexture{ true };
         bool const colourTexture{ true };
         for (char32_t const c
@@ -518,69 +516,82 @@ namespace hg {
               utf32_from_utf8_iter(std::begin(text), std::end(text)),
               utf32_from_utf8_iter(std::end(text), std::end(text)))
             ) {
+            auto const wasCR{ wasCR_ext };
+            wasCR_ext = c == '\r';
+
             if (c > 0xFFFF) continue;//We only know how to draw the basic multilingual plane for now.
-            float const left{ x };
-            x += width;
-            float const right{ x };
 
-
-            //TODO: Figure out how texture coordinates work exactly at a pixel level.
-            float const texLeft{ textureRectLeft + (c % 0xFF)*fontSize - 0.5f };
-            float const texTop{ textureRectTop + (c / 0xFF)*fontSize - 0.5f };
-            float const texRight{ texLeft + fontSize/2 };
-            float const texBottom{ texTop + fontSize };
-
-            vertices.push_back(
-                Vertex{
-                    vec2<float>{left / scaleHackVal, top / scaleHackVal},
-                    vulkanColour,
-                    vec2<float>{texLeft, texTop},
-                    useTexture,
-                    colourTexture
+            if (c == '\r' || c == '\n') {
+                if (wasCR && c == '\n') {
+                    continue;
                 }
-            );
-            vertices.push_back(
-                Vertex{
-                    vec2<float>{right / scaleHackVal, top / scaleHackVal},
-                    vulkanColour,
-                    vec2<float>{texRight, texTop},
-                    useTexture,
-                    colourTexture
-                });
-            vertices.push_back(
-                Vertex{
-                    vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
-                    vulkanColour,
-                    vec2<float>{texRight, texBottom},
-                    useTexture,
-                    colourTexture
-                });
+                x = 0;
+                y += height * 1.5f;
+            }
+            else {
+                float const left{ x };
+                x += width;
+                float const right{ x };
+                float const top{ y };
+                float const bottom{ y + height };
 
-            vertices.push_back(
-                Vertex{
-                    vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
-                    vulkanColour,
-                    vec2<float>{texRight, texBottom},
-                    useTexture,
-                    colourTexture
-                });
-            vertices.push_back(
-                Vertex{
-                    vec2<float>{left / scaleHackVal, bottom / scaleHackVal},
-                    vulkanColour,
-                    vec2<float>{texLeft, texBottom},
-                    useTexture,
-                    colourTexture
-                });
-            vertices.push_back(
-                Vertex{
-                    vec2<float>{left / scaleHackVal, top / scaleHackVal},
-                    vulkanColour,
-                    vec2<float>{texLeft, texTop},
-                    useTexture,
-                    colourTexture
-                });
-            ++i;
+                //TODO: Figure out how texture coordinates work exactly at a pixel level.
+                float const texLeft{ textureRectLeft + (c % 0xFF) * fontSize - 0.5f };
+                float const texTop{ textureRectTop + (c / 0xFF) * fontSize - 0.5f };
+                float const texRight{ texLeft + fontSize / 2 };
+                float const texBottom{ texTop + fontSize };
+
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{left / scaleHackVal, top / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texLeft, texTop},
+                        useTexture,
+                        colourTexture
+                    }
+                );
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{right / scaleHackVal, top / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texRight, texTop},
+                        useTexture,
+                        colourTexture
+                    });
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texRight, texBottom},
+                        useTexture,
+                        colourTexture
+                    });
+
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texRight, texBottom},
+                        useTexture,
+                        colourTexture
+                    });
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{left / scaleHackVal, bottom / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texLeft, texBottom},
+                        useTexture,
+                        colourTexture
+                    });
+                vertices.push_back(
+                    Vertex{
+                        vec2<float>{left / scaleHackVal, top / scaleHackVal},
+                        vulkanColour,
+                        vec2<float>{texLeft, texTop},
+                        useTexture,
+                        colourTexture
+                    });
+            }
         }
 
         target.drawVertices(vertices);

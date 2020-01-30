@@ -105,7 +105,7 @@ std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::v
         }
         catch (hg::LuaError const &e) {
             std::cerr << "There was an error in some lua, the error message was:\n" << boost::diagnostic_information(e) << std::endl;
-            report_runtime_error(window, windowglfw, e);
+            report_runtime_error(window, windowglfw, vulkanEng, vkRenderer, e);
             return GameAborted_tag{};
         }
     }
@@ -127,7 +127,7 @@ int run_hourglassii() {
             throw std::exception("Couldn't load window icon");
         }
 
-        // 'window' is the SDL instance and window
+        // 'window' is the SFML instance and window
         hg::RenderWindow window(sf::VideoMode(hg::WINDOW_DEFAULT_X, hg::WINDOW_DEFAULT_Y), windowTitle, sf::Style::Titlebar | sf::Style::Resize | sf::Style::Close);
         window.setIcon(window_icon_image.getSize().x, window_icon_image.getSize().y, window_icon_image.getPixelsPtr());
         window.setVerticalSyncEnabled(true);
@@ -137,7 +137,7 @@ int run_hourglassii() {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         // windowglfw holds the Vulkan instance
-        GLFWWindow windowglfw(hg::WINDOW_DEFAULT_X, /*10*/hg::WINDOW_DEFAULT_Y, windowTitle, NULL, NULL);
+        GLFWWindow windowglfw(hg::WINDOW_DEFAULT_X, /*10*/hg::WINDOW_DEFAULT_Y, windowTitle, nullptr, nullptr);
         // Set key and mouse presses to be saved until the next poll events
         glfwSetInputMode(windowglfw.w, GLFW_STICKY_KEYS, GLFW_TRUE);
         glfwSetInputMode(windowglfw.w, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
