@@ -52,6 +52,7 @@ triggerSystem =
 {
     type = "ConfiguredLua",
     speedOfTimeTriggerID = 8,
+    paradoxPressureTriggerID = 10, -- Default frame pressure is 100
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],
@@ -94,6 +95,10 @@ triggerSystem =
         {
             offset = 1,
             default = {0}
+        },
+        {
+            offset = 1,
+            default = {100}
         },
     },
     arrivalLocationsSize = 2

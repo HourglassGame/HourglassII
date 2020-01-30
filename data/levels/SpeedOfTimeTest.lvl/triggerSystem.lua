@@ -117,6 +117,10 @@ local tempStore =
         {
             triggerID = 3,
             triggerClause = "o4 1 & 24 |",
+        },
+        {
+            triggerID = 5,
+            triggerClause = "o4 10 & 100 |",
         }
     },
 }

@@ -168,6 +168,10 @@ local tempStore =
         {
             triggerID = 8,
             triggerClause = "o5 1 & 24 |",
+        },
+        {
+            triggerID = 10,
+            triggerClause = "o5 10 & 100 |",
         }
     },
     protoGlitz = {
