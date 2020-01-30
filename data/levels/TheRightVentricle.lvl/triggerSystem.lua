@@ -53,13 +53,13 @@ local tempStore =
                         desiredPosition = 10 * 3200,
                         maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     },
                     yDestination = {
                         desiredPosition = 7 * 3200,
-                        maxSpeed = 250,
+                        maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     }
                 },
                 offDestination = {
@@ -67,13 +67,13 @@ local tempStore =
                         desiredPosition = 10 * 3200,
                         maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     },
                     yDestination = {
                         desiredPosition = 16 * 3200,
-                        maxSpeed = 250,
+                        maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     }
                 }
             }
@@ -91,13 +91,13 @@ local tempStore =
                         desiredPosition = 20 * 3200,
                         maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     },
                     yDestination = {
                         desiredPosition = 7 * 3200,
-                        maxSpeed = 250,
+                        maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     }
                 },
                 offDestination = {
@@ -105,13 +105,13 @@ local tempStore =
                         desiredPosition = 20 * 3200,
                         maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     },
                     yDestination = {
                         desiredPosition = 16 * 3200,
-                        maxSpeed = 250,
+                        maxSpeed = 200,
                         acceleration = 15,
-                        deceleration = 15
+                        deceleration = 8
                     }
                 }
             }
@@ -150,9 +150,9 @@ local tempStore =
             triggerID = 1
         },
         bts.stickySwitch{
-            attachment = {platform = nil, xOffset = 15 * 3200 - 800, yOffset = 3.25 * 3200},
-            width = 800,
-            height = 1600,
+            attachment = {platform = nil, xOffset = 14.25 * 3200, yOffset = 3 * 3200},
+            width = 1600,
+            height = 800,
             timeDirection = 'forwards',
             triggerID = 2
         },
