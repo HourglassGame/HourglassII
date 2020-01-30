@@ -106,23 +106,33 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
         guyFrameNumber = guyFrameNumber + guyDirection;
     }
 
-    size_t minWaveChanges = 0;
+    unsigned minWaveChanges = 0;
+    unsigned maxFrameParadoxPressure = 0;
     bool first = true;
     for (hg::FrameUpdateSet const &updateSet : updatedList) {
-        int waveChanges = 0;
+        unsigned waveChanges = 0;
         for (Frame *frame : updateSet) {
             if (guyDirection == TimeDirection::FORWARDS) {
                 if (getFrameNumber(frame) < guyFrameNumber) {
-                    waveChanges += 1;
+                    waveChanges += getFrameParadoxPressure(frame);
+                    if (getFrameParadoxPressure(frame) > maxFrameParadoxPressure) {
+                        maxFrameParadoxPressure = getFrameParadoxPressure(frame);
+                    }
                 }
             }
             else if (guyDirection == TimeDirection::REVERSE) {
                 if (getFrameNumber(frame) > guyFrameNumber) {
-                    waveChanges += 1;
+                    waveChanges += getFrameParadoxPressure(frame);
+                    if (getFrameParadoxPressure(frame) > maxFrameParadoxPressure) {
+                        maxFrameParadoxPressure = getFrameParadoxPressure(frame);
+                    }
                 }
             }
             else if (guyDirection == TimeDirection::INVALID) {
-                waveChanges += 1;
+                waveChanges += getFrameParadoxPressure(frame);
+                if (getFrameParadoxPressure(frame) > maxFrameParadoxPressure) {
+                    maxFrameParadoxPressure = getFrameParadoxPressure(frame);
+                }
             }
         }
         //std::cerr << "updateSize " << updateSize << "\n";
@@ -135,7 +145,8 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
     //std::cerr << "minWaveChanges " << minWaveChanges << "\n";
 
     if (minWaveChanges > 0) {
-        paradoxPressure += static_cast<int>(std::pow(static_cast<float>(6 * minWaveChanges), 1.2f)) + hg::PARADOX_PRESSURE_ADD_MIN;
+        paradoxPressure += static_cast<int>(std::pow(static_cast<float>(3 * minWaveChanges), 1.2f)) 
+            + hg::PARADOX_PRESSURE_ADD_MIN * maxFrameParadoxPressure / hg::PARADOX_PRESSURE_PER_FRAME;
         paradoxPressureDecay = 0;
     }
     else if (paradoxPressure > 0) {

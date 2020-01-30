@@ -35,12 +35,13 @@ Universe &getUniverse(Frame *frame);
 Universe const &getUniverse(Frame const *frame);
 int getFrameNumber(Frame const *frame);
 unsigned getFrameSpeedOfTime(Frame const *frame);
+unsigned getFrameParadoxPressure(Frame const *frame);
 //Only one "Frame" per frame. Referenced by frame pointers and contained in universes.
 class Frame final {
 public:
     typedef mt::std::map<Frame *, ObjectList<Normal>> FrameDeparturesT;
     typedef tbb::concurrent_hash_map<Frame const *, ObjectList<Normal> const *> FrameArrivalsT;
-    Frame(int frameNumber, unsigned frameSpeedOfTime, Universe &universe);
+    Frame(int frameNumber, unsigned frameSpeedOfTime, unsigned frameParadoxPressure, Universe &universe);
     #if 0
     Frame(Frame const &o) :
         frameNumber(o.frameNumber),
@@ -59,6 +60,7 @@ public:
     FrameUpdateSet updateDeparturesFromHere(FrameDeparturesT &&newDeparture);
 
     void setSpeedOfTime(int newSpeedOfTime) { frameSpeedOfTime = newSpeedOfTime; }
+    void setParadoxPressure(int newParadoxPressure) { frameParadoxPressure = newParadoxPressure; }
 
     void setView(FrameView &&newView) { view.swap(newView); }
     FrameView const &getView() const { return view; }
@@ -95,6 +97,7 @@ private:
     Universe &getUniverse();
     int getFrameNumber() const;
     unsigned getFrameSpeedOfTime() const;
+    unsigned getFrameParadoxPressure() const;
     //Valid to call with NullFrame {
     friend bool isNullFrame(Frame const *frame);
     //}
@@ -106,6 +109,7 @@ private:
     friend Universe const &getUniverse(Frame const *frame);
     friend int getFrameNumber(Frame const *frame);
     friend unsigned getFrameSpeedOfTime(Frame const *frame);
+    friend unsigned getFrameParadoxPressure(Frame const *frame);
     //}
     void insertArrival(FrameArrivalsT::value_type const &toInsert);
     void changeArrival(FrameArrivalsT::value_type const &toChange);
@@ -115,6 +119,8 @@ private:
     int frameNumber;
     // Speed of time on frame
     unsigned frameSpeedOfTime;
+    // Paradox pressure caused by frame
+    unsigned frameParadoxPressure;
     // Back-link to universe which this frame is in
     Universe *universe;
     #if 0

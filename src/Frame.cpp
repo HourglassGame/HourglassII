@@ -11,9 +11,10 @@
 #include <cassert>
 
 namespace hg {
-Frame::Frame(int frameNumber, unsigned frameSpeedOfTime, Universe &universe):
+Frame::Frame(int frameNumber, unsigned frameSpeedOfTime, unsigned frameParadoxPressure, Universe &universe):
         frameNumber(frameNumber),
         frameSpeedOfTime(frameSpeedOfTime),
+        frameParadoxPressure(frameParadoxPressure),
         universe(&universe),
         departures(),
         arrivals(),
@@ -80,6 +81,9 @@ int Frame::getFrameNumber() const {
 unsigned Frame::getFrameSpeedOfTime() const {
     return frameSpeedOfTime;
 }
+unsigned Frame::getFrameParadoxPressure() const {
+    return frameParadoxPressure;
+}
 
 Frame const *nextFrame(Frame const *frame, TimeDirection direction)
 {
@@ -110,6 +114,10 @@ int getFrameNumber(Frame const *frame) {
 unsigned getFrameSpeedOfTime(Frame const *frame) {
     assert(frame);
     return frame->getFrameSpeedOfTime();
+}
+unsigned getFrameParadoxPressure(Frame const *frame) {
+    assert(frame);
+    return frame->getFrameParadoxPressure();
 }
 bool isNullFrame(Frame const *frame) {
     return !frame;

@@ -36,6 +36,7 @@ public:
         FrameView view;
         mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
         int speedOfTime;
+        int paradoxPressure;
         bool currentWinFrame;
     };
 

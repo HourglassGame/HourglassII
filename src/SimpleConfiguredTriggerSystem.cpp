@@ -480,6 +480,22 @@ namespace hg {
         return outputTriggers[speedOfTimeTriggerID][0];
     }
 
+    int calculateParadoxPressure(
+        mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
+        bool hasParadoxPressureTrigger,
+        int paradoxPressureTriggerID,
+        std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+    {
+        if (!hasParadoxPressureTrigger) {
+            return -1;
+        }
+        auto const outputTriggerIt{ outputTriggers.find(paradoxPressureTriggerID) };
+        if (outputTriggerIt == outputTriggers.end() || outputTriggerIt->second.size() < 1) {
+            return triggerOffsetsAndDefaults[paradoxPressureTriggerID].second[0];
+        }
+        return outputTriggers[paradoxPressureTriggerID][0];
+    }
+
     SimpleConfiguredTriggerFrameState::SimpleConfiguredTriggerFrameState(
         std::vector<
             std::pair<
@@ -489,6 +505,8 @@ namespace hg {
         > const &triggerOffsetsAndDefaults,
         bool hasSpeedOfTimeTrigger,
         int speedOfTimeTriggerID,
+        bool hasParadoxPressureTrigger,
+        int paradoxPressureTriggerID,
         std::size_t arrivalLocationsSize,
         std::vector<ProtoCollision> const &protoCollisions,
         std::vector<ProtoPortal> const &protoPortals,
@@ -504,6 +522,8 @@ namespace hg {
         triggerOffsetsAndDefaults_(triggerOffsetsAndDefaults),
         hasSpeedOfTimeTrigger_(hasSpeedOfTimeTrigger),
         speedOfTimeTriggerID_(speedOfTimeTriggerID),
+        hasParadoxPressureTrigger_(hasParadoxPressureTrigger),
+        paradoxPressureTriggerID_(paradoxPressureTriggerID),
         arrivalLocationsSize_(arrivalLocationsSize),
         outputTriggers_(pool),
         forwardsGlitz_(),
@@ -706,7 +726,8 @@ namespace hg {
             reverseGlitz_,
             additionalGlitzPersisters,
             additionalBoxDepartures, 
-            calculateSpeedOfTime(outputTriggers_, hasSpeedOfTimeTrigger_, speedOfTimeTriggerID_, triggerOffsetsAndDefaults_) };
+            calculateSpeedOfTime(outputTriggers_, hasSpeedOfTimeTrigger_, speedOfTimeTriggerID_, triggerOffsetsAndDefaults_),
+            calculateParadoxPressure(outputTriggers_, hasParadoxPressureTrigger_, paradoxPressureTriggerID_, triggerOffsetsAndDefaults_) };
     }
 
 
@@ -1571,6 +1592,8 @@ namespace hg {
             > triggerOffsetsAndDefaults,
             bool hasSpeedOfTimeTrigger,
             int speedOfTimeTriggerID,
+            bool hasParadoxPressureTrigger,
+            int paradoxPressureTriggerID,
             std::size_t arrivalLocationsSize)
         :
         protoPortals_(),
@@ -1581,6 +1604,8 @@ namespace hg {
         triggerOffsetsAndDefaults_(std::move(triggerOffsetsAndDefaults)),
         hasSpeedOfTimeTrigger_(hasSpeedOfTimeTrigger),
         speedOfTimeTriggerID_(speedOfTimeTriggerID),
+        hasParadoxPressureTrigger_(hasParadoxPressureTrigger),
+        paradoxPressureTriggerID_(paradoxPressureTriggerID),
         arrivalLocationsSize_(arrivalLocationsSize)
     {
         //#if 0

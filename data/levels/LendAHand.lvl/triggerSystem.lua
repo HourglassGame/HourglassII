@@ -167,7 +167,7 @@ local tempStore =
     protoTriggerMods = {
         {
             triggerID = 8,
-            triggerClause = "o5 1 & 30 |",
+            triggerClause = "o5 1 & 24 |",
         }
     },
     protoGlitz = {

@@ -194,6 +194,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
         FrameView(std::move(forwardsGlitz), std::move(reverseGlitz), std::move(guyInfo)),
         guyDepartureFrames,
         triggerSystemDepartureInformation.speedOfTime,
+        triggerSystemDepartureInformation.paradoxPressure,
         winFrame};
 }
 } //namespace hg

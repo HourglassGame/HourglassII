@@ -109,6 +109,8 @@ public:
         > triggerOffsetsAndDefaults,
         bool hasSpeedOfTimeTrigger,
         int speedOfTimeTriggerID,
+        bool hasParadoxPressureTrigger,
+        int paradoxPressureTriggerID,
         std::size_t arrivalLocationsSize);
     virtual TriggerFrameState getFrameState(memory_pool<user_allocator_tbb_alloc> &pool, OperationInterrupter &interrupter) const override;
     virtual TriggerSystemImplementation *clone() const override
@@ -144,6 +146,8 @@ private:
     > triggerOffsetsAndDefaults_;
     bool hasSpeedOfTimeTrigger_;
     int speedOfTimeTriggerID_;
+    bool hasParadoxPressureTrigger_;
+    int paradoxPressureTriggerID_;
     std::size_t arrivalLocationsSize_;
 };
 }

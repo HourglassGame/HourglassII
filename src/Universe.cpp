@@ -18,7 +18,7 @@ Universe::Universe(int timelineLength, unsigned defaultSpeedOfTime) :
     assert(timelineLength > 0);
     frames.reserve(timelineLength);
     for (int i: boost::irange<int>(0, timelineLength)) {
-        frames.push_back(Frame(i, defaultSpeedOfTime, *this));
+        frames.push_back(Frame(i, defaultSpeedOfTime, hg::PARADOX_PRESSURE_PER_FRAME,  *this));
     }
     assert(!frames.empty());
 }

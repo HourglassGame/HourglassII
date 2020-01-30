@@ -196,9 +196,12 @@ PhysicsEngine::FrameDepartureT
     // modification of guyProcessedArrivalFrames_.
     frame->setView(std::move(retv.view));
 
-    // Update speed of time
+    // Update frame speed of time and paradox pressure
     if (retv.speedOfTime >= 0) {
         frame->setSpeedOfTime(retv.speedOfTime);
+    }
+    if (retv.paradoxPressure >= 0) {
+        frame->setParadoxPressure(retv.paradoxPressure);
     }
 
     return std::move(retv.departures);

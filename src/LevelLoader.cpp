@@ -65,12 +65,19 @@ static TriggerSystem loadSimpleConfiguredTriggerSystem(lua_State *L, path const 
     int speedOfTimeTriggerID = hasSpeedOfTimeTrigger ? lua_index_to_C_index(to<int>(L)) : -1;
     lua_pop(L, 1);
 
+    lua_getfield(L, -1, "paradoxPressureTriggerID");
+    bool hasParadoxPressureTrigger = !lua_isnil(L, -1);
+    int paradoxPressureTriggerID = hasParadoxPressureTrigger ? lua_index_to_C_index(to<int>(L)) : -1;
+    lua_pop(L, 1);
+
     return TriggerSystem{std::make_unique<SimpleConfiguredTriggerSystem>(
         std::vector<char>(system.begin(), system.end()),
         luaFiles,
         std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
         hasSpeedOfTimeTrigger,
         speedOfTimeTriggerID,
+        hasParadoxPressureTrigger,
+        paradoxPressureTriggerID,
         readField<int>(L, "arrivalLocationsSize")
     )};
 }
@@ -95,15 +102,21 @@ static TriggerSystem loadDirectLuaTriggerSystem(lua_State *L, path const &levelP
     int speedOfTimeTriggerID = hasSpeedOfTimeTrigger ? lua_index_to_C_index(to<int>(L)) : -1;
     lua_pop(L, 1);
 
-    return
-        TriggerSystem{std::make_unique<DirectLuaTriggerSystem>(
-            std::vector<char>(system.begin(), system.end()),
-            luaFiles,
-            std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
-            hasSpeedOfTimeTrigger,
-            speedOfTimeTriggerID,
-            readField<int>(L, "arrivalLocationsSize")
-        )};
+    lua_getfield(L, -1, "paradoxPressureTriggerID");
+    bool hasParadoxPressureTrigger = !lua_isnil(L, -1);
+    int paradoxPressureTriggerID = hasParadoxPressureTrigger ? lua_index_to_C_index(to<int>(L)) : -1;
+    lua_pop(L, 1);
+
+    return TriggerSystem{std::make_unique<DirectLuaTriggerSystem>(
+        std::vector<char>(system.begin(), system.end()),
+        luaFiles,
+        std::move(readField<TriggerOffsetsAndDefaults>(L, "triggerOffsetsAndDefaults").value),
+        hasSpeedOfTimeTrigger,
+        speedOfTimeTriggerID,
+        hasParadoxPressureTrigger,
+        paradoxPressureTriggerID,
+        readField<int>(L, "arrivalLocationsSize")
+    )};
 }
 
 static TriggerSystem loadTriggerSystem(lua_State *L, char const *fieldName, path const &levelPath) {

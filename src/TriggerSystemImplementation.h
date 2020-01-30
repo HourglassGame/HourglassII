@@ -63,6 +63,7 @@ class TriggerFrameStateImplementation
         mt::std::vector<GlitzPersister> additionalGlitzPersisters;
         mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
         int speedOfTime;
+        int paradoxPressure;
     };
 
     virtual DepartureInformation getDepartureInformation(

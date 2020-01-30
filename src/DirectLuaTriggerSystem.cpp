@@ -1176,12 +1176,16 @@ DirectLuaTriggerSystem::DirectLuaTriggerSystem(
     > triggerOffsetsAndDefaults,
     bool hasSpeedOfTimeTrigger,
     int speedOfTimeTriggerID,
+	bool hasParadoxPressureTrigger,
+	int paradoxPressureTriggerID,
     std::size_t arrivalLocationsSize) :
         compiledMainChunk_(compileLuaChunk(mainChunk, "Main Chunk")),
         compiledExtraChunks_(extraChunks),
         triggerOffsetsAndDefaults_(std::move(triggerOffsetsAndDefaults)),
         hasSpeedOfTimeTrigger_(hasSpeedOfTimeTrigger),
         speedOfTimeTriggerID_(speedOfTimeTriggerID),
+        hasParadoxPressureTrigger_(hasParadoxPressureTrigger),
+        paradoxPressureTriggerID_(paradoxPressureTriggerID),
         arrivalLocationsSize_(arrivalLocationsSize)
 {
     for (LuaModule &module: compiledExtraChunks_) {
