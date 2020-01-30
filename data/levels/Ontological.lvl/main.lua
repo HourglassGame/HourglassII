@@ -1,5 +1,5 @@
 name = "Ontological"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 6000
 environment =
 {

@@ -1,5 +1,5 @@
 name = "Something Missing"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment = 
 {
@@ -50,7 +50,7 @@ initialArrivals =
 }
 triggerSystem = 
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     --This describes a lua chunk which will be loaded by TriggerFrameState

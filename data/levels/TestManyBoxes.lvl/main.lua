@@ -1,5 +1,5 @@
 name = "Easy Start"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment = 
 {
@@ -47,7 +47,7 @@ for x = 1, 9 do
 end
 triggerSystem = 
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     --This describes a lua chunk which will be loaded by TriggerFrameState

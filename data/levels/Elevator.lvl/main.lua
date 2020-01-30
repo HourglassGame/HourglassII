@@ -1,5 +1,5 @@
 name = "Going Up"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 6000
 environment =
 {
@@ -46,7 +46,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],

@@ -1,5 +1,5 @@
 name = "Standard Box Puzzle"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment =
 {
@@ -51,7 +51,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     speedOfTimeTriggerID = 3,
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
@@ -70,7 +70,7 @@ triggerSystem =
         },
         {
             offset = 1,
-            default = {30}
+            default = {24}
         },
         {
             offset = 1,

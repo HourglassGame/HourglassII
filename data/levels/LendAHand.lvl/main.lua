@@ -1,5 +1,5 @@
 name = "Lend a Hand"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment =
 {
@@ -50,7 +50,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     speedOfTimeTriggerID = 8,
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},

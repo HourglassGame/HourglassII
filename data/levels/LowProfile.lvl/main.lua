@@ -1,5 +1,5 @@
 name = "Low Profile"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 8000
 environment =
 {

@@ -1,5 +1,5 @@
 name = "Wait A Moment"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength =5400
 environment =
 {
@@ -51,7 +51,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

@@ -1,5 +1,5 @@
 name = "Ups and Downs"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 9000
 environment =
 {
@@ -48,7 +48,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

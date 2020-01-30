@@ -1,5 +1,5 @@
 name = "Reverse Bootstrap"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 4200
 environment =
 {
@@ -47,7 +47,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

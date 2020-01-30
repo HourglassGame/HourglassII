@@ -1,5 +1,5 @@
 name = "It's A Trap!"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment =
 {
@@ -49,7 +49,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],

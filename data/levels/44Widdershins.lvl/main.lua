@@ -1,5 +1,5 @@
 name = "Widdershins"
-speedOfTime = 1 -- This was 10 as an experiment.
+speedOfTime = 24 -- This was 10 as an experiment.
 timelineLength = 9000
 environment =
 {
@@ -48,7 +48,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

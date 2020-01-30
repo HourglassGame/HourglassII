@@ -1,5 +1,5 @@
 name = "HoldThemAll"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 8000
 environment =
 {
@@ -41,7 +41,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

@@ -1,5 +1,5 @@
 name = "Not Sure If Possible"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment =
 {

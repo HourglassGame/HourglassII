@@ -1,5 +1,5 @@
 name = "Going Up"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment =
 {

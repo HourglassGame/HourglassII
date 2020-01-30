@@ -116,7 +116,7 @@ local tempStore =
     protoTriggerMods = {
         {
             triggerID = 3,
-            triggerClause = "o4 1 & 30 |",
+            triggerClause = "o4 1 & 24 |",
         }
     },
 }

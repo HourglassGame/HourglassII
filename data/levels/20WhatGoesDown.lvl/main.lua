@@ -1,5 +1,5 @@
 name = "What goes down..."
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 5000
 environment =
 {
@@ -45,7 +45,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

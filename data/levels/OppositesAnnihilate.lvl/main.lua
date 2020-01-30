@@ -1,5 +1,5 @@
 name = "Opposites Annihilate"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 5401 -- Important, improves loading time.
 environment =
 {
@@ -43,7 +43,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],

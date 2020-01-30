@@ -1,5 +1,5 @@
 name = "Open and Closed"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 10800
 environment = 
 {
@@ -46,7 +46,7 @@ initialGuy =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],

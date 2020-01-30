@@ -1,5 +1,5 @@
 name = "Which Way II"
-speedOfTime = 1
+speedOfTime = 24
 timelineLength = 7200
 environment =
 {
@@ -50,7 +50,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "CompatibleLua",
+    type = "ConfiguredLua",
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],
