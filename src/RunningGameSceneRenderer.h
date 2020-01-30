@@ -1546,7 +1546,7 @@ namespace hg {
             }
             {
                 std::stringstream currentPlayerIndex;
-                currentPlayerIndex << "Index: " << (std::size(uiFrameStateLocal->guyFrames) - 1);
+                currentPlayerIndex << "Index: " << (std::size(uiFrameStateLocal->postOverwriteInput) - 1);
 
                 hg::drawText(
                     target,
@@ -1561,7 +1561,7 @@ namespace hg {
             }
             {
                 std::stringstream currentPlayerIndex;
-                currentPlayerIndex << "Control: " << (std::size(uiFrameStateLocal->guyFrames) - 1) - uiFrameStateLocal->relativeGuyIndex;
+                currentPlayerIndex << "Control: " << (std::size(uiFrameStateLocal->postOverwriteInput) - 1) - uiFrameStateLocal->relativeGuyIndex;
                 hg::drawText(
                     target,
                     drawCommandBuffer,
@@ -1853,7 +1853,7 @@ namespace hg {
             std::size_t skipInputFrames = 0;
             //auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
             auto const &actualGuyFrames{guyFrames};
-            auto const guyFramesLength{ boost::size(actualGuyFrames) };
+            auto const guyFramesLength{ boost::size(guyInput) };
             std::size_t const timelineLength{ std::max(minTimelineLength, guyFramesLength) };
 
             std::size_t const frameInc = static_cast<std::size_t>(std::max(1, static_cast<int>(std::floor(timelineLength / width))));
@@ -1904,7 +1904,13 @@ namespace hg {
                 }
 
                 //if (isNullFrame(guyFrame)) continue;
-                if (actualGuyFrames[i].empty()) continue;
+                if (actualGuyFrames.size() <= i) {
+                    break;
+                }
+                if (actualGuyFrames[i].empty()) {
+                    continue;
+                }
+
                 auto const guyFrame{ actualGuyFrames[i][0] };
 
                 auto const frameVerticalPosition{ float{padding + frameHeight * guyFrame.frameNumber} };
