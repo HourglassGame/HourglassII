@@ -1436,7 +1436,7 @@ namespace hg {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1, &sceneData->fontTexDescriptorSet, 0, nullptr);
 
             reallyDoRender(preDrawCommandBuffer, drawCommandBuffer, target, targetFrameBuffer, timelineTexture);
-
+            
             vkCmdEndRenderPass(drawCommandBuffer);
             target.flushBuffersToDevice();
         }

@@ -59,6 +59,7 @@ public:
     * Returns the array mapping guy index to arrival frame.
     */
     std::vector<ConcurrentTimeSet> const &getGuyFrames() const { return guyProcessedArrivalFrames_; };
+    std::vector<std::vector<int> > const &getFrameGuys() const {return processedGuyByFrame_; };
 
     std::vector<GuyInput> const &getPostOverwriteInput() const { return playerInput_; }
     std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }

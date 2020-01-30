@@ -250,6 +250,13 @@ run_game_scene(hg::RenderWindow &window,
     sf::Image const &wallImage = *loadedLevel.bakedWall;
     sf::Image const &positionColoursImage = *loadedLevel.bakedPositionColours;
 
+    // Now we're allocating globals like RunningGameScene is a class. It's getting bad.
+    run_game_scene_guyFrameData.clear(); // ~_~
+    run_game_scene_frameGuyData.clear(); // ~_~
+    for (int i = 0; i < timeEngine.getTimelineLength(); ++i) {
+        run_game_scene_frameGuyData.push_back(std::vector<int>());
+    }
+
     enum class RunState { AWAITING_INPUT, RUNNING_LEVEL };
     RunState state(RunState::AWAITING_INPUT);
     bool paused = false;
@@ -511,7 +518,6 @@ run_game_scene(hg::RenderWindow &window,
     assert(false && "should be unreachable");
 }
 
-
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     hg::RenderWindow &app,
@@ -599,22 +605,82 @@ UIFrameState runStep(
         }
     }
 
-    auto const &guyFrames{timeEngine.getGuyFrames()};
-    auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
-    
-    std::vector<std::vector<GuyFrameData>> guyFrameData;
-    guyFrameData.reserve(actualGuyFrames.size());
-    for (std::size_t i{}, end{std::size(actualGuyFrames)}; i != end; ++i) {
-        guyFrameData.push_back({});
-        for (hg::Frame *frame : actualGuyFrames[i]) {
-            guyFrameData[i].push_back(
-                GuyFrameData{
-                    getFrameNumber(frame),
-                    *boost::find_if(frame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; })
+    // New hacky system to update guyFrameData based on the frames that changed.
+    // Should be replaced alongside the graphics rework.
+    std::vector<std::vector<int> > const &frameGuys{ timeEngine.getFrameGuys() };
+
+    for (hg::FrameUpdateSet const &updateSet : waveInfo.updatedFrames) {
+        for (Frame *frame : updateSet) {
+            std::vector<int> const &changedGuyIndicies = run_game_scene_frameGuyData[getFrameNumber(frame)];
+            for (size_t i = 0; i < changedGuyIndicies.size(); ++i) {
+                int gi = changedGuyIndicies[i];
+                if (gi < run_game_scene_guyFrameData.size()) {
+                    for (size_t j = 0; j < run_game_scene_guyFrameData[gi].size(); ++j) {
+                        if (run_game_scene_guyFrameData[gi][j].frameNumber == getFrameNumber(frame)) {
+                            run_game_scene_guyFrameData[gi][j] = run_game_scene_guyFrameData[gi].back();
+                            run_game_scene_guyFrameData[gi].pop_back();
+                            --j;
+                        }
+                    }
                 }
-            );
+            }
+            run_game_scene_frameGuyData[getFrameNumber(frame)].clear();
         }
     }
+
+    for (hg::FrameUpdateSet const &updateSet : waveInfo.updatedFrames) {
+        for (Frame *frame : updateSet) {
+            std::vector<int> const &changedGuyIndicies = frameGuys[getFrameNumber(frame)];
+            std::vector<int> &rgs_frameGuyData = run_game_scene_frameGuyData[getFrameNumber(frame)];
+            for (size_t i = 0; i < changedGuyIndicies.size(); ++i) {
+                int gi = changedGuyIndicies[i];
+                while (run_game_scene_guyFrameData.size() <= gi) {
+                    run_game_scene_guyFrameData.push_back(std::vector<GuyFrameData>());
+                }
+                run_game_scene_guyFrameData[gi].push_back(
+                    GuyFrameData{
+                        getFrameNumber(frame),
+                        *boost::find_if(frame->getView().getGuyInformation(), [gi](auto const& guyInfo) {return guyInfo.getIndex() == gi; })
+                    }
+                );
+                rgs_frameGuyData.push_back(gi);
+            }
+        }
+    }
+
+    std::vector<std::vector<GuyFrameData>> guyFrameData;
+    guyFrameData.reserve(run_game_scene_guyFrameData.size());
+    for (std::size_t i{}, end{ std::size(run_game_scene_guyFrameData) }; i != end; ++i) {
+        guyFrameData.push_back(run_game_scene_guyFrameData[i]);
+        //guyFrameData.push_back(std::vector<GuyFrameData>());
+        //guyFrameData[i].reserve(run_game_scene_guyFrameData[i].size());
+        //for (std::size_t j{}, end{ std::size(run_game_scene_guyFrameData[i]) }; j != end; ++j) {
+        //    guyFrameData[i].push_back(
+        //        GuyFrameData{
+        //            run_game_scene_guyFrameData[i][j].frameNumber,
+        //            run_game_scene_guyFrameData[i][j].guyOutputInfo
+        //        }
+        //    );
+        //}
+    }
+
+    // Old reliable code
+    //auto const &guyFrames{timeEngine.getGuyFrames()};
+    //auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
+    //
+    //std::vector<std::vector<GuyFrameData>> guyFrameData;
+    //guyFrameData.reserve(actualGuyFrames.size());
+    //for (std::size_t i{}, end{ std::size(actualGuyFrames) }; i != end; ++i) {
+    //    guyFrameData.push_back({});
+    //    for (hg::Frame *frame : actualGuyFrames[i]) {
+    //        guyFrameData[i].push_back(
+    //            GuyFrameData{
+    //                getFrameNumber(frame),
+    //                *boost::find_if(frame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i; })
+    //            }
+    //        );
+    //    }
+    //}
 
     return UIFrameState{
             drawnFrame,

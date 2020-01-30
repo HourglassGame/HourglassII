@@ -125,7 +125,7 @@ local tempStore =
         },
         {
             triggerID = 5, -- Paradox pressure
-            triggerClause = "o4 4 & 100 |",
+            triggerClause = "o4 10 & 100 |",
         },
     },
     protoGlitz = {
