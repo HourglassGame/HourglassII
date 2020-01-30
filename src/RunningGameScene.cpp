@@ -116,7 +116,9 @@ UIFrameState runStep(
     sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point const &frameStartTime,
     bool const runningFromReplay,
-    bool const frameRun);
+    bool const frameRun,
+    std::vector<std::vector<GuyFrameData>> &run_game_scene_guyFrameData,
+    std::vector<std::vector<int>> &run_game_scene_frameGuyData);
 
 
 void drawFrame(
@@ -250,9 +252,9 @@ run_game_scene(hg::RenderWindow &window,
     sf::Image const &wallImage = *loadedLevel.bakedWall;
     sf::Image const &positionColoursImage = *loadedLevel.bakedPositionColours;
 
-    // Now we're allocating globals like RunningGameScene is a class. It's getting bad.
-    run_game_scene_guyFrameData.clear(); // ~_~
-    run_game_scene_frameGuyData.clear(); // ~_~
+    std::vector<std::vector<GuyFrameData>> run_game_scene_guyFrameData;
+    std::vector<std::vector<int>> run_game_scene_frameGuyData;
+
     for (int i = 0; i < timeEngine.getTimelineLength(); ++i) {
         run_game_scene_frameGuyData.push_back(std::vector<int>());
     }
@@ -434,9 +436,10 @@ run_game_scene(hg::RenderWindow &window,
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex, 
-                        input.getTimeCursor(), inertia, waveInfo, levelResources, wallImage, 
-                        positionColoursImage, frameStartTime, runningFromReplay, frameRun)};
+                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex,
+                        input.getTimeCursor(), inertia, waveInfo, levelResources, wallImage,
+                        positionColoursImage, frameStartTime, runningFromReplay, frameRun,
+                        run_game_scene_guyFrameData, run_game_scene_frameGuyData)};
                     interrupter.reset();
 
                     if (waveInfo.paradoxPressure >= hg::PARADOX_PRESSURE_MAX) {
@@ -532,7 +535,9 @@ UIFrameState runStep(
     sf::Image const &positionColoursImage,
     std::chrono::steady_clock::time_point const &frameStartTime,
     bool const runningFromReplay,
-    bool const frameRun)
+    bool const frameRun,
+    std::vector<std::vector<GuyFrameData>> &run_game_scene_guyFrameData,
+    std::vector<std::vector<int>> &run_game_scene_frameGuyData)
 {
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
