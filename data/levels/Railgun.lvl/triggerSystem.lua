@@ -183,7 +183,7 @@ local tempStore =
         bts.basicTextGlitz{
             x = 8.25 * 3200,
             y = 14.65 * 3200,
-            text = "Pause (keyboard P) is for more than taking",
+            text = "Pause (keyboard P) not just for taking a",
             size = 1600,
             layer = 1600,
             colour = {r = 0, g = 0, b = 0},
@@ -191,7 +191,7 @@ local tempStore =
         bts.basicTextGlitz{
             x = 8.25 * 3200,
             y = (14.65 + 0.48) * 3200,
-            text = "a break, as you can also perform actions",
+            text = "break, as actions may be performed while",
             size = 1600,
             layer = 1600,
             colour = {r = 0, g = 0, b = 0},
@@ -199,7 +199,7 @@ local tempStore =
         bts.basicTextGlitz{
             x = 8.25 * 3200,
             y = (14.65 + 2*0.48) * 3200,
-            text = "while paused. Non-movement actions advance",
+            text = "paused. Non-movement actions automatically",
             size = 1600,
             layer = 1600,
             colour = {r = 0, g = 0, b = 0},
@@ -207,7 +207,7 @@ local tempStore =
         bts.basicTextGlitz{
             x = 8.25 * 3200,
             y = (14.65 + 3*0.48) * 3200,
-            text = "time by 1/30th of a second.",
+            text = "advance time by 1/30th of a second.",
             size = 1600,
             layer = 1600,
             colour = {r = 0, g = 0, b = 0},
