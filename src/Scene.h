@@ -8,14 +8,17 @@
 namespace hg {
     struct WindowClosed_exception final {};
     struct RunALevel_tag final {
+        RunALevel_tag() = default;
         RunALevel_tag(RunALevel_tag const&) = default;
         RunALevel_tag(RunALevel_tag &&) noexcept = default;
     };
     struct RunAReplay_tag final {
+        RunAReplay_tag() = default;
         RunAReplay_tag(RunAReplay_tag const&) = default;
         RunAReplay_tag(RunAReplay_tag &&) noexcept = default;
     };
     struct Exit_tag final {
+        Exit_tag() = default;
         Exit_tag(Exit_tag const&) = default;
         Exit_tag(Exit_tag &&) noexcept = default;
     };

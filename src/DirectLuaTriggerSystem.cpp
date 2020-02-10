@@ -3,7 +3,6 @@
 #include "lua/lua.h"
 #include "lua/lauxlib.h"
 #include "lua/lualib.h"
-#include "lua/lstate.h"
 
 #include "CommonTriggerCode.h"
 #include "ObjectAndTime.h"
