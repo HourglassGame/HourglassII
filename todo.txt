@@ -158,3 +158,35 @@ Design levels
 ----===== SOUNDTRACK =====----
 
 **Apart from basics such as character animations, this is heavily dependent on the storyline, particularly the setting. So this is really a placeholder section.
+
+
+----===== VULKAN =====----
+
+Main Render Loop (Shouldn't busy-wait; Shouldn't re-render when inputs haven't changed.)
+
+Loading of image (etc) resources (Shouldn't be so slow. Possibly should be cached. Avoid hardcoded set of images.)
+
+Removal of excessive duplicate code in different renderers.
+
+Proper Text Rendering
+
+Proper timeline rendering
+
+Proper vulkan memory allocation (rather than one allocation per vulkan object)
+
+Render level-won scene
+
+Avoid rendering of scene before its inputs have been properly initialised
+ (e.g. the "if (!uiFrameStateLocal) {return;}" in RunningGameSceneRender::ReallyDoRender)
+
+Render any other missing scenes?
+
+Render any missing features in the Vulkan scenes
+ (e.g. the guy-position overlay; and others?)
+
+Improve performance; reduce latency.
+  (Add proper performance monitoring?)
+
+Use vertex index rendering, rather than vertex list?
+
+Add proper classes and structure to enforce relevant invariants
