@@ -9,7 +9,6 @@
 
 #include <boost/algorithm/string/find_iterator.hpp>
 #include <boost/algorithm/string/finder.hpp>
-#include <boost/range/algorithm/find_if.hpp>
 
 //#include "lua/lstate.h"
 

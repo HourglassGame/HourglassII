@@ -13,27 +13,77 @@
 
 #include <sstream>
 
+#include "PostLevelSceneRenderer.h"
+
 namespace hg {
 namespace {
-    void runStep(
-        hg::TimeEngine const &timeEngine,
-        hg::RenderWindow &app,
-        GLFWWindow &windowglfw,
-        hg::VulkanEngine &eng,
-        AudioPlayingState &audioPlayingState,
-        AudioGlitzManager &audioGlitzManager,
-        hg::Inertia &inertia,
-        hg::LevelResources const &resources,
-        sf::Image const &wallImage,
-        sf::Image const &positionColoursImage);
+    void drawFrame(
+        sf::RenderTarget& target,
+        VulkanEngine& eng,
+        LevelResources const& resources,
+        sf::Image const& wallImage,
+        sf::Image const& positionColoursImage,
+        std::vector<std::vector<GuyFrameData>> const& guyFrameData,
+        Wall const& wall,
+        std::size_t const timelineLength,
+        std::vector<GuyInput> const& postOverwriteInput,
+        PostLevelSceneUiFrameState const& uiFrameState);
+
+    PostLevelSceneUiFrameState runStep(
+        TimeEngine const& timeEngine,
+        RenderWindow& app,
+        GLFWWindow& windowglfw,
+        Inertia& inertia);
 }
 void run_post_level_scene(
     hg::RenderWindow &window,
     GLFWWindow &windowglfw,
-    hg::VulkanEngine &eng,
+    VulkanEngine &eng,
+    VulkanRenderer &vkRenderer,
     TimeEngine const &initialTimeEngine,
     LoadedLevel const &finalLevel)
 {
+
+
+
+    std::vector<std::vector<GuyFrameData>> guyFrameData;
+    {
+        auto const &guyFrames{finalLevel.timeEngine.getGuyFrames()};
+        auto const actualGuyFrames{boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end()))};
+        guyFrameData.reserve(actualGuyFrames.size());
+        for (std::size_t i{}, end{ std::size(actualGuyFrames) }; i != end; ++i) {
+            guyFrameData.push_back({});
+            for (hg::Frame* frame : actualGuyFrames[i]) {
+                guyFrameData[i].push_back(
+                    GuyFrameData{
+                        getFrameNumber(frame),
+                        findCurrentGuy(frame->getView().getGuyInformation(), i)
+                    }
+                );
+            }
+        }
+    }
+    PostLevelSceneRenderer renderer(
+        eng.physicalDevice,
+        eng.logicalDevice.device,
+        eng.surface.surface,
+        eng.renderPass.renderPass,
+        eng.swapChain.extent,
+        eng.logicalDevice.graphicsQueue,
+        guyFrameData,
+        finalLevel.timeEngine.getWall(),
+        gsl::narrow_cast<std::size_t>(finalLevel.timeEngine.getTimelineLength()),
+        finalLevel.timeEngine.getPostOverwriteInput()
+    );
+    vkRenderer.StartScene(renderer);
+    struct RendererCleanupEnforcer final {
+        decltype(vkRenderer)& vkRenderer_;
+        ~RendererCleanupEnforcer() noexcept {
+            vkRenderer_.EndScene();
+        }
+    } RendererCleanupEnforcer_obj{ vkRenderer };
+
+
     //hg::unique_ptr<hg::OperationInterrupter> interrupter(new hg::OperationInterrupter());
     hg::TimeEngine const &timeEngine = finalLevel.timeEngine;
     hg::LevelResources const &levelResources = finalLevel.resources;
@@ -94,27 +144,30 @@ void run_post_level_scene(
             if (glfwGetKey(windowglfw.w, GLFW_KEY_SLASH) == GLFW_PRESS) {
                 inertia.reset();
             }
-            runStep(timeEngine, window, windowglfw, eng, audioPlayingState, audioGlitzManager, inertia, levelResources, wallImage, positionColoursImage);
-            {
-                sf::Text replayGlyph;
-                replayGlyph.setFont(*hg::defaultFont);
-                replayGlyph.setString("You Won -- Replay");
-                replayGlyph.setFillColor(sf::Color(255,0,0));
-                replayGlyph.setOutlineColor(sf::Color(255, 0, 0));
-                replayGlyph.setPosition(480, 32);
-                replayGlyph.setCharacterSize(16);
-                window.draw(replayGlyph);
-            }
-            {
-                sf::Text replayGlyph;
-                replayGlyph.setFont(*hg::defaultFont);
-                replayGlyph.setString(", . / keys control the displayed time");
-                replayGlyph.setFillColor(sf::Color(255,0,0));
-                replayGlyph.setOutlineColor(sf::Color(255, 0, 0));
-                replayGlyph.setPosition(380, 64);
-                replayGlyph.setCharacterSize(16);
-                window.draw(replayGlyph);
-            }
+
+            auto uiFrameState{runStep(timeEngine, window, windowglfw, inertia)};
+
+            PlayAudioGlitz(
+                uiFrameState.drawnGlitz,
+                audioPlayingState,
+                audioGlitzManager,
+                -1//guyIndex
+            );
+
+            drawFrame(
+                window.getRenderTarget(),
+                eng,
+                levelResources,
+                wallImage,
+                positionColoursImage,
+                guyFrameData,
+                timeEngine.getWall(),
+                gsl::narrow_cast<std::size_t>(timeEngine.getTimelineLength()),
+                timeEngine.getPostOverwriteInput(),
+                uiFrameState);
+
+            renderer.setUiFrameState(std::move(uiFrameState));
+
             //Fast-Forward
             if (glfwGetKey(windowglfw.w, GLFW_KEY_F) == GLFW_PRESS) {
                 window.setFramerateLimit(0);
@@ -139,117 +192,54 @@ void run_post_level_scene(
 
 }
 namespace {
-void runStep(
-    hg::TimeEngine const &timeEngine,
-    hg::RenderWindow &app,
-    GLFWWindow &windowglfw,
-    hg::VulkanEngine &eng,
-    AudioPlayingState &audioPlayingState,
-    AudioGlitzManager &audioGlitzManager,
-    hg::Inertia &inertia,
-    hg::LevelResources const &resources,
-    sf::Image const &wallImage,
-    sf::Image const &positionColoursImage)
+void drawFrame(
+    sf::RenderTarget &target,
+    hg::VulkanEngine& eng,
+    hg::LevelResources const& resources,
+    sf::Image const& wallImage,
+    sf::Image const& positionColoursImage,
+    std::vector<std::vector<GuyFrameData>> const &guyFrameData,
+    Wall const &wall,
+    std::size_t const timelineLength,
+    std::vector<GuyInput> const &postOverwriteInput,
+    PostLevelSceneUiFrameState const &uiFrameState)
 {
-    app.clear(sf::Color(255, 255, 255));
-    hg::FrameID drawnFrame;
+    target.clear(sf::Color(255, 255, 255));
 
-    bool const shouldDrawGuyPositionColours{ app.getInputState().isKeyPressed(sf::Keyboard::LShift) };
+    DrawVisualGlitzAndWall(
+        target,
+        eng,
+        uiFrameState.drawnGlitz,
+        wall,
+        resources,
+        wallImage,
+        positionColoursImage,
+        -1,//guyIndex
+        uiFrameState.shouldDrawGuyPositionColours);
 
-    if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
-        drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
-        hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-        auto const &glitz{ getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS) };
-        auto const guyIndex{-1};
-        PlayAudioGlitz(
-            glitz,
-            audioPlayingState,
-            audioGlitzManager,
-            guyIndex
-        );
-        DrawVisualGlitzAndWall(app.getRenderTarget(),
-            eng,
-            glitz,
-            timeEngine.getWall(),
-            resources,
-            wallImage,
-            positionColoursImage,
-            guyIndex,
-            shouldDrawGuyPositionColours);
-    }
-    else {
-        inertia.run();
-        hg::FrameID const inertialFrame(inertia.getFrame());
-        if (inertialFrame.isValidFrame()) {
-            drawnFrame = inertialFrame;
-            hg::Frame const *frame(timeEngine.getFrame(inertialFrame));
-            auto const &glitz{ getGlitzForDirection(frame->getView(), inertia.getTimeDirection()) };
-            auto const guyIndex{-1};
-            PlayAudioGlitz(
-                glitz,
-                audioPlayingState,
-                audioGlitzManager,
-                guyIndex
-                );
-            DrawVisualGlitzAndWall(app.getRenderTarget(),
-                eng,
-                glitz,
-                timeEngine.getWall(),
-                resources,
-                wallImage,
-                positionColoursImage,
-                guyIndex,
-                shouldDrawGuyPositionColours);
-        }
-        else {
-            drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
-            hg::Frame const *frame(timeEngine.getFrame(drawnFrame));
-            auto const &glitz{ getGlitzForDirection(frame->getView(), TimeDirection::FORWARDS) };
-            auto const guyIndex{-1};
-            PlayAudioGlitz(
-                glitz,
-                audioPlayingState,
-                audioGlitzManager,
-                guyIndex
-            );
-            DrawVisualGlitzAndWall(app.getRenderTarget(),
-                eng,
-                glitz,
-                timeEngine.getWall(),
-                resources,
-                wallImage,
-                positionColoursImage,
-                guyIndex,
-                shouldDrawGuyPositionColours);
-        }
-    }
-
-    auto const &guyFrames{ timeEngine.getGuyFrames() };
-    auto const actualGuyFrames{ boost::make_iterator_range(guyFrames.begin(), std::prev(guyFrames.end())) };
-
-    std::vector<std::vector<hg::Frame*>> guyFrameDataRaw;
-    guyFrameDataRaw.reserve(actualGuyFrames.size());
-    for (std::size_t i{}, end{ std::size(actualGuyFrames) }; i != end; ++i) {
-        guyFrameDataRaw.push_back({});
-        for (hg::Frame *frame : actualGuyFrames[i]) {
-            guyFrameDataRaw[i].push_back(frame);
-        }
-    }
-
-    DrawTimeline(app.getRenderTarget(), timeEngine, TimeEngine::FrameListList{}, drawnFrame, timeEngine.getReplayData().back().getGuyInput().getTimeCursor(), timeEngine.getTimelineLength());
-    DrawPersonalTimeline(
-        app.getRenderTarget(),
-        timeEngine,
+    DrawTimeline2(
+        target,
+        timelineLength,
+        TimeEngine::FrameListList{},
+        uiFrameState.drawnFrame,
+        postOverwriteInput.back().getTimeCursor(),
+        guyFrameData,
+        wall
+    );
+    DrawPersonalTimeline2(
+        target,
+        wall,
         0/*relativeGuyIndex*/,
-        guyFrameDataRaw,
-        timeEngine.getPostOverwriteInput(),
-        static_cast<std::size_t>(timeEngine.getTimelineLength()));
-        
-    DrawInterfaceBorder(app.getRenderTarget());
+        guyFrameData,
+        postOverwriteInput,
+        timelineLength
+    );
+
+    DrawInterfaceBorder(target);
 
     {
         std::stringstream currentPlayerIndex;
-        currentPlayerIndex << "Index: " << timeEngine.getReplayData().size() - 1;
+        currentPlayerIndex << "Index: " << (std::size(guyFrameData) - 1);
         sf::Text currentPlayerGlyph;
         currentPlayerGlyph.setFont(*hg::defaultFont);
         currentPlayerGlyph.setString(currentPlayerIndex.str());
@@ -257,31 +247,31 @@ void runStep(
         currentPlayerGlyph.setCharacterSize(10);
         currentPlayerGlyph.setFillColor(uiTextColor);
         currentPlayerGlyph.setOutlineColor(uiTextColor);
-        app.draw(currentPlayerGlyph);
+        target.draw(currentPlayerGlyph);
     }
     {
         std::stringstream frameNumberString;
-        frameNumberString << "Frame: " << drawnFrame.getFrameNumber();
+        frameNumberString << "Frame: " << getFrameNumber(uiFrameState.drawnFrame);
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 60);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 60);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
-        app.draw(frameNumberGlyph);
+        target.draw(frameNumberGlyph);
     }
     {
         std::stringstream timeString;
-        timeString << "Time: " << (drawnFrame.getFrameNumber()*10/hg::FRAMERATE)/10. << "s";
+        timeString << "Time: " << (getFrameNumber(uiFrameState.drawnFrame) * 10 / hg::FRAMERATE) / 10. << "s";
         sf::Text frameNumberGlyph;
         frameNumberGlyph.setFont(*hg::defaultFont);
         frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 20);
+        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 20);
         frameNumberGlyph.setCharacterSize(16);
         frameNumberGlyph.setFillColor(uiTextColor);
         frameNumberGlyph.setOutlineColor(uiTextColor);
-        app.draw(frameNumberGlyph);
+        target.draw(frameNumberGlyph);
     }
     /*{
         std::stringstream numberOfFramesExecutedString;
@@ -314,6 +304,67 @@ void runStep(
         fpsglyph.setColor(uiTextColor);
         app.draw(fpsglyph);
     }*/
+    {
+        sf::Text replayGlyph;
+        replayGlyph.setFont(*hg::defaultFont);
+        replayGlyph.setString("You Won -- Replay");
+        replayGlyph.setFillColor(sf::Color(255, 0, 0));
+        replayGlyph.setOutlineColor(sf::Color(255, 0, 0));
+        replayGlyph.setPosition(480, 32);
+        replayGlyph.setCharacterSize(16);
+        target.draw(replayGlyph);
+    }
+    {
+        sf::Text replayGlyph;
+        replayGlyph.setFont(*hg::defaultFont);
+        replayGlyph.setString(", . / keys control the displayed time");
+        replayGlyph.setFillColor(sf::Color(255, 0, 0));
+        replayGlyph.setOutlineColor(sf::Color(255, 0, 0));
+        replayGlyph.setPosition(380, 64);
+        replayGlyph.setCharacterSize(16);
+        target.draw(replayGlyph);
+    }
+}
+
+PostLevelSceneUiFrameState runStep(
+    hg::TimeEngine const &timeEngine,
+    hg::RenderWindow &app,
+    GLFWWindow &windowglfw,
+    hg::Inertia &inertia)
+{
+    auto const &[drawnFrame, glitz] =
+        [&]() -> std::tuple<hg::FrameID, mt::std::vector<hg::Glitz> const&> {
+            if (app.getInputState().isKeyPressed(sf::Keyboard::LControl)) {
+                auto const drawnFrame{mousePosToFrameID(windowglfw, timeEngine)};
+                return {
+                    drawnFrame,
+                    getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), TimeDirection::FORWARDS)
+                };
+            }
+            else {
+                inertia.run();
+                hg::FrameID const inertialFrame(inertia.getFrame());
+                if (!isNullFrame(inertialFrame)) {
+                    return {
+                        inertialFrame,
+                        getGlitzForDirection(timeEngine.getFrame(inertialFrame)->getView(), inertia.getTimeDirection())
+                    };
+                }
+                else {
+                    auto const drawnFrame{mousePosToFrameID(windowglfw, timeEngine)};
+                    return {
+                        drawnFrame,
+                        getGlitzForDirection(timeEngine.getFrame(drawnFrame)->getView(), TimeDirection::FORWARDS)
+                    };
+                }
+            }
+        }();
+
+    return {
+        drawnFrame,
+        app.getInputState().isKeyPressed(sf::Keyboard::LShift)/*shouldDrawGuyPositionColours*/,
+        glitz
+    };
 }
 }
 }

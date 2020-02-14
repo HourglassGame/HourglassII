@@ -508,7 +508,10 @@ run_game_scene(hg::RenderWindow &window,
                     state = RunState::AWAITING_INPUT;
                 }
                 catch (hg::PlayerVictoryException const &) {
-                    run_post_level_scene(window, windowglfw, eng, initialTimeEngine, loadedLevel);
+                    //TODO: Leave this scene properly before entering post_level_scene.
+                    //(to avoid excessive memory use)
+                    vkRenderer.EndScene();
+                    run_post_level_scene(window, windowglfw, eng, vkRenderer, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)
                     return GameWon_tag{};
                 }
@@ -647,7 +650,7 @@ UIFrameState runStep(
                     run_game_scene_guyFrameData[gi].push_back(
                         GuyFrameData{
                             getFrameNumber(frame),
-                            *boost::find_if(frame->getView().getGuyInformation(), [gi](auto const& guyInfo) {return guyInfo.getIndex() == gi; })
+                            findCurrentGuy(frame->getView().getGuyInformation(), gi)
                         }
                     );
                     rgs_frameGuyData.push_back(gi);

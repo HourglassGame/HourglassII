@@ -5,6 +5,7 @@
 #include "GlobalConst.h"
 
 #include <boost/swap.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 //#include <iostream>
 
 namespace hg {
@@ -45,15 +46,9 @@ void TimeEngine::swap(TimeEngine &o) noexcept {
     std::swap(impl, o.impl);
 }
 
-hg::GuyOutputInfo const &findCurrentGuy(mt::std::vector<GuyOutputInfo> const &guyRange, std::size_t index)
+hg::GuyOutputInfo const &findCurrentGuy(mt::std::vector<GuyOutputInfo> const &guyRange, std::size_t const index)
 {
-    for (GuyOutputInfo const &guyInfo : guyRange)
-    {
-        if (guyInfo.getIndex() == index)
-        {
-            return guyInfo;
-        }
-    }
+    return *boost::find_if(guyRange, [index](auto const& guyInfo) {return guyInfo.getIndex() == index;});
 }
 
 TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInputData, size_t const relativeGuyIndex, OperationInterrupter &interrupter)

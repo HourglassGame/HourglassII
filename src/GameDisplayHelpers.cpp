@@ -2,7 +2,6 @@
 #include "sfRenderTargetCanvas.h"
 #include "VulkanCanvas.h"
 #include "GlobalConst.h"
-#include <boost/range/algorithm/find_if.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include "VulkanEngine.h"
@@ -620,7 +619,7 @@ void DrawPersonalTimeline(
         auto const guyFrame{ actualGuyFrames[i][0] };
 
         auto const frameVerticalPosition{float{padding + frameHeight*getFrameNumber(guyFrame)}};
-        hg::GuyOutputInfo guy{*boost::find_if(guyFrame->getView().getGuyInformation(), [i](auto const& guyInfo) {return guyInfo.getIndex() == i;})};
+        hg::GuyOutputInfo guy{findCurrentGuy(guyFrame->getView().getGuyInformation(), i)};
 
         //TODO: Share this logic with DrawTimelineContents!
         double const xFrac = (guy.getX() - timeEngine.getWall().segmentSize()) / static_cast<double>(timeEngine.getWall().roomWidth() - 2 * timeEngine.getWall().segmentSize());

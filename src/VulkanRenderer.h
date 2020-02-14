@@ -4,6 +4,7 @@
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm/find.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 #include <atomic>
 namespace hg {
     /*
@@ -131,13 +132,15 @@ namespace hg {
         }
         //TODO: Make helper object that calls EndScene in its destructor?
         void EndScene() {
-            sceneAlive = false;
-            std::lock_guard l{sceneMutex};
-            {
-                std::lock_guard l2{ keepAliveMutex };
-                scene = nullptr;
-                sceneKeepAlives.emplace_back(std::move(*currentSceneKeepAlive));
-                currentSceneKeepAlive.reset();
+            if (sceneAlive) {
+                sceneAlive = false;
+                std::lock_guard l{ sceneMutex };
+                {
+                    std::lock_guard l2{ keepAliveMutex };
+                    scene = nullptr;
+                    sceneKeepAlives.emplace_back(std::move(*currentSceneKeepAlive));
+                    currentSceneKeepAlive.reset();
+                }
             }
         }
         bool hasNoKeepAlives(){

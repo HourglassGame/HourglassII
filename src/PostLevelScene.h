@@ -12,6 +12,7 @@ namespace hg {
         hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         hg::VulkanEngine &eng,
+        VulkanRenderer& vkRenderer,
         TimeEngine const &initialTimeEngine,
         LoadedLevel const &finalLevel);
 }

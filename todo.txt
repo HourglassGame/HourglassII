@@ -178,6 +178,7 @@ Render level-won scene
 
 Avoid rendering of scene before its inputs have been properly initialised
  (e.g. the "if (!uiFrameStateLocal) {return;}" in RunningGameSceneRender::ReallyDoRender)
+ (And avoid any other problematic behaviour during transitions between scenes)
 
 Render any other missing scenes?
 
@@ -190,3 +191,5 @@ Improve performance; reduce latency.
 Use vertex index rendering, rather than vertex list?
 
 Add proper classes and structure to enforce relevant invariants
+
+Improve performance of window resizing; avoid game-speed slowdown during window resizing.
