@@ -1,9 +1,7 @@
-#include "InitialScene.h"
-#include "TestDriver.h"
-#include "LuaUtilities.h"
-#include "VulkanUtil.h"
-
-#include <SFML/Audio.hpp>
+#include "hg/FrontEnd/InitialScene.h"
+#include "hg/Util/TestDriver.h"
+#include "hg/Util/file_util.h"
+#include "hg/Util/memory_util.h"
 
 #include <boost/filesystem.hpp>
 

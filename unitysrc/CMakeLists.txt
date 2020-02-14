@@ -39,18 +39,26 @@ target_compile_definitions(HourglassII
         WIN32_LEAN_AND_MEAN
 )
 
+target_include_directories(HourglassII PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/../src/
+)
+
 set_target_properties(HourglassII PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON)
 
 target_sources(HourglassII
     PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}/FrontEnd.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/glew.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/lua.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/main.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/PhysicsEngine.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/TimeEngine.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/extraTest_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/FrontEnd_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/glew_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/lua_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/LuaUtil_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/main_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/PhysicsEngine_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/TimeEngine_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/Util_UnitySrc.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/VulkanUtil_UnitySrc.cpp
         #Windows Specific
         ${CMAKE_CURRENT_LIST_DIR}/../src/windows/resource.rc
 )

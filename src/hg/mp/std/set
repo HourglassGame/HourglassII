@@ -1,0 +1,19 @@
+#ifndef HG_MP_STD_MAP
+#define HG_MP_STD_MAP
+#include "hg/Util/memory_pool.h"
+#include <set>
+namespace hg {
+namespace mp {
+namespace std{
+template<
+    typename Key,
+    typename Compare = ::std::less<Key> >
+using set =
+        ::std::set<
+            Key,
+            Compare,
+            memory_pool_allocator<Key>>;
+}
+}
+}
+#endif //HG_MP_STD_MAP

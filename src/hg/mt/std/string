@@ -1,0 +1,16 @@
+#ifndef HG_MT_STD_STRING
+#define HG_MT_STD_STRING
+#include "hg/Util/multi_thread_allocator.h"
+#include <string>
+namespace hg {
+namespace mt {
+namespace std{
+using string =
+        ::std::basic_string<
+            char,
+            ::std::char_traits<char>,
+            multi_thread_allocator_t<char>>;
+}
+}
+}
+#endif //HG_MT_STD_STRING
