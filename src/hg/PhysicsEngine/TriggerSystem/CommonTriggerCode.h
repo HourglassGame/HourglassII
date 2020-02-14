@@ -63,10 +63,13 @@ calculateActualTriggerDepartures(
     //However, sorting here allows
     //different TriggerSystem implementations
     //to add trigger data in a slightly different order, but
-    //still be considered to have identical behaviour by ComparisonTestTriggerSystem.
+    //still be considered to have identical behaviour by ComparisonTestTriggerSystem
+    //(if such a trigger system is added again in the future)
+#if 0
     for (auto &[frame, tdVec] : retv) {
         boost::sort(tdVec);
     }
+#endif
     return retv;
 }
 

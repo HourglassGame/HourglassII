@@ -7,7 +7,7 @@
 #include "hg/TimeEngine/Glitz/AudioGlitz.h"
 
 #include "hg/Util/memory_pool.h"
-#include "hg/Util/Geometry.h"
+#include "hg/Util/maths.h"
 
 #include "hg/mt/std/map"
 #include "hg/mt/std/vector"

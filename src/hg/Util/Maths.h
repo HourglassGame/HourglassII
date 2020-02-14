@@ -5,7 +5,7 @@
 #include <cmath>
 namespace hg {
 
-template<typename T> struct vec2
+template<typename T> struct vec2 final
 {
     T a;
     T b;
@@ -94,7 +94,7 @@ inline vec2<T> normal(vec2<T> const &vec) {
     return direction / magnitude(direction);
 }
 
-template<typename T> struct vec3 {
+template<typename T> struct vec3 final {
     T a;
     T b;
     T c;
@@ -179,7 +179,13 @@ inline bool operator!=(vec3<T> const &l, vec3<T> const &r) {
     return !(l == r);
 }
 
-
+template<typename T>
+struct Rect final {
+    T x;
+    T y;
+    T w;
+    T h;
+};
 
 template<typename Numeric>
 Numeric sign(Numeric a) {
@@ -237,4 +243,3 @@ constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilo
 }
 }//namespace hg
 #endif //HG_MATHS_H
-

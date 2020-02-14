@@ -1,7 +1,6 @@
 #ifndef HG_ENVIRONMENT_H
 #define HG_ENVIRONMENT_H
 
-#include "hg/Util/Geometry.h"
 #include <utility>
 #include "hg/Util/multi_vector.h"
 #include "hg/Util/Maths.h"
@@ -53,7 +52,7 @@ namespace hg {
             
             int const miny(flooredDivision(input.y,segmentSize_));
             int const maxy(flooredDivision(input.y + input.h, segmentSize_));
-            return Rect<int>(minx, miny, maxx - minx, maxy - miny);
+            return {minx, miny, maxx - minx, maxy - miny};
         }
 
         bool inTopLeftTriangle(int x, int y, int oldX, int oldY) const noexcept

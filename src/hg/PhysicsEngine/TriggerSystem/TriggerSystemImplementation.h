@@ -164,7 +164,6 @@ class TriggerSystemImplementation
     //Currently:
     //DirectLuaTriggerSystem == 1000
     //SimpleConfiguredTriggerSystem == 2000
-    //ComparisonTestTriggerSystem == 10000
     virtual int order_ranking() const = 0;
 };
 }

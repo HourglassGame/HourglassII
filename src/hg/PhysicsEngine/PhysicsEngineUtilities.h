@@ -1,28 +1,28 @@
 #ifndef HG_PHYSICS_ENGINE_TEST_H
 #define HG_PHYSICS_ENGINE_TEST_H
 
+#include "Environment.h"
+#include "PhysicsEngine.h"
+#include "BoxGlitzAdder.h"
+#include "GuyGlitzAdder.h"
+#include "hg/PhysicsEngine/TriggerSystem/TriggerSystem.h"
+
 #include "hg/TimeEngine/ArrivalDepartures/InputList.h"
 #include "hg/TimeEngine/ArrivalDepartures/ObjectList.h"
 #include "hg/TimeEngine/ArrivalDepartures/ObjectPtrList.h"
 #include "hg/TimeEngine/ArrivalDepartures/ObjectListTypes.h"
-#include "hg/PhysicsEngine/TriggerSystem/TriggerSystem.h"
-#include "Environment.h"
-#include "hg/Util/multi_thread_allocator.h"
-#include "BoxGlitzAdder.h"
-#include "GuyGlitzAdder.h"
-
 #include "hg/TimeEngine/ArrivalDepartures/PhysicsObjectType.h"
-
-#include <vector>
-#include "hg/mt/boost/container/map.hpp"
-#include "hg/mt/std/vector"
-#include "hg/mp/std/vector"
-#include <utility>
 
 #include "hg/TimeEngine/Frame_fwd.h"
 #include "hg/TimeEngine/Frame.h"
 #include "hg/TimeEngine/Universe.h"
-#include "hg/Util/Geometry.h"
+
+#include "hg/Util/multi_thread_allocator.h"
+#include "hg/Util/maths.h"
+
+#include "hg/mt/boost/container/map.hpp"
+#include "hg/mt/std/vector"
+#include "hg/mp/std/vector"
 
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/reversed.hpp>
@@ -36,10 +36,10 @@
 #include "hg/mt/std/map"
 #include "hg/mt/std/vector"
 
-#include "PhysicsEngine.h"
 
 #include <iostream>
-
+#include <vector>
+#include <utility>
 #include <cassert>
 namespace hg {
 struct SortObjectList final {

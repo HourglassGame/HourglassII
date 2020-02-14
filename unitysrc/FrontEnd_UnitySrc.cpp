@@ -12,5 +12,4 @@
 #include "hg/FrontEnd/ResourceManager.cpp"
 #include "hg/FrontEnd/RunningGameScene.cpp"
 #include "hg/FrontEnd/RuntimeErrorScene.cpp"
-#include "hg/FrontEnd/Scene.cpp"
 #include "hg/FrontEnd/SelectionScene.cpp"

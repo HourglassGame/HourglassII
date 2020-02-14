@@ -5,7 +5,6 @@
 #include "hg/TimeEngine/Frame.cpp"
 #include "hg/TimeEngine/FrameID.cpp"
 #include "hg/TimeEngine/FrameUpdateSet.cpp"
-#include "hg/TimeEngine/Level.cpp"
 #include "hg/TimeEngine/LevelLoader.cpp"
 #include "hg/TimeEngine/TimeEngine.cpp"
 #include "hg/TimeEngine/TimelineState.cpp"
@@ -27,5 +26,3 @@
 
 //Glitz
 #include "hg/TimeEngine/Glitz/FrameView.cpp"
-#include "hg/TimeEngine/Glitz/Glitz.cpp"
-#include "hg/TimeEngine/Glitz/GuyOutputInfo.cpp"
