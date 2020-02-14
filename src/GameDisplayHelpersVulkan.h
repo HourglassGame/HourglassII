@@ -31,6 +31,21 @@
 #include <vector>
 
 namespace hg {
+
+inline vec3<float> asColor(vec3<float> const &vec) {
+    return {clamp(0.f, vec.a, 1.f), clamp(0.f, vec.b, 1.f), clamp(0.f, vec.c, 1.f)};
+}
+inline vec3<float> guyPositionToColor(double const xFrac, double const yFrac) {
+    vec3<float> const posStart{1.f, 0.f, 0.f};
+    vec3<float> const xMax{0.5f, 1.f, 0.f};
+    vec3<float> const yMax{0.5f, 0.f, 1.f};
+
+    vec3<float> const xDif{xMax - posStart};
+    vec3<float> const yDif{yMax - posStart};
+
+    return asColor(posStart + xDif*gsl::narrow_cast<float>(xFrac) + yDif*gsl::narrow_cast<float>(yFrac));
+}
+
 inline std::vector<VkCommandBuffer> createCommandBuffersForRenderer(
     VkDevice const device,
     VkCommandPool const commandPool
@@ -125,7 +140,6 @@ inline VkDescriptorSetLayoutCreateInfo makeDescriptorSetLayoutCreateInfo(
     layoutInfo.pBindings = &descriptorSetLayoutBinding;
     return layoutInfo;
 }
-sf::Color guyPositionToColor(double xFrac, double yFrac);
 inline vec3<float> interpretAsVulkanColour(unsigned const colour)
 {
     return vec3<float>{
@@ -737,25 +751,25 @@ public:
     }
     void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
     {
-        sf::Vector2f const pa(xa, ya);
-        sf::Vector2f const pb(xb, yb);
+        vec2<float> const pa{xa, ya};
+        vec2<float> const pb{xb, yb};
         if (pa != pb) {
             auto const vulkanColour{interpretAsVulkanColour(colour)};
             std::vector<Vertex> vertices;
-            sf::Vector2f d(normal(pa - pb)*(width / 2.f));
+            vec2<float> d(normal(pa - pb)*(width / 2.f));
             //Assume VK_FRONT_FACE_CLOCKWISE and VK_CULL_MODE_BACK_BIT
-            sf::Vector2f paNeg{ pa - d };
-            sf::Vector2f pbNeg{ pb - d };
-            sf::Vector2f pbPos{ pb + d };
-            sf::Vector2f paPos{ pa + d };
+            vec2<float> paNeg{ pa - d };
+            vec2<float> pbNeg{ pb - d };
+            vec2<float> pbPos{ pb + d };
+            vec2<float> paPos{ pa + d };
 
-            vertices.push_back(Vertex{vec2<float>{paNeg.x / scaleHackVal, paNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
-            vertices.push_back(Vertex{vec2<float>{pbNeg.x / scaleHackVal, pbNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
-            vertices.push_back(Vertex{vec2<float>{pbPos.x / scaleHackVal, pbPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+            vertices.push_back(Vertex{vec2<float>{paNeg.a / scaleHackVal, paNeg.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+            vertices.push_back(Vertex{vec2<float>{pbNeg.a / scaleHackVal, pbNeg.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+            vertices.push_back(Vertex{vec2<float>{pbPos.a / scaleHackVal, pbPos.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
 
-            vertices.push_back(Vertex{vec2<float>{pbPos.x / scaleHackVal, pbPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
-            vertices.push_back(Vertex{vec2<float>{paPos.x / scaleHackVal, paPos.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
-            vertices.push_back(Vertex{vec2<float>{paNeg.x / scaleHackVal, paNeg.y / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+            vertices.push_back(Vertex{vec2<float>{pbPos.a / scaleHackVal, pbPos.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+            vertices.push_back(Vertex{vec2<float>{paPos.a / scaleHackVal, paPos.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
+            vertices.push_back(Vertex{vec2<float>{paNeg.a / scaleHackVal, paNeg.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0, 0});
             target->drawVertices(vertices);
         }
     }
@@ -982,22 +996,9 @@ inline void DrawVisualGlitzAndWall(
         // such that the level is centered in the view
         assert(essentiallyEqual(worldViewXPos + worldViewWidth / 2., LWidth / 2., 0.00001));
         assert(essentiallyEqual(worldViewYPos + worldViewHeight / 2., LHeight / 2., 0.00001));
-        /*
-        sf::View scaledView(sf::FloatRect(
-            worldViewXPos,
-            worldViewYPos,
-            worldViewWidth,
-            worldViewHeight));
-        */
+
         //Game view is top-right quadrant
-        /*
-        scaledView.setViewport(
-            sf::FloatRect(
-                static_cast<float>(hg::UI_DIVIDE_X),
-                0.f,
-                static_cast<float>(ViewportWidthRatio),
-                static_cast<float>(ViewportHeightRatio)));
-        */
+
         viewport = VkRect2D {
             VkOffset2D{static_cast<int>(hg::UI_DIVIDE_X*swapChainExtent.width), 0},
             VkExtent2D{
@@ -1179,42 +1180,13 @@ inline void DrawPersonalTimeline(
 
             addRectVertices(vertices, left, top - 1.5f, right - left, 3.f, borderColor, 0, 0);
             addRectVertices(vertices, left, bot - 1.5f, right - left, 3.f, borderColor, 0, 0);
-            /*
-            sf::RectangleShape horizontalLine(sf::Vector2f(right - left, 3.f));
-            //horizontalLine.setFillColor(borderColor);
-            horizontalLine.setPosition(left, top - 1.5f);
-            target.draw(horizontalLine);
-            horizontalLine.setPosition(left, bot - 1.5f);
-            target.draw(horizontalLine);
-            */
 
             addRectVertices(vertices, left - 3.f, top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
             addRectVertices(vertices, right     , top - 1.5f, 3.f, bot - top + 3.f, borderColor, 0, 0);
-            /*
-            sf::RectangleShape verticalLine(sf::Vector2f(3.f, bot - top + 3.f));
-            //verticalLine.setFillColor(borderColor);
-            verticalLine.setPosition(left - 3.f, top - 1.5f);
-            target.draw(verticalLine);
-            verticalLine.setPosition(right, top - 1.5f);
-            target.draw(verticalLine);
-            */
+
             target.drawVertices(vertices);
         }
     }
-    /*
-    sf::View oldView(target.getView());
-    sf::View scaledView(sf::FloatRect(
-        0.f,
-        0.f,
-        target.getSize().x*static_cast<float>((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X),
-        height + 2.f*padding + bottomSpace));
-    scaledView.setViewport(sf::FloatRect(
-        static_cast<float>(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::UI_DIVIDE_Y) + static_cast<float>(hg::P_TIME_Y*(1. - hg::UI_DIVIDE_Y)),
-        1.f - static_cast<float>(hg::UI_DIVIDE_X + 2.*hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::P_TIME_HEIGHT*(1. - hg::UI_DIVIDE_Y))));
-    target.setView(scaledView);
-    */
     float const width = swapChainExtent.width*static_cast<float>((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X);
     {
         float const left = 0.f;
@@ -1284,29 +1256,24 @@ inline void DrawPersonalTimeline(
         }
         else if (guyInput[i].getActionTaken())
         {
-            //sf::RectangleShape inputLine(sf::Vector2f(std::max(frameWidth, 3.f), bottomSpace - minFrameHeight - 1.f + padding / 2.f));
             vec3<float> colour;
             if (guyInput[i].getPortalUsed())
             {
-                //inputLine.setFillColor(sf::Color(50, 255, 50));
                 colour = vec3<float>{ 50.f/255.f, 255.f / 255.f, 50.f / 255.f };
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
             }
             else if (guyInput[i].getAbilityUsed())
             {
-                //inputLine.setFillColor(sf::Color(50, 50, 255));
                 colour = vec3<float>{ 50.f / 255.f, 50.f / 255.f, 255.f / 255.f };
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
             }
             else if (guyInput[i].getDown() || guyInput[i].getBoxLeft() || guyInput[i].getBoxRight())
             {
-                //inputLine.setFillColor(sf::Color(0, 0, 0));
                 colour = vec3<float>{ 0.f / 255.f, 0.f / 255.f, 0.f / 255.f };
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
             }
             else
             {
-                //inputLine.setFillColor(sf::Color(120, 120, 120));
                 colour = vec3<float>{ 120.f / 255.f, 120.f / 255.f, 120.f / 255.f };
             }
             //inputLine.setPosition(frameHorizontalPosition, padding + height + frameHeight + minFrameHeight + 1.f);
@@ -1337,12 +1304,8 @@ inline void DrawPersonalTimeline(
         double const xFrac = (guy.getX() - wall.segmentSize()) / static_cast<double>(wall.roomWidth() - 2 * wall.segmentSize());
         double const yFrac = (guy.getY() - wall.segmentSize()) / static_cast<double>(wall.roomHeight() - 2 * wall.segmentSize());
 
-        sf::Color const frameColor(guyPositionToColor(xFrac, yFrac));
-        vec3<float> frameColourVulkan{ frameColor.r/255.f,  frameColor.g / 255.f, frameColor.b / 255.f };
-        //sf::RectangleShape frameLine(sf::Vector2f(frameWidth, std::max(minFrameHeight, frameHeight)));
-        //frameLine.setPosition(frameHorizontalPosition, frameVerticalPosition);
-        //frameLine.setFillColor(frameColor);
-        //target.draw(frameLine);
+        vec3<float> frameColourVulkan{ guyPositionToColor(xFrac, yFrac) };
+
         addRectVertices(
             vertices,
             frameHorizontalPosition, frameVerticalPosition,
@@ -1356,12 +1319,7 @@ inline void DrawPersonalTimeline(
                 : sf::Color(0, 255, 0));
 
             vec3<float> boxColourVulkan{ boxColor.r / 255.f,  boxColor.g / 255.f, boxColor.b / 255.f };
-            /*
-            sf::RectangleShape boxLine(sf::Vector2f(frameWidth, std::max(4.f, frameHeight) / 4.f));
-            boxLine.setPosition(frameHorizontalPosition, frameVerticalPosition);
-            boxLine.setFillColor(boxColor);
-            target.draw(boxLine);
-            */
+
             addRectVertices(
                 vertices,
                 frameHorizontalPosition, frameVerticalPosition,
@@ -1378,14 +1336,7 @@ inline void DrawPersonalTimeline(
         3.f, static_cast<float>(height + bottomSpace),
         vec3<float>{200.f/255.f, 200.f / 255.f, 0.f / 255.f}, 0, 0
     );
-    /*
-    sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height + bottomSpace)));
-    playerLine.setPosition((guyFramesLength - relativeGuyIndex)*target.getView().getSize().x / timelineLength, padding);
-    playerLine.setFillColor(sf::Color(200, 200, 0));
-    target.draw(playerLine);
 
-    target.setView(oldView);
-    */
     target.drawVertices(vertices);
     {
         std::array<VkViewport, 1> viewports{
@@ -1534,7 +1485,8 @@ inline void DrawTimelineContents(
             double const xFrac = (guy.getX() - wall.segmentSize()) / static_cast<double>(wall.roomWidth() - 2 * wall.segmentSize());
             double const yFrac = (guy.getY() - wall.segmentSize()) / static_cast<double>(wall.roomHeight() - 2 * wall.segmentSize());
 
-            sf::Color const color(guyPositionToColor(xFrac, yFrac));
+            vec3<float> hgColor{guyPositionToColor(xFrac, yFrac)};
+            sf::Color const color(hgColor.a*255,hgColor.b*255,hgColor.c*255);
 
             std::size_t pos(top);
             for (std::size_t const bot(top + boxLineHeight); pos != bot; ++pos) {
@@ -1632,12 +1584,6 @@ inline void DrawWaves(
             }
             else {
                 if (inWaveRegion) {
-                    /*
-                    sf::RectangleShape wavegroup(sf::Vector2f(static_cast<float>(i - leftOfWaveRegion), static_cast<float>(height)));
-                    wavegroup.setPosition(static_cast<float>(leftOfWaveRegion), 10.f);
-                    wavegroup.setFillColor(sf::Color(250, 0, 0));
-                    target.draw(wavegroup);
-                    */
                     addRectVertices(vertices, gsl::narrow<float>(leftOfWaveRegion), gsl::narrow<float>(getTimelineTickHeight()), gsl::narrow<float>(i - leftOfWaveRegion), static_cast<float>(height), vec3<float>{250.f/255.f, 0.f, 0.f}, 0, 0);
 
                     inWaveRegion = false;
@@ -1785,26 +1731,7 @@ inline void DrawTimeline(
         float const timeCursorHorizontalPosition{ timeCursor.getFrameNumber()*width / timelineLength };
 
         drawRect(target, timeCursorHorizontalPosition, gsl::narrow<float>(getTimelineTickHeight()), 3.f, gsl::narrow<float>(height), timeCursorColor, 0, 0);
-#if 0
-        //Looks like this is drawn outside the viewport area, so is never displayed, this was also true in the SFML implementation.
-        //Needs to be debugged/rethought
-        {
-            std::stringstream cursorTime;
-            cursorTime << (timeCursor.getFrameNumber() * 10 / hg::FRAMERATE) / 10. << "s";
-            drawText(target, drawCommandBuffer, pipelineLayout.pipelineLayout, fontTexDescriptorSet, cursorTime.str(), timeCursorHorizontalPosition - 3.f, height + 20.f, 10.f, timeCursorColor);
-            /*
-            sf::Text cursorTimeGlyph;
-            cursorTimeGlyph.setFont(*hg::defaultFont);
-            cursorTimeGlyph.setString(cursorTime.str());
-            cursorTimeGlyph.setPosition(timeCursorHorizontalPosition - 3.f, height + 20.f);
-            cursorTimeGlyph.setCharacterSize(10);
-            cursorTimeGlyph.setFillColor(timeCursorColor);
-            cursorTimeGlyph.setOutlineColor(timeCursorColor);
-            target.draw(cursorTimeGlyph);
-            */
 
-        }
-#endif
     }
     DrawTimelineContents(target, timelineTexture, preDrawCommandBuffer, drawCommandBuffer, pipelineLayout, height, width, timelineLength, guyFrames, wall/*, swapChainExtent, sceneData*/);
 
@@ -1826,56 +1753,6 @@ inline void DrawTimeline(
             viewports.data()
         );
     }
-#if 0
-
-    sf::View oldView(target.getView());
-    sf::View scaledView(sf::FloatRect(
-        0.f,
-        0.f,
-        target.getSize().x*static_cast<float>((1. - hg::UI_DIVIDE_X) - 2.*hg::TIMELINE_PAD_X),
-        85.f));
-    scaledView.setViewport(sf::FloatRect(
-        static_cast<float>(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::UI_DIVIDE_Y) + static_cast<float>(hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y)),
-        1.f - static_cast<float>(hg::UI_DIVIDE_X + 2.*hg::TIMELINE_PAD_X),
-        static_cast<float>(hg::G_TIME_HEIGHT*(1. - hg::UI_DIVIDE_Y))));
-    target.setView(scaledView);
-
-    unsigned int const height = 75;
-    DrawTicks(target, timelineLength);
-    DrawWaves(target, waves, timelineLength, height);
-
-    if (playerFrame.isValidFrame()) {
-        sf::RectangleShape playerLine(sf::Vector2f(3.f, static_cast<float>(height)));
-        playerLine.setPosition(playerFrame.getFrameNumber()*target.getView().getSize().x / timelineLength, 10.f);
-        playerLine.setFillColor(sf::Color(200, 200, 0));
-        target.draw(playerLine);
-    }
-    if (timeCursor.isValidFrame()) {
-        sf::Color const timeCursorColor(0, 0, 200);
-        sf::RectangleShape timeCursorLine(sf::Vector2f(3.f, static_cast<float>(height)));
-        float const timeCursorHorizontalPosition{ timeCursor.getFrameNumber()*target.getView().getSize().x / timelineLength };
-        timeCursorLine.setPosition(timeCursorHorizontalPosition, 10.f);
-        timeCursorLine.setFillColor(timeCursorColor);
-        target.draw(timeCursorLine);
-
-        {
-            std::stringstream cursorTime;
-            cursorTime << (timeCursor.getFrameNumber() * 10 / hg::FRAMERATE) / 10. << "s";
-            sf::Text cursorTimeGlyph;
-            cursorTimeGlyph.setFont(*hg::defaultFont);
-            cursorTimeGlyph.setString(cursorTime.str());
-            cursorTimeGlyph.setPosition(timeCursorHorizontalPosition - 3.f, height + 20.f);
-            cursorTimeGlyph.setCharacterSize(10);
-            cursorTimeGlyph.setFillColor(timeCursorColor);
-            cursorTimeGlyph.setOutlineColor(timeCursorColor);
-            target.draw(cursorTimeGlyph);
-        }
-    }
-    DrawTimelineContents(target, timeEngine, height);
-
-    target.setView(oldView);
-#endif
 }
 
 

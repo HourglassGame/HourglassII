@@ -1,8 +1,6 @@
 #include "Hg_Input.h"
 #include "InputList.h"
 #include "Maths.h"
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Mouse.hpp>
 namespace hg
 {
 static void updatePress(int &var, bool inputState)
@@ -32,7 +30,6 @@ Input::Input() :
 }
 
 void Input::updateState(
-    hg::RenderWindow::InputState const &input,
     GLFWWindow &windowglfw,
     ActivePanel const mousePanel,
     bool waitingForWave,

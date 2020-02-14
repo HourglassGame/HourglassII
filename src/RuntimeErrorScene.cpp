@@ -1,5 +1,4 @@
 #include "RuntimeErrorScene.h"
-#include <SFML/Graphics/Text.hpp>
 #include "Scene.h"
 #include "GLFWWindow.h"
 
@@ -227,9 +226,6 @@ private:
             );
         }
 
-#if 0
-        window.draw(sf::Text(boost::diagnostic_information(e), *defaultFont, 8));
-#endif
         drawText(target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet, boost::diagnostic_information(*luaError), 0.f, 0.f, 12.f, vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
     }
 
@@ -244,18 +240,7 @@ private:
 };
 
 
-
-
-
-
-
-extern sf::Font const *defaultFont;
-static void draw_runtime_error_scene(hg::RenderWindow &window, LuaError const &e) {
-    window.clear();
-    window.draw(sf::Text(boost::diagnostic_information(e), *defaultFont, 8));
-    window.display();
-}
-void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer, LuaError const &e)
+void report_runtime_error(GLFWWindow &windowglfw, VulkanEngine& vulkanEng, VulkanRenderer& vkRenderer, LuaError const &e)
 {
     //TODO: Significantly improve the error reporting (Capture more info, and present it in a more understandable and useful fashion).
     //LuaError can be:
@@ -299,17 +284,16 @@ void report_runtime_error(hg::RenderWindow &window, GLFWWindow &windowglfw, Vulk
     } RendererCleanupEnforcer_obj{ vkRenderer };
 
 
-    draw_runtime_error_scene(window, e);
+    //draw_runtime_error_scene(window, e);
 
     while (true) {
         glfwPollEvents();
         if (glfwWindowShouldClose(windowglfw.w)) {
-            window.close();
+            //window.close();
             throw WindowClosed_exception{};
         }
         if (windowglfw.hasLastKey()) {
-            int key = windowglfw.useLastKey();
-            if (key == GLFW_KEY_ESCAPE) {
+            if (windowglfw.useLastKey() == GLFW_KEY_ESCAPE) {
                 return;
             }
         }

@@ -1,14 +1,9 @@
 #include "MainMenuScene.h"
 #include "Maths.h"
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Sleep.hpp>
 #include <chrono>
 #include <iostream>
 #include "VulkanRenderer.h"
 namespace hg {
-extern sf::Font const *defaultFont;
 struct MenuItem final {
     std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
     std::string text;
@@ -367,17 +362,6 @@ private:
         float ypos = 200.f;
         int i = 0;
         for (auto const& menuItem : uiFrameStateLocal->menu) {
-#if 0
-            sf::Text menuItemGlyph;
-            menuItemGlyph.setFont(*hg::defaultFont);
-            menuItemGlyph.setString(menuItem.text);
-            auto const menuItemColour = i == uiFrameStateLocal->currentItem ? sf::Color(0, 255, 255) : sf::Color(255, 255, 255);
-            menuItemGlyph.setFillColor(menuItemColour);
-            menuItemGlyph.setOutlineColor(menuItemColour);
-            menuItemGlyph.setPosition(450.f, ypos);
-            menuItemGlyph.setCharacterSize(42);
-            window.draw(menuItemGlyph);
-#endif
             drawText(target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet, menuItem.text, 450.f, ypos, 42.f, i == uiFrameStateLocal->currentItem ? vec3<float>{0.f/255.f, 255.f / 255.f, 255.f / 255.f} : vec3<float>{255.f / 255.f, 255.f / 255.f, 255.f / 255.f});
 
             ypos += 50.f;
@@ -404,30 +388,8 @@ private:
     std::unique_ptr<MainMenuUIFrameState> mainMenuUiFrameState;
 };
 
-static void drawMainMenu(hg::RenderWindow &window, std::vector<MenuItem> const &menu, int const currentItem) {
-    window.clear();
-    float ypos = 200.f;
-    int i = 0;
-    for (auto const& menuItem: menu) {
-        sf::Text menuItemGlyph;
-        menuItemGlyph.setFont(*hg::defaultFont);
-        menuItemGlyph.setString(menuItem.text);
-        auto const menuItemColour = i == currentItem ? sf::Color(0, 255, 255) : sf::Color(255, 255, 255);
-        menuItemGlyph.setFillColor(menuItemColour);
-        menuItemGlyph.setOutlineColor(menuItemColour);
-        menuItemGlyph.setPosition(450.f, ypos);
-        ypos += 50.f;
-        menuItemGlyph.setCharacterSize(42);
-        window.draw(menuItemGlyph);
-
-        ++i;
-    }
-    window.display();
-}
-
 std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
 run_main_menu(
-    hg::RenderWindow &window, 
     GLFWWindow &windowglfw, 
     VulkanEngine &vulkanEng, 
     VulkanRenderer &vkRenderer)
@@ -461,7 +423,6 @@ run_main_menu(
     auto frameStart = std::chrono::steady_clock::now();
     while (true) {
         renderer.setUiFrameState(MainMenuUIFrameState{ menu, currentItem });
-        drawMainMenu(window, menu, currentItem);
 
         bool mainMenuDrawn = true;
         while (mainMenuDrawn) {
@@ -474,9 +435,8 @@ run_main_menu(
             frameStart = nextFrame;
 
             if (glfwWindowShouldClose(windowglfw.w)) {
-                std::cout << "Main Menu windowglfw Pointer: " << &windowglfw << "\n" << std::flush;
-                std::cout << "Main Menu windowglfw.w Pointer: " << (windowglfw.w) << "\n" << std::flush;
-                window.close();
+                //std::cout << "Main Menu windowglfw Pointer: " << &windowglfw << "\n" << std::flush;
+                //std::cout << "Main Menu windowglfw.w Pointer: " << (windowglfw.w) << "\n" << std::flush;
                 throw WindowClosed_exception{};
             }
 

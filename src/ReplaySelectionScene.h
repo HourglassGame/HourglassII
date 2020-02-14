@@ -3,7 +3,6 @@
 
 #include "InputList.h"
 #include "Scene.h"
-#include "RenderWindow.h"
 #include "GLFWWindow.h"
 #include <variant>
 
@@ -11,7 +10,6 @@
 #include <string>
 namespace hg {
     std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         std::string const &levelName,
         VulkanEngine& vulkanEng,

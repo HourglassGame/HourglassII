@@ -4,7 +4,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <SFML/Graphics/Image.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include "multi_array.h"
 #include <sstream>
 namespace hg {
@@ -43,14 +42,6 @@ inline sf::SoundBuffer loadSoundBuffer(fs::path const &file) {
     return sound;
 }
 
-inline sf::Texture loadTexture(fs::path const &file) {
-    sf::Texture img;
-    bool loaded(img.loadFromFile(file.string()));
-    assert(loaded);
-    static_cast<void>(loaded);
-    return img;
-}
-
 inline void loadPackage(LevelResources &resourceStore, std::string const &prefix, std::string const &directory) {
     fs::path package_directory(directory);
     assert(fs::is_directory(package_directory));
@@ -65,12 +56,6 @@ inline void loadPackage(LevelResources &resourceStore, std::string const &prefix
     }
 }
 
-sf::Sprite spriteForBlock(sf::Texture const &tex, double x, double y, double size) {
-    sf::Sprite sprite(tex);
-    sprite.setPosition(sf::Vector2f(static_cast<float>(x),static_cast<float>(y)));
-    sprite.setScale(sf::Vector2f(static_cast<float>(size*1.f/tex.getSize().x), static_cast<float>(size*1.f/tex.getSize().y)));
-    return sprite;
-}
 }//namespace
 
 LevelResources loadLevelResources(std::string const &levelPath, std::string const &globalsPath) {
@@ -78,103 +63,6 @@ LevelResources loadLevelResources(std::string const &levelPath, std::string cons
     loadPackage(resources, "global.", globalsPath);
     loadPackage(resources, "", levelPath);
     return resources;
-}
-
-sf::Image loadAndBakeWallImage(Wall const &wall) {
-    int const segmentSize = wall.segmentSize()/100;
-    int const roomWidth = wall.roomWidth()/100;
-    int const roomHeight = wall.roomHeight()/100;
-    
-    int const roomIndexWidth = roomWidth/segmentSize;
-    int const roomIndexHeight = roomHeight/segmentSize;
-    
-   auto const blockImages = [&wall,segmentSize] {
-        multi_array<sf::Image, 2, 2, 2, 2> blockImages;
-        for (int right(0); right <= 1; ++right) {
-            for (int top(0); top <= 1; ++top) {
-                for (int left(0); left <= 1; ++left) {
-                    for (int bottom(0); bottom <= 1; ++bottom) {
-                        std::stringstream filename;
-                        filename << "Tilesets/" << wall.tilesetName() << right << top << left << bottom << ".png";
-                        blockImages[right][top][left][bottom] = loadImage(filename.str());
-                        assert((blockImages[right][top][left][bottom].getSize() == sf::Vector2u(segmentSize,segmentSize)));
-                    }
-                }
-            }
-        }
-        return blockImages;
-    }();
-
-    auto const cornerImages = [&wall,segmentSize] {
-        multi_array<sf::Image, 2, 2> cornerImages;
-        for (int bottom(0); bottom <= 1; ++bottom) {
-            for (int right(0); right <= 1; ++right) {
-                std::stringstream filename;
-                filename << "Tilesets/" << wall.tilesetName() << (bottom ? "B":"T") << (right ? "R":"L") << ".png";
-                cornerImages[bottom][right] = loadImage(filename.str());
-                assert((cornerImages[bottom][right].getSize() == sf::Vector2u(segmentSize/2,segmentSize/2)));
-            }
-        }
-        return cornerImages;
-    }();
-    
-    //This should be done using a RenderTexture, but RenderTexture is
-    //buggy on some platforms (in particular, the MASS3 smartboard).
-    //The current implementation requires that the tileset be the same size in pixels as the level's
-    //segment size (divided by 100).
-    sf::Image foregroundImageBuf;
-    foregroundImageBuf.create(roomWidth, roomHeight, sf::Color(0,0,0,0));
-    
-    for (int x(0), xend(roomIndexWidth); x != xend; ++x) {
-        for (int y(0), yend(roomIndexHeight); y != yend; ++y) {
-            if (wall.atIndex(x, y)) {
-
-                foregroundImageBuf.copy(
-                    blockImages
-                        [wall.atIndex(x+1, y)]
-                        [wall.atIndex(x, y-1)]
-                        [wall.atIndex(x-1, y)]
-                        [wall.atIndex(x, y+1)],
-                        x*segmentSize,
-                        y*segmentSize);
-
-                for (int vpos(-1); vpos <= 1; vpos += 2) {
-                    for (int hpos(-1); hpos <= 1; hpos += 2) {
-                        if (wall.atIndex(x+hpos, y)
-                         && wall.atIndex(x, y+vpos)
-                        && !wall.atIndex(x+hpos, y+vpos))
-                        {
-                            int const bottom((vpos+1)/2);
-                            int const right((hpos+1)/2);
-                            foregroundImageBuf.copy(
-                                cornerImages[bottom][right],
-                                static_cast<int>(x*segmentSize + right*segmentSize/2.),
-                                static_cast<int>(y*segmentSize + bottom*segmentSize/2.));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return foregroundImageBuf;
-}
-
-sf::Image loadAndBakePositionColourImage(Wall const &wall) {
-    auto const roomWidth = wall.roomWidth();
-    auto const roomHeight = wall.roomHeight();
-    auto const segmentSize = wall.segmentSize();
-    sf::Image colors;
-    colors.create(roomWidth / 100, roomHeight / 100, sf::Color(0, 0, 0, 0));
-    for (int x(segmentSize / 100); x != (roomWidth - segmentSize) / 100; ++x) {
-        for (int y(segmentSize / 100); y != (roomHeight - segmentSize) / 100; ++y) {
-            sf::Color color(guyPositionToColor(
-                (x - segmentSize / 100)*100. / (roomWidth - 2 * segmentSize), (y - segmentSize / 100)*100. / (roomHeight - 2 * segmentSize)));
-            color.a = 220;
-            colors.setPixel(x, y, color);
-        }
-    }
-    return colors;
 }
 
 } //namespace hg

@@ -81,5 +81,6 @@ private:
     TimeDirection guyDirection;
     int guyFrameNumber;
 };
+hg::GuyOutputInfo const &findCurrentGuy(mt::std::vector<GuyOutputInfo> const &guyRange, std::size_t const index);
 }
 #endif //HG_TIME_ENGINE_H

@@ -468,24 +468,6 @@ namespace hg {
             //TODO: Rething FPS measurements, now that
             //GUI and TimeEngine frames can be independent
             //(in the near future they will be)
-#if 0
-            {
-                auto newFrameStartTime = std::chrono::steady_clock().now();
-                std::stringstream fpsstring;
-                auto const fps = (1. / std::chrono::duration<double>(newFrameStartTime - frameStartTime).count());
-                fpsstring << (fps > 5 ? std::round(fps) : fps);
-                frameStartTime = newFrameStartTime;
-                sf::Text fpsglyph;
-                fpsglyph.setFont(*hg::defaultFont);
-                fpsglyph.setString(fpsstring.str());
-                fpsglyph.setCharacterSize(12);
-                fpsglyph.setFillColor(uiTextColor);
-                fpsglyph.setOutlineColor(uiTextColor);
-                fpsglyph.setPosition(50, 300);
-                app.draw(fpsglyph);
-                //std::cout << "fps: " << fps << "\n";
-            }
-#endif
 
             if (uiFrameStateLocal->runningFromReplay) {
                 //TODO: also write some sort of replay progress display here

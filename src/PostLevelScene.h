@@ -5,11 +5,9 @@
 #include "GLFWWindow.h"
 
 namespace hg {
-    struct RenderWindow;
     struct LoadedLevel;
     class TimeEngine;
     void run_post_level_scene(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         hg::VulkanEngine &eng,
         VulkanRenderer& vkRenderer,

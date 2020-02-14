@@ -1,10 +1,10 @@
 #ifndef HG_MATHS_H
 #define HG_MATHS_H
 #include <algorithm>
-#include <SFML/System/Vector2.hpp>
 namespace hg {
 
-template<typename T> struct vec2{
+template<typename T> struct vec2
+{
     T a;
     T b;
 };
@@ -22,6 +22,75 @@ static_assert(sizeof(vec2<int>) == 2 * sizeof(int));
 static_assert(offsetof(vec2<int>, a) == 0);
 static_assert(offsetof(vec2<int>, b) == 0 + sizeof(int));
 
+template<typename T>
+inline vec2<T> &operator+=(vec2<T> &l, vec2<T> const &r) {
+    l.a += r.a;
+    l.b += r.b;
+    return l;
+}
+template<typename T>
+inline vec2<T> operator+(vec2<T> l, vec2<T> const &r) {
+    return l += r;
+}
+
+template<typename T>
+inline vec2<T> &operator-=(vec2<T> &l, vec2<T> const &r) {
+    l.a -= r.a;
+    l.b -= r.b;
+    return l;
+}
+template<typename T>
+inline vec2<T> operator-(vec2<T> l, vec2<T> const &r) {
+    return l -= r;
+}
+
+template<typename T>
+inline vec2<T> &operator*=(vec2<T> &l, T const &r) {
+    l.a *= r;
+    l.b *= r;
+    return l;
+}
+template<typename T>
+inline vec2<T> operator*(vec2<T> l, T const &r) {
+    return l *= r;
+}
+template<typename T>
+inline vec2<T> operator*(T const &l, vec2<T> r) {
+    return r *= l;
+}
+
+
+template<typename T>
+inline vec2<T> &operator/=(vec2<T> &l, T const &r) {
+    l.a /= r;
+    l.b /= r;
+    return l;
+}
+template<typename T>
+inline vec2<T> operator/(vec2<T> l, T const &r) {
+    return l /= r;
+}
+
+template<typename T>
+inline bool operator==(vec2<T> const &l, vec2<T> const &r) {
+    return std::tie(l.a, l.b) == std::tie(r.a, r.b);
+}
+template<typename T>
+inline bool operator!=(vec2<T> const &l, vec2<T> const &r) {
+    return !(l == r);
+}
+
+template<typename T>
+inline T magnitude(vec2<T> const &vec) {
+    return std::sqrt(vec.a*vec.a + vec.b*vec.b);
+}
+
+template<typename T>
+inline vec2<T> normal(vec2<T> const &vec) {
+    vec2<T> direction{vec.b, -vec.a};
+    assert(magnitude(direction));
+    return direction / magnitude(direction);
+}
 
 template<typename T> struct vec3 {
     T a;
@@ -46,15 +115,68 @@ static_assert(offsetof(vec3<int>, a) == 0);
 static_assert(offsetof(vec3<int>, b) == 0 + sizeof(int));
 static_assert(offsetof(vec3<int>, c) == 0 + 2*sizeof(int));
 
-inline float magnitude(sf::Vector2f const vec) {
-    return std::sqrt(vec.x*vec.x + vec.y*vec.y);
+template<typename T>
+inline vec3<T> &operator+=(vec3<T> &l, vec3<T> const &r) {
+    l.a += r.a;
+    l.b += r.b;
+    l.c += r.c;
+    return l;
+}
+template<typename T>
+inline vec3<T> operator+(vec3<T> l, vec3<T> const &r) {
+    return l += r;
 }
 
-inline sf::Vector2f normal(sf::Vector2f const vec) {
-    sf::Vector2f direction(vec.y, -vec.x);
-    assert(magnitude(direction));
-    return direction / magnitude(direction);
+template<typename T>
+inline vec3<T> &operator-=(vec3<T> &l, vec3<T> const &r) {
+    l.a -= r.a;
+    l.b -= r.b;
+    l.c -= r.c;
+    return l;
 }
+template<typename T>
+inline vec3<T> operator-(vec3<T> l, vec3<T> const &r) {
+    return l -= r;
+}
+
+template<typename T>
+inline vec3<T> &operator*=(vec3<T> &l, T const &r) {
+    l.a *= r;
+    l.b *= r;
+    l.c *= r;
+    return l;
+}
+template<typename T>
+inline vec3<T> operator*(vec3<T> l, T const &r) {
+    return l *= r;
+}
+template<typename T>
+inline vec3<T> operator*(T const &l, vec3<T> r) {
+    return r *= l;
+}
+
+
+template<typename T>
+inline vec3<T> &operator/=(vec3<T> &l, T const &r) {
+    l.a /= r;
+    l.b /= r;
+    l.c /= r;
+    return l;
+}
+template<typename T>
+inline vec3<T> operator/(vec3<T> l, T const &r) {
+    return l /= r;
+}
+
+template<typename T>
+inline bool operator==(vec3<T> const &l, vec3<T> const &r) {
+    return std::tie(l.a, l.b, l.c) == std::tie(r.a, r.b, r.c);
+}
+template<typename T>
+inline bool operator!=(vec3<T> const &l, vec3<T> const &r) {
+    return !(l == r);
+}
+
 
 
 template<typename Numeric>

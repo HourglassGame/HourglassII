@@ -6,7 +6,6 @@
 #include "multi_thread_allocator.h"
 #include "memory_pool.h"
 #include "mp/std/vector"
-#include <boost/assign.hpp>
 namespace hg {
 namespace physics_engine_test {
 namespace {
@@ -58,27 +57,25 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 
 
     bool testTester() {
-        using namespace boost::assign;
-
         std::vector<std::vector<bool> > wall;
         std::vector<bool> row;
-        #define E row +=
-        #define D wall.push_back(row); row.clear();
-        E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1; D
-        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1; D
-        E 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1; D
-        E 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1; D
-        E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1; D
+        #define E row = std::vector<bool>{
+        #define D }; wall.push_back(row); row.clear();
+        E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1 D
+        E 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1 D
+        E 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1 D
+        E 1,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1 D
+        E 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 D
         #undef E
         #undef D
         std::array<hg::multi_vector<bool, 2>::index, 2> shape = {{ 20, 15 }};
@@ -93,8 +90,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 
         Wall actualWall(3200, wallmap, "HourglassI");
         Environment env{actualWall, 30};
-        std::vector<Box> boxArrivalList;
-        boxArrivalList +=
+        std::vector<Box> boxArrivalList{
             Box(19200, 34800, 1380, 3800, 3200, -1, -1, TimeDirection::FORWARDS),
             Box(22400, 40600, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
             Box(25600, 40600, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
@@ -102,7 +98,8 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
             Box(32000, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
             Box(35200, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
             Box(38400, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS),
-            Box(41600, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS);
+            Box(41600, 38400, 0, 0, 3200, -1, -1, TimeDirection::FORWARDS)
+        };
 
         const std::size_t initialPoolSize{ 2 << 5 };
         memory_pool<user_allocator_tbb_alloc> pool{ initialPoolSize };
@@ -113,11 +110,13 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
         mt::std::vector<Glitz> forwardsGlitz;
         mt::std::vector<Glitz> reverseGlitz;
         mp::std::vector<GlitzPersister> persistentGlitz(pool);
-        std::vector<Collision> nextPlatform;
-        nextPlatform += Collision(22400, 43800, 0, 0, 0, 0, 6400, 1600, TimeDirection::FORWARDS);
+        std::vector<Collision> nextPlatform{
+            Collision(22400, 43800, 0, 0, 0, 0, 6400, 1600, TimeDirection::FORWARDS)
+        };
         std::vector<PortalArea> nextPortal;
-        std::vector<ArrivalLocation> arrivalLocations;
-        arrivalLocations += ArrivalLocation(18200, 4060, 0, 0, TimeDirection::FORWARDS);
+        std::vector<ArrivalLocation> arrivalLocations{
+            ArrivalLocation(18200, 4060, 0, 0, TimeDirection::FORWARDS)
+        };
         std::vector<MutatorArea> mutators;
         TriggerFrameState triggerFrameState(new (pool) MockTriggerFrameStateImplementation());
         FrameID frame(9654, UniverseID(10800));
@@ -487,17 +486,16 @@ Spec:
         //Test line contraction
         //Test start point inside wall
         //Test start point exactly at edge of wall
-        using namespace boost::assign;
 
         std::vector<std::vector<bool>> wall;
         std::vector<bool> row;
-#define E row +=
-#define D wall.push_back(row); row.clear();
-        E 1, 1, 1, 1, 1; D
-        E 1, 0, 0, 0, 1; D
-        E 1, 0, 1, 0, 1; D
-        E 1, 0, 0, 0, 1; D
-        E 1, 1, 1, 1, 1; D
+#define E row = std::vector<bool>{
+#define D }; wall.push_back(row); row.clear();
+        E 1, 1, 1, 1, 1 D
+        E 1, 0, 0, 0, 1 D
+        E 1, 0, 1, 0, 1 D
+        E 1, 0, 0, 0, 1 D
+        E 1, 1, 1, 1, 1 D
 #undef E
 #undef D
         std::array<hg::multi_vector<bool, 2>::index, 2> shape = { { 5, 5 } };

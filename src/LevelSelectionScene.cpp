@@ -3,10 +3,6 @@
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm/adjacent_find.hpp>
 #include <boost/filesystem.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/System/Sleep.hpp>
 #include "Maths.h"
 #include "natural_sort.h"
 #include "LevelLoader.h"
@@ -50,10 +46,9 @@ private:
 };
 
 std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
-    hg::RenderWindow &window,
     GLFWWindow &windowglfw,
-    VulkanEngine& vulkanEng,
-    VulkanRenderer& vkRenderer,
+    VulkanEngine &vulkanEng,
+    VulkanRenderer &vkRenderer,
     std::string &levelName)
 {
     std::vector<boost::filesystem::path> levelPaths;
@@ -85,7 +80,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
     }
 
     std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(
-        window, windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer);
+        windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer);
 
     if (std::holds_alternative<SceneAborted_tag>(selectedOption))
     {
@@ -104,13 +99,9 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
                 CachingTimeEngineLoader(selectedPath)),
             move_function<LoadedLevel(TimeEngine &&)>(
                 [levelPathString](TimeEngine &&timeEngine) -> LoadedLevel {
-                    auto wall = std::make_unique<sf::Image>(loadAndBakeWallImage(timeEngine.getWall()));
-                    auto positionColours = std::make_unique<sf::Image>(loadAndBakePositionColourImage(timeEngine.getWall()));
                     return {
                         std::move(timeEngine),
-                        loadLevelResources(levelPathString, "GlitzData"),
-                        std::move(wall),
-                        std::move(positionColours)
+                        loadLevelResources(levelPathString, "GlitzData")
                     };
                 }
             )

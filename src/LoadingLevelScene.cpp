@@ -2,10 +2,6 @@
 #include <tbb/task_group.h>
 #include <boost/thread/future.hpp>
 #include "LoadedLevel.h"
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include "RenderWindow.h"
 #include "async.h"
 namespace hg {
     struct LoadingLevelSceneSharedVulkanData {
@@ -232,19 +228,6 @@ namespace hg {
                     viewports.data()
                 );
             }
-
-#if 0
-            sf::Text loadingGlyph;
-            loadingGlyph.setFont(*hg::defaultFont);
-            loadingGlyph.setString("Loading Level...");
-            loadingGlyph.setFillColor(sf::Color(255, 255, 255));
-            loadingGlyph.setOutlineColor(sf::Color(255, 255, 255));
-            loadingGlyph.setPosition(520, 450);
-            loadingGlyph.setCharacterSize(12);
-            window.clear();
-            window.draw(loadingGlyph);
-            window.display();
-#endif
             drawText(target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet, "Loading Level...", 520.f, 450.f, 12.f, vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
         }
 
@@ -256,22 +239,9 @@ namespace hg {
         std::shared_ptr<LoadingLevelSceneSharedVulkanData> sceneData;
         std::vector<std::shared_ptr<LoadingLevelSceneFrameVulkanData>> frameData;
     };
-static void drawLoadingScreen(hg::RenderWindow &window) {
-    sf::Text loadingGlyph;
-    loadingGlyph.setFont(*hg::defaultFont);
-    loadingGlyph.setString("Loading Level...");
-    loadingGlyph.setFillColor(sf::Color(255,255,255));
-    loadingGlyph.setOutlineColor(sf::Color(255, 255, 255));
-    loadingGlyph.setPosition(520, 450);
-    loadingGlyph.setCharacterSize(12);
-    window.clear();
-    window.draw(loadingGlyph);
-    window.display();
-}
 
 static std::variant<hg::LoadedLevel, LoadingCanceled_tag>
 displayLoadingScreen(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         boost::future<TimeEngine> &futureLoadedLevel,
         OperationInterrupter &interrupter,
@@ -302,12 +272,8 @@ displayLoadingScreen(
     while (futureLoadedLevel.wait_for(boost::chrono::milliseconds(100)) != boost::future_status::ready) {
         glfwPollEvents();
 
-        if (!sceneDrawn) {
-            drawLoadingScreen(window);
-        }
         {
             if (glfwWindowShouldClose(windowglfw.w)) {
-                window.close();
                 throw WindowClosed_exception{};
             }
 
@@ -328,7 +294,6 @@ displayLoadingScreen(
 
 std::variant<hg::LoadedLevel, LoadingCanceled_tag>
 load_level_scene(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         LoadLevelFunction const &levelLoadingFunction,
         VulkanEngine& vulkanEng,
@@ -338,6 +303,6 @@ load_level_scene(
 
     auto futureLoadedLevel = async([&]() {return levelLoadingFunction.timeEngineLoadFun(interruptor); });
 
-    return displayLoadingScreen(window, windowglfw, futureLoadedLevel, interruptor, levelLoadingFunction.glitzLoadFun, vulkanEng, vkRenderer);
+    return displayLoadingScreen(windowglfw, futureLoadedLevel, interruptor, levelLoadingFunction.glitzLoadFun, vulkanEng, vkRenderer);
 }
 }

@@ -12,7 +12,6 @@
 
 namespace hg {
     std::variant<move_function<std::vector<InputList>()>, SceneAborted_tag> run_replay_selection_scene(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         std::string const &levelName,
         VulkanEngine& vulkanEng,
@@ -50,7 +49,7 @@ namespace hg {
         std::vector<std::string> optionStrings;
         boost::push_back(optionStrings, optionList | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
         std::variant<std::size_t, SceneAborted_tag> selectedOption = 
-            run_selection_scene(window, windowglfw, 0, optionStrings, vulkanEng, vkRenderer);
+            run_selection_scene(/*window,*/ windowglfw, 0, optionStrings, vulkanEng, vkRenderer);
 
         if (std::holds_alternative<SceneAborted_tag>(selectedOption))
         {

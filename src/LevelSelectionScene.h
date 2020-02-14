@@ -5,13 +5,11 @@
 #include <variant>
 #include "LoadedLevel.h"
 #include "OperationInterrupter.h"
-#include "RenderWindow.h"
 #include "GLFWWindow.h"
 
 namespace hg {
     std::variant<LoadLevelFunction, SceneAborted_tag>
     run_level_selection_scene(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         VulkanEngine& vulkanEng,
         VulkanRenderer& vkRenderer,

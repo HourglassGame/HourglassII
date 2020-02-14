@@ -3,7 +3,6 @@
 
 #include "Ability.h"
 
-#include "RenderWindow.h"
 #include "InputList_fwd.h"
 #include "GLFWWindow.h"
 
@@ -14,7 +13,6 @@ class Input final {
 public:
     Input();
     void updateState(
-        hg::RenderWindow::InputState const &keyState,
         GLFWWindow &windowglfw,
         ActivePanel const mousePanel,
         bool waitingForWave,

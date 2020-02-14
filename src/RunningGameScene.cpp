@@ -24,10 +24,8 @@
 #include "ReplayIO.h"
 #include "LayeredCanvas.h"
 #include "ResourceManager.h"
-#include "RenderWindow.h"
 #include "Maths.h"
 #include "async.h"
-#include <SFML/Graphics.hpp>
 
 #include "AudioGlitzManager.h"
 #include "ObjectPtrList.h"
@@ -42,8 +40,6 @@
 #include "ReplayIO.h"
 #include "LayeredCanvas.h"
 #include "ResourceManager.h"
-#include "RenderWindow.h"
-#include <SFML/Graphics.hpp>
 
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -79,14 +75,12 @@
 #include "move_function.h"
 #include <memory>
 #include "sfRenderTargetCanvas.h"
-#include "sfColour.h"
 #include "Maths.h"
 
 #include "Scene.h"
 #include "InitialScene.h"
 
 #include "InitialScene.h"
-#include "RenderWindow.h"
 #include "LoadingLevelScene.h"
 #include "LoadedLevel.h"
 #include "PostLevelScene.h"
@@ -104,33 +98,15 @@ namespace hg {
 
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
-    hg::RenderWindow &app,
     GLFWWindow &windowglfw,
-    hg::VulkanEngine &eng,
     std::size_t relativeGuyIndex,
     hg::FrameID const &uiTimeCursor,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
-    hg::LevelResources const &resources,
-    sf::Image const &wallImage,
-    sf::Image const &positionColoursImage,
-    std::chrono::steady_clock::time_point const &frameStartTime,
     bool const runningFromReplay,
     bool const frameRun,
     std::vector<std::vector<GuyFrameData>> &run_game_scene_guyFrameData,
     std::vector<std::vector<int>> &run_game_scene_frameGuyData);
-
-
-void drawFrame(
-    sf::RenderTarget &target,
-    hg::VulkanEngine &eng,
-    //hg::TimeEngine const &timeEngine,
-    UIFrameState const &uiFrameState,
-
-    hg::LevelResources const &resources,
-    sf::Image const &wallImage,
-    sf::Image const &positionColoursImage
-);
 
 void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend);
 void generateReplay();
@@ -181,7 +157,7 @@ std::variant<
     ReloadLevel_tag,
     move_function<std::vector<hg::InputList>()>
 >
-run_game_scene(hg::RenderWindow &window,
+run_game_scene(
     GLFWWindow &windowglfw,
     VulkanEngine &eng,
     VulkanRenderer &vkRenderer,
@@ -244,13 +220,8 @@ run_game_scene(hg::RenderWindow &window,
     auto audioPlayingState = AudioPlayingState(loadedLevel.resources.sounds);
     auto audioGlitzManager = AudioGlitzManager();
 
-    assert(loadedLevel.bakedWall);
-    assert(loadedLevel.bakedPositionColours);
-
     hg::TimeEngine &timeEngine = loadedLevel.timeEngine;
     hg::LevelResources const &levelResources = loadedLevel.resources;
-    sf::Image const &wallImage = *loadedLevel.bakedWall;
-    sf::Image const &positionColoursImage = *loadedLevel.bakedPositionColours;
 
     std::vector<std::vector<GuyFrameData>> run_game_scene_guyFrameData;
     std::vector<std::vector<int>> run_game_scene_frameGuyData;
@@ -325,7 +296,7 @@ run_game_scene(hg::RenderWindow &window,
                 
                 ActivePanel mousePanel = getActivePanel(windowglfw);
 
-                input.updateState(window.getInputState(), windowglfw, mousePanel, waitingForWave,
+                input.updateState(/*window.getInputState(), */windowglfw, mousePanel, waitingForWave,
                     timelineOffset, timelineWidth, personalTimelineWidth,
                     timeEngine.getReplayData().size(),
                     mouseOffX, mouseOffY, 1. / scalingFactor);
@@ -366,7 +337,7 @@ run_game_scene(hg::RenderWindow &window,
         case RunState::RUNNING_LEVEL:
         {
             if (glfwWindowShouldClose(windowglfw.w)) {
-                window.close();
+                //window.close();
                 throw WindowClosed_exception{};
             }
 
@@ -436,10 +407,19 @@ run_game_scene(hg::RenderWindow &window,
                 try {
                     assert(futureRunResult.get_state() != boost::future_state::uninitialized);
                     auto const waveInfo{futureRunResult.get()};
-                    auto uiFrameState{runStep(timeEngine, window, windowglfw, eng, relativeGuyIndex,
-                        input.getTimeCursor(), inertia, waveInfo, levelResources, wallImage,
-                        positionColoursImage, frameStartTime, runningFromReplay, frameRun,
-                        run_game_scene_guyFrameData, run_game_scene_frameGuyData)};
+                    auto uiFrameState{
+                        runStep(
+                            timeEngine,
+                            windowglfw,
+                            relativeGuyIndex,
+                            input.getTimeCursor(),
+                            inertia,
+                            waveInfo,
+                            runningFromReplay,
+                            frameRun,
+                            run_game_scene_guyFrameData,
+                            run_game_scene_frameGuyData)
+                    };
                     interrupter.reset();
 
                     if (waveInfo.paradoxPressure >= hg::PARADOX_PRESSURE_MAX) {
@@ -487,14 +467,15 @@ run_game_scene(hg::RenderWindow &window,
                     //eng.drawFrame(renderer);
 
                     if ((waitingForWave) || (glfwGetKey(windowglfw.w, GLFW_KEY_F) == GLFW_PRESS)) {
-                        window.setFramerateLimit(0);
-                        window.setVerticalSyncEnabled(false);
+                        //window.setFramerateLimit(0);
+                        //window.setVerticalSyncEnabled(false);
                         frameStartTime = std::chrono::steady_clock::now();
                     }
                     else {
-                        window.setFramerateLimit(hg::FRAMERATE);
-                        window.setVerticalSyncEnabled(true);
-
+                        //window.setFramerateLimit(hg::FRAMERATE);
+                        //window.setVerticalSyncEnabled(true);
+                        
+                        //TODO: Avoid busy-wait
                         while (true) {
                             auto const t{std::chrono::steady_clock::now()};
                             if (t >= frameStartTime+std::chrono::duration<double>(1./FRAMERATE)) {
@@ -511,7 +492,7 @@ run_game_scene(hg::RenderWindow &window,
                     //TODO: Leave this scene properly before entering post_level_scene.
                     //(to avoid excessive memory use)
                     vkRenderer.EndScene();
-                    run_post_level_scene(window, windowglfw, eng, vkRenderer, initialTimeEngine, loadedLevel);
+                    run_post_level_scene(/*window, */windowglfw, eng, vkRenderer, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)
                     return GameWon_tag{};
                 }
@@ -526,17 +507,11 @@ run_game_scene(hg::RenderWindow &window,
 
 UIFrameState runStep(
     hg::TimeEngine &timeEngine,
-    hg::RenderWindow &app,
     GLFWWindow &windowglfw,
-    hg::VulkanEngine &eng,
     std::size_t relativeGuyIndex,
     hg::FrameID const &uiTimeCursor,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
-    hg::LevelResources const &resources,
-    sf::Image const &wallImage,
-    sf::Image const &positionColoursImage,
-    std::chrono::steady_clock::time_point const &frameStartTime,
     bool const runningFromReplay,
     bool const frameRun,
     std::vector<std::vector<GuyFrameData>> &run_game_scene_guyFrameData,
@@ -713,175 +688,6 @@ UIFrameState runStep(
             static_cast<std::size_t>(timeEngine.getTimelineLength()),
             std::move(guyFrameData)
     };
-}
-void drawFrame(
-    sf::RenderTarget &target,
-    hg::VulkanEngine &eng,
-    //hg::TimeEngine const &timeEngine,
-    UIFrameState const &uiFrameState,
-
-    hg::LevelResources const &resources,
-    sf::Image const &wallImage,
-    sf::Image const &positionColoursImage
-)
-{
-    target.clear(sf::Color(255, 255, 255));
-
-    DrawVisualGlitzAndWall(
-        target,
-        eng,
-        uiFrameState.drawnGlitz,//getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
-        uiFrameState.wall,//timeEngine.getWall(),
-        resources,
-        wallImage,
-        positionColoursImage,
-        static_cast<int>(uiFrameState.guyIndex),
-        uiFrameState.shouldDrawGuyPositionColours);
-
-    if (uiFrameState.shouldDrawInventory) {
-        drawInventory(
-            target,
-            uiFrameState.pickups,
-            uiFrameState.abilityCursor);
-    }
-
-    DrawParadoxPressure(
-        target,
-        uiFrameState.waveInfo.paradoxPressure,
-        uiFrameState.waveInfo.minWaveChanges);
-
-    DrawTimeline2(
-        target,
-        uiFrameState.timelineLength,
-        uiFrameState.waveInfo.updatedFrames,
-        uiFrameState.drawnFrame,
-        uiFrameState.postOverwriteInput.back().getTimeCursor(),
-        uiFrameState.guyFrames,
-        uiFrameState.wall);
-
-    DrawPersonalTimeline2(
-        target,
-        uiFrameState.wall,
-        uiFrameState.relativeGuyIndex,
-        uiFrameState.guyFrames,
-        uiFrameState.postOverwriteInput,
-        uiFrameState.timelineLength);
-
-    DrawInterfaceBorder(target);
-
-    {
-        std::stringstream currentPlayerIndex;
-        currentPlayerIndex << "Index: " << (std::size(uiFrameState.guyFrames) - 1);
-        sf::Text currentPlayerGlyph;
-        currentPlayerGlyph.setFont(*hg::defaultFont);
-        currentPlayerGlyph.setString(currentPlayerIndex.str());
-        currentPlayerGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 55);
-        currentPlayerGlyph.setCharacterSize(16);
-        currentPlayerGlyph.setFillColor(uiTextColor);
-        currentPlayerGlyph.setOutlineColor(uiTextColor);
-        target.draw(currentPlayerGlyph);
-    }
-    {
-        std::stringstream currentPlayerIndex;
-        currentPlayerIndex << "Control: " << (std::size(uiFrameState.guyFrames) - 1) - uiFrameState.relativeGuyIndex;
-        sf::Text currentPlayerGlyph;
-        currentPlayerGlyph.setFont(*hg::defaultFont);
-        currentPlayerGlyph.setString(currentPlayerIndex.str());
-        currentPlayerGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y) - 35);
-        currentPlayerGlyph.setCharacterSize(16);
-        currentPlayerGlyph.setFillColor(uiTextColor);
-        currentPlayerGlyph.setOutlineColor(uiTextColor);
-        target.draw(currentPlayerGlyph);
-    }
-    {
-        std::stringstream frameNumberString;
-        frameNumberString << "Frame: " << uiFrameState.drawnFrame.getFrameNumber();
-        sf::Text frameNumberGlyph;
-        frameNumberGlyph.setFont(*hg::defaultFont);
-        frameNumberGlyph.setString(frameNumberString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 60);
-        frameNumberGlyph.setCharacterSize(16);
-        frameNumberGlyph.setFillColor(uiTextColor);
-        frameNumberGlyph.setOutlineColor(uiTextColor);
-        target.draw(frameNumberGlyph);
-    }
-    {
-        std::stringstream timeString;
-        timeString << "Time: " << (uiFrameState.drawnFrame.getFrameNumber() * 10 / hg::FRAMERATE) / 10. << "s";
-        sf::Text frameNumberGlyph;
-        frameNumberGlyph.setFont(*hg::defaultFont);
-        frameNumberGlyph.setString(timeString.str());
-        frameNumberGlyph.setPosition(90, static_cast<float>(hg::WINDOW_DEFAULT_Y*hg::UI_DIVIDE_Y) + 20);
-        frameNumberGlyph.setCharacterSize(16);
-        frameNumberGlyph.setFillColor(uiTextColor);
-        frameNumberGlyph.setOutlineColor(uiTextColor);
-        target.draw(frameNumberGlyph);
-    }
-    {
-        std::vector<int> framesExecutedList;
-        framesExecutedList.reserve(boost::size(uiFrameState.waveInfo.updatedFrames));
-        for (
-            hg::FrameUpdateSet const &updateSet :
-            uiFrameState.waveInfo.updatedFrames)
-        {
-            framesExecutedList.push_back(static_cast<int>(boost::size(updateSet)));
-        }
-        std::stringstream numberOfFramesExecutedString;
-        if (!boost::empty(framesExecutedList)) {
-            numberOfFramesExecutedString << *boost::begin(framesExecutedList);
-            for (
-                int num :
-            framesExecutedList
-                | boost::adaptors::sliced(1, boost::size(framesExecutedList)))
-            {
-                numberOfFramesExecutedString << ":" << num;
-            }
-        }
-        sf::Text numberOfFramesExecutedGlyph;
-        numberOfFramesExecutedGlyph.setFont(*hg::defaultFont);
-        numberOfFramesExecutedGlyph.setString(numberOfFramesExecutedString.str());
-        numberOfFramesExecutedGlyph.setPosition(50, 330);
-        numberOfFramesExecutedGlyph.setCharacterSize(12);
-        numberOfFramesExecutedGlyph.setFillColor(uiTextColor);
-        numberOfFramesExecutedGlyph.setOutlineColor(uiTextColor);
-        target.draw(numberOfFramesExecutedGlyph);
-    }
-    //TODO: Rething FPS measurements, now that
-    //GUI and TimeEngine frames can be independent
-    //(in the near future they will be)
-#if 0
-    {
-        auto newFrameStartTime = std::chrono::steady_clock().now();
-        std::stringstream fpsstring;
-        auto const fps = (1. / std::chrono::duration<double>(newFrameStartTime - frameStartTime).count());
-        fpsstring << (fps > 5 ? std::round(fps) : fps);
-        frameStartTime = newFrameStartTime;
-        sf::Text fpsglyph;
-        fpsglyph.setFont(*hg::defaultFont);
-        fpsglyph.setString(fpsstring.str());
-        fpsglyph.setCharacterSize(12);
-        fpsglyph.setFillColor(uiTextColor);
-        fpsglyph.setOutlineColor(uiTextColor);
-        fpsglyph.setPosition(50, 300);
-        app.draw(fpsglyph);
-        //std::cout << "fps: " << fps << "\n";
-    }
-#endif
-
-    if (uiFrameState.runningFromReplay) {
-        //TODO: also write some sort of replay progress display here
-        //currentReplayIt-replay.begin() << "/" << currentReplayEnd-replay.begin()
-
-
-        sf::Text replayGlyph;
-        replayGlyph.setFont(*hg::defaultFont);
-        replayGlyph.setString("R");
-        replayGlyph.setFillColor(sf::Color(255, 25, 50));
-        replayGlyph.setOutlineColor(sf::Color(255, 25, 50));
-        replayGlyph.setPosition(580, 32);
-        replayGlyph.setCharacterSize(32);
-        target.draw(replayGlyph);
-    }
 }
 
 void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend)

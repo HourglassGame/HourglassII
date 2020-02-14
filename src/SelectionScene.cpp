@@ -1,6 +1,5 @@
 #include "SelectionScene.h"
 #include "RunningGameSceneRenderer.h"
-#include <SFML/Graphics/Text.hpp>
 namespace hg {
 
     struct SelectionSceneSharedVulkanData {
@@ -234,22 +233,6 @@ namespace hg {
                 );
             }
 
-#if 0
-            //TODO: Display surrounding options, rather than just one option;
-            //      Display some sort of title, explaining what is being selected.
-            window.clear();
-
-            sf::Text levelNameGlyph;
-            levelNameGlyph.setFont(*hg::defaultFont);
-            levelNameGlyph.setString(selected);
-            levelNameGlyph.setFillColor(sf::Color(255, 255, 255));
-            levelNameGlyph.setOutlineColor(sf::Color(255, 255, 255));
-            levelNameGlyph.setPosition(400, 200);
-            levelNameGlyph.setCharacterSize(32);
-            window.draw(levelNameGlyph);
-
-            window.display();
-#endif
             drawText(target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet, *uiFrameStateLocal, 400.f, 200.f, 32.f, vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
         }
         std::optional<std::string> copyUiFrameState() {
@@ -270,25 +253,7 @@ namespace hg {
         std::unique_ptr<std::string> selectionSceneUiFrameState;
     };
 
-    static void drawOptionSelection(hg::RenderWindow &window, std::string const &selected) {
-        //TODO: Display surrounding options, rather than just one option;
-        //      Display some sort of title, explaining what is being selected.
-        window.clear();
-
-        sf::Text levelNameGlyph;
-        levelNameGlyph.setFont(*hg::defaultFont);
-        levelNameGlyph.setString(selected);
-        levelNameGlyph.setFillColor(sf::Color(255, 255, 255));
-        levelNameGlyph.setOutlineColor(sf::Color(255, 255, 255));
-        levelNameGlyph.setPosition(400, 200);
-        levelNameGlyph.setCharacterSize(32);
-        window.draw(levelNameGlyph);
-
-        window.display();
-    }
-
     std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
-        hg::RenderWindow &window,
         GLFWWindow &windowglfw,
         int defaultOption,
         std::vector<std::string> const &options,
@@ -315,12 +280,12 @@ namespace hg {
 
         if (options.empty()) //If no options available, just display a blank screen until the user escapes out.
         {
-            window.clear();
-            window.display();
+            //window.clear();
+            //window.display();
             while (true) {
                 glfwPollEvents();
                 if (glfwWindowShouldClose(windowglfw.w)) {
-                    window.close();
+                    //window.close();
                     throw WindowClosed_exception{};
                 }
 
@@ -338,13 +303,13 @@ namespace hg {
 
         while (true) {
             renderer.setUiFrameState(std::string{ options[selectedItem] });
-            drawOptionSelection(window, options[selectedItem]);
+            //drawOptionSelection(window, options[selectedItem]);
             bool menuDrawn = true;
             while (menuDrawn) {
                 glfwPollEvents();
 
                 if (glfwWindowShouldClose(windowglfw.w)) {
-                    window.close();
+                    //window.close();
                     throw WindowClosed_exception{};
                 }
 
