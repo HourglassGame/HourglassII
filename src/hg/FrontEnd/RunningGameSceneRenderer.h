@@ -645,13 +645,13 @@ namespace hg {
                 top,
                 static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f,
                 bottom - top,
-                backgroundColor, 0, 0);
+                backgroundColor, 0);
             drawRect(target,
                 static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.35f,
                 top + (bottom - top)*(1.f - pressureProportion),
                 static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f,
                 (bottom - top)*pressureProportion,
-                pressureColor, 0, 0);
+                pressureColor, 0);
 
             std::stringstream pressureStr;
             pressureStr << "Pressure: " << static_cast<int>(static_cast<float>(100 * paradoxPressure) /  static_cast<float>(hg::PARADOX_PRESSURE_MAX)) << "%";

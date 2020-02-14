@@ -12,10 +12,8 @@ namespace hg {
         vec3<float> colour;
         vec2<float> texCoord;
         unsigned char useTexture;
-        unsigned char colourTexture;
     };
 
-    //typedef vec2<float> Vertex;
     std::vector<const char*> const deviceExtensions{
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };

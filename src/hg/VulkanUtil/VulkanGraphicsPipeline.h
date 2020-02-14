@@ -48,7 +48,7 @@ namespace hg {
             
             TODO: Ensure this is true
             */
-            std::array<VkVertexInputAttributeDescription, 5> attributeDescriptions = {};
+            std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions = {};
 
             attributeDescriptions[0].binding = 0;
             attributeDescriptions[0].location = 0;
@@ -65,16 +65,10 @@ namespace hg {
             attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
             attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 
-
             attributeDescriptions[3].binding = 0;
             attributeDescriptions[3].location = 3;
             attributeDescriptions[3].format = VK_FORMAT_R8_UINT;
             attributeDescriptions[3].offset = offsetof(Vertex, useTexture);
-
-            attributeDescriptions[4].binding = 0;
-            attributeDescriptions[4].location = 4;
-            attributeDescriptions[4].format = VK_FORMAT_R8_UINT;
-            attributeDescriptions[4].offset = offsetof(Vertex, colourTexture);
 
             VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
             vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;

@@ -24,7 +24,25 @@ namespace hg{
             if (!textureImage.loadFromFile(filename)) {
                 BOOST_THROW_EXCEPTION(std::exception("Image Load From File Failed!"));
             }
+            
             std::size_t imageSizeBytes{textureImage.getSize().x*textureImage.getSize().y * 4};
+
+            if (filename == "unifont.png") {
+                //Hack. Remove this!
+                for (auto x{0}; x != textureImage.getSize().x; ++x) {
+                    for (auto y{0}; y != textureImage.getSize().y; ++y) {
+                        //Turn White to alpha
+                        //and Black to White.
+                        if (textureImage.getPixel(x,y) == sf::Color(255,255,255,255)) {
+                            textureImage.setPixel(x,y, sf::Color(255,255,255,0));
+                        }
+                        else {
+                            textureImage.setPixel(x,y, sf::Color(255,255,255,255));
+                        }
+                    }
+                }
+            }
+
 
             //Copy to staging buffer
             VkBufferCreateInfo stagingBufferInfo = {};
