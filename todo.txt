@@ -193,3 +193,5 @@ Use vertex index rendering, rather than vertex list?
 Add proper classes and structure to enforce relevant invariants
 
 Improve performance of window resizing; avoid game-speed slowdown during window resizing.
+
+Handle windowRefreshCallback
