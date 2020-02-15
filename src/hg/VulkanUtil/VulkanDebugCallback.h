@@ -6,8 +6,21 @@
 namespace hg {
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-        std::cerr << "validation layer: " << pCallbackData->pMessage << "\n";;
-
+        if (
+            (messageSeverity & (VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT))
+         || (messageType & (VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)))
+        {
+            std::cerr << "validation error: " << pCallbackData->pMessage << "\n";
+        }
+        else if (
+            (messageSeverity & (VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT))
+         || (messageType & (VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)))
+        {
+            std::cerr << "validation warning: " << pCallbackData->pMessage << "\n";
+        }
+        else {
+            std::cerr << "validation info: " << pCallbackData->pMessage << "\n";
+        }
         return VK_FALSE;
     }
     class VulkanDebugCallback final {

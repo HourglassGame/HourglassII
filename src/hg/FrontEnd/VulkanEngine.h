@@ -31,6 +31,7 @@
 #include "hg/GlobalConst.h"
 #include "hg/VulkanUtil/VulkanExceptions.h"
 #include "VulkanRenderer.h"
+#include <tbb/queuing_mutex.h>
 namespace hg {
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
@@ -550,7 +551,7 @@ namespace hg {
     class VulkanEngine final {
         static void framebufferResizeCallback(GLFWwindow* const window, int const width, int const height) {
             auto const eng{static_cast<VulkanEngine*>(glfwGetWindowUserPointer(window))};
-            std::lock_guard<std::mutex> lock(eng->frameBufferSizeMutex);
+            decltype(frameBufferSizeMutex)::scoped_lock lock(eng->frameBufferSizeMutex);
             eng->newFramebufferSize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
         }
 
@@ -606,7 +607,6 @@ namespace hg {
             swapChainFramebuffers = std::move(newSwapChainFramebuffers);
         }
         bool framebufferResizedCheck() {
-            std::lock_guard<std::mutex> lock(frameBufferSizeMutex);
             if (oldFramebufferSize.width != newFramebufferSize.width || oldFramebufferSize.height != newFramebufferSize.height) {
                 oldFramebufferSize = newFramebufferSize;
                 return true;
@@ -614,6 +614,7 @@ namespace hg {
             return false;
         }
         void drawFrame(VulkanRenderer &renderer) {
+            decltype(frameBufferSizeMutex)::scoped_lock lock(frameBufferSizeMutex);
             {
                 auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max())};
                 if (res != VK_SUCCESS) {
@@ -621,7 +622,6 @@ namespace hg {
                 }
             }
             uint32_t imageIndex{};
-
             while (true) {
                 auto const res{ vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex)};
                 if (res == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -713,7 +713,7 @@ namespace hg {
         }
         GLFWwindow *w;
 
-        std::mutex frameBufferSizeMutex;
+        tbb::queuing_mutex frameBufferSizeMutex;
         VkExtent2D oldFramebufferSize;
         VkExtent2D newFramebufferSize;
         VulkanInstance instance;
