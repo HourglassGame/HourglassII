@@ -588,7 +588,9 @@ namespace hg {
         void recreateSwapChain(VulkanRenderer &renderer){
             vkDeviceWaitIdle(logicalDevice.device);
             framebufferResizedCheck();
-            if (oldFramebufferSize.width == 0 || oldFramebufferSize.height == 0) {
+            auto capabilities{querySwapChainSupport(physicalDevice, surface.surface).capabilities};
+            if (oldFramebufferSize.width == 0 || oldFramebufferSize.height == 0
+             || capabilities.maxImageExtent.width == 0 || capabilities.maxImageExtent.height == 0) {
                 //Can't render into 0-size swapchain.
                 return;
             }
@@ -615,6 +617,11 @@ namespace hg {
         }
         void drawFrame(VulkanRenderer &renderer) {
             decltype(frameBufferSizeMutex)::scoped_lock lock(frameBufferSizeMutex);
+            {
+                auto capabilities{querySwapChainSupport(physicalDevice, surface.surface).capabilities};
+                //Can't render into 0-size surface
+                if (capabilities.maxImageExtent.width == 0 || capabilities.maxImageExtent.height == 0) return;
+            }
             {
                 auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max())};
                 if (res != VK_SUCCESS) {
