@@ -11,7 +11,7 @@
 #include "hg/VulkanUtil/VulkanPipelineLayout.h"
 #include "hg/VulkanUtilHG/VulkanFramebufferHG.h"
 #include "hg/VulkanUtilHG/VulkanCommandPoolHG.h"
-#include "hg/VulkanUtil/VulkanGraphicsPipeline.h"
+#include "hg/VulkanUtilHG/VulkanGraphicsPipelineHG.h"
 #include "hg/VulkanUtilHG/VulkanFenceHG.h"
 #include "hg/VulkanUtil/VulkanSemaphore.h"
 #include "hg/VulkanUtil/VulkanMemory.h"

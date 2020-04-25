@@ -78,7 +78,7 @@ namespace hg {
         VulkanDescriptorSetLayout projUniformDescriptorSetLayout;
         VulkanDescriptorSetLayout textureDescriptorSetLayout;
         VulkanPipelineLayout pipelineLayout;
-        VulkanGraphicsPipeline graphicsPipeline;
+        VulkanGraphicsPipelineHG graphicsPipeline;
         std::vector<VulkanRenderTarget> renderTargets;
 
         GameDisplayTextures textures;
@@ -158,13 +158,13 @@ namespace hg {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "timelineTextureDescriptorPool vkResetDescriptorPool failed"));
                 }
             }
-            sceneData->graphicsPipeline = VulkanGraphicsPipeline(device);
+            sceneData->graphicsPipeline = VulkanGraphicsPipelineHG(device);
             //pipelineLayout = VulkanPipelineLayout(device);
 
             sceneData->textures.timelineTextures = createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), sceneData->textures.timelineTextureDescriptorPool.descriptorPool, sceneData->textureDescriptorSetLayout.descriptorSetLayout);
 
             //pipelineLayout = VulkanPipelineLayout(device, makePipelineLayoutCreateInfo(descriptorSetLayout.descriptorSetLayout));
-            sceneData->graphicsPipeline = VulkanGraphicsPipeline(device, swapChainExtent, sceneData->pipelineLayout.pipelineLayout, renderPass);
+            sceneData->graphicsPipeline = VulkanGraphicsPipelineHG(device, swapChainExtent, sceneData->pipelineLayout.pipelineLayout, renderPass);
             sceneData->renderTargets = createRenderTargets(physicalDevice, device, sceneData->pipelineLayout.pipelineLayout, sceneData->projUniformDescriptorSetLayout.descriptorSetLayout, sceneData->preDrawCommandBuffers, sceneData->drawCommandBuffers);
         }
         std::vector<VkCommandBuffer> renderFrame(
@@ -254,7 +254,7 @@ namespace hg {
             renderPassInfo.pClearValues = &clearColor;
 
             vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-            vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->graphicsPipeline.graphicsPipeline);
+            vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->graphicsPipeline.h());
 
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1, &sceneData->textures.fontTexDescriptorSet, 0, nullptr);
 

@@ -106,7 +106,7 @@ struct MainMenuSceneSharedVulkanData {
     VulkanDescriptorSetLayout projUniformDescriptorSetLayout;
     VulkanDescriptorSetLayout textureDescriptorSetLayout;
     VulkanPipelineLayout pipelineLayout;
-    VulkanGraphicsPipeline graphicsPipeline;
+    VulkanGraphicsPipelineHG graphicsPipeline;
     VulkanDescriptorPool samplerDescriptorPool;
     //std::vector<VulkanDescriptorPool> samplerDescriptorPools;
     std::vector<VulkanRenderTarget> renderTargets;
@@ -209,11 +209,11 @@ public:
         this->renderPass = renderPass;
         this->swapChainExtent = swapChainExtent;
         sceneData->renderTargets.clear();
-        sceneData->graphicsPipeline = VulkanGraphicsPipeline(device);
+        sceneData->graphicsPipeline = VulkanGraphicsPipelineHG(device);
         //pipelineLayout = VulkanPipelineLayout(device);
 
         //pipelineLayout = VulkanPipelineLayout(device, makePipelineLayoutCreateInfo(descriptorSetLayout.descriptorSetLayout));
-        sceneData->graphicsPipeline = VulkanGraphicsPipeline(device, swapChainExtent, sceneData->pipelineLayout.pipelineLayout, renderPass);
+        sceneData->graphicsPipeline = VulkanGraphicsPipelineHG(device, swapChainExtent, sceneData->pipelineLayout.pipelineLayout, renderPass);
         sceneData->renderTargets = createRenderTargets(physicalDevice, device, sceneData->pipelineLayout.pipelineLayout, sceneData->projUniformDescriptorSetLayout.descriptorSetLayout, sceneData->preDrawCommandBuffers, sceneData->drawCommandBuffers);
     }
     std::vector<VkCommandBuffer> renderFrame(
@@ -301,7 +301,7 @@ private:
         renderPassInfo.pClearValues = &clearColor;
 
         vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-        vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->graphicsPipeline.graphicsPipeline);
+        vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->graphicsPipeline.h());
 
         vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1, &sceneData->fontTexDescriptorSet, 0, nullptr);
 
