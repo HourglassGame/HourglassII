@@ -15,58 +15,21 @@ namespace hg {
     public:
         explicit VulkanLogicalDevice(
             VkPhysicalDevice const physicalDevice,
-            VkSurfaceKHR const surface
-        )
+            VkDeviceCreateInfo const &createInfo
+        ) :
+            device(
+                [&]{
+                    VkDevice d{VK_NULL_HANDLE};
+                    {
+                        auto const res{ vkCreateDevice(physicalDevice, &createInfo, nullptr, &d) };
+                        if (res != VK_SUCCESS) {
+                            BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create logical device!"));
+                        }
+                    }
+                    return d;
+                }()
+            )
         {
-            QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
-
-            if (!indices.graphicsFamily) {
-                BOOST_THROW_EXCEPTION(std::exception("No graphics queue on physical device, should not have been detected as a valid device selection"));
-            }
-            if (!indices.presentFamily) {
-                BOOST_THROW_EXCEPTION(std::exception("No present queue on physical device, should not have been detected as a valid device selection"));
-            }
-
-            VkDeviceQueueCreateInfo queueCreateInfo = {};
-            queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-            queueCreateInfo.pNext = nullptr;
-            queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-            queueCreateInfo.queueCount = 1;
-
-            float const queuePriority[1]{1.0f};
-            queueCreateInfo.pQueuePriorities = queuePriority;
-
-            VkPhysicalDeviceFeatures deviceFeatures = {};
-
-            VkDeviceCreateInfo createInfo = {};
-            createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-            createInfo.pNext = nullptr;
-
-            createInfo.pQueueCreateInfos = &queueCreateInfo;
-            createInfo.queueCreateInfoCount = 1;
-
-            createInfo.pEnabledFeatures = &deviceFeatures;
-
-            if (enableValidationLayers) {
-                createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-                createInfo.ppEnabledLayerNames = validationLayers.data();
-            }
-            else {
-                createInfo.enabledLayerCount = 0;
-                createInfo.ppEnabledLayerNames = nullptr;
-            }
-
-            createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-            createInfo.ppEnabledExtensionNames = deviceExtensions.data();
-            {
-                auto const res{ vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) };
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create logical device!"));
-                }
-            }
-
-            vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-            vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
         }
         VulkanLogicalDevice(VulkanLogicalDevice const&) = delete;
         VulkanLogicalDevice(VulkanLogicalDevice &&) = delete;
@@ -76,8 +39,6 @@ namespace hg {
             vkDestroyDevice(device, nullptr);
         }
         VkDevice device;
-        VkQueue graphicsQueue;
-        VkQueue presentQueue;
     };
 }
 #endif // !HG_VULKANLOGICALDEVICE_H

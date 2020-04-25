@@ -46,11 +46,11 @@ void run_post_level_scene(
     }
     PostLevelSceneRenderer renderer(
         eng.physicalDevice,
-        eng.logicalDevice.device,
+        eng.logicalDevice.h(),
         eng.surface.surface,
         eng.renderPass.renderPass,
         eng.swapChain.extent,
-        eng.logicalDevice.graphicsQueue,
+        eng.logicalDevice.graphicsQ(),
         guyFrameData,
         finalLevel.timeEngine.getWall(),
         gsl::narrow_cast<std::size_t>(finalLevel.timeEngine.getTimelineLength()),

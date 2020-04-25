@@ -402,14 +402,14 @@ run_main_menu(
     };
     MainMenuSceneRenderer renderer{
         vulkanEng.physicalDevice,
-        vulkanEng.logicalDevice.device,
+        vulkanEng.logicalDevice.h(),
         vulkanEng.surface.surface,
         vulkanEng.renderPass.renderPass,
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,
         vulkanEng.swapChain.extent,
-        vulkanEng.logicalDevice.graphicsQueue
+        vulkanEng.logicalDevice.graphicsQ()
     };
     vkRenderer.StartScene(renderer);
 

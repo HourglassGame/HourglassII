@@ -7,7 +7,7 @@
 #include "hg/VulkanUtil/VulkanInstance.h"
 #include "hg/VulkanUtilHG/VulkanDebugCallbackHG.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
-#include "hg/VulkanUtil/VulkanLogicalDevice.h"
+#include "hg/VulkanUtilHG/VulkanLogicalDeviceHG.h"
 #include "hg/VulkanUtil/VulkanPipelineLayout.h"
 #include "hg/VulkanUtilHG/VulkanFramebufferHG.h"
 #include "hg/VulkanUtilHG/VulkanCommandPoolHG.h"
@@ -32,6 +32,8 @@
 #include "hg/VulkanUtil/VulkanExceptions.h"
 #include "VulkanRenderer.h"
 #include <tbb/queuing_mutex.h>
+#include <boost/throw_exception.hpp>
+#include <system_error>
 namespace hg {
     inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
     inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
@@ -150,8 +152,7 @@ namespace hg {
     inline bool isDeviceSuitable(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(device, &props);
-        VkFormat allFormats[] =
-        {
+        auto const allFormats{std::array{
             VK_FORMAT_UNDEFINED,
             VK_FORMAT_R4G4_UNORM_PACK8,
             VK_FORMAT_R4G4B4A4_UNORM_PACK16,
@@ -415,9 +416,9 @@ namespace hg {
             VK_FORMAT_G16_B16R16_2PLANE_422_UNORM_KHRVK_FORMAT_G16_B16R16_2PLANE_422_UNORM,
             VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM_KHRVK_FORMAT_G16_B16_R16_3PLANE_444_UNORM
             */
-        };
+        }};
         std::map<VkFormat, VkFormatProperties> supportedFormats;
-        for (auto format : allFormats) {
+        for (auto const format : allFormats) {
             vkGetPhysicalDeviceFormatProperties(
                 device,
                 format,
@@ -575,18 +576,18 @@ namespace hg {
           , debugCallback(instance.i)
           , surface(instance.i, &w)
           , physicalDevice(pickPhysicalDevice(instance.i, surface.surface))
-          , logicalDevice(physicalDevice, surface.surface)
+          , logicalDevice(physicalDevice, surface.surface, findQueueFamilies(physicalDevice, surface.surface)/*TODO: Don't recalculate queues*/)
             //TODO: if frameBufferWidth or Height is 0, don't create the swapChain; rather than
             //making an invalid swapChain!
             //Attempting to make a swapChain with width or height 0 violates the vulkan spec!
-          , swapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
-          , swapChainImages(createSwapChainImages(logicalDevice.device, swapChain.swapChain, swapChain.imageCount))
-          , swapChainImageViews(createSwapChainImageViews(logicalDevice.device, swapChain.surfaceFormat.format, swapChainImages))
-          , renderPass(logicalDevice.device, swapChain.surfaceFormat.format)
-          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, renderPass.renderPass, swapChain.extent, swapChainImageViews))
-          , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.device))
-          , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.device))
-          , inFlightFences(createInFlightFences(logicalDevice.device))
+          , swapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
+          , swapChainImages(createSwapChainImages(logicalDevice.h(), swapChain.swapChain, swapChain.imageCount))
+          , swapChainImageViews(createSwapChainImageViews(logicalDevice.h(), swapChain.surfaceFormat.format, swapChainImages))
+          , renderPass(logicalDevice.h(), swapChain.surfaceFormat.format)
+          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.renderPass, swapChain.extent, swapChainImageViews))
+          , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.h()))
+          , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.h()))
+          , inFlightFences(createInFlightFences(logicalDevice.h()))
           , currentFrame(0)
         {
             glfwSetWindowUserPointer(&w, this);
@@ -596,7 +597,7 @@ namespace hg {
 
 
         void recreateSwapChain(VulkanRenderer &renderer){
-            vkDeviceWaitIdle(logicalDevice.device);
+            vkDeviceWaitIdle(logicalDevice.h());
             framebufferResizedCheck();
             auto capabilities{querySwapChainSupport(physicalDevice, surface.surface).capabilities};
             if (oldFramebufferSize.width == 0 || oldFramebufferSize.height == 0
@@ -604,11 +605,11 @@ namespace hg {
                 //Can't render into 0-size swapchain.
                 return;
             }
-            VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.device, surface.surface, oldFramebufferSize, swapChain.swapChain);
-            std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.device, newSwapChain.swapChain, newSwapChain.imageCount));
-            std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.device, newSwapChain.surfaceFormat.format, newSwapChainImages));
-            VulkanRenderPass newRenderPass(logicalDevice.device, newSwapChain.surfaceFormat.format);
-            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, newRenderPass.renderPass, newSwapChain.extent, newSwapChainImageViews));
+            VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, swapChain.swapChain);
+            std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.h(), newSwapChain.swapChain, newSwapChain.imageCount));
+            std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.h(), newSwapChain.surfaceFormat.format, newSwapChainImages));
+            VulkanRenderPass newRenderPass(logicalDevice.h(), newSwapChain.surfaceFormat.format);
+            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), newRenderPass.renderPass, newSwapChain.extent, newSwapChainImageViews));
 
             renderer.updateSwapChainData(newRenderPass.renderPass, newSwapChain.extent);
 
@@ -634,14 +635,14 @@ namespace hg {
             }
             {
                 auto const fences{std::array{inFlightFences[currentFrame].h()}};
-                auto const res{vkWaitForFences(logicalDevice.device, fences.size(), fences.data(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
+                auto const res{vkWaitForFences(logicalDevice.h(), fences.size(), fences.data(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't wait for fence"));
                 }
             }
             uint32_t imageIndex{};
             while (true) {
-                auto const res{ vkAcquireNextImageKHR(logicalDevice.device, swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex)};
+                auto const res{ vkAcquireNextImageKHR(logicalDevice.h(), swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex)};
                 if (res == VK_ERROR_OUT_OF_DATE_KHR) {
                     recreateSwapChain(renderer);
                     continue;
@@ -671,13 +672,13 @@ namespace hg {
 
             {
                 auto const fences{std::array{inFlightFences[currentFrame].h()}};
-                auto const res{vkResetFences(logicalDevice.device, fences.size(), fences.data())};
+                auto const res{vkResetFences(logicalDevice.h(), fences.size(), fences.data())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset fence"));
                 }
             }
             {
-                auto const res{vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].h())};
+                auto const res{vkQueueSubmit(logicalDevice.graphicsQ(), 1, &submitInfo, inFlightFences[currentFrame].h())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "failed to submit draw command buffer!"));
                 }
@@ -696,7 +697,7 @@ namespace hg {
             presentInfo.pImageIndices = &imageIndex;
 
             {
-                auto const res{vkQueuePresentKHR(logicalDevice.presentQueue, &presentInfo)};
+                auto const res{vkQueuePresentKHR(logicalDevice.presentQ(), &presentInfo)};
                 if (res == VK_ERROR_OUT_OF_DATE_KHR || framebufferResizedCheck()) {
                     recreateSwapChain(renderer);
                 }
@@ -710,7 +711,7 @@ namespace hg {
         void idle(VulkanRenderer &vkRenderer) {
             for(int f{0}; f != MAX_FRAMES_IN_FLIGHT; ++f) {
                 {
-                    auto const res{vkGetFenceStatus(logicalDevice.device, inFlightFences[f].h())};
+                    auto const res{vkGetFenceStatus(logicalDevice.h(), inFlightFences[f].h())};
                     if (res == VK_SUCCESS) {
                         vkRenderer.frameEnded(f);
                     }
@@ -728,7 +729,7 @@ namespace hg {
         VulkanEngine &operator=(VulkanEngine const&) = delete;
         VulkanEngine &operator=(VulkanEngine &&) = delete;
         ~VulkanEngine() noexcept {
-            vkDeviceWaitIdle(logicalDevice.device); //Something like this is needed, but maybe not this exact implementation
+            vkDeviceWaitIdle(logicalDevice.h()); //Something like this is needed, but maybe not this exact implementation
         }
         GLFWwindow *w;
 
@@ -739,7 +740,7 @@ namespace hg {
         VulkanDebugCallbackHG debugCallback;
         VulkanSurface surface;
         VkPhysicalDevice physicalDevice;
-        VulkanLogicalDevice logicalDevice;
+        VulkanLogicalDeviceHG logicalDevice;
         VulkanSwapChain swapChain;
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanImageView> swapChainImageViews;

@@ -152,14 +152,14 @@ run_game_scene(
 {
     RunningGameSceneRenderer renderer(
         eng.physicalDevice,
-        eng.logicalDevice.device,
+        eng.logicalDevice.h(),
         eng.surface.surface,
         eng.renderPass.renderPass,
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,
         eng.swapChain.extent,
-        eng.logicalDevice.graphicsQueue
+        eng.logicalDevice.graphicsQ()
     );
     vkRenderer.StartScene(renderer);
     struct RendererCleanupEnforcer final {

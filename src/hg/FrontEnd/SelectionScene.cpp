@@ -262,11 +262,11 @@ namespace hg {
     {
         SelectionSceneRenderer renderer{
             vulkanEng.physicalDevice,
-            vulkanEng.logicalDevice.device,
+            vulkanEng.logicalDevice.h(),
             vulkanEng.surface.surface,
             vulkanEng.renderPass.renderPass,
             vulkanEng.swapChain.extent,
-            vulkanEng.logicalDevice.graphicsQueue
+            vulkanEng.logicalDevice.graphicsQ()
         };
 
         vkRenderer.StartScene(renderer);
