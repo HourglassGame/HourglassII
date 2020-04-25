@@ -67,8 +67,18 @@ namespace hg {
         std::vector<VkSurfaceFormatKHR> formats;
         std::vector<VkPresentModeKHR> presentModes;
     };
+    inline VkExtent2D querySwapChainMaxImageExtent(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
+        VkSurfaceCapabilitiesKHR capabilities{};
+        {
+            auto const res{vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities)};
+            if (res != VK_SUCCESS) {
+                BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't Read Surface Capabilities"));
+            }
+        }
+        return capabilities.maxImageExtent;
+    }
     inline SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
-        SwapChainSupportDetails details;
+        SwapChainSupportDetails details{};
 
         {
             auto const res{vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities)};
@@ -80,7 +90,7 @@ namespace hg {
         uint32_t formatCount{};
         {
             auto const res{vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr)};
-            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
                 BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read surface formats count"));
             }
         }
@@ -88,7 +98,7 @@ namespace hg {
         details.formats.resize(formatCount);
         {
             auto const res{ vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data())};
-            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
                 BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read surface formats"));
             }
         }
@@ -97,7 +107,7 @@ namespace hg {
         uint32_t presentModeCount{};
         {
             auto const res{vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr)};
-            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+            if (!(res == VK_SUCCESS || res ==VK_INCOMPLETE)) {
                 BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read presentModes count"));
             }
         }
@@ -105,7 +115,7 @@ namespace hg {
         details.presentModes.resize(presentModeCount);
         {
             auto const res{ vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data())};
-            if (!(res == VK_SUCCESS || VK_INCOMPLETE)) {
+            if (!(res == VK_SUCCESS || res == VK_INCOMPLETE)) {
                 BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read presentModes"));
             }
         }

@@ -553,6 +553,16 @@ namespace hg {
             auto const eng{static_cast<VulkanEngine*>(glfwGetWindowUserPointer(window))};
             decltype(frameBufferSizeMutex)::scoped_lock lock(eng->frameBufferSizeMutex);
             eng->newFramebufferSize = {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
+
+            //TODO: There may be a race condition here between the time this lock is released and when the control returns to the event loop.
+            //Need to add some additional locks to make sure the renderer doesn't run during this period of time.
+            //(My understanding is that the framebuffer gets resized once the control has returned to the event loop;
+            // so ideally we would wait until the next event is processed by the loop, to be sure that this processing has completed)
+
+
+            //https://github.com/KhronosGroup/Vulkan-Docs/issues/1144
+            //https://github.com/KhronosGroup/Vulkan-ValidationLayers/issues/1340
+            //https://github.com/KhronosGroup/Vulkan-Docs/issues/388
         }
 
     public:
@@ -618,9 +628,9 @@ namespace hg {
         void drawFrame(VulkanRenderer &renderer) {
             decltype(frameBufferSizeMutex)::scoped_lock lock(frameBufferSizeMutex);
             {
-                auto capabilities{querySwapChainSupport(physicalDevice, surface.surface).capabilities};
+                auto maxImageExtent{querySwapChainMaxImageExtent(physicalDevice, surface.surface)};
                 //Can't render into 0-size surface
-                if (capabilities.maxImageExtent.width == 0 || capabilities.maxImageExtent.height == 0) return;
+                if (maxImageExtent.width == 0 || maxImageExtent.height == 0) return;
             }
             {
                 auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max())};
