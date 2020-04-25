@@ -615,7 +615,7 @@ namespace hg {
             auto const maxImageExtent{querySwapChainMaxImageExtent(physicalDevice.physicalDevice, surface.surface)};
 
             if (oldFramebufferSize.width == 0 || oldFramebufferSize.height == 0
-             || capabilities.maxImageExtent.width == 0 || capabilities.maxImageExtent.height == 0) {
+             || maxImageExtent.width == 0 || maxImageExtent.height == 0) {
                 //Can't render into 0-size swapchain.
                 return;
             }
