@@ -18,8 +18,8 @@ struct PostLevelSceneSharedVulkanData {
         VkQueue const graphicsQueue
     )
         : commandPool(device, physicalDevice, surface)
-        , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
-        , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
+        , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.h()))
+        , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.h()))
         , projUniformDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
         , textureDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeSamplerLayoutBinding()))
         , pipelineLayout(device, makePipelineLayoutCreateInfo({ projUniformDescriptorSetLayout.descriptorSetLayout, textureDescriptorSetLayout.descriptorSetLayout }))
@@ -30,12 +30,12 @@ struct PostLevelSceneSharedVulkanData {
             device,
             swapChainExtent,
             textureDescriptorSetLayout,
-            commandPool,
+            commandPool.h(),
             graphicsQueue)
     {
     }
 
-    VulkanCommandPool commandPool;
+    VulkanCommandPoolHG commandPool;
     std::vector<VkCommandBuffer> preDrawCommandBuffers;
     std::vector<VkCommandBuffer> drawCommandBuffers;
 

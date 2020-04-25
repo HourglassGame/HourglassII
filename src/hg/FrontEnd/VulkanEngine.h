@@ -10,7 +10,7 @@
 #include "hg/VulkanUtil/VulkanLogicalDevice.h"
 #include "hg/VulkanUtil/VulkanPipelineLayout.h"
 #include "hg/VulkanUtil/VulkanFramebuffer.h"
-#include "hg/VulkanUtil/VulkanCommandPool.h"
+#include "hg/VulkanUtilHG/VulkanCommandPoolHG.h"
 #include "hg/VulkanUtil/VulkanGraphicsPipeline.h"
 #include "hg/VulkanUtil/VulkanFence.h"
 #include "hg/VulkanUtil/VulkanSemaphore.h"

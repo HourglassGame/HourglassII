@@ -1,31 +1,26 @@
 #ifndef HG_VULKANCOMMANDPOOL_H
 #define HG_VULKANCOMMANDPOOL_H
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
-#include "VulkanUtil.h"
-#include <utility>
+#include <system_error>
 namespace hg {
     class VulkanCommandPool final {
     public:
-        VulkanCommandPool(
+        explicit VulkanCommandPool(
             VkDevice const device,
-            VkPhysicalDevice const physicalDevice,
-            VkSurfaceKHR const surface
+            VkCommandPoolCreateInfo const &poolInfo
         ) : device(device)
-        {
-            QueueFamilyIndices const queueFamilyIndices{findQueueFamilies(physicalDevice, surface)};
-            if (!queueFamilyIndices.graphicsFamily) {
-                BOOST_THROW_EXCEPTION(std::exception("Couldn't find graphics queue when creating command pool, physical device shouldn't have been selected"));
-            }
-            VkCommandPoolCreateInfo poolInfo{};
-            poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-            poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-            poolInfo.queueFamilyIndex = *queueFamilyIndices.graphicsFamily;
-            {
-                auto const res{vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create command pool!"));
+          , commandPool([&]{
+                VkCommandPool cp{VK_NULL_HANDLE};
+                {
+                    auto const res{vkCreateCommandPool(device, &poolInfo, nullptr, &cp)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create command pool!"));
+                    }
                 }
-            }
+                return cp;
+            }())
+        {
         }
         VulkanCommandPool(VulkanCommandPool const&) = delete;
         VulkanCommandPool(VulkanCommandPool &&o) = delete;
@@ -34,7 +29,9 @@ namespace hg {
         ~VulkanCommandPool() noexcept {
             vkDestroyCommandPool(device, commandPool, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkCommandPool commandPool;
     };
 }

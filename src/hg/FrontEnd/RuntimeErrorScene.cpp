@@ -16,20 +16,20 @@ struct RuntimeErrorSceneSharedVulkanData {
         VkQueue const graphicsQueue
     )
         : commandPool(device, physicalDevice, surface)
-        , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
-        , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.commandPool))
+        , preDrawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.h()))
+        , drawCommandBuffers(createCommandBuffersForRenderer(device, commandPool.h()))
         , projUniformDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeUboLayoutBinding()))
         , textureDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeSamplerLayoutBinding()))
         , pipelineLayout(device, makePipelineLayoutCreateInfo({ projUniformDescriptorSetLayout.descriptorSetLayout, textureDescriptorSetLayout.descriptorSetLayout }))
         , graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
         , samplerDescriptorPool(createSamplerDescriptorPool(device))
         , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
-        , fontTex("unifont.png", device, physicalDevice, commandPool.commandPool, graphicsQueue, true)
+        , fontTex("unifont.png", device, physicalDevice, commandPool.h(), graphicsQueue, true)
         , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
     {}
 
 
-    VulkanCommandPool commandPool;
+    VulkanCommandPoolHG commandPool;
     std::vector<VkCommandBuffer> preDrawCommandBuffers;
     std::vector<VkCommandBuffer> drawCommandBuffers;
 
