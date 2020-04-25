@@ -1,14 +1,19 @@
 #ifndef HG_VULKANLOGICALDEVICE_H
 #define HG_VULKANLOGICALDEVICE_H
-#include "VulkanExceptions.h"
+
 #include "hg/GlobalConst.h"
 #include "VulkanUtil.h"
+
+#include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
+
 namespace hg {
 
     class VulkanLogicalDevice final {
     public:
-        VulkanLogicalDevice(
+        explicit VulkanLogicalDevice(
             VkPhysicalDevice const physicalDevice,
             VkSurfaceKHR const surface
         )

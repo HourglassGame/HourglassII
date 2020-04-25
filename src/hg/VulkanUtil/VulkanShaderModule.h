@@ -1,13 +1,16 @@
 #ifndef HG_VULKANSHADERMODULE_H
 #define HG_VULKANSHADERMODULE_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
+#include <utility>
 #include <vector>
 namespace hg {
 
     class VulkanShaderModule final {
     public:
-        VulkanShaderModule(
+        explicit VulkanShaderModule(
             VkDevice const device,
             std::vector<uint32_t> const& code
         ) : device(device)

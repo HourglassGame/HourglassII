@@ -9,8 +9,8 @@
 #include "VulkanSampler.h"
 #include "hg/Util/memory_util.h"
 namespace hg{
-    struct VulkanTextureSimple {
-        VulkanTextureSimple(
+    struct VulkanTextureSimple final {
+        explicit VulkanTextureSimple(
             std::string const &filename,
             VkDevice const device,
             VkPhysicalDevice const physicalDevice,

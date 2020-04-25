@@ -1,8 +1,10 @@
 #ifndef HG_VULKAN_MEMORY_H
 #define HG_VULKAN_MEMORY_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
-#include <vector>
+#include <system_error>
+#include <utility>
 namespace hg {
     class VulkanMemory final {
     public:

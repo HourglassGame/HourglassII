@@ -1,7 +1,9 @@
 #ifndef HG_VULKAN_IMAGE_VIEW_H
 #define HG_VULKAN_IMAGE_VIEW_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 #include <utility>
 namespace hg {
     class VulkanImageView final {
@@ -38,7 +40,9 @@ namespace hg {
         ~VulkanImageView() noexcept {
             vkDestroyImageView(device, imageView, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkImageView imageView;
     };
 }

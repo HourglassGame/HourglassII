@@ -1,14 +1,17 @@
 #ifndef HG_VULKANSURFACE_H
 #define HG_VULKANSURFACE_H
 #include "VulkanExceptions.h"
-#include <vulkan/vulkan.h>
+#include <boost/throw_exception.hpp>
 #include <glfw/glfw3.h>
+#include <vulkan/vulkan.h>
+#include <system_error>
+
 namespace hg {
 
     class VulkanSurface final {
 
     public:
-        VulkanSurface(
+        explicit VulkanSurface(
             VkInstance const i,
             GLFWwindow * const window
         )

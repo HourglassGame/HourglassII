@@ -1,11 +1,16 @@
 #ifndef HG_VULKANSWAPCHAIN_H
 #define HG_VULKANSWAPCHAIN_H
+#include "VulkanUtil.h"
+
 #include "VulkanExceptions.h"
 #include "hg/GlobalConst.h"
-#include "VulkanUtil.h"
-#include "hg/Util/Maths.h"
+
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
-#include <GLFW/glfw3.h>
+#include <system_error>
+#include <utility>
+#include <vector>
+
 namespace hg {
     inline VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &availableFormats) {
         if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
@@ -55,14 +60,14 @@ namespace hg {
 
     class VulkanSwapChain final {
     public:
-        VulkanSwapChain(VkDevice const device)
+        explicit VulkanSwapChain(VkDevice const device)
             : device(device)
             , swapChain(VK_NULL_HANDLE)
             , imageCount()
             , surfaceFormat()
             , extent()
         {}
-        VulkanSwapChain(
+        explicit VulkanSwapChain(
             VkPhysicalDevice const physicalDevice,
             VkDevice const device,
             VkSurfaceKHR const surface,

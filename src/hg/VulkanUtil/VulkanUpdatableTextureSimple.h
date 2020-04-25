@@ -1,7 +1,10 @@
 #ifndef HG_VULKAN_UPDATABLE_TEXTURE_SIMPLE_H
 #define HG_VULKAN_UPDATABLE_TEXTURE_SIMPLE_H
+
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 
 namespace hg{
 
@@ -42,8 +45,8 @@ namespace hg{
         return descriptorSet;
     }
 
-    struct VulkanUpdatableTextureSimple {
-        VulkanUpdatableTextureSimple(
+    struct VulkanUpdatableTextureSimple final {
+        explicit VulkanUpdatableTextureSimple(
             VkPhysicalDevice const physicalDevice,
             VkDevice const device,
             std::size_t const width_,

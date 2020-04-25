@@ -1,7 +1,12 @@
 #ifndef HG_VULKANRENDERPASS_H
 #define HG_VULKANRENDERPASS_H
+
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
+#include <utility>
+
 namespace hg {
     class VulkanRenderPass final {
     public:
@@ -9,7 +14,7 @@ namespace hg {
             : device(device)
             , renderPass(VK_NULL_HANDLE)
         {}
-        VulkanRenderPass(
+        explicit VulkanRenderPass(
             VkDevice const device,
             VkFormat const swapChainImageFormat
         ) : device(device)

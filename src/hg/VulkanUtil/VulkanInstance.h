@@ -2,13 +2,16 @@
 #define HG_VULKANINSTANCE_H
 
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
+
 namespace hg {
 
     class VulkanInstance final {
 
     public:
-        VulkanInstance(
+        explicit VulkanInstance(
             VkInstanceCreateInfo const& createInfo
         )
         {

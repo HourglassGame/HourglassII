@@ -1,15 +1,18 @@
 #ifndef HG_VULKANPIPELINELAYOUT_H
 #define HG_VULKANPIPELINELAYOUT_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
-#include "VulkanShaderModule.h"
+#include <system_error>
+#include <utility>
 namespace hg {
     class VulkanPipelineLayout final {
     public:
-        VulkanPipelineLayout(
-            VkDevice const device) : device(device), pipelineLayout(VK_NULL_HANDLE)
+        explicit VulkanPipelineLayout(
+            VkDevice const device)
+          : device(device), pipelineLayout(VK_NULL_HANDLE)
         {}
-        VulkanPipelineLayout(
+        explicit VulkanPipelineLayout(
             VkDevice const device,
             VkPipelineLayoutCreateInfo const &pipelineLayoutInfo
         ) : device(device)

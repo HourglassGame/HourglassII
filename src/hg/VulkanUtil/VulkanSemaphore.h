@@ -1,8 +1,10 @@
 #ifndef HG_VULKANSEMAPHORE_H
 #define HG_VULKANSEMAPHORE_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
-#include <vector>
+#include <system_error>
+#include <utility>
 namespace hg {
     class VulkanSemaphore final {
     public:

@@ -10,11 +10,11 @@
 namespace hg {
     class VulkanGraphicsPipeline final {
     public:
-        VulkanGraphicsPipeline(VkDevice const device) :
+        explicit VulkanGraphicsPipeline(VkDevice const device) :
             device(device),
             graphicsPipeline(VK_NULL_HANDLE)
         {}
-        VulkanGraphicsPipeline(
+        explicit VulkanGraphicsPipeline(
             VkDevice const device,
             VkGraphicsPipelineCreateInfo const &pipelineInfo
         ) : device(device)

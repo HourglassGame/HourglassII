@@ -1,8 +1,10 @@
 #ifndef HG_VULKAN_IMAGE_H
 #define HG_VULKAN_IMAGE_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
-#include <vector>
+#include <system_error>
+#include <utility>
 namespace hg {
     class VulkanImage final {
     public:
@@ -22,7 +24,7 @@ namespace hg {
         VulkanImage(VulkanImage const&) = delete;
         VulkanImage(VulkanImage &&o) noexcept
             : device(o.device)
-            , image(std::exchange(o.image, VkImage{ VK_NULL_HANDLE }))
+            , image(std::exchange(o.image, VkImage{VK_NULL_HANDLE}))
         {
         }
         VulkanImage &operator=(VulkanImage const&) = delete;
@@ -34,7 +36,9 @@ namespace hg {
         ~VulkanImage() noexcept {
             vkDestroyImage(device, image, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkImage image;
     };
 }

@@ -1,7 +1,9 @@
 #ifndef HG_VULKAN_SAMPLER_H
 #define HG_VULKAN_SAMPLER_H
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 #include <utility>
 namespace hg {
     class VulkanSampler final {
@@ -26,7 +28,7 @@ namespace hg {
         VulkanSampler(VulkanSampler const&) = delete;
         VulkanSampler(VulkanSampler &&o) noexcept
             : device(o.device)
-            , sampler(std::exchange(o.sampler, VkSampler{ VK_NULL_HANDLE }))
+            , sampler(std::exchange(o.sampler, VkSampler{VK_NULL_HANDLE}))
         {
         }
         VulkanSampler &operator=(VulkanSampler const&) = delete;

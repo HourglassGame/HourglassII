@@ -2,6 +2,7 @@
 #define HG_VULKANGRAPHICSPIPELINEHG_H
 
 #include "hg/VulkanUtil/VulkanGraphicsPipeline.h"
+#include "hg/VulkanUtil/VulkanShaderModule.h"
 #include <vulkan/vulkan.h>
 #include "hg/Util/Maths.h"
 #include <vector>
