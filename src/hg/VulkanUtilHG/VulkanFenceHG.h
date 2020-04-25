@@ -22,7 +22,7 @@ namespace hg {
         VulkanFenceHG(VulkanFenceHG &&o) = default;
         VulkanFenceHG &operator=(VulkanFenceHG const&) = delete;
         VulkanFenceHG &operator=(VulkanFenceHG &&o) = default;
-        VkFence const &h() const noexcept {
+        VkFence h() const noexcept {
             return fence.fence;
         }
     private:

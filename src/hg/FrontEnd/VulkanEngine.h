@@ -633,7 +633,8 @@ namespace hg {
                 if (maxImageExtent.width == 0 || maxImageExtent.height == 0) return;
             }
             {
-                auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].h(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
+                auto const fences{std::array{inFlightFences[currentFrame].h()}};
+                auto const res{vkWaitForFences(logicalDevice.device, fences.size(), fences.data(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't wait for fence"));
                 }
@@ -669,7 +670,8 @@ namespace hg {
             submitInfo.pSignalSemaphores = signalSemaphores;
 
             {
-                auto const res{vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].h())};
+                auto const fences{std::array{inFlightFences[currentFrame].h()}};
+                auto const res{vkResetFences(logicalDevice.device, fences.size(), fences.data())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset fence"));
                 }

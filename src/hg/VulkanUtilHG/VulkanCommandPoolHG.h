@@ -35,7 +35,7 @@ namespace hg {
         VulkanCommandPoolHG &operator=(VulkanCommandPoolHG const&) = delete;
         VulkanCommandPoolHG &operator=(VulkanCommandPoolHG &&o) noexcept = delete;
 
-        VkCommandPool const &h() const noexcept {
+        VkCommandPool h() const noexcept {
             return commandPool.commandPool;
         }
     private:

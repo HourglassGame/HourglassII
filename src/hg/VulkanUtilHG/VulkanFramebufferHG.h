@@ -39,7 +39,7 @@ namespace hg {
         VulkanFramebufferHG(VulkanFramebufferHG &&o) noexcept = default;
         VulkanFramebufferHG &operator=(VulkanFramebufferHG const&) = delete;
         VulkanFramebufferHG &operator=(VulkanFramebufferHG &&o) noexcept = default;
-        VkFramebuffer const &h() const noexcept {
+        VkFramebuffer h() const noexcept {
             return framebuffer.framebuffer;
         }
     private:
