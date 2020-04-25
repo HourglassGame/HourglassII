@@ -15,7 +15,7 @@ namespace hg {
                 if (!vkCreateDebugUtilsMessengerEXT || !vkDestroyDebugUtilsMessengerEXT) {
                     BOOST_THROW_EXCEPTION(std::exception("Couldn't load vkCreateDebugUtilsMessengerEXT or vkDestroyDebugUtilsMessengerEXT functions"));
                 }
-                VkDebugUtilsMessengerEXT cb{};
+                VkDebugUtilsMessengerEXT cb{VK_NULL_HANDLE};
                 {
                     auto const res{vkCreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &cb)};
                     if (res != VK_SUCCESS) {
