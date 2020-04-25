@@ -1,7 +1,6 @@
 #ifndef HG_VULKAN_BUFFER_H
 #define HG_VULKAN_BUFFER_H
 #include <vulkan/vulkan.h>
-#include <vector>
 namespace hg {
     class VulkanBuffer final {
     public:
@@ -12,11 +11,15 @@ namespace hg {
             VkDevice const device,
             VkBufferCreateInfo const &bufferInfo
         ) : device(device)
+          , buffer([&]{
+                VkBuffer b{VK_NULL_HANDLE};
+                auto const res{vkCreateBuffer(device, &bufferInfo, nullptr, &b)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create vulkan buffer!"));
+                }
+                return b;
+            }())
         {
-            auto const res{vkCreateBuffer(device, &bufferInfo, nullptr, &buffer)};
-            if (res != VK_SUCCESS) {
-                BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create vertex buffer!"));
-            }
         }
         VulkanBuffer(VulkanBuffer const&) = delete;
         VulkanBuffer(VulkanBuffer &&o) noexcept
@@ -33,7 +36,9 @@ namespace hg {
         ~VulkanBuffer() noexcept {
             vkDestroyBuffer(device, buffer, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkBuffer buffer;
     };
 }
