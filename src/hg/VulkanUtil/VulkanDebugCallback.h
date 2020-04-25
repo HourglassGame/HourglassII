@@ -1,64 +1,40 @@
 #ifndef HG_VULKANDEBUGCALLBACK_H
 #define HG_VULKANDEBUGCALLBACK_H
-#include "hg/GlobalConst.h"
 #include <vulkan/vulkan.h>
-#include <iostream>
 namespace hg {
-
-    static VKAPI_ATTR VkBool32 VKAPI_CALL vulkanDebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-        if (
-            (messageSeverity & (VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT))
-         || (messageType & (VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT)))
-        {
-            std::cerr << "validation error: " << pCallbackData->pMessage << "\n";
-        }
-        else if (
-            (messageSeverity & (VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT|VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT))
-         || (messageType & (VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)))
-        {
-            std::cerr << "validation warning: " << pCallbackData->pMessage << "\n";
-        }
-        else {
-            std::cerr << "validation info: " << pCallbackData->pMessage << "\n";
-        }
-        return VK_FALSE;
-    }
     class VulkanDebugCallback final {
     public:
         VulkanDebugCallback(
-            VkInstance const &i
+            VkInstance const instance
+           ,VkDebugUtilsMessengerCreateInfoEXT const &createInfo
         )
-            : i(i)
-            , vkCreateDebugUtilsMessengerEXT(reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(i, "vkCreateDebugUtilsMessengerEXT")))
-            , vkDestroyDebugUtilsMessengerEXT(reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(i, "vkDestroyDebugUtilsMessengerEXT")))
-        {
-            if (!enableValidationLayers) return;
-
-            if (!vkCreateDebugUtilsMessengerEXT || !vkDestroyDebugUtilsMessengerEXT) {
-                BOOST_THROW_EXCEPTION(std::exception("Couldn't load vkCreateDebugUtilsMessengerEXT or vkDestroyDebugUtilsMessengerEXT functions"));
-            }
-
-            VkDebugUtilsMessengerCreateInfoEXT createInfo = {};
-            createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-            createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-            createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-            createInfo.pfnUserCallback = vulkanDebugCallback;
-            {
-                auto const res{vkCreateDebugUtilsMessengerEXT(i, &createInfo, nullptr, &callback)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't enable debug callback"));
+            : instance(instance)
+            , vkCreateDebugUtilsMessengerEXT(reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT")))
+            , vkDestroyDebugUtilsMessengerEXT(reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT")))
+            , callback([&]{
+                if (!vkCreateDebugUtilsMessengerEXT || !vkDestroyDebugUtilsMessengerEXT) {
+                    BOOST_THROW_EXCEPTION(std::exception("Couldn't load vkCreateDebugUtilsMessengerEXT or vkDestroyDebugUtilsMessengerEXT functions"));
                 }
-            }
+                VkDebugUtilsMessengerEXT cb{};
+                {
+                    auto const res{vkCreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &cb)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't enable debug callback"));
+                    }
+                }
+                return cb;
+              }())
+        {
         }
         VulkanDebugCallback(VulkanDebugCallback const&) = delete;
-        VulkanDebugCallback(VulkanDebugCallback &&) = delete;
+        VulkanDebugCallback(VulkanDebugCallback &&) noexcept = delete;
         VulkanDebugCallback &operator=(VulkanDebugCallback const&) = delete;
-        VulkanDebugCallback &operator=(VulkanDebugCallback &&) = delete;
+        VulkanDebugCallback &operator=(VulkanDebugCallback &&) noexcept = delete;
         ~VulkanDebugCallback() noexcept {
-            if (!enableValidationLayers) return;
-            vkDestroyDebugUtilsMessengerEXT(i, callback, nullptr);
+            vkDestroyDebugUtilsMessengerEXT(instance, callback, nullptr);
         }
-        VkInstance const &i;
+    private:
+        VkInstance instance;
         PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT;
         PFN_vkDestroyDebugUtilsMessengerEXT vkDestroyDebugUtilsMessengerEXT;
         VkDebugUtilsMessengerEXT callback;

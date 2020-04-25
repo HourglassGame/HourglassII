@@ -5,7 +5,7 @@
 #include "hg/VulkanUtil/VulkanSurface.h"
 #include "hg/VulkanUtil/VulkanRenderPass.h"
 #include "hg/VulkanUtil/VulkanInstance.h"
-#include "hg/VulkanUtil/VulkanDebugCallback.h"
+#include "hg/VulkanUtilHG/VulkanDebugCallbackHG.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
 #include "hg/VulkanUtil/VulkanLogicalDevice.h"
 #include "hg/VulkanUtil/VulkanPipelineLayout.h"
@@ -734,7 +734,7 @@ namespace hg {
         VkExtent2D oldFramebufferSize;
         VkExtent2D newFramebufferSize;
         VulkanInstance instance;
-        VulkanDebugCallback debugCallback;
+        VulkanDebugCallbackHG debugCallback;
         VulkanSurface surface;
         VkPhysicalDevice physicalDevice;
         VulkanLogicalDevice logicalDevice;
