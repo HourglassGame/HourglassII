@@ -1,5 +1,6 @@
 #ifndef HG_VULKANFENCE_H
 #define HG_VULKANFENCE_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <vector>
 namespace hg {

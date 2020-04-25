@@ -1,5 +1,7 @@
 #ifndef HG_VULKANFRAMEBUFFER_H
 #define HG_VULKANFRAMEBUFFER_H
+
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <utility>
 namespace hg {

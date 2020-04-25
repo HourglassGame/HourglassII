@@ -1,5 +1,6 @@
 #ifndef HG_VULKANSHADERMODULE_H
 #define HG_VULKANSHADERMODULE_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <vector>
 namespace hg {

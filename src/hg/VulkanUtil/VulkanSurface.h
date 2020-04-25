@@ -1,5 +1,6 @@
 #ifndef HG_VULKANSURFACE_H
 #define HG_VULKANSURFACE_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <glfw/glfw3.h>
 namespace hg {

@@ -1,5 +1,6 @@
-#ifndef HG_VULKAN_IMAGE_VUEW_H
-#define HG_VULKAN_IMAGE_VUEW_H
+#ifndef HG_VULKAN_IMAGE_VIEW_H
+#define HG_VULKAN_IMAGE_VIEW_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <utility>
 namespace hg {
@@ -41,4 +42,4 @@ namespace hg {
         VkImageView imageView;
     };
 }
-#endif // !HG_VULKAN_IMAGE_VUEW_H
+#endif // !HG_VULKAN_IMAGE_VIEW_H

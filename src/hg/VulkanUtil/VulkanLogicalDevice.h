@@ -1,5 +1,6 @@
 #ifndef HG_VULKANLOGICALDEVICE_H
 #define HG_VULKANLOGICALDEVICE_H
+#include "VulkanExceptions.h"
 #include "hg/GlobalConst.h"
 #include "VulkanUtil.h"
 #include <vulkan/vulkan.h>

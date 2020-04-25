@@ -1,5 +1,6 @@
 #ifndef HG_VULKANUTIL_H
 #define HG_VULKANUTIL_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include "VulkanExceptions.h"
 #include <vector>

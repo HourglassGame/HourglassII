@@ -1,5 +1,6 @@
 #ifndef HG_VULKAN_TEXTURE_SIMPLE_H
 #define HG_VULKAN_TEXTURE_SIMPLE_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <SFML/Graphics/Image.hpp>
 #include "VulkanBuffer.h"

@@ -1,5 +1,7 @@
 #ifndef HG_VULKANGRAPHICSPIPELINE_H
 #define HG_VULKANGRAPHICSPIPELINE_H
+
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include "hg/Util/Maths.h"
 #include <vector>

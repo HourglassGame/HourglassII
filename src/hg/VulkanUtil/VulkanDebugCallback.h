@@ -1,6 +1,7 @@
 #ifndef HG_VULKANDEBUGCALLBACK_H
 #define HG_VULKANDEBUGCALLBACK_H
 #include <boost/throw_exception.hpp>
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <system_error>
 namespace hg {

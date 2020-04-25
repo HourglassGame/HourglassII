@@ -1,6 +1,7 @@
 #ifndef HG_VULKANINSTANCE_H
 #define HG_VULKANINSTANCE_H
 
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 namespace hg {
 

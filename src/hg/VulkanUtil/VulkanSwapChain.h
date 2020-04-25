@@ -1,5 +1,6 @@
 #ifndef HG_VULKANSWAPCHAIN_H
 #define HG_VULKANSWAPCHAIN_H
+#include "VulkanExceptions.h"
 #include "hg/GlobalConst.h"
 #include "VulkanUtil.h"
 #include "hg/Util/Maths.h"

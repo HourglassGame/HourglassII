@@ -1,6 +1,7 @@
 #ifndef HG_VULKAN_BUFFER_H
 #define HG_VULKAN_BUFFER_H
 #include <boost/throw_exception.hpp>
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <system_error>
 #include <utility>

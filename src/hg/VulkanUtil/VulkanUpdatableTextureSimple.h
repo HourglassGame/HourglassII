@@ -1,5 +1,6 @@
 #ifndef HG_VULKAN_UPDATABLE_TEXTURE_SIMPLE_H
 #define HG_VULKAN_UPDATABLE_TEXTURE_SIMPLE_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 
 namespace hg{

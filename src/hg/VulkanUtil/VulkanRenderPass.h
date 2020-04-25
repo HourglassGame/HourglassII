@@ -1,5 +1,6 @@
 #ifndef HG_VULKANRENDERPASS_H
 #define HG_VULKANRENDERPASS_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 namespace hg {
     class VulkanRenderPass final {

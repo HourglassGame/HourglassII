@@ -1,5 +1,6 @@
 #ifndef HG_VULKANPIPELINELAYOUT_H
 #define HG_VULKANPIPELINELAYOUT_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include "VulkanShaderModule.h"
 namespace hg {

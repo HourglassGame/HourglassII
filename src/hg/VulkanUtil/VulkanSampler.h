@@ -1,5 +1,6 @@
 #ifndef HG_VULKAN_SAMPLER_H
 #define HG_VULKAN_SAMPLER_H
+#include "VulkanExceptions.h"
 #include <vulkan/vulkan.h>
 #include <utility>
 namespace hg {
