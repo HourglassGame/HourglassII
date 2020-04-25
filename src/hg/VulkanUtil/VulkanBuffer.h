@@ -1,6 +1,9 @@
 #ifndef HG_VULKAN_BUFFER_H
 #define HG_VULKAN_BUFFER_H
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
+#include <utility>
 namespace hg {
     class VulkanBuffer final {
     public:
@@ -24,7 +27,7 @@ namespace hg {
         VulkanBuffer(VulkanBuffer const&) = delete;
         VulkanBuffer(VulkanBuffer &&o) noexcept
             : device(o.device)
-            , buffer(std::exchange(o.buffer, VkBuffer{ VK_NULL_HANDLE }))
+            , buffer(std::exchange(o.buffer, VkBuffer{VK_NULL_HANDLE}))
         {
         }
         VulkanBuffer &operator=(VulkanBuffer const&) = delete;
