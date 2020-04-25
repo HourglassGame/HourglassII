@@ -1,7 +1,7 @@
 #ifndef HG_VULKANCOMMANDPOOL_H
 #define HG_VULKANCOMMANDPOOL_H
-#include <boost/throw_exception.hpp>
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
 #include <system_error>
 namespace hg {

@@ -1,7 +1,7 @@
 #ifndef HG_VULKAN_DESCRIPTOR_SET_LAYOUT_H
 #define HG_VULKAN_DESCRIPTOR_SET_LAYOUT_H
-#include <boost/throw_exception.hpp>
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
 #include <system_error>
 namespace hg {
@@ -30,7 +30,7 @@ namespace hg {
         VulkanDescriptorSetLayout(VulkanDescriptorSetLayout const&) = delete;
         VulkanDescriptorSetLayout(VulkanDescriptorSetLayout &&o) noexcept
             : device(o.device)
-            , descriptorSetLayout(std::exchange(o.descriptorSetLayout, VkDescriptorSetLayout{ VK_NULL_HANDLE }))
+            , descriptorSetLayout(std::exchange(o.descriptorSetLayout, VkDescriptorSetLayout{VK_NULL_HANDLE}))
         {
         }
         VulkanDescriptorSetLayout &operator=(VulkanDescriptorSetLayout const&) = delete;
