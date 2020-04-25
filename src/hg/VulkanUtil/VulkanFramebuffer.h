@@ -2,42 +2,34 @@
 #define HG_VULKANFRAMEBUFFER_H
 
 #include "VulkanExceptions.h"
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 #include <utility>
+
 namespace hg {
     class VulkanFramebuffer final {
     public:
-        VulkanFramebuffer(
+        explicit VulkanFramebuffer(
             VkDevice const device,
-            VkImageView const imageView,
-            VkRenderPass const renderPass,
-            VkExtent2D const swapChainExtent
+            VkFramebufferCreateInfo const &createInfo
         ) : device(device)
-        {
-            VkImageView attachments[] = {
-                imageView
-            };
-
-            VkFramebufferCreateInfo framebufferInfo = {};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = renderPass;
-            framebufferInfo.attachmentCount = 1;
-            framebufferInfo.pAttachments = attachments;
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
-            framebufferInfo.layers = 1;
-
-            {
-                auto const res{ vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffer)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create framebuffer!"));
+          , framebuffer([&]{
+                VkFramebuffer fb{VK_NULL_HANDLE};
+                {
+                    auto const res{vkCreateFramebuffer(device, &createInfo, nullptr, &fb)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create framebuffer!"));
+                    }
                 }
-            }
+                return fb;
+            }())
+        {
         }
         VulkanFramebuffer(VulkanFramebuffer const&) = delete;
         VulkanFramebuffer(VulkanFramebuffer &&o) noexcept
             : device(o.device)
-            , framebuffer(std::exchange(o.framebuffer, VkFramebuffer{ VK_NULL_HANDLE }))
+            , framebuffer(std::exchange(o.framebuffer, VkFramebuffer{VK_NULL_HANDLE}))
         {
         }
         VulkanFramebuffer &operator=(VulkanFramebuffer const&) = delete;
@@ -49,7 +41,9 @@ namespace hg {
         ~VulkanFramebuffer() noexcept {
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkFramebuffer framebuffer;
     };
 }

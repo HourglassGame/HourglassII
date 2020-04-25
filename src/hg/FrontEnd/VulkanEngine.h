@@ -9,10 +9,10 @@
 #include "hg/VulkanUtil/VulkanUtil.h"
 #include "hg/VulkanUtil/VulkanLogicalDevice.h"
 #include "hg/VulkanUtil/VulkanPipelineLayout.h"
-#include "hg/VulkanUtil/VulkanFramebuffer.h"
+#include "hg/VulkanUtilHG/VulkanFramebufferHG.h"
 #include "hg/VulkanUtilHG/VulkanCommandPoolHG.h"
 #include "hg/VulkanUtil/VulkanGraphicsPipeline.h"
-#include "hg/VulkanUtil/VulkanFence.h"
+#include "hg/VulkanUtilHG/VulkanFenceHG.h"
 #include "hg/VulkanUtil/VulkanSemaphore.h"
 #include "hg/VulkanUtil/VulkanMemory.h"
 #include "hg/VulkanUtil/VulkanBuffer.h"
@@ -509,13 +509,13 @@ namespace hg {
 
         return swapChainImageViews;
     }
-    inline std::vector<VulkanFramebuffer> createSwapchainFramebuffers(
+    inline std::vector<VulkanFramebufferHG> createSwapchainFramebuffers(
         VkDevice const device,
         VkRenderPass const renderPass,
         VkExtent2D const swapChainExtent,
         std::vector<VulkanImageView> const &swapChainImageViews)
     {
-        std::vector<VulkanFramebuffer> framebuffers;
+        std::vector<VulkanFramebufferHG> framebuffers;
         framebuffers.reserve(swapChainImageViews.size());
         for (auto const &swapChainImageView : swapChainImageViews) {
             framebuffers.emplace_back(device, swapChainImageView.imageView, renderPass, swapChainExtent);
@@ -536,8 +536,8 @@ namespace hg {
         }
         return s;
     }
-    inline std::vector<VulkanFence> createInFlightFences(VkDevice const device) {
-        std::vector<VulkanFence> f;
+    inline std::vector<VulkanFenceHG> createInFlightFences(VkDevice const device) {
+        std::vector<VulkanFenceHG> f;
         for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
             f.emplace_back(device);
         }
@@ -608,7 +608,7 @@ namespace hg {
             std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.device, newSwapChain.swapChain, newSwapChain.imageCount));
             std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.device, newSwapChain.surfaceFormat.format, newSwapChainImages));
             VulkanRenderPass newRenderPass(logicalDevice.device, newSwapChain.surfaceFormat.format);
-            std::vector<VulkanFramebuffer> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, newRenderPass.renderPass, newSwapChain.extent, newSwapChainImageViews));
+            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.device, newRenderPass.renderPass, newSwapChain.extent, newSwapChainImageViews));
 
             renderer.updateSwapChainData(newRenderPass.renderPass, newSwapChain.extent);
 
@@ -633,7 +633,7 @@ namespace hg {
                 if (maxImageExtent.width == 0 || maxImageExtent.height == 0) return;
             }
             {
-                auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence, VK_TRUE, std::numeric_limits<uint64_t>::max())};
+                auto const res{vkWaitForFences(logicalDevice.device, 1, &inFlightFences[currentFrame].h(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't wait for fence"));
                 }
@@ -650,7 +650,7 @@ namespace hg {
                 }
                 break;
             }
-            auto const renderedCommandBuffers{renderer.renderFrame(currentFrame, swapChainFramebuffers[imageIndex].framebuffer)};
+            auto const renderedCommandBuffers{renderer.renderFrame(currentFrame, swapChainFramebuffers[imageIndex].h())};
 
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -669,13 +669,13 @@ namespace hg {
             submitInfo.pSignalSemaphores = signalSemaphores;
 
             {
-                auto const res{vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].fence)};
+                auto const res{vkResetFences(logicalDevice.device, 1, &inFlightFences[currentFrame].h())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset fence"));
                 }
             }
             {
-                auto const res{vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].fence)};
+                auto const res{vkQueueSubmit(logicalDevice.graphicsQueue, 1, &submitInfo, inFlightFences[currentFrame].h())};
                 if (res != VK_SUCCESS) {
                     BOOST_THROW_EXCEPTION(std::system_error(res, "failed to submit draw command buffer!"));
                 }
@@ -708,7 +708,7 @@ namespace hg {
         void idle(VulkanRenderer &vkRenderer) {
             for(int f{0}; f != MAX_FRAMES_IN_FLIGHT; ++f) {
                 {
-                    auto const res{vkGetFenceStatus(logicalDevice.device, inFlightFences[f].fence)};
+                    auto const res{vkGetFenceStatus(logicalDevice.device, inFlightFences[f].h())};
                     if (res == VK_SUCCESS) {
                         vkRenderer.frameEnded(f);
                     }
@@ -743,7 +743,7 @@ namespace hg {
         std::vector<VulkanImageView> swapChainImageViews;
         VulkanRenderPass renderPass;
 
-        std::vector<VulkanFramebuffer> swapChainFramebuffers;
+        std::vector<VulkanFramebufferHG> swapChainFramebuffers;
 
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkAcquireNextImageKHR has finished/vkQueueSubmit can start
@@ -754,7 +754,7 @@ namespace hg {
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkQueueSubmit has finished/vkAcquireNextImageKHR for next frame can start
         //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
-        std::vector<VulkanFence> inFlightFences;
+        std::vector<VulkanFenceHG> inFlightFences;
         std::size_t currentFrame;
     private:
     };
