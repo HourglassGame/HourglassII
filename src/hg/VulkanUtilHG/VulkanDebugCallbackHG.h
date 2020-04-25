@@ -26,7 +26,7 @@ namespace hg {
 
     class VulkanDebugCallbackHG final {
     public:
-        VulkanDebugCallbackHG(
+        explicit VulkanDebugCallbackHG(
             VkInstance const instance
         ) : debugCallback()
         {

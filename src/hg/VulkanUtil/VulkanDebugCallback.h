@@ -4,7 +4,7 @@
 namespace hg {
     class VulkanDebugCallback final {
     public:
-        VulkanDebugCallback(
+        explicit VulkanDebugCallback(
             VkInstance const instance
            ,VkDebugUtilsMessengerCreateInfoEXT const &createInfo
         )
