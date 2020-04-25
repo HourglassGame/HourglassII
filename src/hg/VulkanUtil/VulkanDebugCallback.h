@@ -1,6 +1,8 @@
 #ifndef HG_VULKANDEBUGCALLBACK_H
 #define HG_VULKANDEBUGCALLBACK_H
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 namespace hg {
     class VulkanDebugCallback final {
     public:

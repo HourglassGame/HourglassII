@@ -1,6 +1,8 @@
 #ifndef HG_VULKAN_DESCRIPTOR_POOL_H
 #define HG_VULKAN_DESCRIPTOR_POOL_H
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 namespace hg {
     class VulkanDescriptorPool final {
     public:
@@ -8,17 +10,22 @@ namespace hg {
             VkDevice const device
         ) : device(device), descriptorPool(VK_NULL_HANDLE)
         {}
+
         explicit VulkanDescriptorPool(
-            VkDevice         const device,
+            VkDevice const device,
             VkDescriptorPoolCreateInfo const &createInfo
         ) : device(device)
-        {
-            {
-                auto const res{vkCreateDescriptorPool(device, &createInfo, nullptr, &descriptorPool)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "vkCreateDescriptorPool failed!"));
+          , descriptorPool([&]{
+                VkDescriptorPool dp{VK_NULL_HANDLE};
+                {
+                    auto const res{vkCreateDescriptorPool(device, &createInfo, nullptr, &dp)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "vkCreateDescriptorPool failed!"));
+                    }
                 }
-            }
+                return dp;
+            }())
+        {
         }
         VulkanDescriptorPool(VulkanDescriptorPool const&) = delete;
         VulkanDescriptorPool(VulkanDescriptorPool &&o) noexcept
@@ -35,7 +42,9 @@ namespace hg {
         ~VulkanDescriptorPool() noexcept {
             vkDestroyDescriptorPool(device, descriptorPool, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkDescriptorPool descriptorPool;
     };
 }

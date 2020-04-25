@@ -21,13 +21,13 @@ namespace hg {
             }
         }
         VulkanPipelineLayout(VulkanPipelineLayout const&) = delete;
-        VulkanPipelineLayout(VulkanPipelineLayout &&o)
+        VulkanPipelineLayout(VulkanPipelineLayout &&o) noexcept
             : device(o.device)
             , pipelineLayout(std::exchange(o.pipelineLayout, VkPipelineLayout{VK_NULL_HANDLE}))
         {
         }
         VulkanPipelineLayout &operator=(VulkanPipelineLayout const&) = delete;
-        VulkanPipelineLayout &operator=(VulkanPipelineLayout &&o) {
+        VulkanPipelineLayout &operator=(VulkanPipelineLayout &&o) noexcept {
             std::swap(device, o.device);
             std::swap(pipelineLayout, o.pipelineLayout);
             return *this;

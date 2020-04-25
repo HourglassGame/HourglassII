@@ -1,6 +1,8 @@
 #ifndef HG_VULKAN_DESCRIPTOR_SET_LAYOUT_H
 #define HG_VULKAN_DESCRIPTOR_SET_LAYOUT_H
+#include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
+#include <system_error>
 namespace hg {
     class VulkanDescriptorSetLayout final {
     public:
@@ -12,13 +14,17 @@ namespace hg {
             VkDevice const device,
             VkDescriptorSetLayoutCreateInfo const &layoutInfo
         ) : device(device)
-        {
-            {
-                auto const res{vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &descriptorSetLayout)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create descriptor set layout!"));
+          , descriptorSetLayout([&]{
+                VkDescriptorSetLayout dsl{VK_NULL_HANDLE};
+                {
+                    auto const res{vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &dsl)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create descriptor set layout!"));
+                    }
                 }
-            }
+                return dsl;
+            }())
+        {
         }
         VulkanDescriptorSetLayout(VulkanDescriptorSetLayout const&) = delete;
         VulkanDescriptorSetLayout(VulkanDescriptorSetLayout &&o) noexcept
@@ -35,7 +41,9 @@ namespace hg {
         ~VulkanDescriptorSetLayout() noexcept {
             vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkDescriptorSetLayout descriptorSetLayout;
     };
 }
