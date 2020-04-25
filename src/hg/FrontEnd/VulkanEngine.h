@@ -1,5 +1,6 @@
 #ifndef HG_VULKANENGINE_H
 #define HG_VULKANENGINE_H
+#include "hg/Util/util.h"
 #include "hg/VulkanUtil/VulkanSwapChain.h"
 #include "hg/VulkanUtil/VulkanImageView.h"
 #include "hg/VulkanUtil/VulkanSurface.h"
@@ -35,8 +36,6 @@
 #include <boost/throw_exception.hpp>
 #include <system_error>
 namespace hg {
-    inline auto const strcmporder{ [](char const * const a, char const * const b) {return strcmp(a, b) < 0; } };
-    inline auto const strcmpeq{ [](char const * const a, char const * const b) {return strcmp(a, b) == 0; } };
 
     inline bool checkValidationLayerSupport() {
         uint32_t layerCount = 0;
@@ -114,6 +113,7 @@ namespace hg {
         info.ppEnabledExtensionNames = extensions.data();
         return info;
     }
+#if 0
     inline bool checkDeviceExtensionSupport(VkPhysicalDevice const device) {
         uint32_t extensionCount{0};
         {
@@ -150,6 +150,7 @@ namespace hg {
     }
 
     inline bool isDeviceSuitable(VkPhysicalDevice const device, VkSurfaceKHR const surface) {
+#if 0
         VkPhysicalDeviceProperties props;
         vkGetPhysicalDeviceProperties(device, &props);
         auto const allFormats{std::array{
@@ -417,6 +418,8 @@ namespace hg {
             VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM_KHRVK_FORMAT_G16_B16_R16_3PLANE_444_UNORM
             */
         }};
+
+        /*
         std::map<VkFormat, VkFormatProperties> supportedFormats;
         for (auto const format : allFormats) {
             vkGetPhysicalDeviceFormatProperties(
@@ -424,19 +427,20 @@ namespace hg {
                 format,
                 &supportedFormats[format]);
         }
-
+        */
+        /*
         std::map<VkFormat, VkFormatProperties> vertexBufferFormats;
         for (auto [format, flags] : supportedFormats) {
             if (flags.bufferFeatures & VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT) {
                 vertexBufferFormats[format] = flags;
             }
         }
-
+        */
+#endif
         return findQueueFamilies(device, surface).isComplete()
             && checkDeviceExtensionSupport(device)
             && checkSwapChainSupport(querySwapChainSupport(device, surface));
     }
-
     inline VkPhysicalDevice pickPhysicalDevice(VkInstance const &instance, VkSurfaceKHR const surface) {
         uint32_t deviceCount{0};
         {
@@ -463,6 +467,7 @@ namespace hg {
         }
         return *suitableDeviceIt;
     }
+#endif
     inline std::vector<VkImage> createSwapChainImages(
         VkDevice const device,
         VkSwapchainKHR const swapChain,
@@ -575,8 +580,15 @@ namespace hg {
           , newFramebufferSize(getFramebufferSize(w))
           , debugCallback(instance.i)
           , surface(instance.i, &w)
-          , physicalDevice(pickPhysicalDevice(instance.i, surface.surface))
-          , logicalDevice(physicalDevice, surface.surface, findQueueFamilies(physicalDevice, surface.surface)/*TODO: Don't recalculate queues*/)
+          , physicalDevice(
+              [&]{
+                  auto const possiblePhysicalDevices{enumerateSuitablePhysicalDevices(instance.i, surface.surface)};
+                  if (possiblePhysicalDevices.empty()) {
+                      BOOST_THROW_EXCEPTION(std::exception("Gailed to find GPU supporting features required for Hourglass II"));
+                  }
+                  return possiblePhysicalDevices.front();
+              }())
+          , logicalDevice(physicalDevice, surface.surface)
             //TODO: if frameBufferWidth or Height is 0, don't create the swapChain; rather than
             //making an invalid swapChain!
             //Attempting to make a swapChain with width or height 0 violates the vulkan spec!
@@ -599,7 +611,9 @@ namespace hg {
         void recreateSwapChain(VulkanRenderer &renderer){
             vkDeviceWaitIdle(logicalDevice.h());
             framebufferResizedCheck();
-            auto capabilities{querySwapChainSupport(physicalDevice, surface.surface).capabilities};
+
+            auto const maxImageExtent{querySwapChainMaxImageExtent(physicalDevice.physicalDevice, surface.surface)};
+
             if (oldFramebufferSize.width == 0 || oldFramebufferSize.height == 0
              || capabilities.maxImageExtent.width == 0 || capabilities.maxImageExtent.height == 0) {
                 //Can't render into 0-size swapchain.
@@ -629,7 +643,7 @@ namespace hg {
         void drawFrame(VulkanRenderer &renderer) {
             decltype(frameBufferSizeMutex)::scoped_lock lock(frameBufferSizeMutex);
             {
-                auto maxImageExtent{querySwapChainMaxImageExtent(physicalDevice, surface.surface)};
+                auto maxImageExtent{querySwapChainMaxImageExtent(physicalDevice.physicalDevice, surface.surface)};
                 //Can't render into 0-size surface
                 if (maxImageExtent.width == 0 || maxImageExtent.height == 0) return;
             }
@@ -739,7 +753,7 @@ namespace hg {
         VulkanInstance instance;
         VulkanDebugCallbackHG debugCallback;
         VulkanSurface surface;
-        VkPhysicalDevice physicalDevice;
+        PossiblePhysicalDevice physicalDevice;
         VulkanLogicalDeviceHG logicalDevice;
         VulkanSwapChain swapChain;
         std::vector<VkImage> swapChainImages;

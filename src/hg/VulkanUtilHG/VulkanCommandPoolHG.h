@@ -1,5 +1,7 @@
 #ifndef HG_VULKANCOMMANDPOOLHG_H
 #define HG_VULKANCOMMANDPOOLHG_H
+#include "VulkanUtilPhysicalDevice.h"
+
 #include "hg/VulkanUtil/VulkanCommandPool.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
 #include <boost/throw_exception.hpp>
@@ -10,21 +12,16 @@ namespace hg {
     public:
         explicit VulkanCommandPoolHG(
             VkDevice const device,
-            VkPhysicalDevice const physicalDevice,
+            PossiblePhysicalDevice const &physicalDevice,
             VkSurfaceKHR const surface
         ) :
             commandPool(
                 device,
                 [&]{
-                    QueueFamilyIndices const queueFamilyIndices{findQueueFamilies(physicalDevice, surface)};
-                    if (!queueFamilyIndices.graphicsFamily) {
-                        BOOST_THROW_EXCEPTION(std::exception("Couldn't find graphics queue when creating command pool, physical device shouldn't have been selected"));
-                    }
-
                     VkCommandPoolCreateInfo poolInfo{};
                     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
                     poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-                    poolInfo.queueFamilyIndex = *queueFamilyIndices.graphicsFamily;
+                    poolInfo.queueFamilyIndex = physicalDevice.queueIndices.graphicsFamily;
                     return poolInfo;
                 }()
             )

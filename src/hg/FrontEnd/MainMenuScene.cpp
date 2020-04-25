@@ -16,7 +16,7 @@ struct MainMenuUIFrameState final {
 
 struct MainMenuSceneSharedVulkanData {
     MainMenuSceneSharedVulkanData(
-        VkPhysicalDevice const physicalDevice,
+        PossiblePhysicalDevice const &physicalDevice,
         VkDevice const device,
         VkSurfaceKHR const surface,
         VkRenderPass const renderPass,
@@ -33,11 +33,11 @@ struct MainMenuSceneSharedVulkanData {
 
         , samplerDescriptorPool(createSamplerDescriptorPool(device))
         //, samplerDescriptorPools(createSamplerDescriptorPools(device))
-        , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
+        , renderTargets(createRenderTargets(physicalDevice.physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
 
         //, timelineTextureDescriptorPool(createTimelineTextureDescriptorPool(device))
         //, timelineTextures(createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
-        , fontTex("unifont.png", device, physicalDevice, commandPool.h(), graphicsQueue, true)
+        , fontTex("unifont.png", device, physicalDevice.physicalDevice, commandPool.h(), graphicsQueue, true)
         , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 #if 0
         , boxTex("GlitzData/box.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
@@ -167,13 +167,13 @@ struct MainMenuSceneFrameVulkanData {
 class MainMenuSceneRenderer : public SceneRenderer {
 public:
     MainMenuSceneRenderer(
-        VkPhysicalDevice const physicalDevice,
+        PossiblePhysicalDevice const &physicalDevice,
         VkDevice const device,
         VkSurfaceKHR const surface,
         VkRenderPass const renderPass,
         VkExtent2D const &swapChainExtent,
         VkQueue const graphicsQueue)
-        : physicalDevice(physicalDevice)
+        : physicalDevice(physicalDevice.physicalDevice)
         , device(device)
         , renderPass(renderPass)
         , swapChainExtent(swapChainExtent)

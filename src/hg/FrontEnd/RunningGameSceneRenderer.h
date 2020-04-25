@@ -46,7 +46,7 @@ namespace hg {
 
     struct RunningGameSceneSharedVulkanData {
         RunningGameSceneSharedVulkanData(
-            VkPhysicalDevice const physicalDevice,
+            PossiblePhysicalDevice const &physicalDevice,
             VkDevice const device,
             VkSurfaceKHR const surface,
             VkRenderPass const renderPass,
@@ -60,9 +60,9 @@ namespace hg {
             , textureDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeSamplerLayoutBinding()))
             , pipelineLayout(device, makePipelineLayoutCreateInfo({ projUniformDescriptorSetLayout.descriptorSetLayout, textureDescriptorSetLayout.descriptorSetLayout }))
             , graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
-            , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
+            , renderTargets(createRenderTargets(physicalDevice.physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
             , textures(
-                physicalDevice,
+                physicalDevice.physicalDevice,
                 device,
                 swapChainExtent,
                 textureDescriptorSetLayout,
@@ -95,13 +95,13 @@ namespace hg {
             //vkDeviceWaitIdle(device);
         }
         RunningGameSceneRenderer(
-            VkPhysicalDevice const physicalDevice,
+            PossiblePhysicalDevice const &physicalDevice,
             VkDevice const device,
             VkSurfaceKHR const surface,
             VkRenderPass const renderPass,
             VkExtent2D const &swapChainExtent,
             VkQueue const graphicsQueue)
-          : physicalDevice(physicalDevice)
+          : physicalDevice(physicalDevice.physicalDevice)
           , device(device)
           , renderPass(renderPass)
           , swapChainExtent(swapChainExtent)

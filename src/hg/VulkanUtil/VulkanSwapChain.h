@@ -5,6 +5,8 @@
 #include "VulkanExceptions.h"
 #include "hg/GlobalConst.h"
 
+#include "hg/VulkanUtilHG/VulkanUtilPhysicalDevice.h"
+
 #include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
 #include <system_error>
@@ -68,7 +70,7 @@ namespace hg {
             , extent()
         {}
         explicit VulkanSwapChain(
-            VkPhysicalDevice const physicalDevice,
+            PossiblePhysicalDevice const &physicalDevice,
             VkDevice const device,
             VkSurfaceKHR const surface,
             VkExtent2D const glfwFramebufferExtent,
@@ -76,15 +78,21 @@ namespace hg {
         )
           : device(device)
         {
-            SwapChainSupportDetails const swapChainSupport{querySwapChainSupport(physicalDevice, surface)};
+            VkSurfaceCapabilitiesKHR capabilities{};
+            {
+                auto const res{vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice.physicalDevice, surface, &capabilities)};
+                if (res != VK_SUCCESS) {
+                    BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't read surface capabilities"));
+                }
+            }
 
-            surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-            VkPresentModeKHR const presentMode{chooseSwapPresentMode(swapChainSupport.presentModes)};
-            extent = chooseSwapExtent(glfwFramebufferExtent, swapChainSupport.capabilities);
+            surfaceFormat = chooseSwapSurfaceFormat(physicalDevice.swapChainSupport.formats);
+            VkPresentModeKHR const presentMode{chooseSwapPresentMode(physicalDevice.swapChainSupport.presentModes)};
+            extent = chooseSwapExtent(glfwFramebufferExtent, capabilities);
 
-            imageCount = swapChainSupport.capabilities.minImageCount + 1;
-            if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-                imageCount = swapChainSupport.capabilities.maxImageCount;
+            imageCount = capabilities.minImageCount + 1;
+            if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
+                imageCount = capabilities.maxImageCount;
             }
 
             VkSwapchainCreateInfoKHR createInfo = {};
@@ -98,19 +106,19 @@ namespace hg {
             createInfo.imageArrayLayers = 1;
             createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-            QueueFamilyIndices const indices{findQueueFamilies(physicalDevice, surface)};
-            uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
+            //QueueFamilyIndices const indices{findQueueFamilies(physicalDevice, surface)};
+            auto queueFamilyIndices{std::array{ physicalDevice.queueIndices.graphicsFamily, physicalDevice.queueIndices.presentFamily }};
 
-            if (indices.graphicsFamily != indices.presentFamily) {
+            if (physicalDevice.queueIndices.graphicsFamily != physicalDevice.queueIndices.presentFamily) {
                 createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
                 createInfo.queueFamilyIndexCount = 2;
-                createInfo.pQueueFamilyIndices = queueFamilyIndices;
+                createInfo.pQueueFamilyIndices = queueFamilyIndices.data();
             }
             else {
                 createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
             }
 
-            createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
+            createInfo.preTransform = capabilities.currentTransform;
             createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
             createInfo.presentMode = presentMode;
             createInfo.clipped = VK_TRUE;

@@ -1,6 +1,8 @@
 #ifndef HG_VULKANLOGICALDEVICEHG_H
 #define HG_VULKANLOGICALDEVICEHG_H
 
+#include "VulkanUtilPhysicalDevice.h"
+
 #include "hg/VulkanUtil/VulkanLogicalDevice.h"
 #include "hg/VulkanUtil/VulkanExceptions.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
@@ -16,20 +18,12 @@ namespace hg {
     class VulkanLogicalDeviceHG final {
     public:
         explicit VulkanLogicalDeviceHG(
-            VkPhysicalDevice const physicalDevice,
-            VkSurfaceKHR const surface,
-            QueueFamilyIndices const &indices //= findQueueFamilies(physicalDevice, surface)/*TODO: Move to be computed only once: when the physical device is selected*/
-        ) : logicalDevice(
-                physicalDevice,
+            PossiblePhysicalDevice const &physicalDevice,
+            VkSurfaceKHR const surface
+        )
+          : logicalDevice(
+                physicalDevice.physicalDevice,
                 [&](auto const &queueCreateInfos){
-                    //QueueFamilyIndices const indices{findQueueFamilies(physicalDevice, surface)};
-
-                    if (!indices.graphicsFamily) {
-                        BOOST_THROW_EXCEPTION(std::exception("No graphics queue on physical device, should not have been detected as a valid device selection"));
-                    }
-                    if (!indices.presentFamily) {
-                        BOOST_THROW_EXCEPTION(std::exception("No present queue on physical device, should not have been detected as a valid device selection"));
-                    }
 
                     VkDeviceCreateInfo createInfo = {};
                     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -58,7 +52,7 @@ namespace hg {
                         VkDeviceQueueCreateInfo queueCreateInfo = {};
                         queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
                         queueCreateInfo.pNext = nullptr;
-                        queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+                        queueCreateInfo.queueFamilyIndex = physicalDevice.queueIndices.graphicsFamily;
                         queueCreateInfo.queueCount = gsl::narrow<uint32_t>(queuePriorities.size());
                         queueCreateInfo.pQueuePriorities = queuePriorities.data();
 
@@ -66,9 +60,17 @@ namespace hg {
                     }([]{return std::array{1.0f};}())
                 )
             )
+          , graphicsQueue([&]{
+                VkQueue q{VK_NULL_HANDLE};
+                vkGetDeviceQueue(logicalDevice.device, physicalDevice.queueIndices.graphicsFamily, 0, &q);
+                return q;
+            }())
+          , presentQueue([&]{
+                VkQueue q{VK_NULL_HANDLE};
+                vkGetDeviceQueue(logicalDevice.device, physicalDevice.queueIndices. presentFamily, 0, &q);
+                return q;
+            }())
         {
-            vkGetDeviceQueue(logicalDevice.device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-            vkGetDeviceQueue(logicalDevice.device, indices. presentFamily.value(), 0, &presentQueue);
         }
         VulkanLogicalDeviceHG(VulkanLogicalDeviceHG const&) = delete;
         VulkanLogicalDeviceHG(VulkanLogicalDeviceHG &&) = delete;

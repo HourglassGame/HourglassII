@@ -8,7 +8,7 @@ namespace hg {
 
 struct RuntimeErrorSceneSharedVulkanData {
     explicit RuntimeErrorSceneSharedVulkanData(
-        VkPhysicalDevice const physicalDevice,
+        PossiblePhysicalDevice const &physicalDevice,
         VkDevice const device,
         VkSurfaceKHR const surface,
         VkRenderPass const renderPass,
@@ -23,8 +23,8 @@ struct RuntimeErrorSceneSharedVulkanData {
         , pipelineLayout(device, makePipelineLayoutCreateInfo({ projUniformDescriptorSetLayout.descriptorSetLayout, textureDescriptorSetLayout.descriptorSetLayout }))
         , graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
         , samplerDescriptorPool(createSamplerDescriptorPool(device))
-        , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
-        , fontTex("unifont.png", device, physicalDevice, commandPool.h(), graphicsQueue, true)
+        , renderTargets(createRenderTargets(physicalDevice.physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
+        , fontTex("unifont.png", device, physicalDevice.physicalDevice, commandPool.h(), graphicsQueue, true)
         , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
     {}
 
@@ -50,7 +50,7 @@ class RuntimeErrorSceneRenderer : public SceneRenderer {
 public:
     explicit RuntimeErrorSceneRenderer(
         LuaError const& luaError,
-        VkPhysicalDevice const physicalDevice,
+        PossiblePhysicalDevice const &physicalDevice,
         VkDevice const device,
         VkSurfaceKHR const surface,
         VkRenderPass const renderPass,
@@ -58,7 +58,7 @@ public:
         VkQueue const graphicsQueue
     ) :
           luaError(&luaError)
-        , physicalDevice(physicalDevice)
+        , physicalDevice(physicalDevice.physicalDevice)
         , device(device)
         , renderPass(renderPass)
         , swapChainExtent(swapChainExtent)

@@ -1,6 +1,6 @@
 #ifndef HG_POST_LEVEL_SCENE_RENDERER_H
 #define HG_POST_LEVEL_SCENE_RENDERER_H
-
+#include "hg/VulkanUtilHG/VulkanUtilPhysicalDevice.h"
 namespace hg {
 struct PostLevelSceneUiFrameState {
     hg::FrameID drawnFrame;
@@ -10,7 +10,7 @@ struct PostLevelSceneUiFrameState {
 
 struct PostLevelSceneSharedVulkanData {
     PostLevelSceneSharedVulkanData(
-        VkPhysicalDevice const physicalDevice,
+        PossiblePhysicalDevice const &physicalDevice,
         VkDevice const device,
         VkSurfaceKHR const surface,
         VkRenderPass const renderPass,
@@ -24,9 +24,9 @@ struct PostLevelSceneSharedVulkanData {
         , textureDescriptorSetLayout(device, makeDescriptorSetLayoutCreateInfo(makeSamplerLayoutBinding()))
         , pipelineLayout(device, makePipelineLayoutCreateInfo({ projUniformDescriptorSetLayout.descriptorSetLayout, textureDescriptorSetLayout.descriptorSetLayout }))
         , graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
-        , renderTargets(createRenderTargets(physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
+        , renderTargets(createRenderTargets(physicalDevice.physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
         , textures(
-            physicalDevice,
+            physicalDevice.physicalDevice,
             device,
             swapChainExtent,
             textureDescriptorSetLayout,
@@ -54,7 +54,7 @@ struct PostLevelSceneFrameVulkanData {
 class PostLevelSceneRenderer : public SceneRenderer {
 public:
     PostLevelSceneRenderer(
-        VkPhysicalDevice const physicalDevice,
+        PossiblePhysicalDevice const &physicalDevice,
         VkDevice const device,
         VkSurfaceKHR const surface,
         VkRenderPass const renderPass,
@@ -64,11 +64,10 @@ public:
         Wall const &wall,
         std::size_t const timelineLength,
         std::vector<GuyInput> const &postOverwriteInput)
-        : physicalDevice(physicalDevice)
+        : physicalDevice(physicalDevice.physicalDevice)
         , device(device)
         , renderPass(renderPass)
         , swapChainExtent(swapChainExtent)
-        
         , sceneData(std::make_shared<PostLevelSceneSharedVulkanData>(
             physicalDevice,
             device,
