@@ -408,7 +408,7 @@ run_main_menu(
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,
-        vulkanEng.swapChain.extent,
+        vulkanEng.swapChain.extent(),
         vulkanEng.logicalDevice.graphicsQ()
     };
     vkRenderer.StartScene(renderer);

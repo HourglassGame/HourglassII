@@ -21,7 +21,7 @@ namespace hg {
                 [&]{
                     VkDevice d{VK_NULL_HANDLE};
                     {
-                        auto const res{ vkCreateDevice(physicalDevice, &createInfo, nullptr, &d) };
+                        auto const res{vkCreateDevice(physicalDevice, &createInfo, nullptr, &d)};
                         if (res != VK_SUCCESS) {
                             BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create logical device!"));
                         }

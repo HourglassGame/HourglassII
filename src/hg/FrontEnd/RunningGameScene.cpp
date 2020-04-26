@@ -158,7 +158,7 @@ run_game_scene(
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,
-        eng.swapChain.extent,
+        eng.swapChain.extent(),
         eng.logicalDevice.graphicsQ()
     );
     vkRenderer.StartScene(renderer);

@@ -49,7 +49,7 @@ void run_post_level_scene(
         eng.logicalDevice.h(),
         eng.surface.surface,
         eng.renderPass.h(),
-        eng.swapChain.extent,
+        eng.swapChain.extent(),
         eng.logicalDevice.graphicsQ(),
         guyFrameData,
         finalLevel.timeEngine.getWall(),

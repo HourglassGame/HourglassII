@@ -1,7 +1,7 @@
 #ifndef HG_VULKANENGINE_H
 #define HG_VULKANENGINE_H
 #include "hg/Util/util.h"
-#include "hg/VulkanUtil/VulkanSwapChain.h"
+#include "hg/VulkanUtilHG/VulkanSwapChainHG.h"
 #include "hg/VulkanUtil/VulkanImageView.h"
 #include "hg/VulkanUtil/VulkanSurface.h"
 #include "hg/VulkanUtilHG/VulkanRenderPassHG.h"
@@ -116,9 +116,10 @@ namespace hg {
 
     inline std::vector<VkImage> createSwapChainImages(
         VkDevice const device,
-        VkSwapchainKHR const swapChain,
-        uint32_t &imageCount)
+        VkSwapchainKHR const swapChain
+    )
     {
+        uint32_t imageCount{};
         std::vector<VkImage> swapChainImages;
         {
             auto const res{ vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr) };
@@ -230,7 +231,7 @@ namespace hg {
               [&]{
                   auto const possiblePhysicalDevices{enumerateSuitablePhysicalDevices(instance.i, surface.surface)};
                   if (possiblePhysicalDevices.empty()) {
-                      BOOST_THROW_EXCEPTION(std::exception("Gailed to find GPU supporting features required for Hourglass II"));
+                      BOOST_THROW_EXCEPTION(std::exception("Failed to find GPU supporting features required for Hourglass II"));
                   }
                   return possiblePhysicalDevices.front();
               }())
@@ -239,10 +240,10 @@ namespace hg {
             //making an invalid swapChain!
             //Attempting to make a swapChain with width or height 0 violates the vulkan spec!
           , swapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
-          , swapChainImages(createSwapChainImages(logicalDevice.h(), swapChain.swapChain, swapChain.imageCount))
+          , swapChainImages(createSwapChainImages(logicalDevice.h(), swapChain.h()))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.h(), physicalDevice.surfaceFormat.format, swapChainImages))
           , renderPass(logicalDevice.h(), physicalDevice.surfaceFormat.format)
-          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), swapChain.extent, swapChainImageViews))
+          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), swapChain.extent(), swapChainImageViews))
           , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.h()))
           , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.h()))
           , inFlightFences(createInFlightFences(logicalDevice.h()))
@@ -265,12 +266,12 @@ namespace hg {
                 //Can't render into 0-size swapchain.
                 return;
             }
-            VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, swapChain.swapChain);
-            std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.h(), newSwapChain.swapChain, newSwapChain.imageCount));
+            VulkanSwapChainHG newSwapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, swapChain.h());
+            std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.h(), newSwapChain.h()));
             std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.h(), physicalDevice.surfaceFormat.format, newSwapChainImages));
-            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), newSwapChain.extent, newSwapChainImageViews));
+            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), newSwapChain.extent(), newSwapChainImageViews));
 
-            renderer.updateSwapChainData(renderPass.h(), newSwapChain.extent);
+            renderer.updateSwapChainData(renderPass.h(), newSwapChain.extent());
 
             swapChain = std::move(newSwapChain);
             swapChainImages = std::move(swapChainImages);
@@ -287,7 +288,7 @@ namespace hg {
         void drawFrame(VulkanRenderer &renderer) {
             decltype(frameBufferSizeMutex)::scoped_lock lock(frameBufferSizeMutex);
             {
-                auto maxImageExtent{querySwapChainMaxImageExtent(physicalDevice.physicalDevice, surface.surface)};
+                auto const maxImageExtent{querySwapChainMaxImageExtent(physicalDevice.physicalDevice, surface.surface)};
                 //Can't render into 0-size surface
                 if (maxImageExtent.width == 0 || maxImageExtent.height == 0) return;
             }
@@ -300,7 +301,7 @@ namespace hg {
             }
             uint32_t imageIndex{};
             while (true) {
-                auto const res{ vkAcquireNextImageKHR(logicalDevice.h(), swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].h(), VK_NULL_HANDLE, &imageIndex)};
+                auto const res{ vkAcquireNextImageKHR(logicalDevice.h(), swapChain.h(), std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].h(), VK_NULL_HANDLE, &imageIndex)};
                 if (res == VK_ERROR_OUT_OF_DATE_KHR) {
                     recreateSwapChain(renderer);
                     continue;
@@ -348,7 +349,7 @@ namespace hg {
             presentInfo.waitSemaphoreCount = 1;
             presentInfo.pWaitSemaphores = signalSemaphores;
 
-            auto const swapChains{std::array{swapChain.swapChain}};
+            auto const swapChains{std::array{swapChain.h()}};
             presentInfo.swapchainCount = gsl::narrow<uint32_t>(swapChains.size());
             presentInfo.pSwapchains = swapChains.data();
 
@@ -399,7 +400,7 @@ namespace hg {
         VulkanSurface surface;
         PossiblePhysicalDevice physicalDevice;
         VulkanLogicalDeviceHG logicalDevice;
-        VulkanSwapChain swapChain;
+        VulkanSwapChainHG swapChain;
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanImageView> swapChainImageViews;
         VulkanRenderPassHG renderPass;
