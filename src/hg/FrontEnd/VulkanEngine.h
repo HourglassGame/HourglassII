@@ -97,7 +97,7 @@ namespace hg {
         info.pApplicationInfo = pApplicationInfo;
 
         if (enableValidationLayers) {
-            info.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+            info.enabledLayerCount = gsl::narrow<uint32_t>(validationLayers.size());
             info.ppEnabledLayerNames = validationLayers.data();
         }
         else {
@@ -109,7 +109,7 @@ namespace hg {
             BOOST_THROW_EXCEPTION(std::exception("Vulkan support insufficient to run in GLFW"));
         }
 
-        info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+        info.enabledExtensionCount = gsl::narrow<uint32_t>(extensions.size());
         info.ppEnabledExtensionNames = extensions.data();
         return info;
     }
@@ -255,7 +255,7 @@ namespace hg {
         }
 
 
-        void recreateSwapChain(VulkanRenderer &renderer){
+        void recreateSwapChain(VulkanRenderer &renderer) {
             vkDeviceWaitIdle(logicalDevice.h());
             framebufferResizedCheck();
 
