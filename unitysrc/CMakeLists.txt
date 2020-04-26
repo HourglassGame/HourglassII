@@ -10,7 +10,7 @@ find_package(SFML 2.5.1 COMPONENTS graphics audio REQUIRED)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.68.0 COMPONENTS filesystem thread serialization REQUIRED)
+find_package(Boost 1.72.0 COMPONENTS filesystem thread serialization REQUIRED)
 
 find_package(TBB REQUIRED)
 
@@ -73,7 +73,7 @@ target_compile_options(HourglassII
         /Zc:throwingNew)
 
 target_link_libraries(HourglassII sfml-graphics sfml-audio)
-target_link_libraries(HourglassII Boost::boost Boost::filesystem Boost::thread Boost::serialization)
+target_link_libraries(HourglassII Boost::headers Boost::filesystem Boost::thread Boost::serialization)
 target_link_libraries(HourglassII TBB::tbb TBB::tbbmalloc)
 target_link_libraries(HourglassII glfw)
 target_link_libraries(HourglassII Vulkan::Vulkan)
