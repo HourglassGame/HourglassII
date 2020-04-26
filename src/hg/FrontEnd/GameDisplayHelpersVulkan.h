@@ -393,8 +393,8 @@ inline VkDescriptorSet createDescriptorSet(
     return createDescriptorSet2(device, samplerDescriptorPool, textureDescriptorSetLayout, texture.imageView.imageView, texture.sampler.sampler);
 }
 inline multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> loadWallBlockImages(
-    VkDevice const device,
     VkPhysicalDevice const physicalDevice,
+    VkDevice const device,
     VkCommandPool const commandPool,
     VkQueue const graphicsQueue)
 {
@@ -408,13 +408,13 @@ inline multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> loadWallBlock
                     filename << "Tilesets/" << tilesetName << right << top << left << bottom << ".png";
                     wallBlockImages[right][top][left][bottom] = std::optional<VulkanTextureSimple>{
                         VulkanTextureSimple{
-                        filename.str(),
-                        device,
-                        physicalDevice,
-                        commandPool,
-                        graphicsQueue,
-                        false
-                    }
+                            filename.str(),
+                            physicalDevice,
+                            device,
+                            commandPool,
+                            graphicsQueue,
+                            false
+                        }
                     };
                 }
             }
@@ -448,8 +448,8 @@ multi_array<VkDescriptorSet, 2, 2, 2, 2> loadWallBlockDescriptorSets(
 }
 
 inline multi_array<std::optional<VulkanTextureSimple>, 2, 2> loadWallCornerImages(
-    VkDevice const device,
     VkPhysicalDevice const physicalDevice,
+    VkDevice const device,
     VkCommandPool const commandPool,
     VkQueue const graphicsQueue)
 {
@@ -461,13 +461,13 @@ inline multi_array<std::optional<VulkanTextureSimple>, 2, 2> loadWallCornerImage
             filename << "Tilesets/" << tilesetName << (bottom ? "B" : "T") << (right ? "R" : "L") << ".png";
             cornerImages[bottom][right] = std::optional<VulkanTextureSimple>{
                 VulkanTextureSimple{
-                filename.str(),
-                device,
-                physicalDevice,
-                commandPool,
-                graphicsQueue,
-                false
-            }
+                    filename.str(),
+                    physicalDevice,
+                    device,
+                    commandPool,
+                    graphicsQueue,
+                    false
+                }
             };
         }
     }
@@ -605,48 +605,48 @@ struct GameDisplayTextures final {
 
         , timelineTextureDescriptorPool(createTimelineTextureDescriptorPool(device))
         , timelineTextures(createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
-        , fontTex("unifont.png", device, physicalDevice, commandPool, graphicsQueue, true)
+        , fontTex("unifont.png", physicalDevice, device, commandPool, graphicsQueue, true)
         , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 
-        , boxTex("GlitzData/box.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , boxTex("GlitzData/box.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , boxTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxTex))
 
-        , boxRTex("GlitzData/box_r.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , boxRTex("GlitzData/box_r.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , boxRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
 
-        , powerupJumpTex("GlitzData/powerup_jump.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , powerupJumpTex("GlitzData/powerup_jump.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , powerupJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, powerupJumpTex))
 
-        , rhinoLeftStopTex("GlitzData/rhino_left_stop.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , rhinoLeftStopTex("GlitzData/rhino_left_stop.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , rhinoLeftStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopTex))
 
-        , rhinoLeftStopRTex("GlitzData/rhino_left_stop_r.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , rhinoLeftStopRTex("GlitzData/rhino_left_stop_r.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , rhinoLeftStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopRTex))
 
-        , rhinoRightStopTex("GlitzData/rhino_right_stop.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , rhinoRightStopTex("GlitzData/rhino_right_stop.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , rhinoRightStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopTex))
 
-        , rhinoRightStopRTex("GlitzData/rhino_right_stop_r.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , rhinoRightStopRTex("GlitzData/rhino_right_stop_r.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , rhinoRightStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopRTex))
 
-        , timeGunTex("GlitzData/time_gun.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , timeGunTex("GlitzData/time_gun.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , timeGunTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeGunTex))
 
-        , timeJumpTex("GlitzData/time_jump.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , timeJumpTex("GlitzData/time_jump.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , timeJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeJumpTex))
 
-        , timePauseTex("GlitzData/time_pause.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , timePauseTex("GlitzData/time_pause.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , timePauseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timePauseTex))
 
-        , timeReverseTex("GlitzData/time_reverse.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , timeReverseTex("GlitzData/time_reverse.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , timeReverseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeReverseTex))
 
-        , trampolineTex("GlitzData/trampoline.png", device, physicalDevice, commandPool, graphicsQueue, false)
+        , trampolineTex("GlitzData/trampoline.png", physicalDevice, device, commandPool, graphicsQueue, false)
         , trampolineTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, trampolineTex))
 
-        , wallBlockImages(loadWallBlockImages(device, physicalDevice, commandPool, graphicsQueue))
+        , wallBlockImages(loadWallBlockImages(physicalDevice, device, commandPool, graphicsQueue))
         , wallBlockDescriptorSets(loadWallBlockDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallBlockImages))
-        , wallCornerImages(loadWallCornerImages(device, physicalDevice, commandPool, graphicsQueue))
+        , wallCornerImages(loadWallCornerImages(physicalDevice, device, commandPool, graphicsQueue))
         , wallCornerDescriptorSets(loadWallCornerDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallCornerImages))
         , texDescriptorSets(GameDisplayTexDescriptorSets{
               fontTexDescriptorSet

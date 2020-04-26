@@ -12,8 +12,8 @@ namespace hg{
     struct VulkanTextureSimple final {
         explicit VulkanTextureSimple(
             std::string const &filename,
-            VkDevice const device,
             VkPhysicalDevice const physicalDevice,
+            VkDevice const device,
             VkCommandPool const commandPool,
             VkQueue const graphicsQueue,
             bool const unnormalizedCoordinates
