@@ -9,17 +9,22 @@ namespace hg {
     class VulkanSemaphore final {
     public:
         explicit VulkanSemaphore(
-            VkDevice const device
+            VkDevice const device,
+            VkSemaphoreCreateInfo const &semaphoreInfo
         ) : device(device)
+          , semaphore(
+                [&]{
+                    VkSemaphore s{VK_NULL_HANDLE};
+                    {
+                        auto const res{vkCreateSemaphore(device, &semaphoreInfo, nullptr, &s)};
+                        if (res != VK_SUCCESS) {
+                            BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create semaphore!"));
+                        }
+                    }
+                    return s;
+                }()
+            )
         {
-            VkSemaphoreCreateInfo semaphoreInfo = {};
-            semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-            {
-                auto const res{vkCreateSemaphore(device, &semaphoreInfo, nullptr, &semaphore)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create semaphore!"));
-                }
-            }
         }
         VulkanSemaphore(VulkanSemaphore const&) = delete;
         VulkanSemaphore(VulkanSemaphore &&o) noexcept
@@ -36,7 +41,9 @@ namespace hg {
         ~VulkanSemaphore() noexcept {
             vkDestroySemaphore(device, semaphore, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkSemaphore semaphore;
     };
 }

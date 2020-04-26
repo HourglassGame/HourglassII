@@ -14,7 +14,7 @@
 #include "hg/VulkanUtilHG/VulkanCommandPoolHG.h"
 #include "hg/VulkanUtilHG/VulkanGraphicsPipelineHG.h"
 #include "hg/VulkanUtilHG/VulkanFenceHG.h"
-#include "hg/VulkanUtil/VulkanSemaphore.h"
+#include "hg/VulkanUtilHG/VulkanSemaphoreHG.h"
 #include "hg/VulkanUtil/VulkanMemory.h"
 #include "hg/VulkanUtil/VulkanBuffer.h"
 #include "hg/VulkanUtil/VulkanDescriptorSetLayout.h"
@@ -174,15 +174,15 @@ namespace hg {
         }
         return framebuffers;
     }
-    inline std::vector<VulkanSemaphore> createImageAvailableSemaphores(VkDevice const device) {
-        std::vector<VulkanSemaphore> s;
+    inline std::vector<VulkanSemaphoreHG> createImageAvailableSemaphores(VkDevice const device) {
+        std::vector<VulkanSemaphoreHG> s;
         for (auto i{0}; i != MAX_FRAMES_IN_FLIGHT; ++i) {
             s.emplace_back(device);
         }
         return s;
     }
-    inline std::vector<VulkanSemaphore> createRenderFinishedSemaphores(VkDevice const device) {
-        std::vector<VulkanSemaphore> s;
+    inline std::vector<VulkanSemaphoreHG> createRenderFinishedSemaphores(VkDevice const device) {
+        std::vector<VulkanSemaphoreHG> s;
         for (auto i{ 0 }; i != MAX_FRAMES_IN_FLIGHT; ++i) {
             s.emplace_back(device);
         }
@@ -300,7 +300,7 @@ namespace hg {
             }
             uint32_t imageIndex{};
             while (true) {
-                auto const res{ vkAcquireNextImageKHR(logicalDevice.h(), swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].semaphore, VK_NULL_HANDLE, &imageIndex)};
+                auto const res{ vkAcquireNextImageKHR(logicalDevice.h(), swapChain.swapChain, std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].h(), VK_NULL_HANDLE, &imageIndex)};
                 if (res == VK_ERROR_OUT_OF_DATE_KHR) {
                     recreateSwapChain(renderer);
                     continue;
@@ -315,7 +315,7 @@ namespace hg {
             VkSubmitInfo submitInfo = {};
             submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-            VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame].semaphore };
+            VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame].h() };
             VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
             submitInfo.waitSemaphoreCount = 1;
             submitInfo.pWaitSemaphores = waitSemaphores;
@@ -324,7 +324,7 @@ namespace hg {
             submitInfo.commandBufferCount = gsl::narrow<uint32_t>(renderedCommandBuffers.size());
             submitInfo.pCommandBuffers = renderedCommandBuffers.data();
 
-            VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].semaphore };
+            VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame].h() };
             submitInfo.signalSemaphoreCount = 1;
             submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -408,10 +408,10 @@ namespace hg {
 
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkAcquireNextImageKHR has finished/vkQueueSubmit can start
-        std::vector<VulkanSemaphore> imageAvailableSemaphores;
+        std::vector<VulkanSemaphoreHG> imageAvailableSemaphores;
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkQueueSubmit has finished/vkQueuePresentKHR can start
-        std::vector<VulkanSemaphore> renderFinishedSemaphores;
+        std::vector<VulkanSemaphoreHG> renderFinishedSemaphores;
         //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
         //vkQueueSubmit has finished/vkAcquireNextImageKHR for next frame can start
         //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
