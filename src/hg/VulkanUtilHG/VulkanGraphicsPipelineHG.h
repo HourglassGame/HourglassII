@@ -2,7 +2,7 @@
 #define HG_VULKANGRAPHICSPIPELINEHG_H
 
 #include "hg/VulkanUtil/VulkanGraphicsPipeline.h"
-#include "hg/VulkanUtil/VulkanShaderModule.h"
+#include "hg/VulkanUtilHG/VulkanShaderModuleHG.h"
 #include <gsl/gsl_util>
 #include <vulkan/vulkan.h>
 #include "hg/Util/Maths.h"
@@ -56,17 +56,17 @@ namespace hg {
                         VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
                         vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                         vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-                        vertShaderStageInfo.module = vertShaderModule.shaderModule;
+                        vertShaderStageInfo.module = vertShaderModule.h();
                         vertShaderStageInfo.pName = "main";
 
                         VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
                         fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
                         fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-                        fragShaderStageInfo.module = fragShaderModule.shaderModule;
+                        fragShaderStageInfo.module = fragShaderModule.h();
                         fragShaderStageInfo.pName = "main";
 
                         return std::array{ vertShaderStageInfo, fragShaderStageInfo };
-                    }(VulkanShaderModule(device, *demoVertSpv), VulkanShaderModule(device, *demoFragSpv)),
+                    }(VulkanShaderModuleHG(device, *demoVertSpv), VulkanShaderModuleHG(device, *demoFragSpv)),
 
 
                     [](auto const &bindingDescriptions, auto const &attributeDescriptions){

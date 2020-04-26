@@ -5,26 +5,25 @@
 #include <vulkan/vulkan.h>
 #include <system_error>
 #include <utility>
-#include <vector>
 namespace hg {
 
     class VulkanShaderModule final {
     public:
         explicit VulkanShaderModule(
             VkDevice const device,
-            std::vector<uint32_t> const& code
+            VkShaderModuleCreateInfo const &createInfo
         ) : device(device)
-        {
-            VkShaderModuleCreateInfo createInfo = {};
-            createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-            createInfo.codeSize = code.size()*sizeof(decltype(*code.data()));
-            createInfo.pCode = code.data();
-            {
-                auto const res{vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule)};
-                if (res != VK_SUCCESS) {
-                    BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create shader module!"));
+          , shaderModule([&]{
+                VkShaderModule sm{VK_NULL_HANDLE};
+                {
+                    auto const res{vkCreateShaderModule(device, &createInfo, nullptr, &sm)};
+                    if (res != VK_SUCCESS) {
+                        BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create shader module!"));
+                    }
                 }
-            }
+                return sm;
+            }())
+        {
         }
         VulkanShaderModule(VulkanShaderModule const&) = delete;
         VulkanShaderModule(VulkanShaderModule &&o) noexcept
@@ -41,7 +40,9 @@ namespace hg {
         ~VulkanShaderModule() noexcept {
             vkDestroyShaderModule(device, shaderModule, nullptr);
         }
+    private:
         VkDevice device;
+    public:
         VkShaderModule shaderModule;
     };
 }
