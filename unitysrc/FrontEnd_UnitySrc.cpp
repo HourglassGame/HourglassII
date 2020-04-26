@@ -13,3 +13,4 @@
 #include "hg/FrontEnd/RunningGameScene.cpp"
 #include "hg/FrontEnd/RuntimeErrorScene.cpp"
 #include "hg/FrontEnd/SelectionScene.cpp"
+#include "hg/FrontEnd/VulkanEngine.cpp"
