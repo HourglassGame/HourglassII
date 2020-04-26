@@ -8,7 +8,7 @@
 #include "hg/VulkanUtil/VulkanInstance.h"
 #include "hg/VulkanUtilHG/VulkanDebugCallbackHG.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
-#include "hg/VulkanUtilHG/VulkanLogicalDeviceHG.h"
+#include "hg/VulkanUtilHG/VulkanDeviceHG.h"
 #include "hg/VulkanUtil/VulkanPipelineLayout.h"
 #include "hg/VulkanUtilHG/VulkanFramebufferHG.h"
 #include "hg/VulkanUtilHG/VulkanCommandPoolHG.h"
@@ -61,7 +61,7 @@ namespace hg {
         VulkanEngine &operator=(VulkanEngine const&) = delete;
         VulkanEngine &operator=(VulkanEngine &&) = delete;
         ~VulkanEngine() noexcept {
-            vkDeviceWaitIdle(logicalDevice.h()); //Something like this is needed, but maybe not this exact implementation
+            vkDeviceWaitIdle(device.h()); //Something like this is needed, but maybe not this exact implementation
         }
     private:
         GLFWwindow *w;
@@ -74,7 +74,7 @@ namespace hg {
     public:
         VulkanSurface surface;
         PossiblePhysicalDevice physicalDevice;
-        VulkanLogicalDeviceHG logicalDevice;
+        VulkanDeviceHG device;
         VulkanSwapChainHG swapChain;
     private:
         std::vector<VkImage> swapChainImages;

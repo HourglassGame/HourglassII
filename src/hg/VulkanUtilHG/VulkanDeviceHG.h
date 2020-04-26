@@ -1,9 +1,9 @@
-#ifndef HG_VULKANLOGICALDEVICEHG_H
-#define HG_VULKANLOGICALDEVICEHG_H
+#ifndef HG_VULKANDEVICEHG_H
+#define HG_VULKANDEVICEHG_H
 
 #include "VulkanUtilPhysicalDevice.h"
 
-#include "hg/VulkanUtil/VulkanLogicalDevice.h"
+#include "hg/VulkanUtil/VulkanDevice.h"
 #include "hg/VulkanUtil/VulkanExceptions.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
 
@@ -17,13 +17,13 @@
 
 namespace hg {
 
-    class VulkanLogicalDeviceHG final {
+    class VulkanDeviceHG final {
     public:
-        explicit VulkanLogicalDeviceHG(
+        explicit VulkanDeviceHG(
             PossiblePhysicalDevice const &physicalDevice,
             VkSurfaceKHR const surface
         )
-          : logicalDevice(
+          : device(
                 physicalDevice.physicalDevice,
                 [&](auto const &queueCreateInfos){
 
@@ -64,23 +64,23 @@ namespace hg {
             )
           , graphicsQueue([&]{
                 VkQueue q{VK_NULL_HANDLE};
-                vkGetDeviceQueue(logicalDevice.device, physicalDevice.queueIndices.graphicsFamily, 0, &q);
+                vkGetDeviceQueue(device.device, physicalDevice.queueIndices.graphicsFamily, 0, &q);
                 return q;
             }())
           , presentQueue([&]{
                 VkQueue q{VK_NULL_HANDLE};
-                vkGetDeviceQueue(logicalDevice.device, physicalDevice.queueIndices. presentFamily, 0, &q);
+                vkGetDeviceQueue(device.device, physicalDevice.queueIndices. presentFamily, 0, &q);
                 return q;
             }())
         {
         }
-        VulkanLogicalDeviceHG(VulkanLogicalDeviceHG const&) = delete;
-        VulkanLogicalDeviceHG(VulkanLogicalDeviceHG &&) = delete;
-        VulkanLogicalDeviceHG &operator=(VulkanLogicalDeviceHG const&) = delete;
-        VulkanLogicalDeviceHG &operator=(VulkanLogicalDeviceHG &&) = delete;
+        VulkanDeviceHG(VulkanDeviceHG const&) = delete;
+        VulkanDeviceHG(VulkanDeviceHG &&) = delete;
+        VulkanDeviceHG &operator=(VulkanDeviceHG const&) = delete;
+        VulkanDeviceHG &operator=(VulkanDeviceHG &&) = delete;
 
         VkDevice h() const {
-            return logicalDevice.device;
+            return device.device;
         }
         VkQueue graphicsQ() const {
             return graphicsQueue;
@@ -89,9 +89,9 @@ namespace hg {
             return presentQueue;
         }
     private:
-        VulkanLogicalDevice logicalDevice;
+        VulkanDevice device;
         VkQueue graphicsQueue;
         VkQueue presentQueue;
     };
 }
-#endif // !HG_VULKANLOGICALDEVICEHG_H
+#endif // !HG_VULKANDEVICEHG_H

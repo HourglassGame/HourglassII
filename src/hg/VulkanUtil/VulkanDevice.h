@@ -1,5 +1,5 @@
-#ifndef HG_VULKANLOGICALDEVICE_H
-#define HG_VULKANLOGICALDEVICE_H
+#ifndef HG_VULKANDEVICE_H
+#define HG_VULKANDEVICE_H
 
 #include "hg/GlobalConst.h"
 #include "VulkanUtil.h"
@@ -11,9 +11,9 @@
 
 namespace hg {
 
-    class VulkanLogicalDevice final {
+    class VulkanDevice final {
     public:
-        explicit VulkanLogicalDevice(
+        explicit VulkanDevice(
             VkPhysicalDevice const physicalDevice,
             VkDeviceCreateInfo const &createInfo
         ) :
@@ -23,7 +23,7 @@ namespace hg {
                     {
                         auto const res{vkCreateDevice(physicalDevice, &createInfo, nullptr, &d)};
                         if (res != VK_SUCCESS) {
-                            BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create logical device!"));
+                            BOOST_THROW_EXCEPTION(std::system_error(res, "failed to create Vulkan device!"));
                         }
                     }
                     return d;
@@ -31,14 +31,14 @@ namespace hg {
             )
         {
         }
-        VulkanLogicalDevice(VulkanLogicalDevice const&) = delete;
-        VulkanLogicalDevice(VulkanLogicalDevice &&) = delete;
-        VulkanLogicalDevice &operator=(VulkanLogicalDevice const&) = delete;
-        VulkanLogicalDevice &operator=(VulkanLogicalDevice &&) = delete;
-        ~VulkanLogicalDevice() noexcept {
+        VulkanDevice(VulkanDevice const&) = delete;
+        VulkanDevice(VulkanDevice &&) = delete;
+        VulkanDevice &operator=(VulkanDevice const&) = delete;
+        VulkanDevice &operator=(VulkanDevice &&) = delete;
+        ~VulkanDevice() noexcept {
             vkDestroyDevice(device, nullptr);
         }
         VkDevice device;
     };
 }
-#endif // !HG_VULKANLOGICALDEVICE_H
+#endif // !HG_VULKANDEVICE_H

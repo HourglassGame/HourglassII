@@ -191,7 +191,8 @@ void VulkanEngine::framebufferResizeCallback(GLFWwindow* const window, int const
 
 VulkanEngine::VulkanEngine(
     GLFWwindow &w
-) : w(&w)
+)
+    : w(&w)
     , instance(makeInstanceCreateInfo(nullptr, getRequiredExtensions()))
     , oldFramebufferSize(getFramebufferSize(w))
     , newFramebufferSize(getFramebufferSize(w))
@@ -205,18 +206,18 @@ VulkanEngine::VulkanEngine(
             }
             return possiblePhysicalDevices.front();
         }())
-    , logicalDevice(physicalDevice, surface.surface)
+    , device(physicalDevice, surface.surface)
     //TODO: if frameBufferWidth or Height is 0, don't create the swapChain; rather than
     //making an invalid swapChain!
     //Attempting to make a swapChain with width or height 0 violates the vulkan spec!
-    , swapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
-    , swapChainImages(createSwapChainImages(logicalDevice.h(), swapChain.h()))
-    , swapChainImageViews(createSwapChainImageViews(logicalDevice.h(), physicalDevice.surfaceFormat.format, swapChainImages))
-    , renderPass(logicalDevice.h(), physicalDevice.surfaceFormat.format)
-    , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), swapChain.extent(), swapChainImageViews))
-    , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.h()))
-    , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.h()))
-    , inFlightFences(createInFlightFences(logicalDevice.h()))
+    , swapChain(physicalDevice, device.h(), surface.surface, oldFramebufferSize, VK_NULL_HANDLE)
+    , swapChainImages(createSwapChainImages(device.h(), swapChain.h()))
+    , swapChainImageViews(createSwapChainImageViews(device.h(), physicalDevice.surfaceFormat.format, swapChainImages))
+    , renderPass(device.h(), physicalDevice.surfaceFormat.format)
+    , swapChainFramebuffers(createSwapchainFramebuffers(device.h(), renderPass.h(), swapChain.extent(), swapChainImageViews))
+    , imageAvailableSemaphores(createImageAvailableSemaphores(device.h()))
+    , renderFinishedSemaphores(createRenderFinishedSemaphores(device.h()))
+    , inFlightFences(createInFlightFences(device.h()))
     , currentFrame(0)
 {
     glfwSetWindowUserPointer(&w, this);
@@ -224,9 +225,8 @@ VulkanEngine::VulkanEngine(
     //glfwSetWindowRefreshCallback(&w, windowRefreshCallback); //TODO
 }
 
-
 void VulkanEngine::recreateSwapChain(VulkanRenderer &renderer) {
-    vkDeviceWaitIdle(logicalDevice.h());
+    vkDeviceWaitIdle(device.h());
     framebufferResizedCheck();
 
     auto const maxImageExtent{querySwapChainMaxImageExtent(physicalDevice.physicalDevice, surface.surface)};
@@ -236,10 +236,10 @@ void VulkanEngine::recreateSwapChain(VulkanRenderer &renderer) {
         //Can't render into 0-size swapchain.
         return;
     }
-    VulkanSwapChainHG newSwapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, swapChain.h());
-    std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.h(), newSwapChain.h()));
-    std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.h(), physicalDevice.surfaceFormat.format, newSwapChainImages));
-    std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), newSwapChain.extent(), newSwapChainImageViews));
+    VulkanSwapChainHG newSwapChain(physicalDevice, device.h(), surface.surface, oldFramebufferSize, swapChain.h());
+    std::vector<VkImage> newSwapChainImages(createSwapChainImages(device.h(), newSwapChain.h()));
+    std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(device.h(), physicalDevice.surfaceFormat.format, newSwapChainImages));
+    std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(device.h(), renderPass.h(), newSwapChain.extent(), newSwapChainImageViews));
 
     renderer.updateSwapChainData(renderPass.h(), newSwapChain.extent());
 
@@ -267,14 +267,14 @@ void VulkanEngine::drawFrame(VulkanRenderer &renderer) {
     }
     {
         auto const fences{std::array{inFlightFences[currentFrame].h()}};
-        auto const res{vkWaitForFences(logicalDevice.h(), fences.size(), fences.data(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
+        auto const res{vkWaitForFences(device.h(), fences.size(), fences.data(), VK_TRUE, std::numeric_limits<uint64_t>::max())};
         if (res != VK_SUCCESS) {
             BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't wait for fence"));
         }
     }
     uint32_t imageIndex{};
     while (true) {
-        auto const res{ vkAcquireNextImageKHR(logicalDevice.h(), swapChain.h(), std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].h(), VK_NULL_HANDLE, &imageIndex)};
+        auto const res{ vkAcquireNextImageKHR(device.h(), swapChain.h(), std::numeric_limits<uint64_t>::max(), imageAvailableSemaphores[currentFrame].h(), VK_NULL_HANDLE, &imageIndex)};
         if (res == VK_ERROR_OUT_OF_DATE_KHR) {
             recreateSwapChain(renderer);
             continue;
@@ -304,13 +304,13 @@ void VulkanEngine::drawFrame(VulkanRenderer &renderer) {
 
     {
         auto const fences{std::array{inFlightFences[currentFrame].h()}};
-        auto const res{vkResetFences(logicalDevice.h(), fences.size(), fences.data())};
+        auto const res{vkResetFences(device.h(), fences.size(), fences.data())};
         if (res != VK_SUCCESS) {
             BOOST_THROW_EXCEPTION(std::system_error(res, "Couldn't reset fence"));
         }
     }
     {
-        auto const res{vkQueueSubmit(logicalDevice.graphicsQ(), 1, &submitInfo, inFlightFences[currentFrame].h())};
+        auto const res{vkQueueSubmit(device.graphicsQ(), 1, &submitInfo, inFlightFences[currentFrame].h())};
         if (res != VK_SUCCESS) {
             BOOST_THROW_EXCEPTION(std::system_error(res, "failed to submit draw command buffer!"));
         }
@@ -329,7 +329,7 @@ void VulkanEngine::drawFrame(VulkanRenderer &renderer) {
     presentInfo.pImageIndices = &imageIndex;
 
     {
-        auto const res{vkQueuePresentKHR(logicalDevice.presentQ(), &presentInfo)};
+        auto const res{vkQueuePresentKHR(device.presentQ(), &presentInfo)};
         if (res == VK_ERROR_OUT_OF_DATE_KHR || framebufferResizedCheck()) {
             recreateSwapChain(renderer);
         }
@@ -345,7 +345,7 @@ void VulkanEngine::drawFrame(VulkanRenderer &renderer) {
 void VulkanEngine::idle(VulkanRenderer &vkRenderer) {
     for(int f{0}; f != MAX_FRAMES_IN_FLIGHT; ++f) {
         {
-            auto const res{vkGetFenceStatus(logicalDevice.h(), inFlightFences[f].h())};
+            auto const res{vkGetFenceStatus(device.h(), inFlightFences[f].h())};
             if (res == VK_SUCCESS) {
                 vkRenderer.frameEnded(f);
             }

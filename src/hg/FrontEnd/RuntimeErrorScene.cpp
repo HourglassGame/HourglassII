@@ -268,11 +268,11 @@ void report_runtime_error(GLFWWindow &windowglfw, VulkanEngine& vulkanEng, Vulka
     RuntimeErrorSceneRenderer renderer{
         e,
         vulkanEng.physicalDevice,
-        vulkanEng.logicalDevice.h(),
+        vulkanEng.device.h(),
         vulkanEng.surface.surface,
         vulkanEng.renderPass.h(),
         vulkanEng.swapChain.extent(),
-        vulkanEng.logicalDevice.graphicsQ()
+        vulkanEng.device.graphicsQ()
     };
     vkRenderer.StartScene(renderer);
 
