@@ -3,6 +3,7 @@
 
 #include "hg/VulkanUtil/VulkanGraphicsPipeline.h"
 #include "hg/VulkanUtil/VulkanShaderModule.h"
+#include <gsl/gsl_util>
 #include <vulkan/vulkan.h>
 #include "hg/Util/Maths.h"
 #include <vector>

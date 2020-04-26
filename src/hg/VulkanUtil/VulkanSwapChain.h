@@ -95,7 +95,7 @@ namespace hg {
                 imageCount = capabilities.maxImageCount;
             }
 
-            VkSwapchainCreateInfoKHR createInfo = {};
+            VkSwapchainCreateInfoKHR createInfo{};
             createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
             createInfo.surface = surface;
 

@@ -270,7 +270,7 @@ void report_runtime_error(GLFWWindow &windowglfw, VulkanEngine& vulkanEng, Vulka
         vulkanEng.physicalDevice,
         vulkanEng.logicalDevice.h(),
         vulkanEng.surface.surface,
-        vulkanEng.renderPass.renderPass,
+        vulkanEng.renderPass.h(),
         vulkanEng.swapChain.extent,
         vulkanEng.logicalDevice.graphicsQ()
     };

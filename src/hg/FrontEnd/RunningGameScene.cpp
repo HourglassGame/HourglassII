@@ -154,7 +154,7 @@ run_game_scene(
         eng.physicalDevice,
         eng.logicalDevice.h(),
         eng.surface.surface,
-        eng.renderPass.renderPass,
+        eng.renderPass.h(),
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,

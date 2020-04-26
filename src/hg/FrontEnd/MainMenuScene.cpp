@@ -404,7 +404,7 @@ run_main_menu(
         vulkanEng.physicalDevice,
         vulkanEng.logicalDevice.h(),
         vulkanEng.surface.surface,
-        vulkanEng.renderPass.renderPass,
+        vulkanEng.renderPass.h(),
         //eng.graphicsPipeline.graphicsPipeline,
         //eng.pipelineLayout.pipelineLayout,
         //eng.descriptorSetLayout.descriptorSetLayout,

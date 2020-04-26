@@ -4,7 +4,7 @@
 #include "hg/VulkanUtil/VulkanSwapChain.h"
 #include "hg/VulkanUtil/VulkanImageView.h"
 #include "hg/VulkanUtil/VulkanSurface.h"
-#include "hg/VulkanUtil/VulkanRenderPass.h"
+#include "hg/VulkanUtilHG/VulkanRenderPassHG.h"
 #include "hg/VulkanUtil/VulkanInstance.h"
 #include "hg/VulkanUtilHG/VulkanDebugCallbackHG.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
@@ -596,7 +596,7 @@ namespace hg {
           , swapChainImages(createSwapChainImages(logicalDevice.h(), swapChain.swapChain, swapChain.imageCount))
           , swapChainImageViews(createSwapChainImageViews(logicalDevice.h(), swapChain.surfaceFormat.format, swapChainImages))
           , renderPass(logicalDevice.h(), swapChain.surfaceFormat.format)
-          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.renderPass, swapChain.extent, swapChainImageViews))
+          , swapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), renderPass.h(), swapChain.extent, swapChainImageViews))
           , imageAvailableSemaphores(createImageAvailableSemaphores(logicalDevice.h()))
           , renderFinishedSemaphores(createRenderFinishedSemaphores(logicalDevice.h()))
           , inFlightFences(createInFlightFences(logicalDevice.h()))
@@ -622,10 +622,10 @@ namespace hg {
             VulkanSwapChain newSwapChain(physicalDevice, logicalDevice.h(), surface.surface, oldFramebufferSize, swapChain.swapChain);
             std::vector<VkImage> newSwapChainImages(createSwapChainImages(logicalDevice.h(), newSwapChain.swapChain, newSwapChain.imageCount));
             std::vector<VulkanImageView> newSwapChainImageViews(createSwapChainImageViews(logicalDevice.h(), newSwapChain.surfaceFormat.format, newSwapChainImages));
-            VulkanRenderPass newRenderPass(logicalDevice.h(), newSwapChain.surfaceFormat.format);
-            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), newRenderPass.renderPass, newSwapChain.extent, newSwapChainImageViews));
+            VulkanRenderPassHG newRenderPass(logicalDevice.h(), newSwapChain.surfaceFormat.format);
+            std::vector<VulkanFramebufferHG> newSwapChainFramebuffers(createSwapchainFramebuffers(logicalDevice.h(), newRenderPass.h(), newSwapChain.extent, newSwapChainImageViews));
 
-            renderer.updateSwapChainData(newRenderPass.renderPass, newSwapChain.extent);
+            renderer.updateSwapChainData(newRenderPass.h(), newSwapChain.extent);
 
             swapChain = std::move(newSwapChain);
             swapChainImages = std::move(swapChainImages);
@@ -758,7 +758,7 @@ namespace hg {
         VulkanSwapChain swapChain;
         std::vector<VkImage> swapChainImages;
         std::vector<VulkanImageView> swapChainImageViews;
-        VulkanRenderPass renderPass;
+        VulkanRenderPassHG renderPass;
 
         std::vector<VulkanFramebufferHG> swapChainFramebuffers;
 

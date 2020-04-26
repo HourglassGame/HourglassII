@@ -264,7 +264,7 @@ namespace hg {
             vulkanEng.physicalDevice,
             vulkanEng.logicalDevice.h(),
             vulkanEng.surface.surface,
-            vulkanEng.renderPass.renderPass,
+            vulkanEng.renderPass.h(),
             vulkanEng.swapChain.extent,
             vulkanEng.logicalDevice.graphicsQ()
         };

@@ -9,9 +9,11 @@
 
 #include "hg/GlobalConst.h"
 
+#include <gsl/gsl_util>
 #include <boost/throw_exception.hpp>
 #include <vulkan/vulkan.h>
 #include <system_error>
+#include <array>
 
 namespace hg {
 

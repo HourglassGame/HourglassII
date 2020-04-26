@@ -2,6 +2,7 @@
 #define HG_VULKANFRAMEBUFFERHG_H
 
 #include "hg/VulkanUtil/VulkanFramebuffer.h"
+#include <gsl/gsl_util>
 #include <vulkan/vulkan.h>
 #include <array>
 
@@ -19,7 +20,7 @@ namespace hg {
                     VkFramebufferCreateInfo framebufferInfo = {};
                     framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
                     framebufferInfo.renderPass = renderPass;
-                    framebufferInfo.attachmentCount = attachments.size();
+                    framebufferInfo.attachmentCount = gsl::narrow<uint32_t>(attachments.size());
                     framebufferInfo.pAttachments = attachments.data();
                     framebufferInfo.width = swapChainExtent.width;
                     framebufferInfo.height = swapChainExtent.height;
