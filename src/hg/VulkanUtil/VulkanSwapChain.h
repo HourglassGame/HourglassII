@@ -14,39 +14,6 @@
 #include <vector>
 
 namespace hg {
-    inline VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &availableFormats) {
-        if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
-            return { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
-        }
-
-        for (auto const &availableFormat : availableFormats) {
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                return availableFormat;
-            }
-
-            /*
-            if (availableFormat.format == VK_FORMAT_B8G8R8A8_SNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-                return availableFormat;
-            }*/
-        }
-
-        return availableFormats[0];
-    }
-
-    inline VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const &availablePresentModes) {
-        VkPresentModeKHR bestMode{VK_PRESENT_MODE_FIFO_KHR};
-
-        for (auto const &availablePresentMode : availablePresentModes) {
-            if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-                return availablePresentMode;
-            }
-            else if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
-                bestMode = availablePresentMode;
-            }
-        }
-
-        return bestMode;
-    }
 
     inline VkExtent2D chooseSwapExtent(VkExtent2D const glfwFramebufferExtent, VkSurfaceCapabilitiesKHR const &capabilities) {
         if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
@@ -66,7 +33,6 @@ namespace hg {
             : device(device)
             , swapChain(VK_NULL_HANDLE)
             , imageCount()
-            , surfaceFormat()
             , extent()
         {}
         explicit VulkanSwapChain(
@@ -86,8 +52,6 @@ namespace hg {
                 }
             }
 
-            surfaceFormat = chooseSwapSurfaceFormat(physicalDevice.swapChainSupport.formats);
-            VkPresentModeKHR const presentMode{chooseSwapPresentMode(physicalDevice.swapChainSupport.presentModes)};
             extent = chooseSwapExtent(glfwFramebufferExtent, capabilities);
 
             imageCount = capabilities.minImageCount + 1;
@@ -100,8 +64,8 @@ namespace hg {
             createInfo.surface = surface;
 
             createInfo.minImageCount = imageCount;
-            createInfo.imageFormat = surfaceFormat.format;
-            createInfo.imageColorSpace = surfaceFormat.colorSpace;
+            createInfo.imageFormat = physicalDevice.surfaceFormat.format;
+            createInfo.imageColorSpace = physicalDevice.surfaceFormat.colorSpace;
             createInfo.imageExtent = extent;
             createInfo.imageArrayLayers = 1;
             createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -120,7 +84,7 @@ namespace hg {
 
             createInfo.preTransform = capabilities.currentTransform;
             createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-            createInfo.presentMode = presentMode;
+            createInfo.presentMode = physicalDevice.presentMode;
             createInfo.clipped = VK_TRUE;
 
             createInfo.oldSwapchain = oldSwapchain;
@@ -136,7 +100,6 @@ namespace hg {
             : device(o.device)
             , swapChain(std::exchange(o.swapChain, VkSwapchainKHR{VK_NULL_HANDLE}))
             , imageCount(o.imageCount)
-            , surfaceFormat(o.surfaceFormat)
             , extent(o.extent)
         {
         }
@@ -145,7 +108,6 @@ namespace hg {
             std::swap(device, o.device);
             std::swap(swapChain, o.swapChain);
             std::swap(imageCount, o.imageCount);
-            std::swap(surfaceFormat, o.surfaceFormat);
             std::swap(extent, o.extent);
             return *this;
         }
@@ -155,7 +117,6 @@ namespace hg {
         VkDevice device;
         VkSwapchainKHR swapChain;
         uint32_t imageCount;
-        VkSurfaceFormatKHR surfaceFormat;
         VkExtent2D extent;
     };
 }

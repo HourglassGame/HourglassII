@@ -15,15 +15,12 @@ namespace hg {
         uint32_t presentFamily; //Index of queue family with vkGetPhysicalDeviceSurfaceSupportKHR giving VK_TRUE result; to use for Present processing.
     };
 
-    struct SwapChainSupportDetails final {
-        std::vector<VkSurfaceFormatKHR> formats;
-        std::vector<VkPresentModeKHR> presentModes;
-    };
-
     struct PossiblePhysicalDevice final {
         VkPhysicalDevice physicalDevice;
         QueueFamiliesForUses queueIndices;
-        SwapChainSupportDetails swapChainSupport;
+        VkSurfaceFormatKHR surfaceFormat;
+        VkPresentModeKHR presentMode;
+
         //TODO: Potentially also list supported extensions, in the future where we optionally
         //use some extensions.
 

@@ -13,6 +13,12 @@
 
 namespace hg {
     namespace {
+
+        struct SwapChainSupportDetails final {
+            std::vector<VkSurfaceFormatKHR> formats;
+            std::vector<VkPresentModeKHR> presentModes;
+        };
+
         std::optional<QueueFamiliesForUses> findQueueFamilies(VkPhysicalDevice const physicalDevice, VkSurfaceKHR const surface) {
             std::vector<VkQueueFamilyProperties> const queueFamilies{[&]{
                 uint32_t queueFamilyCount = 0;
@@ -128,10 +134,46 @@ namespace hg {
             return details;
         }
 
+
         bool checkSwapChainSupport(SwapChainSupportDetails const &swapChainSupport) {
             return !(swapChainSupport.formats.empty() || swapChainSupport.presentModes.empty());
         }
 
+
+        VkSurfaceFormatKHR chooseSwapSurfaceFormat(std::vector<VkSurfaceFormatKHR> const &availableFormats) {
+            if (availableFormats.size() == 1 && availableFormats[0].format == VK_FORMAT_UNDEFINED) {
+                return { VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR };
+            }
+
+            for (auto const &availableFormat : availableFormats) {
+                if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                    return availableFormat;
+                }
+
+                /*
+                if (availableFormat.format == VK_FORMAT_B8G8R8A8_SNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+                    return availableFormat;
+                }*/
+            }
+
+            return availableFormats[0];
+        }
+
+
+        VkPresentModeKHR chooseSwapPresentMode(std::vector<VkPresentModeKHR> const &availablePresentModes) {
+            VkPresentModeKHR bestMode{VK_PRESENT_MODE_FIFO_KHR};
+
+            for (auto const &availablePresentMode : availablePresentModes) {
+                if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+                    return availablePresentMode;
+                }
+                else if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+                    bestMode = availablePresentMode;
+                }
+            }
+
+            return bestMode;
+        }
     }
 
     std::vector<PossiblePhysicalDevice> enumerateSuitablePhysicalDevices(VkInstance const instance, VkSurfaceKHR const surface) {
@@ -172,7 +214,9 @@ namespace hg {
             PossiblePhysicalDevice deviceEvaluation{};
             deviceEvaluation.physicalDevice = physicalDevice;
             deviceEvaluation.queueIndices = *queueIndices;
-            deviceEvaluation.swapChainSupport = swapChainSupport;
+            deviceEvaluation.surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+            deviceEvaluation.presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
+
             deviceEvaluation.score = 1 + (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU ? 1000 : 0);
 
             possibleDevices.push_back(deviceEvaluation);
