@@ -15,18 +15,6 @@
 
 namespace hg {
 
-    inline VkExtent2D chooseSwapExtent(VkExtent2D const glfwFramebufferExtent, VkSurfaceCapabilitiesKHR const &capabilities) {
-        if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-            return capabilities.currentExtent;
-        }
-        else {
-            return {
-                std::clamp<uint32_t>(glfwFramebufferExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
-                std::clamp<uint32_t>(glfwFramebufferExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
-            };
-        }
-    }
-
     class VulkanSwapChain final {
     public:
         explicit VulkanSwapChain(VkDevice const device)
@@ -52,7 +40,17 @@ namespace hg {
                 }
             }
 
-            extent = chooseSwapExtent(glfwFramebufferExtent, capabilities);
+            extent = [](VkExtent2D const glfwFramebufferExtent, VkSurfaceCapabilitiesKHR const &capabilities) -> VkExtent2D {
+                if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+                    return capabilities.currentExtent;
+                }
+                else {
+                    return {
+                        std::clamp<uint32_t>(glfwFramebufferExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
+                        std::clamp<uint32_t>(glfwFramebufferExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height)
+                    };
+                }
+            }(glfwFramebufferExtent, capabilities);
 
             imageCount = capabilities.minImageCount + 1;
             if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount) {
