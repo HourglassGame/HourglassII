@@ -324,31 +324,34 @@ void guyStep(
             // Chonofrag with platforms
             for (Collision const &platform : nextPlatform)
             {
-                int pX(platform.getX());
-                int pY(platform.getY());
-                int pWidth(platform.getWidth());
-                int pHeight(platform.getHeight());
-                TimeDirection pDirection(platform.getTimeDirection());
-                if (pDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
+                if (platform.getCollisionType() == CollisionType::PLATFORM)
                 {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+                    int pX(platform.getX());
+                    int pY(platform.getY());
+                    int pWidth(platform.getWidth());
+                    int pHeight(platform.getHeight());
+                    TimeDirection pDirection(platform.getTimeDirection());
+                    if (pDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
                     {
-                        finishedWith[i] = true;
-                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
-                        continue;
+                        pX -= platform.getXspeed();
+                        pY -= platform.getYspeed();
+                        if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+                        {
+                            finishedWith[i] = true;
+                            guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+                            continue;
+                        }
                     }
-                }
-                else
-                {
-                    pX -= platform.getXspeed();
-                    pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+                    else
                     {
-                        finishedWith[i] = true;
-                        guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
-                        continue;
+                        pX -= platform.getXspeed();
+                        pY -= platform.getYspeed();
+                        if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+                        {
+                            finishedWith[i] = true;
+                            guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+                            continue;
+                        }
                     }
                 }
             }
@@ -658,17 +661,20 @@ void guyStep(
             int const jumpSpeed(guyArrivalList[i].getJumpSpeed());
 
             // chonofrag with platforms
-            for (Collision const &platform : nextPlatform)
+            for (Collision const& platform : nextPlatform)
             {
-                int pX(platform.getX());
-                int pY(platform.getY());
-                int pWidth(platform.getWidth());
-                int pHeight(platform.getHeight());
-
-                if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+                if (platform.getCollisionType() == CollisionType::PLATFORM)
                 {
-                    finishedWith[i] = true;
-                    continue;
+                    int pX(platform.getX());
+                    int pY(platform.getY());
+                    int pWidth(platform.getWidth());
+                    int pHeight(platform.getHeight());
+
+                    if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+                    {
+                        finishedWith[i] = true;
+                        continue;
+                    }
                 }
             }
 
