@@ -193,6 +193,7 @@ namespace hg {
                 /*int xspeed*/horizontalPosAndVel.velocity, /*int yspeed*/verticalPosAndVel.velocity,
                 /*int prevXspeed*/lastStateTrigger[2], /*int prevYspeed*/lastStateTrigger[3],
                 /*int width*/protoCollision.width, /*int height*/protoCollision.height,
+                protoCollision.collisionType,
                 /*TimeDirection timeDirection*/protoCollision.timeDirection
             );
         };
@@ -1110,7 +1111,7 @@ namespace hg {
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection"));
         int const width(readField<int>(L, "width"));
         int const height(readField<int>(L, "height"));
-
+        CollisionType const collisionType(readField<CollisionType>(L, "collisionType"));
 
         lua_getfield(L, -1, "destinations");
         assert(lua_istable(L, -1));
@@ -1137,6 +1138,7 @@ namespace hg {
             timeDirection,
             width,
             height,
+            collisionType,
             onDestination,
             offDestination,
             hasButtonTriggerID,
@@ -1845,6 +1847,7 @@ namespace hg {
             guy.getXspeed(), guy.getYspeed(),
             guy.getWalkSpeed(),
             guy.getJumpHold(),
+            guy.getAction(),
             guy.getWidth(), guy.getHeight(),
             guy.getJumpSpeed(),
 
@@ -2120,6 +2123,7 @@ namespace hg {
                 guy.getXspeed(), guy.getYspeed(),
                 guy.getWalkSpeed(),
                 guy.getJumpHold(),
+                guy.getAction(),
                 guy.getWidth(), guy.getHeight(),
                 -500,
 

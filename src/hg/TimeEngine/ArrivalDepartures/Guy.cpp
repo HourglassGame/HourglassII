@@ -7,6 +7,7 @@ Guy::Guy(
     int xspeed, int yspeed,
     int walkSpeed,
     int jumpHold,
+    GuyAction action,
     int width, int height,
     int jumpSpeed,
     
@@ -29,6 +30,7 @@ Guy::Guy(
         xspeed(xspeed), yspeed(yspeed),
         walkSpeed(walkSpeed),
         jumpHold(jumpHold),
+        action(action),
         width(width), height(height),
         jumpSpeed(jumpSpeed),
 

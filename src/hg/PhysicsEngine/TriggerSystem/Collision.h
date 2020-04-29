@@ -5,6 +5,12 @@
 #include <tuple>
 namespace hg
 {
+enum class CollisionType : int {
+    PLATFORM = 0,
+    LADDER = 1
+};
+std::ostream &operator<<(std::ostream &o, CollisionType collisionType);
+
 class Collision;
 std::ostream &operator<<(std::ostream &os, Collision const &toPrint);
 class Collision final
@@ -20,6 +26,7 @@ class Collision final
             prevYspeed_,
             width_,
             height_,
+            collisionType_,
             timeDirection_
         );
     }
@@ -29,11 +36,13 @@ public:
         int xspeed, int yspeed,
         int prevXspeed, int prevYspeed,
         int width, int height,
+        CollisionType collisionType,
         TimeDirection timeDirection) :
             x_(x), y_(y),
             xspeed_(xspeed), yspeed_(yspeed),
             prevXspeed_(prevXspeed), prevYspeed_(prevYspeed),
             width_(width), height_(height),
+            collisionType_(collisionType),
             timeDirection_(timeDirection) { }
     int getX()          const { return x_; }
     int getY()          const { return y_; }
@@ -43,6 +52,7 @@ public:
     int getPrevYspeed() const { return prevYspeed_; }
     int getWidth()      const { return width_; }
     int getHeight()     const { return height_; }
+    CollisionType getCollisionType()     const { return collisionType_; }
     TimeDirection 
         getTimeDirection() const { return timeDirection_; }
     friend std::ostream &operator<<(std::ostream &os, Collision const &toPrint)
@@ -56,6 +66,7 @@ public:
         HG_COLLISION_PRINT(prevYspeed_);
         HG_COLLISION_PRINT(width_);
         HG_COLLISION_PRINT(height_);
+        HG_COLLISION_PRINT(collisionType_);
         HG_COLLISION_PRINT(timeDirection_);
         #undef HG_COLLISION_PRINT
         return os;
@@ -72,6 +83,7 @@ private:
     int prevYspeed_;
     int width_;
     int height_;
+    CollisionType collisionType_;
     TimeDirection timeDirection_;
 };
 

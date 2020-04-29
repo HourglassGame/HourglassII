@@ -13,6 +13,15 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/algorithm/count_if.hpp>
 namespace hg {
+enum class GuyAction : int {
+    IDLE = 0,
+    WALK = 1,
+    JUMP = 2,
+    FALL = 3,
+    CLIMB = 4
+};
+std::ostream &operator<<(std::ostream &o, GuyAction action);
+
 template<typename ToMatch, typename ToConstQualify>
 using MatchConstness =
     typename std::conditional_t <std::is_const_v<ToMatch>, ToConstQualify const, ToConstQualify>;
@@ -139,6 +148,7 @@ public:
         int xspeed, int yspeed,
         int walkSpeed,
         int jumpHold,
+        GuyAction action,
         int width, int height,
         int jumpSpeed,
 
@@ -158,15 +168,16 @@ public:
         bool timePaused);
     
     std::size_t getIndex() const { return index; }
-    int getX()         const { return x; }
-    int getY()         const { return y; }
-    int getXspeed()    const { return xspeed; }
-    int getYspeed()    const { return yspeed; }
-    int getWalkSpeed() const { return walkSpeed; }
-    int getJumpHold()  const { return jumpHold; }
-    int getWidth()     const { return width; }
-    int getHeight()    const { return height; }
-    int getJumpSpeed() const { return jumpSpeed; }
+    int getX()             const { return x; }
+    int getY()             const { return y; }
+    int getXspeed()        const { return xspeed; }
+    int getYspeed()        const { return yspeed; }
+    int getWalkSpeed()     const { return walkSpeed; }
+    int getJumpHold()      const { return jumpHold; }
+    GuyAction getAction()  const { return action; }
+    int getWidth()         const { return width; }
+    int getHeight()        const { return height; }
+    int getJumpSpeed()     const { return jumpSpeed; }
     
     int getIllegalPortal()    const { return illegalPortal; }
     int getArrivalBasis()     const { return arrivalBasis; }
@@ -201,6 +212,7 @@ private:
     int width;
     int height;
     int jumpSpeed;
+    GuyAction action;
 
     int illegalPortal;
     int arrivalBasis;
@@ -221,7 +233,7 @@ private:
     {
         return std::tie(
             index, 
-            x, y, xspeed, yspeed, walkSpeed, jumpHold, width, height, jumpSpeed,
+            x, y, xspeed, yspeed, walkSpeed, jumpHold, action, width, height, jumpSpeed,
             illegalPortal, arrivalBasis, supported, supportedSpeed,
             pickups, facing,
             boxCarrying, boxCarrySize, boxCarryDirection,
@@ -237,15 +249,16 @@ public:
     Guy const &get() const   { return *guy_; }
     
     std::size_t getIndex() const { return guy_->getIndex(); }
-    int getX()         const { return guy_->getX(); }
-    int getY()         const { return guy_->getY(); }
-    int getXspeed()    const { return guy_->getXspeed(); }
-    int getYspeed()    const { return guy_->getYspeed(); }
-    int getWalkSpeed() const { return guy_->getWalkSpeed(); }
-    int getJumpHold()  const { return guy_->getJumpHold(); }
-    int getWidth()     const { return guy_->getWidth(); }
-    int getHeight()    const { return guy_->getHeight(); }
-    int getJumpSpeed() const { return guy_->getJumpSpeed(); }
+    int getX()             const { return guy_->getX(); }
+    int getY()             const { return guy_->getY(); }
+    int getXspeed()        const { return guy_->getXspeed(); }
+    int getYspeed()        const { return guy_->getYspeed(); }
+    int getWalkSpeed()     const { return guy_->getWalkSpeed(); }
+    int getJumpHold()      const { return guy_->getJumpHold(); }
+    GuyAction getAction()  const { return guy_->getAction(); }
+    int getWidth()         const { return guy_->getWidth(); }
+    int getHeight()        const { return guy_->getHeight(); }
+    int getJumpSpeed()     const { return guy_->getJumpSpeed(); }
 
     int getIllegalPortal()    const { return guy_->getIllegalPortal(); }
     int getArrivalBasis()     const { return guy_->getArrivalBasis(); }

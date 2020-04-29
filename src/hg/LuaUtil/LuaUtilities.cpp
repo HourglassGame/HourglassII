@@ -176,6 +176,30 @@ std::vector<std::string> to<std::vector<std::string> >(lua_State * const L, int 
 }
 
 template<>
+CollisionType to<CollisionType>(lua_State * const L, int const index) {
+    try {
+        if (!lua_isstring(L, index)) {
+            //BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("collisionType values must be strings"));
+            return CollisionType::PLATFORM;
+        }
+        char const * const collisionTypeString(lua_tostring(L, index));
+        if (strcmp(collisionTypeString, "platform") == 0) {
+            return CollisionType::PLATFORM;
+        }
+        else if (strcmp(collisionTypeString, "ladder") == 0) {
+            return CollisionType::LADDER;
+        }
+        else {
+            return CollisionType::PLATFORM;
+        }
+    }
+    catch (LuaError &e) {
+        add_semantic_callstack_info(e, "to<CollisionType>");
+        throw;
+    }
+}
+
+template<>
 TimeDirection to<TimeDirection>(lua_State * const L, int const index) {
     try {
         if (!lua_isstring(L, index)) {
@@ -478,7 +502,7 @@ Guy to<Guy>(lua_State* L, int index) {
             relativeIndex,
             x, y,
             xspeed, yspeed,
-            walkSpeed, jumpHold,
+            walkSpeed, jumpHold, GuyAction::IDLE,
             width, height,
             jumpSpeed,
             illegalPortal,
@@ -525,7 +549,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
                     0,
                     x, y,
                     xspeed, yspeed,
-                    0, 0,
+                    0, 0, hg::GuyAction::IDLE,
                     width, height,
                     jumpSpeed,
                     -1,
@@ -592,9 +616,10 @@ Collision to<Collision>(lua_State *L, int index) {
         int const prevYspeed(readField<int>(L, "prevYspeed", index));
         int const width(readField<int>(L, "width", index));
         int const height(readField<int>(L, "height", index));
+        CollisionType const collisionType(readField<CollisionType>(L, "collisionType", index));
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
 
-        return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, timeDirection);
+        return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, collisionType, timeDirection);
     }
     catch (LuaError &e) {
         add_semantic_callstack_info(e, "to<Collision>");

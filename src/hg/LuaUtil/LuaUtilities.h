@@ -124,6 +124,9 @@ template<>
 std::vector<std::string> to<std::vector<std::string> >(lua_State *L, int index);
 
 template<>
+CollisionType to<CollisionType>(lua_State *L, int index);
+
+template<>
 TimeDirection to<TimeDirection>(lua_State *L, int index);
 
 template<>

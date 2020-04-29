@@ -99,6 +99,7 @@ namespace hg {
                 timeDirection,
                 width,
                 height,
+                collisionType,
                 onDestination,
                 offDestination,
                 hasButtonTriggerID,
@@ -112,6 +113,7 @@ namespace hg {
         TimeDirection timeDirection;
         int width;
         int height;
+        CollisionType collisionType;
         CollisionDestination onDestination;
         CollisionDestination offDestination;
         //TODO: More elegant handling of hasButtonTriggerID

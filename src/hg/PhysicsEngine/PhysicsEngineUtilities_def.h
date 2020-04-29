@@ -219,6 +219,7 @@ void guyStep(
     mp::std::vector<int> yspeed(pool);
     mp::std::vector<int> walkSpeed(pool);
     mp::std::vector<int> jumpHold(pool);
+    mp::std::vector<GuyAction> action(pool);
     mp::std::vector<char> supported(pool);
     mp::std::vector<int> supportedSpeed(pool);
     mp::std::vector<char> finishedWith(pool);
@@ -230,6 +231,7 @@ void guyStep(
     yspeed.reserve(boost::size(guyArrivalList));
     walkSpeed.reserve(boost::size(guyArrivalList));
     jumpHold.reserve(boost::size(guyArrivalList));
+    action.reserve(boost::size(guyArrivalList));
     supported.reserve(boost::size(guyArrivalList));
     supportedSpeed.reserve(boost::size(guyArrivalList));
     finishedWith.reserve(boost::size(guyArrivalList));
@@ -241,6 +243,7 @@ void guyStep(
     {
         walkSpeed.push_back(guyArrivalList[i].getWalkSpeed());
         jumpHold.push_back(guyArrivalList[i].getJumpHold());
+        action.push_back(guyArrivalList[i].getAction());
         // initialise positions with arrivalBasis
         if (guyArrivalList[i].getArrivalBasis() == -1)
         {
@@ -630,6 +633,7 @@ void guyStep(
     assert(boost::size(yspeed) == boost::size(guyArrivalList));
     assert(boost::size(walkSpeed) == boost::size(guyArrivalList));
     assert(boost::size(jumpHold) == boost::size(guyArrivalList));
+    assert(boost::size(action) == boost::size(guyArrivalList));
     assert(boost::size(supported) == boost::size(guyArrivalList));
     assert(boost::size(supportedSpeed) == boost::size(guyArrivalList));
     assert(boost::size(finishedWith) == boost::size(guyArrivalList));
@@ -682,6 +686,9 @@ void guyStep(
 
             //std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
+            // action placeholder
+            action[i] = GuyAction::WALK;
+            
             // jump
             if (input.getUp())
             {
@@ -1251,7 +1258,7 @@ void guyStep(
                     Guy(relativeIndex,
                         x[i], y[i],
                         xspeed[i], yspeed[i],
-                        walkSpeed[i], jumpHold[i],
+                        walkSpeed[i], jumpHold[i], action[i],
                         newWidth[i], newHeight[i],
                         newJumpSpeed[i],
                         guyArrivalList[i].getIllegalPortal(),
@@ -1277,6 +1284,7 @@ void guyStep(
                 yspeed[i] = newGuy->getYspeed();
                 walkSpeed[i] = newGuy->getWalkSpeed();
                 jumpHold[i] = newGuy->getJumpHold();
+                action[i] = newGuy->getAction();
                 newWidth[i] = newGuy->getWidth();
                 newHeight[i] = newGuy->getHeight();
                 newJumpSpeed[i] = newGuy->getJumpSpeed();
@@ -1321,7 +1329,7 @@ void guyStep(
                         else if (triggerFrameState.shouldPort(
                             j,
                             Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i],
-                                walkSpeed[i], jumpHold[i], newWidth[i], newHeight[i],
+                                walkSpeed[i], jumpHold[i], action[i], newWidth[i], newHeight[i],
                                 newJumpSpeed[i],
                                 illegalPortal[i], -1,
                                 supported[i], supportedSpeed[i], newPickups[i], facing[i],
@@ -1436,7 +1444,7 @@ void guyStep(
                             nextPortal[j].getCollisionOverlap())
                             && (triggerFrameState.shouldPort(j,
                                 Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i],
-                                    walkSpeed[i], jumpHold[i], newWidth[i], newHeight[i],
+                                    walkSpeed[i], jumpHold[i], action[i], newWidth[i], newHeight[i],
                                     newJumpSpeed[i],
                                     illegalPortal[i], -1,
                                     supported[i], supportedSpeed[i], newPickups[i], facing[i],
@@ -1517,7 +1525,7 @@ void guyStep(
                             relativeIndex + 1,
                             x[i], y[i],
                             xspeed[i], yspeed[i],
-                            walkSpeed[i], jumpHold[i],
+                            walkSpeed[i], jumpHold[i], action[i],
                             newWidth[i], newHeight[i],
                             newJumpSpeed[i],
 
@@ -1650,7 +1658,7 @@ void guyStep(
                             guyArrivalList[shot.targetId].getIndex() + 1,
                             x[shot.targetId], y[shot.targetId],
                             xspeed[shot.targetId], yspeed[shot.targetId],
-                            walkSpeed[shot.targetId], jumpHold[shot.targetId],
+                            walkSpeed[shot.targetId], jumpHold[shot.targetId], action[shot.targetId],
                             newWidth[shot.targetId], newHeight[shot.targetId],
                             newJumpSpeed[shot.targetId],
 
@@ -1812,7 +1820,7 @@ void guyStep(
                             guyArrivalList[shot.targetId].getIndex() + 1,
                             x[shot.targetId], y[shot.targetId],
                             xspeed[shot.targetId], yspeed[shot.targetId],
-                            walkSpeed[shot.targetId], jumpHold[shot.targetId],
+                            walkSpeed[shot.targetId], jumpHold[shot.targetId], action[shot.targetId],
                             newWidth[shot.targetId], newHeight[shot.targetId],
                             newJumpSpeed[shot.targetId],
 
@@ -1869,7 +1877,7 @@ void guyStep(
                     guyArrivalList[i].getIndex() + 1,
                     x[i], y[i],
                     xspeed[i], yspeed[i],
-                    walkSpeed[i], jumpHold[i],
+                    walkSpeed[i], jumpHold[i], action[i],
                     newWidth[i], newHeight[i],
                     newJumpSpeed[i],
 
