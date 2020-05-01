@@ -51,6 +51,31 @@ struct SortObjectList final {
 template<
     typename RandomAccessGuyRange,
     typename RandomAccessBoxRange>
+void guyMovement(
+    Environment const &env,
+    RandomAccessGuyRange const &guyArrivalList,
+    std::vector<GuyInput> const &playerInput,
+	int const i,
+	mp::std::vector<int> &x,
+    mp::std::vector<int> &y,
+    mp::std::vector<int> &xspeed,
+    mp::std::vector<int> &yspeed,
+    mp::std::vector<int> &walkSpeed,
+    mp::std::vector<int> &jumpHold,
+    mp::std::vector<GuyAction> &action,
+    mp::std::vector<char> &supported,
+    mp::std::vector<int> &supportedSpeed,
+    mp::std::vector<char> &finishedWith,
+    mp::std::vector<FacingDirection> &facing,
+    mp::std::vector<ObjectAndTime<Box, Frame *>> &nextBox,
+    mp::std::vector<char> &nextBoxNormalDeparture,
+    RandomAccessBoxRange const &boxArrivalList,
+    mp::std::vector<Collision> const &nextPlatform,
+    GuyGlitzAdder const &guyGlitzAdder);
+
+template<
+    typename RandomAccessGuyRange,
+    typename RandomAccessBoxRange>
 void guyStep(
     Environment const &env,
     RandomAccessGuyRange const &guyArrivalList,
