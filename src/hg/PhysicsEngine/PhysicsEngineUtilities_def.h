@@ -283,7 +283,7 @@ void guyMovement(
 	//std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
 	// jump
-	if (input.getUp() || (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MIN && !guyArrivalList[i].getSupported()))
+	if ((input.getUp() && action[i] != GuyAction::CLIMB) || (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MIN && !guyArrivalList[i].getSupported()))
 	{
 		if (guyArrivalList[i].getSupported())
 		{
@@ -390,6 +390,8 @@ void guyMovement(
 	}
 
 	// Platform collision in Y direction
+    int climbSpeed = 0;
+    bool climbing = false;
 	for (Collision const &platform : nextPlatform)
 	{
 		int pX(platform.getX());
@@ -408,32 +410,53 @@ void guyMovement(
 			x[i], newY, width, height,
 			pX, pY, pWidth, pHeight))
 		{
-			if (platform.getCollisionType() == CollisionType::PLATFORM)
+			int colDir = RectangleIntersectionDirection(x[i], y[i], width, height, pX, pY, pWidth, pHeight);
+			if (colDir == 1)
 			{
-				int colDir = RectangleIntersectionDirection(x[i], y[i], width, height, pX, pY, pWidth, pHeight);
-				if (colDir == 1)
-				{
-					newY = pY - height;
-					bottom = true;
-					if (guyArrivalList[i].getTimePaused()) {
-						xspeed[i] = 0;
-						supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
-						supportedSpeed[i] = 0;
-					}
-					else {
-						xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
-						supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
-						supportedSpeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getYspeed();
-					}
+				newY = pY - height;
+				bottom = true;
+				if (guyArrivalList[i].getTimePaused()) {
+					xspeed[i] = 0;
+					supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
+					supportedSpeed[i] = 0;
 				}
-				else if (colDir == 3)
-				{
-					newY = pY + pHeight;
-					top = true;
+				else {
+					xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
+					supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
+					supportedSpeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getYspeed();
 				}
+			}
+			else if (colDir == 3)
+			{
+				newY = pY + pHeight;
+				top = true;
+			}   
+
+            if (platform.getCollisionType() == CollisionType::LADDER) {   
+                if (input.getUp()) {
+                    climbSpeed = -hg::GUY_SPEED/2;
+                    climbing = true;
+                }
+                else if (input.getDown()) {
+                    climbSpeed = hg::GUY_SPEED / 2;
+                    climbing = true;
+                }
+                else if (action[i] == GuyAction::CLIMB) {
+                    climbing = true;
+                }
 			}
 		}
 	}
+
+    if (climbing) {
+        action[i] = GuyAction::CLIMB;
+        yspeed[i] = climbSpeed;
+        newY = y[i] + yspeed[i];
+        std::cerr << "climbing: " << yspeed[i] << ", Pos: " << newY << "\n";
+    }
+    else {
+        action[i] = GuyAction::IDLE;
+    }
 
 	//check wall collision in Y direction
 	if (yspeed[i] > 0) // down
@@ -751,7 +774,7 @@ void guyStep(
             if (carry[i])
             {
                 bool droppable(false);
-                if (input.getDown())
+                if (input.getDownPress())
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
@@ -1011,7 +1034,7 @@ void guyStep(
             }
             else
             {
-                if (input.getDown())
+                if (input.getDownPress())
                 {
 
                     int width = guyArrivalList[i].getWidth();

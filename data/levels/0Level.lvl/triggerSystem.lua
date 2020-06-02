@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {xOffset = 21.5 * 3200, yOffset = 5 * 3200},
+            attachment = {xOffset = 1.5 * 3200, yOffset = 5 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -16,50 +16,30 @@ local tempStore =
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = 1,
+            illegalDestination = nil,
             fallable = false,
             winner = true
         },
-        --{
-        --    attachment = {xOffset = 6 * 3200, yOffset = 6 * 3200},
-        --    index = 2,
-        --    xaim = 5 * 3200,
-        --    yaim = 20 * 3200,
-        --    collisionOverlap = 50,
-        --    timeDirection = 'forwards',
-        --    destinationIndex = nil,
-        --    xDestination = 0,
-        --    yDestination = 0,
-        --    relativeTime = true,
-        --    timeDestination = -600,
-        --    illegalDestination = 1,
-        --    fallable = false,
-        --    winner = false,
-        --    isLaser = true,
-		--	triggerFunction = function(triggerArrivals, frameNumber)
-		--		return triggerArrivals[1][1] == 1
-		--	end
-        --},
     },
     protoCollisions = {
         {
-            width = 3 * 3200,
-            height = 5 * 3200,
+            width = 1 * 3200,
+            height = 8 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
-            triggerClause = "t2,2 35200 >",
+			collisionType = "ladder",
             destinations =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 12 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 10 * 3200,
+                        desiredPosition = 3 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -67,13 +47,13 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 12 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 200,
                         acceleration = 20,
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 12 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -83,10 +63,42 @@ local tempStore =
         },
     },
     protoMutators = {
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 8 * 3200, yOffset = 6.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 3,
+            pickupType = 'timeReverse'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 13.5 * 3200, yOffset = 12.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 4,
+            pickupType = 'timeReverse'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 17 * 3200, yOffset = 8.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 5,
+            pickupType = 'timeReverse'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 22.5 * 3200, yOffset = 14.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 6,
+            pickupType = 'timeReverse'
+        },
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {xOffset = 7 * 3200, yOffset = 10.75 * 3200},
+            attachment = {xOffset = 27.5 * 3200, yOffset = 10.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',

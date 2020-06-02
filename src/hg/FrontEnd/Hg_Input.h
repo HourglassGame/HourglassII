@@ -30,7 +30,9 @@ private:
     bool left;
     bool right;
     bool up;
-    int down;
+    int upPress;
+    bool down;
+    int downPress;
     int boxLeft;
     int boxRight;
     int space;

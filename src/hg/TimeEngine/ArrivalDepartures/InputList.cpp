@@ -5,6 +5,7 @@ GuyInput::GuyInput() noexcept :
     right(),
     up(),
     down(),
+    downPress(),
     boxLeft(),
     boxRight(),
     portalUsed(),
@@ -19,7 +20,9 @@ GuyInput::GuyInput(
     bool left,
     bool right,
     bool up,
+    bool upPress,
     bool down,
+    bool downPress,
     bool boxLeft,
     bool boxRight,
     bool portalUsed,
@@ -31,7 +34,9 @@ GuyInput::GuyInput(
         left(left),
         right(right),
         up(up),
+        upPress(upPress),
         down(down),
+        downPress(downPress),
         boxLeft(boxLeft),
         boxRight(boxRight),
         portalUsed(portalUsed),
@@ -47,7 +52,9 @@ bool GuyInput::operator==(GuyInput const &o) const noexcept
     return left == o.left
         && right == o.right
         && up == o.up
+        && upPress == o.upPress
         && down == o.down
+        && downPress == o.downPress
         && boxLeft == o.boxLeft
         && boxRight == o.boxRight
         && portalUsed == o.portalUsed

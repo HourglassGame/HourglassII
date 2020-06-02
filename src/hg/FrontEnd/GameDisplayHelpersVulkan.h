@@ -1154,7 +1154,7 @@ inline void DrawPersonalTimeline(
                 colour = vec3<float>{ 50.f / 255.f, 50.f / 255.f, 255.f / 255.f };
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));
             }
-            else if (guyInput[i].getDown() || guyInput[i].getBoxLeft() || guyInput[i].getBoxRight())
+            else if (guyInput[i].getDownPress() || guyInput[i].getBoxLeft() || guyInput[i].getBoxRight())
             {
                 colour = vec3<float>{ 0.f / 255.f, 0.f / 255.f, 0.f / 255.f };
                 skipInputFrames = static_cast<std::size_t>(std::floor(2 / frameWidth));

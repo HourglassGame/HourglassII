@@ -27,7 +27,9 @@ public:
         bool left,
         bool right,
         bool up,
+        bool upPress,
         bool down,
+        bool downPress,
         bool boxLeft,
         bool boxRight,
         bool portalUsed,
@@ -42,7 +44,9 @@ public:
     bool getLeft()       const noexcept { return left; }
     bool getRight()      const noexcept { return right; }
     bool getUp()         const noexcept { return up; }
+    bool getUpPress()    const noexcept { return upPress; }
     bool getDown()       const noexcept { return down; }
+    bool getDownPress()  const noexcept { return downPress; }
     bool getBoxLeft()    const noexcept { return boxLeft; }
     bool getBoxRight()   const noexcept { return boxRight; }
     bool getPortalUsed() const noexcept { return portalUsed; }
@@ -53,8 +57,8 @@ public:
     int getXCursor() const noexcept { return xCursor; }
     int getYCursor() const noexcept { return yCursor; }
 
-    bool getPauseActionTaken() const noexcept { return portalUsed || abilityUsed || down; }
-    bool getActionTaken() const noexcept { return left || right || up || down || boxLeft || boxRight || portalUsed || abilityUsed; }
+    bool getPauseActionTaken() const noexcept { return portalUsed || abilityUsed || upPress || downPress; }
+    bool getActionTaken() const noexcept { return left || right || up || upPress || down || downPress || boxLeft || boxRight || portalUsed || abilityUsed; }
 private:
     friend class InputList;
     friend std::ostream &operator<<(std::ostream &os, InputList const &toPrint);
@@ -63,7 +67,9 @@ private:
     bool left;
     bool right;
     bool up;
+    bool upPress;
     bool down;
+    bool downPress;
     bool boxLeft;
     bool boxRight;
     bool portalUsed;
@@ -106,7 +112,9 @@ private:
         ar & guyInput.left;
         ar & guyInput.right;
         ar & guyInput.up;
+        ar & guyInput.upPress;
         ar & guyInput.down;
+        ar & guyInput.downPress;
         ar & guyInput.portalUsed;
         if (version < 2) {
             //Loading only, as version < current version.
@@ -156,7 +164,9 @@ private:
         os << toPrint.guyInput.left << " ";
         os << toPrint.guyInput.right << " ";
         os << toPrint.guyInput.up << " ";
+        os << toPrint.guyInput.upPress << " ";
         os << toPrint.guyInput.down << " ";
+        os << toPrint.guyInput.downPress << " ";
         os << toPrint.guyInput.boxLeft << " ";
         os << toPrint.guyInput.boxRight << " ";
         os << toPrint.guyInput.portalUsed << " ";
@@ -173,7 +183,9 @@ private:
         is >> toRead.guyInput.left;
         is >> toRead.guyInput.right;
         is >> toRead.guyInput.up;
+        is >> toRead.guyInput.upPress;
         is >> toRead.guyInput.down;
+        is >> toRead.guyInput.downPress;
         is >> toRead.guyInput.boxLeft;
         is >> toRead.guyInput.boxRight;
         is >> toRead.guyInput.portalUsed;
