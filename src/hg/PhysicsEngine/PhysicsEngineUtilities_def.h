@@ -283,7 +283,7 @@ void guyMovement(
 	//std::size_t boxThatIamStandingOn(std::numeric_limits<std::size_t>::max());
 
 	// jump
-	if (input.getUp() || (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MIN && !guyArrivalList[i].getSupported()))
+	if (input.getjump() || (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MIN && !guyArrivalList[i].getSupported()))
 	{
 		if (guyArrivalList[i].getSupported())
 		{
@@ -476,7 +476,7 @@ void guyMovement(
 	int newX(x[i] + xspeed[i]);
 
 	//check wall collision in X direction
-	if (input.getLeft()) {
+	if (input.getMoveLeft()) {
 		facing[i] = FacingDirection::LEFT;
 		if (walkSpeed[i] > 0) {
 			walkSpeed[i] += -hg::GUY_HOR_SLOW;
@@ -485,7 +485,7 @@ void guyMovement(
 			walkSpeed[i] = std::max(-hg::GUY_SPEED, walkSpeed[i] - hg::GUY_HOR_ACCEL);
 		}
 	}
-	else if (input.getRight()) {
+	else if (input.getMoveRight()) {
 		facing[i] = FacingDirection::RIGHT;
 		if (walkSpeed[i] < 0) {
 			walkSpeed[i] += hg::GUY_HOR_SLOW;
@@ -751,7 +751,7 @@ void guyStep(
             if (carry[i])
             {
                 bool droppable(false);
-                if (input.getDown())
+                if (input.getBoxAction())
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
@@ -1011,7 +1011,7 @@ void guyStep(
             }
             else
             {
-                if (input.getDown())
+                if (input.getBoxAction())
                 {
 
                     int width = guyArrivalList[i].getWidth();

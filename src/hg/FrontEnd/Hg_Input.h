@@ -30,10 +30,11 @@ private:
     bool left;
     bool right;
     bool up;
+    bool space;
     int down;
     int boxLeft;
     int boxRight;
-    int space;
+    int shift;
     int mouseLeft;
     Ability abilityCursor;
     bool abilityChanged;

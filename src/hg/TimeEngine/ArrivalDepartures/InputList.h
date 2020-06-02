@@ -24,10 +24,10 @@ class GuyInput final : boost::equality_comparable<GuyInput> {
 public:
     GuyInput() noexcept;
     GuyInput(
-        bool left,
-        bool right,
-        bool up,
-        bool down,
+        bool moveLeft,
+        bool moveRight,
+        bool jump,
+        bool boxAction,
         bool boxLeft,
         bool boxRight,
         bool portalUsed,
@@ -39,10 +39,10 @@ public:
 
     bool operator==(GuyInput const &o) const noexcept;
 
-    bool getLeft()       const noexcept { return left; }
-    bool getRight()      const noexcept { return right; }
-    bool getUp()         const noexcept { return up; }
-    bool getDown()       const noexcept { return down; }
+    bool getMoveLeft()   const noexcept { return moveLeft; }
+    bool getMoveRight()  const noexcept { return moveRight; }
+    bool getjump()       const noexcept { return jump; }
+    bool getBoxAction()  const noexcept { return boxAction; }
     bool getBoxLeft()    const noexcept { return boxLeft; }
     bool getBoxRight()   const noexcept { return boxRight; }
     bool getPortalUsed() const noexcept { return portalUsed; }
@@ -53,17 +53,17 @@ public:
     int getXCursor() const noexcept { return xCursor; }
     int getYCursor() const noexcept { return yCursor; }
 
-    bool getPauseActionTaken() const noexcept { return portalUsed || abilityUsed || down; }
-    bool getActionTaken() const noexcept { return left || right || up || down || boxLeft || boxRight || portalUsed || abilityUsed; }
+    bool getPauseActionTaken() const noexcept { return portalUsed || abilityUsed || boxAction; }
+    bool getActionTaken() const noexcept { return moveLeft || moveRight || jump || boxAction || boxLeft || boxRight || portalUsed || abilityUsed; }
 private:
     friend class InputList;
     friend std::ostream &operator<<(std::ostream &os, InputList const &toPrint);
     friend std::istream &operator>>(std::istream &is, InputList &toRead);
 
-    bool left;
-    bool right;
-    bool up;
-    bool down;
+    bool moveLeft;
+    bool moveRight;
+    bool jump;
+    bool boxAction;
     bool boxLeft;
     bool boxRight;
     bool portalUsed;
@@ -103,10 +103,10 @@ private:
     template<class Archive>
     void serialize(Archive & ar, unsigned int const version)
     {
-        ar & guyInput.left;
-        ar & guyInput.right;
-        ar & guyInput.up;
-        ar & guyInput.down;
+        ar & guyInput.moveLeft;
+        ar & guyInput.moveRight;
+        ar & guyInput.jump;
+        ar & guyInput.boxAction;
         ar & guyInput.portalUsed;
         if (version < 2) {
             //Loading only, as version < current version.
@@ -153,10 +153,10 @@ private:
     //more crappy serialization
     inline friend std::ostream &operator<<(std::ostream &os, InputList const &toPrint)
     {
-        os << toPrint.guyInput.left << " ";
-        os << toPrint.guyInput.right << " ";
-        os << toPrint.guyInput.up << " ";
-        os << toPrint.guyInput.down << " ";
+        os << toPrint.guyInput.moveLeft << " ";
+        os << toPrint.guyInput.moveRight << " ";
+        os << toPrint.guyInput.jump << " ";
+        os << toPrint.guyInput.boxAction << " ";
         os << toPrint.guyInput.boxLeft << " ";
         os << toPrint.guyInput.boxRight << " ";
         os << toPrint.guyInput.portalUsed << " ";
@@ -170,10 +170,10 @@ private:
     }
     inline friend std::istream &operator>>(std::istream &is, InputList &toRead)
     {
-        is >> toRead.guyInput.left;
-        is >> toRead.guyInput.right;
-        is >> toRead.guyInput.up;
-        is >> toRead.guyInput.down;
+        is >> toRead.guyInput.moveLeft;
+        is >> toRead.guyInput.moveRight;
+        is >> toRead.guyInput.jump;
+        is >> toRead.guyInput.boxAction;
         is >> toRead.guyInput.boxLeft;
         is >> toRead.guyInput.boxRight;
         is >> toRead.guyInput.portalUsed;

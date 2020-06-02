@@ -1,10 +1,10 @@
 #include "InputList.h"
 namespace hg {
 GuyInput::GuyInput() noexcept :
-    left(),
-    right(),
-    up(),
-    down(),
+    moveLeft(),
+    moveRight(),
+    jump(),
+    boxAction(),
     boxLeft(),
     boxRight(),
     portalUsed(),
@@ -16,10 +16,10 @@ GuyInput::GuyInput() noexcept :
 {
 }
 GuyInput::GuyInput(
-    bool left,
-    bool right,
-    bool up,
-    bool down,
+    bool moveLeft,
+    bool moveRight,
+    bool jump,
+    bool boxAction,
     bool boxLeft,
     bool boxRight,
     bool portalUsed,
@@ -28,10 +28,10 @@ GuyInput::GuyInput(
     FrameID timeCursor,
     int xCursor,
     int yCursor) noexcept :
-        left(left),
-        right(right),
-        up(up),
-        down(down),
+        moveLeft(moveLeft),
+        moveRight(moveRight),
+        jump(jump),
+        boxAction(boxAction),
         boxLeft(boxLeft),
         boxRight(boxRight),
         portalUsed(portalUsed),
@@ -44,10 +44,10 @@ GuyInput::GuyInput(
 }
 bool GuyInput::operator==(GuyInput const &o) const noexcept
 {
-    return left == o.left
-        && right == o.right
-        && up == o.up
-        && down == o.down
+    return moveLeft == o.moveLeft
+        && moveRight == o.moveRight
+        && jump == o.jump
+        && boxAction == o.boxAction
         && boxLeft == o.boxLeft
         && boxRight == o.boxRight
         && portalUsed == o.portalUsed

@@ -14,10 +14,11 @@ Input::Input() :
     left(),
     right(),
     up(),
+    space(),
     down(),
     boxLeft(),
     boxRight(),
-    space(),
+    shift(),
     mouseLeft(),
     abilityCursor(),
     abilityChanged(),
@@ -40,10 +41,11 @@ void Input::updateState(
     left = (glfwGetKey(windowglfw.w, GLFW_KEY_A) == GLFW_PRESS);
     right = (glfwGetKey(windowglfw.w, GLFW_KEY_D) == GLFW_PRESS);
     up = (glfwGetKey(windowglfw.w, GLFW_KEY_W) == GLFW_PRESS);
+    space = (glfwGetKey(windowglfw.w, GLFW_KEY_SPACE) == GLFW_PRESS);
     updatePress(down, glfwGetKey(windowglfw.w, GLFW_KEY_S) == GLFW_PRESS);
     updatePress(boxLeft, glfwGetKey(windowglfw.w, GLFW_KEY_Q) == GLFW_PRESS);
     updatePress(boxRight, glfwGetKey(windowglfw.w, GLFW_KEY_E) == GLFW_PRESS);
-    updatePress(space, glfwGetKey(windowglfw.w, GLFW_KEY_SPACE) == GLFW_PRESS);
+    updatePress(shift, glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
 
     bool mouseLeftPressed = (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
 
@@ -94,11 +96,11 @@ InputList Input::AsInputList() const
         GuyInput(
             left,
             right,
-            up,
+            up || space,
             down == 1,
             boxLeft == 1,
             boxRight == 1,
-            space == 1, //portalUsed
+            shift == 1, //portalUsed
             mouseLeft == 1, //abilityUsed
             abilityCursor,
             FrameID(mouseTimelinePosition, UniverseID(timelineLength)),
