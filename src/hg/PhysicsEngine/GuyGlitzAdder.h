@@ -67,7 +67,7 @@ public:
         vec2<int> const &size,
         TimeDirection timeDirection,
         FacingDirection facing,
-        bool boxCarrying,
+        BoxType boxCarrying,
         int boxCarrySize,
         TimeDirection boxCarryDirection,
         bool paused,
@@ -99,7 +99,7 @@ public:
                 left, top, size.a, size.b),
                 paused ? static_cast<int>(guyIndex) : -1));
 
-            if (boxCarrying)
+            if (boxCarrying != BoxType::NONE)
             {
                 forwardsGlitz->push_back(
                     Glitz(mt::std::make_unique<ImageGlitz>(
@@ -139,7 +139,7 @@ public:
                     (timeDirection == TimeDirection::REVERSE ? "global.rhino_left_stop" : "global.rhino_left_stop_r"),
                 left, top, size.a, size.b),
                 paused ? static_cast<int>(guyIndex) : -1));
-            if (boxCarrying)
+            if (boxCarrying != BoxType::NONE)
             {
                 reverseGlitz->push_back(
                     Glitz(mt::std::make_unique<ImageGlitz>(

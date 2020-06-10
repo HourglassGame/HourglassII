@@ -6,6 +6,12 @@
 #include "ConstPtr_of_fwd.h"
 #include <ostream>
 namespace hg {
+enum class BoxType : int {
+    NONE = 0,
+    CRATE = 1,
+    BALLOON = 2
+};
+
 class Box;
 std::ostream &operator<<(std::ostream &str, Box const &b);
 class Box final : boost::totally_ordered<Box>

@@ -1200,7 +1200,7 @@ inline void DrawPersonalTimeline(
             frameColourVulkan, 0
         );
 
-        if (guy.getBoxCarrying()) {
+        if (guy.getBoxCarrying() != BoxType::NONE) {
             sf::Color const boxColor(guy.getBoxCarryDirection() == guy.getTimeDirection() ?
                 sf::Color(255, 0, 255)
                 : sf::Color(0, 255, 0));
@@ -1382,7 +1382,7 @@ inline void DrawTimelineContents(
                 assert(yPix < timelineContents.getSize().y);
                 timelineContents.setPixel(
                     xPix, yPix,
-                    !guy.getBoxCarrying() ?
+                    (guy.getBoxCarrying() == BoxType::NONE) ?
                     color :
                     guy.getBoxCarryDirection() == guy.getTimeDirection() ?
                     sf::Color(255, 0, 255)

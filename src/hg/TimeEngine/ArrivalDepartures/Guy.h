@@ -3,6 +3,7 @@
 #include "TimeDirection.h"
 #include "Ability.h"
 #include "FacingDirection.h"
+#include "Box.h"
 #include <boost/operators.hpp>
 #include "hg/mt/std/map"
 #include <cstdlib>
@@ -160,7 +161,7 @@ public:
         Pickups pickups,
         FacingDirection facing,
 
-        bool boxCarrying,
+        BoxType boxCarrying,
         int boxCarrySize,
         TimeDirection boxCarryDirection,
 
@@ -188,7 +189,7 @@ public:
 
     FacingDirection getFacing()        const { return facing; }
 
-    bool getBoxCarrying()  const { return boxCarrying; }
+    BoxType getBoxCarrying()  const { return boxCarrying; }
     int getBoxCarrySize()  const { return boxCarrySize; }
     TimeDirection 
         getBoxCarryDirection() const { return boxCarryDirection; }
@@ -222,7 +223,7 @@ private:
     Pickups pickups;
     FacingDirection facing; // <- 0, -> 1
 
-    bool boxCarrying;
+    BoxType boxCarrying;
     int boxCarrySize;
     TimeDirection boxCarryDirection;
 
@@ -269,7 +270,7 @@ public:
 
     FacingDirection getFacing()        const { return guy_->getFacing();}
 
-    bool getBoxCarrying()  const { return guy_->getBoxCarrying(); }
+    BoxType getBoxCarrying()  const { return guy_->getBoxCarrying(); }
     int getBoxCarrySize()  const { return guy_->getBoxCarrySize(); }
     TimeDirection 
         getBoxCarryDirection() const { return guy_->getBoxCarryDirection(); }

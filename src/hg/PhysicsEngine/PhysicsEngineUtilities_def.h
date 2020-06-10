@@ -295,7 +295,7 @@ void guyMovement(
 		}
 		else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
 		{
-			if (guyArrivalList[i].getBoxCarrying()) {
+			if (guyArrivalList[i].getBoxCarrying() != BoxType::NONE) {
 				yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
 			}
 			else {
@@ -720,7 +720,7 @@ void guyStep(
     assert(boost::size(finishedWith) == boost::size(guyArrivalList));
     assert(boost::size(facing) == boost::size(guyArrivalList));
 
-    mp::std::vector<char> carry(guyArrivalList.size(), pool);
+    mp::std::vector<BoxType> carry(guyArrivalList.size(), pool);
     mp::std::vector<int> carrySize(guyArrivalList.size(), pool);
     mp::std::vector<TimeDirection> carryDirection(guyArrivalList.size(), pool);
     mp::std::vector<char> justPickedUpBox(guyArrivalList.size(), pool);
@@ -748,7 +748,7 @@ void guyStep(
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
             GuyInput const &input(playerInput[relativeIndex]);
 
-            if (carry[i])
+            if (carry[i] != BoxType::NONE)
             {
                 bool droppable(false);
                 if (input.getBoxAction())
@@ -992,7 +992,7 @@ void guyStep(
                                 frame,
                                 pool);
 
-                            carry[i] = false;
+                            carry[i] = BoxType::NONE;
                             carrySize[i] = 0;
                             carryDirection[i] = TimeDirection::INVALID;
                         }
@@ -1036,7 +1036,7 @@ void guyStep(
                             //The differences in bounds are intentional
                             if ((x[i] <= boxX + boxSize) && (x[i] + width >= boxX) && (y[i] < boxY + boxSize) && (y[i] + height >= boxY + boxSize))
                             {
-                                carry[i] = true;
+                                carry[i] = BoxType::CRATE;
                                 carrySize[i] = boxSize;
                                 carryDirection[i] = nextBoxIt->object.getTimeDirection();
                                 nextBoxIt = nextBox.erase(nextBoxIt);

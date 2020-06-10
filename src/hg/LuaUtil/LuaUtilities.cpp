@@ -493,9 +493,9 @@ Guy to<Guy>(lua_State* L, int index) {
         int const supportedSpeed(supported ? readField<int>(L, "supportedSpeed", index) : 0);
         Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
-        bool const boxCarrying(readField<bool>(L, "boxCarrying", index));
-        int const boxCarrySize(boxCarrying ? readField<int>(L, "boxCarrySize", index) : 0);
-        TimeDirection const boxCarryDirection{ boxCarrying ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
+        BoxType const boxCarrying(readField<BoxType>(L, "boxCarrying", index));
+        int const boxCarrySize((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarrySize", index) : 0);
+        TimeDirection const boxCarryDirection{(boxCarrying != BoxType::NONE) ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
         bool const timePaused(readField<bool>(L, "timePaused", index));
         return Guy(
@@ -538,9 +538,9 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
         int const jumpSpeed(readFieldWithDefault<int>(L, "jumpSpeed", index, -hg::GUY_JUMP_SPEED_DEFAULT));
         Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
-        bool const boxCarrying(readFieldWithDefault<bool>(L, "boxCarrying", index, false));
-        int const boxCarrySize(boxCarrying ? readField<int>(L, "boxCarrySize", index) : 0);
-        TimeDirection const boxCarryDirection{ boxCarrying ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
+        BoxType const boxCarrying(readFieldWithDefault<BoxType>(L, "boxCarrying", index, BoxType::NONE));
+        int const boxCarrySize((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarrySize", index) : 0);
+        TimeDirection const boxCarryDirection{(boxCarrying != BoxType::NONE) ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
         bool const timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
         return
@@ -602,6 +602,35 @@ TriggerOffsetsAndDefaults to<TriggerOffsetsAndDefaults>(lua_State *L, int index)
         throw;
     }
 }
+
+template<>
+BoxType to<BoxType>(lua_State * const L, int const index) {
+    try {
+        if (!lua_isstring(L, index)) {
+            //BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("BoxType values must be strings"));
+            return BoxType::NONE;
+        }
+        char const * const collisionTypeString(lua_tostring(L, index));
+        if (strcmp(collisionTypeString, "crate") == 0) {
+            return BoxType::CRATE;
+        }
+        else if (strcmp(collisionTypeString, "balloon") == 0) {
+            return BoxType::BALLOON;
+        }
+        else {
+            return BoxType::NONE;
+        }
+    }
+    catch (LuaError &e) {
+        add_semantic_callstack_info(e, "to<BoxType>");
+        throw;
+    }
+}
+template<>
+bool isValid<BoxType>(lua_State * const L, int const index) {
+    return true;
+}
+
 template<>
 Collision to<Collision>(lua_State *L, int index) {
     try {

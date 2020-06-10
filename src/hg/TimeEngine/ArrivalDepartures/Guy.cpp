@@ -19,7 +19,7 @@ Guy::Guy(
     Pickups pickups,
     FacingDirection facing,
 
-    bool boxCarrying,
+    BoxType boxCarrying,
     int boxCarrySize,
     TimeDirection boxCarryDirection,
 

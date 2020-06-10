@@ -11,7 +11,7 @@ public:
         std::size_t index,
         TimeDirection timeDirection,
         Pickups pickups,
-        bool boxCarrying,
+        BoxType boxCarrying,
         TimeDirection boxCarryDirection,
         int x,
         int y)
@@ -26,7 +26,7 @@ public:
     std::size_t getIndex() const { return index; }
     TimeDirection getTimeDirection() const { return timeDirection; }
     Pickups const &getPickups() const { return pickups; }
-    bool getBoxCarrying() const { return boxCarrying; }
+    BoxType getBoxCarrying() const { return boxCarrying; }
     TimeDirection getBoxCarryDirection() const { return boxCarryDirection; }
     int getX() const { return x; }
     int getY() const { return y; }
@@ -34,7 +34,7 @@ private:
     std::size_t index;
     TimeDirection timeDirection;
     Pickups pickups;
-    bool boxCarrying;
+    BoxType boxCarrying;
     TimeDirection boxCarryDirection;
     int x;
     int y;

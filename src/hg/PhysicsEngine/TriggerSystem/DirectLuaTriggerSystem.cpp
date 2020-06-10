@@ -620,9 +620,18 @@ void pushGuy(lua_State *L, Guy const &guy)
     lua_pushstring(L, guy.getFacing() == FacingDirection::LEFT ? "left" : "right");
     lua_setfield(L, -2, "facing");
     
-    lua_pushboolean(L, guy.getBoxCarrying());
+    
+    if (guy.getBoxCarrying() == BoxType::NONE) {
+        lua_pushboolean(L, false);
+    }
+    else if (guy.getBoxCarrying() == BoxType::CRATE) {
+        lua_pushstring(L, "crate");
+    }
+    else if (guy.getBoxCarrying() == BoxType::BALLOON) {
+        lua_pushstring(L, "balloon");
+    }
     lua_setfield(L, -2, "boxCarrying");
-    if (guy.getBoxCarrying()) {
+    if (guy.getBoxCarrying() != BoxType::NONE) {
         lua_pushinteger(L, guy.getBoxCarrySize());
         lua_setfield(L, -2, "boxCarrySize");
         lua_pushstring(L, guy.getBoxCarryDirection() == TimeDirection::FORWARDS ? "forwards" : "reverse");
