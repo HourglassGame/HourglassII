@@ -46,6 +46,12 @@ struct MainMenuSceneSharedVulkanData {
         , boxRTex("GlitzData/box_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
         , boxRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
 
+        , balloonTex("GlitzData/balloon.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+        , balloonTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, balloonTex))
+
+        , balloonRTex("GlitzData/balloon_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+        , balloonRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, balloonRTex))
+
         , powerupJumpTex("GlitzData/powerup_jump.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
         , powerupJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, powerupJumpTex))
 
@@ -84,6 +90,8 @@ struct MainMenuSceneSharedVulkanData {
                   fontTexDescriptorSet
                 , boxTexDescriptorSet
                 , boxRTexDescriptorSet
+                , balloonTexDescriptorSet
+                , balloonRTexDescriptorSet
                 , powerupJumpTexDescriptorSet
                 , rhinoLeftStopTexDescriptorSet
                 , rhinoLeftStopRTexDescriptorSet
@@ -122,6 +130,12 @@ struct MainMenuSceneSharedVulkanData {
 
     VulkanTextureSimple boxRTex;
     VkDescriptorSet boxRTexDescriptorSet;
+
+    VulkanTextureSimple balloonTex;
+    VkDescriptorSet balloonTexDescriptorSet;
+
+    VulkanTextureSimple balloonRTex;
+    VkDescriptorSet balloonRTexDescriptorSet;
 
     VulkanTextureSimple powerupJumpTex;
     VkDescriptorSet powerupJumpTexDescriptorSet;

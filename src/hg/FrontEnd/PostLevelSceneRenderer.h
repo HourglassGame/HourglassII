@@ -86,6 +86,8 @@ public:
               sceneData->textures.fontTexDescriptorSet
             , sceneData->textures.boxTexDescriptorSet
             , sceneData->textures.boxRTexDescriptorSet
+            , sceneData->textures.balloonTexDescriptorSet
+            , sceneData->textures.balloonRTexDescriptorSet
             , sceneData->textures.powerupJumpTexDescriptorSet
             , sceneData->textures.rhinoLeftStopTexDescriptorSet
             , sceneData->textures.rhinoLeftStopRTexDescriptorSet

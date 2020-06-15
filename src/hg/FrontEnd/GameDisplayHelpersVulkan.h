@@ -570,6 +570,10 @@ struct GameDisplayTexDescriptorSets final {
 
     VkDescriptorSet boxRTexDescriptorSet;
 
+    VkDescriptorSet balloonTexDescriptorSet;
+
+    VkDescriptorSet balloonRTexDescriptorSet;
+
     VkDescriptorSet powerupJumpTexDescriptorSet;
 
     VkDescriptorSet rhinoLeftStopTexDescriptorSet;
@@ -591,6 +595,9 @@ struct GameDisplayTexDescriptorSets final {
     VkDescriptorSet trampolineTexDescriptorSet;
 };
 
+#define TEXTURE(NAME, FILE), NAME(FILE, physicalDevice, device, commandPool, graphicsQueue, false) \
+, NAME##DescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, NAME))
+
 struct GameDisplayTextures final {
     explicit GameDisplayTextures(
         VkPhysicalDevice const physicalDevice,
@@ -608,41 +615,22 @@ struct GameDisplayTextures final {
         , fontTex("unifont.png", physicalDevice, device, commandPool, graphicsQueue, true)
         , fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 
-        , boxTex("GlitzData/box.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , boxTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxTex))
+        TEXTURE(boxTex, "GlitzData/box.png")
+        TEXTURE(boxRTex, "GlitzData/box_r.png")
+        TEXTURE(balloonTex, "GlitzData/balloon.png")
+        TEXTURE(balloonRTex, "GlitzData/balloon_r.png")
+        TEXTURE(powerupJumpTex, "GlitzData/powerup_jump.png")
 
-        , boxRTex("GlitzData/box_r.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , boxRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
+        TEXTURE(rhinoLeftStopTex, "GlitzData/rhino_left_stop.png")
+        TEXTURE(rhinoLeftStopRTex, "GlitzData/rhino_left_stop_r.png")
+        TEXTURE(rhinoRightStopTex, "GlitzData/rhino_right_stop.png")
+        TEXTURE(rhinoRightStopRTex, "GlitzData/rhino_right_stop_r.png")
 
-        , powerupJumpTex("GlitzData/powerup_jump.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , powerupJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, powerupJumpTex))
-
-        , rhinoLeftStopTex("GlitzData/rhino_left_stop.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , rhinoLeftStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopTex))
-
-        , rhinoLeftStopRTex("GlitzData/rhino_left_stop_r.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , rhinoLeftStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoLeftStopRTex))
-
-        , rhinoRightStopTex("GlitzData/rhino_right_stop.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , rhinoRightStopTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopTex))
-
-        , rhinoRightStopRTex("GlitzData/rhino_right_stop_r.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , rhinoRightStopRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, rhinoRightStopRTex))
-
-        , timeGunTex("GlitzData/time_gun.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , timeGunTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeGunTex))
-
-        , timeJumpTex("GlitzData/time_jump.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , timeJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeJumpTex))
-
-        , timePauseTex("GlitzData/time_pause.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , timePauseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timePauseTex))
-
-        , timeReverseTex("GlitzData/time_reverse.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , timeReverseTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeReverseTex))
-
-        , trampolineTex("GlitzData/trampoline.png", physicalDevice, device, commandPool, graphicsQueue, false)
-        , trampolineTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, trampolineTex))
+        TEXTURE(timeGunTex, "GlitzData/time_gun.png")
+        TEXTURE(timeJumpTex, "GlitzData/time_jump.png")
+        TEXTURE(timePauseTex, "GlitzData/time_pause.png")
+        TEXTURE(timeReverseTex, "GlitzData/time_reverse.png")
+        TEXTURE(trampolineTex, "GlitzData/trampoline.png")
 
         , wallBlockImages(loadWallBlockImages(physicalDevice, device, commandPool, graphicsQueue))
         , wallBlockDescriptorSets(loadWallBlockDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallBlockImages))
@@ -652,6 +640,8 @@ struct GameDisplayTextures final {
               fontTexDescriptorSet
             , boxTexDescriptorSet
             , boxRTexDescriptorSet
+            , balloonTexDescriptorSet
+            , balloonRTexDescriptorSet
             , powerupJumpTexDescriptorSet
             , rhinoLeftStopTexDescriptorSet
             , rhinoLeftStopRTexDescriptorSet
@@ -674,6 +664,12 @@ struct GameDisplayTextures final {
 
     VulkanTextureSimple boxTex;
     VkDescriptorSet boxTexDescriptorSet;
+
+    VulkanTextureSimple balloonRTex;
+    VkDescriptorSet balloonRTexDescriptorSet;
+
+    VulkanTextureSimple balloonTex;
+    VkDescriptorSet balloonTexDescriptorSet;
 
     VulkanTextureSimple boxRTex;
     VkDescriptorSet boxRTexDescriptorSet;
@@ -769,6 +765,12 @@ public:
         }
         else if (key == "global.box_r") {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->boxRTexDescriptorSet, 0, nullptr);
+        }
+        else if (key == "global.balloon") {
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->balloonTexDescriptorSet, 0, nullptr);
+        }
+        else if (key == "global.balloon_r") {
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->balloonRTexDescriptorSet, 0, nullptr);
         }
         else if (key == "global.powerup_jump") {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->powerupJumpTexDescriptorSet, 0, nullptr);
