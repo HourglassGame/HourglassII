@@ -123,7 +123,7 @@ Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
     lua_pop(L, 1);
     TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
     
-    return Box(x, y, xspeed, yspeed, size, illegalPortal, arrivalBasis, timeDirection);
+    return Box(x, y, xspeed, yspeed, size, size, BoxType::CRATE, illegalPortal, arrivalBasis, timeDirection);
 }
 
 mt::std::string abilityToString(Ability ability)
@@ -661,7 +661,7 @@ void pushBox(lua_State *L, Box const &box)
 //for redundant width and height fields
 //in boxes that arises from using them 
 //in the same context as guys.
-    lua_pushinteger(L, box.getSize());
+    lua_pushinteger(L, box.getWidth());
     lua_setfield(L, -2, "size");
     lua_pushinteger(L, box.getWidth());
     lua_setfield(L, -2, "width");

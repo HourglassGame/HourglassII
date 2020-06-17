@@ -29,7 +29,9 @@ void makeBoxGlitzListForNormalDepartures(
                 vec2<int>{
                     nextBox[j].object.getX() - nextBox[j].object.getXspeed(), 
                     nextBox[j].object.getY() - nextBox[j].object.getYspeed()},
-                nextBox[j].object.getSize(), nextBox[j].object.getTimeDirection());
+                nextBox[j].object.getWidth(), nextBox[j].object.getHeight(),
+				nextBox[j].object.getBoxType(),
+				nextBox[j].object.getTimeDirection());
         }
     }
 }
@@ -671,7 +673,7 @@ GunRaytraceResult doGunRaytrace(
             auto const collision = getRaytraceRectangleCollision(
                 sx, sy, aimx, aimy,
                 nextBox[i].object.getX(), nextBox[i].object.getY(), 
-                nextBox[i].object.getSize(), nextBox[i].object.getSize());
+                nextBox[i].object.getWidth(), nextBox[i].object.getHeight());
             if (collision.hit && (iabs(collision.point.a - sx) < iabs(hitPoint.a - sx) || iabs(collision.point.b - sy) < iabs(hitPoint.b - sy))) {
                 hitPoint = collision.point;
                 targetType = PhysicsObjectType::BOX;

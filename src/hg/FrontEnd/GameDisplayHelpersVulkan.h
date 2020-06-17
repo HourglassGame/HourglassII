@@ -536,7 +536,7 @@ std::vector<VulkanUpdatableTextureSimple> createTimelineTextures(
 }
 inline VulkanDescriptorPool createSamplerDescriptorPool(VkDevice const device) {
     uint32_t const maxSets =
-        13//Glitz Images
+        15//Glitz Images
         + 2 * 2 * 2 * 2/*Wall Blocks*/
         + 2 * 2 /*Wall Corners*/
         ;//TODO; set this to match count of descriptors used in renderer

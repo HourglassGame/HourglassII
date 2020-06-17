@@ -23,18 +23,18 @@ public:
     //with the given characteristics
     void addGlitzForBox(
         vec2<int> const &position,
-        int size,
+        int width, int height, BoxType boxType,
         TimeDirection timeDirection) const
     {
         Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
                 500, mt::std::string("global.box"),
                 position.a, position.b,
-                size, size));
+                width, height));
 
         Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
                 500, mt::std::string("global.box_r"),
                 position.a, position.b,
-                size, size));
+                width, height));
         
         forwardsGlitz->push_back(
             timeDirection == TimeDirection::FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);
@@ -46,7 +46,8 @@ public:
     void addDeathGlitz(
         int x,
         int y,
-        int size,
+        int width,
+		int height,
         TimeDirection timeDirection) const
     {
         persistentGlitz->push_back(
@@ -57,16 +58,16 @@ public:
                                 1500,
                                 x,
                                 y,
-                                size,
-                                size,
+                                width,
+                                height,
                                 timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
                     Glitz(
                         mt::std::make_unique<RectangleGlitz>(
                                 1500,
                                 x,
                                 y,
-                                size,
-                                size,
+                                width,
+                                height,
                                 timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
                     60,
                     timeDirection)));

@@ -19,7 +19,9 @@ class Box final : boost::totally_ordered<Box>
 public:
     explicit Box(int x, int y,
         int xspeed, int yspeed,
-        int size,
+        int width,
+        int height,
+        BoxType boxType,
         int illegalPortal,
         int arrivalBasis,
         TimeDirection timeDirection);
@@ -29,9 +31,9 @@ public:
     int getY()      const { return y; }
     int getXspeed() const { return xspeed; }
     int getYspeed() const { return yspeed; }
-    int getSize()   const { return size; }
-    int getWidth()  const { return size; }
-    int getHeight() const { return size; }
+    int getWidth()  const { return width; }
+    int getHeight() const { return height; }
+    BoxType getBoxType() const { return boxType; }
     int getIllegalPortal()    const { return illegalPortal; }
     int getArrivalBasis() const { return arrivalBasis; }
     TimeDirection 
@@ -45,7 +47,9 @@ private:
     int y;
     int xspeed;
     int yspeed;
-    int size;
+    int width;
+    int height;
+	BoxType boxType;
 
     int illegalPortal;
     int arrivalBasis;
@@ -55,7 +59,7 @@ private:
     auto comparison_tuple() const -> decltype(auto)
     {
         return boost::tie(
-            x, y, xspeed, yspeed, size,
+            x, y, xspeed, yspeed, width, height, boxType,
             illegalPortal, arrivalBasis,
             timeDirection);
     }
@@ -70,13 +74,13 @@ public:
     typedef Box base_type;
     Box const &get() const  { return *box_; }
     
-    int getX()      const { return box_->getX(); }
-    int getY()      const { return box_->getY(); }
-    int getXspeed() const { return box_->getXspeed(); }
-    int getYspeed() const { return box_->getYspeed(); }
-    int getSize()   const { return box_->getSize(); }
-    int getWidth()  const { return box_->getWidth(); }
-    int getHeight() const { return box_->getHeight(); }
+    int getX()            const { return box_->getX(); }
+    int getY()            const { return box_->getY(); }
+    int getXspeed()       const { return box_->getXspeed(); }
+    int getYspeed()       const { return box_->getYspeed(); }
+    int getWidth()        const { return box_->getWidth(); }
+    int getHeight()       const { return box_->getHeight(); }
+    BoxType getBoxType()  const { return box_->getBoxType(); }
     int getIllegalPortal()const { return box_->getIllegalPortal(); }
     int getArrivalBasis() const { return box_->getArrivalBasis(); }
     TimeDirection 

@@ -55,7 +55,9 @@ template <
         int y,
         int xspeed,
         int yspeed,
-        int size,
+        int width,
+        int height,
+		BoxType boxType,
         int oldIllegalPortal,
         TimeDirection const oldTimeDirection,
         TriggerFrameState &triggerFrameState,
@@ -73,7 +75,7 @@ template <
 
     for (unsigned i = 0; i < mutators.size(); ++i)
     {
-        if (IntersectingRectanglesInclusiveCollisionOverlap(x, y, size, size,
+        if (IntersectingRectanglesInclusiveCollisionOverlap(x, y, width, height,
             mutators[i].getX(), mutators[i].getY(),
             mutators[i].getWidth(), mutators[i].getHeight(),
             mutators[i].getCollisionOverlap()))
@@ -93,7 +95,8 @@ template <
                 y,
                 xspeed,
                 yspeed,
-                size,
+                width, height,
+				boxType,
                 oldIllegalPortal,
                 -1,
                 timeDirection));
@@ -105,7 +108,9 @@ template <
         y = newBox->getY();
         xspeed = newBox->getXspeed();
         yspeed = newBox->getYspeed();
-        size = newBox->getSize();
+        width = newBox->getWidth();
+        height = newBox->getHeight();
+        boxType = newBox->getBoxType();
         illegalPortal = newBox->getIllegalPortal();
         //arrivalLocation = newBox->getArrivalLocation();
         timeDirection = newBox->getTimeDirection();
@@ -118,7 +123,7 @@ template <
     {
         if (portals[i].getFallable() &&
             (!portals[i].getIsLaser()) &&
-            IntersectingRectanglesInclusiveCollisionOverlap(x, y, size, size,
+            IntersectingRectanglesInclusiveCollisionOverlap(x, y, width, height,
             portals[i].getX(), portals[i].getY(),
             portals[i].getWidth(), portals[i].getHeight(),
             portals[i].getCollisionOverlap()))
@@ -127,7 +132,7 @@ template <
             {
                 illegalPortal = i;
             }
-            else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, size, oldIllegalPortal, -1, timeDirection), false))
+            else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, width, height, boxType, oldIllegalPortal, -1, timeDirection), false))
             {
                 FrameT portalTime(
                     portals[i].getRelativeTime() ?
@@ -183,7 +188,9 @@ template <
                 y,
                 xspeed,
                 yspeed,
-                size,
+                width,
+				height,
+				boxType,
                 illegalPortal,
                 arrivalBasis,
                 timeDirection),
@@ -323,8 +330,8 @@ void guyMovement(
 			{
 				int boxX(nextBox[j].object.getX());
 				int boxY(nextBox[j].object.getY());
-				int boxSize(nextBox[j].object.getSize());
-				if (x[i] < boxX + boxSize && x[i] + width > boxX)
+				int boxWidth(nextBox[j].object.getWidth());
+				if (x[i] < boxX + boxWidth && x[i] + width > boxX)
 				{
 					if (newY + height >= boxY && newY - yspeed[i] + height <= boxY)
 					{
@@ -350,8 +357,8 @@ void guyMovement(
 				int boxXspeed(nextBox[j].object.getXspeed());
 				int boxYspeed(nextBox[j].object.getYspeed());
 
-				int boxSize(nextBox[j].object.getSize());
-				if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] <= boxY - boxYspeed)
+				int boxWidth(nextBox[j].object.getWidth());
+				if (x[i] < boxX + boxWidth && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] <= boxY - boxYspeed)
 				{
 					//boxThatIamStandingOn = j;
 					newY = boxY - height;
@@ -374,10 +381,10 @@ void guyMovement(
 				int boxX(boxArrivalList[j].getX() - boxXspeed);
 				int boxY(boxArrivalList[j].getY() - boxYspeed);
 
-				int boxSize(boxArrivalList[j].getSize());
+				int boxWidth(boxArrivalList[j].getWidth());
 
 				// -hg::DOWN_GRAVITY feels like hax but probably isn't. The print out shows that it is a requirement
-				if (x[i] < boxX + boxSize && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - hg::DOWN_GRAVITY <= boxY + boxYspeed)
+				if (x[i] < boxX + boxWidth && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - hg::DOWN_GRAVITY <= boxY + boxYspeed)
 				{
 					newY = boxY - height;
 					xspeed[i] = -boxXspeed;
@@ -903,7 +910,8 @@ void guyStep(
                                 {
                                     int bx = nextBox[j].object.getX();
                                     int by = nextBox[j].object.getY();
-                                    int bs = nextBox[j].object.getSize();
+                                    int bw = nextBox[j].object.getWidth();
+									int bh = nextBox[j].object.getHeight();
 
                                     if (guyArrivalList[i].getBoxCarryDirection()*nextBox[j].object.getTimeDirection() == TimeDirection::REVERSE)
                                     {
@@ -911,25 +919,25 @@ void guyStep(
                                         by -= nextBox[j].object.getYspeed();
                                     }
 
-                                    //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bs << ", h: " << bs << "\n";
+                                    //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
                                     //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
                                     if (IntersectingRectanglesExclusive(
-                                        bx, by, bs, bs,
+                                        bx, by, bw, bh,
                                         leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
                                     {
-                                        if (bx + bs >= leftBound + dropSize && bx <= rightBound + dropSize)
+                                        if (bx + bw >= leftBound + dropSize && bx <= rightBound + dropSize)
                                         {
                                             rightBound = bx - dropSize;
                                             if (by - dropSize > nextDropY) {
                                                 nextDropY = by - dropSize;
                                             }
                                         }
-                                        if (bx <= rightBound && bx + bs >= leftBound)
+                                        if (bx <= rightBound && bx + bw >= leftBound)
                                         {
                                             if (by - dropSize > nextDropY) {
                                                 nextDropY = by - dropSize;
                                             }
-                                            leftBound = bx + bs;
+                                            leftBound = bx + bw;
                                         }
                                         if (rightBound < leftBound)
                                         {
@@ -986,6 +994,8 @@ void guyStep(
                                 0,
                                 guyArrivalList[i].getSupportedSpeed(),
                                 dropSize,
+                                dropSize,
+								BoxType::CRATE,
                                 -1,
                                 guyArrivalList[i].getBoxCarryDirection(),
                                 triggerFrameState,
@@ -1032,12 +1042,13 @@ void guyStep(
                                 boxY += -nextBoxIt->object.getYspeed() + y[i] - guyArrivalList[i].getY();
                             }
 
-                            int boxSize = nextBoxIt->object.getSize();
+                            int boxWidth = nextBoxIt->object.getWidth();
+							int boxHeight = nextBoxIt->object.getHeight();
                             //The differences in bounds are intentional
-                            if ((x[i] <= boxX + boxSize) && (x[i] + width >= boxX) && (y[i] < boxY + boxSize) && (y[i] + height >= boxY + boxSize))
+                            if ((x[i] <= boxX + boxWidth) && (x[i] + width >= boxX) && (y[i] < boxY + boxHeight) && (y[i] + height >= boxY + boxHeight))
                             {
                                 carry[i] = BoxType::CRATE;
-                                carrySize[i] = boxSize;
+                                carrySize[i] = boxWidth;
                                 carryDirection[i] = nextBoxIt->object.getTimeDirection();
                                 nextBoxIt = nextBox.erase(nextBoxIt);
                                 nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
@@ -1555,7 +1566,9 @@ void guyStep(
                 int boxY = nextBox[shot.targetId].object.getY();
                 int boxXspeed = nextBox[shot.targetId].object.getXspeed();
                 int boxYspeed = nextBox[shot.targetId].object.getYspeed();
-                int size = nextBox[shot.targetId].object.getSize();
+				int boxWidth = nextBox[shot.targetId].object.getWidth();
+				int boxHeight = nextBox[shot.targetId].object.getHeight();
+				BoxType boxType = nextBox[shot.targetId].object.getBoxType();
 
                 TimeDirection timeDirection = nextBox[shot.targetId].object.getTimeDirection();
 
@@ -1606,7 +1619,9 @@ void guyStep(
                             boxY,
                             boxXspeed,
                             boxYspeed,
-                            size,
+                            boxWidth,
+                            boxHeight,
+                            boxType,
                             nextPortal[i].getIllegalDestination(),
                             arrivalBasis,
                             timeDirection),
@@ -1775,7 +1790,9 @@ template <
         mp::std::vector<int> &xTemp,
         mp::std::vector<int> &yTemp,
         mp::std::vector<char> &squished,
-        mp::std::vector<int> const &size,
+		mp::std::vector<int> const &width,
+		mp::std::vector<int> const &height,
+		mp::std::vector<BoxType> const &boxType,
         mp::std::vector<Box> const &oldBoxList,
         RandomAccessPlatformRange const &nextPlatform,
         BoxGlitzAdder const &boxGlitzAdder,
@@ -1817,10 +1834,10 @@ template <
                 //std::cerr << "Box " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
                 //** Check inside a wall, velocity independent which is why it is so complex **//
                 // intial keep-it-inside-the-level step
-                if (x[i] <= 0 || y[i] <= 0 || x[i] + size[i] > env.wall.roomWidth() || y[i] + size[i] > env.wall.roomHeight())
+                if (x[i] <= 0 || y[i] <= 0 || x[i] + width[i] > env.wall.roomWidth() || y[i] + height[i] > env.wall.roomHeight())
                 {
-                    int xOut = x[i] + size[i] - env.wall.roomWidth();
-                    int yOut = y[i] + size[i] - env.wall.roomHeight();
+                    int xOut = x[i] + width[i] - env.wall.roomWidth();
+                    int yOut = y[i] + height[i] - env.wall.roomHeight();
                     if (x[i] < 0 && (y[i] > 0 || x[i] < y[i]) && (yOut <= 0 || -x[i] > yOut)) {
                         y[i] = y[i] - (x[i] - env.wall.segmentSize() / 2)*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
                         x[i] = env.wall.segmentSize() / 2;
@@ -1830,12 +1847,12 @@ template <
                         y[i] = env.wall.segmentSize() / 2;
                     }
                     else if (xOut > 0 && (y[i] > 0 || xOut > -y[i]) && (yOut <= 0 || xOut > yOut)) {
-                        y[i] = y[i] - (xOut + env.wall.segmentSize() / 2 + size[i])*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
-                        x[i] = env.wall.roomWidth() - env.wall.segmentSize() / 2 - size[i];
+                        y[i] = y[i] - (xOut + env.wall.segmentSize() / 2 + width[i])*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
+                        x[i] = env.wall.roomWidth() - env.wall.segmentSize() / 2 - width[i];
                     }
                     else if (yOut > 0 && (x[i] > 0 || yOut > -x[i]) && (xOut <= 0 || yOut > xOut)) {
-                        x[i] = x[i] - (yOut + env.wall.segmentSize() / 2 + size[i])*(x[i] - xTemp[i]) / std::abs(y[i] - yTemp[i]);
-                        y[i] = env.wall.roomHeight() - env.wall.segmentSize() / 2 - size[i];
+                        x[i] = x[i] - (yOut + env.wall.segmentSize() / 2 + width[i])*(x[i] - xTemp[i]) / std::abs(y[i] - yTemp[i]);
+                        y[i] = env.wall.roomHeight() - env.wall.segmentSize() / 2 - height[i];
                     }
                 }
 
@@ -1853,7 +1870,7 @@ template <
                         }
                         else
                         {
-                            newY = y[i] - y[i] % env.wall.segmentSize() - size[i];
+                            newY = y[i] - y[i] % env.wall.segmentSize() - height[i];
                         }
                         x[i] = x[i] - std::abs(y[i] - newY)*(x[i] - xTemp[i]) / std::abs(y[i] - yTemp[i]);
                         y[i] = newY;
@@ -1866,7 +1883,7 @@ template <
                         }
                         else
                         {
-                            newX = x[i] - x[i] % env.wall.segmentSize() - size[i];
+                            newX = x[i] - x[i] % env.wall.segmentSize() - width[i];
                         }
                         y[i] = y[i] - std::abs(x[i] - newX)*(y[i] - yTemp[i]) / std::abs(x[i] - xTemp[i]);
                         x[i] = newX;
@@ -1881,12 +1898,12 @@ template <
                 // Normal case; box does not have 2 or more sides lined up on the wallmap.
                 bool w00, w10, w01, w11;
 
-                if (size[i] <= env.wall.segmentSize()) {
+                if (width[i] <= env.wall.segmentSize() && height[i] <= env.wall.segmentSize()) {
                     // purely a speedup for this case
                     w00 = env.wall.at(x[i], y[i]);
-                    w10 = env.wall.at(x[i] + size[i] - 1, y[i]);
-                    w01 = env.wall.at(x[i], y[i] + size[i] - 1);
-                    w11 = env.wall.at(x[i] + size[i] - 1, y[i] + size[i] - 1);
+                    w10 = env.wall.at(x[i] + width[i] - 1, y[i]);
+                    w01 = env.wall.at(x[i], y[i] + height[i] - 1);
+                    w11 = env.wall.at(x[i] + width[i] - 1, y[i] + height[i] - 1);
                 }
                 else {
                     // Extra collision for box size greater than wall size (would handle other case too)
@@ -1896,26 +1913,26 @@ template <
                     w11 = false;
 
                     int xOff = 0;
-                    while (xOff < size[i] - 1) {
+                    while (xOff < width[i] - 1) {
                         xOff += env.wall.segmentSize();
-                        if (xOff > size[i] - 1) {
-                            xOff = size[i] - 1;
+                        if (xOff > width[i] - 1) {
+                            xOff = width[i] - 1;
                         }
                         int yOff = 0;
-                        while (yOff < size[i] - 1) {
+                        while (yOff < height[i] - 1) {
                             yOff += env.wall.segmentSize();
-                            if (yOff > size[i] - 1) {
-                                yOff = size[i] - 1;
+                            if (yOff > height[i] - 1) {
+                                yOff = height[i] - 1;
                             }
                             // the collision test bit
                             if (!w00) {
-                                w00 = env.wall.at(x[i] + size[i] - xOff, y[i] + size[i] - yOff);
+                                w00 = env.wall.at(x[i] + width[i] - xOff, y[i] + height[i] - yOff);
                             }
                             if (!w10) {
-                                w10 = env.wall.at(x[i] + yOff, y[i] + size[i] - yOff);
+                                w10 = env.wall.at(x[i] + yOff, y[i] + height[i] - yOff);
                             }
                             if (!w01) {
-                                w01 = env.wall.at(x[i] + size[i] - xOff, y[i] + yOff);
+                                w01 = env.wall.at(x[i] + width[i] - xOff, y[i] + yOff);
                             }
                             if (!w11) {
                                 w11 = env.wall.at(x[i] + xOff, y[i] + yOff);
@@ -1939,7 +1956,7 @@ template <
                                 // xx
                                 if (x[i] == xTemp[i] && y[i] == yTemp[i]) {
                                     // Cannot interpolate a static box.
-                                    boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                                    boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                                     squished[i] = true;
                                 }
                                 else {
@@ -1949,7 +1966,7 @@ template <
                             else {
                                 // xx
                                 // ox
-                                x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                                x[i] = ((x[i] + width[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - width[i];
                                 right[i] = std::make_pair(true, x[i]);
                                 y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                                 top[i] = std::make_pair(true, y[i]);
@@ -1961,13 +1978,13 @@ template <
                             // .x
                             x[i] = (x[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             left[i] = std::make_pair(true, x[i]);
-                            y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                            y[i] = ((y[i] + height[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - height[i];
                             bottom[i] = std::make_pair(true, y[i]);
                         }
                         else {
                             // xo
                             // ox
-                            x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                            x[i] = ((x[i] + width[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - width[i];
                             right[i] = std::make_pair(true, x[i]);
                             y[i] = (y[i] / env.wall.segmentSize() + 1)*env.wall.segmentSize();
                             top[i] = std::make_pair(true, y[i]);
@@ -2014,13 +2031,13 @@ template <
                     {
                         // ox
                         // x.
-                        if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i], xTemp[i] + size[i] - 1, yTemp[i])) // this triangle check needs improvement for rectangles
+                        if (w11 || env.wall.inTopLeftTriangle(x[i] + width[i] - 1, y[i], xTemp[i] + height[i] - 1, yTemp[i])) // this triangle check needs improvement for rectangles
                         {
                             // ox
                             // x.
-                            x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                            x[i] = ((x[i] + width[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - width[i];
                             right[i] = std::make_pair(true, x[i]);
-                            y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                            y[i] = ((y[i] + height[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - height[i];
                             bottom[i] = std::make_pair(true, y[i]);
                         }
                         else
@@ -2033,11 +2050,11 @@ template <
                             top[i] = std::make_pair(true, y[i]);
                         }
                     }
-                    else if (w11 || env.wall.inTopLeftTriangle(x[i] + size[i] - 1, y[i], xTemp[i] + size[i] - 1, yTemp[i]))
+                    else if (w11 || env.wall.inTopLeftTriangle(x[i] + width[i] - 1, y[i], xTemp[i] + width[i] - 1, yTemp[i]))
                     {
                         // ox
                         // o.
-                        x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                        x[i] = ((x[i] + width[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - width[i];
                         right[i] = std::make_pair(true, x[i]);
                     }
                     else
@@ -2052,11 +2069,11 @@ template <
                 {
                     // oo
                     // x.
-                    if (w11 || env.wall.inTopLeftTriangle(x[i], y[i] + size[i] - 1, xTemp[i], yTemp[i] + size[i] - 1))
+                    if (w11 || env.wall.inTopLeftTriangle(x[i], y[i] + height[i] - 1, xTemp[i], yTemp[i] + height[i] - 1))
                     {
                         // oo
                         // x.
-                        y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                        y[i] = ((y[i] + height[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - height[i];
                         bottom[i] = std::make_pair(true, y[i]);
                         x[i] = xTemp[i];
                     }
@@ -2072,15 +2089,15 @@ template <
                 {
                     // oo
                     // ox
-                    if (env.wall.inTopRightTriangle(x[i] + size[i] - 1, y[i] + size[i] - 1, xTemp[i] + size[i] - 1, yTemp[i] + size[i] - 1))
+                    if (env.wall.inTopRightTriangle(x[i] + width[i] - 1, y[i] + height[i] - 1, xTemp[i] + width[i] - 1, yTemp[i] + height[i] - 1))
                     {
-                        y[i] = ((y[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                        y[i] = ((y[i] + height[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - height[i];
                         bottom[i] = std::make_pair(true, y[i]);
                         x[i] = xTemp[i];
                     }
                     else
                     {
-                        x[i] = ((x[i] + size[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - size[i];
+                        x[i] = ((x[i] + width[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - width[i];
                         right[i] = std::make_pair(true, x[i]);
                     }
                 }
@@ -2100,15 +2117,15 @@ template <
                         pY -= platform.getYspeed() + platform.getPrevYspeed();
                     }
 
-                    if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], pX, pY, pWidth, pHeight))
+                    if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], pX, pY, pWidth, pHeight))
                     {
                         if (platform.getCollisionType() == CollisionType::PLATFORM)
                         {
-                            if (IsPointInVerticalQuadrant(xTemp[i] + size[i] / 2, yTemp[i] + size[i] / 2, pX, pY, pWidth, pHeight))
+                            if (IsPointInVerticalQuadrant(xTemp[i] + width[i] / 2, yTemp[i] + height[i] / 2, pX, pY, pWidth, pHeight))
                             {
-                                if (yTemp[i] + size[i] / 2 < pY + pHeight / 2) // box above platform
+                                if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) // box above platform
                                 {
-                                    y[i] = pY - size[i];
+                                    y[i] = pY - height[i];
                                     bottom[i] = std::make_pair(true, y[i]);
                                     if (firstTimeThrough)
                                     {
@@ -2123,9 +2140,9 @@ template <
                             }
                             else // left or right
                             {
-                                if (xTemp[i] + size[i] / 2 < pX + pWidth / 2) // box left of platform
+                                if (xTemp[i] + width[i] / 2 < pX + pWidth / 2) // box left of platform
                                 {
-                                    x[i] = pX - size[i];
+                                    x[i] = pX - width[i];
                                     right[i] = std::make_pair(true, x[i]);
                                 }
                                 else
@@ -2145,14 +2162,15 @@ template <
                     {
                         int bX = oldBoxList[j].getX() - oldBoxList[j].getXspeed();
                         int bY = oldBoxList[j].getY() - oldBoxList[j].getYspeed();
-                        int bSize = oldBoxList[j].getSize();
-                        if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], bX, bY, bSize, bSize))
+                        int bWidth = oldBoxList[j].getWidth();
+						int bHeight = oldBoxList[j].getHeight();
+                        if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], bX, bY, bWidth, bHeight))
                         {
-                            if (IsPointInVerticalQuadrant(xTemp[i] + size[i] / 2, yTemp[i] + size[i] / 2, bX, bY, bSize, bSize))
+                            if (IsPointInVerticalQuadrant(xTemp[i] + width[i] / 2, yTemp[i] + height[i] / 2, bX, bY, bWidth, bHeight))
                             {
-                                if (yTemp[i] + size[i] / 2 < bY + bSize / 2) // on top of reverse box
+                                if (yTemp[i] + height[i] / 2 < bY + bHeight / 2) // on top of reverse box
                                 {
-                                    y[i] = bY - size[i];
+                                    y[i] = bY - height[i];
                                     bottom[i] = std::make_pair(true, y[i]);
                                     if (firstTimeThrough)
                                     {
@@ -2161,20 +2179,20 @@ template <
                                 }
                                 else
                                 {
-                                    y[i] = bY + bSize;
+                                    y[i] = bY + bHeight;
                                     top[i] = std::make_pair(true, y[i]);
                                 }
                             }
                             else // left or right
                             {
-                                if (xTemp[i] + size[i] / 2 < bX + bSize / 2) // box left of reverse box
+                                if (xTemp[i] + width[i] / 2 < bX + bWidth / 2) // box left of reverse box
                                 {
-                                    x[i] = bX - size[i];
+                                    x[i] = bX - width[i];
                                     right[i] = std::make_pair(true, x[i]);
                                 }
                                 else
                                 {
-                                    x[i] = bX + bSize;
+                                    x[i] = bX + bWidth;
                                     left[i] = std::make_pair(true, x[i]);
                                 }
                             }
@@ -2204,9 +2222,9 @@ template <
                 {
                     if (j != i && !squished[j] && oldBoxList[j].getTimeDirection() == boxDirection)
                     {
-                        if (IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j]))
+                        if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j]))
                         {
-                            if (std::abs(xTemp[i] + size[i] / 2 - x[j] - size[j] / 2) < std::abs(yTemp[i] + size[i] / 2 - y[j] - size[j] / 2)) // top or bot
+                            if (std::abs(xTemp[i] + width[i] / 2 - x[j] - width[j] / 2) < std::abs(yTemp[i] + height[i] / 2 - y[j] - height[j] / 2)) // top or bot
                             {
                                 if (yTemp[i] < y[j]) // i above j
                                 {
@@ -2237,11 +2255,11 @@ template <
                 if (bottom[i].first) // Push boxes up
                 {
                     //explodeBoxes(y, size, topLinks, toBeSquished, top, i, bottom[i].second, -1);
-                    explodeBoxesUpwards(x, xTemp, y, size, topLinks, firstTimeThrough, toBeSquished, top, i, bottom[i].second);
+                    explodeBoxesUpwards(x, xTemp, y, height, topLinks, firstTimeThrough, toBeSquished, top, i, bottom[i].second);
                 }
                 if (top[i].first) // Push boxes down
                 {
-                    explodeBoxes(y, size, bottomLinks, toBeSquished, bottom, i, top[i].second, 1);
+                    explodeBoxes(y, height, bottomLinks, toBeSquished, bottom, i, top[i].second, 1);
                 }
             }
         }
@@ -2250,7 +2268,7 @@ template <
         {
             if (toBeSquished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
-                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
             }
         }
@@ -2264,10 +2282,10 @@ template <
                 {
                     if (j != i
                         && !squished[j]
-                        && IntersectingRectanglesInclusive(x[i], y[i], size[i], size[i], x[j], y[j], size[j], size[j])
+                        && IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j])
                         && oldBoxList[j].getTimeDirection() == boxDirection)
                     {
-                        if (std::abs(xTemp[i] + size[i] / 2 - x[j] - size[j] / 2) >= std::abs(yTemp[i] + size[i] / 2 - y[j] - size[j] / 2)) // left or right
+                        if (std::abs(xTemp[i] + width[i] / 2 - x[j] - width[j] / 2) >= std::abs(yTemp[i] + height[i] / 2 - y[j] - height[j] / 2)) // left or right
                         {
                             if (xTemp[i] < x[j]) // i left of j
                             {
@@ -2302,11 +2320,11 @@ template <
             {
                 if (right[i].first)
                 {
-                    explodeBoxes(x, size, leftLinks, toBeSquished, left, i, right[i].second, -1);
+                    explodeBoxes(x, width, leftLinks, toBeSquished, left, i, right[i].second, -1);
                 }
                 if (left[i].first)
                 {
-                    explodeBoxes(x, size, rightLinks, toBeSquished, right, i, left[i].second, 1);
+                    explodeBoxes(x, width, rightLinks, toBeSquished, right, i, left[i].second, 1);
                 }
             }
         }
@@ -2315,7 +2333,7 @@ template <
         {
             if (toBeSquished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
-                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
             }
         }
@@ -2326,7 +2344,7 @@ template <
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 mp::std::vector<std::size_t> pass(pool);
-                recursiveBoxCollision(y, x, size, squished, pass, i, 0, boxDirection, oldBoxList);
+                recursiveBoxCollision(y, x, height, squished, pass, i, 0, boxDirection, oldBoxList);
             }
         }
 
@@ -2336,7 +2354,7 @@ template <
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 mp::std::vector<std::size_t> pass(pool);
-                recursiveBoxCollision(x, y, size, squished, pass, i, 1, boxDirection, oldBoxList);
+                recursiveBoxCollision(x, y, width, squished, pass, i, 1, boxDirection, oldBoxList);
             }
         }
 
@@ -2405,7 +2423,9 @@ template <
     mp::std::vector<int> yTemp(oldBoxList.size(), pool);
     mp::std::vector<int> xPreBox(oldBoxList.size(), pool);
     mp::std::vector<int> yPreBox(oldBoxList.size(), pool);
-    mp::std::vector<int> size(oldBoxList.size(), pool);
+    mp::std::vector<int> width(oldBoxList.size(), pool);
+    mp::std::vector<int> height(oldBoxList.size(), pool);
+    mp::std::vector<BoxType> boxType(oldBoxList.size(), pool);
     mp::std::vector<char> squished(oldBoxList.size(), pool);
 
     // Check with triggers if the box should arrive at all
@@ -2444,7 +2464,9 @@ template <
                 y[i] = rely + oldBoxList[i].getYspeed();
             }
         }
-        size[i] = oldBoxList[i].getSize();
+        width[i] = oldBoxList[i].getWidth();
+        height[i] = oldBoxList[i].getHeight();
+		boxType[i] = oldBoxList[i].getBoxType();
         if (oldBoxList[i].getYspeed() > 0) {
             y[i] += hg::UP_GRAVITY;
         }
@@ -2457,10 +2479,10 @@ template <
     // Destroy boxes that are overlapping with platforms and walls
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
         if (!squished[i]) {
-            if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i] + size[i] - 1, yTemp[i])
-                && env.wall.at(xTemp[i], yTemp[i] + size[i] - 1) && env.wall.at(xTemp[i] + size[i], yTemp[i] + size[i] - 1))
+            if (env.wall.at(xTemp[i], yTemp[i]) && env.wall.at(xTemp[i] + width[i] - 1, yTemp[i])
+                && env.wall.at(xTemp[i], yTemp[i] + height[i] - 1) && env.wall.at(xTemp[i] + width[i], yTemp[i] + height[i] - 1))
             {
-                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
                 continue;
             }
@@ -2475,11 +2497,11 @@ template <
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
+                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight))
                     {
                         if (platform.getCollisionType() == CollisionType::PLATFORM)
                         {
-                            boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                            boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                             squished[i] = true;
                             continue;
                         }
@@ -2489,11 +2511,11 @@ template <
                 {
                     pX -= platform.getXspeed();
                     pY -= platform.getYspeed();
-                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], size[i], size[i], pX, pY, pWidth, pHeight))
+                    if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight))
                     {
                         if (platform.getCollisionType() == CollisionType::PLATFORM)
                         {
-                            boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                            boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                             squished[i] = true;
                             continue;
                         }
@@ -2512,8 +2534,8 @@ template <
                 for (std::size_t j(0); j < i; ++j) {
                     if (!squished[j]) {
                         if (IntersectingRectanglesExclusive(
-                            xTemp[i], yTemp[i], size[i], size[i],
-                            xTemp[j], yTemp[j], size[j], size[j]))
+                            xTemp[i], yTemp[i], width[i], height[i],
+                            xTemp[j], yTemp[j], width[j], height[j]))
                         {
                             toBeSquished[i] = true;
                             toBeSquished[j] = true;
@@ -2525,14 +2547,14 @@ template <
     
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
             if (toBeSquished[i]) {
-                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], size[i], oldBoxList[i].getTimeDirection());
+                boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
                 squished[i] = true;
             }
         }
     }
 
-    boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder, pool);
-    boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, size, oldBoxList, nextPlatform, boxGlitzAdder, pool);
+    boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
+    boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
 
     // Send boxes
     for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
@@ -2550,7 +2572,9 @@ template <
                     y[i],
                     x[i] - oldBoxList[i].getX(),
                     y[i] - oldBoxList[i].getY(),
-                    size[i],
+                    width[i],
+                    height[i],
+					boxType[i],
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
                     triggerFrameState,
@@ -2582,7 +2606,9 @@ template <
                     y[i],
                     x[i] - relx,
                     y[i] - rely,
-                    size[i],
+                    width[i],
+                    height[i],
+					boxType[i],
                     oldBoxList[i].getIllegalPortal(),
                     oldBoxList[i].getTimeDirection(),
                     triggerFrameState,
