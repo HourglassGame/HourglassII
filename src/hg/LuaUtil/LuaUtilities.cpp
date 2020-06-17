@@ -312,12 +312,19 @@ InitialBox to<InitialBox>(lua_State *L, int index) {
         if (readField<std::string>(L, "type", index) != "box") {
             BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info("there is no support for initial objects other than boxes"));
         }
+		int width = readFieldWithDefault<int>(L, "width", index, 0);
+		if (width <= 0) {
+			width = readField<int>(L, "size", index);
+		}
+		int height = readFieldWithDefault<int>(L, "height", index, 0);
+		if (height <= 0) {
+			height = readField<int>(L, "size", index);
+		}
         return
             InitialBox(
                 Box(readField<int>(L, "x", index), readField<int>(L, "y", index),
                     readField<int>(L, "xspeed", index), readField<int>(L, "yspeed", index),
-                    readFieldWithDefault<int>(L, "width", index, readField<int>(L, "size", index)),
-					readFieldWithDefault<int>(L, "height", index, readField<int>(L, "size", index)),
+                    width, height,
                     readFieldWithDefault<BoxType>(L, "boxType", index, BoxType::CRATE),
                     -1,
                     -1,
