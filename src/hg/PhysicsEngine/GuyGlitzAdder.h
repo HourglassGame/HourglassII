@@ -68,7 +68,8 @@ public:
         TimeDirection timeDirection,
         FacingDirection facing,
         BoxType boxCarrying,
-        int boxCarrySize,
+        int boxCarryWidth,
+        int boxCarryHeight,
         TimeDirection boxCarryDirection,
         bool paused,
         std::size_t guyIndex,
@@ -106,10 +107,10 @@ public:
                             600,
                             boxCarryDirection == TimeDirection::FORWARDS ?
                               "global.box" : "global.box_r",
-                            hmid - boxCarrySize/2,
-                            top - boxCarrySize,
-                            boxCarrySize,
-                            boxCarrySize),
+                            hmid - boxCarryWidth/2,
+                            top - boxCarryHeight,
+                            boxCarryWidth,
+                            boxCarryHeight),
                         paused ? static_cast<int>(guyIndex) : -1));
             }
             
@@ -146,10 +147,10 @@ public:
                             600,
                             boxCarryDirection == TimeDirection::REVERSE ?
                               "global.box" : "global.box_r",
-                            hmid - boxCarrySize/2,
-                            top - boxCarrySize,
-                            boxCarrySize,
-                            boxCarrySize),
+                            hmid - boxCarryWidth/2,
+                            top - boxCarryHeight,
+                            boxCarryWidth,
+                            boxCarryHeight),
                         paused ? static_cast<int>(guyIndex) : -1));
             }
             addCurrentGuyArrow(*reverseGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);

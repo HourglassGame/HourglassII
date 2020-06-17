@@ -728,7 +728,8 @@ void guyStep(
     assert(boost::size(facing) == boost::size(guyArrivalList));
 
     mp::std::vector<BoxType> carry(guyArrivalList.size(), pool);
-    mp::std::vector<int> carrySize(guyArrivalList.size(), pool);
+    mp::std::vector<int> carryWidth(guyArrivalList.size(), pool);
+    mp::std::vector<int> carryHeight(guyArrivalList.size(), pool);
     mp::std::vector<TimeDirection> carryDirection(guyArrivalList.size(), pool);
     mp::std::vector<char> justPickedUpBox(guyArrivalList.size(), pool);
 
@@ -749,7 +750,8 @@ void guyStep(
         if (guyArrivalList[i].getIndex() < playerInput.size() && !finishedWith[i])
         {
             carry[i] = guyArrivalList[i].getBoxCarrying();
-            carrySize[i] = 0;
+			carryWidth[i] = 0;
+			carryHeight[i] = 0;
             carryDirection[i] = TimeDirection::INVALID;
 
             std::size_t const relativeIndex(guyArrivalList[i].getIndex());
@@ -762,7 +764,8 @@ void guyStep(
                 {
                     int width(guyArrivalList[i].getWidth());
                     int height(guyArrivalList[i].getHeight());
-                    int dropSize(guyArrivalList[i].getBoxCarrySize());
+                    int dropWidth(guyArrivalList[i].getBoxCarryWidth());
+                    int dropHeight(guyArrivalList[i].getBoxCarryHeight());
 
                     int gX(x[i]);
                     int gY(y[i]);
@@ -774,28 +777,28 @@ void guyStep(
                     }
                     //std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 
-                    while (dropY >= gY + height - dropSize && !droppable)
+                    while (dropY >= gY + height - dropHeight && !droppable)
                     {
                         //std::cerr << "Try: " << gX << ", " << gY << "\n";
                         // Track next attempted drop height
-                        int nextDropY = gY + height - dropSize - 1;
+                        int nextDropY = gY + height - dropHeight - 1;
 
                         // Initialize bounds on drops based on movement direction
                         int leftBound, rightBound;
 
-                        if (dropSize < width)
+                        if (dropWidth < width)
                         {
                             leftBound = gX;
-                            rightBound = gX - dropSize + width;
+                            rightBound = gX - dropWidth + width;
                         }
                         else
                         {
-                            leftBound = gX - dropSize + width;
+                            leftBound = gX - dropWidth + width;
                             rightBound = gX;
                         }
 
                         if (facing[i] == FacingDirection::LEFT) {
-                            leftBound = gX - dropSize + width / 2;
+                            leftBound = gX - dropWidth + width / 2;
                         }
                         else if (facing[i] == FacingDirection::RIGHT) {
                             rightBound = gX + width / 2;
@@ -805,20 +808,20 @@ void guyStep(
 
                         // Narrow drop bounds with wall collision
                         int cx = rightBound - rightBound % env.wall.segmentSize();
-                        int initial_cy = dropY + dropSize - (dropY + dropSize) % env.wall.segmentSize(); // Top of lowest wall
-                        if ((dropY + dropSize) % env.wall.segmentSize() == 0) {
+                        int initial_cy = dropY + dropHeight - (dropY + dropHeight) % env.wall.segmentSize(); // Top of lowest wall
+                        if ((dropY + dropHeight) % env.wall.segmentSize() == 0) {
                             initial_cy -= env.wall.segmentSize();
                         }
-                        while (cx < rightBound + dropSize)
+                        while (cx < rightBound + dropWidth)
                         {
                             int cy = initial_cy;
                             while (cy >= dropY)
                             {
                                 if (env.wall.at(cx, cy))
                                 {
-                                    rightBound = cx - dropSize;
-                                    if (cy - dropSize > nextDropY) {
-                                        nextDropY = cy - dropSize;
+                                    rightBound = cx - dropWidth;
+                                    if (cy - dropHeight > nextDropY) {
+                                        nextDropY = cy - dropHeight;
                                     }
                                     goto rightBoundCheckDoubleBreak;
                                 }
@@ -831,7 +834,7 @@ void guyStep(
                         //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
                         //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
-                        cx = (leftBound + dropSize) - (leftBound + dropSize) % env.wall.segmentSize() - 1;
+                        cx = (leftBound + dropWidth) - (leftBound + dropWidth) % env.wall.segmentSize() - 1;
                         while (cx > leftBound)
                         {
                             int cy = initial_cy;
@@ -840,8 +843,8 @@ void guyStep(
                                 if (env.wall.at(cx, cy))
                                 {
                                     leftBound = cx + 1;
-                                    if (cy - dropSize > nextDropY) {
-                                        nextDropY = cy - dropSize;
+                                    if (cy - dropHeight > nextDropY) {
+                                        nextDropY = cy - dropHeight;
                                     }
                                     goto leftBoundCheckDoubleBreak;
                                 }
@@ -872,22 +875,22 @@ void guyStep(
 
                                 if (IntersectingRectanglesExclusive(
                                     px, py, pw, ph,
-                                    leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+                                    leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
                                 {
                                     if (nextPlatform[j].getCollisionType() == CollisionType::PLATFORM)
                                     {
-                                        if (px + pw > leftBound + dropSize && px < rightBound + dropSize)
+                                        if (px + pw > leftBound + dropWidth && px < rightBound + dropWidth)
                                         {
-                                            rightBound = px - dropSize;
-                                            if (py - dropSize > nextDropY) {
-                                                nextDropY = py - dropSize;
+                                            rightBound = px - dropWidth;
+                                            if (py - dropHeight > nextDropY) {
+                                                nextDropY = py - dropHeight;
                                             }
                                         }
                                         if (px < rightBound && px + pw > leftBound)
                                         {
                                             leftBound = px + pw;
-                                            if (py - dropSize > nextDropY) {
-                                                nextDropY = py - dropSize;
+                                            if (py - dropHeight > nextDropY) {
+                                                nextDropY = py - dropHeight;
                                             }
                                         }
                                         if (rightBound < leftBound)
@@ -920,22 +923,22 @@ void guyStep(
                                     }
 
                                     //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
-                                    //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropSize <<  ", w: " << dropSize << "\n";
+                                    //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropWidth <<  ", w: " << dropHeight << "\n";
                                     if (IntersectingRectanglesExclusive(
                                         bx, by, bw, bh,
-                                        leftBound, dropY, rightBound - leftBound + dropSize, dropSize))
+                                        leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
                                     {
-                                        if (bx + bw >= leftBound + dropSize && bx <= rightBound + dropSize)
+                                        if (bx + bw >= leftBound + dropWidth && bx <= rightBound + dropWidth)
                                         {
-                                            rightBound = bx - dropSize;
-                                            if (by - dropSize > nextDropY) {
-                                                nextDropY = by - dropSize;
+                                            rightBound = bx - dropWidth;
+                                            if (by - dropHeight > nextDropY) {
+                                                nextDropY = by - dropHeight;
                                             }
                                         }
                                         if (bx <= rightBound && bx + bw >= leftBound)
                                         {
-                                            if (by - dropSize > nextDropY) {
-                                                nextDropY = by - dropSize;
+                                            if (by - dropHeight > nextDropY) {
+                                                nextDropY = by - dropHeight;
                                             }
                                             leftBound = bx + bw;
                                         }
@@ -965,7 +968,7 @@ void guyStep(
                             else {
                                 // Never seen?
                                 assert(false);
-                                int midX = gX + width / 2 - dropSize / 2;
+                                int midX = gX + width / 2 - dropWidth / 2;
                                 if (leftBound <= midX) {
                                     if (midX <= rightBound)
                                     {
@@ -993,9 +996,9 @@ void guyStep(
                                 dropY,
                                 0,
                                 guyArrivalList[i].getSupportedSpeed(),
-                                dropSize,
-                                dropSize,
-								BoxType::CRATE,
+                                dropWidth,
+                                dropHeight,
+								carry[i],
                                 -1,
                                 guyArrivalList[i].getBoxCarryDirection(),
                                 triggerFrameState,
@@ -1003,7 +1006,8 @@ void guyStep(
                                 pool);
 
                             carry[i] = BoxType::NONE;
-                            carrySize[i] = 0;
+                            carryWidth[i] = 0;
+                            carryHeight[i] = 0;
                             carryDirection[i] = TimeDirection::INVALID;
                         }
                         else // !droppable
@@ -1015,7 +1019,8 @@ void guyStep(
 
                 if (!droppable)
                 {
-                    carrySize[i] = guyArrivalList[i].getBoxCarrySize();
+                    carryWidth[i] = guyArrivalList[i].getBoxCarryWidth();
+                    carryHeight[i] = guyArrivalList[i].getBoxCarryHeight();
                     carryDirection[i] = guyArrivalList[i].getBoxCarryDirection();
                 }
             }
@@ -1047,8 +1052,9 @@ void guyStep(
                             //The differences in bounds are intentional
                             if ((x[i] <= boxX + boxWidth) && (x[i] + width >= boxX) && (y[i] < boxY + boxHeight) && (y[i] + height >= boxY + boxHeight))
                             {
-                                carry[i] = BoxType::CRATE;
-                                carrySize[i] = boxWidth;
+                                carry[i] = nextBoxIt->object.getBoxType();
+								carryWidth[i] = boxWidth;
+								carryHeight[i] = boxHeight;
                                 carryDirection[i] = nextBoxIt->object.getTimeDirection();
                                 nextBoxIt = nextBox.erase(nextBoxIt);
                                 nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
@@ -1062,7 +1068,8 @@ void guyStep(
                 }
                 else
                 {
-                    carrySize[i] = 0;
+                    carryWidth[i] = 0;
+                    carryHeight[i] = 0;
                     carryDirection[i] = TimeDirection::INVALID;
                 }
             }
@@ -1070,7 +1077,8 @@ void guyStep(
     }
 
     assert(boost::size(carry) == boost::size(guyArrivalList));
-    assert(boost::size(carrySize) == boost::size(guyArrivalList));
+    assert(boost::size(carryWidth) == boost::size(guyArrivalList));
+    assert(boost::size(carryHeight) == boost::size(guyArrivalList));
     assert(boost::size(carryDirection) == boost::size(guyArrivalList));
 
     mp::std::vector<int> newWidth(guyArrivalList.size(), pool);
@@ -1142,7 +1150,8 @@ void guyStep(
                         newPickups[i],
                         facing[i],
                         carry[i],
-                        carrySize[i],
+                        carryWidth[i],
+						carryHeight[i],
                         carryDirection[i],
                         nextTimeDirection,
                         newTimePaused[i]
@@ -1169,7 +1178,8 @@ void guyStep(
                 newPickups[i] = newGuy->getPickups();
                 facing[i] = newGuy->getFacing();
                 carry[i] = newGuy->getBoxCarrying();
-                carrySize[i] = newGuy->getBoxCarrySize();
+                carryWidth[i] = newGuy->getBoxCarryWidth();
+                carryHeight[i] = newGuy->getBoxCarryHeight();
                 carryDirection[i] = newGuy->getBoxCarryDirection();
                 nextTimeDirection = newGuy->getTimeDirection();
                 newTimePaused[i] = newGuy->getTimePaused();
@@ -1207,7 +1217,7 @@ void guyStep(
                                 newJumpSpeed[i],
                                 illegalPortal[i], -1,
                                 supported[i], supportedSpeed[i], newPickups[i], facing[i],
-                                carry[i], carrySize[i], carryDirection[i], nextTimeDirection, newTimePaused[i]),
+                                carry[i], carryWidth[i], carryHeight[i], carryDirection[i], nextTimeDirection, newTimePaused[i]),
                             false))
                         {
                             if (nextPortal[j].getWinner())
@@ -1322,7 +1332,7 @@ void guyStep(
                                     newJumpSpeed[i],
                                     illegalPortal[i], -1,
                                     supported[i], supportedSpeed[i], newPickups[i], facing[i],
-                                    carry[i], carrySize[i], carryDirection[i], nextTimeDirection, newTimePaused[i]), true)))
+                                    carry[i], carryWidth[i], carryHeight[i], carryDirection[i], nextTimeDirection, newTimePaused[i]), true)))
                         {
                             if (nextPortal[j].getWinner())
                             {
@@ -1385,7 +1395,8 @@ void guyStep(
                 nextTimeDirection,
                 facing[i],
                 carry[i],
-                carrySize[i],
+				carryWidth[i],
+				carryHeight[i],
                 carryDirection[i],
                 newTimePaused[i],
                 guyArrivalList[i].getIndex(),
@@ -1412,7 +1423,8 @@ void guyStep(
                             facing[i],
 
                             carry[i],
-                            carrySize[i],
+                            carryWidth[i],
+                            carryHeight[i],
                             carryDirection[i],
 
                             nextTimeDirection,
@@ -1545,7 +1557,8 @@ void guyStep(
                             facing[shot.targetId],
 
                             carry[shot.targetId],
-                            carrySize[shot.targetId],
+                            carryWidth[shot.targetId],
+                            carryHeight[shot.targetId],
                             carryDirection[shot.targetId],
 
                             guyArrivalList[shot.targetId].getTimeDirection(),
@@ -1711,7 +1724,8 @@ void guyStep(
                             facing[shot.targetId],
 
                             carry[shot.targetId],
-                            carrySize[shot.targetId],
+                            carryWidth[shot.targetId],
+                            carryHeight[shot.targetId],
                             carryDirection[shot.targetId],
 
                             guyArrivalList[shot.targetId].getTimeDirection(),
@@ -1768,7 +1782,8 @@ void guyStep(
                     facing[i],
 
                     carry[i],
-                    carrySize[i],
+                    carryWidth[i],
+                    carryHeight[i],
                     carryDirection[i],
 
                     guyArrivalList[i].getTimeDirection(),

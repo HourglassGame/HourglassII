@@ -1860,7 +1860,8 @@ namespace hg {
             guy.getFacing(),
 
             guy.getBoxCarrying(),
-            guy.getBoxCarrySize(),
+			guy.getBoxCarryWidth(),
+			guy.getBoxCarryHeight(),
             guy.getBoxCarryDirection(),
 
             guy.getTimeDirection(),
@@ -2136,7 +2137,8 @@ namespace hg {
                 guy.getFacing(),
 
                 guy.getBoxCarrying(),
-                guy.getBoxCarrySize(),
+                guy.getBoxCarryWidth(),
+                guy.getBoxCarryHeight(),
                 guy.getBoxCarryDirection(),
 
                 guy.getTimeDirection(),

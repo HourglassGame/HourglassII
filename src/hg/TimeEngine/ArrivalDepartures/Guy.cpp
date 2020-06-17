@@ -20,7 +20,8 @@ Guy::Guy(
     FacingDirection facing,
 
     BoxType boxCarrying,
-    int boxCarrySize,
+	int boxCarryWidth,
+	int boxCarryHeight,
     TimeDirection boxCarryDirection,
 
     TimeDirection timeDirection,
@@ -43,7 +44,8 @@ Guy::Guy(
         facing(facing),
 
         boxCarrying(boxCarrying),
-        boxCarrySize(boxCarrySize),
+        boxCarryWidth(boxCarryWidth),
+        boxCarryHeight(boxCarryHeight),
         boxCarryDirection(boxCarryDirection),
 
         timeDirection(timeDirection),

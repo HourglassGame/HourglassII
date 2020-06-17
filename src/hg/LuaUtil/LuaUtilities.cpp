@@ -316,8 +316,9 @@ InitialBox to<InitialBox>(lua_State *L, int index) {
             InitialBox(
                 Box(readField<int>(L, "x", index), readField<int>(L, "y", index),
                     readField<int>(L, "xspeed", index), readField<int>(L, "yspeed", index),
-                    readField<int>(L, "size", index), readField<int>(L, "size", index),
-                    BoxType::CRATE,
+                    readFieldWithDefault<int>(L, "width", index, readField<int>(L, "size", index)),
+					readFieldWithDefault<int>(L, "height", index, readField<int>(L, "size", index)),
+                    readFieldWithDefault<BoxType>(L, "boxType", index, BoxType::CRATE),
                     -1,
                     -1,
                     readField<TimeDirection>(L, "timeDirection", index)));
@@ -495,7 +496,8 @@ Guy to<Guy>(lua_State* L, int index) {
         Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
         BoxType const boxCarrying(readField<BoxType>(L, "boxCarrying", index));
-        int const boxCarrySize((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarrySize", index) : 0);
+        int const boxCarryWidth((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryWidth", index) : 0);
+        int const boxCarryHeight((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryHeight", index) : 0);
         TimeDirection const boxCarryDirection{(boxCarrying != BoxType::NONE) ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
         bool const timePaused(readField<bool>(L, "timePaused", index));
@@ -513,7 +515,8 @@ Guy to<Guy>(lua_State* L, int index) {
             std::move(pickups),
             facing,
             boxCarrying,
-            boxCarrySize,
+            boxCarryWidth,
+            boxCarryHeight,
             boxCarryDirection,
             timeDirection,
             timePaused);
@@ -540,7 +543,8 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
         Pickups pickups(readField<Pickups>(L, "pickups", index));
         FacingDirection const facing(readField<FacingDirection>(L, "facing", index));
         BoxType const boxCarrying(readFieldWithDefault<BoxType>(L, "boxCarrying", index, BoxType::NONE));
-        int const boxCarrySize((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarrySize", index) : 0);
+        int const boxCarryWidth((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryWidth", index) : 0);
+        int const boxCarryHeight((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryHeight", index) : 0);
         TimeDirection const boxCarryDirection{(boxCarrying != BoxType::NONE) ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
         bool const timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
@@ -560,7 +564,8 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
                     std::move(pickups),
                     facing,
                     boxCarrying,
-                    boxCarrySize,
+                    boxCarryWidth,
+                    boxCarryHeight,
                     boxCarryDirection,
                     timeDirection,
                     timePaused));
@@ -629,7 +634,7 @@ BoxType to<BoxType>(lua_State * const L, int const index) {
 }
 template<>
 bool isValid<BoxType>(lua_State * const L, int const index) {
-    return true;
+    return lua_isstring(L, index);
 }
 
 template<>

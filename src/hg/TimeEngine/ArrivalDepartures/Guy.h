@@ -162,7 +162,8 @@ public:
         FacingDirection facing,
 
         BoxType boxCarrying,
-        int boxCarrySize,
+        int boxCarryWidth,
+        int boxCarryHeight,
         TimeDirection boxCarryDirection,
 
         TimeDirection timeDirection,
@@ -190,7 +191,8 @@ public:
     FacingDirection getFacing()        const { return facing; }
 
     BoxType getBoxCarrying()  const { return boxCarrying; }
-    int getBoxCarrySize()  const { return boxCarrySize; }
+    int getBoxCarryWidth()    const { return boxCarryWidth; }
+    int getBoxCarryHeight()   const { return boxCarryHeight; }
     TimeDirection 
         getBoxCarryDirection() const { return boxCarryDirection; }
 
@@ -224,7 +226,8 @@ private:
     FacingDirection facing; // <- 0, -> 1
 
     BoxType boxCarrying;
-    int boxCarrySize;
+    int boxCarryWidth;
+    int boxCarryHeight;
     TimeDirection boxCarryDirection;
 
     TimeDirection timeDirection;
@@ -237,7 +240,7 @@ private:
             x, y, xspeed, yspeed, walkSpeed, jumpHold, action, width, height, jumpSpeed,
             illegalPortal, arrivalBasis, supported, supportedSpeed,
             pickups, facing,
-            boxCarrying, boxCarrySize, boxCarryDirection,
+            boxCarrying, boxCarryWidth, boxCarryHeight, boxCarryDirection,
             timeDirection, timePaused);
     }
 };
@@ -271,7 +274,8 @@ public:
     FacingDirection getFacing()        const { return guy_->getFacing();}
 
     BoxType getBoxCarrying()  const { return guy_->getBoxCarrying(); }
-    int getBoxCarrySize()  const { return guy_->getBoxCarrySize(); }
+    int getBoxCarryWidth()    const { return guy_->getBoxCarryWidth(); }
+    int getBoxCarryHeight()   const { return guy_->getBoxCarryHeight(); }
     TimeDirection 
         getBoxCarryDirection() const { return guy_->getBoxCarryDirection(); }
 

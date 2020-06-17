@@ -632,7 +632,7 @@ void pushGuy(lua_State *L, Guy const &guy)
     }
     lua_setfield(L, -2, "boxCarrying");
     if (guy.getBoxCarrying() != BoxType::NONE) {
-        lua_pushinteger(L, guy.getBoxCarrySize());
+        lua_pushinteger(L, guy.getBoxCarryWidth());
         lua_setfield(L, -2, "boxCarrySize");
         lua_pushstring(L, guy.getBoxCarryDirection() == TimeDirection::FORWARDS ? "forwards" : "reverse");
         lua_setfield(L, -2, "boxCarryDirection");
