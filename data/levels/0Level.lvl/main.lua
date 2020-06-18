@@ -1,5 +1,5 @@
 name = "Guy Killer"
-speedOfTime = 24
+speedOfTime = 1 --24
 timelineLength = 5000
 environment =
 {
@@ -33,14 +33,7 @@ initialGuy =
     arrivalTime = 0,
     arrival =
     {
-		-- Broken drop.
-        --x = 5.6 * 3200,
-        --y = 9 * 3200,
-		-- Broken platform.
-        --x = 10.6 * 3200,
-        --y = 9 * 3200,
-		-- Infinite Loop
-        x = 10 * 3200,
+        x = 7.2 * 3200,
         y = 9 * 3200,
         width = 1600,
         height = 3200,
@@ -76,8 +69,8 @@ initialArrivals =
     --{type = "box", x = 11 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
     --{type = "box", x = 10 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "reverse"},
 	
-    {type = "box", x = 8 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 8700, height = 2100, timeDirection = "forwards"},
-    --{type = "box", x = 6 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
+    {type = "box", x = 11 * 3200, y = 8.5 * 3200, xspeed = 0, yspeed = 0, width = 8700, height = 2100, timeDirection = "forwards"},
+    {type = "box", x = 10 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 8700, height = 2100, timeDirection = "forwards"},
 }
 triggerSystem =
 {

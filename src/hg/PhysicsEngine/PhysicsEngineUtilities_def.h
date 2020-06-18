@@ -779,7 +779,7 @@ void guyStep(
 
                     while (dropY >= gY + height - dropHeight && !droppable)
                     {
-                        std::cerr << "Try: " << gX << ", " << gY << "\n";
+                        //std::cerr << "Try: " << gX << ", " << gY << "\n";
                         // Track next attempted drop height
                         int nextDropY = gY + height - dropHeight - 1;
 
@@ -804,8 +804,8 @@ void guyStep(
                             rightBound = gX + width / 2;
                         }
 
-                        std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
-						std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
+						//std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
 						int initial_cy = dropY + dropHeight - (dropY + dropHeight) % env.wall.segmentSize(); // Top of lowest wall
 						if ((dropY + dropHeight) % env.wall.segmentSize() == 0) {
@@ -814,7 +814,7 @@ void guyStep(
 
                         // Narrow drop bounds with wall collision
                         int cx = leftBound;
-						std::cerr << "Check X " << cx << "\n";
+						//std::cerr << "Check X " << cx << "\n";
                         while (cx <= rightBound)
                         {
                             int cy = initial_cy; // Top of lowest wall
@@ -827,7 +827,6 @@ void guyStep(
 									if (topOfWall > nextDropY) {
 										nextDropY = topOfWall;
 									}
-									std::cerr << "topOfWall " << topOfWall << ", " << rightBound << "\n";
                                     goto rightBoundCheckDoubleBreak;
                                 }
                                 cy -= env.wall.segmentSize();
@@ -836,11 +835,11 @@ void guyStep(
                         }
                     rightBoundCheckDoubleBreak:;
 
-                        std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
-                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
+                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         cx = rightBound;
-						std::cerr << "Check X " << cx << "\n";
+						//std::cerr << "Check X " << cx << "\n";
                         while (cx >= leftBound)
                         {
 							int cy = initial_cy;
@@ -861,8 +860,8 @@ void guyStep(
                         }
                     leftBoundCheckDoubleBreak:;
 
-                        std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
-                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        //std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
+                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         // Check bounds imposed by platforms
                         if (rightBound >= leftBound)
@@ -909,7 +908,7 @@ void guyStep(
                             }
                         }
                         //std::cerr << "After Plat " << leftBound << ", " << rightBound << "\n";
-                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         // Check bounds imposed by boxes
                         if (rightBound >= leftBound)
@@ -929,8 +928,8 @@ void guyStep(
                                         by -= nextBox[j].object.getYspeed();
                                     }
 
-                                    std::cerr << "Index: " << j <<  ", x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
-                                    std::cerr << "Dropper x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropWidth <<  ", w: " << dropHeight << "\n";
+                                    //std::cerr << "Index: " << j <<  ", x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
+                                    //std::cerr << "Dropper x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropWidth <<  ", w: " << dropHeight << "\n";
                                     if (IntersectingRectanglesExclusive(
                                         bx, by, bw, bh,
                                         leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
@@ -958,7 +957,7 @@ void guyStep(
                             }
                         }
 
-                        std::cerr << "After Box " << leftBound << ", " << rightBound << " dropY " << nextDropY << "\n";
+                        //std::cerr << "After Box " << leftBound << ", " << rightBound << " dropY " << nextDropY << "\n";
 
                         droppable = rightBound >= leftBound;
 
@@ -991,7 +990,7 @@ void guyStep(
                                     dropX = leftBound;
                                 }
                             }
-                            std::cerr << "Dropped Box " << dropX << ", " << dropY << "\n";
+                            //std::cerr << "Dropped Box " << dropX << ", " << dropY << "\n";
 
                             // Add box
                             makeBoxAndTimeWithPortalsAndMutators(
@@ -2259,13 +2258,13 @@ template <
                                 {
                                     bottomLinks[i].push_back(j);
                                     topLinks[j].push_back(i);
-                                    //if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
+                                    if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
                                 }
                                 else // i below j
                                 {
                                     topLinks[i].push_back(j);
                                     bottomLinks[j].push_back(i);
-                                    //if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
+                                    if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
                                 }
                             }
                         }
@@ -2320,13 +2319,13 @@ template <
                             {
                                 rightLinks[i].push_back(j);
                                 leftLinks[j].push_back(i);
-                                //if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << i << " <-> " << j << "\n";
+                                if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << i << " <-> " << j << "\n";
                             }
                             else // i right of j
                             {
                                 leftLinks[i].push_back(j);
                                 rightLinks[j].push_back(i);
-                                //if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << j << " <-> " << i << "\n";
+                                if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << j << " <-> " << i << "\n";
                             }
                         }
                     }

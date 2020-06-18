@@ -104,6 +104,7 @@ bool explodeBoxesUpwards(
 {
     //int sign = -1;
     y[index] = boundSoFar;
+    //std::cerr << "Exploding Up " << index << ": " << boundSoFar << ", " << size[index] << "\n";
 
     bool subSquished = false;
 
