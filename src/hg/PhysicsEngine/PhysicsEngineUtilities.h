@@ -187,11 +187,12 @@ bool explodeBoxes(
 void recursiveBoxCollision(
     mp::std::vector<int> &majorAxis,
     mp::std::vector<int> const &minorAxis,
-    mp::std::vector<int> const &size,
+    mp::std::vector<int> const &majorSize,
+    mp::std::vector<int> const &minorSize,
     mp::std::vector<char> const &squished,
     mp::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
-    int subtractionNumber,
+    bool winTies,
     TimeDirection const boxDirection,
     mp::std::vector<Box> const &oldBoxList);
 
@@ -253,6 +254,7 @@ bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
 bool PointInRectangleSemiInclusive(int px, int py, int x, int y, int w, int h);
 bool PointInRectangleExclusive(int px, int py, int x, int y, int w, int h);
+bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesInclusiveCollisionOverlap(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, int buffer);

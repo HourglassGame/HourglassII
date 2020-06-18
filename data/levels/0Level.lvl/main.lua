@@ -33,7 +33,14 @@ initialGuy =
     arrivalTime = 0,
     arrival =
     {
-        x = 5.6 * 3200,
+		-- Broken drop.
+        --x = 5.6 * 3200,
+        --y = 9 * 3200,
+		-- Broken platform.
+        --x = 10.6 * 3200,
+        --y = 9 * 3200,
+		-- Infinite Loop
+        x = 10 * 3200,
         y = 9 * 3200,
         width = 1600,
         height = 3200,
@@ -64,12 +71,13 @@ initialArrivals =
     --{type = "box", x = 16.6 * 3200, y = 2 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
     --{type = "box", x = 16 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "reverse"},
     
-    {type = "box", x = 13.9 * 3200, y = 2 * 3200, xspeed = 0, yspeed = 0, width = 3000, height = 6400, timeDirection = "forwards"},
-    --{type = "box", x = 8 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 8700, height = 2100, timeDirection = "forwards"},
-    {type = "box", x = 9.5 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, width = 1600, height = 2400, timeDirection = "forwards"},
-    {type = "box", x = 11 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
-    {type = "box", x = 6 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
+    --{type = "box", x = 13.9 * 3200, y = 2 * 3200, xspeed = 0, yspeed = 0, width = 3000, height = 6400, timeDirection = "forwards"},
+    --{type = "box", x = 9.5 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, width = 1600, height = 2400, timeDirection = "forwards"},
+    --{type = "box", x = 11 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
     --{type = "box", x = 10 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "reverse"},
+	
+    {type = "box", x = 8 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 8700, height = 2100, timeDirection = "forwards"},
+    --{type = "box", x = 6 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
 }
 triggerSystem =
 {

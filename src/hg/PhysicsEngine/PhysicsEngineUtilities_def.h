@@ -779,7 +779,7 @@ void guyStep(
 
                     while (dropY >= gY + height - dropHeight && !droppable)
                     {
-                        //std::cerr << "Try: " << gX << ", " << gY << "\n";
+                        std::cerr << "Try: " << gX << ", " << gY << "\n";
                         // Track next attempted drop height
                         int nextDropY = gY + height - dropHeight - 1;
 
@@ -804,25 +804,30 @@ void guyStep(
                             rightBound = gX + width / 2;
                         }
 
-                        //std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
+                        std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
+						std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+
+						int initial_cy = dropY + dropHeight - (dropY + dropHeight) % env.wall.segmentSize(); // Top of lowest wall
+						if ((dropY + dropHeight) % env.wall.segmentSize() == 0) {
+							initial_cy -= env.wall.segmentSize();
+						}
 
                         // Narrow drop bounds with wall collision
-                        int cx = rightBound - rightBound % env.wall.segmentSize();
-                        int initial_cy = dropY + dropHeight - (dropY + dropHeight) % env.wall.segmentSize(); // Top of lowest wall
-                        if ((dropY + dropHeight) % env.wall.segmentSize() == 0) {
-                            initial_cy -= env.wall.segmentSize();
-                        }
-                        while (cx < rightBound + dropWidth)
+                        int cx = leftBound;
+						std::cerr << "Check X " << cx << "\n";
+                        while (cx <= rightBound)
                         {
-                            int cy = initial_cy;
-                            while (cy >= dropY)
+                            int cy = initial_cy; // Top of lowest wall
+                            while (cy >= dropY - env.wall.segmentSize() + 1)
                             {
-                                if (env.wall.at(cx, cy))
+                                if (env.wall.at(cx + dropWidth, cy))
                                 {
-                                    rightBound = cx - dropWidth;
-                                    if (cy - dropHeight > nextDropY) {
-                                        nextDropY = cy - dropHeight;
-                                    }
+                                    rightBound = (cx + dropWidth) - ((cx + dropWidth) % env.wall.segmentSize()) - dropWidth;
+									int topOfWall = cy - dropHeight;
+									if (topOfWall > nextDropY) {
+										nextDropY = topOfWall;
+									}
+									std::cerr << "topOfWall " << topOfWall << ", " << rightBound << "\n";
                                     goto rightBoundCheckDoubleBreak;
                                 }
                                 cy -= env.wall.segmentSize();
@@ -831,20 +836,22 @@ void guyStep(
                         }
                     rightBoundCheckDoubleBreak:;
 
-                        //std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
-                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
+                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
-                        cx = (leftBound + dropWidth) - (leftBound + dropWidth) % env.wall.segmentSize() - 1;
-                        while (cx > leftBound)
+                        cx = rightBound;
+						std::cerr << "Check X " << cx << "\n";
+                        while (cx >= leftBound)
                         {
-                            int cy = initial_cy;
-                            while (cy >= dropY)
+							int cy = initial_cy;
+                            while (cy >= dropY - env.wall.segmentSize() + 1)
                             {
                                 if (env.wall.at(cx, cy))
                                 {
-                                    leftBound = cx + 1;
-                                    if (cy - dropHeight > nextDropY) {
-                                        nextDropY = cy - dropHeight;
+                                    leftBound = cx + env.wall.segmentSize() - (cx % env.wall.segmentSize());
+									int topOfWall = cy - dropHeight;
+                                    if (topOfWall > nextDropY) {
+                                        nextDropY = topOfWall;
                                     }
                                     goto leftBoundCheckDoubleBreak;
                                 }
@@ -854,8 +861,8 @@ void guyStep(
                         }
                     leftBoundCheckDoubleBreak:;
 
-                        //std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
-                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        std::cerr << "After Wall Left " << leftBound << ", " << rightBound << "\n";
+                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         // Check bounds imposed by platforms
                         if (rightBound >= leftBound)
@@ -902,7 +909,7 @@ void guyStep(
                             }
                         }
                         //std::cerr << "After Plat " << leftBound << ", " << rightBound << "\n";
-                        //std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+                        std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
                         // Check bounds imposed by boxes
                         if (rightBound >= leftBound)
@@ -922,8 +929,8 @@ void guyStep(
                                         by -= nextBox[j].object.getYspeed();
                                     }
 
-                                    //std::cerr << "x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
-                                    //std::cerr << "x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropWidth <<  ", w: " << dropHeight << "\n";
+                                    std::cerr << "Index: " << j <<  ", x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
+                                    std::cerr << "Dropper x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropWidth <<  ", w: " << dropHeight << "\n";
                                     if (IntersectingRectanglesExclusive(
                                         bx, by, bw, bh,
                                         leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
@@ -951,7 +958,7 @@ void guyStep(
                             }
                         }
 
-                        //std::cerr << "After Box " << leftBound << ", " << rightBound << "\n";
+                        std::cerr << "After Box " << leftBound << ", " << rightBound << " dropY " << nextDropY << "\n";
 
                         droppable = rightBound >= leftBound;
 
@@ -984,7 +991,7 @@ void guyStep(
                                     dropX = leftBound;
                                 }
                             }
-                            //std::cerr << "Dropped Box " << dropX << ", " << dropY << "\n";
+                            std::cerr << "Dropped Box " << dropX << ", " << dropY << "\n";
 
                             // Add box
                             makeBoxAndTimeWithPortalsAndMutators(
@@ -1818,16 +1825,22 @@ template <
 
     bool thereAreStillThingsToDo(true); // if a box moves thereAreStillThingsToDo
     bool firstTimeThrough(true);
-    //unsigned int count(0);
-    while (thereAreStillThingsToDo) {
 
-        /*
-        for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
-        {
-        std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
-        << ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getSize() << ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
-        }
-        */
+    //unsigned int count(0);
+	//if (boost::size(oldBoxList) > 1) {
+	//	for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
+	//	{
+	//		std::cerr << "Box(" << oldBoxList[i].getX() << ", " << oldBoxList[i].getY() << ", " << oldBoxList[i].getXspeed()
+	//			<< ", " << oldBoxList[i].getYspeed() << ", " << oldBoxList[i].getWidth() << ", " << oldBoxList[i].getHeight()
+	//			<< ", -1, " << oldBoxList[i].getArrivalBasis() << ", FORWARDS),\n";
+	//	}
+	//}
+
+    while (thereAreStillThingsToDo) {
+		//if (boost::size(oldBoxList) > 1) {
+		//	std::cerr << "Count " << count << "\n";
+		//	++count;
+		//}
 
         mp::std::vector<std::pair<bool, int>> top(oldBoxList.size(), pool);
         mp::std::vector<std::pair<bool, int>> bottom(oldBoxList.size(), pool);
@@ -1846,7 +1859,7 @@ template <
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection) {
 
-                //std::cerr << "Box " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+                //if (boost::size(oldBoxList) > 1) std::cerr << "Box Start " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
                 //** Check inside a wall, velocity independent which is why it is so complex **//
                 // intial keep-it-inside-the-level step
                 if (x[i] <= 0 || y[i] <= 0 || x[i] + width[i] > env.wall.roomWidth() || y[i] + height[i] > env.wall.roomHeight())
@@ -1876,7 +1889,7 @@ template <
                 // it is attempted to be moved out of.
                 if (false) {
                 TryAgainWithMoreInterpolation:
-                    //std::cerr << "Interpolate " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+                    //if (boost::size(oldBoxList) > 1) std::cerr << "Interpolate " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
                     if (std::abs(x[i] - xTemp[i]) < std::abs(y[i] - yTemp[i])) {
                         int newY;
                         if (y[i] < yTemp[i])
@@ -2136,7 +2149,7 @@ template <
                     {
                         if (platform.getCollisionType() == CollisionType::PLATFORM)
                         {
-                            if (IsPointInVerticalQuadrant(xTemp[i] + width[i] / 2, yTemp[i] + height[i] / 2, pX, pY, pWidth, pHeight))
+							if (IsRectangleRelationVertical(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight, false))
                             {
                                 if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) // box above platform
                                 {
@@ -2181,7 +2194,7 @@ template <
 						int bHeight = oldBoxList[j].getHeight();
                         if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], bX, bY, bWidth, bHeight))
                         {
-                            if (IsPointInVerticalQuadrant(xTemp[i] + width[i] / 2, yTemp[i] + height[i] / 2, bX, bY, bWidth, bHeight))
+                            if (IsRectangleRelationVertical(x[i], y[i], width[i], height[i], bX, bY, bWidth, bHeight, false))
                             {
                                 if (yTemp[i] + height[i] / 2 < bY + bHeight / 2) // on top of reverse box
                                 {
@@ -2225,6 +2238,7 @@ template <
                 //std::cerr << "Wall " << i << ": " << x[i] << ", " << y[i] << " " << (right[i].first ? "> " : "  ") << (top[i].first ? "^ " : "  ") << (left[i].first ? "< " : "  ") << (bottom[i].first ? "v\n" : " \n");
                 xPreBox[i] = x[i];
                 yPreBox[i] = y[i];
+                //if (boost::size(oldBoxList) > 1) std::cerr << "Box Store " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
             }
         }
 
@@ -2239,19 +2253,19 @@ template <
                     {
                         if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j]))
                         {
-                            if (std::abs(xTemp[i] + width[i] / 2 - x[j] - width[j] / 2) < std::abs(yTemp[i] + height[i] / 2 - y[j] - height[j] / 2)) // top or bot
+                            if (IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
                             {
                                 if (yTemp[i] < y[j]) // i above j
                                 {
                                     bottomLinks[i].push_back(j);
                                     topLinks[j].push_back(i);
-                                    //std::cerr << "Vert link " << i << " <-> " << j << "\n";
+                                    //if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
                                 }
                                 else // i below j
                                 {
                                     topLinks[i].push_back(j);
                                     bottomLinks[j].push_back(i);
-                                    //std::cerr << "Vert link " << j << " <-> " << i << "\n";
+                                    //if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
                                 }
                             }
                         }
@@ -2300,19 +2314,19 @@ template <
                         && IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j])
                         && oldBoxList[j].getTimeDirection() == boxDirection)
                     {
-                        if (std::abs(xTemp[i] + width[i] / 2 - x[j] - width[j] / 2) >= std::abs(yTemp[i] + height[i] / 2 - y[j] - height[j] / 2)) // left or right
+                        if (!IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
                         {
                             if (xTemp[i] < x[j]) // i left of j
                             {
                                 rightLinks[i].push_back(j);
                                 leftLinks[j].push_back(i);
-                                //std::cerr << "Hori link " << i << " <-> " << j << "\n";
+                                //if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << i << " <-> " << j << "\n";
                             }
                             else // i right of j
                             {
                                 leftLinks[i].push_back(j);
                                 rightLinks[j].push_back(i);
-                                //std::cerr << "Hori link " << j << " <-> " << i << "\n";
+                                //if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << j << " <-> " << i << "\n";
                             }
                         }
                     }
@@ -2359,9 +2373,14 @@ template <
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 mp::std::vector<std::size_t> pass(pool);
-                recursiveBoxCollision(y, x, height, squished, pass, i, 0, boxDirection, oldBoxList);
+                recursiveBoxCollision(y, x, height, width, squished, pass, i, false, boxDirection, oldBoxList);
             }
         }
+
+        //for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
+		//{
+        //    if (boost::size(oldBoxList) > 1) std::cerr << "Box postVert " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+		//}
 
         // Collide them horizontally
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
@@ -2369,9 +2388,14 @@ template <
             if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
             {
                 mp::std::vector<std::size_t> pass(pool);
-                recursiveBoxCollision(x, y, width, squished, pass, i, 1, boxDirection, oldBoxList);
+                recursiveBoxCollision(x, y, width, height, squished, pass, i, true, boxDirection, oldBoxList);
             }
         }
+
+        //for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
+		//{
+        //    if (boost::size(oldBoxList) > 1) std::cerr << "Box postHor " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+		//}
 
         // If anything moved then rerun box collision until nothing moves.
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)

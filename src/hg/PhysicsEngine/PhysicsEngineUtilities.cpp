@@ -139,11 +139,12 @@ bool explodeBoxesUpwards(
 void recursiveBoxCollision(
     mp::std::vector<int> &majorAxis,
     mp::std::vector<int> const &minorAxis,
-    mp::std::vector<int> const &size,
+    mp::std::vector<int> const &majorSize,
+    mp::std::vector<int> const &minorSize,
     mp::std::vector<char> const &squished,
     mp::std::vector<std::size_t> &boxesSoFar,
     std::size_t index,
-    int subtractionNumber, // horizontal wins a tie
+    bool winTies, // horizontal wins a tie
     TimeDirection const boxDirection,
     mp::std::vector<Box> const &oldBoxList)
 {
@@ -153,15 +154,15 @@ void recursiveBoxCollision(
     {
         if (i != index && !squished[i] && oldBoxList[i].getTimeDirection() == boxDirection &&
             IntersectingRectanglesExclusive(
-                majorAxis[index], minorAxis[index], size[index], size[index],
-                majorAxis[i], minorAxis[i], size[i], size[i]) &&
-            std::abs(majorAxis[index] - majorAxis[i]) > std::abs(minorAxis[index] - minorAxis[i]) - subtractionNumber)
+                majorAxis[index], minorAxis[index], majorSize[index], minorSize[index],
+                majorAxis[i], minorAxis[i], majorSize[i], minorSize[i]) &&
+            IsRectangleRelationVertical(majorAxis[index], minorAxis[index], majorSize[index], minorSize[index], majorAxis[i], minorAxis[i], majorSize[i], minorSize[i], winTies))
         {
             //std::cerr << "Collide link " << majorAxis[index] << ", " << size[index] << ", " << majorAxis[i] << ", " << size[i] << "\n";
-            int overlap = -(majorAxis[index] + size[index] - majorAxis[i]); // index must move UP
+            int overlap = -(majorAxis[index] + majorSize[index] - majorAxis[i]); // index must move UP
             if (majorAxis[i] < majorAxis[index])
             {
-                overlap = majorAxis[i] + size[i] - majorAxis[index];  // index must move DOWN
+                overlap = majorAxis[i] + majorSize[i] - majorAxis[index];  // index must move DOWN
             }
 
             int indexMovement = overlap/(static_cast<int>(boxesSoFar.size()) + 1);
@@ -171,7 +172,7 @@ void recursiveBoxCollision(
                 majorAxis[boxesSoFar[j]] = majorAxis[boxesSoFar[j]] + indexMovement;
             }
             majorAxis[i] = majorAxis[i] + iMovement;
-            recursiveBoxCollision(majorAxis, minorAxis, size, squished, boxesSoFar, i, subtractionNumber, boxDirection, oldBoxList);
+            recursiveBoxCollision(majorAxis, minorAxis, majorSize, minorSize, squished, boxesSoFar, i, winTies, boxDirection, oldBoxList);
         }
     }
 }
@@ -818,6 +819,90 @@ bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h)
             return std::abs(x - (x1 + w/2)) < std::abs(y - (y1 + h - w/2));
         }
     }
+}
+
+bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies)
+{
+	// Extend non-square rectangles to be square by extending away from the other rectangle.
+	if (x1 + w1 / 2 > x2 + w2 / 2) {
+		if (y1 + h1 / 2 > y2 + h2 / 2) {
+			// rec_1 down and right of rec_2
+			if (w1 > h1) {
+				h1 = w1;
+			}
+			else {
+				w1 = h1;
+			}
+			if (w2 > h2) {
+				y2 = y2 - (w2 - h2);
+				h2 = w2;
+			}
+			else {
+				x2 = x2 - (h2 - w2);
+				w2 = h2;
+			}
+		}
+		else {
+			// rec_1 up and right of rec_2
+			if (w1 > h1) {
+				y1 = y1 - (w1 - h1);
+				h1 = w1;
+			}
+			else {
+				w1 = h1;
+			}
+			if (w2 > h2) {
+				h2 = w2;
+			}
+			else {
+				x2 = x2 - (h2 - w2);
+				w2 = h2;
+			}
+		}
+	}
+	else {
+		if (y1 + h1 / 2 > y2 + h2 / 2) {
+			// rec_1 down and left of rec_2
+			if (w1 > h1) {
+				h1 = w1;
+			}
+			else {
+				x1 = x1 - (h1 - w1);
+				w1 = h1;
+			}
+			if (w2 > h2) {
+				y2 = y2 - (w2 - h2);
+				h2 = w2;
+			}
+			else {
+				w2 = h2;
+			}
+		}
+		else {
+			// rec_1 up and left of rec_2
+			if (w1 > h1) {
+				y1 = y1 - (w1 - h1);
+				h1 = w1;
+			}
+			else {
+				x1 = x1 - (h1 - w1);
+				w1 = h1;
+			}
+			if (w2 > h2) {
+				h2 = w2;
+			}
+			else {
+				w2 = h2;
+			}
+		}
+	}
+	
+	// The relation of two squares is vertical if the vertical difference of their midpoints
+	// is greater than the horiziontal difference.
+	if (vertWinTies) {
+		return (std::abs(y1 + h1 / 2 - (y2 + h2 / 2)) >= std::abs(x1 + w1 / 2 - (x2 + w2 / 2)));
+	}
+	return (std::abs(y1 + h1 / 2 - (y2 + h2 / 2)) > std::abs(x1 + w1 / 2 - (x2 + w2 / 2)));
 }
 
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
