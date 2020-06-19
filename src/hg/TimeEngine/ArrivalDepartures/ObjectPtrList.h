@@ -18,11 +18,11 @@ namespace hg {
 template <typename ObjectConstPtr>
 struct GetBase final
 {
-    typename ObjectConstPtr::base_type const &
-        operator()(ObjectConstPtr ptr) const
-    {
-        return ptr.get();
-    }
+	typename ObjectConstPtr::base_type const &
+		operator()(ObjectConstPtr ptr) const
+	{
+		return ptr.get();
+	}
 };
 //Holds pointers to objects.
 //These objects are not owned by ObjectPtrList, so care is needed to avoid getting invalid pointers.
@@ -32,30 +32,30 @@ template<typename ListTypes>
 class ObjectPtrList final
 {
 public:
-    ObjectPtrList();
+	ObjectPtrList();
 
-    template<typename ObjectT>
-    boost::transformed_range<
-        GetBase<typename ConstPtr_of<ObjectT>::type>,
-        typename vector_of<typename ConstPtr_of<ObjectT>::type>::type const> getList() const;
+	template<typename ObjectT>
+	boost::transformed_range<
+		GetBase<typename ConstPtr_of<ObjectT>::type>,
+		typename vector_of<typename ConstPtr_of<ObjectT>::type>::type const> getList() const;
 
-    void add(ObjectList<ListTypes> const &o);
+	void add(ObjectList<ListTypes> const &o);
 
-    template<typename SinglePassRange>
-    void addRange(SinglePassRange const &toAdd);
+	template<typename SinglePassRange>
+	void addRange(SinglePassRange const &toAdd);
 
-    //MUST CALL this to make lists sorted (required for deterministic physics)
-    void sort();
+	//MUST CALL this to make lists sorted (required for deterministic physics)
+	void sort();
 
-    void swap(ObjectPtrList &o);
+	void swap(ObjectPtrList &o);
 
 private:
-    typedef typename
-    boost::mpl::transform<
-        ListTypes,
-        vector_of<
-            ConstPtr_of<boost::mpl::_1> > >::type ListType;
-    ListType list;
+	typedef typename
+	boost::mpl::transform<
+		ListTypes,
+		vector_of<
+			ConstPtr_of<boost::mpl::_1> > >::type ListType;
+	ListType list;
 };
 
 template<typename ListTypes>
@@ -66,23 +66,23 @@ template<typename ObjectT>
 boost::transformed_range<GetBase<typename ConstPtr_of<ObjectT>::type>, typename vector_of<typename ConstPtr_of<ObjectT>::type>::type const>
 ObjectPtrList<ListTypes>::getList() const
 {
-    return 
-        boost::fusion::deref(
-            boost::fusion::find<
-                typename vector_of<typename ConstPtr_of<ObjectT>::type >::type
-            >(list))
-        | boost::adaptors::transformed(GetBase<typename ConstPtr_of<ObjectT>::type>());
+	return 
+		boost::fusion::deref(
+			boost::fusion::find<
+				typename vector_of<typename ConstPtr_of<ObjectT>::type >::type
+			>(list))
+		| boost::adaptors::transformed(GetBase<typename ConstPtr_of<ObjectT>::type>());
 }
 template<typename ListTypes>
 template<typename SinglePassRange>
 void ObjectPtrList<ListTypes>::addRange(SinglePassRange const &toAdd)
 {
-    boost::push_back(
-        boost::fusion::deref(
-            boost::fusion::find<
-                typename vector_of<typename ConstPtr_of<typename boost::range_value<SinglePassRange>::type>::type>::type
-            >(list)),
-        toAdd);
+	boost::push_back(
+		boost::fusion::deref(
+			boost::fusion::find<
+				typename vector_of<typename ConstPtr_of<typename boost::range_value<SinglePassRange>::type>::type>::type
+			>(list)),
+		toAdd);
 }
 
 }

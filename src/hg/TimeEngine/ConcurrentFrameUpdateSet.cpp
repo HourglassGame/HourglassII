@@ -2,24 +2,24 @@
 
 namespace hg {
 ConcurrentFrameUpdateSet::ConcurrentFrameUpdateSet() :
-        threadLocalMap_()
+		threadLocalMap_()
 {
 }
 void ConcurrentFrameUpdateSet::add(FrameUpdateSet const &toAdd)
 {
-    threadLocalMap_.local().add(toAdd);
+	threadLocalMap_.local().add(toAdd);
 }
 void ConcurrentFrameUpdateSet::add(Frame *frameToAdd)
 {
-    FrameUpdateSet toAdd;
-    toAdd.add(frameToAdd);
-    threadLocalMap_.local().add(toAdd);
+	FrameUpdateSet toAdd;
+	toAdd.add(frameToAdd);
+	threadLocalMap_.local().add(toAdd);
 }
 
 FrameUpdateSet ConcurrentFrameUpdateSet::merge()
 {
-    FrameUpdateSet retv;
-    threadLocalMap_.combine_each([&](FrameUpdateSet const &toAdd){retv.add(toAdd);});
-    return retv;
+	FrameUpdateSet retv;
+	threadLocalMap_.combine_each([&](FrameUpdateSet const &toAdd){retv.add(toAdd);});
+	return retv;
 }
 }

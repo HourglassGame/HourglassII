@@ -31,46 +31,46 @@ class Frame;
 //(I have not done conclusive tests by any means).
 class FrameUpdateSet final : boost::equality_comparable<FrameUpdateSet> {
 public:
-    typedef std::vector<Frame *> SetType;
+	typedef std::vector<Frame *> SetType;
 
-    FrameUpdateSet();
+	FrameUpdateSet();
 
-    void add(Frame *frame);
-    void add(FrameUpdateSet const &o);
-    void swap(FrameUpdateSet &o) noexcept;
-
-
-
-    //Privacy leak here, it is an error to use the iterators as anything more than a BidirectionalIterator
-    //I should define my own iterator class, but I can't be bothered right now
-    typedef SetType::iterator iterator;
-    typedef SetType::const_iterator const_iterator;
-    typedef SetType::value_type value_type;
-    typedef SetType::reference reference;
-    typedef SetType::reference pointer;
+	void add(Frame *frame);
+	void add(FrameUpdateSet const &o);
+	void swap(FrameUpdateSet &o) noexcept;
 
 
-    //Lazily made into set when these are called.
-    //WARNING: although these are const, they may
-    //modify the FrameUpdateSet if any non-const member
-    //has been called since the previous call to make_set().
-    //This means that if you are sharing a FrameUpdateSet then you must
-    //ensure that it is a set, or ensure that all accesses are serialized
-    //(even to these const members)
-    const_iterator begin() const;
-    const_iterator end() const;
-    iterator begin();
-    iterator end();
-    std::size_t size() const;
-    bool empty() const;
-    //make_set() may be used to force the vector to be made into a set.
-    //The only visible result of this is that it eliminates race conditions
-    //in the lazy evaluation of the set.
-    void make_set() const;
-    bool operator==(FrameUpdateSet const &o);
+
+	//Privacy leak here, it is an error to use the iterators as anything more than a BidirectionalIterator
+	//I should define my own iterator class, but I can't be bothered right now
+	typedef SetType::iterator iterator;
+	typedef SetType::const_iterator const_iterator;
+	typedef SetType::value_type value_type;
+	typedef SetType::reference reference;
+	typedef SetType::reference pointer;
+
+
+	//Lazily made into set when these are called.
+	//WARNING: although these are const, they may
+	//modify the FrameUpdateSet if any non-const member
+	//has been called since the previous call to make_set().
+	//This means that if you are sharing a FrameUpdateSet then you must
+	//ensure that it is a set, or ensure that all accesses are serialized
+	//(even to these const members)
+	const_iterator begin() const;
+	const_iterator end() const;
+	iterator begin();
+	iterator end();
+	std::size_t size() const;
+	bool empty() const;
+	//make_set() may be used to force the vector to be made into a set.
+	//The only visible result of this is that it eliminates race conditions
+	//in the lazy evaluation of the set.
+	void make_set() const;
+	bool operator==(FrameUpdateSet const &o);
 private:
-    mutable bool isSet_;
-    mutable SetType updateSet_;
+	mutable bool isSet_;
+	mutable SetType updateSet_;
 };
 
 }

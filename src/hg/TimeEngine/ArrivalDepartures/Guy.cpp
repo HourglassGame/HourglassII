@@ -2,63 +2,63 @@
 #include <limits>
 namespace hg {
 Guy::Guy(
-    std::size_t index,
-    int x, int y,
-    int xspeed, int yspeed,
-    int walkSpeed,
-    int jumpHold,
-    GuyAction action,
-    int width, int height,
-    int jumpSpeed,
-    
-    int illegalPortal,
-    int arrivalBasis,
-    int supported,
-    int supportedSpeed,
+	std::size_t index,
+	int x, int y,
+	int xspeed, int yspeed,
+	int walkSpeed,
+	int jumpHold,
+	GuyAction action,
+	int width, int height,
+	int jumpSpeed,
+	
+	int illegalPortal,
+	int arrivalBasis,
+	int supported,
+	int supportedSpeed,
 
-    Pickups pickups,
-    FacingDirection facing,
+	Pickups pickups,
+	FacingDirection facing,
 
-    BoxType boxCarrying,
+	BoxType boxCarrying,
 	int boxCarryWidth,
 	int boxCarryHeight,
-    TimeDirection boxCarryDirection,
+	TimeDirection boxCarryDirection,
 
-    TimeDirection timeDirection,
-    bool timePaused) :
-        index(index),
-        x(x), y(y),
-        xspeed(xspeed), yspeed(yspeed),
-        walkSpeed(walkSpeed),
-        jumpHold(jumpHold),
-        action(action),
-        width(width), height(height),
-        jumpSpeed(jumpSpeed),
+	TimeDirection timeDirection,
+	bool timePaused) :
+		index(index),
+		x(x), y(y),
+		xspeed(xspeed), yspeed(yspeed),
+		walkSpeed(walkSpeed),
+		jumpHold(jumpHold),
+		action(action),
+		width(width), height(height),
+		jumpSpeed(jumpSpeed),
 
-        illegalPortal(illegalPortal),
-        arrivalBasis(arrivalBasis),
-        supported(supported),
-        supportedSpeed(supportedSpeed),
+		illegalPortal(illegalPortal),
+		arrivalBasis(arrivalBasis),
+		supported(supported),
+		supportedSpeed(supportedSpeed),
 
-        pickups(std::move(pickups)),
-        facing(facing),
+		pickups(std::move(pickups)),
+		facing(facing),
 
-        boxCarrying(boxCarrying),
-        boxCarryWidth(boxCarryWidth),
-        boxCarryHeight(boxCarryHeight),
-        boxCarryDirection(boxCarryDirection),
+		boxCarrying(boxCarrying),
+		boxCarryWidth(boxCarryWidth),
+		boxCarryHeight(boxCarryHeight),
+		boxCarryDirection(boxCarryDirection),
 
-        timeDirection(timeDirection),
-        timePaused(timePaused)
+		timeDirection(timeDirection),
+		timePaused(timePaused)
 {
 }
 
 bool Guy::operator==(Guy const &o) const
 {
-    return equality_tuple() == o.equality_tuple();
+	return equality_tuple() == o.equality_tuple();
 }
 bool Guy::operator<(Guy const &o) const
 {
-    return index < o.index;
+	return index < o.index;
 }
 }//namespace hg

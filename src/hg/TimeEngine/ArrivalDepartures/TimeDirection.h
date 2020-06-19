@@ -3,9 +3,9 @@
 #include <ostream>
 namespace hg {
 enum class TimeDirection : int {
-    FORWARDS = 1,
-    INVALID = 0,
-    REVERSE = -1
+	FORWARDS = 1,
+	INVALID = 0,
+	REVERSE = -1
 };
 
 TimeDirection &operator*=(TimeDirection &receiver, int multiple);

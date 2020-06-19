@@ -21,34 +21,34 @@ template<typename ListTypes>
 class ObjectList final : boost::equality_comparable<ObjectList<ListTypes> >
 {
 public:
-    ObjectList();
-    template<typename ObjectT>
-    typename vector_of<ObjectT>::type const &getList() const;
-    
-    template<typename ObjectT>
-    void add(ObjectT const &toCopy);
-    
-    template<typename ObjectRangeT>
-    void addRange(ObjectRangeT const &toAdd);
+	ObjectList();
+	template<typename ObjectT>
+	typename vector_of<ObjectT>::type const &getList() const;
+	
+	template<typename ObjectT>
+	void add(ObjectT const &toCopy);
+	
+	template<typename ObjectRangeT>
+	void addRange(ObjectRangeT const &toAdd);
 
-    void add(ObjectList const &o);
-    //MUST CALL this to make lists sorted (required for operator==)
-    void sort();
+	void add(ObjectList const &o);
+	//MUST CALL this to make lists sorted (required for operator==)
+	void sort();
 
-    void swap(ObjectList &o);
+	void swap(ObjectList &o);
 
-    bool operator==(ObjectList const &o) const;
-    bool isEmpty() const;
+	bool operator==(ObjectList const &o) const;
+	bool isEmpty() const;
 private:
-    friend class ObjectPtrList<ListTypes>;
+	friend class ObjectPtrList<ListTypes>;
 #ifndef NDEBUG
-    bool sorted;
+	bool sorted;
 #endif //NDEBUG
-    typedef typename
-    boost::mpl::transform<
-        ListTypes,
-        vector_of<boost::mpl::_1>>::type ListType;
-    ListType list;
+	typedef typename
+	boost::mpl::transform<
+		ListTypes,
+		vector_of<boost::mpl::_1>>::type ListType;
+	ListType list;
 };
 template<typename ObjectT>
 void swap(ObjectList<ObjectT>& l, ObjectList<ObjectT>& r);
@@ -56,27 +56,27 @@ template<typename ListTypes>
 template<typename ObjectT>
 void ObjectList<ListTypes>::add(ObjectT const &toCopy)
 {
-    boost::fusion::deref(
-        boost::fusion::find<
-            typename vector_of<ObjectT>::type
-        >(list)
-    ).push_back(toCopy);
+	boost::fusion::deref(
+		boost::fusion::find<
+			typename vector_of<ObjectT>::type
+		>(list)
+	).push_back(toCopy);
 #ifndef NDEBUG
-    sorted = false;
+	sorted = false;
 #endif //NDEBUG
 }
 template<typename ListTypes>
 template<typename ObjectRangeT>
 void ObjectList<ListTypes>::addRange(ObjectRangeT const &toAdd)
 {
-    boost::push_back(
-        boost::fusion::deref(
-            boost::fusion::find<
-                typename vector_of<typename boost::range_value<ObjectRangeT>::type >::type
-            >(list)),
-        toAdd);
+	boost::push_back(
+		boost::fusion::deref(
+			boost::fusion::find<
+				typename vector_of<typename boost::range_value<ObjectRangeT>::type >::type
+			>(list)),
+		toAdd);
 #ifndef NDEBUG
-    sorted = false;
+	sorted = false;
 #endif //NDEBUG
 }
 
@@ -87,10 +87,10 @@ template<typename ListTypes>
 template<typename ObjectT>
 typename vector_of<ObjectT>::type const &ObjectList<ListTypes>::getList() const
 {
-    return boost::fusion::deref(
-        boost::fusion::find<
-            typename vector_of<ObjectT>::type
-        >(list));
+	return boost::fusion::deref(
+		boost::fusion::find<
+			typename vector_of<ObjectT>::type
+		>(list));
 }
 }
 #endif //HG_DEPARTURE_LIST_H

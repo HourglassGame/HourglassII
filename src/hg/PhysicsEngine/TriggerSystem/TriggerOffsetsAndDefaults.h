@@ -4,7 +4,7 @@
 #include <utility>
 namespace hg {
 struct TriggerOffsetsAndDefaults final {
-    std::vector<std::pair<int,std::vector<int>>> value;
+	std::vector<std::pair<int,std::vector<int>>> value;
 };
 }
 #endif //HG_TRIGGER_OFFSETS_AND_DEFAULTS_H

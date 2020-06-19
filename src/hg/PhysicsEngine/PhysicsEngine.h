@@ -24,41 +24,41 @@ namespace hg {
 class PhysicsEngine final
 {
 public:
-    PhysicsEngine(
-        Environment const &env,
-        TriggerSystem const &newTriggerSystem);
+	PhysicsEngine(
+		Environment const &env,
+		TriggerSystem const &newTriggerSystem);
 
-    typedef mt::std::map<Frame*, ObjectList<Normal>> FrameDepartureT;
+	typedef mt::std::map<Frame*, ObjectList<Normal>> FrameDepartureT;
 
-    struct PhysicsReturnT
-    {
-        FrameDepartureT departures;
-        FrameView view;
-        mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
-        int speedOfTime;
-        int paradoxPressure;
-        bool currentWinFrame;
-    };
+	struct PhysicsReturnT
+	{
+		FrameDepartureT departures;
+		FrameView view;
+		mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
+		int speedOfTime;
+		int paradoxPressure;
+		bool currentWinFrame;
+	};
 
-    // executes frame and returns departures
-    PhysicsEngine::PhysicsReturnT executeFrame(
-        ObjectPtrList<Normal> const &arrivals,
-        Frame *frame,
-        std::vector<GuyInput> const &playerInput,
-        OperationInterrupter &interrupter) const;
+	// executes frame and returns departures
+	PhysicsEngine::PhysicsReturnT executeFrame(
+		ObjectPtrList<Normal> const &arrivals,
+		Frame *frame,
+		std::vector<GuyInput> const &playerInput,
+		OperationInterrupter &interrupter) const;
 private:
-    Environment env_;
-    TriggerSystem triggerSystem_;
-    //TODO: Allow memory_pool to be copied, to avoid use of copy_as_new_ptr?
+	Environment env_;
+	TriggerSystem triggerSystem_;
+	//TODO: Allow memory_pool to be copied, to avoid use of copy_as_new_ptr?
 #if USE_POOL_ALLOCATOR
-    copy_as_new_ptr<ThreadLocal<memory_pool<user_allocator_tbb_alloc>>> shared_pool_;
+	copy_as_new_ptr<ThreadLocal<memory_pool<user_allocator_tbb_alloc>>> shared_pool_;
 #endif
 };
 inline void swap(PhysicsEngine &l, PhysicsEngine &r)
 {
-    PhysicsEngine temp(boost::move(l));
-    l = boost::move(r);
-    r = boost::move(temp);
+	PhysicsEngine temp(boost::move(l));
+	l = boost::move(r);
+	r = boost::move(temp);
 }
 }//namespace hg
 #endif //HG_PHYSICS_ENGINE_H
