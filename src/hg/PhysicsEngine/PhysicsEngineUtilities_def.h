@@ -2143,6 +2143,7 @@ template <
                         pX -= platform.getXspeed() + platform.getPrevXspeed();
                         pY -= platform.getYspeed() + platform.getPrevYspeed();
                     }
+					//std::cerr << "Platform y - height: " <<  (pY - height[i]) << "\n";
 
                     if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], pX, pY, pWidth, pHeight))
                     {
@@ -2154,6 +2155,7 @@ template <
                                 {
                                     y[i] = pY - height[i];
                                     bottom[i] = std::make_pair(true, y[i]);
+									//std::cerr << "Box platform hit " << i << ": " << y[i] << "\n";
                                     if (firstTimeThrough)
                                     {
                                         x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
@@ -2254,17 +2256,17 @@ template <
                         {
                             if (IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
                             {
-                                if (yTemp[i] < y[j]) // i above j
+                                if (y[i] + height[i]/2 < y[j] + height[j]/2) // i above j
                                 {
                                     bottomLinks[i].push_back(j);
                                     topLinks[j].push_back(i);
-                                    if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
+                                    //if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
                                 }
                                 else // i below j
                                 {
                                     topLinks[i].push_back(j);
                                     bottomLinks[j].push_back(i);
-                                    if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
+                                    //if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
                                 }
                             }
                         }
@@ -2272,6 +2274,10 @@ template <
                 }
             }
         }
+        //for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
+		//{
+        //    if (boost::size(oldBoxList) > 1) std::cerr << "Box post Vertlink " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+		//}
 
         // propagate through vertical collision links to reposition and explode
         mp::std::vector<char> toBeSquished(oldBoxList.size(), pool);
@@ -2287,11 +2293,17 @@ template <
                 }
                 if (top[i].first) // Push boxes down
                 {
+					//std::cerr << "explodeBoxes" << "\n";
                     explodeBoxes(y, height, bottomLinks, toBeSquished, bottom, i, top[i].second, 1);
                 }
             }
         }
 
+        //for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
+		//{
+        //    if (boost::size(oldBoxList) > 1) std::cerr << "Box postExplode vert " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+		//}
+		
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {
             if (toBeSquished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
@@ -2315,17 +2327,17 @@ template <
                     {
                         if (!IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
                         {
-                            if (xTemp[i] < x[j]) // i left of j
+                            if (x[i] + width[i]/2 < x[j] + width[j]/2) // i left of j
                             {
                                 rightLinks[i].push_back(j);
                                 leftLinks[j].push_back(i);
-                                if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << i << " <-> " << j << "\n";
+                                //if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << i << " <-> " << j << "\n";
                             }
                             else // i right of j
                             {
                                 leftLinks[i].push_back(j);
                                 rightLinks[j].push_back(i);
-                                if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << j << " <-> " << i << "\n";
+                                //if (boost::size(oldBoxList) > 1) std::cerr << "Hori link " << j << " <-> " << i << "\n";
                             }
                         }
                     }
@@ -2356,6 +2368,11 @@ template <
                 }
             }
         }
+
+        //for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
+		//{
+        //    if (boost::size(oldBoxList) > 1) std::cerr << "Box postExplode hor " << i << ": " << x[i] << ", " << xTemp[i] << ", " << y[i] << ", " << yTemp[i] << "\n";
+		//}
 
         for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
         {

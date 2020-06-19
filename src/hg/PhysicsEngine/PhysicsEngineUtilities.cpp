@@ -157,7 +157,8 @@ void recursiveBoxCollision(
             IntersectingRectanglesExclusive(
                 majorAxis[index], minorAxis[index], majorSize[index], minorSize[index],
                 majorAxis[i], minorAxis[i], majorSize[i], minorSize[i]) &&
-            IsRectangleRelationVertical(majorAxis[index], minorAxis[index], majorSize[index], minorSize[index], majorAxis[i], minorAxis[i], majorSize[i], minorSize[i], winTies))
+			// Find vertical collision with the major axis as the vertical component. winTies is used to make one of the axies win ties.
+            IsRectangleRelationVertical(minorAxis[index], majorAxis[index], minorSize[index], majorSize[index], minorAxis[i], majorAxis[i], minorSize[i], majorSize[i], winTies))
         {
             //std::cerr << "Collide link " << majorAxis[index] << ", " << size[index] << ", " << majorAxis[i] << ", " << size[i] << "\n";
             int overlap = -(majorAxis[index] + majorSize[index] - majorAxis[i]); // index must move UP
