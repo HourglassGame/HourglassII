@@ -930,24 +930,26 @@ void guyStep(
 									}
 
 									//std::cerr << "Index: " << j <<  ", x: " << bx << ", y: " << by << ", w: " << bw << ", h: " << bh << "\n";
-									//std::cerr << "Dropper x: " << leftBound << ", y: " << dropY << ", w: " << rightBound - leftBound + dropWidth <<  ", w: " << dropHeight << "\n";
+									//std::cerr << "Dropper l: " << leftBound << ", r: " << rightBound << ", y: " << dropY << ", w: " << dropWidth <<  ", h: " << dropHeight << "\n";
 									if (IntersectingRectanglesExclusive(
 										bx, by, bw, bh,
 										leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
 									{
-										if (bx + bw >= leftBound + dropWidth && bx <= rightBound + dropWidth)
+										//std::cerr << "rightChange: " << (bx < rightBound + dropWidth && (bx + bw > rightBound + dropWidth || (rightBound + dropWidth - (bx + bw)) < dropWidth)) << "\n";
+										if (bx < rightBound + dropWidth && (bx + bw > rightBound + dropWidth || (rightBound + dropWidth - (bx + bw)) < dropWidth))
 										{
 											rightBound = bx - dropWidth;
 											if (by - dropHeight > nextDropY) {
 												nextDropY = by - dropHeight;
 											}
 										}
-										if (bx <= rightBound && bx + bw >= leftBound)
+										//std::cerr << "leftChange: " << (bx + bw > leftBound && (leftBound > bx || (bx - leftBound) < dropWidth)) << "\n";
+										if (bx + bw > leftBound && (leftBound > bx || (bx - leftBound) < dropWidth))
 										{
+											leftBound = bx + bw;
 											if (by - dropHeight > nextDropY) {
 												nextDropY = by - dropHeight;
 											}
-											leftBound = bx + bw;
 										}
 										if (rightBound < leftBound)
 										{
