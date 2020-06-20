@@ -807,22 +807,21 @@ void guyStep(
 						//std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
 						//std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
-						int initial_cy = dropY + dropHeight - (dropY + dropHeight) % env.wall.segmentSize(); // Top of lowest wall
-						if ((dropY + dropHeight) % env.wall.segmentSize() == 0) {
-							initial_cy -= env.wall.segmentSize();
-						}
+						int initial_cy = (dropY + dropHeight - 1) - (dropY + dropHeight - 1) % env.wall.segmentSize(); // Top of lowest wall
 
 						// Narrow drop bounds with wall collision
-						int cx = leftBound;
+						int cx = (rightBound) - (rightBound) % env.wall.segmentSize();
+						int bound_cx = (rightBound + dropWidth - 1) - ((rightBound + dropWidth - 1) % env.wall.segmentSize());
+						
 						//std::cerr << "Check X " << cx << "\n";
-						while (cx <= rightBound)
+						while (cx <= bound_cx)
 						{
 							int cy = initial_cy; // Top of lowest wall
 							while (cy >= dropY - env.wall.segmentSize() + 1)
 							{
-								if (env.wall.at(cx + dropWidth, cy))
+								if (env.wall.at(cx, cy))
 								{
-									rightBound = (cx + dropWidth) - ((cx + dropWidth) % env.wall.segmentSize()) - dropWidth;
+									rightBound = cx - dropWidth;
 									int topOfWall = cy - dropHeight;
 									if (topOfWall > nextDropY) {
 										nextDropY = topOfWall;
@@ -838,16 +837,18 @@ void guyStep(
 						//std::cerr << "After Wall Right " << leftBound << ", " << rightBound << "\n";
 						//std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
-						cx = rightBound;
+						cx = (leftBound + dropWidth - 1) - ((leftBound + dropWidth - 1) % env.wall.segmentSize());
+						bound_cx = (leftBound) - ((leftBound) % env.wall.segmentSize());
+						
 						//std::cerr << "Check X " << cx << "\n";
-						while (cx >= leftBound)
+						while (cx >= bound_cx)
 						{
 							int cy = initial_cy;
 							while (cy >= dropY - env.wall.segmentSize() + 1)
 							{
 								if (env.wall.at(cx, cy))
 								{
-									leftBound = cx + env.wall.segmentSize() - (cx % env.wall.segmentSize());
+									leftBound = cx + env.wall.segmentSize();
 									int topOfWall = cy - dropHeight;
 									if (topOfWall > nextDropY) {
 										nextDropY = topOfWall;

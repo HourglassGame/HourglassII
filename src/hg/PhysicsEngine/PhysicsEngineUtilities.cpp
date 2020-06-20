@@ -186,7 +186,7 @@ bool wallAtInclusive(Environment const &env, int x, int y, int w, int h)
 #endif
 bool wallAtExclusive(Wall const &wall, int x, int y, int w, int h)
 {
-	return wall.at(x+1, y+1) || wall.at(x+w-1, y+1) || wall.at(x+1, y+h-1) || wall.at(x+w-1, y+h-1);
+	return wall.at(x, y) || wall.at(x+w-1, y) || wall.at(x, y+h-1) || wall.at(x+w-1, y+h-1);
 }
 bool wallAtExclusive(Environment const &env, int x, int y, int w, int h)
 {
