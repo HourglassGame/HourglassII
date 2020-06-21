@@ -10,7 +10,7 @@ namespace hg {
     inline static const int GUY_SPEED = 230;
     inline static const int GUY_HOR_ACCEL = 40;
     inline static const int GUY_HOR_SLOW = 70;
-    inline static const int GUY_JUMP_SPEED_DEFAULT = 320;
+    inline static const int GUY_JUMP_SPEED_DEFAULT = 322;
     inline static const int GUY_JUMP_HOLD_MAX = 16;
     inline static const int GUY_JUMP_HOLD_MIN = 5;
     inline static const int GUY_JUMP_HOLD_SPEED = -16;
