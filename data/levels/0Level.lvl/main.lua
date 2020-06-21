@@ -44,7 +44,7 @@ initialGuy =
 		boxCarryHeight = 4800,
 		boxCarryDirection = "forwards",
         timeDirection = "forwards",
-        pickups = {timeJump = 0, timeReverse = 0, timeGun = 1000},
+        pickups = {timeJump = 1000, timeReverse = 1000, timeGun = 1000},
     }
 }
 initialArrivals =
@@ -66,7 +66,7 @@ initialArrivals =
     
     {type = "box", x = 13.9 * 3200, y = 2 * 3200, xspeed = 0, yspeed = 0, width = 3000, height = 6400, timeDirection = "forwards"},
     {type = "box", x = 9.5 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, width = 1600, height = 2400, timeDirection = "forwards"},
-    {type = "box", x = 11 * 3200, y = 3 * 3200, xspeed = 0, yspeed = 0, size = 2000, timeDirection = "forwards"},
+    {type = "box", boxType = "balloon", x = 11 * 3200, y = 3 * 3200, xspeed = 0, yspeed = 0, width = 2400, height = 4800, timeDirection = "forwards"},
     --{type = "box", x = 10 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "reverse"},
 	
     {type = "box", x = 11 * 3200, y = 8.5 * 3200, xspeed = 0, yspeed = 0, width = 8700, height = 2100, timeDirection = "forwards"},

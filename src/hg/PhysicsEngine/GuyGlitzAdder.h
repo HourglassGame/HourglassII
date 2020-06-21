@@ -1,5 +1,6 @@
 #ifndef HG_GUY_GLITZ_ADDER_H
 #define HG_GUY_GLITZ_ADDER_H
+#include "hg/PhysicsEngine/GlitzAdderUtil.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
 #include "hg/TimeEngine/Glitz/LineGlitz.h"
 #include "hg/TimeEngine/Glitz/Glitz.h"
@@ -105,8 +106,7 @@ public:
 				forwardsGlitz->push_back(
 					Glitz(mt::std::make_unique<ImageGlitz>(
 							600,
-							boxCarryDirection == TimeDirection::FORWARDS ?
-							  "global.box" : "global.box_r",
+							getBoxImage(boxCarrying, boxCarryDirection),
 							hmid - boxCarryWidth/2,
 							top - boxCarryHeight,
 							boxCarryWidth,
@@ -145,8 +145,7 @@ public:
 				reverseGlitz->push_back(
 					Glitz(mt::std::make_unique<ImageGlitz>(
 							600,
-							boxCarryDirection == TimeDirection::REVERSE ?
-							  "global.box" : "global.box_r",
+							getBoxImage(boxCarrying, boxCarryDirection * TimeDirection::REVERSE),
 							hmid - boxCarryWidth/2,
 							top - boxCarryHeight,
 							boxCarryWidth,

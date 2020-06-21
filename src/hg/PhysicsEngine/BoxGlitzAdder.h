@@ -1,5 +1,6 @@
 #ifndef HG_BOX_GLITZ_ADDER_H
 #define HG_BOX_GLITZ_ADDER_H
+#include "hg/PhysicsEngine/GlitzAdderUtil.h"
 #include "hg/TimeEngine/Glitz/Glitz.h"
 #include "hg/TimeEngine/Glitz/ImageGlitz.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
@@ -27,12 +28,12 @@ public:
 		TimeDirection timeDirection) const
 	{
 		Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				500, mt::std::string("global.box"),
+				500, getBoxImage(boxType, TimeDirection::FORWARDS),
 				position.a, position.b,
 				width, height));
 
 		Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				500, mt::std::string("global.box_r"),
+				500, getBoxImage(boxType, TimeDirection::REVERSE),
 				position.a, position.b,
 				width, height));
 		

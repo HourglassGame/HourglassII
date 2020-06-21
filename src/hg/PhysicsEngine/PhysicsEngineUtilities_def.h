@@ -302,7 +302,8 @@ void guyMovement(
 		}
 		else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
 		{
-			if (guyArrivalList[i].getBoxCarrying() != BoxType::NONE) {
+			BoxType carryType = guyArrivalList[i].getBoxCarrying();
+			if (carryType != BoxType::NONE && carryType != BoxType::BALLOON) {
 				yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
 			}
 			else {
@@ -672,10 +673,10 @@ void guyStep(
 		}
 
 		if (yspeed[i] > 0) {
-			yspeed[i] += hg::UP_GRAVITY;
+			yspeed[i] += (guyArrivalList[i].getBoxCarrying() == BoxType::BALLOON ? hg::UP_GRAVITY/2 : hg::UP_GRAVITY);
 		}
 		else {
-			yspeed[i] += hg::DOWN_GRAVITY;
+			yspeed[i] += (guyArrivalList[i].getBoxCarrying() == BoxType::BALLOON ? hg::DOWN_GRAVITY/2 : hg::DOWN_GRAVITY);
 		}
 
 		// Floaty behaviour
