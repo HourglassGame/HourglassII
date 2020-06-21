@@ -1043,6 +1043,12 @@ void guyStep(
 					//CAREFUL - loop modifies nextBox
 					auto nextBoxIt(nextBox.begin()), nextBoxEnd(nextBox.end());
 					auto nextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
+					
+					BoxType foundBoxType = BoxType::NONE;
+					int foundBoxDistance = 10000000;
+					auto foundBoxIt(nextBox.begin());
+					auto foundNextBoxNormalDepartureIt(nextBoxNormalDeparture.begin());
+					
 					for (; nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
 					{
 						if (*nextBoxNormalDepartureIt)
@@ -1061,18 +1067,27 @@ void guyStep(
 							//The differences in bounds are intentional
 							if ((x[i] <= boxX + boxWidth) && (x[i] + width >= boxX) && (y[i] < boxY + boxHeight) && (y[i] + height >= boxY + boxHeight))
 							{
-								carry[i] = nextBoxIt->object.getBoxType();
-								carryWidth[i] = boxWidth;
-								carryHeight[i] = boxHeight;
-								carryDirection[i] = nextBoxIt->object.getTimeDirection();
-								nextBoxIt = nextBox.erase(nextBoxIt);
-								nextBoxNormalDepartureIt = nextBoxNormalDeparture.erase(nextBoxNormalDepartureIt);
-								nextBoxEnd = nextBox.end();
-
-								justPickedUpBox[i] = true;
-								break;
+								int dist = ManhattanDistanceToRectangle(x[i] + width/2, y[i] + height, boxX, boxY, boxWidth, boxHeight);
+								//std::cerr << "Dist Box " << dist << ", boxWidth " << boxWidth << "\n";
+								if (dist < foundBoxDistance) {
+									foundBoxType = nextBoxIt->object.getBoxType();
+									foundBoxDistance = dist;
+									foundBoxIt = nextBoxIt;
+									foundNextBoxNormalDepartureIt = nextBoxNormalDepartureIt;
+								}
 							}
 						}
+					}
+
+					if (foundBoxType != BoxType::NONE) {
+						carry[i] = foundBoxIt->object.getBoxType();
+						carryWidth[i] = foundBoxIt->object.getWidth();
+						carryHeight[i] = foundBoxIt->object.getHeight();
+						carryDirection[i] = foundBoxIt->object.getTimeDirection();
+						justPickedUpBox[i] = true;
+
+						nextBox.erase(foundBoxIt);
+						nextBoxNormalDeparture.erase(foundNextBoxNormalDepartureIt);
 					}
 				}
 				else

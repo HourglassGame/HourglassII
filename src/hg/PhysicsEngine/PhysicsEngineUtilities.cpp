@@ -823,6 +823,48 @@ bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h)
 	}
 }
 
+int ManhattanDistance(int x1, int y1, int x2, int y2)
+{
+	return std::abs(x1 - x2) + std::abs(y1 - y2);
+}
+
+int ManhattanDistanceToRectangle(int px, int py, int x, int y, int w, int h)
+{
+	if (px < x) {
+		if (py < y) {
+			return ManhattanDistance(px, py, x, y);
+		}
+		else if (py <= y + h) {
+			return std::abs(px - x);
+		}
+		else {
+			return ManhattanDistance(px, py, x, y + h);
+		}
+	}
+	else if (px <= x + w) {
+		if (py < y) {
+			return std::abs(py - y);
+		}
+		else if (py <= y + h) {
+			return -1*std::min(std::min(std::abs(px - x), std::abs(px - (x + w))), std::min(std::abs(py - y), std::abs(py - (y + h))));
+		}
+		else {
+			return std::abs(py - (y + h));
+		}
+	}
+	else {
+		if (py < y) {
+			return ManhattanDistance(px, py, x + w, y);
+		}
+		else if (py <= y + h) {
+			return std::abs(px - (x + w));
+		}
+		else {
+			return ManhattanDistance(px, py, x + w, y + h);
+		}
+	}
+}
+
 bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies)
 {
 	// Extend non-square rectangles to be square by extending away from the other rectangle.
