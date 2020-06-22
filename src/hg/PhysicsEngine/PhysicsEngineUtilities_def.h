@@ -778,9 +778,6 @@ void guyStep(
 					}
 					if (carry[i] == BoxType::BALLOON) {
 						startDropHeight = startDropHeight - height;
-						if (dropHeight > height) {
-							startDropHeight = startDropHeight = startDropHeight - (dropHeight - height);
-						}
 					}
 					int dropY = startDropHeight;
 					//std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
@@ -789,7 +786,7 @@ void guyStep(
 					{
 						//std::cerr << "Try: " << gX << ", " << gY << "\n";
 						// Track next attempted drop height
-						int nextDropY = gY + height - dropHeight - 1;
+						int nextDropY = startDropHeight - dropHeight - 1;
 
 						// Initialize bounds on drops based on movement direction
 						int leftBound, rightBound;
@@ -813,7 +810,7 @@ void guyStep(
 						}
 
 						//std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
-						//std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+						std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
 						int initial_cy = (dropY + dropHeight - 1) - (dropY + dropHeight - 1) % env.wall.segmentSize(); // Top of lowest wall
 
