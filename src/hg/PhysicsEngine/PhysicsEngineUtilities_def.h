@@ -810,7 +810,7 @@ void guyStep(
 						}
 
 						//std::cerr << "Initial Bound " << leftBound << ", " << rightBound << "\n";
-						std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
+						//std::cerr << "Drop Y " << dropY << ", " << nextDropY << "\n";
 
 						int initial_cy = (dropY + dropHeight - 1) - (dropY + dropHeight - 1) % env.wall.segmentSize(); // Top of lowest wall
 

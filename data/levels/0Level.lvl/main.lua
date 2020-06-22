@@ -1,5 +1,5 @@
 name = "Guy Killer"
-speedOfTime = 1 --24
+speedOfTime = 24
 timelineLength = 5000
 environment =
 {
