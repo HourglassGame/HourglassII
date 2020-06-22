@@ -2125,7 +2125,6 @@ template <
 						// x.
 						y[i] = ((y[i] + height[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - height[i];
 						bottom[i] = std::make_pair(true, y[i]);
-						x[i] = xTemp[i];
 					}
 					else
 					{
@@ -2143,13 +2142,20 @@ template <
 					{
 						y[i] = ((y[i] + height[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - height[i];
 						bottom[i] = std::make_pair(true, y[i]);
-						x[i] = xTemp[i];
 					}
 					else
 					{
 						x[i] = ((x[i] + width[i] - 1) / env.wall.segmentSize())*env.wall.segmentSize() - width[i];
 						right[i] = std::make_pair(true, x[i]);
 					}
+				}
+
+				// Stop sideways movement if the floor was hit (ceiling for balloons)
+				if (bottom[i].first && boxType[i] != BoxType::BALLOON) {
+					x[i] = xTemp[i];
+				}
+				if (top[i].first && boxType[i] == BoxType::BALLOON) {
+					x[i] = xTemp[i];
 				}
 
 				// Check inside a platform
@@ -2179,7 +2185,7 @@ template <
 									y[i] = pY - height[i];
 									bottom[i] = std::make_pair(true, y[i]);
 									//std::cerr << "Box platform hit " << i << ": " << y[i] << "\n";
-									if (firstTimeThrough)
+									if (firstTimeThrough && boxType[i] != BoxType::BALLOON)
 									{
 										x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
 									}
@@ -2188,6 +2194,10 @@ template <
 								{
 									y[i] = pY + pHeight;
 									top[i] = std::make_pair(true, y[i]);
+									if (firstTimeThrough && boxType[i] == BoxType::BALLOON)
+									{
+										x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+									}
 								}
 							}
 							else // left or right
