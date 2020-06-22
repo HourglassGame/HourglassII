@@ -5,6 +5,7 @@
 #include "PhysicsEngine.h"
 #include "BoxGlitzAdder.h"
 #include "GuyGlitzAdder.h"
+#include "BoxUtilities.h"
 #include "hg/PhysicsEngine/TriggerSystem/TriggerSystem.h"
 
 #include "hg/TimeEngine/ArrivalDepartures/InputList.h"
@@ -190,6 +191,7 @@ void recursiveBoxCollision(
 	mp::std::vector<int> const &majorSize,
 	mp::std::vector<int> const &minorSize,
 	mp::std::vector<char> const &squished,
+	mp::std::vector<BoxType> const& boxType,
 	mp::std::vector<std::size_t> &boxesSoFar,
 	std::size_t index,
 	bool winTies,

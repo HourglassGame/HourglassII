@@ -327,7 +327,7 @@ void guyMovement(
 		// box collision (only occurs in Y direction)
 		for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 		{
-			if (nextBoxNormalDeparture[j])
+			if (nextBoxNormalDeparture[j] && boxCollidable(nextBox[j].object.getBoxType()))
 			{
 				int boxX(nextBox[j].object.getX());
 				int boxY(nextBox[j].object.getY());
@@ -351,7 +351,7 @@ void guyMovement(
 		// Forwards box collision (only occurs in Y direction)
 		for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 		{
-			if (nextBoxNormalDeparture[j] && nextBox[j].object.getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
+			if (nextBoxNormalDeparture[j] && boxCollidable(nextBox[j].object.getBoxType()) && nextBox[j].object.getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
 			{
 				int boxX(nextBox[j].object.getX());
 				int boxY(nextBox[j].object.getY());
@@ -374,7 +374,7 @@ void guyMovement(
 		// Reverse box collision
 		for (std::size_t j(0), jsize(boxArrivalList.size()); j < jsize; ++j)
 		{
-			if (boxArrivalList[j].getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+			if (boxCollidable(nextBox[j].object.getBoxType()) && boxArrivalList[j].getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
 			{
 				int boxXspeed(boxArrivalList[j].getXspeed());
 				int boxYspeed(boxArrivalList[j].getYspeed());
@@ -673,10 +673,10 @@ void guyStep(
 		}
 
 		if (yspeed[i] > 0) {
-			yspeed[i] += (guyArrivalList[i].getBoxCarrying() == BoxType::BALLOON ? hg::UP_GRAVITY/2 : hg::UP_GRAVITY);
+			yspeed[i] += getBoxCarryGravity(hg::UP_GRAVITY, guyArrivalList[i].getBoxCarrying(), guyArrivalList[i].getBoxCarryHeight());
 		}
 		else {
-			yspeed[i] += (guyArrivalList[i].getBoxCarrying() == BoxType::BALLOON ? hg::DOWN_GRAVITY/2 : hg::DOWN_GRAVITY);
+			yspeed[i] += getBoxCarryGravity(hg::DOWN_GRAVITY, guyArrivalList[i].getBoxCarrying(), guyArrivalList[i].getBoxCarryHeight());
 		}
 
 		// Floaty behaviour
@@ -770,15 +770,22 @@ void guyStep(
 
 					int gX(x[i]);
 					int gY(y[i]);
-					int dropY = gY + height - 1; // -1 prevents jumping off dropped boxes while falling.
+					int startDropHeight = gY + height - 1; // -1 prevents jumping off dropped boxes while falling.
 					if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
 						gX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
 						gY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed();
-						dropY = gY + height; // -1 causes paradox issues when dropping off cliffs..
+						startDropHeight = gY + height; // -1 causes paradox issues when dropping off cliffs..
 					}
+					if (carry[i] == BoxType::BALLOON) {
+						startDropHeight = startDropHeight - height;
+						if (dropHeight > height) {
+							startDropHeight = startDropHeight = startDropHeight - (dropHeight - height);
+						}
+					}
+					int dropY = startDropHeight;
 					//std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 
-					while (dropY >= gY + height - dropHeight && !droppable)
+					while (dropY >= startDropHeight - dropHeight && !droppable)
 					{
 						//std::cerr << "Try: " << gX << ", " << gY << "\n";
 						// Track next attempted drop height
@@ -917,7 +924,7 @@ void guyStep(
 						{
 							for (std::size_t j(0), jsize(nextBox.size()); j < jsize; ++j)
 							{
-								if (nextBoxNormalDeparture[j])
+								if (nextBoxNormalDeparture[j] && boxCollidable(carry[i]) && boxCollidable(nextBox[j].object.getBoxType()))
 								{
 									int bx = nextBox[j].object.getX();
 									int by = nextBox[j].object.getY();
@@ -1065,12 +1072,11 @@ void guyStep(
 
 							int boxWidth = nextBoxIt->object.getWidth();
 							int boxHeight = nextBoxIt->object.getHeight();
-							//The differences in bounds are intentional
-							if ((x[i] <= boxX + boxWidth) && (x[i] + width >= boxX) && (y[i] < boxY + boxHeight) && (y[i] + height >= boxY + boxHeight))
+							if (getBoxPickupCollision(x[i], y[i], width, height, boxX, boxY, boxWidth, boxHeight, nextBoxIt->object.getBoxType()))
 							{
 								int dist = ManhattanDistanceToRectangle(x[i] + width/2, y[i] + height, boxX, boxY, boxWidth, boxHeight);
 								//std::cerr << "Dist Box " << dist << ", boxWidth " << boxWidth << "\n";
-								if (dist < foundBoxDistance) {
+								if (dist < foundBoxDistance || getBoxPickupPriority(foundBoxType, nextBoxIt->object.getBoxType())) {
 									foundBoxType = nextBoxIt->object.getBoxType();
 									foundBoxDistance = dist;
 									foundBoxIt = nextBoxIt;
@@ -1975,7 +1981,7 @@ template <
 								w00 = env.wall.at(x[i] + width[i] - xOff, y[i] + height[i] - yOff);
 							}
 							if (!w10) {
-								w10 = env.wall.at(x[i] + yOff, y[i] + height[i] - yOff);
+								w10 = env.wall.at(x[i] + xOff, y[i] + height[i] - yOff);
 							}
 							if (!w01) {
 								w01 = env.wall.at(x[i] + width[i] - xOff, y[i] + yOff);
@@ -1985,6 +1991,7 @@ template <
 							}
 						}
 					}
+					//std::cerr << "w00 " << w00 << ", w10 " << w10 << ", w01 " << w01 << ", w11 " << w11 << "\n";
 				}
 
 				// collide with walls based on corner status
@@ -2206,7 +2213,8 @@ template <
 				// Collide with reverse boxes
 				for (std::size_t j(0), jsize(boost::size(oldBoxList)); j < jsize; ++j)
 				{
-					if (oldBoxList[j].getTimeDirection() != boxDirection)
+					if (boxCollidable(boxType[i]) && boxCollidable(oldBoxList[j].getBoxType())
+						&& oldBoxList[j].getTimeDirection() != boxDirection)
 					{
 						int bX = oldBoxList[j].getX() - oldBoxList[j].getXspeed();
 						int bY = oldBoxList[j].getY() - oldBoxList[j].getYspeed();
@@ -2265,28 +2273,26 @@ template <
 		// Now make the map of vertical collisions
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				for (std::size_t j(0); j < i; ++j)
 				{
-					if (j != i && !squished[j] && oldBoxList[j].getTimeDirection() == boxDirection)
-					{
-						if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j]))
+					if (j != i && !squished[j] && boxCollidable(boxType[j])
+							&& oldBoxList[j].getTimeDirection() == boxDirection
+							&& IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j])) {
+						if (IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
 						{
-							if (IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
+							if (y[i] + height[i]/2 < y[j] + height[j]/2) // i above j
 							{
-								if (y[i] + height[i]/2 < y[j] + height[j]/2) // i above j
-								{
-									bottomLinks[i].push_back(j);
-									topLinks[j].push_back(i);
-									//if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
-								}
-								else // i below j
-								{
-									topLinks[i].push_back(j);
-									bottomLinks[j].push_back(i);
-									//if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
-								}
+								bottomLinks[i].push_back(j);
+								topLinks[j].push_back(i);
+								//if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << i << " <-> " << j << "\n";
+							}
+							else // i below j
+							{
+								topLinks[i].push_back(j);
+								bottomLinks[j].push_back(i);
+								//if (boost::size(oldBoxList) > 1) std::cerr << "Vert link " << j << " <-> " << i << "\n";
 							}
 						}
 					}
@@ -2303,7 +2309,7 @@ template <
 
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				if (bottom[i].first) // Push boxes up
 				{
@@ -2335,14 +2341,13 @@ template <
 		// Now make the map of horizontal collisions
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				for (unsigned j = 0; j < i; ++j)
 				{
-					if (j != i
-						&& !squished[j]
-						&& IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j])
-						&& oldBoxList[j].getTimeDirection() == boxDirection)
+					if (j != i && !squished[j] && boxCollidable(boxType[j])
+						&& oldBoxList[j].getTimeDirection() == boxDirection
+						&& IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j]))
 					{
 						if (!IsRectangleRelationVertical(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j], false))
 						{
@@ -2375,7 +2380,7 @@ template <
 
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				if (right[i].first)
 				{
@@ -2405,10 +2410,10 @@ template <
 		// Collide boxes vertically which are still overlapping. These will be the unbounded ones
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				mp::std::vector<std::size_t> pass(pool);
-				recursiveBoxCollision(y, x, height, width, squished, pass, i, false, boxDirection, oldBoxList);
+				recursiveBoxCollision(y, x, height, width, squished, boxType, pass, i, false, boxDirection, oldBoxList);
 			}
 		}
 
@@ -2420,10 +2425,10 @@ template <
 		// Collide them horizontally
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				mp::std::vector<std::size_t> pass(pool);
-				recursiveBoxCollision(x, y, width, height, squished, pass, i, true, boxDirection, oldBoxList);
+				recursiveBoxCollision(x, y, width, height, squished, boxType, pass, i, true, boxDirection, oldBoxList);
 			}
 		}
 
@@ -2520,7 +2525,7 @@ template <
 		}
 		else
 		{
-			ArrivalLocation const &relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
+			ArrivalLocation const& relativePortal(arrivalLocations[oldBoxList[i].getArrivalBasis()]);
 			int relx = relativePortal.getX() + oldBoxList[i].getX();
 			int rely = relativePortal.getY() + oldBoxList[i].getY();
 			if (relativePortal.getTimeDirection() * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
@@ -2541,13 +2546,19 @@ template <
 		width[i] = oldBoxList[i].getWidth();
 		height[i] = oldBoxList[i].getHeight();
 		boxType[i] = oldBoxList[i].getBoxType();
-		if (oldBoxList[i].getYspeed() > 0) {
-			y[i] += hg::UP_GRAVITY;
+
+		if (oldBoxList[i].getBoxType() == BoxType::BALLOON) {
+			y[i] -= hg::UP_GRAVITY / 2;
 		}
 		else {
-			y[i] += hg::DOWN_GRAVITY;
+			if (oldBoxList[i].getYspeed() > 0) {
+				y[i] += hg::UP_GRAVITY;
+			}
+			else {
+				y[i] += hg::DOWN_GRAVITY;
+			}
 		}
-		y[i] += -oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() / hg::VERT_AIR_RESISTANCE;
+		y[i] += -oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() / getBoxVertAirResistence(oldBoxList[i].getBoxType());
 	}
 
 	// Destroy boxes that are overlapping with platforms and walls
@@ -2604,9 +2615,9 @@ template <
 		mp::std::vector<char> toBeSquished(oldBoxList.size(), pool);
 	
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
-			if (!squished[i]) {
+			if (boxCollidable(boxType[i]) && !squished[i]) {
 				for (std::size_t j(0); j < i; ++j) {
-					if (!squished[j]) {
+					if (boxCollidable(boxType[j]) && !squished[j]) {
 						if (IntersectingRectanglesExclusive(
 							xTemp[i], yTemp[i], width[i], height[i],
 							xTemp[j], yTemp[j], width[j], height[j]))

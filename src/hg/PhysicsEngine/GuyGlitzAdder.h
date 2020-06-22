@@ -103,14 +103,20 @@ public:
 
 			if (boxCarrying != BoxType::NONE)
 			{
+				int x = hmid - boxCarryWidth/2;
+				int y = top - boxCarryHeight;
+				int w = boxCarryWidth;
+				int h = boxCarryHeight;
+				if (boxCarrying == BoxType::BALLOON) {
+					x = x - w/5;
+					w = w * 7 / 5;
+					h = h * 7 / 5;
+				}
 				forwardsGlitz->push_back(
 					Glitz(mt::std::make_unique<ImageGlitz>(
 							600,
 							getBoxImage(boxCarrying, boxCarryDirection),
-							hmid - boxCarryWidth/2,
-							top - boxCarryHeight,
-							boxCarryWidth,
-							boxCarryHeight),
+							x, y, w, h),
 						paused ? static_cast<int>(guyIndex) : -1));
 			}
 			
@@ -142,14 +148,20 @@ public:
 				paused ? static_cast<int>(guyIndex) : -1));
 			if (boxCarrying != BoxType::NONE)
 			{
+				int x = hmid - boxCarryWidth/2;
+				int y = top - boxCarryHeight;
+				int w = boxCarryWidth;
+				int h = boxCarryHeight;
+				if (boxCarrying == BoxType::BALLOON) {
+					x = x - w/5;
+					w = w * 7 / 5;
+					h = h * 7 / 5;
+				}
 				reverseGlitz->push_back(
 					Glitz(mt::std::make_unique<ImageGlitz>(
 							600,
 							getBoxImage(boxCarrying, boxCarryDirection * TimeDirection::REVERSE),
-							hmid - boxCarryWidth/2,
-							top - boxCarryHeight,
-							boxCarryWidth,
-							boxCarryHeight),
+							x, y, w, h),
 						paused ? static_cast<int>(guyIndex) : -1));
 			}
 			addCurrentGuyArrow(*reverseGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);

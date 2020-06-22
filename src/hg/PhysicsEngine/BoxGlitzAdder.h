@@ -27,15 +27,27 @@ public:
 		int width, int height, BoxType boxType,
 		TimeDirection timeDirection) const
 	{
+		int x = position.a;
+		int y = position.b;
+		int w = width;
+		int h = height;
+		if (boxType == BoxType::BALLOON) {
+			x = x - w/5;
+			w = w * 7 / 5;
+			h = h * 7 / 5;
+		}
+		//Glitz sameDirectionGlitzDebug(mt::std::make_unique<ImageGlitz>(
+		//		500 + static_cast<int>(boxType), getBoxImage(BoxType::CRATE, TimeDirection::FORWARDS),
+		//		position.a, position.b, width, height));
+		//forwardsGlitz->push_back(sameDirectionGlitzDebug);
+
 		Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				500, getBoxImage(boxType, TimeDirection::FORWARDS),
-				position.a, position.b,
-				width, height));
+				500 + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::FORWARDS),
+				x, y, w, h));
 
 		Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				500, getBoxImage(boxType, TimeDirection::REVERSE),
-				position.a, position.b,
-				width, height));
+				500 + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::REVERSE),
+				x, y, w, h));
 		
 		forwardsGlitz->push_back(
 			timeDirection == TimeDirection::FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);

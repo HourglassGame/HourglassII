@@ -143,6 +143,7 @@ void recursiveBoxCollision(
 	mp::std::vector<int> const &majorSize,
 	mp::std::vector<int> const &minorSize,
 	mp::std::vector<char> const &squished,
+	mp::std::vector<BoxType> const& boxType,
 	mp::std::vector<std::size_t> &boxesSoFar,
 	std::size_t index,
 	bool winTies, // horizontal wins a tie
@@ -153,12 +154,15 @@ void recursiveBoxCollision(
 
 	for (std::size_t i(0), isize(majorAxis.size()); i < isize; ++i)
 	{
-		if (i != index && !squished[i] && oldBoxList[i].getTimeDirection() == boxDirection &&
-			IntersectingRectanglesExclusive(
+		if (i != index && !squished[i] && boxCollidable(boxType[i])
+			&& oldBoxList[i].getTimeDirection() == boxDirection
+			&& IntersectingRectanglesExclusive(
 				majorAxis[index], minorAxis[index], majorSize[index], minorSize[index],
-				majorAxis[i], minorAxis[i], majorSize[i], minorSize[i]) &&
+				majorAxis[i], minorAxis[i], majorSize[i], minorSize[i])
 			// Find vertical collision with the major axis as the vertical component. winTies is used to make one of the axies win ties.
-			IsRectangleRelationVertical(minorAxis[index], majorAxis[index], minorSize[index], majorSize[index], minorAxis[i], majorAxis[i], minorSize[i], majorSize[i], winTies))
+			&& IsRectangleRelationVertical(
+				minorAxis[index], majorAxis[index], minorSize[index], majorSize[index],
+				minorAxis[i], majorAxis[i], minorSize[i], majorSize[i], winTies))
 		{
 			//std::cerr << "Collide link " << majorAxis[index] << ", " << size[index] << ", " << majorAxis[i] << ", " << size[i] << "\n";
 			int overlap = -(majorAxis[index] + majorSize[index] - majorAxis[i]); // index must move UP
@@ -174,7 +178,7 @@ void recursiveBoxCollision(
 				majorAxis[boxesSoFar[j]] = majorAxis[boxesSoFar[j]] + indexMovement;
 			}
 			majorAxis[i] = majorAxis[i] + iMovement;
-			recursiveBoxCollision(majorAxis, minorAxis, majorSize, minorSize, squished, boxesSoFar, i, winTies, boxDirection, oldBoxList);
+			recursiveBoxCollision(majorAxis, minorAxis, majorSize, minorSize, squished, boxType, boxesSoFar, i, winTies, boxDirection, oldBoxList);
 		}
 	}
 }
