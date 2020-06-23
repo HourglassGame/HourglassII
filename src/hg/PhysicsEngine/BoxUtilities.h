@@ -34,7 +34,7 @@ bool getBoxPickupCollision(int gx, int gy, int gw, int gh, int bx, int by, int b
 
 int getBoxVertAirResistence(BoxType boxType) {
 	if (boxType == BoxType::BALLOON) {
-		return 3000 * hg::VERT_AIR_RESISTANCE;
+		return 2600 * hg::VERT_AIR_RESISTANCE;
 	}
 	return hg::VERT_AIR_RESISTANCE;
 }
@@ -44,6 +44,13 @@ int getBoxCarryGravity(int baseGravity, BoxType boxType, int boxHeight) {
 		return baseGravity * 2000 / boxHeight;
 	}
 	return baseGravity;
+}
+
+int getBoxDropState(BoxType boxType) {
+	if (boxType == BoxType::BALLOON) {
+		return 0;
+	}
+	return 0;
 }
 
 }//namespace hg

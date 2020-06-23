@@ -91,14 +91,14 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 		Wall actualWall(3200, wallmap, "HourglassI");
 		Environment env{actualWall, 30};
 		std::vector<Box> boxArrivalList{
-			Box(19200, 34800, 1380, 3800, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(22400, 40600, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(25600, 40600, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(28800, 38400, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(32000, 38400, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(35200, 38400, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(38400, 38400, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS),
-			Box(41600, 38400, 0, 0, 3200, 3200, BoxType::CRATE, -1, -1, TimeDirection::FORWARDS)
+			Box(19200, 34800, 1380, 3800, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(22400, 40600, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(25600, 40600, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(28800, 38400, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(32000, 38400, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(35200, 38400, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(38400, 38400, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS),
+			Box(41600, 38400, 0, 0, 3200, 3200, BoxType::CRATE, 0, -1, -1, TimeDirection::FORWARDS)
 		};
 
 		const std::size_t initialPoolSize{ 2 << 5 };

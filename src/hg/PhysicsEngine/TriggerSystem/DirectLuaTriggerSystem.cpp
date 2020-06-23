@@ -123,7 +123,7 @@ Box toBox(lua_State *L, std::size_t arrivalLocationsSize)
 	lua_pop(L, 1);
 	TimeDirection timeDirection(readField<TimeDirection>(L, "timeDirection"));
 	
-	return Box(x, y, xspeed, yspeed, size, size, BoxType::CRATE, illegalPortal, arrivalBasis, timeDirection);
+	return Box(x, y, xspeed, yspeed, size, size, BoxType::CRATE, 0, illegalPortal, arrivalBasis, timeDirection);
 }
 
 mt::std::string abilityToString(Ability ability)

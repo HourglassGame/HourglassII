@@ -58,6 +58,7 @@ template <
 		int width,
 		int height,
 		BoxType boxType,
+		int state,
 		int oldIllegalPortal,
 		TimeDirection const oldTimeDirection,
 		TriggerFrameState &triggerFrameState,
@@ -85,9 +86,7 @@ template <
 	}
 
 	// send vector of collisions that occurred (if any)
-	if (mutatorCollisions.size() != 0)
-	{
-
+	if (mutatorCollisions.size() != 0) {
 		boost::optional<Box> newBox = triggerFrameState.mutateObject(
 			mutatorCollisions,
 			Box(
@@ -97,11 +96,11 @@ template <
 				yspeed,
 				width, height,
 				boxType,
+				state,
 				oldIllegalPortal,
 				-1,
 				timeDirection));
-		if (!newBox)
-		{
+		if (!newBox) {
 			return; // box was destroyed, do not add
 		}
 		x = newBox->getX();
@@ -132,7 +131,7 @@ template <
 			{
 				illegalPortal = i;
 			}
-			else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, width, height, boxType, oldIllegalPortal, -1, timeDirection), false))
+			else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, width, height, boxType, 0, oldIllegalPortal, -1, timeDirection), false))
 			{
 				FrameT portalTime(
 					portals[i].getRelativeTime() ?
@@ -191,6 +190,7 @@ template <
 				width,
 				height,
 				boxType,
+				state,
 				illegalPortal,
 				arrivalBasis,
 				timeDirection),
@@ -780,6 +780,11 @@ void guyStep(
 						startDropHeight = startDropHeight - height;
 					}
 					int dropY = startDropHeight;
+					if (carry[i] == BoxType::BALLOON) {
+						if (dropY + dropHeight > gY + height/2) {
+							dropY = gY - dropHeight + height/2;
+						}
+					}
 					//std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 
 					while (dropY >= startDropHeight - dropHeight && !droppable)
@@ -1013,6 +1018,7 @@ void guyStep(
 								dropWidth,
 								dropHeight,
 								carry[i],
+								getBoxDropState(carry[i]),
 								-1,
 								guyArrivalList[i].getBoxCarryDirection(),
 								triggerFrameState,
@@ -1663,6 +1669,7 @@ void guyStep(
 							boxWidth,
 							boxHeight,
 							boxType,
+							nextBox[shot.targetId].object.getState(),
 							nextPortal[i].getIllegalDestination(),
 							arrivalBasis,
 							timeDirection),
@@ -2512,6 +2519,7 @@ template <
 	mp::std::vector<int> width(oldBoxList.size(), pool);
 	mp::std::vector<int> height(oldBoxList.size(), pool);
 	mp::std::vector<BoxType> boxType(oldBoxList.size(), pool);
+	mp::std::vector<int> state(oldBoxList.size(), pool);
 	mp::std::vector<char> squished(oldBoxList.size(), pool);
 
 	// Check with triggers if the box should arrive at all
@@ -2553,6 +2561,7 @@ template <
 		width[i] = oldBoxList[i].getWidth();
 		height[i] = oldBoxList[i].getHeight();
 		boxType[i] = oldBoxList[i].getBoxType();
+		state[i] = oldBoxList[i].getState();
 
 		if (oldBoxList[i].getBoxType() == BoxType::BALLOON) {
 			y[i] -= hg::UP_GRAVITY / 2;
@@ -2667,6 +2676,7 @@ template <
 					width[i],
 					height[i],
 					boxType[i],
+					state[i],
 					oldBoxList[i].getIllegalPortal(),
 					oldBoxList[i].getTimeDirection(),
 					triggerFrameState,
@@ -2701,6 +2711,7 @@ template <
 					width[i],
 					height[i],
 					boxType[i],
+					state[i],
 					oldBoxList[i].getIllegalPortal(),
 					oldBoxList[i].getTimeDirection(),
 					triggerFrameState,

@@ -22,6 +22,7 @@ public:
 		int width,
 		int height,
 		BoxType boxType,
+		int state,
 		int illegalPortal,
 		int arrivalBasis,
 		TimeDirection timeDirection);
@@ -33,9 +34,10 @@ public:
 	int getYspeed() const { return yspeed; }
 	int getWidth()  const { return width; }
 	int getHeight() const { return height; }
-	BoxType getBoxType() const { return boxType; }
-	int getIllegalPortal()    const { return illegalPortal; }
-	int getArrivalBasis() const { return arrivalBasis; }
+	BoxType getBoxType()   const { return boxType; }
+	int getState()         const { return state; }
+	int getIllegalPortal() const { return illegalPortal; }
+	int getArrivalBasis()  const { return arrivalBasis; }
 	TimeDirection 
 		getTimeDirection()    const { return timeDirection; }
 
@@ -51,6 +53,7 @@ private:
 	int height;
 	BoxType boxType;
 
+	int state;
 	int illegalPortal;
 	int arrivalBasis;
 
@@ -60,7 +63,7 @@ private:
 	{
 		return boost::tie(
 			x, y, xspeed, yspeed, width, height, boxType,
-			illegalPortal, arrivalBasis,
+			state, arrivalBasis, // Add illegalPortal
 			timeDirection);
 	}
 	//For debugging
@@ -81,6 +84,7 @@ public:
 	int getWidth()        const { return box_->getWidth(); }
 	int getHeight()       const { return box_->getHeight(); }
 	BoxType getBoxType()  const { return box_->getBoxType(); }
+	int getState()        const { return box_->getState(); }
 	int getIllegalPortal()const { return box_->getIllegalPortal(); }
 	int getArrivalBasis() const { return box_->getArrivalBasis(); }
 	TimeDirection 

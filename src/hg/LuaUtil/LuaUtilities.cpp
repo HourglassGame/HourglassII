@@ -326,6 +326,7 @@ InitialBox to<InitialBox>(lua_State *L, int index) {
                     readField<int>(L, "xspeed", index), readField<int>(L, "yspeed", index),
                     width, height,
                     readFieldWithDefault<BoxType>(L, "boxType", index, BoxType::CRATE),
+					0,
                     -1,
                     -1,
                     readField<TimeDirection>(L, "timeDirection", index)));
