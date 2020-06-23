@@ -42,9 +42,6 @@ initialGuy =
         facing = "right",
         timeDirection = "forwards",
         pickups = {timeJump = -1, timeReverse = -1, timeGun = -1, timePause = -1},
-        boxCarrying = true,
-        boxCarrySize = 3200,
-        boxCarryDirection = "forwards",
     }
 }
 initialArrivals =

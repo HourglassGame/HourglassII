@@ -375,7 +375,7 @@ void guyMovement(
 		// Reverse box collision
 		for (std::size_t j(0), jsize(boxArrivalList.size()); j < jsize; ++j)
 		{
-			if (boxCollidable(nextBox[j].object.getBoxType()) && boxArrivalList[j].getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
+			if (boxCollidable(boxArrivalList[j].getBoxType()) && boxArrivalList[j].getTimeDirection() * guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE)
 			{
 				int boxXspeed(boxArrivalList[j].getXspeed());
 				int boxYspeed(boxArrivalList[j].getYspeed());
