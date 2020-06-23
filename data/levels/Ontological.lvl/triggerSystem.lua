@@ -169,76 +169,82 @@ local tempStore =
         },
     },
     protoGlitz = {
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 4.15 * 3200},
-        --    y1 = {platform = nil, pos = 7 * 3200 },
-        --    x2 = {platform = nil, pos = 11.85 * 3200},
-        --    y2 = {platform = nil, pos = 7.2 * 3200},
-        --    triggerID = 1,
-        --    useTriggerArrival = false
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 11.25 * 3200},
+            y1 = {platform = nil, pos = 13 * 3200 },
+            x2 = {platform = nil, pos = 20.75 * 3200},
+            y2 = {platform = nil, pos = 13.2 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 15.95 * 3200},
+            y1 = {platform = nil, pos = 13 * 3200 },
+            x2 = {platform = nil, pos = 16.05 * 3200},
+            y2 = {platform = nil, pos = 14.1 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 12.75 * 3200},
+            y1 = {platform = nil, pos = 14 * 3200 },
+            x2 = {platform = nil, pos = 22.55 * 3200},
+            y2 = {platform = nil, pos = 14.1 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 22.45 * 3200},
+            y1 = {platform = nil, pos = 13 * 3200 },
+            x2 = {platform = nil, pos = 22.55 * 3200},
+            y2 = {platform = nil, pos = 14.1 * 3200},
+            triggerID = 1,
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 2.8 * 3200},
+            y1 = {platform = nil, pos = 14 * 3200 },
+            x2 = {platform = nil, pos = 12.75 * 3200},
+            y2 = {platform = nil, pos = 14.1 * 3200},
+            triggerClause = "t1 !",
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 2.8 * 3200},
+            y1 = {platform = nil, pos = 8.45 * 3200 },
+            x2 = {platform = nil, pos = 2.9 * 3200},
+            y2 = {platform = nil, pos = 14.1 * 3200},
+            triggerClause = "t1 !",
+            useTriggerArrival = false
+        },
+        bts.wireGlitz{
+            x1 = {platform = nil, pos = 2.8 * 3200},
+            y1 = {platform = nil, pos = 8.45 * 3200 },
+            x2 = {platform = nil, pos = 6 * 3200},
+            y2 = {platform = nil, pos = 8.55 * 3200},
+            triggerClause = "t1 !",
+            useTriggerArrival = false
+        },
+        --bts.basicTextGlitz{
+        --    x = 15 * 3200,
+        --    y = 1.25 * 3200,
+        --    text = " <- Creates a box at the start\n                if the door is closed.",
+        --    size = 1400,
+        --    layer = 1600,
+        --    colour = {r = 255, g = 255, b = 255},
         --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 8.2 * 3200},
-        --    y1 = {platform = nil, pos = 7.2 * 3200 },
-        --    x2 = {platform = nil, pos = 8.3 * 3200},
-        --    y2 = {platform = nil, pos = 7.55 * 3200},
-        --    triggerID = 1,
-        --    useTriggerArrival = false
-        --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 21.45 * 3200},
-        --    y1 = {platform = nil, pos = 7.45 * 3200 },
-        --    x2 = {platform = nil, pos = 8.3 * 3200},
-        --    y2 = {platform = nil, pos = 7.55 * 3200},
-        --    triggerID = 1,
-        --    useTriggerArrival = false
-        --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 21.45 * 3200},
-        --    y1 = {platform = nil, pos = 2.45 * 3200 },
-        --    x2 = {platform = nil, pos = 21.55 * 3200},
-        --    y2 = {platform = nil, pos = 7.55 * 3200},
-        --    triggerID = 1,
-        --    useTriggerArrival = false
-        --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 16.45 * 3200},
-        --    y1 = {platform = nil, pos = 2.45 * 3200 },
-        --    x2 = {platform = nil, pos = 21.55 * 3200},
-        --    y2 = {platform = nil, pos = 2.55 * 3200},
-        --    triggerID = 1,
-        --    useTriggerArrival = false
-        --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 16.45 * 3200},
-        --    y1 = {platform = nil, pos = 3 * 3200 },
-        --    x2 = {platform = nil, pos = 16.55 * 3200},
-        --    y2 = {platform = nil, pos = 2.55 * 3200},
-        --    triggerID = 1,
-        --    useTriggerArrival = false
-        --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 16.45 * 3200},
-        --    y1 = {platform = nil, pos = 1.95 * 3200 },
-        --    x2 = {platform = nil, pos = 16.55 * 3200},
-        --    y2 = {platform = nil, pos = 2.45 * 3200},
-        --    triggerFunction = function (triggerArrivals, outputTriggers)
-        --        return triggerArrivals[1][1] == 0
-        --    end,
-        --},
-        --bts.wireGlitz{
-        --    x1 = {platform = nil, pos = 16.45 * 3200},
-        --    y1 = {platform = nil, pos = 1.95 * 3200 },
-        --    x2 = {platform = nil, pos = 15 * 3200},
-        --    y2 = {platform = nil, pos = 2.05 * 3200},
-        --    triggerFunction = function (triggerArrivals, outputTriggers)
-        --        return triggerArrivals[1][1] == 0
-        --    end,
-        --},
+        bts.basicRectangleGlitz{
+            x = 12.55 * 3200,
+            y = 13.85 * 3200,
+            width = 0.4 * 3200,
+            height = 0.4 * 3200,
+            layer = 1600,
+            colour = {r = 80, g = 80, b = 80},
+        },
         bts.basicTextGlitz{
-            x = 15 * 3200,
-            y = 1.25 * 3200,
-            text = " <- Creates a box at the start\n                if the door is closed.",
+            x = 12.65 * 3200,
+            y = 13.75 * 3200,
+            text = "!",
             size = 1400,
             layer = 1600,
             colour = {r = 255, g = 255, b = 255},

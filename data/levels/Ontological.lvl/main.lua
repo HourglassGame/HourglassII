@@ -56,6 +56,7 @@ triggerSystem =
 
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[require "triggerSystem"]==],
+    paradoxPressureTriggerID = 6, -- Default frame pressure is 100
 
     -- C++ still manages offsets and defaults.
     triggerOffsetsAndDefaults = {
@@ -78,6 +79,10 @@ triggerSystem =
         {
             offset = -1,
             default = {7 * 3200, 8 * 3200, 0, 0}
+        },
+        {
+            offset = 1,
+            default = {0}
         },
     },
     arrivalLocationsSize = 1,
