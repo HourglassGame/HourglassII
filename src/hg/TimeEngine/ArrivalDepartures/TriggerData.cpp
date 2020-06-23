@@ -8,7 +8,7 @@ index(index),
 value(value)
 {
 	assert(index != std::numeric_limits<std::size_t>::max()
-			&& "the max value is reserved for representing invalid/null indices");
+	    && "the max value is reserved for representing invalid/null indices");
 }
 
 bool TriggerData::operator==(TriggerData const &o) const
