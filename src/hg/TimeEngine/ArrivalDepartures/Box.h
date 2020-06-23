@@ -63,8 +63,7 @@ private:
 	{
 		return boost::tie(
 			x, y, xspeed, yspeed, width, height, boxType,
-			state, arrivalBasis, // Add illegalPortal
-			timeDirection);
+			state, arrivalBasis, timeDirection); // Missing illegalPortal
 	}
 	//For debugging
 	friend std::ostream &operator<<(std::ostream &str, Box const &b);
