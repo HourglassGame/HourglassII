@@ -60,7 +60,7 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "DirectLua",
+    type = "ConfiguredLua",
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],

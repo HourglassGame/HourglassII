@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 18 * 3200, yOffset = 5 * 3200},
+            attachment = {platform = nil, xOffset = 24.5 * 3200, yOffset = 11 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -26,19 +26,19 @@ local tempStore =
             width = 3200,
             height = 4 * 3200,
             timeDirection = 'reverse',
-            lastStateTriggerID = 2,
+            lastStateTriggerID = 3,
             buttonTriggerID = 1,
             destinations =
             {
                 onDestination = {
                     xDestination = {
-                        desiredPosition = 16 * 3200,
+                        desiredPosition = 22 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = -1 * 3200,
+                        desiredPosition = 5 * 3200,
                         maxSpeed = 300,
                         acceleration = 50,
                         deceleration = 50
@@ -46,42 +46,96 @@ local tempStore =
                 },
                 offDestination = {
                     xDestination = {
-                        desiredPosition = 16 * 3200,
+                        desiredPosition = 22 * 3200,
                         maxSpeed = 200,
                         acceleration = 50,
                         deceleration = 50
                     },
                     yDestination = {
-                        desiredPosition = 3 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 300,
                         acceleration = 50,
                         deceleration = 50
                     }
                 }
             }
-        }
-    },
-    protoBoxCreators = {
-        bts.boxOMatic{
-            attachment = {platform = nil, xOffset = 14 * 3200, yOffset = 1.25 * 3200},
+        },
+        {
             width = 3200,
-            height = 4800,
-            timeDirection = 'forwards',
-            boxCreationFunction = function (triggers, frameNumber)
-                if frameNumber == 0 and triggers[1][1] == 0 then
-                    return {
-                        x = 0,
-                        y = 800,
-                        xspeed = -1100,
-                        yspeed = 0,
-                        size = 3200,
-                        timeDirection = 'forwards',
+            height = 3200,
+            timeDirection = 'reverse',
+            lastStateTriggerID = 4,
+            triggerClause = "t1 !",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 5 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
                     }
-                else
-                    return false
-                end
-            end,
-        }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 6 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                }
+            }
+        },
+        {
+            width = 3200,
+            height = 3200,
+            timeDirection = 'reverse',
+            lastStateTriggerID = 5,
+            triggerClause = "t1 !",
+            destinations =
+            {
+                onDestination = {
+                    xDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                },
+                offDestination = {
+                    xDestination = {
+                        desiredPosition = 7 * 3200,
+                        maxSpeed = 200,
+                        acceleration = 50,
+                        deceleration = 50
+                    },
+                    yDestination = {
+                        desiredPosition = 8 * 3200,
+                        maxSpeed = 300,
+                        acceleration = 50,
+                        deceleration = 50
+                    }
+                }
+            }
+        },
     },
     protoMutators = {
     },
@@ -89,98 +143,98 @@ local tempStore =
         bts.multiStickySwitch{
             buttons = {
                 {
-                    attachment = {platform = nil, xOffset = 4.15 * 3200, yOffset = 6.75 * 3200},
+                    attachment = {platform = nil, xOffset = 11.25 * 3200, yOffset = 12.75 * 3200},
                     width = 1600,
                     height = 800,
                 },
                 {
-                    attachment = {platform = nil, xOffset = 6.55 * 3200, yOffset = 6.75 * 3200},
+                    attachment = {platform = nil, xOffset = 14.25 * 3200, yOffset = 12.75 * 3200},
                     width = 1600,
                     height = 800,
                 },
                 {
-                    attachment = {platform = nil, xOffset = 8.95 * 3200, yOffset = 6.75 * 3200},
+                    attachment = {platform = nil, xOffset = 17.25 * 3200, yOffset = 12.75 * 3200},
                     width = 1600,
                     height = 800,
                 },
                 {
-                    attachment = {platform = nil, xOffset = 11.35 * 3200, yOffset = 6.75 * 3200},
+                    attachment = {platform = nil, xOffset = 20.25 * 3200, yOffset = 12.75 * 3200},
                     width = 1600,
                     height = 800,
                 },
             },
             timeDirection = 'reverse',
             triggerID = 1,
-            stateTriggerID = 3
+            stateTriggerID = 2
         },
     },
     protoGlitz = {
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 4.15 * 3200},
-            y1 = {platform = nil, pos = 7 * 3200 },
-            x2 = {platform = nil, pos = 11.85 * 3200},
-            y2 = {platform = nil, pos = 7.2 * 3200},
-            triggerID = 1,
-            useTriggerArrival = false
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 8.2 * 3200},
-            y1 = {platform = nil, pos = 7.2 * 3200 },
-            x2 = {platform = nil, pos = 8.3 * 3200},
-            y2 = {platform = nil, pos = 7.55 * 3200},
-            triggerID = 1,
-            useTriggerArrival = false
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 21.45 * 3200},
-            y1 = {platform = nil, pos = 7.45 * 3200 },
-            x2 = {platform = nil, pos = 8.3 * 3200},
-            y2 = {platform = nil, pos = 7.55 * 3200},
-            triggerID = 1,
-            useTriggerArrival = false
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 21.45 * 3200},
-            y1 = {platform = nil, pos = 2.45 * 3200 },
-            x2 = {platform = nil, pos = 21.55 * 3200},
-            y2 = {platform = nil, pos = 7.55 * 3200},
-            triggerID = 1,
-            useTriggerArrival = false
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 16.45 * 3200},
-            y1 = {platform = nil, pos = 2.45 * 3200 },
-            x2 = {platform = nil, pos = 21.55 * 3200},
-            y2 = {platform = nil, pos = 2.55 * 3200},
-            triggerID = 1,
-            useTriggerArrival = false
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 16.45 * 3200},
-            y1 = {platform = nil, pos = 3 * 3200 },
-            x2 = {platform = nil, pos = 16.55 * 3200},
-            y2 = {platform = nil, pos = 2.55 * 3200},
-            triggerID = 1,
-            useTriggerArrival = false
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 16.45 * 3200},
-            y1 = {platform = nil, pos = 1.95 * 3200 },
-            x2 = {platform = nil, pos = 16.55 * 3200},
-            y2 = {platform = nil, pos = 2.45 * 3200},
-            triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[1][1] == 0
-            end,
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 16.45 * 3200},
-            y1 = {platform = nil, pos = 1.95 * 3200 },
-            x2 = {platform = nil, pos = 15 * 3200},
-            y2 = {platform = nil, pos = 2.05 * 3200},
-            triggerFunction = function (triggerArrivals, outputTriggers)
-                return triggerArrivals[1][1] == 0
-            end,
-        },
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 4.15 * 3200},
+        --    y1 = {platform = nil, pos = 7 * 3200 },
+        --    x2 = {platform = nil, pos = 11.85 * 3200},
+        --    y2 = {platform = nil, pos = 7.2 * 3200},
+        --    triggerID = 1,
+        --    useTriggerArrival = false
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 8.2 * 3200},
+        --    y1 = {platform = nil, pos = 7.2 * 3200 },
+        --    x2 = {platform = nil, pos = 8.3 * 3200},
+        --    y2 = {platform = nil, pos = 7.55 * 3200},
+        --    triggerID = 1,
+        --    useTriggerArrival = false
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 21.45 * 3200},
+        --    y1 = {platform = nil, pos = 7.45 * 3200 },
+        --    x2 = {platform = nil, pos = 8.3 * 3200},
+        --    y2 = {platform = nil, pos = 7.55 * 3200},
+        --    triggerID = 1,
+        --    useTriggerArrival = false
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 21.45 * 3200},
+        --    y1 = {platform = nil, pos = 2.45 * 3200 },
+        --    x2 = {platform = nil, pos = 21.55 * 3200},
+        --    y2 = {platform = nil, pos = 7.55 * 3200},
+        --    triggerID = 1,
+        --    useTriggerArrival = false
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 16.45 * 3200},
+        --    y1 = {platform = nil, pos = 2.45 * 3200 },
+        --    x2 = {platform = nil, pos = 21.55 * 3200},
+        --    y2 = {platform = nil, pos = 2.55 * 3200},
+        --    triggerID = 1,
+        --    useTriggerArrival = false
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 16.45 * 3200},
+        --    y1 = {platform = nil, pos = 3 * 3200 },
+        --    x2 = {platform = nil, pos = 16.55 * 3200},
+        --    y2 = {platform = nil, pos = 2.55 * 3200},
+        --    triggerID = 1,
+        --    useTriggerArrival = false
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 16.45 * 3200},
+        --    y1 = {platform = nil, pos = 1.95 * 3200 },
+        --    x2 = {platform = nil, pos = 16.55 * 3200},
+        --    y2 = {platform = nil, pos = 2.45 * 3200},
+        --    triggerFunction = function (triggerArrivals, outputTriggers)
+        --        return triggerArrivals[1][1] == 0
+        --    end,
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 16.45 * 3200},
+        --    y1 = {platform = nil, pos = 1.95 * 3200 },
+        --    x2 = {platform = nil, pos = 15 * 3200},
+        --    y2 = {platform = nil, pos = 2.05 * 3200},
+        --    triggerFunction = function (triggerArrivals, outputTriggers)
+        --        return triggerArrivals[1][1] == 0
+        --    end,
+        --},
         bts.basicTextGlitz{
             x = 15 * 3200,
             y = 1.25 * 3200,

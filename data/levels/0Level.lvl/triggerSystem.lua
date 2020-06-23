@@ -48,7 +48,6 @@ local tempStore =
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
-            triggerClause = "t2,2 35200 >",
             destinations =
             {
                 onDestination = {

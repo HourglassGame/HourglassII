@@ -19,9 +19,10 @@ local tempStore =
             illegalDestination = 1,
             fallable = false,
             winner = true,
-            triggerFunction = function (triggers)
-                return triggers[1][1] > 0 and triggers[2][1] > 0
-            end,
+			triggerClause = "t1 t2 &",
+            --triggerFunction = function (triggers)
+            --    return triggers[1][1] > 0 and triggers[2][1] > 0
+            --end,
         }
     },
     protoCollisions = {

@@ -1,5 +1,5 @@
 name = "Splitters"
-speedOfTime = 24
+speedOfTime = 3 -- Usually 24
 timelineLength = 5400
 environment =
 {
@@ -42,7 +42,8 @@ initialArrivals =
 }
 triggerSystem =
 {
-    type = "DirectLua",
+    type = "ConfiguredLua",
+    paradoxPressureTriggerID = 11, -- Default frame pressure is 100
     
     luaFiles = {"triggerSystem", "global.basicTriggerSystem"},
     system = [==[ require "triggerSystem" ]==],
@@ -84,6 +85,10 @@ triggerSystem =
         {
             offset = 1,
             default = {0}
+        },
+        {
+            offset = 1,
+            default = {0,0}
         },
         {
             offset = 1,
