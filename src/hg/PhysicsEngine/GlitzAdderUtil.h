@@ -11,7 +11,7 @@ inline unsigned asPackedColour(int const r, int const g, int const b) {
 	return r << 24 | g << 16 | b << 8;
 }
 
-mt::std::string formatTime(int const frames) {
+inline mt::std::string formatTime(int const frames) {
 	std::stringstream ss; //TODO: Use appropriate allocator here!
 
 	if (frames % hg::FRAMERATE == 0) {
@@ -26,7 +26,7 @@ mt::std::string formatTime(int const frames) {
 	return { s.begin(), s.end() };
 }
 
-mt::std::string getBoxImage(BoxType boxType, TimeDirection timeDiretion) {
+inline mt::std::string getBoxImage(BoxType boxType, TimeDirection timeDiretion) {
 	if (timeDiretion == TimeDirection::FORWARDS) {
 		if (boxType == BoxType::BALLOON) {
 			return mt::std::string("global.balloon");

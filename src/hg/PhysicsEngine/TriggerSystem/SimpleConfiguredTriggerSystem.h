@@ -13,6 +13,8 @@
 #include "hg/Util/ThreadLocal.h"
 #include "hg/mp/std/map"
 
+#include "hg/PhysicsEngine/GlitzAdderUtil.h"
+
 #include <string>
 #include <vector>
 #include <mutex>
@@ -1410,7 +1412,7 @@ namespace hg {
 					}
 				}()
 			};
-			auto const colour{ active ? 180 << 16 : 180 << 24}; // asPackedColour cannot be access from here.
+			auto const colour{ active ? asPackedColour(0, 180, 0) : asPackedColour(180, 0, 0) };
 			auto [forGlitz, revGlitz] = calculateBidirectionalGlitz(1500, obj, colour, colour);
 
 			forwardsGlitz.emplace_back(std::move(forGlitz));
