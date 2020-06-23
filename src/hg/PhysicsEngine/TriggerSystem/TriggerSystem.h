@@ -3,6 +3,7 @@
 #include "TriggerSystemImplementation.h"
 #include "hg/Util/clone_ptr.h"
 #include <memory>
+#include <tuple>
 namespace hg
 {
 class TriggerSystem final {

@@ -5,6 +5,7 @@
 #include "hg/Util/multi_vector.h"
 #include "hg/Util/Maths.h"
 #include <string>
+#include <tuple>
 namespace hg {
 	//stores the wall (the static environment over which the game is played)
 	class Wall final {

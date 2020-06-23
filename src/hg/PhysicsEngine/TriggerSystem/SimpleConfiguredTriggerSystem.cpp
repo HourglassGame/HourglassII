@@ -17,6 +17,7 @@
 
 #include "lua/lauxlib.h"
 #include <cmath>
+#include <tuple>
 
 namespace hg {
 	//TODO: Remove this overload!

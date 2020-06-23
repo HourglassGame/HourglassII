@@ -3,6 +3,7 @@
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
 #include "hg/Util/multi_thread_allocator.h"
 #include "hg/mp/std/vector"
+#include <tuple>
 namespace hg {
 
 void buildDepartures(

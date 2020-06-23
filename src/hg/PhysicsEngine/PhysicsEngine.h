@@ -20,6 +20,7 @@
 #include <utility>
 
 #include "hg/TimeEngine/Frame_fwd.h"
+#include <tuple>
 namespace hg {
 class PhysicsEngine final
 {

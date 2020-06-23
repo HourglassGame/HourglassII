@@ -4,6 +4,7 @@
 #include <tbb/task_scheduler_observer.h>
 #include <thread>
 #include <tbb/spin_rw_mutex.h>
+#include <tuple>
 namespace hg {
 template<typename T>
 class ThreadLocal final : private tbb::task_scheduler_observer

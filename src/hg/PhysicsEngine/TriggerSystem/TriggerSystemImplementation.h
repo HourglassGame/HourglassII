@@ -22,7 +22,6 @@
 #include <boost/optional.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/swap.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include <utility>
 

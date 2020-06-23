@@ -2,8 +2,6 @@
 #include "hg/TimeEngine/Frame.h"
 #include "hg/mt/std/memory"
 #include <boost/polymorphic_cast.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 #include "hg/TimeEngine/Glitz/AudioGlitz.h"
 namespace hg {
 StaticGlitzPersister::StaticGlitzPersister(

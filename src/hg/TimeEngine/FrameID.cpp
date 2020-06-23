@@ -4,7 +4,6 @@
 #include "Universe.h"
 
 #include <boost/functional/hash.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include <limits>
 #include <cassert>

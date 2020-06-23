@@ -9,9 +9,10 @@
 #include "ReplayIO.h"
 #include "LoadedLevel.h"
 
-#include <sstream>
-
 #include "PostLevelSceneRenderer.h"
+
+#include <sstream>
+#include <tuple>
 
 namespace hg {
 namespace {

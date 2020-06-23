@@ -13,6 +13,7 @@
 #include <gsl/gsl>
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/algorithm/count_if.hpp>
+#include <tuple>
 namespace hg {
 enum class GuyAction : int {
 	IDLE = 0,

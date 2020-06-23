@@ -2,14 +2,14 @@
 #define HG_TEXT_GLITZ_H
 #include "GlitzImplementation.h"
 #include <boost/polymorphic_cast.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 #include "hg/FrontEnd/LayeredCanvas.h"
 #include "hg/mt/std/string"
+#include <tuple>
 namespace hg {
 class TextGlitz final : public GlitzImplementation {
 private:
-	auto asTie() const -> decltype(auto) {
-		return boost::tie(layer, text, x, y, size, colour);
+	auto comparison_tuple() const {
+		return std::tie(layer, text, x, y, size, colour);
 	}
 public:
 	TextGlitz(
@@ -36,11 +36,11 @@ public:
 	
 	virtual bool operator<(GlitzImplementation const &right) const override {
 		TextGlitz const &actual_right(*boost::polymorphic_downcast<TextGlitz const *>(&right));
-		return asTie() < actual_right.asTie();
+		return comparison_tuple() < actual_right.comparison_tuple();
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		TextGlitz const &actual_other(*boost::polymorphic_downcast<TextGlitz const *>(&o));
-		return asTie() == actual_other.asTie();
+		return comparison_tuple() == actual_other.comparison_tuple();
 	}
 private:
 	virtual int order_ranking() const override {

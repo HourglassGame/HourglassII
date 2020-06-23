@@ -2,8 +2,8 @@
 #define HG_BOX_H
 #include "TimeDirection.h"
 #include <boost/operators.hpp>
-#include <boost/tuple/tuple.hpp>
 #include "ConstPtr_of_fwd.h"
+#include <tuple>
 #include <ostream>
 namespace hg {
 enum class BoxType : int {
@@ -60,11 +60,11 @@ private:
 
 	TimeDirection timeDirection;
 	
-	auto comparison_tuple() const -> decltype(auto)
+	auto comparison_tuple() const noexcept
 	{
-		return boost::tie(
+		return std::tie(
 			x, y, xspeed, yspeed, width, height, boxType,
-			state, arrivalBasis, timeDirection); // Missing illegalPortal
+			state, illegalPortal, arrivalBasis, timeDirection);
 	}
 	//For debugging
 	friend std::ostream &operator<<(std::ostream &str, Box const &b);

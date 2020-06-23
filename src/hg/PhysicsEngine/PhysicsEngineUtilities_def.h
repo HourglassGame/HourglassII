@@ -1,4 +1,5 @@
 #include "hg/GlobalConst.h"
+#include <tuple>
 namespace hg {
 template<typename RandomAccessObjectAndTypeRange>
 void buildDeparturesForComplexEntities(

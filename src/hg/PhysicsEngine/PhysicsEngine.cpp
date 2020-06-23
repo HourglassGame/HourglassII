@@ -20,9 +20,9 @@
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/optional.hpp>
-#include <boost/tuple/tuple.hpp>
 
 #include <cassert>
+#include <tuple>
 
 namespace hg {
 PhysicsEngine::PhysicsEngine(

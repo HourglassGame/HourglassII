@@ -1,7 +1,5 @@
 #include "Box.h"
 
-#include <boost/tuple/tuple_comparison.hpp>
-
 namespace hg {
 Box::Box(
 	int x, int y,
@@ -35,17 +33,12 @@ Box::Box(Box const &o, hg::TimeDirection timeDirection) :
 
 bool Box::operator==(Box const &o) const
 {
-	return comparison_tuple() == o.comparison_tuple() && illegalPortal == o.illegalPortal;
+	return comparison_tuple() == o.comparison_tuple();
 }
 
 bool Box::operator<(Box const &o) const
 {
-	auto thisTuple = comparison_tuple();
-	auto otherTuple = o.comparison_tuple();
-	if (thisTuple == otherTuple) {
-		return illegalPortal < o.illegalPortal;
-	}
-	return thisTuple < otherTuple;
+	return comparison_tuple() <  o.comparison_tuple();
 }
 
 std::ostream &operator<<(std::ostream &str, Box const &b)

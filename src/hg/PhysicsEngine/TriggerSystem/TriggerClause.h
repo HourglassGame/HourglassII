@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string.h> 
 #include <regex>
+#include <tuple>
 #include "hg/mp/std/map"
 
 namespace hg {
