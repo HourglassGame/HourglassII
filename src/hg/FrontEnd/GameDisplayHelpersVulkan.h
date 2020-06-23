@@ -1590,17 +1590,16 @@ inline void DrawTimeline(
         target.updateUniformBuffer(
             UniformBufferObject{
                 //Out  x    y    z    v
-                        a, 0.0, 0.0, 0.0,//In x
-                        0.0,   b, 0.0, 0.0,//In y
-                        0.0, 0.0, 1.0, 0.0,//In z
-                        c,   d, 0.0, 1.0 //In v
+                       a  , 0.0, 0.0, 0.0,//In x
+                       0.0,   b, 0.0, 0.0,//In y
+                       0.0, 0.0, 1.0, 0.0,//In z
+                       c  ,   d, 0.0, 1.0 //In v
             }
         );
     }
     {
         std::array<VkViewport, 1> viewports{
             {
-
                 static_cast<float>(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X)*swapChainExtent.width,
                 (static_cast<float>(hg::UI_DIVIDE_Y) + static_cast<float>(hg::G_TIME_Y*(1. - hg::UI_DIVIDE_Y)))*swapChainExtent.height,
                 (1.f - static_cast<float>(hg::UI_DIVIDE_X + 2.*hg::TIMELINE_PAD_X))*swapChainExtent.width,
