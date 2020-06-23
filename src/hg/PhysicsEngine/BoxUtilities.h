@@ -7,21 +7,24 @@
 namespace hg {
 
 bool boxCollidable(BoxType boxType) {
-	return (boxType == BoxType::CRATE);
+	return (boxType == BoxType::CRATE || boxType == BoxType::BOMB);
 }
 
 bool getBoxPickupPriority(BoxType currentBoxType, BoxType newBoxType) {
 	if (currentBoxType == BoxType::NONE) {
 		return true;
 	}
-	if (currentBoxType == BoxType::CRATE && newBoxType == BoxType::BALLOON) {
+	if (currentBoxType == BoxType::CRATE && newBoxType != BoxType::CRATE) {
+		return true;
+	}
+	if (currentBoxType == BoxType::BOMB && newBoxType == BoxType::BALLOON) {
 		return true;
 	}
 	return false;
 }
 
 bool getBoxPickupCollision(int gx, int gy, int gw, int gh, int bx, int by, int bw, int bh, BoxType boxType) {
-	if (boxType == BoxType::CRATE) {
+	if (boxType == BoxType::CRATE || boxType == BoxType::BOMB) {
 		// Crates can only be picked up if their base is above the feet of the Guy.
 		// This prevents crates being passed up cliffs.
 		return (gx <= bx + bw) && (gx + gw >= bx) && (gy < by + bh) && (gy + gh >= by + bh);
@@ -47,8 +50,8 @@ int getBoxCarryGravity(int baseGravity, BoxType boxType, int boxHeight) {
 }
 
 int getBoxDropState(BoxType boxType) {
-	if (boxType == BoxType::BALLOON) {
-		return 0;
+	if (boxType == BoxType::BOMB) {
+		return 5 * hg::FRAMERATE;
 	}
 	return 0;
 }

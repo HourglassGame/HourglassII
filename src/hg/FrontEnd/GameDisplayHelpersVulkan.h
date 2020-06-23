@@ -536,7 +536,7 @@ std::vector<VulkanUpdatableTextureSimple> createTimelineTextures(
 }
 inline VulkanDescriptorPool createSamplerDescriptorPool(VkDevice const device) {
     uint32_t const maxSets =
-        15//Glitz Images
+        17 //Glitz Images MAGIC
         + 2 * 2 * 2 * 2/*Wall Blocks*/
         + 2 * 2 /*Wall Corners*/
         ;//TODO; set this to match count of descriptors used in renderer
@@ -569,6 +569,10 @@ struct GameDisplayTexDescriptorSets final {
     VkDescriptorSet boxTexDescriptorSet;
 
     VkDescriptorSet boxRTexDescriptorSet;
+
+    VkDescriptorSet bombTexDescriptorSet;
+
+    VkDescriptorSet bombRTexDescriptorSet;
 
     VkDescriptorSet balloonTexDescriptorSet;
 
@@ -617,6 +621,8 @@ struct GameDisplayTextures final {
 
         TEXTURE(boxTex, "GlitzData/box.png")
         TEXTURE(boxRTex, "GlitzData/box_r.png")
+        TEXTURE(bombTex, "GlitzData/bomb.png")
+        TEXTURE(bombRTex, "GlitzData/bomb_r.png")
         TEXTURE(balloonTex, "GlitzData/balloon.png")
         TEXTURE(balloonRTex, "GlitzData/balloon_r.png")
         TEXTURE(powerupJumpTex, "GlitzData/powerup_jump.png")
@@ -640,6 +646,8 @@ struct GameDisplayTextures final {
               fontTexDescriptorSet
             , boxTexDescriptorSet
             , boxRTexDescriptorSet
+            , bombTexDescriptorSet
+            , bombRTexDescriptorSet
             , balloonTexDescriptorSet
             , balloonRTexDescriptorSet
             , powerupJumpTexDescriptorSet
@@ -665,14 +673,20 @@ struct GameDisplayTextures final {
     VulkanTextureSimple boxTex;
     VkDescriptorSet boxTexDescriptorSet;
 
+    VulkanTextureSimple boxRTex;
+    VkDescriptorSet boxRTexDescriptorSet;
+
+    VulkanTextureSimple bombTex;
+    VkDescriptorSet bombTexDescriptorSet;
+
+    VulkanTextureSimple bombRTex;
+    VkDescriptorSet bombRTexDescriptorSet;
+
     VulkanTextureSimple balloonRTex;
     VkDescriptorSet balloonRTexDescriptorSet;
 
     VulkanTextureSimple balloonTex;
     VkDescriptorSet balloonTexDescriptorSet;
-
-    VulkanTextureSimple boxRTex;
-    VkDescriptorSet boxRTexDescriptorSet;
 
     VulkanTextureSimple powerupJumpTex;
     VkDescriptorSet powerupJumpTexDescriptorSet;
@@ -765,6 +779,12 @@ public:
         }
         else if (key == "global.box_r") {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->boxRTexDescriptorSet, 0, nullptr);
+        }
+        else if (key == "global.bomb") {
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->bombTexDescriptorSet, 0, nullptr);
+        }
+        else if (key == "global.bomb_r") {
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->bombRTexDescriptorSet, 0, nullptr);
         }
         else if (key == "global.balloon") {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->balloonTexDescriptorSet, 0, nullptr);

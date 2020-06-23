@@ -2657,6 +2657,19 @@ template <
 	boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
 	boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
 
+	// Update box state
+	for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+		if (boxType[i] == BoxType::BOMB) {
+			if (state[i] > 0) {
+				state[i] -= 1;
+				if (state[i] == 0) {
+					squished[i] = true;
+					boxGlitzAdder.addDeathGlitz(x[i], y[i], width[i], height[i], oldBoxList[i].getTimeDirection());
+				}
+			}
+		}
+	}
+
 	// Send boxes
 	for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 	{

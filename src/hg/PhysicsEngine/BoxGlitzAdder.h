@@ -1,9 +1,11 @@
 #ifndef HG_BOX_GLITZ_ADDER_H
 #define HG_BOX_GLITZ_ADDER_H
+#include "hg/GlobalConst.h"
 #include "hg/PhysicsEngine/GlitzAdderUtil.h"
 #include "hg/TimeEngine/Glitz/Glitz.h"
 #include "hg/TimeEngine/Glitz/ImageGlitz.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
+#include "hg/TimeEngine/Glitz/TextGlitz.h"
 #include "hg/Util/multi_thread_allocator.h"
 #include "hg/mt/std/memory"
 #include "hg/mt/std/vector"
@@ -12,6 +14,7 @@
 namespace hg {
 class BoxGlitzAdder final {
 public:
+
 	explicit BoxGlitzAdder(
 		mt::std::vector<Glitz> &forwardsGlitz,
 		mt::std::vector<Glitz> &reverseGlitz,
@@ -24,7 +27,8 @@ public:
 	//with the given characteristics
 	void addGlitzForBox(
 		vec2<int> const &position,
-		int width, int height, BoxType boxType,
+		int width, int height,
+		BoxType boxType, int state,
 		TimeDirection timeDirection) const
 	{
 		int x = position.a;
@@ -54,6 +58,19 @@ public:
 		
 		reverseGlitz->push_back(
 			timeDirection == TimeDirection::REVERSE ? sameDirectionGlitz : oppositeDirectionGlitz);
+
+		if (boxType == BoxType::BOMB && state > 0) {
+			Glitz stateText = Glitz(mt::std::make_unique<TextGlitz>(
+				500 + static_cast<int>(boxType),
+				formatTime(state),
+				x + width / 5,
+				y + height / 5,
+				width / 2,
+				asPackedColour(0, 0, 0)));
+
+			forwardsGlitz->push_back(stateText);
+			reverseGlitz->push_back(stateText);
+		}
 	}
 
 	void addDeathGlitz(

@@ -42,7 +42,6 @@ namespace hg {
 		DynamicArea const &dynamicArea,
 		unsigned const forwardsColour,
 		unsigned const reverseColour);
-	unsigned asPackedColour(int const r, int const g, int const b);
 	struct AxisCollisionDestination final {
 	private:
 		auto comparison_tuple() const noexcept -> decltype(auto) {
@@ -1411,7 +1410,7 @@ namespace hg {
 					}
 				}()
 			};
-			auto const colour{active ? asPackedColour(0, 180, 0) : asPackedColour(180, 0, 0)};
+			auto const colour{ active ? 180 << 16 : 180 << 24}; // asPackedColour cannot be access from here.
 			auto [forGlitz, revGlitz] = calculateBidirectionalGlitz(1500, obj, colour, colour);
 
 			forwardsGlitz.emplace_back(std::move(forGlitz));

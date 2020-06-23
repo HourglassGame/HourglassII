@@ -30,7 +30,7 @@ void makeBoxGlitzListForNormalDepartures(
 					nextBox[j].object.getX() - nextBox[j].object.getXspeed(), 
 					nextBox[j].object.getY() - nextBox[j].object.getYspeed()},
 				nextBox[j].object.getWidth(), nextBox[j].object.getHeight(),
-				nextBox[j].object.getBoxType(),
+				nextBox[j].object.getBoxType(), nextBox[j].object.getState(),
 				nextBox[j].object.getTimeDirection());
 		}
 	}

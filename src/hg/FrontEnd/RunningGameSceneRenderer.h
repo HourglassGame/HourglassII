@@ -123,6 +123,8 @@ namespace hg {
                 sceneData->textures.fontTexDescriptorSet
               , sceneData->textures.boxTexDescriptorSet
               , sceneData->textures.boxRTexDescriptorSet
+              , sceneData->textures.bombTexDescriptorSet
+              , sceneData->textures.bombRTexDescriptorSet
               , sceneData->textures.balloonTexDescriptorSet
               , sceneData->textures.balloonRTexDescriptorSet
               , sceneData->textures.powerupJumpTexDescriptorSet

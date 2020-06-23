@@ -11,6 +11,7 @@
 #include "TriggerClause.h"
 #include "hg/mt/std/memory"
 
+#include "hg/PhysicsEngine/GlitzAdderUtil.h"
 #include "hg/Util/Maths.h"
 #include "hg/GlobalConst.h"
 
@@ -18,11 +19,6 @@
 #include <cmath>
 
 namespace hg {
-	//TODO: Move this to a central location
-	unsigned asPackedColour(int const r, int const g, int const b) { 
-		return r << 24 | g << 16 | b << 8;
-	}
-
 	//TODO: Remove this overload!
 	std::tuple<Glitz, Glitz> calculateBidirectionalGlitz(
 		int const layer,
@@ -289,21 +285,6 @@ namespace hg {
 		};
 	}
 
-	mt::std::string formatTime(int const frames) {
-		std::stringstream ss; //TODO: Use appropriate allocator here!
-		
-		if (frames%hg::FRAMERATE == 0) {
-			ss << floor(frames/static_cast<double>(hg::FRAMERATE)) << "s";
-		}
-		else {
-			double const seconds = frames/static_cast<double>(hg::FRAMERATE);
-			ss << std::setprecision(gsl::narrow<std::streamsize>(std::ceil(std::log10(std::abs(seconds)))));
-			ss << frames/static_cast<double>(hg::FRAMERATE) << "s";
-		}
-		//TODO: Use appropriate allocator here too!!
-		auto s = ss.str();
-		return {s.begin(), s.end()};
-	}
 	void calculatePortalGlitz(
 		PortalArea const &portal,
 		mt::std::vector<Glitz> &forwardsGlitz,
