@@ -153,7 +153,6 @@ inline hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
 {
     return timeDirection == TimeDirection::FORWARDS ? view.getForwardsGlitz() : view.getReverseGlitz();
 }
-inline float scaleHackVal{1.f};
 
 inline void addCircleVertices(
     std::vector<Vertex> &vertices,
@@ -213,7 +212,7 @@ inline void addRectVertices(
 
     vertices.push_back(
         Vertex{
-            vec2<float>{left / scaleHackVal, top / scaleHackVal},
+            vec2<float>{left, top},
             colour,
             vec2<float>{0.f, 0.f},
             useTexture
@@ -221,14 +220,14 @@ inline void addRectVertices(
     );
     vertices.push_back(
         Vertex{
-            vec2<float>{right / scaleHackVal, top / scaleHackVal},
+            vec2<float>{right, top},
             colour,
             vec2<float>{1.f, 0.f},
             useTexture
         });
     vertices.push_back(
         Vertex{
-            vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+            vec2<float>{right, bottom},
             colour,
             vec2<float>{1.f, 1.f},
             useTexture
@@ -236,21 +235,21 @@ inline void addRectVertices(
 
     vertices.push_back(
         Vertex{
-            vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+            vec2<float>{right, bottom},
             colour,
             vec2<float>{1.f, 1.f},
             useTexture
         });
     vertices.push_back(
         Vertex{
-            vec2<float>{left / scaleHackVal, bottom / scaleHackVal},
+            vec2<float>{left, bottom},
             colour,
             vec2<float>{0.f, 1.f},
             useTexture
         });
     vertices.push_back(
         Vertex{
-            vec2<float>{left / scaleHackVal, top / scaleHackVal},
+            vec2<float>{left, top},
             colour,
             vec2<float>{0.f, 0.f},
             useTexture
@@ -388,7 +387,7 @@ inline void drawText(VulkanRenderTarget &target, VkCommandBuffer const drawComma
 
             vertices.push_back(
                 Vertex{
-                    vec2<float>{left / scaleHackVal, top / scaleHackVal},
+                    vec2<float>{left, top},
                     vulkanColour,
                     vec2<float>{texLeft, texTop},
                     useTexture
@@ -396,14 +395,14 @@ inline void drawText(VulkanRenderTarget &target, VkCommandBuffer const drawComma
             );
             vertices.push_back(
                 Vertex{
-                    vec2<float>{right / scaleHackVal, top / scaleHackVal},
+                    vec2<float>{right, top},
                     vulkanColour,
                     vec2<float>{texRight, texTop},
                     useTexture
                 });
             vertices.push_back(
                 Vertex{
-                    vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+                    vec2<float>{right, bottom},
                     vulkanColour,
                     vec2<float>{texRight, texBottom},
                     useTexture
@@ -411,21 +410,21 @@ inline void drawText(VulkanRenderTarget &target, VkCommandBuffer const drawComma
 
             vertices.push_back(
                 Vertex{
-                    vec2<float>{right / scaleHackVal, bottom / scaleHackVal},
+                    vec2<float>{right, bottom},
                     vulkanColour,
                     vec2<float>{texRight, texBottom},
                     useTexture
                 });
             vertices.push_back(
                 Vertex{
-                    vec2<float>{left / scaleHackVal, bottom / scaleHackVal},
+                    vec2<float>{left, bottom},
                     vulkanColour,
                     vec2<float>{texLeft, texBottom},
                     useTexture
                 });
             vertices.push_back(
                 Vertex{
-                    vec2<float>{left / scaleHackVal, top / scaleHackVal},
+                    vec2<float>{left, top},
                     vulkanColour,
                     vec2<float>{texLeft, texTop},
                     useTexture
@@ -819,13 +818,13 @@ public:
             vec2<float> pbPos{ pb + d };
             vec2<float> paPos{ pa + d };
 
-            vertices.push_back(Vertex{vec2<float>{paNeg.a / scaleHackVal, paNeg.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-            vertices.push_back(Vertex{vec2<float>{pbNeg.a / scaleHackVal, pbNeg.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-            vertices.push_back(Vertex{vec2<float>{pbPos.a / scaleHackVal, pbPos.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+            vertices.push_back(Vertex{vec2<float>{paNeg.a, paNeg.b},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+            vertices.push_back(Vertex{vec2<float>{pbNeg.a, pbNeg.b},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+            vertices.push_back(Vertex{vec2<float>{pbPos.a, pbPos.b},vulkanColour, vec2<float>{0.f, 0.f}, 0});
 
-            vertices.push_back(Vertex{vec2<float>{pbPos.a / scaleHackVal, pbPos.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-            vertices.push_back(Vertex{vec2<float>{paPos.a / scaleHackVal, paPos.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
-            vertices.push_back(Vertex{vec2<float>{paNeg.a / scaleHackVal, paNeg.b / scaleHackVal},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+            vertices.push_back(Vertex{vec2<float>{pbPos.a, pbPos.b},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+            vertices.push_back(Vertex{vec2<float>{paPos.a, paPos.b},vulkanColour, vec2<float>{0.f, 0.f}, 0});
+            vertices.push_back(Vertex{vec2<float>{paNeg.a, paNeg.b},vulkanColour, vec2<float>{0.f, 0.f}, 0});
             target->drawVertices(vertices);
         }
     }
