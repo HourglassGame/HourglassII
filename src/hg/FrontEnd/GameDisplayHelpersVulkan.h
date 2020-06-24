@@ -14,6 +14,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 #include "hg/Util/multi_array.h"
 #include <boost/range/adaptor/sliced.hpp>
+#include <boost/math/constants/constants.hpp>
 #include <mutex>
 #include <locale>
 #include <codecvt>
@@ -154,6 +155,48 @@ inline hg::mt::std::vector<hg::Glitz> const &getGlitzForDirection(
 }
 inline float scaleHackVal{1.f};
 
+inline void addCircleVertices(
+    std::vector<Vertex> &vertices,
+    float const x,
+    float const y,
+    float const radius,
+    vec3<float> const &colour
+)
+{
+    unsigned char const useTexture{0};//Currently doesn't make sense to use a texture for a circle; maybe could change in the future.
+    auto const numFaces{32};
+    auto const vertexNumToPos{[=](auto const tri){
+        auto const angle{gsl::narrow_cast<float>(tri)*2.f*boost::math::constants::pi<float>()/gsl::narrow_cast<float>(numFaces)};
+        return vec2<float>{x + radius * std::cos(angle), y + radius * std::sin(angle)};
+    }};
+    for (auto tri{0}; tri != numFaces; ++tri) {
+        vertices.emplace_back(
+            Vertex{
+                vec2<float>{x, y},
+                colour,
+                vec2<float>{0.f, 0.f},
+                useTexture
+            }
+        );
+        vertices.emplace_back(
+            Vertex{
+                vertexNumToPos(tri),
+                colour,
+                vec2<float>{0.f, 0.f},
+                useTexture
+            }
+        );
+        vertices.emplace_back(
+            Vertex{
+                vertexNumToPos(tri+1),
+                colour,
+                vec2<float>{0.f, 0.f},
+                useTexture
+            }
+        );
+    }
+}
+
 inline void addRectVertices(
     std::vector<Vertex> &vertices,
     float const x,
@@ -234,14 +277,12 @@ inline void drawCircle(
     float const x,
     float const y,
     float const radius,
-    vec3<float> const &colour,
-    unsigned char const useTexture
+    vec3<float> const &colour
 )
 {
     std::vector<Vertex> vertices;
-	// TODO: Be a circle.
-    addRectVertices(
-        vertices, x - radius, y - radius, radius*2, radius*2, colour, useTexture
+    addCircleVertices(
+        vertices, x, y, radius, colour
     );
     target.drawVertices(vertices);
 }
@@ -762,7 +803,7 @@ public:
     }
     void drawCircle(float const x, float const y, float const radius, unsigned const colour) override
     {
-        hg::drawCircle(*target, x, y, radius, interpretAsVulkanColour(colour), 0);
+        hg::drawCircle(*target, x, y, radius, interpretAsVulkanColour(colour));
     }
     void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
     {
