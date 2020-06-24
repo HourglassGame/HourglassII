@@ -39,7 +39,7 @@ public:
 	}
 private:
 	virtual int order_ranking() const override {
-		return 0;
+		return 4;
 	}
 	int layer;
 

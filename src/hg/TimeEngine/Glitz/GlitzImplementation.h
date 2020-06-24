@@ -19,6 +19,7 @@ public:
 	//LineGlitz: 1
 	//TextGlitz: 2
 	//ImageGlitz: 3
+	//CircleGlitz: 4
 	virtual int order_ranking() const = 0;
 	virtual bool operator<(GlitzImplementation const &o) const = 0;
 	virtual bool operator==(GlitzImplementation const &o) const = 0;
