@@ -1499,7 +1499,7 @@ namespace hg {
 		TriggerClause triggerClause(triggerClauseString);
 		lua_pop(L, 1);
 
-		bool const useTriggerArrival{readField<bool>(L, "useTriggerArrival")};
+		bool const useTriggerArrival{readFieldWithDefault<bool>(L, "useTriggerArrival", -1, false)};
 		PlatformAndPos const x1{readField<PlatformAndPos>(L, "x1")};
 		PlatformAndPos const y1{readField<PlatformAndPos>(L, "y1")};
 		PlatformAndPos const x2{readField<PlatformAndPos>(L, "x2")};
