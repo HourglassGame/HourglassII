@@ -184,6 +184,50 @@ void recursiveBoxCollision(
 		}
 	}
 }
+
+
+void explodeBomb(
+	int const index_,
+	mp::std::vector<int> const& x,
+	mp::std::vector<int> const& y,
+	mp::std::vector<int> const& width,
+	mp::std::vector<int> const& height,
+	mp::std::vector<BoxType> const& boxType,
+	mp::std::vector<char>& squished,
+	mp::std::vector<Box> const& oldBoxList,
+	BoxGlitzAdder const& boxGlitzAdder,
+	memory_pool<user_allocator_tbb_alloc>& pool)
+{
+	mp::std::vector<char> triggeredBombs(pool);
+	triggeredBombs.reserve(std::size(oldBoxList));
+	triggeredBombs.push_back(index_);
+	while (!std::empty(triggeredBombs)) {
+		auto const index{triggeredBombs.back()};
+		triggeredBombs.pop_back();
+
+		squished[index] = true;
+		int const midX = x[index] + width[index] / 2;
+		int const midY = y[index] + height[index] / 2;
+		int const radius = (width[index]/2 + 1600) * 2;
+		boxGlitzAdder.addExplosionGlitz(midX, midY, radius, oldBoxList[index].getTimeDirection());
+
+		for (std::size_t i(0), isize(std::size(oldBoxList)); i < isize; ++i) {
+			if (!squished[i]) {
+				if (DistanceToRectangle(midX, midY, x[i], y[i], width[i], height[i]) <= radius) {
+					if (boxType[i] == BoxType::BOMB) {
+						triggeredBombs.push_back(i);
+					}
+					else {
+						boxGlitzAdder.addDeathGlitz(x[i], y[i], width[i], height[i], oldBoxList[i].getTimeDirection());
+						squished[i] = true;
+					}
+				}
+			}
+		}
+	}
+}
+
+
 #if 0
 bool wallAtInclusive(Environment const &env, int x, int y, int w, int h)
 {

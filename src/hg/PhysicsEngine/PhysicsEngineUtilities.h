@@ -115,8 +115,8 @@ void boxInteractionBoundLoop(
 
 void explodeBomb(
 	int index,
-	mp::std::vector<int>& x,
-	mp::std::vector<int>& y,
+	mp::std::vector<int> const& x,
+	mp::std::vector<int> const& y,
 	mp::std::vector<int> const& width,
 	mp::std::vector<int> const& height,
 	mp::std::vector<BoxType> const& boxType,
