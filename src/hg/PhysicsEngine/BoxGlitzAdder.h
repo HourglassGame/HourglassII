@@ -5,6 +5,7 @@
 #include "hg/TimeEngine/Glitz/Glitz.h"
 #include "hg/TimeEngine/Glitz/ImageGlitz.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
+#include "hg/TimeEngine/Glitz/CircleGlitz.h"
 #include "hg/TimeEngine/Glitz/TextGlitz.h"
 #include "hg/Util/multi_thread_allocator.h"
 #include "hg/mt/std/memory"
@@ -102,6 +103,34 @@ public:
 					60,
 					timeDirection)));
 	}
+
+	void addExplosionGlitz(
+		int x,
+		int y,
+		int radius,
+		TimeDirection timeDirection) const
+	{
+		persistentGlitz->push_back(
+			GlitzPersister(
+				mt::std::make_unique<StaticGlitzPersister>(
+					Glitz(
+						mt::std::make_unique<CircleGlitz>(
+								1500,
+								x,
+								y,
+								radius,
+								timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+					Glitz(
+						mt::std::make_unique<CircleGlitz>(
+								1500,
+								x,
+								y,
+								radius,
+								timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+					60,
+					timeDirection)));
+	}
+
 private:
 	mt::std::vector<Glitz> *forwardsGlitz;
 	mt::std::vector<Glitz> *reverseGlitz;

@@ -10,6 +10,7 @@
 #include "hg/LuaUtil/LuaStackManager.h"
 #include "hg/LuaUtil/LuaSandbox.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
+#include "hg/TimeEngine/Glitz/CircleGlitz.h"
 #include "hg/TimeEngine/Glitz/TextGlitz.h"
 #include "hg/TimeEngine/Glitz/ImageGlitz.h"
 #include "hg/Util/memory_pool.h"

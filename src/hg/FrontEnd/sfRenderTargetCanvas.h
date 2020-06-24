@@ -22,6 +22,10 @@ public:
     {
         (void)x; (void)y; (void)width; (void)height; (void)colour;
     }
+    virtual void drawCircle(float const x, float const y, float const radius, unsigned const colour) override
+    {
+        (void)x; (void)y; (void)radius; (void)colour;
+    }
     virtual void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
     {
         (void)xa; (void)ya; (void)xb; (void)yb; (void)width; (void)colour;

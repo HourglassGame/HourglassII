@@ -2,6 +2,7 @@
 #define HG_GUY_GLITZ_ADDER_H
 #include "hg/PhysicsEngine/GlitzAdderUtil.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
+#include "hg/TimeEngine/Glitz/CircleGlitz.h"
 #include "hg/TimeEngine/Glitz/LineGlitz.h"
 #include "hg/TimeEngine/Glitz/Glitz.h"
 #include "hg/Util/multi_thread_allocator.h"

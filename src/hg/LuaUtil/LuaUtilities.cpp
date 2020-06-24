@@ -7,6 +7,7 @@
 #include "hg/TimeEngine/Glitz/TextGlitz.h"
 #include "hg/TimeEngine/Glitz/LineGlitz.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
+#include "hg/TimeEngine/Glitz/CircleGlitz.h"
 
 #include "hg/Util/multi_vector.h"
 #include "hg/mt/std/memory"

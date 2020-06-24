@@ -1,6 +1,7 @@
 #include "PhysicsEngineUtilities.h"
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
+#include "hg/TimeEngine/Glitz/CircleGlitz.h"
 #include "hg/Util/multi_thread_allocator.h"
 #include "hg/mp/std/vector"
 #include <tuple>
@@ -866,6 +867,48 @@ int ManhattanDistanceToRectangle(int px, int py, int x, int y, int w, int h)
 		}
 		else {
 			return ManhattanDistance(px, py, x + w, y + h);
+		}
+	}
+}
+
+int Distance(int x1, int y1, int x2, int y2)
+{
+	return std::sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+}
+
+int DistanceToRectangle(int px, int py, int x, int y, int w, int h)
+{
+	if (px < x) {
+		if (py < y) {
+			return Distance(px, py, x, y);
+		}
+		else if (py <= y + h) {
+			return std::abs(px - x);
+		}
+		else {
+			return Distance(px, py, x, y + h);
+		}
+	}
+	else if (px <= x + w) {
+		if (py < y) {
+			return std::abs(py - y);
+		}
+		else if (py <= y + h) {
+			return -1*std::min(std::min(std::abs(px - x), std::abs(px - (x + w))), std::min(std::abs(py - y), std::abs(py - (y + h))));
+		}
+		else {
+			return std::abs(py - (y + h));
+		}
+	}
+	else {
+		if (py < y) {
+			return Distance(px, py, x + w, y);
+		}
+		else if (py <= y + h) {
+			return std::abs(px - (x + w));
+		}
+		else {
+			return Distance(px, py, x + w, y + h);
 		}
 	}
 }

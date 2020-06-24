@@ -229,6 +229,22 @@ inline void drawRect(
     );
     target.drawVertices(vertices);
 }
+inline void drawCircle(
+    VulkanRenderTarget &target,
+    float const x,
+    float const y,
+    float const radius,
+    vec3<float> const &colour,
+    unsigned char const useTexture
+)
+{
+    std::vector<Vertex> vertices;
+	// TODO: Be a circle.
+    addRectVertices(
+        vertices, x - radius, y - radius, radius*2, radius*2, colour, useTexture
+    );
+    target.drawVertices(vertices);
+}
 
 template<typename It>
 class utf32_from_utf8_iter : public boost::iterator_facade<
@@ -743,6 +759,10 @@ public:
     void drawRect(float const x, float const y, float const width, float const height, unsigned const colour) override
     {
         hg::drawRect(*target, x, y, width, height, interpretAsVulkanColour(colour), 0);
+    }
+    void drawCircle(float const x, float const y, float const radius, unsigned const colour) override
+    {
+        hg::drawCircle(*target, x, y, radius, interpretAsVulkanColour(colour), 0);
     }
     void drawLine(float const xa, float const ya, float const xb, float const yb, float const width, unsigned const colour) override
     {

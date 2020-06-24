@@ -2469,6 +2469,39 @@ template <
 	}
 }
 
+void explodeBomb(
+	int index,
+	mp::std::vector<int>& x,
+	mp::std::vector<int>& y,
+	mp::std::vector<int> const& width,
+	mp::std::vector<int> const& height,
+	mp::std::vector<BoxType> const& boxType,
+	mp::std::vector<char>& squished,
+	mp::std::vector<Box> const& oldBoxList,
+	BoxGlitzAdder const& boxGlitzAdder,
+	memory_pool<user_allocator_tbb_alloc>& pool)
+{
+	squished[index] = true;
+	int midX = x[index] + width[index] / 2;
+	int midY = y[index] + height[index] / 2;
+	int radius = (width[index]/2 + 1600) * 2;
+	boxGlitzAdder.addExplosionGlitz(midX, midY, radius, oldBoxList[index].getTimeDirection());
+
+	for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+		if (!squished[i]) {
+			if (DistanceToRectangle(midX, midY, x[i], y[i], width[i], height[i]) <= radius) {
+				if (boxType[i] == BoxType::BOMB) {
+					explodeBomb(i, x, y, width, height, boxType, squished, oldBoxList, boxGlitzAdder, pool);
+				}
+				else {
+					boxGlitzAdder.addDeathGlitz(x[i], y[i], width[i], height[i], oldBoxList[i].getTimeDirection());
+					squished[i] = true;
+				}
+			}
+		}
+	}
+}
+
 template <
 	typename RandomAccessBoxRange,
 	typename RandomAccessPortalRange,
@@ -2664,8 +2697,7 @@ template <
 			if (state[i] > 0) {
 				state[i] -= 1;
 				if (state[i] == 0) {
-					squished[i] = true;
-					boxGlitzAdder.addDeathGlitz(x[i], y[i], width[i], height[i], oldBoxList[i].getTimeDirection());
+					explodeBomb(i, x, y, width, height, boxType, squished, oldBoxList, boxGlitzAdder, pool);
 				}
 			}
 		}

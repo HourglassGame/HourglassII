@@ -113,6 +113,18 @@ void boxInteractionBoundLoop(
 	BoxGlitzAdder const &boxGlitzAdder,
 	memory_pool<user_allocator_tbb_alloc> &pool);
 
+void explodeBomb(
+	int index,
+	mp::std::vector<int>& x,
+	mp::std::vector<int>& y,
+	mp::std::vector<int> const& width,
+	mp::std::vector<int> const& height,
+	mp::std::vector<BoxType> const& boxType,
+	mp::std::vector<char>& squished,
+	mp::std::vector<Box> const& oldBoxList,
+	BoxGlitzAdder const& boxGlitzAdder,
+	memory_pool<user_allocator_tbb_alloc>& pool);
+
 template <
 	typename RandomAccessBoxRange,
 	typename RandomAccessPortalRange,
@@ -134,7 +146,7 @@ void boxCollisionAlgorithm(
 	BoxGlitzAdder const &boxGlitzAdder,
 	FrameT const &frame,
 	memory_pool<user_allocator_tbb_alloc> &pool);
-	
+
 void makeBoxGlitzListForNormalDepartures(
 	mp::std::vector<ObjectAndTime<Box, Frame*>> const &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
@@ -173,7 +185,6 @@ bool explodeBoxesUpwards(
 	mp::std::vector<std::pair<bool, int> > const &bound,
 	std::size_t index,
 	int boundSoFar);
-
 
 bool explodeBoxes(
 	mp::std::vector<int> &pos,
@@ -258,6 +269,8 @@ bool PointInRectangleSemiInclusive(int px, int py, int x, int y, int w, int h);
 bool PointInRectangleExclusive(int px, int py, int x, int y, int w, int h);
 int ManhattanDistance(int x1, int y1, int x2, int y2);
 int ManhattanDistanceToRectangle(int px, int py, int x, int y, int w, int h);
+int Distance(int x1, int y1, int x2, int y2);
+int DistanceToRectangle(int px, int py, int x, int y, int w, int h);
 bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);

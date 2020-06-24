@@ -32,6 +32,24 @@ namespace lc_internal {
         float height;
         unsigned colour;
     };
+    class CircleDrawer : public Drawer {
+    public:
+        CircleDrawer(float x, float y, float radius, unsigned colour) :
+            x(x), y(y), radius(radius), colour(colour)
+        {
+        }
+        void drawTo(Canvas &canvas) const override {
+            canvas.drawCircle(x, y, radius, colour);
+        }
+        CircleDrawer *clone() const override {
+            return new CircleDrawer(*this);
+        }
+    private:
+        float x;
+        float y;
+        float radius;
+        unsigned colour;
+    };
     class LineDrawer : public Drawer {
     public:
         LineDrawer(float xa, float ya, float xb, float yb, float width, unsigned colour) :
@@ -109,6 +127,9 @@ void LayeredCanvas::playSound(std::string const &key, int n) {
 }
 void LayeredCanvas::drawRect(int layer, float x, float y, float width, float height, unsigned colour) {
     drawCalls.push_back(DrawCall{layer, make_clone_ptr<RectDrawer>(x, y, width, height, colour)});
+}
+void LayeredCanvas::drawCircle(int layer, float x, float y, float radius, unsigned colour) {
+    drawCalls.push_back(DrawCall{layer, make_clone_ptr<CircleDrawer>(x, y, radius, colour)});
 }
 void LayeredCanvas::drawLine(int layer, float xa, float ya, float xb, float yb, float width, unsigned colour) {
     drawCalls.push_back(DrawCall{layer, make_clone_ptr<LineDrawer>(xa,ya,xb,yb,width,colour)});

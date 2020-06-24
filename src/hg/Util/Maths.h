@@ -88,10 +88,29 @@ inline T magnitude(vec2<T> const &vec) {
 }
 
 template<typename T>
+inline T dot(vec2<T> const& v1, vec2<T> const& v2) {
+	return v1.a * v2.a + v1.b * v2.b;
+}
+
+template<typename T>
 inline vec2<T> normal(vec2<T> const &vec) {
     vec2<T> direction{vec.b, -vec.a};
     assert(magnitude(direction));
     return direction / magnitude(direction);
+}
+
+template<typename T>
+inline vec2<T> unit(vec2<T> const& vec) {
+	vec2<T> direction{ vec.a, vec.b };
+	assert(magnitude(direction));
+	return direction / magnitude(direction);
+}
+
+// Projection of v1 onto v2
+template<typename T>
+inline vec2<T> projection(vec2<T> const& v1, vec2<T> const& v2) {
+	vec2<T> unitV2 = unit(v2);
+	return dot(v1, unitV2) * unitV2;
 }
 
 template<typename T> struct vec3 final {
@@ -241,5 +260,26 @@ constexpr bool essentiallyEqual(Float const a, Float const b, Float const epsilo
 {
     return std::abs(a - b) <= std::min(std::abs(a), std::abs(b)) * epsilon;
 }
+
+template<typename Integral>
+Integral DistanceToBoundedLineSq(Integral px, Integral py, Integral x1, Integral y1, Integral x2, Integral y2) {
+	vec2<float> point = vec2<float>{ px, py };
+	vec2<float> start = vec2<float>{ x1, y1 };
+	vec2<float> end = vec2<float>{ x2, y2 };
+
+	vec2<float> startToEnd = end - start;
+	vec2<float> startToPoint = point - start;
+	vec2<float> proj = projection(startToPoint, startToEnd);
+
+	float projFactor = dot(startToEnd, proj);
+	if (projFactor < 0) {
+		return static_cast<Integral>(magnitude(startToPoint));
+	}
+	if (projFactor > 1) {
+		return static_cast<Integral>(magnitude(point - end));
+	}
+	return static_cast<Integral>(magnitude(startToPoint - proj));
+}
+
 }//namespace hg
 #endif //HG_MATHS_H
