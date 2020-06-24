@@ -1,5 +1,8 @@
 *** Unimplemented features/things to think about doing ***
 
+----===== MECHANICS =====-----
+ - Think about balloon dropping, whether the ceiling should ever block it.
+
 ----===== DETAILED CODING ISSUES =====-----
 
 BUG - Fix Crashes that can be caused by loading ill-formed levels or
