@@ -108,7 +108,7 @@ public:
 private:
 	Glitz forwardsGlitz;
 	Glitz reverseGlitz;
-	unsigned framesLeft;
+	int framesLeft; // peristers with framesLeft = -1 are permantent
 	TimeDirection timeDirection;
 	auto comparison_tuple() const -> decltype(auto)
 	{

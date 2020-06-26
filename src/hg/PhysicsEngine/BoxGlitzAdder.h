@@ -127,7 +127,26 @@ public:
 								y,
 								radius,
 								timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-					60,
+					30,
+					timeDirection)));
+		persistentGlitz->push_back(
+			GlitzPersister(
+				mt::std::make_unique<StaticGlitzPersister>(
+					Glitz(
+						mt::std::make_unique<CircleGlitz>(
+								100,
+								x,
+								y,
+								radius,
+								0x88888800u)),
+					Glitz(
+						mt::std::make_unique<CircleGlitz>(
+								100,
+								x,
+								y,
+								radius,
+								0x88888800u)),
+					-1,
 					timeDirection)));
 	}
 

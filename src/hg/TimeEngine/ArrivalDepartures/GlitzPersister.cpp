@@ -17,7 +17,8 @@ ObjectAndTime<GlitzPersister, Frame *> StaticGlitzPersister::runStep(Frame *fram
 		GlitzPersister(
 			mt::std::make_unique<StaticGlitzPersister>(
 				forwardsGlitz, reverseGlitz,
-				framesLeft - 1, timeDirection)),
+				framesLeft > 0 ? framesLeft - 1 : framesLeft, // peristers with framesLeft = -1 are permantent
+				timeDirection)),
 		framesLeft ? nextFrame(frame, timeDirection) : nullptr);
 }
 bool StaticGlitzPersister::operator==(GlitzPersisterImpl const &o) const
