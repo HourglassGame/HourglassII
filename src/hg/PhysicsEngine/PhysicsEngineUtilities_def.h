@@ -234,41 +234,43 @@ void guyMovement(
 	// Chonofrag with platforms
 	for (Collision const &platform : nextPlatform)
 	{
-		if (platform.getCollisionType() == CollisionType::PLATFORM)
-		{
-			int pX(platform.getX());
-			int pY(platform.getY());
-			int pWidth(platform.getWidth());
-			int pHeight(platform.getHeight());
-			TimeDirection pDirection(platform.getTimeDirection());
-			if (guyArrivalList[i].getTimePaused())
+		if (platform.getFunctional()) {
+			if (platform.getCollisionType() == CollisionType::PLATFORM)
 			{
-				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+				int pX(platform.getX());
+				int pY(platform.getY());
+				int pWidth(platform.getWidth());
+				int pHeight(platform.getHeight());
+				TimeDirection pDirection(platform.getTimeDirection());
+				if (guyArrivalList[i].getTimePaused())
 				{
-					finishedWith[i] = true;
-					continue;
+					if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+					{
+						finishedWith[i] = true;
+						continue;
+					}
 				}
-			}
-			else if (pDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
-			{
-				pX -= platform.getXspeed();
-				pY -= platform.getYspeed();
-				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+				else if (pDirection * guyArrivalList[i].getTimeDirection() == TimeDirection::FORWARDS)
 				{
-					finishedWith[i] = true;
-					guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
-					continue;
+					pX -= platform.getXspeed();
+					pY -= platform.getYspeed();
+					if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+					{
+						finishedWith[i] = true;
+						guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+						continue;
+					}
 				}
-			}
-			else
-			{
-				pX -= platform.getXspeed();
-				pY -= platform.getYspeed();
-				if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+				else
 				{
-					finishedWith[i] = true;
-					guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
-					continue;
+					pX -= platform.getXspeed();
+					pY -= platform.getYspeed();
+					if (IntersectingRectanglesExclusive(x[i], y[i], width, height, pX, pY, pWidth, pHeight))
+					{
+						finishedWith[i] = true;
+						guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+						continue;
+					}
 				}
 			}
 		}
@@ -402,44 +404,46 @@ void guyMovement(
 	// Platform collision in Y direction
 	for (Collision const &platform : nextPlatform)
 	{
-		int pX(platform.getX());
-		int pY(platform.getY());
-		TimeDirection pDirection(platform.getTimeDirection());
-		int pWidth(platform.getWidth());
-		int pHeight(platform.getHeight());
+		if (platform.getFunctional()) {
+			int pX(platform.getX());
+			int pY(platform.getY());
+			TimeDirection pDirection(platform.getTimeDirection());
+			int pWidth(platform.getWidth());
+			int pHeight(platform.getHeight());
 
-		if (!guyArrivalList[i].getTimePaused() && pDirection != guyArrivalList[i].getTimeDirection())
-		{
-			pX -= platform.getXspeed() + platform.getPrevXspeed();
-			pY -= platform.getYspeed() + platform.getPrevYspeed();
-		}
-
-		if (IntersectingRectanglesExclusive(
-			x[i], newY, width, height,
-			pX, pY, pWidth, pHeight))
-		{
-			if (platform.getCollisionType() == CollisionType::PLATFORM)
+			if (!guyArrivalList[i].getTimePaused() && pDirection != guyArrivalList[i].getTimeDirection())
 			{
-				int colDir = RectangleIntersectionDirection(x[i], y[i], width, height, pX, pY, pWidth, pHeight);
-				if (colDir == 1)
+				pX -= platform.getXspeed() + platform.getPrevXspeed();
+				pY -= platform.getYspeed() + platform.getPrevYspeed();
+			}
+
+			if (IntersectingRectanglesExclusive(
+				x[i], newY, width, height,
+				pX, pY, pWidth, pHeight))
+			{
+				if (platform.getCollisionType() == CollisionType::PLATFORM)
 				{
-					newY = pY - height;
-					bottom = true;
-					if (guyArrivalList[i].getTimePaused()) {
-						xspeed[i] = 0;
-						supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
-						supportedSpeed[i] = 0;
+					int colDir = RectangleIntersectionDirection(x[i], y[i], width, height, pX, pY, pWidth, pHeight);
+					if (colDir == 1)
+					{
+						newY = pY - height;
+						bottom = true;
+						if (guyArrivalList[i].getTimePaused()) {
+							xspeed[i] = 0;
+							supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
+							supportedSpeed[i] = 0;
+						}
+						else {
+							xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
+							supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
+							supportedSpeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getYspeed();
+						}
 					}
-					else {
-						xspeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getXspeed();
-						supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
-						supportedSpeed[i] = static_cast<int>(pDirection * guyArrivalList[i].getTimeDirection()) * platform.getYspeed();
+					else if (colDir == 3)
+					{
+						newY = pY + pHeight;
+						top = true;
 					}
-				}
-				else if (colDir == 3)
-				{
-					newY = pY + pHeight;
-					top = true;
 				}
 			}
 		}
@@ -515,30 +519,32 @@ void guyMovement(
 	// platform collision
 	for (Collision const &platform : nextPlatform)
 	{
-		int pX(platform.getX());
-		int pY(platform.getY());
-		int pWidth = platform.getWidth();
-		int pHeight = platform.getHeight();
+		if (platform.getFunctional()) {
+			int pX(platform.getX());
+			int pY(platform.getY());
+			int pWidth = platform.getWidth();
+			int pHeight = platform.getHeight();
 
-		if (!guyArrivalList[i].getTimePaused() && platform.getTimeDirection() != guyArrivalList[i].getTimeDirection())
-		{
-			pX -= platform.getXspeed() + platform.getPrevXspeed();
-			pY -= platform.getYspeed() + platform.getPrevYspeed();
-		}
-
-		if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
-		{
-			if (platform.getCollisionType() == CollisionType::PLATFORM)
+			if (!guyArrivalList[i].getTimePaused() && platform.getTimeDirection() != guyArrivalList[i].getTimeDirection())
 			{
-				if (x[i] + width / 2 < pX + pWidth / 2)
+				pX -= platform.getXspeed() + platform.getPrevXspeed();
+				pY -= platform.getYspeed() + platform.getPrevYspeed();
+			}
+
+			if (IntersectingRectanglesExclusive(newX, newY, width, height, pX, pY, pWidth, pHeight))
+			{
+				if (platform.getCollisionType() == CollisionType::PLATFORM)
 				{
-					newX = pX - width;
-					right = true;
-				}
-				else
-				{
-					newX = pX + pWidth;
-					left = true;
+					if (x[i] + width / 2 < pX + pWidth / 2)
+					{
+						newX = pX - width;
+						right = true;
+					}
+					else
+					{
+						newX = pX + pWidth;
+						left = true;
+					}
 				}
 			}
 		}
@@ -890,40 +896,42 @@ void guyStep(
 						{
 							for (std::size_t j(0), jsize(nextPlatform.size()); j < jsize; ++j)
 							{
-								int px = nextPlatform[j].getX();
-								int py = nextPlatform[j].getY();
-								int pw = nextPlatform[j].getWidth();
-								int ph = nextPlatform[j].getHeight();
+								if (nextPlatform[j].getFunctional()) {
+									int px = nextPlatform[j].getX();
+									int py = nextPlatform[j].getY();
+									int pw = nextPlatform[j].getWidth();
+									int ph = nextPlatform[j].getHeight();
 
-								if (guyArrivalList[i].getBoxCarryDirection()*nextPlatform[j].getTimeDirection() == TimeDirection::REVERSE)
-								{
-									px -= nextPlatform[j].getXspeed() + nextPlatform[j].getPrevXspeed();
-									py -= nextPlatform[j].getYspeed() + nextPlatform[j].getPrevYspeed();
-								}
-
-								if (IntersectingRectanglesExclusive(
-									px, py, pw, ph,
-									leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
-								{
-									if (nextPlatform[j].getCollisionType() == CollisionType::PLATFORM)
+									if (guyArrivalList[i].getBoxCarryDirection()*nextPlatform[j].getTimeDirection() == TimeDirection::REVERSE)
 									{
-										if (px + pw > leftBound + dropWidth && px < rightBound + dropWidth)
+										px -= nextPlatform[j].getXspeed() + nextPlatform[j].getPrevXspeed();
+										py -= nextPlatform[j].getYspeed() + nextPlatform[j].getPrevYspeed();
+									}
+
+									if (IntersectingRectanglesExclusive(
+										px, py, pw, ph,
+										leftBound, dropY, rightBound - leftBound + dropWidth, dropHeight))
+									{
+										if (nextPlatform[j].getCollisionType() == CollisionType::PLATFORM)
 										{
-											rightBound = px - dropWidth;
-											if (py - dropHeight > nextDropY) {
-												nextDropY = py - dropHeight;
+											if (px + pw > leftBound + dropWidth && px < rightBound + dropWidth)
+											{
+												rightBound = px - dropWidth;
+												if (py - dropHeight > nextDropY) {
+													nextDropY = py - dropHeight;
+												}
 											}
-										}
-										if (px < rightBound && px + pw > leftBound)
-										{
-											leftBound = px + pw;
-											if (py - dropHeight > nextDropY) {
-												nextDropY = py - dropHeight;
+											if (px < rightBound && px + pw > leftBound)
+											{
+												leftBound = px + pw;
+												if (py - dropHeight > nextDropY) {
+													nextDropY = py - dropHeight;
+												}
 											}
-										}
-										if (rightBound < leftBound)
-										{
-											break;
+											if (rightBound < leftBound)
+											{
+												break;
+											}
 										}
 									}
 								}
@@ -2179,56 +2187,58 @@ template <
 				// Check inside a platform
 				for (Collision const &platform : nextPlatform)
 				{
-					int pX(platform.getX());
-					int pY(platform.getY());
-					TimeDirection pDirection(platform.getTimeDirection());
-					int pWidth(platform.getWidth());
-					int pHeight(platform.getHeight());
+					if (platform.getFunctional()) {
+						int pX(platform.getX());
+						int pY(platform.getY());
+						TimeDirection pDirection(platform.getTimeDirection());
+						int pWidth(platform.getWidth());
+						int pHeight(platform.getHeight());
 
-					if (pDirection != boxDirection)
-					{
-						pX -= platform.getXspeed() + platform.getPrevXspeed();
-						pY -= platform.getYspeed() + platform.getPrevYspeed();
-					}
-					//std::cerr << "Platform y - height: " <<  (pY - height[i]) << "\n";
-
-					if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], pX, pY, pWidth, pHeight))
-					{
-						if (platform.getCollisionType() == CollisionType::PLATFORM)
+						if (pDirection != boxDirection)
 						{
-							if (IsRectangleRelationVertical(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight, false))
+							pX -= platform.getXspeed() + platform.getPrevXspeed();
+							pY -= platform.getYspeed() + platform.getPrevYspeed();
+						}
+						//std::cerr << "Platform y - height: " <<  (pY - height[i]) << "\n";
+
+						if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], pX, pY, pWidth, pHeight))
+						{
+							if (platform.getCollisionType() == CollisionType::PLATFORM)
 							{
-								if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) // box above platform
+								if (IsRectangleRelationVertical(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight, false))
 								{
-									y[i] = pY - height[i];
-									bottom[i] = std::make_pair(true, y[i]);
-									//std::cerr << "Box platform hit " << i << ": " << y[i] << "\n";
-									if (firstTimeThrough && boxType[i] != BoxType::BALLOON)
+									if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) // box above platform
 									{
-										x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+										y[i] = pY - height[i];
+										bottom[i] = std::make_pair(true, y[i]);
+										//std::cerr << "Box platform hit " << i << ": " << y[i] << "\n";
+										if (firstTimeThrough && boxType[i] != BoxType::BALLOON)
+										{
+											x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+										}
+									}
+									else
+									{
+										y[i] = pY + pHeight;
+										top[i] = std::make_pair(true, y[i]);
+										if (firstTimeThrough && boxType[i] == BoxType::BALLOON)
+										{
+											x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+										}
 									}
 								}
-								else
+								else // left or right
 								{
-									y[i] = pY + pHeight;
-									top[i] = std::make_pair(true, y[i]);
-									if (firstTimeThrough && boxType[i] == BoxType::BALLOON)
+									if (xTemp[i] + width[i] / 2 < pX + pWidth / 2) // box left of platform
 									{
-										x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+										x[i] = pX - width[i];
+										right[i] = std::make_pair(true, x[i]);
 									}
-								}
-							}
-							else // left or right
-							{
-								if (xTemp[i] + width[i] / 2 < pX + pWidth / 2) // box left of platform
-								{
-									x[i] = pX - width[i];
-									right[i] = std::make_pair(true, x[i]);
-								}
-								else
-								{
-									x[i] = pX + pWidth;
-									left[i] = std::make_pair(true, x[i]);
+									else
+									{
+										x[i] = pX + pWidth;
+										left[i] = std::make_pair(true, x[i]);
+									}
 								}
 							}
 						}
@@ -2601,36 +2611,38 @@ template <
 			}
 
 			for (Collision const &platform : nextPlatform) {
-				int pX(platform.getX());
-				int pY(platform.getY());
-				int pWidth(platform.getWidth());
-				int pHeight(platform.getHeight());
-				TimeDirection pDirection(platform.getTimeDirection());
-				if (pDirection * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
-				{
-					pX -= platform.getXspeed();
-					pY -= platform.getYspeed();
-					if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight))
+				if (platform.getFunctional()) {
+					int pX(platform.getX());
+					int pY(platform.getY());
+					int pWidth(platform.getWidth());
+					int pHeight(platform.getHeight());
+					TimeDirection pDirection(platform.getTimeDirection());
+					if (pDirection * oldBoxList[i].getTimeDirection() == TimeDirection::FORWARDS)
 					{
-						if (platform.getCollisionType() == CollisionType::PLATFORM)
+						pX -= platform.getXspeed();
+						pY -= platform.getYspeed();
+						if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight))
 						{
-							boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
-							squished[i] = true;
-							continue;
+							if (platform.getCollisionType() == CollisionType::PLATFORM)
+							{
+								boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
+								squished[i] = true;
+								continue;
+							}
 						}
 					}
-				}
-				else
-				{
-					pX -= platform.getXspeed();
-					pY -= platform.getYspeed();
-					if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight))
+					else
 					{
-						if (platform.getCollisionType() == CollisionType::PLATFORM)
+						pX -= platform.getXspeed();
+						pY -= platform.getYspeed();
+						if (IntersectingRectanglesExclusive(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight))
 						{
-							boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
-							squished[i] = true;
-							continue;
+							if (platform.getCollisionType() == CollisionType::PLATFORM)
+							{
+								boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
+								squished[i] = true;
+								continue;
+							}
 						}
 					}
 				}

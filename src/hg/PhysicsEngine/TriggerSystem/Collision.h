@@ -26,6 +26,7 @@ class Collision final
 			prevYspeed_,
 			width_,
 			height_,
+			functional_,
 			collisionType_,
 			timeDirection_
 		);
@@ -36,22 +37,25 @@ public:
 		int xspeed, int yspeed,
 		int prevXspeed, int prevYspeed,
 		int width, int height,
+		bool functional,
 		CollisionType collisionType,
 		TimeDirection timeDirection) :
 			x_(x), y_(y),
 			xspeed_(xspeed), yspeed_(yspeed),
 			prevXspeed_(prevXspeed), prevYspeed_(prevYspeed),
 			width_(width), height_(height),
+			functional_(functional),
 			collisionType_(collisionType),
 			timeDirection_(timeDirection) { }
-	int getX()          const { return x_; }
-	int getY()          const { return y_; }
-	int getXspeed()     const { return xspeed_; }
-	int getYspeed()     const { return yspeed_; }
-	int getPrevXspeed() const { return prevXspeed_; }
-	int getPrevYspeed() const { return prevYspeed_; }
-	int getWidth()      const { return width_; }
-	int getHeight()     const { return height_; }
+	int getX()           const { return x_; }
+	int getY()           const { return y_; }
+	int getXspeed()      const { return xspeed_; }
+	int getYspeed()      const { return yspeed_; }
+	int getPrevXspeed()  const { return prevXspeed_; }
+	int getPrevYspeed()  const { return prevYspeed_; }
+	int getWidth()       const { return width_; }
+	int getHeight()      const { return height_; }
+	bool getFunctional() const { return functional_; }
 	CollisionType getCollisionType()     const { return collisionType_; }
 	TimeDirection 
 		getTimeDirection() const { return timeDirection_; }
@@ -66,6 +70,7 @@ public:
 		HG_COLLISION_PRINT(prevYspeed_);
 		HG_COLLISION_PRINT(width_);
 		HG_COLLISION_PRINT(height_);
+		HG_COLLISION_PRINT(functional_);
 		HG_COLLISION_PRINT(collisionType_);
 		HG_COLLISION_PRINT(timeDirection_);
 		#undef HG_COLLISION_PRINT
@@ -83,6 +88,7 @@ private:
 	int prevYspeed_;
 	int width_;
 	int height_;
+	bool functional_;
 	CollisionType collisionType_;
 	TimeDirection timeDirection_;
 };

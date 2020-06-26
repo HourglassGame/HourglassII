@@ -67,15 +67,15 @@ triggerSystem =
         },
         {
             offset = 1,
-            default = {25 * 3200, 8 * 3200, 0, 0}
+            default = {25 * 3200, 8 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {7 * 3200, 5 * 3200, 0, 0}
+            default = {7 * 3200, 5 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {7 * 3200, 14 * 3200, 0, 0}
+            default = {7 * 3200, 14 * 3200, 0, 0, 0}
         },
     },
     arrivalLocationsSize = 2

@@ -65,7 +65,7 @@ triggerSystem =
         },
         {
             offset = 1,
-            default = {14 * 3200, 13 * 3200, 0, 0}
+            default = {14 * 3200, 13 * 3200, 0, 0, 0}
         },
         {
             offset = 1,

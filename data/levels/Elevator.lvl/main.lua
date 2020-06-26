@@ -59,7 +59,7 @@ triggerSystem =
         },
         {   --Platform Trigger
             offset = 1,
-            default = {10 * 3200, 12 * 3200, 0, 0}
+            default = {10 * 3200, 12 * 3200, 0, 0, 0}
         },
         {   --Switch State Trigger
             offset = 1,

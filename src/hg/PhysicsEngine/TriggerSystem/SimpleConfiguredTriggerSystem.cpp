@@ -168,18 +168,27 @@ namespace hg {
 				return protoCollision.rawCollisionFunction(triggerArrivals, outputTriggers, frameNumber);
 			}
 			*/
-			
+			mp::std::vector<int> const& lastStateTrigger = triggerArrivals[protoCollision.lastStateTriggerID];
+			assert(4 < lastStateTrigger.size());
 
+			if (lastStateTrigger[4] == -1) {
+				return Collision(
+					/*int x*/lastStateTrigger[0],/*int y*/lastStateTrigger[1],
+					/*int xspeed*/0, /*int yspeed*/0,
+					/*int prevXspeed*/lastStateTrigger[2], /*int prevYspeed*/lastStateTrigger[3],
+					/*int width*/protoCollision.width, /*int height*/protoCollision.height,
+					false, // Dead
+					protoCollision.collisionType,
+					/*TimeDirection timeDirection*/protoCollision.timeDirection
+				);
+			}
 			bool const active =
 				(protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] > 0)
-				|| (protoCollision.hasTriggerClause && (protoCollision.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) != 0))
-				;
+				|| (protoCollision.hasTriggerClause && (protoCollision.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) != 0));
 
 			CollisionDestination const &destination =
 				active ? protoCollision.onDestination : protoCollision.offDestination;
 
-			mp::std::vector<int> const &lastStateTrigger = triggerArrivals[protoCollision.lastStateTriggerID];
-			assert(3 < lastStateTrigger.size());
 			auto const horizontalPosAndVel = solvePDEquation(
 				destination.xDestination, lastStateTrigger[0], lastStateTrigger[2], triggerArrivals, currentFrame);
 
@@ -191,6 +200,7 @@ namespace hg {
 				/*int xspeed*/horizontalPosAndVel.velocity, /*int yspeed*/verticalPosAndVel.velocity,
 				/*int prevXspeed*/lastStateTrigger[2], /*int prevYspeed*/lastStateTrigger[3],
 				/*int width*/protoCollision.width, /*int height*/protoCollision.height,
+				true, // Not dead
 				protoCollision.collisionType,
 				/*TimeDirection timeDirection*/protoCollision.timeDirection
 			);
@@ -422,7 +432,7 @@ namespace hg {
 		for (std::size_t i{0}, sz{protoCollisions.size()}; i != sz; ++i) {
 			assert(collisions.size() == sz);
 			auto const &coll = collisions[i];
-			outputTriggers[protoCollisions[i].lastStateTriggerID] = mt::std::vector<int>{coll.getX(), coll.getY(), coll.getXspeed(), coll.getYspeed()};
+			outputTriggers[protoCollisions[i].lastStateTriggerID] = mt::std::vector<int>{coll.getX(), coll.getY(), coll.getXspeed(), coll.getYspeed(), coll.getFunctional() ? 0 : -1};
 		}
 	}
 
@@ -533,12 +543,29 @@ namespace hg {
 		for(auto &&a : protoMutators) mutatorFrameStates_.push_back(a.getFrameState(pool_));
 	}
 
+	void checkCollisionExplosion(
+		mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
+		ProtoCollision const &protoCollision,
+		mt::std::vector<ExplosionEffect> const &explosions)
+	{
+		if (outputTriggers[protoCollision.lastStateTriggerID][4] != -1) {
+			for (std::size_t i(0), isize(std::size(explosions)); i < isize; ++i) {
+				if (DistanceToRectangle(explosions[i].x, explosions[i].y, 
+						outputTriggers[protoCollision.lastStateTriggerID][0], outputTriggers[protoCollision.lastStateTriggerID][1],
+						protoCollision.width, protoCollision.height) <= explosions[i].radius) {
+					outputTriggers[protoCollision.lastStateTriggerID][4] = -1;
+					return;
+				}
+			}
+		}
+	}
 
 	std::tuple<Glitz, Glitz> calculateCollisionGlitz(Collision const &collision) {
 		return calculateBidirectionalGlitz(
 			300,
 			collision.getX(), collision.getY(), collision.getXspeed(), collision.getYspeed(), collision.getWidth(), collision.getHeight(), collision.getTimeDirection(),
-			asPackedColour(50, 0, 0), asPackedColour(0, 0, 50));
+			collision.getFunctional() ? asPackedColour(50, 0, 0): asPackedColour(110, 110, 110),
+			collision.getFunctional() ? asPackedColour(0, 0, 50): asPackedColour(110, 110, 110));
 	}
 
 	PhysicsAffectingStuff
@@ -696,6 +723,12 @@ namespace hg {
 		}
 		for (auto const  &protoTriggerMod : protoTriggerMods_) {
 			protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, triggerOffsetsAndDefaults_, currentFrame);
+		}
+
+		if (!explosions.empty()) {
+			for (auto const& protoCollision : protoCollisions_) {
+				checkCollisionExplosion(outputTriggers_, protoCollision, explosions);
+			}
 		}
 
 		for (auto const &protoPortal : protoPortals_) {
@@ -2166,7 +2199,7 @@ namespace hg {
 				(ya == yb)
 			);
 	}
-	
+
 	bool checkExplosion(
 		mt::std::vector<ExplosionEffect> &explosions,
 		int x, int y, int width, int height)

@@ -79,19 +79,19 @@ triggerSystem =
         },
         {
             offset = 1,
-            default = {14 * 3200, 14 * 3200, 0, 0}
+            default = {14 * 3200, 14 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {13 * 3200, 9 * 3200, 0, 0}
+            default = {13 * 3200, 9 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {14 * 3200, 4 * 3200, 0, 0}
+            default = {14 * 3200, 4 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {16 * 3200, 4 * 3200, 0, 0}
+            default = {16 * 3200, 4 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
@@ -107,19 +107,19 @@ triggerSystem =
         },
         {
             offset = 1,
-            default = {5 * 3200, 7 * 3200, 0, 0}
+            default = {5 * 3200, 7 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {26 * 3200, 7 * 3200, 0, 0}
+            default = {26 * 3200, 7 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {5 * 3200, 8 * 3200, 0, 0}
+            default = {5 * 3200, 8 * 3200, 0, 0, 0}
         },
         {
             offset = 1,
-            default = {25 * 3200, 8 * 3200, 0, 0}
+            default = {25 * 3200, 8 * 3200, 0, 0, 0}
         },
     },
     arrivalLocationsSize = 1

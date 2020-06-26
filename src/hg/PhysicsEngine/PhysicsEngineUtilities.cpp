@@ -709,13 +709,15 @@ GunRaytraceResult doGunRaytrace(
 	for (std::size_t i(0), isize(nextPlatform.size()); i < isize; ++i)
 	{
 		//TODO
-		auto const collision = getRaytraceRectangleCollision(
-			sx, sy, aimx, aimy,
-			nextPlatform[i].getX(), nextPlatform[i].getY(), 
-			nextPlatform[i].getWidth(), nextPlatform[i].getHeight());
-		//TODO: Add vector2 functions instead of doing it manually?
-		if (collision.hit && (iabs(collision.point.a - sx) < iabs(hitPoint.a - sx) || iabs(collision.point.b - sy) < iabs(hitPoint.b - sy))) {
-			hitPoint = collision.point;
+		if (nextPlatform[i].getFunctional()) {
+			auto const collision = getRaytraceRectangleCollision(
+				sx, sy, aimx, aimy,
+				nextPlatform[i].getX(), nextPlatform[i].getY(), 
+				nextPlatform[i].getWidth(), nextPlatform[i].getHeight());
+			//TODO: Add vector2 functions instead of doing it manually?
+			if (collision.hit && (iabs(collision.point.a - sx) < iabs(hitPoint.a - sx) || iabs(collision.point.b - sy) < iabs(hitPoint.b - sy))) {
+				hitPoint = collision.point;
+			}
 		}
 	}
 	auto targetType = PhysicsObjectType::NONE;

@@ -105,7 +105,7 @@ triggerSystem =
         },
         {
             offset = 1,
-            default = {38400, 43800, 0, 0}
+            default = {38400, 43800, 0, 0, 0}
         },
         {
             offset = 1,

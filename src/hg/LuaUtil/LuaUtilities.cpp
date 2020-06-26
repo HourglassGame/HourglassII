@@ -666,7 +666,7 @@ Collision to<Collision>(lua_State *L, int index) {
         CollisionType const collisionType(readField<CollisionType>(L, "collisionType", index));
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
 
-        return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, collisionType, timeDirection);
+        return Collision(x, y, xspeed, yspeed, prevXspeed, prevYspeed, width, height, false, collisionType, timeDirection);
     }
     catch (LuaError &e) {
         add_semantic_callstack_info(e, "to<Collision>");
