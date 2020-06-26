@@ -61,6 +61,7 @@ class DirectLuaTriggerFrameState final :
 	
 	virtual DepartureInformation getDepartureInformation(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		Frame *currentFrame) override;
 	virtual ~DirectLuaTriggerFrameState() noexcept override;
 private:

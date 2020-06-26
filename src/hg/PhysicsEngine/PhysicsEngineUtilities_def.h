@@ -221,6 +221,7 @@ void guyMovement(
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	RandomAccessBoxRange const &boxArrivalList,
 	mp::std::vector<Collision> const &nextPlatform,
+	mt::std::vector<ExplosionEffect> &explosions,
 	GuyGlitzAdder const &guyGlitzAdder)
 {
 	std::size_t relativeIndex(guyArrivalList[i].getIndex());
@@ -577,6 +578,14 @@ void guyMovement(
 		return;
 	}
 
+	for (std::size_t j(0), jsize(std::size(explosions)); j < jsize; ++j) {
+		if (DistanceToRectangle(explosions[j].x, explosions[j].y, x[i], y[i], width, height) <= explosions[j].radius) {
+			finishedWith[i] = true;
+			guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+			return;
+		}
+	}
+
 	// Apply Change
 	xspeed[i] = newX - x[i];
 	yspeed[i] = newY - y[i];
@@ -603,6 +612,7 @@ void guyStep(
 	mp::std::vector<PortalArea> const &nextPortal,
 	mp::std::vector<ArrivalLocation> const &arrivalLocations,
 	mp::std::vector<MutatorArea> const &mutators,
+	mt::std::vector<ExplosionEffect> &explosions,
 	TriggerFrameState &triggerFrameState,
 	GuyGlitzAdder const &guyGlitzAdder,
 	bool &winFrame,
@@ -713,7 +723,7 @@ void guyStep(
 				i, x, y, xspeed, yspeed, walkSpeed, jumpHold, action,
 				supported, supportedSpeed, finishedWith, facing,
 				nextBox, nextBoxNormalDeparture, boxArrivalList,
-				nextPlatform, guyGlitzAdder);
+				nextPlatform, explosions, guyGlitzAdder);
 		}
 	}
 	
@@ -745,7 +755,7 @@ void guyStep(
 				i, x, y, xspeed, yspeed, walkSpeed, jumpHold, action,
 				supported, supportedSpeed, finishedWith, facing,
 				nextBox, nextBoxNormalDeparture, boxArrivalList,
-				nextPlatform, guyGlitzAdder);
+				nextPlatform, explosions, guyGlitzAdder);
 		}
 
 		// Box Manipulation
@@ -2486,6 +2496,7 @@ template <
 		RandomAccessPortalRange const &nextPortal,
 		RandomAccessArrivalLocationRange const &arrivalLocations,
 		RandomAccessMutatorRange const &mutators,
+		mt::std::vector<ExplosionEffect> &explosions,
 		TriggerFrameState &triggerFrameState,
 		BoxGlitzAdder const &boxGlitzAdder,
 		FrameT const &frame,
@@ -2664,7 +2675,7 @@ template <
 			if (state[i] > 0) {
 				state[i] -= 1;
 				if (state[i] == 0) {
-					explodeBomb(i, x, y, width, height, boxType, squished, oldBoxList, boxGlitzAdder, pool);
+					explodeBomb(i, x, y, width, height, boxType, squished, oldBoxList, explosions, boxGlitzAdder, pool);
 				}
 			}
 		}

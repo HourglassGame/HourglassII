@@ -195,6 +195,7 @@ void explodeBomb(
 	mp::std::vector<BoxType> const& boxType,
 	mp::std::vector<char>& squished,
 	mp::std::vector<Box> const& oldBoxList,
+	mt::std::vector<ExplosionEffect> &explosions,
 	BoxGlitzAdder const& boxGlitzAdder,
 	memory_pool<user_allocator_tbb_alloc>& pool)
 {
@@ -210,6 +211,7 @@ void explodeBomb(
 		int const midY = y[index] + height[index] / 2;
 		int const radius = (width[index]/2 + 1600) * 2;
 		boxGlitzAdder.addExplosionGlitz(midX, midY, radius, oldBoxList[index].getTimeDirection());
+		explosions.push_back(ExplosionEffect{midX, midY, radius, oldBoxList[index].getTimeDirection()});
 
 		for (std::size_t i(0), isize(std::size(oldBoxList)); i < isize; ++i) {
 			if (!squished[i]) {

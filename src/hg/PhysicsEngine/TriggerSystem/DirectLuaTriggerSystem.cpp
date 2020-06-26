@@ -904,6 +904,7 @@ boost::optional<Box> DirectLuaTriggerFrameState::mutateObject(
 
 TriggerFrameStateImplementation::DepartureInformation DirectLuaTriggerFrameState::getDepartureInformation(
 	mt::std::map<Frame *, ObjectList<Normal>> const &departures,
+	mt::std::vector<ExplosionEffect> &explosions,
 	Frame *currentFrame)
 {
 	lua_State *L(L_.ptr);

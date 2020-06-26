@@ -6,6 +6,7 @@
 #include "BoxGlitzAdder.h"
 #include "GuyGlitzAdder.h"
 #include "BoxUtilities.h"
+#include "ExplosionEffect.h"
 #include "hg/PhysicsEngine/TriggerSystem/TriggerSystem.h"
 
 #include "hg/TimeEngine/ArrivalDepartures/InputList.h"
@@ -72,6 +73,7 @@ void guyMovement(
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	RandomAccessBoxRange const &boxArrivalList,
 	mp::std::vector<Collision> const &nextPlatform,
+	mt::std::vector<ExplosionEffect> &explosions,
 	GuyGlitzAdder const &guyGlitzAdder);
 
 template<
@@ -90,6 +92,7 @@ void guyStep(
 	mp::std::vector<PortalArea> const &nextPortal,
 	mp::std::vector<ArrivalLocation> const &arrivalLocations,
 	mp::std::vector<MutatorArea> const &mutators,
+	mt::std::vector<ExplosionEffect> &explosions,
 	TriggerFrameState &triggerFrameState,
 	GuyGlitzAdder const &guyGlitzAdder,
 	bool &winFrame,
@@ -122,6 +125,7 @@ void explodeBomb(
 	mp::std::vector<BoxType> const& boxType,
 	mp::std::vector<char>& squished,
 	mp::std::vector<Box> const& oldBoxList,
+	mt::std::vector<ExplosionEffect> &explosions,
 	BoxGlitzAdder const& boxGlitzAdder,
 	memory_pool<user_allocator_tbb_alloc>& pool);
 
@@ -142,6 +146,7 @@ void boxCollisionAlgorithm(
 	RandomAccessPortalRange const &nextPortal,
 	RandomAccessArrivalLocationRange const &arrivalLocations,
 	RandomAccessMutatorRange const &mutators,
+	mt::std::vector<ExplosionEffect> &explosions,
 	TriggerFrameState &triggerFrameState,
 	BoxGlitzAdder const &boxGlitzAdder,
 	FrameT const &frame,

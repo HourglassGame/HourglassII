@@ -265,6 +265,7 @@ namespace hg {
 		virtual void calcPnV(mp::std::vector<Collision> const &collisions) = 0;
 		virtual void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals) = 0;
 		virtual void calculateGlitz(
 			mt::std::vector<Glitz> &forwardsGlitz,
@@ -295,6 +296,7 @@ namespace hg {
 		void calcPnV(mp::std::vector<Collision> const &collisions) final;
 		void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
 		void calculateGlitz(
 			mt::std::vector<Glitz> &forwardsGlitz,
@@ -333,6 +335,7 @@ namespace hg {
 		void calcPnV(mp::std::vector<Collision> const &collisions) final;
 		void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
 		void calculateGlitz(
@@ -369,6 +372,7 @@ namespace hg {
 		void calcPnV(mp::std::vector<Collision> const &collisions) final;
 		void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
 		void calculateGlitz(
@@ -379,7 +383,7 @@ namespace hg {
 		ProtoToggleSwitchImpl const *proto;//Initialised by ctor
 		PositionAndVelocity2D firstPnV;//Initialised by calcPnV
 		PositionAndVelocity2D secondPnV;//Initialised by calcPnV
-		bool switchState;//Initialised by updateState
+		int switchState;//Initialised by updateState
 		bool justPressed;//Initialised by updateState
 	};
 
@@ -402,6 +406,7 @@ namespace hg {
 		void calcPnV(mp::std::vector<Collision> const &collisions) final;
 		void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
 		void calculateGlitz(
@@ -413,7 +418,7 @@ namespace hg {
 		mp::std::vector<PositionAndVelocity2D> PnVs;//Initialised by ctor/calcPnV
 		
 		int switchState;//Initialised by updateState
-		mp::std::vector<char> individualState;//Initialised by ctor/updateState
+		mp::std::vector<int> individualState;//Initialised by ctor/updateState
 		mp::std::vector<char> justPressed;//Initialised by ctor/updateState
 		mp::std::vector<char> justReleased;//Initialised by ctor/updateState
 	};
@@ -436,6 +441,7 @@ namespace hg {
 		void calcPnV(mp::std::vector<Collision> const &collisions) final;
 		void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals) final;
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
 		void calculateGlitz(
@@ -447,7 +453,7 @@ namespace hg {
 		PositionAndVelocity2D beamPnV; //Initialised by calcPnV
 		PositionAndVelocity2D emitterPnV; //Initialised by calcPnV
 
-		char switchState;//Initialised by updateState
+		int switchState;//Initialised by updateState
 		bool justPressed;//Initialised by updateState
 	};
 
@@ -464,10 +470,11 @@ namespace hg {
 		}
 		void updateState(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 		{
 			assert(pimpl_);
-			pimpl_->updateState(departures, triggerArrivals);
+			pimpl_->updateState(departures, explosions, triggerArrivals);
 		}
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const/*?*/{
 			assert(pimpl_);
@@ -1644,6 +1651,7 @@ namespace hg {
 
 		DepartureInformation getDepartureInformation(
 			mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+			mt::std::vector<ExplosionEffect> &explosions,
 			Frame *currentFrame) final;
 		~SimpleConfiguredTriggerFrameState() noexcept final;
 	private:

@@ -46,6 +46,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 	virtual DepartureInformation
 	getDepartureInformation(
 		mt::std::map<Frame *, ObjectList<Normal> > const &/*departures*/,
+		mt::std::vector<ExplosionEffect> &explosions,
 		Frame * /*currentFrame*/) override
 	{
 		assert(false && "Not implemented");
@@ -121,6 +122,8 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 		TriggerFrameState triggerFrameState(new (pool) MockTriggerFrameStateImplementation());
 		FrameID frame(9654, UniverseID(10800));
 		
+		mt::std::vector<ExplosionEffect> explosions;
+		
 		//This is testing a case which caused a crash. If this line does not cause a crash,
 		//then the test has succeeded.
 		boxCollisionAlgorithm(
@@ -133,6 +136,7 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 			nextPortal,
 			arrivalLocations,
 			mutators,
+			explosions,
 			triggerFrameState,
 			BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
 			frame,

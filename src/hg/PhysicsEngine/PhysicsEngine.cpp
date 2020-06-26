@@ -93,6 +93,9 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 	mp::std::vector<GlitzPersister> persistentGlitz(pool);
 	boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
 
+	// explosions
+	mt::std::vector<ExplosionEffect> explosions;
+
 	// boxes do their crazy wizz-bang collision algorithm
 	boxCollisionAlgorithm(
 		env_,
@@ -104,6 +107,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 		physicsTriggerStuff.portals,
 		physicsTriggerStuff.arrivalLocations,
 		physicsTriggerStuff.mutators,
+		explosions,
 		triggerFrameState,
 		BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
 		frame,
@@ -135,6 +139,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 		physicsTriggerStuff.portals,
 		physicsTriggerStuff.arrivalLocations,
 		physicsTriggerStuff.mutators,
+		explosions,
 		triggerFrameState,
 		GuyGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
 		winFrame,
@@ -165,6 +170,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 	TriggerFrameState::DepartureInformation const triggerSystemDepartureInformation(
 		triggerFrameState.getDepartureInformation(
 			newDepartures,
+			explosions,
 			frame));
 
 	for (auto const &triggerDeparture: triggerSystemDepartureInformation.triggerDepartures) {

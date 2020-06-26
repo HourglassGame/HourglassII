@@ -61,8 +61,8 @@ namespace hg {
 			reverseColour);
 	}
 
-	std::tuple<Glitz, Glitz> calculateButtonGlitz(DynamicArea const &buttonArea, bool const buttonState) {
-		auto const colour = buttonState ? asPackedColour(150, 255, 150) : asPackedColour(255, 150, 150);
+	std::tuple<Glitz, Glitz> calculateButtonGlitz(DynamicArea const &buttonArea, bool const buttonEnabled, bool const buttonDead) {
+		auto const colour = buttonEnabled ? asPackedColour(150, 255, 150) : buttonDead ? asPackedColour(120, 120, 120) : asPackedColour(255, 150, 150);
 
 		return calculateBidirectionalGlitz(400, buttonArea, colour, colour);
 	}
@@ -171,7 +171,7 @@ namespace hg {
 			
 
 			bool const active =
-				(protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] != 0)
+				(protoCollision.hasButtonTriggerID && triggerArrivals[protoCollision.buttonTriggerID][0] > 0)
 				|| (protoCollision.hasTriggerClause && (protoCollision.triggerClause.execute(triggerArrivals, getFrameNumber(currentFrame)) != 0))
 				;
 
@@ -429,10 +429,11 @@ namespace hg {
 	void calculateButtonStates(
 		mp::std::vector<ButtonFrameState> &buttonFrameStates,
 		mt::std::map<Frame *, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		for (auto &&buttonFrameState : buttonFrameStates) {
-			buttonFrameState.updateState(departures, triggerArrivals);
+			buttonFrameState.updateState(departures, explosions, triggerArrivals);
 		}
 	}
 
@@ -647,10 +648,11 @@ namespace hg {
 
 	TriggerFrameStateImplementation::DepartureInformation SimpleConfiguredTriggerFrameState::getDepartureInformation(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		Frame *currentFrame)
 	{
 #if 0
-		calculateButtonStates(tempStore.protoButtons, departures, tempStore.triggerArrivals)
+		calculateButtonStates(tempStore.protoButtons, departures, explosions, tempStore.triggerArrivals)
 
 		for protoButton in list_iter(tempStore.protoButtons) do
 			protoButton:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz)
@@ -680,7 +682,7 @@ namespace hg {
 		mt::std::vector<GlitzPersister> additionalGlitzPersisters;
 		mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
 
-		calculateButtonStates(buttonFrameStates_, departures, triggerArrivals_);
+		calculateButtonStates(buttonFrameStates_, departures, explosions, triggerArrivals_);
 		for (auto const &buttonFrameState : buttonFrameStates_) {
 			buttonFrameState.calculateGlitz(forwardsGlitz_, reverseGlitz_, additionalGlitzPersisters);
 			buttonFrameState.fillTrigger(outputTriggers_);
@@ -2164,6 +2166,19 @@ namespace hg {
 				(ya == yb)
 			);
 	}
+	
+	bool checkExplosion(
+		mt::std::vector<ExplosionEffect> &explosions,
+		int x, int y, int width, int height)
+	{
+		for (std::size_t i(0), isize(std::size(explosions)); i < isize; ++i) {
+			if (DistanceToRectangle(explosions[i].x, explosions[i].y, x, y, width, height) <= explosions[i].radius) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	bool checkPressed(
 		int const x, int const y, int const xspeed, int const yspeed, int const width, int const height, TimeDirection const timeDirection,
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures)
@@ -2218,39 +2233,31 @@ namespace hg {
 	}
 	void MomentarySwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		assert(proto->stateTriggerID < triggerArrivals.size());
 		assert(0 < triggerArrivals[proto->stateTriggerID].size());
 		int const oldState = triggerArrivals[proto->stateTriggerID][0];
-		state = std::min(
-			checkPressed(x, y, xspeed, yspeed, proto->width, proto->height, proto->timeDirection, departures) ? oldState+1 : 0,
-			2);
-		justPressed = oldState == 0 && state != 0;
-		justReleased = oldState != 0 && state == 0;
+		
+		if (oldState == -1 || checkExplosion(explosions, x, y, proto->width, proto->height)) {
+			state = -1;
+			justPressed = false;
+			justReleased = false;
+		}
+		else {
+			state = std::min(
+				checkPressed(x, y, xspeed, yspeed, proto->width, proto->height, proto->timeDirection, departures) ? oldState+1 : 0,
+				2);
+			justPressed = oldState == 0 && state != 0;
+			justReleased = oldState != 0 && state == 0;
+		}
 	}
 	void MomentarySwitchFrameStateImpl::calculateGlitz(
 			mt::std::vector<Glitz> &forwardsGlitz,
 			mt::std::vector<Glitz> &reverseGlitz,
 			mt::std::vector<GlitzPersister> &persistentGlitz) const
 	{
-
-		#if 0
-		local forGlitz, revGlitz = calculateButtonGlitz(proto, PnV, state > 0)
-		table.insert(forwardsGlitz, forGlitz)
-		table.insert(reverseGlitz, revGlitz)
-		if justPressed then
-			table.insert(
-				persistentGlitz,
-				{type = "audio", key = "global.switch_push_down", duration = 10, timeDirection = proto.timeDirection})
-		end
-		if justReleased then
-			table.insert(
-				persistentGlitz,
-				{type = "audio", key = "global.switch_push_up", duration = 10, timeDirection = proto.timeDirection})
-		end
-		#endif
-
 		auto [forGlitz, revGlitz] = calculateButtonGlitz(
 			DynamicArea{
 			   x,
@@ -2260,7 +2267,7 @@ namespace hg {
 			   proto->width,
 			   proto->height,
 			   proto->timeDirection},
-			state != 0);
+			state == 1, state == -1);
 		forwardsGlitz.push_back(std::move(forGlitz));
 		reverseGlitz.push_back(std::move(revGlitz));
 
@@ -2290,6 +2297,7 @@ namespace hg {
 	}
 	void StickySwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		assert(proto->stateTriggerID < triggerArrivals.size());
@@ -2316,7 +2324,7 @@ namespace hg {
 			   proto->width,
 			   proto->height,
 			   proto->timeDirection},
-			state != 0);
+			state == 1, state == -1);
 		forwardsGlitz.push_back(std::move(forGlitz));
 		reverseGlitz.push_back(std::move(revGlitz));
 
@@ -2355,6 +2363,7 @@ namespace hg {
 	}
 	void ToggleSwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		/*
@@ -2374,6 +2383,7 @@ namespace hg {
 		assert(proto->stateTriggerID < triggerArrivals.size());
 		assert(0 < triggerArrivals[proto->stateTriggerID].size());
 		auto const stateTriggerValue{triggerArrivals[proto->stateTriggerID][0]};
+
 		auto const firstPressed{checkPressed(
 			firstPnV.x, firstPnV.y, firstPnV.xspeed, firstPnV.yspeed, proto->first.width, proto->first.height, proto->timeDirection,
 			departures)};
@@ -2412,25 +2422,6 @@ namespace hg {
 		mt::std::vector<Glitz> &reverseGlitz,
 		mt::std::vector<GlitzPersister> &persistentGlitz) const
 	{
-		/*
-		do
-			local forGlitz, revGlitz =
-				calculateButtonGlitz(constructCompleteProto(timeDirection, self.first), firstPnV, switchState > 0)
-			table.insert(forwardsGlitz, forGlitz)
-			table.insert(reverseGlitz, revGlitz)
-		end
-		do
-			local forGlitz, revGlitz =
-				calculateButtonGlitz(constructCompleteProto(timeDirection, self.second), secondPnV, switchState == 0)
-			table.insert(forwardsGlitz, forGlitz)
-			table.insert(reverseGlitz, revGlitz)
-		end
-		if justPressed then
-			table.insert(
-				persistentGlitz,
-				{type = "audio", key = "global.switch_toggle", duration = 6, timeDirection = timeDirection})
-		end
-		*/
 		{
 			auto [forGlitz, revGlitz] = calculateButtonGlitz(
 				DynamicArea{
@@ -2441,7 +2432,7 @@ namespace hg {
 				   proto->first.width,
 				   proto->first.height,
 				   proto->timeDirection},
-				switchState/*switchState != 0*/);
+				switchState == 1, switchState == -1);
 			forwardsGlitz.push_back(std::move(forGlitz));
 			reverseGlitz.push_back(std::move(revGlitz));
 		}
@@ -2455,7 +2446,7 @@ namespace hg {
 				   proto->second.width,
 				   proto->second.height,
 				   proto->timeDirection},
-				!switchState/*switchState == 0*/);
+				switchState == 0, switchState == -1);
 			forwardsGlitz.push_back(std::move(forGlitz));
 			reverseGlitz.push_back(std::move(revGlitz));
 		}
@@ -2496,6 +2487,7 @@ namespace hg {
 	}
 	void MultiStickySwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		/*
@@ -2535,7 +2527,7 @@ namespace hg {
 
 		bool state{true};
 		for (std::size_t i{0}, end{proto->buttons.size()}, stateTriggerEnd{stateTriggerValues.size()}; i != end && i < stateTriggerEnd; ++i) {
-			if (stateTriggerValues[i] == 0) {
+			if (stateTriggerValues[i] == 0 || stateTriggerValues[i] == -1) {
 				state = false;
 				break;
 			}
@@ -2548,14 +2540,16 @@ namespace hg {
 				auto const &button{proto->buttons[i]};
 				auto const &PnV{PnVs[i]};
 				individualState.push_back(
-					checkPressed(
-						PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, proto->timeDirection,
-						departures));
-				if (!individualState[i]) {
+					(individualState[i] == -1 || checkExplosion(explosions, PnV.x, PnV.y, button.width, button.height)) ? 
+						-1 :
+						checkPressed(
+							PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, proto->timeDirection,
+							departures));
+				if (individualState[i] != 1) {
 					state = false;
 				}
-				justPressed.push_back(stateTriggerValues[i] == 0 && individualState[i]);
-				justReleased.push_back(stateTriggerValues[i] != 0 && !individualState[i]);
+				justPressed.push_back(stateTriggerValues[i] == 0 && individualState[i] == 1);
+				justReleased.push_back(stateTriggerValues[i] != 0 && individualState[i] == 0);
 			}
 		}
 		else {
@@ -2628,7 +2622,7 @@ namespace hg {
 				   proto->buttons[i].width,
 				   proto->buttons[i].height,
 				   proto->timeDirection},
-				(switchState != 0) || individualState[i]);
+				((switchState != 0) || individualState[i] == 1) && individualState[i] != -1, individualState[i] == -1);
 			forwardsGlitz.push_back(std::move(forGlitz));
 			reverseGlitz.push_back(std::move(revGlitz));
 			
@@ -2662,6 +2656,7 @@ namespace hg {
 	}
 	void StickyLaserSwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		/*
@@ -2676,14 +2671,19 @@ namespace hg {
 		assert(proto->stateTriggerID < triggerArrivals.size());
 		auto const &stateTriggerValues = triggerArrivals[proto->stateTriggerID];
 		int const oldState = stateTriggerValues.size() != 0 ? triggerArrivals[proto->stateTriggerID][0] : 0;
-
-		switchState = std::min(
-			oldState != 0 ?
-			   oldState + 1
-			 : (checkPressed(beamPnV.x, beamPnV.y, beamPnV.xspeed, beamPnV.yspeed, proto->beam.width, proto->beam.height, proto->timeDirection, departures) ? 1 : 0),
-			2);
-
-		justPressed = oldState == 0 && switchState != 0;
+		
+		if (oldState == -1 || checkExplosion(explosions, beamPnV.x, beamPnV.y, 10, 10)) {
+			switchState = -1;
+			justPressed = false;
+		}
+		else {
+			switchState = std::min(
+				oldState != 0 ?
+				   oldState + 1
+				 : (checkPressed(beamPnV.x, beamPnV.y, beamPnV.xspeed, beamPnV.yspeed, proto->beam.width, proto->beam.height, proto->timeDirection, departures) ? 1 : 0),
+				2);
+			justPressed = oldState == 0 && switchState != 0;
+		}
 	}
 	void StickyLaserSwitchFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const
 	{
@@ -2752,7 +2752,7 @@ namespace hg {
 					proto->emitter.width,
 					proto->emitter.height,
 					proto->timeDirection},
-				switchState != 0);
+				switchState == 1, switchState == -1);
 			forwardsGlitz.push_back(std::move(forGlitz));
 			reverseGlitz.push_back(std::move(revGlitz));
 		}

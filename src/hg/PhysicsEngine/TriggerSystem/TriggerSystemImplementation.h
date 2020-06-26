@@ -2,6 +2,7 @@
 #define HG_TRIGGER_SYSTEM_IMPLEMENTATION_H
 
 #include "PhysicsAffectingStuff.h"
+#include "hg/PhysicsEngine/ExplosionEffect.h"
 
 #include "hg/TimeEngine/ArrivalDepartures/Guy.h"
 #include "hg/TimeEngine/ArrivalDepartures/Box.h"
@@ -69,6 +70,7 @@ class TriggerFrameStateImplementation
 
 	virtual DepartureInformation getDepartureInformation(
 		mt::std::map<Frame *, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		Frame *currentFrame) = 0;
 
 	virtual ~TriggerFrameStateImplementation(){}
@@ -115,9 +117,10 @@ class TriggerFrameState final
 	
 	DepartureInformation getDepartureInformation(
 		mt::std::map<Frame *, ObjectList<Normal>> const &departures,
+		mt::std::vector<ExplosionEffect> &explosions,
 		Frame *currentFrame)
 	{
-		return impl->getDepartureInformation(departures, currentFrame);
+		return impl->getDepartureInformation(departures, explosions, currentFrame);
 	}
 
 	//Default constructed TriggerFrameState may not have any functions called on it,
