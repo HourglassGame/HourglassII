@@ -921,7 +921,9 @@ int ManhattanDistanceToRectangle(int px, int py, int x, int y, int w, int h)
 
 int Distance(int x1, int y1, int x2, int y2)
 {
-	return std::sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+	long long xDiff = static_cast<long long>(x1 - x2);
+	long long yDiff = static_cast<long long>(y1 - y2);
+	return static_cast<int>(std::sqrt(xDiff*xDiff + yDiff*yDiff));
 }
 
 int DistanceToRectangle(int px, int py, int x, int y, int w, int h)

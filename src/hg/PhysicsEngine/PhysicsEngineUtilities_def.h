@@ -586,6 +586,7 @@ void guyMovement(
 
 	for (std::size_t j(0), jsize(std::size(explosions)); j < jsize; ++j) {
 		if (DistanceToRectangle(explosions[j].x, explosions[j].y, x[i], y[i], width, height) <= explosions[j].radius) {
+			//std::cerr << "ex " << explosions[j].x << ", ey " << explosions[j].y << ", x " << x[i] << ", y " << y[i] << ", w " << width << ", h " << height << ", r " << explosions[j].radius << "\n";
 			finishedWith[i] = true;
 			guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
 			return;

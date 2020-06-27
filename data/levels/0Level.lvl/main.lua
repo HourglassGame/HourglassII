@@ -71,6 +71,7 @@ initialArrivals =
     {type = "box", boxType = "balloon", x = 14 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, width = 1000*2.66, height = 3000*2.66, timeDirection = "forwards"},
     {type = "box", boxType = "balloon", x = 16 * 3200, y = 13 * 3200, xspeed = 0, yspeed = 0, width = 1000*3, height = 3000*3, timeDirection = "forwards"},
 	
+    {type = "box", boxType = "bomb", x = 4 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, width = 6400, height = 6400, timeDirection = "forwards"},
     {type = "box", boxType = "bomb", x = 4 * 3200, y = 7 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
     {type = "box", boxType = "bomb", x = 4 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
     {type = "box", x = 4 * 3200, y = 9 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
