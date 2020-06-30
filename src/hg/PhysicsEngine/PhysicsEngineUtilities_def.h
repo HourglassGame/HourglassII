@@ -52,12 +52,13 @@ void addExplosion(
 	int y,
 	int width,
 	int height,
-	int radius,
-	int radiusMax,
-	int radiusGrow,
 	TimeDirection timeDirection)
 {
 	FrameT nextTime(nextFrame(frame, timeDirection));
+	
+	int radius = 0;
+	int radiusMax = (width + height + 3200) / 2;
+	int radiusGrow = (width + height + 3200) / 10;
 	
 	nextExplosion.push_back(
 		ObjectAndTime<Explosion, FrameT>(
@@ -71,6 +72,76 @@ void addExplosion(
 				radiusGrow,
 				timeDirection),
 			nextTime));
+}
+
+template<
+	typename RandomAccessExplosionRange>
+void updateExplosionsAndMakeGlitz(
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > &nextExplosion,
+	Frame *frame,
+	ExplosionGlitzAdder const &explosionGlitzAdder)
+{
+	for (std::size_t i(0), isize(explosionArrivalList.size()); i < isize; ++i) {
+		if (explosionArrivalList[i].getRadius() < explosionArrivalList[i].getRadiusMax()) {
+			int newRadius = explosionArrivalList[i].getRadius() + explosionArrivalList[i].getRadiusGrow();
+			if (newRadius > explosionArrivalList[i].getRadiusMax()) {
+				newRadius = explosionArrivalList[i].getRadiusMax();
+			}
+			
+			nextExplosion.push_back(
+				ObjectAndTime<Explosion, Frame *>(
+					Explosion(
+						explosionArrivalList[i].getX(),
+						explosionArrivalList[i].getY(),
+						explosionArrivalList[i].getWidth(),
+						explosionArrivalList[i].getHeight(),
+						newRadius,
+						explosionArrivalList[i].getRadiusMax(),
+						explosionArrivalList[i].getRadiusGrow(),
+						explosionArrivalList[i].getTimeDirection()),
+					nextFrame(frame, explosionArrivalList[i].getTimeDirection())));
+		}
+	}
+	
+	for (std::size_t i(0), isize(nextExplosion.size()); i < isize; ++i) {
+		if (nextExplosion[i].object.getRadius() == nextExplosion[i].object.getRadiusMax()) {
+			explosionGlitzAdder.addExplosionGlitz(
+				nextExplosion[i].object.getX(), nextExplosion[i].object.getY(),
+				nextExplosion[i].object.getWidth(), nextExplosion[i].object.getHeight(),
+				nextExplosion[i].object.getRadius(),
+				nextExplosion[i].object.getTimeDirection());
+		}
+		else {
+			explosionGlitzAdder.addExplosionFinalGlitz(
+				nextExplosion[i].object.getX(), nextExplosion[i].object.getY(),
+				nextExplosion[i].object.getWidth(), nextExplosion[i].object.getHeight(),
+				nextExplosion[i].object.getRadius(),
+				nextExplosion[i].object.getTimeDirection());
+		}
+	}
+}
+
+template <
+	typename RandomAccessExplosionRange>
+bool checkExplosionHit(
+	int x,
+	int y,
+	int width,
+	int height,
+	RandomAccessExplosionRange const &explosionArrivalList)
+{
+	for (std::size_t i(0), isize(explosionArrivalList.size()); i < isize; ++i) {
+		if (DistanceBetweenRectanglesApprox(
+				explosionArrivalList[i].getX(), explosionArrivalList[i].getY(),
+				explosionArrivalList[i].getWidth(), explosionArrivalList[i].getHeight(),
+				x, y, width, height) <= explosionArrivalList[i].getRadius())
+		{
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 template <
@@ -228,31 +299,10 @@ template <
 			nextTime));
 }
 
-template <
-	typename RandomAccessExplosionRange>
-bool checkExplosionHit(
-	int x,
-	int y,
-	int width,
-	int height,
-	RandomAccessExplosionRange const &explosionArrivalList)
-{
-	for (std::size_t i(0), isize(explosionArrivalList.size()); i < isize; ++i) {
-		if (DistanceBetweenRectanglesApprox(
-				explosionArrivalList[i].getX(), explosionArrivalList[i].getY(),
-				explosionArrivalList[i].getWidth(), explosionArrivalList[i].getHeight(),
-				x, y, width, height) <= explosionArrivalList[i].getRadius())
-		{
-			return true;
-		}
-	}
-	
-	return false;
-}
-
 template<
 	typename RandomAccessGuyRange,
-	typename RandomAccessBoxRange>
+	typename RandomAccessBoxRange,
+	typename RandomAccessExplosionRange>
 void guyMovement(
 	Environment const &env,
 	RandomAccessGuyRange const &guyArrivalList,
@@ -272,9 +322,11 @@ void guyMovement(
 	mp::std::vector<ObjectAndTime<Box, Frame *>> &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	RandomAccessBoxRange const &boxArrivalList,
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > &nextExplosion,
 	mp::std::vector<Collision> const &nextPlatform,
-	mt::std::vector<ExplosionEffect> &explosions,
-	GuyGlitzAdder const &guyGlitzAdder)
+	GuyGlitzAdder const &guyGlitzAdder,
+	Frame *frame)
 {
 	std::size_t relativeIndex(guyArrivalList[i].getIndex());
 	GuyInput const &input(playerInput[relativeIndex]);
@@ -636,11 +688,23 @@ void guyMovement(
 		return;
 	}
 
-	for (std::size_t j(0), jsize(std::size(explosions)); j < jsize; ++j) {
-		if (DistanceToRectangle(explosions[j].x, explosions[j].y, x[i], y[i], width, height) <= explosions[j].radius) {
-			//std::cerr << "ex " << explosions[j].x << ", ey " << explosions[j].y << ", x " << x[i] << ", y " << y[i] << ", w " << width << ", h " << height << ", r " << explosions[j].radius << "\n";
+	for (std::size_t j(0), jsize(boost::size(explosionArrivalList)); j < jsize; ++j) {
+		if (DistanceBetweenRectanglesApprox(explosionArrivalList[j].getX(), explosionArrivalList[j].getY(),
+				explosionArrivalList[j].getWidth(), explosionArrivalList[j].getHeight(),
+				newX, newY, width, height) <= explosionArrivalList[j].getRadius()) {
 			finishedWith[i] = true;
 			guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+			
+			if (guyArrivalList[i].getBoxCarrying() == BoxType::BOMB) {
+				int boxWidth(guyArrivalList[i].getBoxCarryWidth());
+				int boxHeight(guyArrivalList[i].getBoxCarryHeight());
+				
+				addExplosion(nextExplosion, frame,
+					newX + ((width - boxWidth) / 2),
+					newY - boxHeight,
+					boxWidth, boxHeight,
+					guyArrivalList[i].getTimeDirection() * guyArrivalList[i].getBoxCarryDirection());
+			}
 			return;
 		}
 	}
@@ -657,7 +721,8 @@ void guyMovement(
 
 template<
 	typename RandomAccessGuyRange,
-	typename RandomAccessBoxRange>
+	typename RandomAccessBoxRange,
+	typename RandomAccessExplosionRange>
 void guyStep(
 	Environment const &env,
 	RandomAccessGuyRange const &guyArrivalList,
@@ -667,11 +732,12 @@ void guyStep(
 	mp::std::vector<ObjectAndTime<Box, Frame *>> &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	RandomAccessBoxRange const &boxArrivalList,
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > &nextExplosion,
 	mp::std::vector<Collision> const &nextPlatform,
 	mp::std::vector<PortalArea> const &nextPortal,
 	mp::std::vector<ArrivalLocation> const &arrivalLocations,
 	mp::std::vector<MutatorArea> const &mutators,
-	mt::std::vector<ExplosionEffect> &explosions,
 	TriggerFrameState &triggerFrameState,
 	GuyGlitzAdder const &guyGlitzAdder,
 	bool &winFrame,
@@ -782,7 +848,8 @@ void guyStep(
 				i, x, y, xspeed, yspeed, walkSpeed, jumpHold, action,
 				supported, supportedSpeed, finishedWith, facing,
 				nextBox, nextBoxNormalDeparture, boxArrivalList,
-				nextPlatform, explosions, guyGlitzAdder);
+				explosionArrivalList, nextExplosion,
+				nextPlatform, guyGlitzAdder, frame);
 		}
 	}
 	
@@ -814,7 +881,8 @@ void guyStep(
 				i, x, y, xspeed, yspeed, walkSpeed, jumpHold, action,
 				supported, supportedSpeed, finishedWith, facing,
 				nextBox, nextBoxNormalDeparture, boxArrivalList,
-				nextPlatform, explosions, guyGlitzAdder);
+				explosionArrivalList, nextExplosion,
+				nextPlatform, guyGlitzAdder, frame);
 		}
 
 		// Box Manipulation
@@ -2746,7 +2814,6 @@ template <
 					boxGlitzAdder.addDeathGlitz(xTemp[i], yTemp[i], width[i], height[i], oldBoxList[i].getTimeDirection());
 					addExplosion(nextExplosion, frame,
 						xTemp[i], yTemp[i], width[i], height[i],
-						width[i] + height[i], width[i] + height[i], 0,
 						oldBoxList[i].getTimeDirection());
 				}
 			}
@@ -2763,7 +2830,6 @@ template <
 			if (boxType[i] == BoxType::BOMB) {
 				addExplosion(nextExplosion, frame,
 					xTemp[i], yTemp[i], width[i], height[i],
-					width[i] + height[i], width[i] + height[i], 0,
 					oldBoxList[i].getTimeDirection());
 			}
 		}

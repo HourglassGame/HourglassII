@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include "PhysicsEngine.h"
 #include "BoxGlitzAdder.h"
+#include "ExplosionGlitzAdder.h"
 #include "GuyGlitzAdder.h"
 #include "BoxUtilities.h"
 #include "ExplosionEffect.h"
@@ -51,15 +52,6 @@ struct SortObjectList final {
 };
 
 template <
-	typename RandomAccessExplosionRange>
-bool checkExplosionHit(
-	int x,
-	int y,
-	int width,
-	int height,
-	RandomAccessExplosionRange const &explosionArrivalList);
-
-template <
 	typename FrameT>
 void addExplosion(
 	mp::std::vector<ObjectAndTime<Explosion, FrameT>> &nextExplosion,
@@ -68,14 +60,29 @@ void addExplosion(
 	int y,
 	int width,
 	int height,
-	int radius,
-	int radiusMax,
-	int radiusGrow,
 	TimeDirection timeDirection);
+
+template <
+	typename RandomAccessExplosionRange>
+bool checkExplosionHit(
+	int x,
+	int y,
+	int width,
+	int height,
+	RandomAccessExplosionRange const &explosionArrivalList);
+
+template<
+	typename RandomAccessExplosionRange>
+void updateExplosionsAndMakeGlitz(
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > &nextExplosion,
+	Frame *frame,
+	ExplosionGlitzAdder const &explosionGlitzAdder);
 
 template<
 	typename RandomAccessGuyRange,
-	typename RandomAccessBoxRange>
+	typename RandomAccessBoxRange,
+	typename RandomAccessExplosionRange>
 void guyMovement(
 	Environment const &env,
 	RandomAccessGuyRange const &guyArrivalList,
@@ -95,13 +102,16 @@ void guyMovement(
 	mp::std::vector<ObjectAndTime<Box, Frame *>> &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	RandomAccessBoxRange const &boxArrivalList,
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > &nextExplosion,
 	mp::std::vector<Collision> const &nextPlatform,
-	mt::std::vector<ExplosionEffect> &explosions,
-	GuyGlitzAdder const &guyGlitzAdder);
+	GuyGlitzAdder const &guyGlitzAdder,
+	Frame *frame);
 
 template<
 	typename RandomAccessGuyRange,
-	typename RandomAccessBoxRange>
+	typename RandomAccessBoxRange,
+	typename RandomAccessExplosionRange>
 void guyStep(
 	Environment const &env,
 	RandomAccessGuyRange const &guyArrivalList,
@@ -111,11 +121,12 @@ void guyStep(
 	mp::std::vector<ObjectAndTime<Box, Frame*>> &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	RandomAccessBoxRange const &boxArrivalList,
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > &nextExplosion,
 	mp::std::vector<Collision> const &nextPlatform,
 	mp::std::vector<PortalArea> const &nextPortal,
 	mp::std::vector<ArrivalLocation> const &arrivalLocations,
 	mp::std::vector<MutatorArea> const &mutators,
-	mt::std::vector<ExplosionEffect> &explosions,
 	TriggerFrameState &triggerFrameState,
 	GuyGlitzAdder const &guyGlitzAdder,
 	bool &winFrame,
@@ -159,7 +170,6 @@ void boxCollisionAlgorithm(
 	RandomAccessPortalRange const &nextPortal,
 	RandomAccessArrivalLocationRange const &arrivalLocations,
 	RandomAccessMutatorRange const &mutators,
-	mt::std::vector<ExplosionEffect> &explosions,
 	TriggerFrameState &triggerFrameState,
 	BoxGlitzAdder const &boxGlitzAdder,
 	FrameT const &frame,
@@ -169,7 +179,7 @@ void makeBoxGlitzListForNormalDepartures(
 	mp::std::vector<ObjectAndTime<Box, Frame*>> const &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
 	BoxGlitzAdder const &boxGlitzAdder);
-	
+
 template <
 	typename RandomAccessPortalRange,
 	typename RandomAccessMutatorRange,

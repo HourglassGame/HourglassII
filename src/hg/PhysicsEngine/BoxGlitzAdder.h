@@ -104,52 +104,6 @@ public:
 					timeDirection)));
 	}
 
-	void addExplosionGlitz(
-		int x,
-		int y,
-		int radius,
-		TimeDirection timeDirection) const
-	{
-		persistentGlitz->push_back(
-			GlitzPersister(
-				mt::std::make_unique<StaticGlitzPersister>(
-					Glitz(
-						mt::std::make_unique<CircleGlitz>(
-								1500,
-								x,
-								y,
-								radius,
-								timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
-					Glitz(
-						mt::std::make_unique<CircleGlitz>(
-								1500,
-								x,
-								y,
-								radius,
-								timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
-					30,
-					timeDirection)));
-		persistentGlitz->push_back(
-			GlitzPersister(
-				mt::std::make_unique<StaticGlitzPersister>(
-					Glitz(
-						mt::std::make_unique<CircleGlitz>(
-								100,
-								x,
-								y,
-								radius,
-								0x88888800u)),
-					Glitz(
-						mt::std::make_unique<CircleGlitz>(
-								100,
-								x,
-								y,
-								radius,
-								0x88888800u)),
-					-1,
-					timeDirection)));
-	}
-
 private:
 	mt::std::vector<Glitz> *forwardsGlitz;
 	mt::std::vector<Glitz> *reverseGlitz;
