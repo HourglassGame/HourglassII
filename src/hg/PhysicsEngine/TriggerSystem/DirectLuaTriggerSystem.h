@@ -4,6 +4,7 @@
 #include "hg/Util/copy_as_new_ptr.h"
 #include "hg/LuaUtil/SimpleLuaCpp.h"
 #include "hg/Util/ThreadLocal.h"
+#include "hg/TimeEngine/ArrivalDepartures/Explosion.h"
 #include "hg/TimeEngine/ObjectAndTime.h"
 #include "hg/LuaUtil/LuaInterruption.h"
 #include "hg/LuaUtil/LuaModule.h"
@@ -61,7 +62,9 @@ class DirectLuaTriggerFrameState final :
 	
 	virtual DepartureInformation getDepartureInformation(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		Frame *currentFrame) override;
 	virtual ~DirectLuaTriggerFrameState() noexcept override;
 private:

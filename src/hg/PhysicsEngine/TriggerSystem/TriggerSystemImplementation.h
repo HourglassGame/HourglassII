@@ -6,6 +6,7 @@
 
 #include "hg/TimeEngine/ArrivalDepartures/Guy.h"
 #include "hg/TimeEngine/ArrivalDepartures/Box.h"
+#include "hg/TimeEngine/ArrivalDepartures/Explosion.h"
 #include "hg/TimeEngine/ArrivalDepartures/TriggerData.h"
 #include "hg/TimeEngine/ArrivalDepartures/ObjectPtrList.h"
 #include "hg/TimeEngine/ArrivalDepartures/ObjectList.h"
@@ -70,7 +71,9 @@ class TriggerFrameStateImplementation
 
 	virtual DepartureInformation getDepartureInformation(
 		mt::std::map<Frame *, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		Frame *currentFrame) = 0;
 
 	virtual ~TriggerFrameStateImplementation(){}
@@ -117,10 +120,12 @@ class TriggerFrameState final
 	
 	DepartureInformation getDepartureInformation(
 		mt::std::map<Frame *, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		Frame *currentFrame)
 	{
-		return impl->getDepartureInformation(departures, explosions, currentFrame);
+		return impl->getDepartureInformation(departures, explosionArrivals, currentFrame);
 	}
 
 	//Default constructed TriggerFrameState may not have any functions called on it,

@@ -173,7 +173,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 	TriggerFrameState::DepartureInformation const triggerSystemDepartureInformation(
 		triggerFrameState.getDepartureInformation(
 			newDepartures,
-			explosions,
+			arrivals.getList<Explosion>(),
 			frame));
 
 	for (auto const &triggerDeparture: triggerSystemDepartureInformation.triggerDepartures) {

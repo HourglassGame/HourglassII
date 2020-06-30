@@ -1,5 +1,6 @@
 #include "PhysicsEngineUtilities.h"
 #include "hg/Util/TestDriver.h"
+#include "hg/TimeEngine/ArrivalDepartures/Explosion.h"
 #include "hg/PhysicsEngine/TriggerSystem/PortalArea.h"
 #include "hg/PhysicsEngine/TriggerSystem/MutatorArea.h"
 #include "hg/TimeEngine/FrameID.h"
@@ -46,7 +47,9 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 	virtual DepartureInformation
 	getDepartureInformation(
 		mt::std::map<Frame *, ObjectList<Normal> > const &/*departures*/,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		Frame * /*currentFrame*/) override
 	{
 		assert(false && "Not implemented");

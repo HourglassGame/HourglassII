@@ -439,11 +439,13 @@ namespace hg {
 	void calculateButtonStates(
 		mp::std::vector<ButtonFrameState> &buttonFrameStates,
 		mt::std::map<Frame *, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		for (auto &&buttonFrameState : buttonFrameStates) {
-			buttonFrameState.updateState(departures, explosions, triggerArrivals);
+			buttonFrameState.updateState(departures, explosionArrivals, triggerArrivals);
 		}
 	}
 
@@ -546,13 +548,17 @@ namespace hg {
 	void checkCollisionExplosion(
 		mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
 		ProtoCollision const &protoCollision,
-		mt::std::vector<ExplosionEffect> const &explosions)
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals)
 	{
 		if (outputTriggers[protoCollision.lastStateTriggerID][4] != -1) {
-			for (std::size_t i(0), isize(std::size(explosions)); i < isize; ++i) {
-				if (DistanceToRectangle(explosions[i].x, explosions[i].y, 
+
+			for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
+				if (DistanceBetweenRectanglesApprox(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
+						explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
 						outputTriggers[protoCollision.lastStateTriggerID][0], outputTriggers[protoCollision.lastStateTriggerID][1],
-						protoCollision.width, protoCollision.height) <= explosions[i].radius) {
+						protoCollision.width, protoCollision.height) <= explosionArrivals[i].getRadius()) {
 					outputTriggers[protoCollision.lastStateTriggerID][4] = -1;
 					return;
 				}
@@ -675,11 +681,13 @@ namespace hg {
 
 	TriggerFrameStateImplementation::DepartureInformation SimpleConfiguredTriggerFrameState::getDepartureInformation(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		Frame *currentFrame)
 	{
 #if 0
-		calculateButtonStates(tempStore.protoButtons, departures, explosions, tempStore.triggerArrivals)
+		calculateButtonStates(tempStore.protoButtons, departures, explosionArrivals, tempStore.triggerArrivals)
 
 		for protoButton in list_iter(tempStore.protoButtons) do
 			protoButton:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz)
@@ -709,7 +717,7 @@ namespace hg {
 		mt::std::vector<GlitzPersister> additionalGlitzPersisters;
 		mt::std::vector<ObjectAndTime<Box, Frame *>> additionalBoxDepartures;
 
-		calculateButtonStates(buttonFrameStates_, departures, explosions, triggerArrivals_);
+		calculateButtonStates(buttonFrameStates_, departures, explosionArrivals, triggerArrivals_);
 		for (auto const &buttonFrameState : buttonFrameStates_) {
 			buttonFrameState.calculateGlitz(forwardsGlitz_, reverseGlitz_, additionalGlitzPersisters);
 			buttonFrameState.fillTrigger(outputTriggers_);
@@ -725,9 +733,9 @@ namespace hg {
 			protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, triggerOffsetsAndDefaults_, currentFrame);
 		}
 
-		if (!explosions.empty()) {
+		if (!explosionArrivals.empty()) {
 			for (auto const& protoCollision : protoCollisions_) {
-				checkCollisionExplosion(outputTriggers_, protoCollision, explosions);
+				checkCollisionExplosion(outputTriggers_, protoCollision, explosionArrivals);
 			}
 		}
 
@@ -2201,11 +2209,15 @@ namespace hg {
 	}
 
 	bool checkExplosion(
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		int x, int y, int width, int height)
 	{
-		for (std::size_t i(0), isize(std::size(explosions)); i < isize; ++i) {
-			if (DistanceToRectangle(explosions[i].x, explosions[i].y, x, y, width, height) <= explosions[i].radius) {
+		for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
+			if (DistanceBetweenRectanglesApprox(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
+					explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
+					x, y, width, height) <= explosionArrivals[i].getRadius()) {
 				return true;
 			}
 		}
@@ -2266,14 +2278,16 @@ namespace hg {
 	}
 	void MomentarySwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		assert(proto->stateTriggerID < triggerArrivals.size());
 		assert(0 < triggerArrivals[proto->stateTriggerID].size());
 		int const oldState = triggerArrivals[proto->stateTriggerID][0];
 		
-		if (oldState == -1 || checkExplosion(explosions, x, y, proto->width, proto->height)) {
+		if (oldState == -1 || checkExplosion(explosionArrivals, x, y, proto->width, proto->height)) {
 			state = -1;
 			justPressed = false;
 			justReleased = false;
@@ -2330,7 +2344,9 @@ namespace hg {
 	}
 	void StickySwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		assert(proto->stateTriggerID < triggerArrivals.size());
@@ -2396,7 +2412,9 @@ namespace hg {
 	}
 	void ToggleSwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		/*
@@ -2520,7 +2538,9 @@ namespace hg {
 	}
 	void MultiStickySwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		/*
@@ -2573,7 +2593,7 @@ namespace hg {
 				auto const &button{proto->buttons[i]};
 				auto const &PnV{PnVs[i]};
 				individualState.push_back(
-					(individualState[i] == -1 || checkExplosion(explosions, PnV.x, PnV.y, button.width, button.height)) ? 
+					(individualState[i] == -1 || checkExplosion(explosionArrivals, PnV.x, PnV.y, button.width, button.height)) ? 
 						-1 :
 						checkPressed(
 							PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, proto->timeDirection,
@@ -2689,7 +2709,9 @@ namespace hg {
 	}
 	void StickyLaserSwitchFrameStateImpl::updateState(
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures,
-		mt::std::vector<ExplosionEffect> &explosions,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
 	{
 		/*
@@ -2705,7 +2727,7 @@ namespace hg {
 		auto const &stateTriggerValues = triggerArrivals[proto->stateTriggerID];
 		int const oldState = stateTriggerValues.size() != 0 ? triggerArrivals[proto->stateTriggerID][0] : 0;
 		
-		if (oldState == -1 || checkExplosion(explosions, beamPnV.x, beamPnV.y, 10, 10)) {
+		if (oldState == -1 || checkExplosion(explosionArrivals, beamPnV.x, beamPnV.y, 10, 10)) {
 			switchState = -1;
 			justPressed = false;
 		}
