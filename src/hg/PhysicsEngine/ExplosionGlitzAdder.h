@@ -68,7 +68,7 @@ public:
 	{
 		int drawX = x + width/2;
 		int drawY = y + height/2;
-		int drawRadius = radius + (width + height) / 4;
+		int drawRadius = radius + (width + height) / 2;
 		
 		persistentGlitz->push_back(
 			GlitzPersister(

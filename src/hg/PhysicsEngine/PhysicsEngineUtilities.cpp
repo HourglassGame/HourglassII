@@ -917,9 +917,9 @@ int DistanceToRectangle(int px, int py, int x, int y, int w, int h)
 	}
 }
 
-int DistanceBetweenRectanglesApprox(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+int DistanceToRectangleAddSize(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
-	return Distance(x1 + w1/2, y1 + h1/2, x2 + w1/2, y2 + h2/2) - ((w1 + h1 + w2 + h2) / 4);
+	return DistanceToRectangle(x1 + w1/2, y1 + h1/2, x2 + w2/2, y2 + h2/2, w2, h2) - ((w1 + h1) / 4);
 }
 
 bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies)

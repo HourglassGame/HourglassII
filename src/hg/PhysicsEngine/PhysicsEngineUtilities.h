@@ -300,7 +300,7 @@ int ManhattanDistance(int x1, int y1, int x2, int y2);
 int ManhattanDistanceToRectangle(int px, int py, int x, int y, int w, int h);
 int Distance(int x1, int y1, int x2, int y2);
 int DistanceToRectangle(int px, int py, int x, int y, int w, int h);
-int DistanceBetweenRectanglesApprox(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
+int DistanceToRectangleAddSize(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);

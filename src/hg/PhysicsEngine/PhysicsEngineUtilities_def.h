@@ -132,7 +132,7 @@ bool checkExplosionHit(
 	RandomAccessExplosionRange const &explosionArrivalList)
 {
 	for (std::size_t i(0), isize(explosionArrivalList.size()); i < isize; ++i) {
-		if (DistanceBetweenRectanglesApprox(
+		if (DistanceToRectangleAddSize(
 				explosionArrivalList[i].getX(), explosionArrivalList[i].getY(),
 				explosionArrivalList[i].getWidth(), explosionArrivalList[i].getHeight(),
 				x, y, width, height) <= explosionArrivalList[i].getRadius())
@@ -689,7 +689,7 @@ void guyMovement(
 	}
 
 	for (std::size_t j(0), jsize(boost::size(explosionArrivalList)); j < jsize; ++j) {
-		if (DistanceBetweenRectanglesApprox(explosionArrivalList[j].getX(), explosionArrivalList[j].getY(),
+		if (DistanceToRectangleAddSize(explosionArrivalList[j].getX(), explosionArrivalList[j].getY(),
 				explosionArrivalList[j].getWidth(), explosionArrivalList[j].getHeight(),
 				newX, newY, width, height) <= explosionArrivalList[j].getRadius()) {
 			finishedWith[i] = true;

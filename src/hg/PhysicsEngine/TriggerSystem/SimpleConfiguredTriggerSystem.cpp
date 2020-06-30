@@ -555,7 +555,7 @@ namespace hg {
 		if (outputTriggers[protoCollision.lastStateTriggerID][4] != -1) {
 
 			for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
-				if (DistanceBetweenRectanglesApprox(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
+				if (DistanceToRectangleAddSize(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
 						explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
 						outputTriggers[protoCollision.lastStateTriggerID][0], outputTriggers[protoCollision.lastStateTriggerID][1],
 						protoCollision.width, protoCollision.height) <= explosionArrivals[i].getRadius()) {
@@ -2215,7 +2215,7 @@ namespace hg {
 		int x, int y, int width, int height)
 	{
 		for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
-			if (DistanceBetweenRectanglesApprox(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
+			if (DistanceToRectangleAddSize(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
 					explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
 					x, y, width, height) <= explosionArrivals[i].getRadius()) {
 				return true;
@@ -2314,7 +2314,7 @@ namespace hg {
 			   proto->width,
 			   proto->height,
 			   proto->timeDirection},
-			state == 1, state == -1);
+			state >= 1, state == -1);
 		forwardsGlitz.push_back(std::move(forGlitz));
 		reverseGlitz.push_back(std::move(revGlitz));
 
