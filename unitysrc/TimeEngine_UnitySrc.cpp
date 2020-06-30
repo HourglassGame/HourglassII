@@ -15,6 +15,7 @@
 
 //ArrivalDepartures
 #include "hg/TimeEngine/ArrivalDepartures/Box.cpp"
+#include "hg/TimeEngine/ArrivalDepartures/Explosion.cpp"
 #include "hg/TimeEngine/ArrivalDepartures/GlitzPersister.cpp"
 #include "hg/TimeEngine/ArrivalDepartures/Guy.cpp"
 #include "hg/TimeEngine/ArrivalDepartures/InputList.cpp"

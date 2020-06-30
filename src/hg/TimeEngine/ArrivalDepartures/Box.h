@@ -39,8 +39,7 @@ public:
 	int getState()         const { return state; }
 	int getIllegalPortal() const { return illegalPortal; }
 	int getArrivalBasis()  const { return arrivalBasis; }
-	TimeDirection 
-		getTimeDirection()    const { return timeDirection; }
+	TimeDirection getTimeDirection() const { return timeDirection; }
 
 	bool operator==(Box const &o) const;
 	bool operator<(Box const &o) const;

@@ -6,6 +6,7 @@
 #include <string>
 #include <optional>
 #include "hg/mt/std/string"
+#include "hg/TimeEngine/ArrivalDepartures/Explosion.h"
 #include "hg/TimeEngine/ArrivalDepartures/InitialGuyArrival.h"
 #include "hg/TimeEngine/ArrivalDepartures/InitialObjects.h"
 #include "hg/TimeEngine/ArrivalDepartures/InitialBox.h"

@@ -3,6 +3,7 @@
 
 #include "Guy.h"
 #include "Box.h"
+#include "Explosion.h"
 #include "TriggerData.h"
 #include "GlitzPersister.h"
 
@@ -12,6 +13,7 @@ namespace hg {
 		boost::fusion::vector<
 			Guy,
 			Box,
+			Explosion,
 			TriggerData,
 			GlitzPersister
 		> Normal;

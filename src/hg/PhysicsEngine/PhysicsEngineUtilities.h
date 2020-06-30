@@ -50,6 +50,29 @@ struct SortObjectList final {
 	}
 };
 
+template <
+	typename RandomAccessExplosionRange>
+bool checkExplosionHit(
+	int x,
+	int y,
+	int width,
+	int height,
+	RandomAccessExplosionRange const &explosionArrivalList);
+
+template <
+	typename FrameT>
+void addExplosion(
+	mp::std::vector<ObjectAndTime<Explosion, FrameT>> &nextExplosion,
+	FrameT frame,
+	int x,
+	int y,
+	int width,
+	int height,
+	int radius,
+	int radiusMax,
+	int radiusGrow,
+	TimeDirection timeDirection);
+
 template<
 	typename RandomAccessGuyRange,
 	typename RandomAccessBoxRange>
@@ -116,21 +139,9 @@ void boxInteractionBoundLoop(
 	BoxGlitzAdder const &boxGlitzAdder,
 	memory_pool<user_allocator_tbb_alloc> &pool);
 
-void explodeBomb(
-	int index,
-	mp::std::vector<int> const& x,
-	mp::std::vector<int> const& y,
-	mp::std::vector<int> const& width,
-	mp::std::vector<int> const& height,
-	mp::std::vector<BoxType> const& boxType,
-	mp::std::vector<char>& squished,
-	mp::std::vector<Box> const& oldBoxList,
-	mt::std::vector<ExplosionEffect> &explosions,
-	BoxGlitzAdder const& boxGlitzAdder,
-	memory_pool<user_allocator_tbb_alloc>& pool);
-
 template <
 	typename RandomAccessBoxRange,
+	typename RandomAccessExplosionRange,
 	typename RandomAccessPortalRange,
 	typename RandomAccessPlatformRange,
 	typename RandomAccessArrivalLocationRange,
@@ -142,6 +153,8 @@ void boxCollisionAlgorithm(
 	mp::std::vector<Box> const &additionalBox,
 	mp::std::vector<ObjectAndTime<Box, FrameT> > &nextBox,
 	mp::std::vector<char> &nextBoxNormalDeparture,
+	RandomAccessExplosionRange const &explosionArrivalList,
+	mp::std::vector<ObjectAndTime<Explosion, FrameT> > &nextExplosion,
 	RandomAccessPlatformRange const &nextPlatform,
 	RandomAccessPortalRange const &nextPortal,
 	RandomAccessArrivalLocationRange const &arrivalLocations,
@@ -227,6 +240,7 @@ void buildDeparturesForComplexEntitiesWithIndexCaching(
 
 void buildDepartures(
 	mp::std::vector<ObjectAndTime<Box, Frame*> > const &nextBox,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > const &nextExplosion,
 	mp::std::vector<ObjectAndTime<Guy, Frame*> > const &nextGuy,
 	mt::std::vector<std::tuple<std::size_t, Frame *>> &guyDepartureFrames,
 	PhysicsEngine::FrameDepartureT &newDepartures,
@@ -276,6 +290,7 @@ int ManhattanDistance(int x1, int y1, int x2, int y2);
 int ManhattanDistanceToRectangle(int px, int py, int x, int y, int w, int h);
 int Distance(int x1, int y1, int x2, int y2);
 int DistanceToRectangle(int px, int py, int x, int y, int w, int h);
+int DistanceBetweenRectanglesApprox(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies);
 bool IntersectingRectanglesInclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IntersectingRectanglesExclusive(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);

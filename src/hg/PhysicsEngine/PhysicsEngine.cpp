@@ -85,6 +85,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 		triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>()));
 
 	mp::std::vector<ObjectAndTime<Box, Frame *>> nextBox(pool);
+	mp::std::vector<ObjectAndTime<Explosion, Frame *>> nextExplosion(pool);
 	mp::std::vector<char> nextBoxNormalDeparture(pool);
 
 	//TODO: Use frame-output memory pool
@@ -103,11 +104,12 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 		physicsTriggerStuff.additionalBoxes,
 		nextBox,
 		nextBoxNormalDeparture,
+		arrivals.getList<Explosion>(),
+		nextExplosion,
 		physicsTriggerStuff.collisions,
 		physicsTriggerStuff.portals,
 		physicsTriggerStuff.arrivalLocations,
 		physicsTriggerStuff.mutators,
-		explosions,
 		triggerFrameState,
 		BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
 		frame,
@@ -153,6 +155,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 	mt::std::vector<std::tuple<std::size_t, Frame *>> guyDepartureFrames;
 	buildDepartures(
 		nextBox,
+		nextExplosion,
 		nextGuy,
 		guyDepartureFrames,
 		newDepartures,

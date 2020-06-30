@@ -122,7 +122,8 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 		TriggerFrameState triggerFrameState(new (pool) MockTriggerFrameStateImplementation());
 		FrameID frame(9654, UniverseID(10800));
 		
-		mt::std::vector<ExplosionEffect> explosions;
+		std::vector<Explosion> explosionArrivalList{};
+		mp::std::vector<ObjectAndTime<Explosion, FrameID>> nextExplosion(pool);
 		
 		//This is testing a case which caused a crash. If this line does not cause a crash,
 		//then the test has succeeded.
@@ -132,11 +133,12 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 			additionalBoxes,
 			nextBox,
 			nextBoxNormalDeparture,
+			explosionArrivalList,
+			nextExplosion,
 			nextPlatform,
 			nextPortal,
 			arrivalLocations,
 			mutators,
-			explosions,
 			triggerFrameState,
 			BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
 			frame,

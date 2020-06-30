@@ -9,6 +9,7 @@ namespace hg {
 
 void buildDepartures(
 	mp::std::vector<ObjectAndTime<Box, Frame *>> const &nextBox,
+	mp::std::vector<ObjectAndTime<Explosion, Frame*> > const &nextExplosion,
 	mp::std::vector<ObjectAndTime<Guy, Frame *>> const &nextGuy,
 	mt::std::vector<std::tuple<std::size_t, Frame *>> &guyDepartureFrames,
 	PhysicsEngine::FrameDepartureT &newDepartures,
@@ -16,6 +17,7 @@ void buildDepartures(
 {
 	(void)frame;
 	buildDeparturesForComplexEntities(nextBox, newDepartures);
+	buildDeparturesForComplexEntities(nextExplosion, newDepartures);
 	buildDeparturesForComplexEntitiesWithIndexCaching(nextGuy, guyDepartureFrames, newDepartures);
 }
 
@@ -185,51 +187,6 @@ void recursiveBoxCollision(
 	}
 }
 
-
-void explodeBomb(
-	int const index_,
-	mp::std::vector<int> const& x,
-	mp::std::vector<int> const& y,
-	mp::std::vector<int> const& width,
-	mp::std::vector<int> const& height,
-	mp::std::vector<BoxType> const& boxType,
-	mp::std::vector<char>& squished,
-	mp::std::vector<Box> const& oldBoxList,
-	mt::std::vector<ExplosionEffect> &explosions,
-	BoxGlitzAdder const& boxGlitzAdder,
-	memory_pool<user_allocator_tbb_alloc>& pool)
-{
-	mp::std::vector<char> triggeredBombs(pool);
-	triggeredBombs.reserve(std::size(oldBoxList));
-	triggeredBombs.push_back(index_);
-	while (!std::empty(triggeredBombs)) {
-		auto const index{triggeredBombs.back()};
-		triggeredBombs.pop_back();
-
-		squished[index] = true;
-		int const midX = x[index] + width[index] / 2;
-		int const midY = y[index] + height[index] / 2;
-		int const radius = (width[index]/2 + 1600) * 2;
-		boxGlitzAdder.addExplosionGlitz(midX, midY, radius, oldBoxList[index].getTimeDirection());
-		explosions.push_back(ExplosionEffect{midX, midY, radius, oldBoxList[index].getTimeDirection()});
-
-		for (std::size_t i(0), isize(std::size(oldBoxList)); i < isize; ++i) {
-			if (!squished[i]) {
-				if (DistanceToRectangle(midX, midY, x[i], y[i], width[i], height[i]) <= radius) {
-					if (boxType[i] == BoxType::BOMB) {
-						triggeredBombs.push_back(i);
-					}
-					else {
-						boxGlitzAdder.addDeathGlitz(x[i], y[i], width[i], height[i], oldBoxList[i].getTimeDirection());
-						squished[i] = true;
-					}
-				}
-			}
-		}
-	}
-}
-
-
 #if 0
 bool wallAtInclusive(Environment const &env, int x, int y, int w, int h)
 {
@@ -244,9 +201,6 @@ bool wallAtExclusive(Environment const &env, int x, int y, int w, int h)
 {
 	return wallAtExclusive(env.wall, x, y, w, h);
 }
-
-
-
 
 struct RayToLineCollisionResult{
 	bool hit;
@@ -961,6 +915,11 @@ int DistanceToRectangle(int px, int py, int x, int y, int w, int h)
 			return Distance(px, py, x + w, y + h);
 		}
 	}
+}
+
+int DistanceBetweenRectanglesApprox(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+{
+	return Distance(x1 + w1/2, y1 + h1/2, x2 + w1/2, y2 + h2/2) - ((w1 + h1 + w2 + h2) / 4);
 }
 
 bool IsRectangleRelationVertical(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2, bool vertWinTies)
