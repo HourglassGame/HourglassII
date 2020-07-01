@@ -914,7 +914,7 @@ void guyStep(
 							int bY(y[i] - carryHeight[i]);
 							guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
 							addExplosion(nextExplosion, frame,
-								bX, bY, width, height,
+								bX, bY, guyArrivalList[i].getBoxCarryWidth(), guyArrivalList[i].getBoxCarryHeight(),
 								guyArrivalList[i].getBoxCarryDirection() * guyArrivalList[i].getTimeDirection());
 						}
 						if (carryState[i] >= hg::BOMB_TIMER) {
