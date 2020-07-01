@@ -507,6 +507,7 @@ Guy to<Guy>(lua_State* L, int index) {
         BoxType const boxCarrying(readField<BoxType>(L, "boxCarrying", index));
         int const boxCarryWidth((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryWidth", index) : 0);
         int const boxCarryHeight((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryHeight", index) : 0);
+        int const boxCarryState((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryState", index) : 0);
         TimeDirection const boxCarryDirection{(boxCarrying != BoxType::NONE) ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
         bool const timePaused(readField<bool>(L, "timePaused", index));
@@ -526,6 +527,7 @@ Guy to<Guy>(lua_State* L, int index) {
             boxCarrying,
             boxCarryWidth,
             boxCarryHeight,
+			boxCarryState,
             boxCarryDirection,
             timeDirection,
             timePaused);
@@ -554,6 +556,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
         BoxType const boxCarrying(readFieldWithDefault<BoxType>(L, "boxCarrying", index, BoxType::NONE));
         int const boxCarryWidth((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryWidth", index) : 0);
         int const boxCarryHeight((boxCarrying != BoxType::NONE) ? readField<int>(L, "boxCarryHeight", index) : 0);
+        int const boxCarryState((boxCarrying != BoxType::NONE) ? readFieldWithDefault<int>(L, "boxCarryState", index, 0) : 0);
         TimeDirection const boxCarryDirection{(boxCarrying != BoxType::NONE) ? readField<TimeDirection>(L, "boxCarryDirection", index) : TimeDirection::INVALID };
         TimeDirection const timeDirection(readField<TimeDirection>(L, "timeDirection", index));
         bool const timePaused(readFieldWithDefault<bool>(L, "timePaused", index, false));
@@ -575,6 +578,7 @@ InitialGuy to<InitialGuy>(lua_State *L, int index) {
                     boxCarrying,
                     boxCarryWidth,
                     boxCarryHeight,
+					boxCarryState,
                     boxCarryDirection,
                     timeDirection,
                     timePaused));

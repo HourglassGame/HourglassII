@@ -56,9 +56,15 @@ void addExplosion(
 {
 	FrameT nextTime(nextFrame(frame, timeDirection));
 	
+	// A standard 3200x3200 bomb destroys boxes as follows:
+	// X X X X X
+	// X X X X X
+	// X X B X X
+	// X X X X X
+	// X X X X X
 	int radius = 0;
-	int radiusMax = (width + height + 3200) / 2;
-	int radiusGrow = (width + height + 3200) / 10;
+	int radiusMax = (width + height + 3800) / 2;
+	int radiusGrow = (width + height + 3800) / 10;
 	
 	nextExplosion.push_back(
 		ObjectAndTime<Explosion, FrameT>(
@@ -688,25 +694,21 @@ void guyMovement(
 		return;
 	}
 
-	for (std::size_t j(0), jsize(boost::size(explosionArrivalList)); j < jsize; ++j) {
-		if (DistanceToRectangleAddSize(explosionArrivalList[j].getX(), explosionArrivalList[j].getY(),
-				explosionArrivalList[j].getWidth(), explosionArrivalList[j].getHeight(),
-				newX, newY, width, height) <= explosionArrivalList[j].getRadius()) {
-			finishedWith[i] = true;
-			guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+	if (checkExplosionHit(newX, newY, width, height, explosionArrivalList)) {
+		finishedWith[i] = true;
+		guyGlitzAdder.addDeathGlitz(newX, newY, width, height, guyArrivalList[i].getTimeDirection());
+		
+		if (guyArrivalList[i].getBoxCarrying() == BoxType::BOMB) {
+			int boxWidth(guyArrivalList[i].getBoxCarryWidth());
+			int boxHeight(guyArrivalList[i].getBoxCarryHeight());
 			
-			if (guyArrivalList[i].getBoxCarrying() == BoxType::BOMB) {
-				int boxWidth(guyArrivalList[i].getBoxCarryWidth());
-				int boxHeight(guyArrivalList[i].getBoxCarryHeight());
-				
-				addExplosion(nextExplosion, frame,
-					newX + ((width - boxWidth) / 2),
-					newY - boxHeight,
-					boxWidth, boxHeight,
-					guyArrivalList[i].getTimeDirection() * guyArrivalList[i].getBoxCarryDirection());
-			}
-			return;
+			addExplosion(nextExplosion, frame,
+				newX + ((width - boxWidth) / 2),
+				newY - boxHeight,
+				boxWidth, boxHeight,
+				guyArrivalList[i].getTimeDirection() * guyArrivalList[i].getBoxCarryDirection());
 		}
+		return;
 	}
 
 	// Apply Change
@@ -868,6 +870,7 @@ void guyStep(
 	mp::std::vector<BoxType> carry(guyArrivalList.size(), pool);
 	mp::std::vector<int> carryWidth(guyArrivalList.size(), pool);
 	mp::std::vector<int> carryHeight(guyArrivalList.size(), pool);
+	mp::std::vector<int> carryState(guyArrivalList.size(), pool);
 	mp::std::vector<TimeDirection> carryDirection(guyArrivalList.size(), pool);
 	mp::std::vector<char> justPickedUpBox(guyArrivalList.size(), pool);
 
@@ -889,17 +892,39 @@ void guyStep(
 		if (guyArrivalList[i].getIndex() < playerInput.size() && !finishedWith[i])
 		{
 			carry[i] = guyArrivalList[i].getBoxCarrying();
-			carryWidth[i] = 0;
-			carryHeight[i] = 0;
-			carryDirection[i] = TimeDirection::INVALID;
 
 			std::size_t const relativeIndex(guyArrivalList[i].getIndex());
 			GuyInput const &input(playerInput[relativeIndex]);
 
 			if (carry[i] != BoxType::NONE)
 			{
+				carryWidth[i] = guyArrivalList[i].getBoxCarryWidth();
+				carryHeight[i] = guyArrivalList[i].getBoxCarryHeight();
+				carryState[i] = guyArrivalList[i].getBoxCarryState();
+				carryDirection[i] = guyArrivalList[i].getBoxCarryDirection();
+				
+				if (carry[i] == BoxType::BOMB) {
+					if (carryState[i] > 0 && !guyArrivalList[i].getTimePaused()) {
+						carryState[i] -= static_cast<int>(guyArrivalList[i].getBoxCarryDirection() * guyArrivalList[i].getTimeDirection());
+						if (carryState[i] == 0) {
+							finishedWith[i] = true;
+							int width(guyArrivalList[i].getWidth());
+							int height(guyArrivalList[i].getHeight());
+							int bX(x[i] + (width - carryWidth[i]) / 2);
+							int bY(y[i] - carryHeight[i]);
+							guyGlitzAdder.addDeathGlitz(x[i], y[i], width, height, guyArrivalList[i].getTimeDirection());
+							addExplosion(nextExplosion, frame,
+								bX, bY, width, height,
+								guyArrivalList[i].getBoxCarryDirection() * guyArrivalList[i].getTimeDirection());
+						}
+						if (carryState[i] >= hg::BOMB_TIMER) {
+							carryState[i] = 0;
+						}
+					}
+				}
+				
 				bool droppable(false);
-				if (input.getBoxAction())
+				if (input.getBoxAction() && !finishedWith[i])
 				{
 					int width(guyArrivalList[i].getWidth());
 					int height(guyArrivalList[i].getHeight());
@@ -1153,12 +1178,12 @@ void guyStep(
 								mutators,
 								dropX,
 								dropY,
-								0,
+								guyArrivalList[i].getBoxCarryState(),
 								guyArrivalList[i].getSupportedSpeed(),
 								dropWidth,
 								dropHeight,
 								carry[i],
-								getBoxDropState(carry[i]),
+								getBoxDropState(carry[i], carryState[i]),
 								-1,
 								guyArrivalList[i].getBoxCarryDirection(),
 								triggerFrameState,
@@ -1168,6 +1193,7 @@ void guyStep(
 							carry[i] = BoxType::NONE;
 							carryWidth[i] = 0;
 							carryHeight[i] = 0;
+							carryState[i] = 0;
 							carryDirection[i] = TimeDirection::INVALID;
 						}
 						else // !droppable
@@ -1176,19 +1202,16 @@ void guyStep(
 						}
 					}
 				}
-
-				if (!droppable)
-				{
-					carryWidth[i] = guyArrivalList[i].getBoxCarryWidth();
-					carryHeight[i] = guyArrivalList[i].getBoxCarryHeight();
-					carryDirection[i] = guyArrivalList[i].getBoxCarryDirection();
-				}
 			}
 			else
 			{
+				carryWidth[i] = 0;
+				carryHeight[i] = 0;
+				carryState[i] = 0;
+				carryDirection[i] = TimeDirection::INVALID;
+
 				if (input.getBoxAction())
 				{
-
 					int width = guyArrivalList[i].getWidth();
 					int height = guyArrivalList[i].getHeight();
 					//CAREFUL - loop modifies nextBox
@@ -1233,18 +1256,13 @@ void guyStep(
 						carry[i] = foundBoxIt->object.getBoxType();
 						carryWidth[i] = foundBoxIt->object.getWidth();
 						carryHeight[i] = foundBoxIt->object.getHeight();
+						carryState[i] = getBoxPickupState(foundBoxIt->object.getBoxType(), foundBoxIt->object.getState());
 						carryDirection[i] = foundBoxIt->object.getTimeDirection();
 						justPickedUpBox[i] = true;
 
 						nextBox.erase(foundBoxIt);
 						nextBoxNormalDeparture.erase(foundNextBoxNormalDepartureIt);
 					}
-				}
-				else
-				{
-					carryWidth[i] = 0;
-					carryHeight[i] = 0;
-					carryDirection[i] = TimeDirection::INVALID;
 				}
 			}
 		}
@@ -1253,6 +1271,7 @@ void guyStep(
 	assert(boost::size(carry) == boost::size(guyArrivalList));
 	assert(boost::size(carryWidth) == boost::size(guyArrivalList));
 	assert(boost::size(carryHeight) == boost::size(guyArrivalList));
+	assert(boost::size(carryState) == boost::size(guyArrivalList));
 	assert(boost::size(carryDirection) == boost::size(guyArrivalList));
 
 	mp::std::vector<int> newWidth(guyArrivalList.size(), pool);
@@ -1326,6 +1345,7 @@ void guyStep(
 						carry[i],
 						carryWidth[i],
 						carryHeight[i],
+						carryState[i],
 						carryDirection[i],
 						nextTimeDirection,
 						newTimePaused[i]
@@ -1354,6 +1374,7 @@ void guyStep(
 				carry[i] = newGuy->getBoxCarrying();
 				carryWidth[i] = newGuy->getBoxCarryWidth();
 				carryHeight[i] = newGuy->getBoxCarryHeight();
+				carryState[i] = newGuy->getBoxCarryState();
 				carryDirection[i] = newGuy->getBoxCarryDirection();
 				nextTimeDirection = newGuy->getTimeDirection();
 				newTimePaused[i] = newGuy->getTimePaused();
@@ -1391,7 +1412,7 @@ void guyStep(
 								newJumpSpeed[i],
 								illegalPortal[i], -1,
 								supported[i], supportedSpeed[i], newPickups[i], facing[i],
-								carry[i], carryWidth[i], carryHeight[i], carryDirection[i], nextTimeDirection, newTimePaused[i]),
+								carry[i], carryWidth[i], carryHeight[i], carryState[i], carryDirection[i], nextTimeDirection, newTimePaused[i]),
 							false))
 						{
 							if (nextPortal[j].getWinner())
@@ -1506,7 +1527,8 @@ void guyStep(
 									newJumpSpeed[i],
 									illegalPortal[i], -1,
 									supported[i], supportedSpeed[i], newPickups[i], facing[i],
-									carry[i], carryWidth[i], carryHeight[i], carryDirection[i], nextTimeDirection, newTimePaused[i]), true)))
+									carry[i], carryWidth[i], carryHeight[i], carryState[i], carryDirection[i],
+									nextTimeDirection, newTimePaused[i]), true)))
 						{
 							if (nextPortal[j].getWinner())
 							{
@@ -1571,6 +1593,7 @@ void guyStep(
 				carry[i],
 				carryWidth[i],
 				carryHeight[i],
+				carryState[i],
 				carryDirection[i],
 				newTimePaused[i],
 				guyArrivalList[i].getIndex(),
@@ -1599,6 +1622,7 @@ void guyStep(
 							carry[i],
 							carryWidth[i],
 							carryHeight[i],
+							carryState[i],
 							carryDirection[i],
 
 							nextTimeDirection,
@@ -1733,6 +1757,7 @@ void guyStep(
 							carry[shot.targetId],
 							carryWidth[shot.targetId],
 							carryHeight[shot.targetId],
+							carryState[shot.targetId],
 							carryDirection[shot.targetId],
 
 							guyArrivalList[shot.targetId].getTimeDirection(),
@@ -1901,6 +1926,7 @@ void guyStep(
 							carry[shot.targetId],
 							carryWidth[shot.targetId],
 							carryHeight[shot.targetId],
+							carryState[shot.targetId],
 							carryDirection[shot.targetId],
 
 							guyArrivalList[shot.targetId].getTimeDirection(),
@@ -1959,6 +1985,7 @@ void guyStep(
 					carry[i],
 					carryWidth[i],
 					carryHeight[i],
+					carryState[i],
 					carryDirection[i],
 
 					guyArrivalList[i].getTimeDirection(),

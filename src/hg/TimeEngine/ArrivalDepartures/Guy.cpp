@@ -22,6 +22,7 @@ Guy::Guy(
 	BoxType boxCarrying,
 	int boxCarryWidth,
 	int boxCarryHeight,
+	int boxCarryState,
 	TimeDirection boxCarryDirection,
 
 	TimeDirection timeDirection,
@@ -46,6 +47,7 @@ Guy::Guy(
 		boxCarrying(boxCarrying),
 		boxCarryWidth(boxCarryWidth),
 		boxCarryHeight(boxCarryHeight),
+		boxCarryState(boxCarryState),
 		boxCarryDirection(boxCarryDirection),
 
 		timeDirection(timeDirection),

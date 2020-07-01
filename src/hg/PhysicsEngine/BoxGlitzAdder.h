@@ -30,7 +30,8 @@ public:
 		vec2<int> const &position,
 		int width, int height,
 		BoxType boxType, int state,
-		TimeDirection timeDirection) const
+		TimeDirection timeDirection,
+		int drawOrder) const
 	{
 		int x = position.a;
 		int y = position.b;
@@ -42,16 +43,16 @@ public:
 			h = h * 7 / 5;
 		}
 		//Glitz sameDirectionGlitzDebug(mt::std::make_unique<ImageGlitz>(
-		//		500 + static_cast<int>(boxType), getBoxImage(BoxType::CRATE, TimeDirection::FORWARDS),
+		//		drawOrder + static_cast<int>(boxType), getBoxImage(BoxType::CRATE, TimeDirection::FORWARDS),
 		//		position.a, position.b, width, height));
 		//forwardsGlitz->push_back(sameDirectionGlitzDebug);
 
 		Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				500 + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::FORWARDS),
+				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::FORWARDS),
 				x, y, w, h));
 
 		Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				500 + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::REVERSE),
+				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::REVERSE),
 				x, y, w, h));
 		
 		forwardsGlitz->push_back(
@@ -62,7 +63,7 @@ public:
 
 		if (boxType == BoxType::BOMB && state > 0) {
 			Glitz stateText = Glitz(mt::std::make_unique<TextGlitz>(
-				500 + static_cast<int>(boxType),
+				drawOrder + static_cast<int>(boxType),
 				formatTime(state),
 				x + width / 5,
 				y + height / 5,

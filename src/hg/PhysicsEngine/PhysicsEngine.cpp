@@ -93,6 +93,8 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 	mt::std::vector<Glitz> reverseGlitz;
 	mp::std::vector<GlitzPersister> persistentGlitz(pool);
 	boost::push_back(persistentGlitz, arrivals.getList<GlitzPersister>());
+	
+	BoxGlitzAdder const boxGlitzAdder = BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz);
 
 	// boxes do their crazy wizz-bang collision algorithm
 	boxCollisionAlgorithm(
@@ -108,7 +110,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 		physicsTriggerStuff.arrivalLocations,
 		physicsTriggerStuff.mutators,
 		triggerFrameState,
-		BoxGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
+		boxGlitzAdder,
 		frame,
 		pool);
 
@@ -141,7 +143,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 		physicsTriggerStuff.arrivalLocations,
 		physicsTriggerStuff.mutators,
 		triggerFrameState,
-		GuyGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz),
+		GuyGlitzAdder(forwardsGlitz, reverseGlitz, persistentGlitz, boxGlitzAdder),
 		winFrame,
 		pool);
 

@@ -1,5 +1,6 @@
 #ifndef HG_GUY_GLITZ_ADDER_H
 #define HG_GUY_GLITZ_ADDER_H
+#include "BoxGlitzAdder.h"
 #include "hg/PhysicsEngine/GlitzAdderUtil.h"
 #include "hg/TimeEngine/Glitz/RectangleGlitz.h"
 #include "hg/TimeEngine/Glitz/CircleGlitz.h"
@@ -57,10 +58,12 @@ public:
 	GuyGlitzAdder(
 		mt::std::vector<Glitz> &forwardsGlitz,
 		mt::std::vector<Glitz> &reverseGlitz,
-		mp::std::vector<GlitzPersister> &persistentGlitz) :
+		mp::std::vector<GlitzPersister> &persistentGlitz,
+		BoxGlitzAdder const &boxGlitzAdder) :
 	forwardsGlitz(&forwardsGlitz),
 	reverseGlitz(&reverseGlitz),
-	persistentGlitz(&persistentGlitz)
+	persistentGlitz(&persistentGlitz),
+	boxGlitzAdder(boxGlitzAdder)
 	{}
 	//Adds the glitz that would be appropriate for a guy
 	//with the given characteristics
@@ -72,6 +75,7 @@ public:
 		BoxType boxCarrying,
 		int boxCarryWidth,
 		int boxCarryHeight,
+		int boxCarryState,
 		TimeDirection boxCarryDirection,
 		bool paused,
 		std::size_t guyIndex,
@@ -104,21 +108,17 @@ public:
 
 			if (boxCarrying != BoxType::NONE)
 			{
+
+
 				int x = hmid - boxCarryWidth/2;
 				int y = top - boxCarryHeight;
 				int w = boxCarryWidth;
 				int h = boxCarryHeight;
-				if (boxCarrying == BoxType::BALLOON) {
-					x = x - w/5;
-					w = w * 7 / 5;
-					h = h * 7 / 5;
-				}
-				forwardsGlitz->push_back(
-					Glitz(mt::std::make_unique<ImageGlitz>(
-							600,
-							getBoxImage(boxCarrying, boxCarryDirection),
-							x, y, w, h),
-						paused ? static_cast<int>(guyIndex) : -1));
+
+				boxGlitzAdder.addGlitzForBox(
+					vec2<int>{x, y}, w, h,
+						boxCarrying, boxCarryState,
+						boxCarryDirection, 600);
 			}
 			
 			addCurrentGuyArrow(*forwardsGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);
@@ -153,17 +153,11 @@ public:
 				int y = top - boxCarryHeight;
 				int w = boxCarryWidth;
 				int h = boxCarryHeight;
-				if (boxCarrying == BoxType::BALLOON) {
-					x = x - w/5;
-					w = w * 7 / 5;
-					h = h * 7 / 5;
-				}
-				reverseGlitz->push_back(
-					Glitz(mt::std::make_unique<ImageGlitz>(
-							600,
-							getBoxImage(boxCarrying, boxCarryDirection * TimeDirection::REVERSE),
-							x, y, w, h),
-						paused ? static_cast<int>(guyIndex) : -1));
+
+				boxGlitzAdder.addGlitzForBox(
+					vec2<int>{x, y}, w, h,
+					boxCarrying, boxCarryState,
+					boxCarryDirection, 600);
 			}
 			addCurrentGuyArrow(*reverseGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);
 		}
@@ -271,6 +265,7 @@ private:
 	mt::std::vector<Glitz> *forwardsGlitz;
 	mt::std::vector<Glitz> *reverseGlitz;
 	mp::std::vector<GlitzPersister> *persistentGlitz;
+	BoxGlitzAdder const &boxGlitzAdder;
 };
 }
 #endif //HG_GUY_GLITZ_ADDER_H

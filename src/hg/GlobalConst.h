@@ -4,6 +4,7 @@
 #include <vector>
 namespace hg {
     inline static const int FRAMERATE = 60;
+    inline static const int BOMB_TIMER = 60 * 3;
     inline static const int GRAVITY = 17;
     inline static const int UP_GRAVITY = 17;
     inline static const int DOWN_GRAVITY = 17;

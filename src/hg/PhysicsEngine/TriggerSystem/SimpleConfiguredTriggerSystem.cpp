@@ -1888,6 +1888,7 @@ namespace hg {
 			guy.getBoxCarrying(),
 			guy.getBoxCarryWidth(),
 			guy.getBoxCarryHeight(),
+			guy.getBoxCarryState(),
 			guy.getBoxCarryDirection(),
 
 			guy.getTimeDirection(),
@@ -2165,6 +2166,7 @@ namespace hg {
 				guy.getBoxCarrying(),
 				guy.getBoxCarryWidth(),
 				guy.getBoxCarryHeight(),
+				guy.getBoxCarryState(),
 				guy.getBoxCarryDirection(),
 
 				guy.getTimeDirection(),

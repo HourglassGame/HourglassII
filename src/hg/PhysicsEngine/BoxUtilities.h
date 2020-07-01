@@ -49,9 +49,22 @@ int getBoxCarryGravity(int baseGravity, BoxType boxType, int boxHeight) {
 	return baseGravity;
 }
 
-int getBoxDropState(BoxType boxType) {
+int getBoxPickupState(BoxType boxType, int boxState) {
 	if (boxType == BoxType::BOMB) {
-		return 5 * hg::FRAMERATE;
+		return boxState;
+	}
+	return 0;
+}
+
+int getBoxDropState(BoxType boxType, int boxState) {
+	if (boxType == BoxType::BOMB) {
+		if (boxState == 0) {
+			// Activate newly dropped bomb
+			return hg::BOMB_TIMER;
+		}
+		else {
+			return boxState;
+		}
 	}
 	return 0;
 }
