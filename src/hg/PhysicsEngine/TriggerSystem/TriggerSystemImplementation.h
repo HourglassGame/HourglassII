@@ -2,7 +2,6 @@
 #define HG_TRIGGER_SYSTEM_IMPLEMENTATION_H
 
 #include "PhysicsAffectingStuff.h"
-#include "hg/PhysicsEngine/ExplosionEffect.h"
 
 #include "hg/TimeEngine/ArrivalDepartures/Guy.h"
 #include "hg/TimeEngine/ArrivalDepartures/Box.h"

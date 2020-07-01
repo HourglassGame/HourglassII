@@ -7,7 +7,6 @@
 #include "ExplosionGlitzAdder.h"
 #include "GuyGlitzAdder.h"
 #include "BoxUtilities.h"
-#include "ExplosionEffect.h"
 #include "hg/PhysicsEngine/TriggerSystem/TriggerSystem.h"
 
 #include "hg/TimeEngine/ArrivalDepartures/InputList.h"
