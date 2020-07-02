@@ -2332,6 +2332,10 @@ template <
 					x[i] = xTemp[i];
 				}
 
+				// Track the movement of things that the box is sitting on.
+				int maxLeftMove = 0;
+				int maxRightMove = 0;
+
 				// Check inside a platform
 				for (Collision const &platform : nextPlatform)
 				{
@@ -2349,41 +2353,53 @@ template <
 						}
 						//std::cerr << "Platform y - height: " <<  (pY - height[i]) << "\n";
 
-						if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], pX, pY, pWidth, pHeight))
-						{
-							if (platform.getCollisionType() == CollisionType::PLATFORM)
-							{
-								if (IsRectangleRelationVertical(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight, false))
-								{
-									if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) // box above platform
-									{
+						if (IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], pX, pY, pWidth, pHeight)) {
+							if (platform.getCollisionType() == CollisionType::PLATFORM) {
+								if (IsRectangleRelationVertical(xTemp[i], yTemp[i], width[i], height[i], pX, pY, pWidth, pHeight, false)) {
+									if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) { // box above platform
 										y[i] = pY - height[i];
 										bottom[i] = std::make_pair(true, y[i]);
-										//std::cerr << "Box platform hit " << i << ": " << y[i] << "\n";
-										if (firstTimeThrough && boxType[i] != BoxType::BALLOON)
-										{
-											x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+										if (firstTimeThrough && boxType[i] != BoxType::BALLOON) {
+											x[i] = xTemp[i]; // Stop movement
+											int movement = static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+											//std::cerr << "Box platform hit " << i << ": " << y[i] << ", move " << movement << "\n";
+											if (movement > 0) {
+												if (movement > maxRightMove) {
+													maxRightMove = movement;
+												}
+											}
+											else if (movement < 0) {
+												if (-movement > maxLeftMove) {
+													maxLeftMove = -movement;
+												}
+											}
 										}
 									}
-									else
-									{
+									else {
 										y[i] = pY + pHeight;
 										top[i] = std::make_pair(true, y[i]);
-										if (firstTimeThrough && boxType[i] == BoxType::BALLOON)
-										{
-											x[i] = xTemp[i] + static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+										if (firstTimeThrough && boxType[i] == BoxType::BALLOON) {
+											x[i] = xTemp[i]; // Stop movement
+											int movement = static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+											if (movement > 0) {
+												if (movement > maxRightMove) {
+													maxRightMove = movement;
+												}
+											}
+											else if (movement < 0) {
+												if (-movement > maxLeftMove) {
+													maxLeftMove = -movement;
+												}
+											}
 										}
 									}
 								}
-								else // left or right
-								{
-									if (xTemp[i] + width[i] / 2 < pX + pWidth / 2) // box left of platform
-									{
+								else { // left or right
+									if (xTemp[i] + width[i] / 2 < pX + pWidth / 2) { // box left of platform
 										x[i] = pX - width[i];
 										right[i] = std::make_pair(true, x[i]);
 									}
-									else
-									{
+									else {
 										x[i] = pX + pWidth;
 										left[i] = std::make_pair(true, x[i]);
 									}
@@ -2413,7 +2429,18 @@ template <
 									bottom[i] = std::make_pair(true, y[i]);
 									if (firstTimeThrough)
 									{
-										x[i] = xTemp[i] - oldBoxList[j].getXspeed();
+										x[i] = xTemp[i]; // Stop movement
+										int movement = -oldBoxList[j].getXspeed();
+										if (movement > 0) {
+											if (movement > maxRightMove) {
+												maxRightMove = movement;
+											}
+										}
+										else if (movement < 0) {
+											if (-movement > maxLeftMove) {
+												maxLeftMove = -movement;
+											}
+										}
 									}
 								}
 								else
@@ -2424,13 +2451,11 @@ template <
 							}
 							else // left or right
 							{
-								if (xTemp[i] + width[i] / 2 < bX + bWidth / 2) // box left of reverse box
-								{
+								if (xTemp[i] + width[i] / 2 < bX + bWidth / 2) { // box left of reverse box
 									x[i] = bX - width[i];
 									right[i] = std::make_pair(true, x[i]);
 								}
-								else
-								{
+								else {
 									x[i] = bX + bWidth;
 									left[i] = std::make_pair(true, x[i]);
 								}
@@ -2438,14 +2463,27 @@ template <
 						}
 					}
 				}
+				
+				// Change box speed based on what it is sitting on.
+				if (maxLeftMove > 0) {
+					//std::cerr << "maxRightMove " << maxRightMove << ", maxLeftMove " << maxLeftMove << "\n";
+					if (maxRightMove > 0) {
+						x[i] = x[i] + maxRightMove - maxLeftMove;
+					}
+					else {
+						x[i] = x[i] - maxLeftMove;
+					}
+				}
+				else if (maxRightMove > 0) {
+					//std::cerr << "maxRightMove " << maxRightMove << ", maxLeftMove " << maxLeftMove << "\n";
+					x[i] = x[i] + maxRightMove;
+				}
 			}
 		}
 
 		// Store position before box collision
-		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
-		{
-			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
-			{
+		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection) {
 				//std::cerr << "Wall " << i << ": " << x[i] << ", " << y[i] << " " << (right[i].first ? "> " : "  ") << (top[i].first ? "^ " : "  ") << (left[i].first ? "< " : "  ") << (bottom[i].first ? "v\n" : " \n");
 				xPreBox[i] = x[i];
 				yPreBox[i] = y[i];
@@ -2454,12 +2492,9 @@ template <
 		}
 
 		// Now make the map of vertical collisions
-		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
-		{
-			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
-			{
-				for (std::size_t j(0); j < i; ++j)
-				{
+		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
+			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection) {
+				for (std::size_t j(0); j < i; ++j) {
 					if (j != i && !squished[j] && boxCollidable(boxType[j])
 							&& oldBoxList[j].getTimeDirection() == boxDirection
 							&& IntersectingRectanglesInclusive(x[i], y[i], width[i], height[i], x[j], y[j], width[j], height[j])) {
