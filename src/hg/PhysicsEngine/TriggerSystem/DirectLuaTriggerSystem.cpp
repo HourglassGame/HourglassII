@@ -321,8 +321,11 @@ PhysicsAffectingStuff
 DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
 	Frame const *currentFrame,
 	boost::transformed_range<
-	GetBase<TriggerDataConstPtr>,
-	mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) try {
+		GetBase<TriggerDataConstPtr>,
+		mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals,
+	boost::transformed_range<
+		GetBase<ExplosionConstPtr>,
+		mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals) try {
 	//All indicies viewed or written by lua count starting from 1, and are adjusted
 	//before geing used in c++.
 	//Expects a chunk which, when executed, returns 1 element:

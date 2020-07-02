@@ -19,7 +19,10 @@ class MockTriggerFrameStateImplementation final : public TriggerFrameStateImplem
 			Frame const * /*currentFrame*/,
 			boost::transformed_range<
 				GetBase<TriggerDataConstPtr>,
-				mt::boost::container::vector<TriggerDataConstPtr> const> const &/*triggerArrivals*/) override
+				mt::boost::container::vector<TriggerDataConstPtr> const> const &/*triggerArrivals*/,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &/*explosionArrivals*/) override
 	{
 		assert(false && "Not Implemented!");
 		throw std::runtime_error("Not Implemented Exception");

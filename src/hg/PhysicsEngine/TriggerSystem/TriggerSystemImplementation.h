@@ -37,7 +37,10 @@ class TriggerFrameStateImplementation
 			Frame const *currentFrame,
 			boost::transformed_range<
 				GetBase<TriggerDataConstPtr>,
-				mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) = 0;
+				mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals) = 0;
 	
 	virtual bool shouldArrive(Guy const &potentialArriver) = 0;
 	virtual bool shouldArrive(Box const &potentialArriver) = 0;
@@ -90,9 +93,12 @@ class TriggerFrameState final
 		Frame const *currentFrame,
 		boost::transformed_range<
 			GetBase<TriggerDataConstPtr>,
-			mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
+			mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals)
 	{
-		return impl->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals);
+		return impl->calculatePhysicsAffectingStuff(currentFrame, triggerArrivals, explosionArrivals);
 	}
 	template<typename ObjectT>
 	bool shouldArrive(ObjectT const &potentialArriver)

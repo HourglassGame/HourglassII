@@ -84,6 +84,23 @@ namespace hg {
 		auto const colour = asPackedColour(255, 0, 0);
 		return {calculateBidirectionalGlitz(400, beamArea, colour, colour)};
 	}
+
+	bool checkExplosion(
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
+		int x, int y, int width, int height)
+	{
+		for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
+			if (DistanceToRectangleAddSize(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
+					explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
+					x, y, width, height) <= explosionArrivals[i].getRadius()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	struct PositionAndVelocity {
 		int position;
 		int velocity;
@@ -154,14 +171,38 @@ namespace hg {
 		return {position + static_cast<int>(velocity), static_cast<int>(velocity)};
 	}
 
+	void checkCollisionExplosion(
+		mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
+		ProtoCollision const &protoCollision,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals)
+	{
+		if (outputTriggers[protoCollision.lastStateTriggerID][4] != -1) {
+
+			for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
+				if (DistanceToRectangleAddSize(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
+						explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
+						outputTriggers[protoCollision.lastStateTriggerID][0], outputTriggers[protoCollision.lastStateTriggerID][1],
+						protoCollision.width, protoCollision.height) <= explosionArrivals[i].getRadius()) {
+					outputTriggers[protoCollision.lastStateTriggerID][4] = -1;
+					return;
+				}
+			}
+		}
+	}
+
 	void calculateCollisions(
 		mp::std::vector<Collision> &collisions,
 		std::vector<ProtoCollision> const &protoCollisions,
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
-		Frame const *const currentFrame
+		Frame const *const currentFrame,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 	)
 	{
-		auto const calculateCollision = [&triggerArrivals, &currentFrame](ProtoCollision const &protoCollision){
+		auto const calculateCollision = [&triggerArrivals, &currentFrame, &explosionArrivals](ProtoCollision const &protoCollision){
 			/*
 			//TODO
 			if (protoCollision.rawCollisionFunction) {
@@ -195,6 +236,21 @@ namespace hg {
 			auto const verticalPosAndVel = solvePDEquation(
 				destination.yDestination, lastStateTrigger[1], lastStateTrigger[3], triggerArrivals, currentFrame);
 
+			if (checkExplosion(explosionArrivals,
+					horizontalPosAndVel.position, verticalPosAndVel.position,
+					protoCollision.width, protoCollision.height)) {
+				
+				return Collision(
+					/*int x*/horizontalPosAndVel.position,/*int y*/verticalPosAndVel.position,
+					/*int xspeed*/0, /*int yspeed*/0,
+					/*int prevXspeed*/lastStateTrigger[2], /*int prevYspeed*/lastStateTrigger[3],
+					/*int width*/protoCollision.width, /*int height*/protoCollision.height,
+					false, // Dead
+					protoCollision.collisionType,
+					/*TimeDirection timeDirection*/protoCollision.timeDirection
+				);
+			}
+
 			return Collision(
 				/*int x*/horizontalPosAndVel.position,/*int y*/verticalPosAndVel.position,
 				/*int xspeed*/horizontalPosAndVel.velocity, /*int yspeed*/verticalPosAndVel.velocity,
@@ -207,6 +263,14 @@ namespace hg {
 		};
 
 		boost::push_back(collisions, protoCollisions | boost::adaptors::transformed(calculateCollision));
+	}
+
+	void fillCollisionTriggers(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers, std::vector<ProtoCollision> const &protoCollisions, mp::std::vector<Collision> const &collisions) {
+		for (std::size_t i{0}, sz{protoCollisions.size()}; i != sz; ++i) {
+			assert(collisions.size() == sz);
+			auto const &coll = collisions[i];
+			outputTriggers[protoCollisions[i].lastStateTriggerID] = mt::std::vector<int>{coll.getX(), coll.getY(), coll.getXspeed(), coll.getYspeed(), coll.getFunctional() ? 0 : -1};
+		}
 	}
 
 	ArrivalLocation calculateArrivalLocation(PortalArea const &portal)
@@ -419,6 +483,7 @@ namespace hg {
 			}
 		}
 	}
+	
 	void calculateButtonPositionsAndVelocities(
 		mp::std::vector<ButtonFrameState> &buttonFrameStates,
 		mp::std::vector<Collision> const &collisions
@@ -426,13 +491,6 @@ namespace hg {
 	{
 		for (auto &&buttonFrameState : buttonFrameStates) {
 			buttonFrameState.calcPnV(collisions);
-		}
-	}
-	void fillCollisionTriggers(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers, std::vector<ProtoCollision> const &protoCollisions, mp::std::vector<Collision> const &collisions) {
-		for (std::size_t i{0}, sz{protoCollisions.size()}; i != sz; ++i) {
-			assert(collisions.size() == sz);
-			auto const &coll = collisions[i];
-			outputTriggers[protoCollisions[i].lastStateTriggerID] = mt::std::vector<int>{coll.getX(), coll.getY(), coll.getXspeed(), coll.getYspeed(), coll.getFunctional() ? 0 : -1};
 		}
 	}
 
@@ -545,27 +603,6 @@ namespace hg {
 		for(auto &&a : protoMutators) mutatorFrameStates_.push_back(a.getFrameState(pool_));
 	}
 
-	void checkCollisionExplosion(
-		mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers,
-		ProtoCollision const &protoCollision,
-		boost::transformed_range<
-			GetBase<ExplosionConstPtr>,
-			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals)
-	{
-		if (outputTriggers[protoCollision.lastStateTriggerID][4] != -1) {
-
-			for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
-				if (DistanceToRectangleAddSize(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
-						explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
-						outputTriggers[protoCollision.lastStateTriggerID][0], outputTriggers[protoCollision.lastStateTriggerID][1],
-						protoCollision.width, protoCollision.height) <= explosionArrivals[i].getRadius()) {
-					outputTriggers[protoCollision.lastStateTriggerID][4] = -1;
-					return;
-				}
-			}
-		}
-	}
-
 	std::tuple<Glitz, Glitz> calculateCollisionGlitz(Collision const &collision) {
 		return calculateBidirectionalGlitz(
 			300,
@@ -579,64 +616,11 @@ namespace hg {
 			Frame const *const currentFrame,
 			boost::transformed_range<
 				GetBase<TriggerDataConstPtr>,
-				mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals)
+				mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals)
 	{
-#if 0
-		local retv = {} //Done
-
-		tempStore.outputTriggers = {}
-		tempStore.forwardsGlitz = {}
-		tempStore.reverseGlitz = {}
-		tempStore.persistentGlitz = {}
-		tempStore.frameNumber = frameNumber
-		tempStore.triggerArrivals = triggerArrivals
-
-		retv.additionalBoxes = {}
-		tempStore.additionalEndBoxes = {}
-
-		if tempStore.triggerManipulationFunction then
-			tempStore.triggerManipulationFunction(triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)
-		end
-
-		retv.collisions = calculateCollisions(tempStore.protoCollisions, triggerArrivals, tempStore.outputTriggers, tempStore.frameNumber)//Mostly done
-
-		retv.mutators, tempStore.activeMutators = calculateMutators(tempStore.protoMutators, retv.collisions, triggerArrivals)//mostly done
-
-		local portals, arrivalLocations = calculatePortals(
-			tempStore.forwardsGlitz,
-			tempStore.reverseGlitz,
-			tempStore.protoPortals,
-			tempStore.protoLasers,
-			retv.collisions,
-			triggerArrivals,
-			tempStore.frameNumber
-		) //done?
-
-		retv.portals = portals //done?
-		retv.arrivalLocations = arrivalLocations//done?
-
-		calculateButtonPositionsAndVelocities(tempStore.protoButtons, retv.collisions) //partial done
-
-		fillCollisionTriggers(tempStore.outputTriggers, tempStore.protoCollisions, retv.collisions)//done?
-
-		for collision in list_iter(retv.collisions) do
-			local forwardsGlitz, reverseGlitz = calculateCollisionGlitz(collision)
-			table.insert(tempStore.forwardsGlitz, forwardsGlitz)
-			table.insert(tempStore.reverseGlitz, reverseGlitz)
-		end
-
-		if tempStore.protoBoxCreators then
-			for protoBoxCreator in list_iter(tempStore.protoBoxCreators) do
-				protoBoxCreator:calcPnV(retv.collisions)
-				protoBoxCreator : calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz)
-				protoBoxCreator : getAdditionalBoxes(tempStore.triggerArrivals, tempStore.frameNumber, retv.additionalBoxes)
-			end
-		end
-
-		tempStore.physicsAffectingStuff = retv
-
-		return retv
-#endif
 		triggerArrivals_ = calculateApparentTriggers(triggerOffsetsAndDefaults_, triggerArrivals, pool_);
 
 		/*
@@ -648,7 +632,7 @@ namespace hg {
 		//ie- arrivalLocations will always be the same length for a particular TriggerSystem
 		mp::std::vector<ArrivalLocation> arrivalLocations;
 		*/
-		calculateCollisions(physicsAffectingStuff_.collisions, protoCollisions_, triggerArrivals_, /*outputTriggers,*/ currentFrame);
+		calculateCollisions(physicsAffectingStuff_.collisions, protoCollisions_, triggerArrivals_, /*outputTriggers,*/ currentFrame, explosionArrivals);
 
 		calculateMutators(physicsAffectingStuff_.mutators, activeMutators_, mutatorFrameStates_, physicsAffectingStuff_.collisions, triggerArrivals_);
 
@@ -686,32 +670,6 @@ namespace hg {
 			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
 		Frame *currentFrame)
 	{
-#if 0
-		calculateButtonStates(tempStore.protoButtons, departures, explosionArrivals, tempStore.triggerArrivals)
-
-		for protoButton in list_iter(tempStore.protoButtons) do
-			protoButton:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz)
-			protoButton:fillTrigger(tempStore.outputTriggers)
-		end
-
-		for protoMutator in list_iter(tempStore.protoMutators) do
-			protoMutator:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.persistentGlitz)
-			protoMutator:fillTrigger(tempStore.outputTriggers)
-		end
-
-		if tempStore.protoGlitz then
-			for protoGlitz in list_iter(tempStore.protoGlitz) do
-				protoGlitz:calculateGlitz(tempStore.forwardsGlitz, tempStore.reverseGlitz, tempStore.physicsAffectingStuff, tempStore.triggerArrivals, tempStore.outputTriggers, currentFrame)
-			end
-		end
-
-		return
-			tempStore.outputTriggers,
-			tempStore.forwardsGlitz,
-			tempStore.reverseGlitz,
-			tempStore.persistentGlitz,
-			tempStore.additionalEndBoxes
-#endif
 		//mt::std::vector<Glitz> forwardsGlitz;
 		//mt::std::vector<Glitz> reverseGlitz;
 		mt::std::vector<GlitzPersister> additionalGlitzPersisters;
@@ -731,12 +689,6 @@ namespace hg {
 		}
 		for (auto const  &protoTriggerMod : protoTriggerMods_) {
 			protoTriggerMod.modifyTrigger(triggerArrivals_, outputTriggers_, triggerOffsetsAndDefaults_, currentFrame);
-		}
-
-		if (!explosionArrivals.empty()) {
-			for (auto const& protoCollision : protoCollisions_) {
-				checkCollisionExplosion(outputTriggers_, protoCollision, explosionArrivals);
-			}
 		}
 
 		for (auto const &protoPortal : protoPortals_) {
@@ -2179,7 +2131,6 @@ namespace hg {
 	}
 
 
-
 	//TODO: Does this logic already exist somewhere in C++??
 	bool temporalIntersectingExclusive(
 		int const xa_raw, int const ya_raw, int const xspeeda, int const yspeeda, int const wa, int const ha, TimeDirection const timeDirectiona,
@@ -2210,22 +2161,6 @@ namespace hg {
 			);
 	}
 
-	bool checkExplosion(
-		boost::transformed_range<
-			GetBase<ExplosionConstPtr>,
-			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals,
-		int x, int y, int width, int height)
-	{
-		for (std::size_t i(0), isize(boost::size(explosionArrivals)); i < isize; ++i) {
-			if (DistanceToRectangleAddSize(explosionArrivals[i].getX(), explosionArrivals[i].getY(),
-					explosionArrivals[i].getWidth(), explosionArrivals[i].getHeight(),
-					x, y, width, height) <= explosionArrivals[i].getRadius()) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	bool checkPressed(
 		int const x, int const y, int const xspeed, int const yspeed, int const width, int const height, TimeDirection const timeDirection,
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures)

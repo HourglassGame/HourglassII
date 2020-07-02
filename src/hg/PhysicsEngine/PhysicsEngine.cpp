@@ -82,7 +82,7 @@ PhysicsEngine::PhysicsReturnT PhysicsEngine::executeFrame(
 
 	//{extra boxes, collision, death, portal, pickup, arrival location}
 	PhysicsAffectingStuff const physicsTriggerStuff(
-		triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>()));
+		triggerFrameState.calculatePhysicsAffectingStuff(frame, arrivals.getList<TriggerData>(), arrivals.getList<Explosion>()));
 
 	mp::std::vector<ObjectAndTime<Box, Frame *>> nextBox(pool);
 	mp::std::vector<ObjectAndTime<Explosion, Frame *>> nextExplosion(pool);

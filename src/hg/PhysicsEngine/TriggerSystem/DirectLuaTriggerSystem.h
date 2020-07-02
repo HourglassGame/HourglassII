@@ -39,7 +39,10 @@ class DirectLuaTriggerFrameState final :
 			Frame const *currentFrame,
 			boost::transformed_range<
 				GetBase<TriggerDataConstPtr>,
-				mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals) override;
+				mt::boost::container::vector<TriggerDataConstPtr> const> const &triggerArrivals,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals) override;
 
 	virtual bool shouldArrive(Guy const &potentialArriver) override;
 	virtual bool shouldArrive(Box const &potentialArriver) override;
