@@ -1,5 +1,6 @@
 name = "Upgrade 3"
 speedOfTime = 24
+speedOfTimeFuture = 0
 timelineLength = 10800
 environment =
 {
