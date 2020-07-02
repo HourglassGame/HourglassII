@@ -14,6 +14,7 @@ struct TimeEngineImpl final {
 		return new TimeEngineImpl(*this);
 	}
 	unsigned int speedOfTime;
+	unsigned int speedOfTimeFuture;
 	//state of world at end of last executed frame
 	WorldState worldState;
 	//Wall duplicated here, it is also in physics.
@@ -26,9 +27,11 @@ TimeEngine::TimeEngine(Level &&level, OperationInterrupter &interrupter) :
 	impl(
 	  new TimeEngineImpl{
 		level.speedOfTime,
+		level.speedOfTimeFuture,
 		WorldState(
 			level.timelineLength,
 			level.speedOfTime,
+			level.speedOfTimeFuture,
 			std::move(level.initialGuy),
 			std::move(level.guyStartTime),
 			PhysicsEngine(Environment(level.environment), std::move(level.triggerSystem)),
@@ -56,10 +59,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 	impl->worldState.addNewInputData(newInputData);
 	FrameListList updatedList;
 	updatedList.reserve(impl->speedOfTime);
-	for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
-		updatedList.push_back(impl->worldState.executeWorld(interrupter, i));
-	}
-
+	
 	// Only generate paradox pressure for waves behind the current guy
 	std::size_t guyIndex = getGuyFrames().size() - 2 - relativeGuyIndex;
 	if (!getGuyFrames()[guyIndex].empty()) {
@@ -99,6 +99,31 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 	}
 	else {
 		guyFrameNumber = guyFrameNumber + guyDirection;
+	}
+	
+	// Find the present Guy
+	int arrivalGuyFrameNumber = 0;
+	TimeDirection arrivalGuyDirection = TimeDirection::INVALID;
+	
+	guyIndex = getGuyArrivalFrames().size() - 2 - relativeGuyIndex; // Current Guy
+	if (guyDirection != TimeDirection::INVALID) {
+		if (!getGuyArrivalFrames()[guyIndex].empty()) {
+			arrivalGuyDirection = guyDirection;
+			for (hg::Frame *frame : getGuyArrivalFrames()[guyIndex])
+			{
+				if (guyDirection == TimeDirection::FORWARDS) {
+					arrivalGuyFrameNumber = std::max(arrivalGuyFrameNumber, getFrameNumber(frame));
+				}
+				else {
+					arrivalGuyFrameNumber = std::min(arrivalGuyFrameNumber, getFrameNumber(frame));
+				}
+			}
+		}
+	}
+	
+	// Update world with guy frame and direction.
+	for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
+		updatedList.push_back(impl->worldState.executeWorld(interrupter, i, arrivalGuyFrameNumber, arrivalGuyDirection));
 	}
 
 	unsigned minWaveChanges = 0;
@@ -161,6 +186,7 @@ TimeEngine::RunResult TimeEngine::getPrevRunResult()
 Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const noexcept { return impl->worldState.getFrame(whichFrame); }
 std::vector<ConcurrentTimeSet> const &TimeEngine::getGuyFrames() const noexcept { return impl->worldState.getGuyFrames(); }
 std::vector<std::vector<int> > const &TimeEngine::getFrameGuys() const noexcept { return impl->worldState.getFrameGuys(); }
+std::vector<ConcurrentTimeSet> const &TimeEngine::getGuyArrivalFrames() const noexcept { return impl->worldState.getGuyArrivalFrames(); }
 std::vector<GuyInput> const &TimeEngine::getPostOverwriteInput() const noexcept { return impl->worldState.getPostOverwriteInput(); }
 std::vector<InputList> const &TimeEngine::getReplayData() const noexcept { return impl->worldState.getReplayData(); }
 Wall const &TimeEngine::getWall() const noexcept { return impl->wall; }

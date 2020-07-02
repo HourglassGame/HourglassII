@@ -22,7 +22,8 @@ public:
 	typedef MapType::iterator iterator;
 	typedef MapType::const_iterator const_iterator;
 	//MUST be called with all the times which will be passed to addDeparture before calling addDeparture
-	void makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor, unsigned speedOfTimeFilter);
+	void makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor, unsigned speedOfTimeFilter,
+		unsigned futureSpeedOfTimeLimit, unsigned guyFrameNumber, TimeDirection guyDirection);
 	void setDeparture(Frame *frame, MapType::mapped_type &&departingObjects);
 	iterator begin();
 	iterator end();

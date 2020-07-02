@@ -69,6 +69,7 @@ public:
 	Frame const *getFrame(FrameID const &whichFrame) const noexcept;// { return worldState.getFrame(whichFrame); }
 	std::vector<ConcurrentTimeSet> const &getGuyFrames() const noexcept;// { return worldState.getGuyFrames(); }
 	std::vector<std::vector<int> > const &getFrameGuys() const noexcept;// { return worldState.getGuyFrames(); }
+	std::vector<ConcurrentTimeSet> const &getGuyArrivalFrames() const noexcept; // { return worldState.getGuyArrivalFrames(); }
 	std::vector<GuyInput> const &getPostOverwriteInput() const noexcept;// { return worldState.getPostOverwriteInput(); }
 	std::vector<InputList> const &getReplayData() const noexcept;// { return worldState.getReplayData(); }
 	Wall const &getWall() const noexcept;// { return wall; }

@@ -2256,7 +2256,7 @@ namespace hg {
 			   proto->width,
 			   proto->height,
 			   proto->timeDirection},
-			state == 1, state == -1);
+			state >= 1, state == -1);
 		forwardsGlitz.push_back(std::move(forGlitz));
 		reverseGlitz.push_back(std::move(revGlitz));
 
@@ -2366,7 +2366,7 @@ namespace hg {
 				   proto->first.width,
 				   proto->first.height,
 				   proto->timeDirection},
-				switchState == 1, switchState == -1);
+				switchState >= 1, switchState == -1);
 			forwardsGlitz.push_back(std::move(forGlitz));
 			reverseGlitz.push_back(std::move(revGlitz));
 		}
@@ -2690,7 +2690,7 @@ namespace hg {
 					proto->emitter.width,
 					proto->emitter.height,
 					proto->timeDirection},
-				switchState == 1, switchState == -1);
+				switchState >= 1, switchState == -1);
 			forwardsGlitz.push_back(std::move(forGlitz));
 			reverseGlitz.push_back(std::move(revGlitz));
 		}

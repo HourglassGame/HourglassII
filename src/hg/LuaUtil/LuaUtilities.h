@@ -103,6 +103,15 @@ T readGlobal(lua_State *L, char const *globalName)
     return retv;
 }
 
+template<typename T>
+T readGlobalWithDefault(lua_State *L, char const *globalName, T defaultValue)
+{
+    lua_getglobal(L, globalName);
+    T retv(isValid<T>(L, -1) ? to<T>(L) : std::move(defaultValue));
+    lua_pop(L, 1);
+    return retv;
+}
+
 template<>
 int to<int>(lua_State *L, int index);
 

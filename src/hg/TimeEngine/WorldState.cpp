@@ -49,6 +49,7 @@ static std::vector<ConcurrentTimeSet> fixFrameVector(
 }
 WorldState::WorldState(WorldState const& o) :
 		timeline_(o.timeline_),
+		futureSpeedOfTimeLimit_(o.futureSpeedOfTimeLimit_),
 		playerInput_(o.playerInput_),
 		realPlayerInput_(o.realPlayerInput_),
 		frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
@@ -62,6 +63,7 @@ WorldState::WorldState(WorldState const& o) :
 WorldState &WorldState::operator=(WorldState const& o)
 {
 	timeline_ = o.timeline_;
+	futureSpeedOfTimeLimit_ = o.futureSpeedOfTimeLimit_;
 	playerInput_ = o.playerInput_;
 	realPlayerInput_ = o.realPlayerInput_;
 	frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
@@ -76,12 +78,14 @@ WorldState &WorldState::operator=(WorldState const& o)
 WorldState::WorldState(
 	int timelineLength,
 	unsigned defaultSpeedOfTime,
+	unsigned futureSpeedOfTimeLimit,
 	Guy const &initialGuy,
 	FrameID const &guyStartTime,
 	PhysicsEngine &&physics,
 	ObjectList<NonGuyDynamic> &&initialObjects,
 	OperationInterrupter &interrupter) :
 		timeline_(timelineLength, defaultSpeedOfTime),
+		futureSpeedOfTimeLimit_(futureSpeedOfTimeLimit),
 		playerInput_(),
 		frameUpdateSet_(),
 		physics_(std::move(physics)),
@@ -124,7 +128,7 @@ WorldState::WorldState(
 	//TODO: Give some way for the UI to hook into this, for a 'Debug' loading view...
 	//Run level for a while
 	for (int i(0); i != timelineLength && !interrupter.interrupted(); ++i) {
-		executeWorld(interrupter, 0);
+		executeWorld(interrupter, 0, 0, TimeDirection::INVALID);
 	}
 }
 
@@ -206,12 +210,12 @@ PhysicsEngine::FrameDepartureT
 
 	return std::move(retv.departures);
 }
-FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsigned executionCount)
+FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsigned executionCount, unsigned guyFrameNumber, TimeDirection guyDirection)
 {
-	//std::cerr << "START: " << executionCount << "\n";
+	//std::cerr << "START: " << executionCount << ", guyFrame " << guyFrameNumber << ", dir " << static_cast<int>(guyDirection) << ", futureSpeedOfTimeLimit_ " << futureSpeedOfTimeLimit_ << "\n";
 	DepartureMap newDepartures;
 	ConcurrentFrameUpdateSet framesWithChangedArrivals;
-	newDepartures.makeSpaceFor(frameUpdateSet_, executionCount);
+	newDepartures.makeSpaceFor(frameUpdateSet_, executionCount, futureSpeedOfTimeLimit_, guyFrameNumber, guyDirection);
 	FrameUpdateSet returnSet;
 	frameUpdateSet_.swap(returnSet);
 	{
@@ -236,7 +240,11 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
 		parallel_for_each(
 			returnSet,
 			[&](Frame *frame) { 
-				if (getFrameSpeedOfTime(frame) > executionCount) {
+				if (getFrameSpeedOfTime(frame) > executionCount &&
+						(futureSpeedOfTimeLimit_ > executionCount ||
+							guyDirection == TimeDirection::INVALID ||
+							(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
+							(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber))) {
 					//std::cerr << "setDeparture: " << getFrameNumber(frame) << "\n";
 					newDepartures.setDeparture(frame, this->getDeparturesFromFrameAndUpdateSpeedOfTime(frame, interrupter));
 				}

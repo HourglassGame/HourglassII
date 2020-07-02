@@ -1,5 +1,6 @@
 name = "Watch the first step"
 speedOfTime = 24
+speedOfTimeFuture = 0
 timelineLength = 10800
 environment =
 {

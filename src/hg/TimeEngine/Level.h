@@ -13,6 +13,7 @@ private:
 	{
 		return std::tie(
 			speedOfTime,
+			speedOfTimeFuture,
 			timelineLength,
 			environment,
 			initialObjects,
@@ -23,6 +24,7 @@ private:
 //Probably will make these private when the level editor gets implemented
 public:
 	unsigned speedOfTime;
+	unsigned speedOfTimeFuture;
 	int timelineLength;
 	Environment environment;
 	ObjectList<NonGuyDynamic> initialObjects;

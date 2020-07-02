@@ -2,11 +2,16 @@
 #include "FrameUpdateSet.h"
 #include <utility>
 namespace hg {
-void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor, unsigned speedOfTimeFilter)
+void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor, unsigned speedOfTimeFilter,
+		unsigned futureSpeedOfTimeLimit, unsigned guyFrameNumber, TimeDirection guyDirection)
 {
 	size_t spaceRequired = 0;
 	for (Frame *frame : toMakeSpaceFor) {
-		if (speedOfTimeFilter < getFrameSpeedOfTime(frame)) {
+		if (speedOfTimeFilter < getFrameSpeedOfTime(frame) &&
+				(futureSpeedOfTimeLimit > speedOfTimeFilter ||
+					guyDirection == TimeDirection::INVALID ||
+					(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
+					(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber))) {
 			++spaceRequired;
 		}
 	}
@@ -14,7 +19,11 @@ void DepartureMap::makeSpaceFor(FrameUpdateSet const &toMakeSpaceFor, unsigned s
 	//removes the need for locking in addDeparture by making a map with spaces for all the items in toMakeSpaceFor
 	for (Frame *frame: toMakeSpaceFor)
 	{
-		if (speedOfTimeFilter < getFrameSpeedOfTime(frame)) {
+		if (speedOfTimeFilter < getFrameSpeedOfTime(frame) &&
+				(futureSpeedOfTimeLimit > speedOfTimeFilter ||
+					guyDirection == TimeDirection::INVALID ||
+					(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
+					(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber))) {
 			map.insert(value_type(frame, MapType::mapped_type()));
 		}
 	}

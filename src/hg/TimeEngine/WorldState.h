@@ -29,6 +29,7 @@ public:
 	WorldState(
 		int timelineLength,
 		unsigned defaultSpeedOfTime,
+		unsigned futureSpeedOfTimeLimit,
 		Guy const &initialGuy,
 		FrameID const &guyStartTime,
 		PhysicsEngine&& physics,
@@ -48,7 +49,7 @@ public:
 	 * in exactly one frame and there are no waves.
 	 * Returns the set of frames that were executed (had different arrivals).
 	 */
-	FrameUpdateSet executeWorld(OperationInterrupter &interrupter, unsigned executionCount);
+	FrameUpdateSet executeWorld(OperationInterrupter &interrupter, unsigned executionCount, unsigned guyFrameNumber, TimeDirection guyDirection);
 
 	/**
 	 * Stores the given input data, allowing the player to exist for another step.
@@ -60,6 +61,7 @@ public:
 	*/
 	std::vector<ConcurrentTimeSet> const &getGuyFrames() const { return guyProcessedArrivalFrames_; };
 	std::vector<std::vector<int> > const &getFrameGuys() const {return processedGuyByFrame_; };
+	std::vector<ConcurrentTimeSet> const &getGuyArrivalFrames() const { return guyNewArrivalFrames_; };
 
 	std::vector<GuyInput> const &getPostOverwriteInput() const { return playerInput_; }
 	std::vector<InputList> const &getReplayData() const { return realPlayerInput_; }
@@ -75,6 +77,8 @@ private:
 	TimelineState timeline_;
 	//Stores all player input (go left/right, jump, etc...). Each element in the vector corresponds to
 	//the input for the guy with the index corresponding to that element.
+	unsigned futureSpeedOfTimeLimit_;
+	// A limit on the speed of time in the future, relative to the current guy.
 	std::vector<GuyInput> playerInput_;
 	std::vector<InputList> realPlayerInput_;
 	//Stores the frames whose arrivals have changed but which have not been executed since the change.
