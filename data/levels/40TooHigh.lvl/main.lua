@@ -1,5 +1,6 @@
 name = "Too High"
 speedOfTime = 24
+speedOfTimeFuture = 0
 timelineLength = 10800
 environment =
 {
