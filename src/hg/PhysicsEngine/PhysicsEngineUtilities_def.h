@@ -417,7 +417,7 @@ void guyMovement(
 		else if (jumpHold[i] > 0 && jumpHold[i] < hg::GUY_JUMP_HOLD_MAX)
 		{
 			BoxType carryType = guyArrivalList[i].getBoxCarrying();
-			if (carryType != BoxType::NONE && carryType != BoxType::BALLOON) {
+			if (getBoxLimitedJump(carryType)) {
 				yspeed[i] += (hg::GUY_JUMP_HOLD_SPEED + jumpHold[i] * jumpHold[i] / 32) / 3;
 			}
 			else {

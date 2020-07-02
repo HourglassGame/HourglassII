@@ -631,6 +631,9 @@ void pushGuy(lua_State *L, Guy const &guy)
 	else if (guy.getBoxCarrying() == BoxType::CRATE) {
 		lua_pushstring(L, "crate");
 	}
+	else if (guy.getBoxCarrying() == BoxType::LIGHT) {
+		lua_pushstring(L, "light");
+	}
 	else if (guy.getBoxCarrying() == BoxType::BOMB) {
 		lua_pushstring(L, "bomb");
 	}

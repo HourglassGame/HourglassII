@@ -76,8 +76,8 @@ initialArrivals =
     {type = "box", boxType = "bomb", x = 4 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, width = 6400, height = 6400, timeDirection = "forwards"},
     {type = "box", boxType = "bomb", x = 4 * 3200, y = 7 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
     {type = "box", boxType = "bomb", x = 4 * 3200, y = 8 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
-    {type = "box", x = 4 * 3200, y = 9 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
-    {type = "box", x = 4 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
+    {type = "box", boxType = "light", x = 4 * 3200, y = 9 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
+    {type = "box", boxType = "light", x = 4 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 3200, height = 3200, timeDirection = "forwards"},
     
     {type = "box", x = 13.9 * 3200, y = 2 * 3200, xspeed = 0, yspeed = 0, width = 3000, height = 6400, timeDirection = "forwards"},
     {type = "box", x = 9.5 * 3200, y = 5 * 3200, xspeed = 0, yspeed = 0, width = 1600, height = 2400, timeDirection = "forwards"},

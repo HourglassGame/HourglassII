@@ -86,6 +86,8 @@ public:
               sceneData->textures.fontTexDescriptorSet
             , sceneData->textures.boxTexDescriptorSet
             , sceneData->textures.boxRTexDescriptorSet
+            , sceneData->textures.boxlightTexDescriptorSet
+            , sceneData->textures.boxlightRTexDescriptorSet
             , sceneData->textures.bombTexDescriptorSet
             , sceneData->textures.bombRTexDescriptorSet
             , sceneData->textures.balloonTexDescriptorSet

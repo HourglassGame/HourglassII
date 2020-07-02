@@ -9,8 +9,9 @@ namespace hg {
 enum class BoxType : int {
 	NONE = 0,
 	CRATE = 1,
-	BOMB = 2,
-	BALLOON = 3
+	LIGHT = 2,
+	BOMB = 3,
+	BALLOON = 4
 };
 
 class Box;

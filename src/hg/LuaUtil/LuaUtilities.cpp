@@ -633,6 +633,9 @@ BoxType to<BoxType>(lua_State * const L, int const index) {
         if (strcmp(collisionTypeString, "crate") == 0) {
             return BoxType::CRATE;
         }
+        else if (strcmp(collisionTypeString, "light") == 0) {
+            return BoxType::LIGHT;
+        }
         else if (strcmp(collisionTypeString, "bomb") == 0) {
             return BoxType::BOMB;
         }

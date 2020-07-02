@@ -46,11 +46,17 @@ struct MainMenuSceneSharedVulkanData {
         , boxRTex("GlitzData/box_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
         , boxRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
 
+        , boxlightTex("GlitzData/boxlight.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+        , boxlightTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxlightTex))
+
+        , boxlightRTex("GlitzData/boxlight_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+        , boxlightRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxlightRTex))
+
         , bombTex("GlitzData/bomb.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
-        , bombTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxTex))
+        , bombTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, bombTex))
 
         , bombRTex("GlitzData/bomb_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
-        , bombRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, boxRTex))
+        , bombRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, bombRTex))
 
         , balloonTex("GlitzData/balloon.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
         , balloonTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, balloonTex))
@@ -96,6 +102,8 @@ struct MainMenuSceneSharedVulkanData {
                   fontTexDescriptorSet
                 , boxTexDescriptorSet
                 , boxRTexDescriptorSet
+                , boxlightTexDescriptorSet
+                , boxlightRTexDescriptorSet
                 , bombTexDescriptorSet
                 , bombRTexDescriptorSet
                 , balloonTexDescriptorSet
@@ -138,6 +146,12 @@ struct MainMenuSceneSharedVulkanData {
 
     VulkanTextureSimple boxRTex;
     VkDescriptorSet boxRTexDescriptorSet;
+
+    VulkanTextureSimple boxlightTex;
+    VkDescriptorSet boxlightTexDescriptorSet;
+
+    VulkanTextureSimple boxlightRTex;
+    VkDescriptorSet boxlightRTexDescriptorSet
 
     VulkanTextureSimple bombTex;
     VkDescriptorSet bombTexDescriptorSet;

@@ -7,14 +7,14 @@
 namespace hg {
 
 bool boxCollidable(BoxType boxType) {
-	return (boxType == BoxType::CRATE || boxType == BoxType::BOMB);
+	return (boxType == BoxType::CRATE || boxType == BoxType::LIGHT || boxType == BoxType::BOMB);
 }
 
 bool getBoxPickupPriority(BoxType currentBoxType, BoxType newBoxType) {
 	if (currentBoxType == BoxType::NONE) {
 		return true;
 	}
-	if (currentBoxType == BoxType::CRATE && newBoxType != BoxType::CRATE) {
+	if ((currentBoxType == BoxType::CRATE || currentBoxType == BoxType::LIGHT) && newBoxType != BoxType::CRATE && newBoxType != BoxType::LIGHT) {
 		return true;
 	}
 	if (currentBoxType == BoxType::BOMB && newBoxType == BoxType::BALLOON) {
@@ -24,7 +24,7 @@ bool getBoxPickupPriority(BoxType currentBoxType, BoxType newBoxType) {
 }
 
 bool getBoxPickupCollision(int gx, int gy, int gw, int gh, int bx, int by, int bw, int bh, BoxType boxType) {
-	if (boxType == BoxType::CRATE || boxType == BoxType::BOMB) {
+	if (boxType == BoxType::CRATE || boxType == BoxType::LIGHT || boxType == BoxType::BOMB) {
 		// Crates can only be picked up if their base is above the feet of the Guy.
 		// This prevents crates being passed up cliffs.
 		return (gx <= bx + bw) && (gx + gw >= bx) && (gy < by + bh) && (gy + gh >= by + bh);
@@ -33,6 +33,10 @@ bool getBoxPickupCollision(int gx, int gy, int gw, int gh, int bx, int by, int b
 		return (gx <= bx + bw) && (gx + gw >= bx) && (gy <= by + bh) && (gy + gh >= by);
 	}
 	return false;
+}
+
+bool getBoxLimitedJump(BoxType boxType) {
+	return boxType == BoxType::CRATE || boxType == BoxType::BOMB;
 }
 
 int getBoxVertAirResistence(BoxType boxType) {

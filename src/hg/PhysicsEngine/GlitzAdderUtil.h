@@ -34,6 +34,9 @@ inline mt::std::string getBoxImage(BoxType boxType, TimeDirection timeDiretion) 
 		if (boxType == BoxType::BOMB) {
 			return mt::std::string("global.bomb");
 		}
+		if (boxType == BoxType::LIGHT) {
+			return mt::std::string("global.boxlight");
+		}
 		return mt::std::string("global.box");
 	}
 	else {
@@ -42,6 +45,9 @@ inline mt::std::string getBoxImage(BoxType boxType, TimeDirection timeDiretion) 
 		}
 		if (boxType == BoxType::BOMB) {
 			return mt::std::string("global.bomb_r");
+		}
+		if (boxType == BoxType::LIGHT) {
+			return mt::std::string("global.boxlight_r");
 		}
 		return mt::std::string("global.box_r");
 	}
