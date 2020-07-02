@@ -512,12 +512,15 @@ namespace hg {
 		mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
 		mp::std::vector<MutatorFrameState> &mutatorFrameStates,
 		mp::std::vector<Collision> const &collisions,
-		mp::std::vector<mp::std::vector<int>> const &triggerArrivals)
+		mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals)
 	{
 		assert(mutators.empty());
 		assert(activeMutators.empty()); 
 		for (auto &mutatorFrameState : mutatorFrameStates) {
-			mutatorFrameState.addMutator(triggerArrivals, collisions, mutators, activeMutators);
+			mutatorFrameState.addMutator(triggerArrivals, collisions, mutators, activeMutators, explosionArrivals);
 		}
 	}
 
@@ -634,7 +637,7 @@ namespace hg {
 		*/
 		calculateCollisions(physicsAffectingStuff_.collisions, protoCollisions_, triggerArrivals_, /*outputTriggers,*/ currentFrame, explosionArrivals);
 
-		calculateMutators(physicsAffectingStuff_.mutators, activeMutators_, mutatorFrameStates_, physicsAffectingStuff_.collisions, triggerArrivals_);
+		calculateMutators(physicsAffectingStuff_.mutators, activeMutators_, mutatorFrameStates_, physicsAffectingStuff_.collisions, triggerArrivals_, explosionArrivals);
 
 		calculatePortals(
 			physicsAffectingStuff_.portals,
@@ -1757,40 +1760,29 @@ namespace hg {
 					proto->timeDirection
 				)));
 		}
-		#if 0
-		if active then
-			local forwardsImageGlitz = {
-				type = "image",
-				layer = 430,
-				key = pickupGlitzNameMap[proto.pickupType],
-				x = PnV.x,
-				y = PnV.y,
-				width = proto.height,
-				height = proto.width
-			}
-
-			local reverseImageGlitz = {
-				type = "image",
-				layer = 430,
-				key = pickupGlitzNameMap[proto.pickupType],
-				x = PnV.x,
-				y = PnV.y,
-				width = proto.height,
-				height = proto.width
-			}
-			table.insert(forwardsGlitz, forwardsImageGlitz)
-			table.insert(reverseGlitz, reverseImageGlitz)
-		end
-		if justTaken then
-			table.insert(
-				persistentGlitz,
-				{type = "audio",
-					key = "global.pickup_pickup",
-					duration = 9,
-					timeDirection = proto.timeDirection})
-		end
-		#endif
-
+		if (justExploded) {
+			persistentGlitz.push_back(
+			GlitzPersister(
+				mt::std::make_unique<StaticGlitzPersister>(
+					Glitz(
+						mt::std::make_unique<RectangleGlitz>(
+								430,
+								x_,
+								y_,
+								proto->width,
+								proto->height,
+								proto->timeDirection == TimeDirection::FORWARDS ? 0xFF000000u : 0x00FFFF00u)),
+					Glitz(
+						mt::std::make_unique<RectangleGlitz>(
+								430,
+								x_,
+								y_,
+								proto->width,
+								proto->height,
+								proto->timeDirection == TimeDirection::REVERSE ? 0xFF000000u : 0x00FFFF00u)),
+					60,
+					proto->timeDirection)));
+		}
 	}
 	void PickupFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const {
 		assert(proto);
@@ -1800,19 +1792,6 @@ namespace hg {
 	boost::optional<Guy> PickupFrameStateImpl::effect(Guy const &guy) {
 		//assert(false);
 		assert(proto);
-		#if 0
-		if not active then 
-			return dynamicObject 
-		end
-		if dynamicObject.type ~= 'guy' then
-			return dynamicObject 
-		end
-		dynamicObject.pickups[proto.pickupType] =
-			dynamicObject.pickups[proto.pickupType] + (proto.pickupNumber or 1)
-		active = false
-		justTaken = true
-		return dynamicObject
-		#endif
 		if (!active) return guy;
 		active = false;
 		justTaken = true;
@@ -1850,24 +1829,12 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		)
 	{
-		#if 0
-		if triggerArrivals[triggerID][1] == 1 then
-			PnV = calculateButtonPositionAndVelocity(proto, collisions)
-			mutators[#mutators+1] = {
-				x = PnV.x, y = PnV.y,
-				width = proto.width, height = proto.height,
-				xspeed = PnV.xspeed, yspeed = PnV.yspeed,
-				collisionOverlap = 0,
-				timeDirection = proto.timeDirection
-			}
-			activeMutators[#activeMutators+1] = self
-		else
-			active = false
-		end
-		#endif
 		assert(proto);
 		assert(triggerArrivals.size() > proto->triggerID);
 		assert(triggerArrivals[proto->triggerID].size() > 0);
@@ -1875,13 +1842,19 @@ namespace hg {
 			auto const [x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->attachment, collisions);
 			x_ = x;
 			y_ = y;
-			mutators.emplace_back(
-				x, y,
-				proto->width, proto->height,
-				xspeed, yspeed,
-				0,//collisionOverlap
-				proto->timeDirection);
-			activeMutators.emplace_back(this);
+			if (checkExplosion(explosionArrivals, x, y, proto->width, proto->height)) {
+				justExploded = true;
+				active = false;
+			}
+			else {
+				mutators.emplace_back(
+					x, y,
+					proto->width, proto->height,
+					xspeed, yspeed,
+					0,//collisionOverlap
+					proto->timeDirection);
+				activeMutators.emplace_back(this);
+			}
 		}
 		else {
 			active = false;
@@ -1893,7 +1866,10 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		)
 	{
 		auto [x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->attachment, collisions);
@@ -1966,7 +1942,10 @@ namespace hg {
 		mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 		mp::std::vector<Collision> const &collisions,
 		mp::std::vector<MutatorArea> &mutators,
-		mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+		mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 	)
 	{
 		/*
@@ -2007,39 +1986,6 @@ namespace hg {
 		mt::std::vector<Glitz> &reverseGlitz,
 		mt::std::vector<GlitzPersister> &persistentGlitz) const
 	{
-		/*
-		if active then
-			local forwardsImageGlitz = {
-				type = "image",
-				layer = 430,
-				key = powerupGlitzNameMap[proto.powerupType],
-				x = PnV.x,
-				y = PnV.y,
-				width = proto.width,
-				height = proto.height
-			}
-
-			local reverseImageGlitz = {
-				type = "image",
-				layer = 430,
-				key = powerupGlitzNameMap[proto.powerupType],
-				x = PnV.x,
-				y = PnV.y,
-				width = proto.width,
-				height = proto.height
-			}
-			table.insert(forwardsGlitz, forwardsImageGlitz)
-			table.insert(reverseGlitz, reverseImageGlitz)
-		end
-		if justTaken then
-			table.insert(
-				persistentGlitz,
-				{type = "audio",
-					key = "global.pickup_pickup",
-					duration = 9,
-					timeDirection = proto.timeDirection})
-		end
-		*/
 		static std::map<Powerup, mt::std::string> const powerupGlitzNameMap{
 			{Powerup::JUMP_BOOTS, "global.powerup_jump"}
 		};

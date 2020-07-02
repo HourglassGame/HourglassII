@@ -82,6 +82,22 @@ local tempStore =
         },
     },
     protoMutators = {
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 10 * 3200, yOffset = 10 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 3,
+            pickupType = 'timeJump'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 5 * 3200, yOffset = 5 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 4,
+            pickupType = 'timeJump'
+        },
     },
     protoButtons = {
         bts.momentarySwitch{

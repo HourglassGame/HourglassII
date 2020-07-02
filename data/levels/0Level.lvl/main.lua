@@ -104,6 +104,14 @@ triggerSystem =
             offset = 1,
             default = {12 * 3200, 12 * 3200, 0, 0, 0}
         },
+        {
+            offset = 1,
+            default = {1}
+        },
+        {
+            offset = 1,
+            default = {1}
+        },
     },
     arrivalLocationsSize = 1,
 }

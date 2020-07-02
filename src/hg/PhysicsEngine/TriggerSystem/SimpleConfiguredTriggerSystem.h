@@ -909,7 +909,10 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		) = 0;
 		virtual void calculateGlitz(
 			mt::std::vector<Glitz> &forwardsGlitz,
@@ -927,13 +930,15 @@ namespace hg {
 		ProtoPickupImpl const *proto;
 		bool active;
 		bool justTaken;
+		bool justExploded;
 		int x_;
 		int y_;
 	public:
 		PickupFrameStateImpl(ProtoPickupImpl const &proto) :
 			proto(&proto),
 			active(true),
-			justTaken(false)
+			justTaken(false),
+			justExploded(false)
 		{}
 		std::size_t clone_size() const noexcept final {
 			return sizeof *this;
@@ -947,7 +952,10 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		) final;
 
 		void calculateGlitz(
@@ -993,7 +1001,10 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		) final;
 
 		void calculateGlitz(
@@ -1032,7 +1043,10 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		) final;
 
 		void calculateGlitz(
@@ -1056,11 +1070,14 @@ namespace hg {
 			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
 			mp::std::vector<Collision> const &collisions,
 			mp::std::vector<MutatorArea> &mutators,
-			mp::std::vector<MutatorFrameStateImpl *> &activeMutators
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
 		) const
 		{
 			assert(pimpl_);
-			return pimpl_->addMutator(triggerArrivals, collisions, mutators, activeMutators);
+			return pimpl_->addMutator(triggerArrivals, collisions, mutators, activeMutators, explosionArrivals);
 		}
 
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const/*?*/{
