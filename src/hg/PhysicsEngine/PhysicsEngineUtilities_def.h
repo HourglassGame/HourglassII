@@ -944,8 +944,8 @@ void guyStep(
 					}
 					int dropY = startDropHeight;
 					if (carry[i] == BoxType::BALLOON) {
-						if (dropY + dropHeight > gY + height/2) {
-							dropY = gY - dropHeight + height/2;
+						if (dropY + dropHeight > gY + height * 3 / 4) {
+							dropY = gY - dropHeight + height * 3 / 4;
 						}
 					}
 					//std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
