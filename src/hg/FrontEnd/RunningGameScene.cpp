@@ -477,6 +477,7 @@ run_game_scene(
                 catch (hg::PlayerVictoryException const &) {
                     //TODO: Leave this scene properly before entering post_level_scene.
                     //(to avoid excessive memory use)
+                    saveReplay("replay", receivedInputs); // Save replay on win
                     vkRenderer.EndScene();
                     run_post_level_scene(/*window, */windowglfw, eng, vkRenderer, initialTimeEngine, loadedLevel);
                     //TODO -- Check run_post_level_scene return values (once it gets return values)

@@ -79,7 +79,7 @@ local tempStore =
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {platform = nil, xOffset = 24.5 * 3200, yOffset = 12 * 3200},
+            attachment = {platform = nil, xOffset = 24.5 * 3200, yOffset = 11 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
