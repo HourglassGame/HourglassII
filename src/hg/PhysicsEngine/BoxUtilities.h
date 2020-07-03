@@ -41,7 +41,7 @@ bool getBoxLimitedJump(BoxType boxType) {
 
 int getBoxVertAirResistence(BoxType boxType) {
 	if (boxType == BoxType::BALLOON) {
-		return 2600 * hg::VERT_AIR_RESISTANCE;
+		return 62 * hg::VERT_AIR_RESISTANCE;
 	}
 	return hg::VERT_AIR_RESISTANCE;
 }
