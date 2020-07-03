@@ -40,6 +40,8 @@ TimeEngine::TimeEngine(Level &&level, OperationInterrupter &interrupter) :
 		level.environment.wall}),
 	paradoxPressure(0),
 	paradoxPressureDecay(0),
+	paradoxWindow(0),
+	paradoxWindowTime(0),
 	guyDirection(TimeDirection::INVALID),
 	guyFrameNumber(0)
 {
@@ -62,6 +64,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 	
 	// Only generate paradox pressure for waves behind the current guy
 	std::size_t guyIndex = getGuyFrames().size() - 2 - relativeGuyIndex;
+	TimeDirection oldGuyDirection = guyDirection;
 	if (!getGuyFrames()[guyIndex].empty()) {
 		bool directionSet = false;
 		for (hg::Frame *frame : getGuyFrames()[guyIndex])
@@ -101,6 +104,16 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 		guyFrameNumber = guyFrameNumber + guyDirection;
 	}
 	
+	// Avoid making the player paradox by changing time direction with a lot of future pending changes.
+	paradoxWindow = paradoxWindow + impl->speedOfTime;
+	if (paradoxWindow > getTimelineLength()) {
+		paradoxWindow = getTimelineLength();
+	}
+	if (guyDirection != TimeDirection::INVALID && guyDirection != oldGuyDirection) {
+		paradoxWindow = 0;
+		paradoxWindowTime = guyFrameNumber;
+	}
+	
 	// Find the present Guy
 	int arrivalGuyFrameNumber = guyDirection == TimeDirection::REVERSE ? getTimelineLength() : 0;
 	TimeDirection arrivalGuyDirection = TimeDirection::INVALID;
@@ -134,7 +147,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 		unsigned waveChanges = 0;
 		for (Frame *frame : updateSet) {
 			if (guyDirection == TimeDirection::FORWARDS) {
-				if (getFrameNumber(frame) < guyFrameNumber) {
+				if (getFrameNumber(frame) < guyFrameNumber && paradoxWindowTime - paradoxWindow < getFrameNumber(frame)) {
 					waveChanges += getFrameParadoxPressure(frame);
 					if (getFrameParadoxPressure(frame) > maxFrameParadoxPressure) {
 						maxFrameParadoxPressure = getFrameParadoxPressure(frame);
@@ -142,7 +155,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 				}
 			}
 			else if (guyDirection == TimeDirection::REVERSE) {
-				if (getFrameNumber(frame) > guyFrameNumber) {
+				if (getFrameNumber(frame) > guyFrameNumber && paradoxWindowTime + paradoxWindow > getFrameNumber(frame)) {
 					waveChanges += getFrameParadoxPressure(frame);
 					if (getFrameParadoxPressure(frame) > maxFrameParadoxPressure) {
 						maxFrameParadoxPressure = getFrameParadoxPressure(frame);

@@ -150,7 +150,7 @@ local tempStore =
             triggerID = 1
         },
         bts.stickySwitch{
-            attachment = {platform = nil, xOffset = 14.25 * 3200, yOffset = 3 * 3200},
+            attachment = {platform = nil, xOffset = 12.75 * 3200, yOffset = 2 * 3200},
             width = 1600,
             height = 800,
             timeDirection = 'forwards',

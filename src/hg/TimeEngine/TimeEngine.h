@@ -79,6 +79,8 @@ private:
 	RunResult prevRunResult;
 	int paradoxPressure;
 	int paradoxPressureDecay;
+	int paradoxWindow;
+	int paradoxWindowTime;
 	TimeDirection guyDirection;
 	int guyFrameNumber;
 };

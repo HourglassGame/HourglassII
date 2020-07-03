@@ -6,17 +6,17 @@ local tempStore =
     {
         {
             attachment = {xOffset = 14.5 * 3200, yOffset = 4 * 3200},
-            index = 2,
+            index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
             collisionOverlap = 50,
             timeDirection = 'forwards',
-            destinationIndex = nil,
+            destinationIndex = 1,
             xDestination = 0,
             yDestination = 0,
             relativeTime = false,
             timeDestination = 0,
-            illegalDestination = nil,
+            illegalDestination = 1,
             fallable = false,
             winner = true
         },
