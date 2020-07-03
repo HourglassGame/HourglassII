@@ -19,6 +19,8 @@ Input::Input() :
 	boxLeft(),
 	boxRight(),
 	shift(),
+	shift_r(),
+	enter(),
 	use(),
 	mouseLeft(),
 	abilityCursor(),
@@ -47,6 +49,8 @@ void Input::updateState(
 	updatePress(boxLeft, glfwGetKey(windowglfw.w, GLFW_KEY_Q) == GLFW_PRESS);
 	updatePress(boxRight, glfwGetKey(windowglfw.w, GLFW_KEY_E) == GLFW_PRESS);
 	updatePress(shift, glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS);
+	updatePress(shift_r, glfwGetKey(windowglfw.w, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+	updatePress(enter, glfwGetKey(windowglfw.w, GLFW_KEY_ENTER) == GLFW_PRESS);
 	updatePress(use, glfwGetKey(windowglfw.w, GLFW_KEY_E) == GLFW_PRESS);
 
 	bool mouseLeftPressed = (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
@@ -102,7 +106,7 @@ InputList Input::AsInputList() const
 			down == 1,
 			boxLeft == 1,
 			boxRight == 1,
-			(shift == 1) || (use == 1), //portalUsed
+			(shift == 1) || (shift_r == 1) || (enter == 1) || (use == 1), //portalUsed
 			mouseLeft == 1, //abilityUsed
 			abilityCursor,
 			FrameID(mouseTimelinePosition, UniverseID(timelineLength)),

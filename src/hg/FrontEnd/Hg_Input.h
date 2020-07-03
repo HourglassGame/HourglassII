@@ -35,6 +35,8 @@ private:
 	int boxLeft;
 	int boxRight;
 	int shift;
+	int shift_r;
+	int enter;
 	int use;
 	int mouseLeft;
 	Ability abilityCursor;

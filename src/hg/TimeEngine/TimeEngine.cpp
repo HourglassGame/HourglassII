@@ -120,7 +120,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 			}
 		}
 	}
-	std::cerr << "UPDATE: " << impl->speedOfTime << ", guyFrame " << arrivalGuyFrameNumber << ", dir " << static_cast<int>(arrivalGuyDirection) << "\n";
+	//std::cerr << "UPDATE: " << impl->speedOfTime << ", guyFrame " << arrivalGuyFrameNumber << ", dir " << static_cast<int>(arrivalGuyDirection) << "\n";
 	
 	// Update world with guy frame and direction.
 	for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
