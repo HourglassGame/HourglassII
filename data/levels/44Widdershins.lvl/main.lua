@@ -1,5 +1,6 @@
 name = "Widdershins"
 speedOfTime = 24 -- This was 10 as an experiment.
+speedOfTimeFuture = 0
 timelineLength = 9000
 environment =
 {

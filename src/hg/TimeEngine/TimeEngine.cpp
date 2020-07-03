@@ -102,7 +102,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 	}
 	
 	// Find the present Guy
-	int arrivalGuyFrameNumber = 0;
+	int arrivalGuyFrameNumber = guyDirection == TimeDirection::REVERSE ? getTimelineLength() : 0;
 	TimeDirection arrivalGuyDirection = TimeDirection::INVALID;
 	
 	guyIndex = getGuyArrivalFrames().size() - 2 - relativeGuyIndex; // Current Guy
@@ -120,6 +120,7 @@ TimeEngine::RunResult TimeEngine::runToNextPlayerFrame(InputList const &newInput
 			}
 		}
 	}
+	std::cerr << "UPDATE: " << impl->speedOfTime << ", guyFrame " << arrivalGuyFrameNumber << ", dir " << static_cast<int>(arrivalGuyDirection) << "\n";
 	
 	// Update world with guy frame and direction.
 	for (unsigned int i(0); i < impl->speedOfTime && !interrupter.interrupted(); ++i) {
