@@ -1,5 +1,6 @@
 name = "Upsypupsy"
 speedOfTime = 24
+speedOfTimeFuture = 0
 timelineLength = 9000
 environment =
 {

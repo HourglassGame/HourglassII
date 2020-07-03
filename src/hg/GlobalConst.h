@@ -21,10 +21,10 @@ namespace hg {
 
     inline static const int SPEED_OF_TIME_OVERRIDE = -1;
     inline static const int PARADOX_PRESSURE_MAX = 12000000;
-    inline static const int PARADOX_PRESSURE_ADD_MIN = 14000;
-    inline static const int PARADOX_PRESSURE_DECAY_BUILDUP = 100;
-    inline static const int PARADOX_PRESSURE_DECAY_MAX = 8000;
-    inline static const int PARADOX_PRESSURE_PER_FRAME = 100;
+    inline static const int PARADOX_PRESSURE_ADD_MIN = 13400;
+    inline static const int PARADOX_PRESSURE_DECAY_BUILDUP = 40;
+    inline static const int PARADOX_PRESSURE_DECAY_MAX = 12000;
+    inline static const int PARADOX_PRESSURE_PER_FRAME = 80;
     //The game window is divided into 4 quadrants.
     //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide
     //the window into quadrants, as ratios of the window width/height.
