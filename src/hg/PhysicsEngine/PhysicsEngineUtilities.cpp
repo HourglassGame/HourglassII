@@ -712,6 +712,12 @@ GunRaytraceResult doGunRaytrace(
 	return {targetType, targetId, hitPoint.a, hitPoint.b};
 }
 
+int CubeAndDivide(int base, int divisor)
+{
+	long long longBase = static_cast<long long>(base);
+	return static_cast<int>(base * base * base / divisor);
+}
+
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
 {
 	// Returns the deepest edge of rectangle 2 that rectangle 1 is in.

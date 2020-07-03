@@ -827,7 +827,7 @@ void guyStep(
 		//std::cerr << jumpHold[i] << ", " << yspeed[i] << "\n";
 
 		// Soft speed limit
-		yspeed[i] += -guyArrivalList[i].getYspeed() * guyArrivalList[i].getYspeed() * guyArrivalList[i].getYspeed() / hg::VERT_AIR_RESISTANCE;
+		yspeed[i] -= CubeAndDivide(guyArrivalList[i].getYspeed(), hg::VERT_AIR_RESISTANCE);
 
 		supported.push_back(0);
 		supportedSpeed.push_back(0);
@@ -2781,7 +2781,7 @@ template <
 				y[i] += hg::DOWN_GRAVITY;
 			}
 		}
-		y[i] += -oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() * oldBoxList[i].getYspeed() / getBoxVertAirResistence(oldBoxList[i].getBoxType());
+		y[i] -= CubeAndDivide(oldBoxList[i].getYspeed(), getBoxVertAirResistence(oldBoxList[i].getBoxType()));
 	}
 
 	// Destroy boxes that are overlapping with platforms and walls

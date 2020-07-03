@@ -290,6 +290,7 @@ GunRaytraceResult doGunRaytrace(
 	memory_pool<user_allocator_tbb_alloc> &pool
 );
 	
+int CubeAndDivide(int base, int divisor);
 int RectangleIntersectionDirection(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 bool IsPointInVerticalQuadrant(int x, int y, int x1, int y1, int w, int h);
 bool PointInRectangleInclusive(int px, int py, int x, int y, int w, int h);
