@@ -31,7 +31,7 @@ local tempStore =
             xDestination = 0,
             yDestination = 0,
             relativeTime = true,
-            timeDestination = -300,
+            timeDestination = -600,
             illegalDestination = 3,
             fallable = true,
             winner = false,
@@ -47,7 +47,7 @@ local tempStore =
             xDestination = 0,
             yDestination = 0,
             relativeTime = true,
-            timeDestination = 300,
+            timeDestination = 600,
             illegalDestination = 2,
             fallable = true,
             winner = false,
@@ -103,30 +103,30 @@ local tempStore =
             timeDirection = 'forwards',
             triggerID = 1,
         },
-        bts.toggleSwitch{ -- Hard mode is momentarySwitch
-            triggerID = 4,
-            timeDirection = 'forwards',
-            first = {
-                attachment = {platform = nil, xOffset = 25 * 3200 - 800, yOffset = 12.25 * 3200},
-                width = 800,
-                height = 1600,
-            },
-            second = {
-                attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 12.25 * 3200},
-                width = 800,
-                height = 1600,
-            }
-        },
+        --bts.toggleSwitch{ -- Hard mode is momentarySwitch
+        --    triggerID = 4,
+        --    timeDirection = 'forwards',
+        --    first = {
+        --        attachment = {platform = nil, xOffset = 25 * 3200 - 800, yOffset = 12.25 * 3200},
+        --        width = 800,
+        --        height = 1600,
+        --    },
+        --    second = {
+        --        attachment = {platform = nil, xOffset = 7 * 3200, yOffset = 12.25 * 3200},
+        --        width = 800,
+        --        height = 1600,
+        --    }
+        --},
     },
     protoTriggerMods = {
-        {
-            triggerID = 3, -- Speed of time
-            triggerClause = "o4 1 & 24 |",
-        },
-        {
-            triggerID = 5, -- Paradox pressure
-            triggerClause = "o4 10 & 100 |",
-        },
+        --{
+        --    triggerID = 3, -- Speed of time
+        --    triggerClause = "o4 1 & 24 |",
+        --},
+        --{
+        --    triggerID = 5, -- Paradox pressure
+        --    triggerClause = "o4 10 & 100 |",
+        --},
     },
     protoGlitz = {
         bts.easyWireGlitz{
@@ -143,54 +143,54 @@ local tempStore =
             triggerID = 1,
             useTriggerArrival = true
         },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 3.8 * 3200},
-            y1 = {platform = nil, pos = 11.8 * 3200 },
-            x2 = {platform = nil, pos = (3.8 + 2.6 + 0.2) * 3200},
-            y2 = {platform = nil, pos = (11.8 + 1.2 + 0.2) * 3200},
-            triggerClause = "o4 !",
-            useTriggerArrival = false
-        },
-        bts.basicRectangleGlitz{
-            x = 3.9 * 3200,
-            y = 11.9 * 3200,
-            width = 2.6 * 3200,
-            height = 1.2 * 3200,
-            layer = 1600,
-            colour = {r = 120, g = 120, b = 120},
-        },
-        bts.basicTextGlitz{
-            x = 4.1 * 3200,
-            y = 12.2 * 3200,
-            text = "Fast Time",
-            size = 1600,
-            layer = 1600,
-            colour = {r = 255, g = 255, b = 255},
-        },
-        bts.wireGlitz{
-            x1 = {platform = nil, pos = 25.4 * 3200},
-            y1 = {platform = nil, pos = 11.8 * 3200 },
-            x2 = {platform = nil, pos = (25.4 + 2.6 + 0.2) * 3200},
-            y2 = {platform = nil, pos = (11.8 + 1.2 + 0.2) * 3200},
-            triggerID = 4,
-            useTriggerArrival = false
-        },
-        bts.basicRectangleGlitz{
-            x = 25.5 * 3200,
-            y = 11.9 * 3200,
-            width = 2.6 * 3200,
-            height = 1.2 * 3200,
-            layer = 1600,
-            colour = {r = 120, g = 120, b = 120},
-        },
-        bts.basicTextGlitz{
-            x = 25.7 * 3200,
-            y = 12.2 * 3200,
-            text = "Slow Time",
-            size = 1600,
-            layer = 1600,
-            colour = {r = 255, g = 255, b = 255},
-        },
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 3.8 * 3200},
+        --    y1 = {platform = nil, pos = 11.8 * 3200 },
+        --    x2 = {platform = nil, pos = (3.8 + 2.6 + 0.2) * 3200},
+        --    y2 = {platform = nil, pos = (11.8 + 1.2 + 0.2) * 3200},
+        --    triggerClause = "o4 !",
+        --    useTriggerArrival = false
+        --},
+        --bts.basicRectangleGlitz{
+        --    x = 3.9 * 3200,
+        --    y = 11.9 * 3200,
+        --    width = 2.6 * 3200,
+        --    height = 1.2 * 3200,
+        --    layer = 1600,
+        --    colour = {r = 120, g = 120, b = 120},
+        --},
+        --bts.basicTextGlitz{
+        --    x = 4.1 * 3200,
+        --    y = 12.2 * 3200,
+        --    text = "Fast Time",
+        --    size = 1600,
+        --    layer = 1600,
+        --    colour = {r = 255, g = 255, b = 255},
+        --},
+        --bts.wireGlitz{
+        --    x1 = {platform = nil, pos = 25.4 * 3200},
+        --    y1 = {platform = nil, pos = 11.8 * 3200 },
+        --    x2 = {platform = nil, pos = (25.4 + 2.6 + 0.2) * 3200},
+        --    y2 = {platform = nil, pos = (11.8 + 1.2 + 0.2) * 3200},
+        --    triggerID = 4,
+        --    useTriggerArrival = false
+        --},
+        --bts.basicRectangleGlitz{
+        --    x = 25.5 * 3200,
+        --    y = 11.9 * 3200,
+        --    width = 2.6 * 3200,
+        --    height = 1.2 * 3200,
+        --    layer = 1600,
+        --    colour = {r = 120, g = 120, b = 120},
+        --},
+        --bts.basicTextGlitz{
+        --    x = 25.7 * 3200,
+        --    y = 12.2 * 3200,
+        --    text = "Slow Time",
+        --    size = 1600,
+        --    layer = 1600,
+        --    colour = {r = 255, g = 255, b = 255},
+        --},
     },
 }
 
