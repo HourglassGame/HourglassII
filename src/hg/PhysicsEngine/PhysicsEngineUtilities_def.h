@@ -501,6 +501,7 @@ void guyMovement(
 				// -hg::DOWN_GRAVITY feels like hax but probably isn't. The print out shows that it is a requirement
 				if (x[i] < boxX + boxWidth && x[i] + width > boxX && newY + height >= boxY && newY + height - yspeed[i] - hg::DOWN_GRAVITY <= boxY + boxYspeed)
 				{
+					//std::cerr << "guy " << newY + height << ", guySpeed " << yspeed[i] << ", box " << boxY << ", boxSpeed " << boxYspeed << ", g " << hg::DOWN_GRAVITY << "\n";
 					newY = boxY - height;
 					xspeed[i] = -boxXspeed;
 					supported[i] = std::min(hg::GUY_MAX_SUPPORTED, guyArrivalList[i].getSupported() + 1);
@@ -935,8 +936,8 @@ void guyStep(
 					int gY(y[i]);
 					int startDropHeight = gY + height - 1; // -1 prevents jumping off dropped boxes while falling.
 					if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
-						gX = guyArrivalList[i].getX() - guyArrivalList[i].getXspeed();
-						gY = guyArrivalList[i].getY() - guyArrivalList[i].getYspeed();
+						gX = gX;
+						gY = gY;
 						startDropHeight = gY + height; // -1 causes paradox issues when dropping off cliffs..
 					}
 					if (carry[i] == BoxType::BALLOON) {
