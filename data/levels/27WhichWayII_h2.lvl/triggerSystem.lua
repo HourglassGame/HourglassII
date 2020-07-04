@@ -24,7 +24,7 @@ local tempStore =
     protoCollisions = {
         {
             width = 2 * 3200,
-            height = 1.5 * 3200,
+            height = 2 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 3,
             triggerClause = "t1 t2 &",
@@ -41,7 +41,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 13 * 3200,
+                        desiredPosition = 12 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -55,7 +55,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 9 * 3200,
+                        desiredPosition = 8 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -82,7 +82,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 14.5 * 3200,
+                        desiredPosition = 14 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -96,7 +96,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 14.5 * 3200,
+                        desiredPosition = 14 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18
@@ -107,7 +107,7 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 4.25 * 3200, yOffset = 10.25 * 3200},
+            attachment = {platform = nil, xOffset = 4.25 * 3200, yOffset = 9.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -115,7 +115,7 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 8.25 * 3200},
+            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 7.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -123,7 +123,7 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 16.25 * 3200, yOffset = 8.25 * 3200},
+            attachment = {platform = nil, xOffset = 16.25 * 3200, yOffset = 7.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -131,7 +131,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 27.25 * 3200, yOffset = 10.25 * 3200},
+            attachment = {platform = nil, xOffset = 27.25 * 3200, yOffset = 9.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -139,7 +139,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 12.25 * 3200},
+            attachment = {platform = nil, xOffset = 15.25 * 3200, yOffset = 11.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -147,7 +147,7 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 16.25 * 3200, yOffset = 12.25 * 3200},
+            attachment = {platform = nil, xOffset = 16.25 * 3200, yOffset = 11.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -157,14 +157,14 @@ local tempStore =
     },
     protoButtons = {
         bts.momentarySwitch{
-            attachment = {xOffset = 2 * 3200, yOffset = 10.75 * 3200},
+            attachment = {xOffset = 2 * 3200, yOffset = 9.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
             triggerID = 1,
         },
         bts.momentarySwitch{
-            attachment = {xOffset = 29 * 3200, yOffset = 10.75 * 3200},
+            attachment = {xOffset = 29 * 3200, yOffset = 9.75 * 3200},
             width = 3200,
             height = 800,
             timeDirection = 'forwards',
