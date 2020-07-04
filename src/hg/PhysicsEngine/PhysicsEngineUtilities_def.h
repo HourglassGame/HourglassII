@@ -1179,7 +1179,7 @@ void guyStep(
 								mutators,
 								dropX,
 								dropY,
-								guyArrivalList[i].getBoxCarryState(),
+								0,
 								guyArrivalList[i].getSupportedSpeed(),
 								dropWidth,
 								dropHeight,
@@ -2165,6 +2165,7 @@ template <
 					}
 					//std::cerr << "w00 " << w00 << ", w10 " << w10 << ", w01 " << w01 << ", w11 " << w11 << "\n";
 				}
+				//std::cerr << w00 << w01 << w10 << w11 << ", x " << x[i] << ", xtemp " << xTemp[i] << ", first " << firstTimeThrough << "\n";
 
 				// collide with walls based on corner status
 				if (w00) {
