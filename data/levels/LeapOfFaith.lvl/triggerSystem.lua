@@ -177,7 +177,7 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 10.1 * 3200, yOffset = 8.1 * 3200},
+            attachment = {platform = nil, xOffset = 10.35 * 3200, yOffset = 8.1 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
