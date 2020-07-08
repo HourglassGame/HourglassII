@@ -118,7 +118,8 @@ public:
 				boxGlitzAdder.addGlitzForBox(
 					vec2<int>{x, y}, w, h,
 						boxCarrying, boxCarryState,
-						boxCarryDirection, 600);
+						boxCarryDirection, 600,
+						paused ? static_cast<int>(guyIndex) : -1);
 			}
 			
 			addCurrentGuyArrow(*forwardsGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);
@@ -157,7 +158,8 @@ public:
 				boxGlitzAdder.addGlitzForBox(
 					vec2<int>{x, y}, w, h,
 					boxCarrying, boxCarryState,
-					boxCarryDirection, 600);
+					boxCarryDirection, 600,
+					paused ? static_cast<int>(guyIndex) : -1);
 			}
 			addCurrentGuyArrow(*reverseGlitz, static_cast<int>(guyIndex), hmid, top, halfwidth, size);
 		}

@@ -31,7 +31,8 @@ public:
 		int width, int height,
 		BoxType boxType, int state,
 		TimeDirection timeDirection,
-		int drawOrder) const
+		int drawOrder,
+		int pausedCarry) const
 	{
 		int x = position.a;
 		int y = position.b;
@@ -49,11 +50,11 @@ public:
 
 		Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
 				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::FORWARDS),
-				x, y, w, h));
+				x, y, w, h), pausedCarry);
 
 		Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
 				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::REVERSE),
-				x, y, w, h));
+				x, y, w, h), pausedCarry);
 		
 		forwardsGlitz->push_back(
 			timeDirection == TimeDirection::FORWARDS ? sameDirectionGlitz : oppositeDirectionGlitz);
