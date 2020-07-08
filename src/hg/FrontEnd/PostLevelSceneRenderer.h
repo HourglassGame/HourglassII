@@ -302,15 +302,15 @@ private:
             
             */
 
-            DrawPersonalTimeline(
-                target,
-                *wall,
-                drawCommandBuffer,
-                0/*relativeGuyIndex*/,
-                *guyFrameData,
-                *postOverwriteInput,
-                timelineLength,
-                swapChainExtent);
+            //DrawPersonalTimeline(
+            //    target,
+            //    *wall,
+            //    drawCommandBuffer,
+            //    0/*relativeGuyIndex*/,
+            //    *guyFrameData,
+            //    *postOverwriteInput,
+            //    timelineLength,
+            //    swapChainExtent);
 
             DrawInterfaceBorder(target, drawCommandBuffer, swapChainExtent);
 

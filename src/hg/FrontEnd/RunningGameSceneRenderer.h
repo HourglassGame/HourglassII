@@ -327,15 +327,15 @@ namespace hg {
                 swapChainExtent,
                 sceneData->pipelineLayout.pipelineLayout);
 
-            DrawPersonalTimeline(
-                target,
-                uiFrameStateLocal->wall,
-                drawCommandBuffer,
-                uiFrameStateLocal->relativeGuyIndex,
-                uiFrameStateLocal->guyFrames,
-                uiFrameStateLocal->postOverwriteInput,
-                uiFrameStateLocal->timelineLength,
-                swapChainExtent);
+            //DrawPersonalTimeline(
+            //    target,
+            //    uiFrameStateLocal->wall,
+            //    drawCommandBuffer,
+            //    uiFrameStateLocal->relativeGuyIndex,
+            //    uiFrameStateLocal->guyFrames,
+            //    uiFrameStateLocal->postOverwriteInput,
+            //    uiFrameStateLocal->timelineLength,
+            //    swapChainExtent);
 
             DrawInterfaceBorder(target, drawCommandBuffer, swapChainExtent);
 
