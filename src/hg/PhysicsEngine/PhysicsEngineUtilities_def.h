@@ -63,8 +63,8 @@ void addExplosion(
 	// X X X X X
 	// X X X X X
 	int radius = 0;
-	int radiusMax = (width + height + 3200) * 6 / 10;
-	int radiusGrow = (width + height + 3200) * 6 / 50;
+	int radiusMax = (width * height / 3200 + 6400) * 6 / 10;
+	int radiusGrow = (width * height / 3200 + 6400) * 6 / 50;
 	
 	nextExplosion.push_back(
 		ObjectAndTime<Explosion, FrameT>(
