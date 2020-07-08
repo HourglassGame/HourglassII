@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 5.5 * 3200, yOffset = 3 * 3200},
+            attachment = {platform = nil, xOffset = 5.5 * 3200, yOffset = 4 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -33,12 +33,12 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 15.75 * 3200, yOffset = 12.75 * 3200},
+            attachment = {platform = nil, xOffset = 9.75 * 3200, yOffset = 11.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 2,
-            pickupType = 'timeJump'
+            pickupType = 'timeReverse'
         },
     },
     protoButtons = {
