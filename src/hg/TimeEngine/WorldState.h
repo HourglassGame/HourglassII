@@ -43,6 +43,8 @@ public:
 
 	WorldState(WorldState &&o) noexcept = default;
 	WorldState &operator=(WorldState &&o) noexcept = default;
+	
+	bool canPropagateFrame(Frame *frame, unsigned speedOfTimeFilter, unsigned guyFrameNumber, TimeDirection guyDirection);
 	/**
 	 * Updates the state of the world once.
 	 * Throws PlayerVictoryException if the player has won

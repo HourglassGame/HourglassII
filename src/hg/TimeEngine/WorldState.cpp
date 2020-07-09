@@ -154,6 +154,15 @@ int WorldState::getTimelineLength() const
 	return hg::getTimelineLength(timeline_.getUniverse());
 }
 
+bool WorldState::canPropagateFrame(Frame *frame, unsigned speedOfTimeFilter, unsigned guyFrameNumber, TimeDirection guyDirection)
+{
+	return (getFrameSpeedOfTime(frame) > speedOfTimeFilter &&
+		(futureSpeedOfTimeLimit_ > speedOfTimeFilter ||
+			guyDirection == TimeDirection::INVALID ||
+			(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
+			(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber)));
+}
+
 PhysicsEngine::FrameDepartureT
 	WorldState::getDeparturesFromFrameAndUpdateSpeedOfTime(Frame *frame, OperationInterrupter &interrupter)
 {
@@ -215,7 +224,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
 	//std::cerr << "START: " << executionCount << ", guyFrame " << guyFrameNumber << ", dir " << static_cast<int>(guyDirection) << ", futureSpeedOfTimeLimit_ " << futureSpeedOfTimeLimit_ << "\n";
 	DepartureMap newDepartures;
 	ConcurrentFrameUpdateSet framesWithChangedArrivals;
-	newDepartures.makeSpaceFor(frameUpdateSet_, executionCount, futureSpeedOfTimeLimit_, guyFrameNumber, guyDirection);
+	newDepartures.makeSpaceFor(frameUpdateSet_, this, executionCount, futureSpeedOfTimeLimit_, guyFrameNumber, guyDirection);
 	FrameUpdateSet returnSet;
 	frameUpdateSet_.swap(returnSet);
 	{
@@ -240,11 +249,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
 		parallel_for_each(
 			returnSet,
 			[&](Frame *frame) { 
-				if (getFrameSpeedOfTime(frame) > executionCount &&
-						(futureSpeedOfTimeLimit_ > executionCount ||
-							guyDirection == TimeDirection::INVALID ||
-							(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
-							(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber))) {
+				if (canPropagateFrame(frame, executionCount, guyFrameNumber, guyDirection)) {
 					//std::cerr << "setDeparture: " << getFrameNumber(frame) << "\n";
 					newDepartures.setDeparture(frame, this->getDeparturesFromFrameAndUpdateSpeedOfTime(frame, interrupter));
 				}
