@@ -159,17 +159,28 @@ int WorldState::getTimelineLength() const
 	return hg::getTimelineLength(timeline_.getUniverse());
 }
 
-bool WorldState::canPropagateFrame(Frame *frame, unsigned speedOfTimeFilter, unsigned guyFrameNumber, TimeDirection guyDirection)
+bool WorldState::isInPast(Frame* frame, unsigned speedOfTimeFilter, unsigned guyFrameNumber, TimeDirection guyDirection)
 {
-	if (getFrameSpeedOfTime(frame) > speedOfTimeFilter &&
+	return (getFrameSpeedOfTime(frame) > speedOfTimeFilter &&
 		(futureSpeedOfTimeLimit_ > speedOfTimeFilter ||
 			guyDirection == TimeDirection::INVALID ||
 			(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
-			(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber))) {
+			(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber)));
+}
+
+bool WorldState::canPropagateFrame(Frame *frame, unsigned speedOfTimeFilter, unsigned guyFrameNumber, TimeDirection guyDirection)
+{
+	if (isInPast(frame, speedOfTimeFilter, guyFrameNumber, guyDirection)) {
 		return true;
 	}
 	//std::cerr << "Frame " << getFrameNumber(frame) << "\n";
-	return false;
+	//for (int f : processedGuyByFrame_[getFrameNumber(frame)]) {
+	//	std::cerr << "Processed " << f << "\n";
+	//}
+	//for (int f : newArrivalGuyByFrame_[getFrameNumber(frame)]) {
+	//	std::cerr << "Arrived " << f << "\n";
+	//}
+	return processedGuyByFrame_[getFrameNumber(frame)] != newArrivalGuyByFrame_[getFrameNumber(frame)];
 }
 
 PhysicsEngine::FrameDepartureT
@@ -177,7 +188,6 @@ PhysicsEngine::FrameDepartureT
 {
 	ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
 	std::set<int> &processedGuys = processedGuyByFrame_[getFrameNumber(frame)];
-	std::set<int> &newArrivalGuys = newArrivalGuyByFrame_[getFrameNumber(frame)];
 
 	// Update the vector of guys that have arrived and been proccessed by this frame.
 	for (std::set<int>::iterator it = processedGuys.begin(); it != processedGuys.end(); ++it) {
@@ -185,12 +195,10 @@ PhysicsEngine::FrameDepartureT
 	}
 
 	processedGuys.clear();
-	int guyFrameIndex = 0;
 	for (Guy const &guy : arrivals.getList<Guy>())
 	{
 		guyProcessedArrivalFrames_[guy.getIndex()].add(frame);
 		processedGuys.insert(guy.getIndex());
-		++guyFrameIndex;
 	}
 
 	// Run physics to turn the changed arrivals into departures.
@@ -204,7 +212,9 @@ PhysicsEngine::FrameDepartureT
 	for (unsigned i = 0; i < retv.guyDepartureFrames.size(); ++i)
 	{
 		if (!isNullFrame(std::get<1>(retv.guyDepartureFrames[i]))) {
-			guyNewArrivalFrames_[std::get<0>(retv.guyDepartureFrames[i])].add(std::get<1>(retv.guyDepartureFrames[i]));
+			int guyIndex = std::get<0>(retv.guyDepartureFrames[i]);
+			guyNewArrivalFrames_[guyIndex].clear(); // This clear assumes that guy propagation has a consatnt speed of time.
+			guyNewArrivalFrames_[guyIndex].add(std::get<1>(retv.guyDepartureFrames[i]));
 		}
 	}
 	if (retv.currentWinFrame) {
@@ -233,6 +243,19 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
 	//std::cerr << "START: " << executionCount << ", guyFrame " << guyFrameNumber << ", dir " << static_cast<int>(guyDirection) << ", futureSpeedOfTimeLimit_ " << futureSpeedOfTimeLimit_ << "\n";
 	DepartureMap newDepartures;
 	ConcurrentFrameUpdateSet framesWithChangedArrivals;
+
+	for (auto it = frameUpdateSet_.begin(); it < frameUpdateSet_.end(); ++it) {
+		if (!isInPast(*it, executionCount, guyFrameNumber, guyDirection)) {
+			Frame* frame = *it;
+			newArrivalGuyByFrame_[getFrameNumber(frame)].clear();
+			ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
+			for (Guy const& guy : arrivals.getList<Guy>()) {
+				//std::cerr << "Add Guy " << guy.getIndex() << ", frame " << getFrameNumber(frame) << "\n";
+				newArrivalGuyByFrame_[getFrameNumber(frame)].insert(guy.getIndex());
+			}
+		}
+	}
+
 	newDepartures.makeSpaceFor(frameUpdateSet_, this, executionCount, futureSpeedOfTimeLimit_, guyFrameNumber, guyDirection);
 	FrameUpdateSet returnSet;
 	frameUpdateSet_.swap(returnSet);
