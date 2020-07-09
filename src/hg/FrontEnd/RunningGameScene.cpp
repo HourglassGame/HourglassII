@@ -577,7 +577,7 @@ UIFrameState runStep(
 
     // New hacky system to update guyFrameData based on the frames that changed.
     // Should be replaced alongside the graphics rework.
-    std::vector<std::vector<int> > const &frameGuys{ timeEngine.getFrameGuys() };
+    std::vector<std::set<int> > const &frameGuys{ timeEngine.getFrameGuys() };
 
     for (hg::FrameUpdateSet const &updateSet : waveInfo.updatedFrames) {
         for (Frame *frame : updateSet) {
@@ -601,10 +601,10 @@ UIFrameState runStep(
     int maxNewGuyIndex = timeEngine.getGuyFrames().size() - 1; // The last guy arrival does not have input
     for (hg::FrameUpdateSet const &updateSet : waveInfo.updatedFrames) {
         for (Frame *frame : updateSet) {
-            std::vector<int> const &changedGuyIndicies = frameGuys[getFrameNumber(frame)];
+            std::set<int> const &changedGuyIndicies = frameGuys[getFrameNumber(frame)];
             std::vector<int> &rgs_frameGuyData = run_game_scene_frameGuyData[getFrameNumber(frame)];
-            for (size_t i = 0; i < changedGuyIndicies.size(); ++i) {
-                int gi = changedGuyIndicies[i];
+			for (std::set<int>::iterator it = changedGuyIndicies.begin(); it != changedGuyIndicies.end(); ++it) {
+                int gi = *it;
                 if (gi < maxNewGuyIndex) {
                     while (run_game_scene_guyFrameData.size() <= gi) {
                         run_game_scene_guyFrameData.push_back(std::vector<GuyFrameData>());

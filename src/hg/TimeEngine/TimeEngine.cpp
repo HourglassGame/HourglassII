@@ -199,7 +199,7 @@ TimeEngine::RunResult TimeEngine::getPrevRunResult()
 
 Frame const *TimeEngine::getFrame(FrameID const &whichFrame) const noexcept { return impl->worldState.getFrame(whichFrame); }
 std::vector<ConcurrentTimeSet> const &TimeEngine::getGuyFrames() const noexcept { return impl->worldState.getGuyFrames(); }
-std::vector<std::vector<int> > const &TimeEngine::getFrameGuys() const noexcept { return impl->worldState.getFrameGuys(); }
+std::vector<std::set<int> > const &TimeEngine::getFrameGuys() const noexcept { return impl->worldState.getFrameGuys(); }
 std::vector<ConcurrentTimeSet> const &TimeEngine::getGuyArrivalFrames() const noexcept { return impl->worldState.getGuyArrivalFrames(); }
 std::vector<GuyInput> const &TimeEngine::getPostOverwriteInput() const noexcept { return impl->worldState.getPostOverwriteInput(); }
 std::vector<InputList> const &TimeEngine::getReplayData() const noexcept { return impl->worldState.getReplayData(); }

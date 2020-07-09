@@ -55,6 +55,7 @@ WorldState::WorldState(WorldState const& o) :
 		frameUpdateSet_(fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_)),
 		physics_(o.physics_),
 		guyNewArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyNewArrivalFrames_)),
+		newArrivalGuyByFrame_(o.newArrivalGuyByFrame_),
 		guyProcessedArrivalFrames_(fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyProcessedArrivalFrames_)),
 		processedGuyByFrame_(o.processedGuyByFrame_),
 		currentWinFrames_(fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_))
@@ -69,6 +70,7 @@ WorldState &WorldState::operator=(WorldState const& o)
 	frameUpdateSet_ = fixFrameUpdateSet(FramePointerUpdater(timeline_.getUniverse()), o.frameUpdateSet_);
 	physics_ = o.physics_;
 	guyNewArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyNewArrivalFrames_);
+	newArrivalGuyByFrame_ = o.newArrivalGuyByFrame_;
 	guyProcessedArrivalFrames_ = fixFrameVector(FramePointerUpdater(timeline_.getUniverse()), o.guyProcessedArrivalFrames_);
 	processedGuyByFrame_ = o.processedGuyByFrame_;
 	currentWinFrames_ = fixConcurrentTimeSet(FramePointerUpdater(timeline_.getUniverse()), o.currentWinFrames_);
@@ -90,6 +92,7 @@ WorldState::WorldState(
 		frameUpdateSet_(),
 		physics_(std::move(physics)),
 		guyNewArrivalFrames_(),
+		newArrivalGuyByFrame_(),
 		guyProcessedArrivalFrames_(),
 		processedGuyByFrame_(),
 		currentWinFrames_()
@@ -103,6 +106,7 @@ WorldState::WorldState(
 	guyProcessedArrivalFrames_.push_back({}); // The oldest Guy to arrive has no input, but has no impact on the physics of the frame.
 
 	for (int i = 0; i < timelineLength; ++i) {
+		newArrivalGuyByFrame_.push_back({});
 		processedGuyByFrame_.push_back({});
 	}
 
@@ -139,6 +143,7 @@ void WorldState::swap(WorldState &o) noexcept
 	boost::swap(frameUpdateSet_, o.frameUpdateSet_);
 	boost::swap(physics_, o.physics_);
 	boost::swap(guyNewArrivalFrames_, o.guyNewArrivalFrames_);
+	boost::swap(newArrivalGuyByFrame_, o.newArrivalGuyByFrame_);
 	boost::swap(guyProcessedArrivalFrames_, o.guyProcessedArrivalFrames_);
 	boost::swap(processedGuyByFrame_, o.processedGuyByFrame_);
 	boost::swap(currentWinFrames_, o.currentWinFrames_);
@@ -156,31 +161,35 @@ int WorldState::getTimelineLength() const
 
 bool WorldState::canPropagateFrame(Frame *frame, unsigned speedOfTimeFilter, unsigned guyFrameNumber, TimeDirection guyDirection)
 {
-	return (getFrameSpeedOfTime(frame) > speedOfTimeFilter &&
+	if (getFrameSpeedOfTime(frame) > speedOfTimeFilter &&
 		(futureSpeedOfTimeLimit_ > speedOfTimeFilter ||
 			guyDirection == TimeDirection::INVALID ||
 			(guyDirection == TimeDirection::FORWARDS && getFrameNumber(frame) <= guyFrameNumber) ||
-			(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber)));
+			(guyDirection == TimeDirection::REVERSE && getFrameNumber(frame) >= guyFrameNumber))) {
+		return true;
+	}
+	//std::cerr << "Frame " << getFrameNumber(frame) << "\n";
+	return false;
 }
 
 PhysicsEngine::FrameDepartureT
 	WorldState::getDeparturesFromFrameAndUpdateSpeedOfTime(Frame *frame, OperationInterrupter &interrupter)
 {
 	ObjectPtrList<Normal> const arrivals = frame->getPrePhysics();
-	std::vector<int> &processedGuys = processedGuyByFrame_[getFrameNumber(frame)];
+	std::set<int> &processedGuys = processedGuyByFrame_[getFrameNumber(frame)];
+	std::set<int> &newArrivalGuys = newArrivalGuyByFrame_[getFrameNumber(frame)];
 
 	// Update the vector of guys that have arrived and been proccessed by this frame.
-	for (std::size_t i(0), isize(processedGuys.size()); i < isize; ++i)
-	{
-		guyProcessedArrivalFrames_[processedGuys[i]].remove(frame);
+	for (std::set<int>::iterator it = processedGuys.begin(); it != processedGuys.end(); ++it) {
+		guyProcessedArrivalFrames_[*it].remove(frame);
 	}
 
-	processedGuys.resize(arrivals.getList<Guy>().size());
+	processedGuys.clear();
 	int guyFrameIndex = 0;
 	for (Guy const &guy : arrivals.getList<Guy>())
 	{
 		guyProcessedArrivalFrames_[guy.getIndex()].add(frame);
-		processedGuys[guyFrameIndex] = guy.getIndex();
+		processedGuys.insert(guy.getIndex());
 		++guyFrameIndex;
 	}
 

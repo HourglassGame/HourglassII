@@ -10,6 +10,7 @@
 
 #include <tbb/task.h>
 
+#include <set>
 #include <vector>
 #include <utility>
 
@@ -62,7 +63,7 @@ public:
 	* Returns the array mapping guy index to arrival frame.
 	*/
 	std::vector<ConcurrentTimeSet> const &getGuyFrames() const { return guyProcessedArrivalFrames_; };
-	std::vector<std::vector<int> > const &getFrameGuys() const {return processedGuyByFrame_; };
+	std::vector<std::set<int> > const &getFrameGuys() const {return processedGuyByFrame_; };
 	std::vector<ConcurrentTimeSet> const &getGuyArrivalFrames() const { return guyNewArrivalFrames_; };
 
 	std::vector<GuyInput> const &getPostOverwriteInput() const { return playerInput_; }
@@ -90,10 +91,12 @@ private:
 	PhysicsEngine physics_;
 	//An array indexed by index of the frame at which a guy is known to arrive, but not necessarily processed by physics yet.
 	std::vector<ConcurrentTimeSet > guyNewArrivalFrames_;
+	//An array indexed frameID, containing a vector of the guys known to arrive, but not necessarily processed by physics yet. Maps to guyNewArrivalFrames_.
+	std::vector<std::set<int> > newArrivalGuyByFrame_;
 	//An array indexed by index of the frame at which the guy with that index has arrived and been processed by physics.
 	std::vector<ConcurrentTimeSet > guyProcessedArrivalFrames_;
 	//An array indexed frameID, containing a vector of the guys known to arrive on that frame. Maps to guyProcessedArrivalFrames_.
-	std::vector<std::vector<int> > processedGuyByFrame_;
+	std::vector<std::set<int> > processedGuyByFrame_;
 	//Holds the frame(s) in which the win condition is met in the current universe state.
 	//That is - just the frame(s) when a guy actually went through the end portal 
 	//(or whatever the win condition is) and not the following frames when the
