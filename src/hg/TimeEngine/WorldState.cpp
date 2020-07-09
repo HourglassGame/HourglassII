@@ -244,6 +244,7 @@ FrameUpdateSet WorldState::executeWorld(OperationInterrupter &interrupter, unsig
 	DepartureMap newDepartures;
 	ConcurrentFrameUpdateSet framesWithChangedArrivals;
 
+	// Update the set of guy arrivals for frames in the future, as they will be propagated if the arrivals change.
 	for (auto it = frameUpdateSet_.begin(); it < frameUpdateSet_.end(); ++it) {
 		if (!isInPast(*it, executionCount, guyFrameNumber, guyDirection)) {
 			Frame* frame = *it;
