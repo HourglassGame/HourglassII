@@ -33,19 +33,35 @@ local tempStore =
             pickupType = 'timeJump'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 9.75 * 3200, yOffset = 11.25 * 3200},
+            attachment = {platform = nil, xOffset = 9.25 * 3200, yOffset = 11.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 2,
             pickupType = 'timeReverse'
         },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 10.25 * 3200, yOffset = 11.25 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 3,
+            pickupType = 'timeReverse'
+        },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 9.75 * 3200, yOffset = 10.5 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 4,
+            pickupType = 'timeJump'
+        },
     },
     protoButtons = {
     }
 }
 
-local triggerID = 3
+local triggerID = 5
 for i = 1, 4 do
 	for j = 1, 4 do
 		tempStore.protoMutators[#tempStore.protoMutators + 1] = bts.pickup{
