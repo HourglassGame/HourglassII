@@ -231,7 +231,7 @@ RayToLineCollisionResult getNormalisedRayToLineCollision(
 	int const rayAatLine =
 		sb == aimb ?
 		 std::max(sa, lineStarta) :
-		sa + (aRound*gsl::narrow<int>(flooredDivision(aRound*std::int64_t{(linePosb - sb)}*std::int64_t{(aima - sa)}, std::int64_t{(aimb - sb)})));
+		 sa + (aRound*gsl::narrow<int>(flooredDivision(aRound*std::int64_t{(linePosb - sb)}*std::int64_t{(aima - sa)}, std::int64_t{(aimb - sb)})));
 	
 	bool const shouldHit =
 		//sb <= aimb, so ray can't hit line segment unless sb <= linePosb
