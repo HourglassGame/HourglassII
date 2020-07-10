@@ -655,6 +655,7 @@ GunRaytraceResult doGunRaytrace(
 	*/
 	// prevent zero length vectors
 	auto const aimx = sx == aimx_raw && sy == aimy ? aimx_raw + 1 : aimx_raw;
+	//std::cerr << "aimx " << aimx << ", aimy " << aimy << ", sx " << sx << ", sy " << sy << "\n";
 
 	auto hitPoint = doGunWallRaytrace(wall, sx, sy, aimx, aimy, pool);
 
