@@ -231,7 +231,7 @@ RayToLineCollisionResult getNormalisedRayToLineCollision(
 	int const rayAatLine =
 		sb == aimb ?
 		 std::max(sa, lineStarta) :
-		 sa + (aRound*flooredDivision(aRound*(linePosb - sb)*(aima - sa), (aimb - sb)));
+		sa + (aRound*gsl::narrow<int>(flooredDivision(aRound*std::int64_t{(linePosb - sb)}*std::int64_t{(aima - sa)}, std::int64_t{(aimb - sb)})));
 	
 	bool const shouldHit =
 		//sb <= aimb, so ray can't hit line segment unless sb <= linePosb
@@ -421,11 +421,11 @@ vec2<int> doNormalisedGunWallRaytrace(
 
 	auto const bForA = [=](int const a) {
 		assert(aima - sa != 0);
-		return sb + (bRound*flooredDivision(bRound*(a - sa)*(aimb - sb),(aima - sa)));
+		return sb + (bRound*gsl::narrow<int>(flooredDivision(bRound*std::int64_t{(a - sa)}*std::int64_t{(aimb - sb)},std::int64_t{(aima - sa)})));
 	};
 	auto const aForB = [=](int const b) {
 		assert(aimb - sb != 0);
-		return sa + (aRound*flooredDivision(aRound*(b - sb)*(aima - sa),(aimb - sb)));
+		return sa + (aRound*gsl::narrow<int>(flooredDivision(aRound*std::int64_t{(b - sb)}*std::int64_t{(aima - sa)},std::int64_t{(aimb - sb)})));
 	};
 	auto const indexOf = [&wall](int const pos) {
 		//TODO: Handle negative pos correctly/ensure that normalisation doesn't make negative positions
