@@ -936,8 +936,6 @@ void guyStep(
 					int gY(y[i]);
 					int startDropHeight = gY + height - 1; // -1 prevents jumping off dropped boxes while falling.
 					if (guyArrivalList[i].getBoxCarryDirection()*guyArrivalList[i].getTimeDirection() == TimeDirection::REVERSE) {
-						gX = guyArrivalList[i].getX();
-						gY = guyArrivalList[i].getY();
 						startDropHeight = gY + height; // -1 causes paradox issues when dropping off cliffs..
 					}
 					if (carry[i] == BoxType::BALLOON) {
