@@ -5,7 +5,7 @@ local tempStore =
     protoPortals =
     {
         {
-            attachment = {platform = nil, xOffset = 15 * 3200, yOffset = 2 * 3200},
+            attachment = {platform = nil, xOffset = 15 * 3200, yOffset = 5 * 3200},
             index = 1,
             width = 2 * 3200,
             height = 2 * 3200,
@@ -38,7 +38,7 @@ local tempStore =
                         deceleration = 16
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 250,
                         acceleration = 16,
                         deceleration = 16
@@ -56,44 +56,6 @@ local tempStore =
                         maxSpeed = 250,
                         acceleration = 16,
                         deceleration = 16
-                    }
-                }
-            }
-        },
-        {
-            width = 6 * 3200,
-            height = 1 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 7,
-            triggerClause = "t2 t3 |",
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = "t10",
-                        maxSpeed = 250,
-                        acceleration = 40,
-                        deceleration = 40
-                    },
-                    yDestination = {
-                        desiredPosition = 9 * 3200,
-                        maxSpeed = 250,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 13 * 3200,
-                        maxSpeed = 250,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 9 * 3200,
-                        maxSpeed = 250,
-                        acceleration = 18,
-                        deceleration = 18
                     }
                 }
             }
@@ -114,7 +76,7 @@ local tempStore =
                         deceleration = 40
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 250,
                         acceleration = 18,
                         deceleration = 18
@@ -128,7 +90,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 250,
                         acceleration = 18,
                         deceleration = 18
@@ -152,7 +114,7 @@ local tempStore =
                         deceleration = 40
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 250,
                         acceleration = 18,
                         deceleration = 18
@@ -166,160 +128,8 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 4 * 3200,
+                        desiredPosition = 7 * 3200,
                         maxSpeed = 250,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                }
-            }
-        },
-        {
-            width = 1 * 3200,
-            height = 1 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 13,
-            triggerClause = "t10 19200 =",
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 5 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                }
-            }
-        },
-        {
-            width = 1 * 3200,
-            height = 1 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 14,
-            triggerClause = "t10 64000 =",
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 24 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 26 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                }
-            }
-        },
-        {
-            width = 2 * 3200,
-            height = 1 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 15,
-            triggerClause = "t10 19200 =",
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 7 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 8 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 5 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 8 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                }
-            }
-        },
-        {
-            width = 2 * 3200,
-            height = 1 * 3200,
-            timeDirection = 'forwards',
-            lastStateTriggerID = 16,
-            triggerClause = "t10 64000 =",
-            destinations =
-            {
-                onDestination = {
-                    xDestination = {
-                        desiredPosition = 23 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 8 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    }
-                },
-                offDestination = {
-                    xDestination = {
-                        desiredPosition = 25 * 3200,
-                        maxSpeed = 50,
-                        acceleration = 18,
-                        deceleration = 18
-                    },
-                    yDestination = {
-                        desiredPosition = 8 * 3200,
-                        maxSpeed = 50,
                         acceleration = 18,
                         deceleration = 18
                     }
@@ -329,7 +139,7 @@ local tempStore =
     },
     protoMutators = {
         bts.pickup{
-            attachment = {platform = nil, xOffset = 3.25 * 3200, yOffset = 8.75 * 3200},
+            attachment = {platform = nil, xOffset = 4.75 * 3200, yOffset = 4.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -337,7 +147,7 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 28.25 * 3200, yOffset = 8.75 * 3200},
+            attachment = {platform = nil, xOffset = 26.75 * 3200, yOffset = 4.25 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
@@ -345,11 +155,11 @@ local tempStore =
             pickupType = 'timeReverse'
         },
         bts.pickup{
-            attachment = {platform = nil, xOffset = 15.75 * 3200, yOffset = 12.75 * 3200},
+            attachment = {platform = nil, xOffset = 15.75 * 3200, yOffset = 11.75 * 3200},
             width = 1600,
             height = 1600,
             timeDirection = 'forwards',
-            triggerID = 17,
+            triggerID = 7,
             pickupType = 'timeJump'
         },
     },
@@ -397,6 +207,94 @@ local tempStore =
         }
     },
 }
+
+local SPEED = 120
+local H_SPEED = SPEED * 5/8
+local triggerID = 13
+for i = 7, 14 do
+	tempStore.protoCollisions[#tempStore.protoCollisions + 1] = {
+		width = 3 * 3200,
+		height = 1 * 3200,
+		timeDirection = 'forwards',
+		lastStateTriggerID = triggerID,
+		triggerClause = "t10 19200 =",
+		destinations =
+		{
+			onDestination = {
+				xDestination = {
+					desiredPosition = (4 + 5*(i - 6)/8) * 3200,
+					maxSpeed = H_SPEED,
+					acceleration = H_SPEED,
+					deceleration = H_SPEED
+				},
+				yDestination = {
+					desiredPosition = i * 3200,
+					maxSpeed = SPEED,
+					acceleration = SPEED,
+					deceleration = SPEED
+				}
+			},
+			offDestination = {
+				xDestination = {
+					desiredPosition = 4 * 3200,
+					maxSpeed = H_SPEED,
+					acceleration = H_SPEED,
+					deceleration = H_SPEED
+				},
+				yDestination = {
+					desiredPosition = 6 * 3200,
+					maxSpeed = SPEED,
+					acceleration = SPEED,
+					deceleration = SPEED
+				}
+			}
+		}
+	}
+	triggerID = triggerID + 1
+end
+
+for i = 7, 14 do
+	tempStore.protoCollisions[#tempStore.protoCollisions + 1] = {
+		width = 3 * 3200,
+		height = 1 * 3200,
+		timeDirection = 'forwards',
+		lastStateTriggerID = triggerID,
+		triggerClause = "t10 64000 =",
+		destinations =
+		{
+			onDestination = {
+				xDestination = {
+					desiredPosition = (25 - 5*(i - 6)/8) * 3200,
+					maxSpeed = H_SPEED,
+					acceleration = H_SPEED,
+					deceleration = H_SPEED
+				},
+				yDestination = {
+					desiredPosition = i * 3200,
+					maxSpeed = SPEED,
+					acceleration = SPEED,
+					deceleration = SPEED
+				}
+			},
+			offDestination = {
+				xDestination = {
+					desiredPosition = 25 * 3200,
+					maxSpeed = H_SPEED,
+					acceleration = H_SPEED,
+					deceleration = H_SPEED
+				},
+				yDestination = {
+					desiredPosition = 6 * 3200,
+					maxSpeed = SPEED,
+					acceleration = SPEED,
+					deceleration = SPEED
+				}
+			}
+		}
+	}
+	triggerID = triggerID + 1
+end
+
 --==Callin Definitions==--
 --triggerArrivals have already had default values inserted by C++
 --for trigger indices that did not arrive by the time this is called
