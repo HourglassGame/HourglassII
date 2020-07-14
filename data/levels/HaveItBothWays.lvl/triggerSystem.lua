@@ -344,6 +344,14 @@ local tempStore =
             triggerID = 12,
             pickupType = 'timeReverse'
         },
+        bts.pickup{
+            attachment = {platform = nil, xOffset = 15.75 * 3200, yOffset = 12.75 * 3200},
+            width = 1600,
+            height = 1600,
+            timeDirection = 'forwards',
+            triggerID = 17,
+            pickupType = 'timeJump'
+        },
     },
     protoButtons = {
         bts.momentarySwitch{
