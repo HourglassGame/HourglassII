@@ -379,8 +379,22 @@ namespace hg {
                 );
             }
             {
+                std::stringstream timeString;
+                timeString << "Time: " << (uiFrameStateLocal->drawnFrame.getFrameNumber() * 10 / hg::FRAMERATE) / 10. << "s";
+                hg::drawText(
+                    target,
+                    drawCommandBuffer,
+                    sceneData->pipelineLayout.pipelineLayout,
+                    texDescriptorSets.fontTexDescriptorSet,
+                    timeString.str(),
+                    90.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 20.f,
+                    16.f,
+                    UI_TEXT_COLOR);
+            }
+            {
                 std::stringstream currentPlayerIndex;
-                currentPlayerIndex << "Index: " << (std::size(uiFrameStateLocal->postOverwriteInput) - 1);
+                currentPlayerIndex << "Age: " << ((std::size(uiFrameStateLocal->postOverwriteInput) - 1)  * 10 / hg::FRAMERATE) / 10. << "s";
 
                 hg::drawText(
                     target,
@@ -388,22 +402,8 @@ namespace hg {
                     sceneData->pipelineLayout.pipelineLayout,
                     texDescriptorSets.fontTexDescriptorSet,
                     currentPlayerIndex.str(),
-                    90.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y) - 55.f,
-                    16.f,
-                    UI_TEXT_COLOR);
-            }
-            {
-                std::stringstream currentPlayerIndex;
-                currentPlayerIndex << "Control: " << (std::size(uiFrameStateLocal->postOverwriteInput) - 1) - uiFrameStateLocal->relativeGuyIndex;
-                hg::drawText(
-                    target,
-                    drawCommandBuffer,
-                    sceneData->pipelineLayout.pipelineLayout,
-                    texDescriptorSets.fontTexDescriptorSet,
-                    currentPlayerIndex.str(),
-                    90.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y) - 35.f,
+                    98.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 45.f,
                     16.f,
                     UI_TEXT_COLOR);
             }
@@ -417,21 +417,7 @@ namespace hg {
                     texDescriptorSets.fontTexDescriptorSet,
                     frameNumberString.str(),
                     90.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y* hg::UI_DIVIDE_Y) + 60.f,
-                    16.f,
-                    UI_TEXT_COLOR);
-            }
-            {
-                std::stringstream timeString;
-                timeString << "Time: " << (uiFrameStateLocal->drawnFrame.getFrameNumber() * 10 / hg::FRAMERATE) / 10. << "s";
-                hg::drawText(
-                    target,
-                    drawCommandBuffer,
-                    sceneData->pipelineLayout.pipelineLayout,
-                    texDescriptorSets.fontTexDescriptorSet,
-                    timeString.str(),
-                    90.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y* hg::UI_DIVIDE_Y) + 20.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 100.f,
                     16.f,
                     UI_TEXT_COLOR);
             }

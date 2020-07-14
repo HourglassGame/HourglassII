@@ -384,7 +384,7 @@ private:
                     texDescriptorSets.fontTexDescriptorSet,
                     frameNumberString.str(),
                     90.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 60.f,
+                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) + 100.f,
                     16.f,
                     UI_TEXT_COLOR);
             }

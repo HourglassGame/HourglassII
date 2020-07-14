@@ -30,9 +30,9 @@ namespace hg {
     //UI_DIVIDE_X and UI_DIVIDE_Y are the locations of the 2 lines that divide
     //the window into quadrants, as ratios of the window width/height.
     inline static const double UI_DIVIDE_X = 0.17;
-    inline static const double UI_DIVIDE_Y = 0.73;
-    inline static const double G_TIME_Y = 0.0625;
-    inline static const double G_TIME_HEIGHT = 10.*0.0625;
+    inline static const double UI_DIVIDE_Y = 0.78;
+    inline static const double G_TIME_Y = 0.095;
+    inline static const double G_TIME_HEIGHT = 0.81;
     inline static const double P_TIME_Y = 12.*0.0625;
     inline static const double P_TIME_HEIGHT = 0.*0.0625; // 3.*0.0625;
     inline static const double TIMELINE_PAD_X = 0.02;
