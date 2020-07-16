@@ -2,6 +2,7 @@
 #define HG_RUNNING_GAME_SCENE_RENDERER_H
 #include "VulkanRenderTarget.h"
 #include "hg/GlobalConst.h"
+#include "Hg_Input.h"
 #include "Canvas.h"
 #include "hg/Util/Maths.h"
 #include "hg/VulkanUtil/VulkanUtil.h"
@@ -31,8 +32,8 @@ namespace hg {
         bool shouldDrawGuyPositionColours;
         bool shouldDrawInventory;
         Pickups pickups;
-        Ability abilityCursor;
-        hg::FrameID timeCursor;
+		hg::Input input;
+		bool paused;
         std::size_t relativeGuyIndex;
         hg::TimeEngine::RunResult waveInfo;
         bool runningFromReplay;
@@ -304,7 +305,7 @@ namespace hg {
                     target,
                     drawCommandBuffer,
                     uiFrameStateLocal->pickups,
-                    uiFrameStateLocal->abilityCursor);
+                    uiFrameStateLocal->input.getAbilityCursor());
             }
 
             DrawParadoxPressure(
@@ -321,7 +322,7 @@ namespace hg {
                 uiFrameStateLocal->timelineLength,
                 uiFrameStateLocal->waveInfo.updatedFrames,
                 uiFrameStateLocal->drawnFrame,
-                uiFrameStateLocal->timeCursor,
+                uiFrameStateLocal->input.getTimeCursor(),
                 uiFrameStateLocal->guyFrames,
                 uiFrameStateLocal->wall,
                 swapChainExtent,

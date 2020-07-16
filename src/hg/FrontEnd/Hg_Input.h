@@ -22,6 +22,7 @@ public:
 	);
 	InputList AsInputList() const;
 	FrameID getTimeCursor() const;
+	Ability getAbilityCursor() const;
 	void setTimelineLength(int timelineLength_) { this->timelineLength = timelineLength_; }
 
 	bool getAbilityChanged() const { return abilityChanged; }

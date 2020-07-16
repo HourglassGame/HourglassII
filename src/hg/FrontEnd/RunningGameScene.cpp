@@ -86,7 +86,8 @@ UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     GLFWWindow &windowglfw,
     std::size_t relativeGuyIndex,
-    hg::FrameID const &uiTimeCursor,
+	hg::Input const &input,
+	bool const paused,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     bool const runningFromReplay,
@@ -292,7 +293,7 @@ run_game_scene(
             relativeGuyIndex = inputList.getRelativeGuyIndex();
             interrupter = std::make_unique<hg::OperationInterrupter>();
 
-            if (levelLost || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken() || input.getAbilityChanged()))) {
+            if (levelLost || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken()))) {
                 frameRun = false;
                 futureRunResult =
                     async(
@@ -398,7 +399,8 @@ run_game_scene(
                             timeEngine,
                             windowglfw,
                             relativeGuyIndex,
-                            input.getTimeCursor(),
+							input,
+							paused,
                             inertia,
                             waveInfo,
                             runningFromReplay,
@@ -496,7 +498,8 @@ UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     GLFWWindow &windowglfw,
     std::size_t relativeGuyIndex,
-    hg::FrameID const &uiTimeCursor,
+	hg::Input const &input,
+	bool const paused,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     bool const runningFromReplay,
@@ -507,8 +510,6 @@ UIFrameState runStep(
     hg::FrameID drawnFrame;
     hg::TimeDirection drawnTimeDirection{hg::TimeDirection::INVALID};
     Pickups pickups;
-    hg::FrameID timeCursor;
-    hg::Ability abilityCursor{hg::Ability::NO_ABILITY};
     bool shouldDrawInventory{false};
     bool guyFrameUpdated(false);
     bool const shouldDrawGuyPositionColours{(glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)};
@@ -544,8 +545,6 @@ UIFrameState runStep(
 
             shouldDrawInventory = true;
             pickups = currentGuy.getPickups();
-            timeCursor = uiTimeCursor; // timeEngine.getPostOverwriteInput()[guyIndex].getTimeCursor();
-            abilityCursor = timeEngine.getPostOverwriteInput()[guyIndex].getAbilityCursor();
         }
         else {
             if (frameRun) {
@@ -662,8 +661,8 @@ UIFrameState runStep(
             shouldDrawGuyPositionColours,
             shouldDrawInventory,
             pickups,
-            abilityCursor,
-            timeCursor,
+			input,
+			paused,
             relativeGuyIndex,
             waveInfo,
             runningFromReplay,

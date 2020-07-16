@@ -120,5 +120,10 @@ FrameID Input::getTimeCursor() const
 	return FrameID(mouseTimelinePosition, UniverseID(timelineLength));
 }
 
+Ability Input::getAbilityCursor() const
+{
+	return abilityCursor;
+}
+
 }
 
