@@ -54,6 +54,7 @@ public:
 	int getYCursor() const noexcept { return yCursor; }
 
 	bool getPauseActionTaken() const noexcept { return portalUsed || abilityUsed || boxAction; }
+	bool getActionPause() const noexcept { return abilityCursor != Ability::NO_ABILITY && !abilityUsed; }
 	bool getActionTaken() const noexcept { return moveLeft || moveRight || jump || boxAction || boxLeft || boxRight || portalUsed || abilityUsed; }
 private:
 	friend class InputList;

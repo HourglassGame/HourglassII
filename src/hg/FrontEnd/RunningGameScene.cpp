@@ -286,14 +286,14 @@ run_game_scene(
                 input.updateState(/*window.getInputState(), */windowglfw, mousePanel, waitingForWave,
                     timelineOffset, timelineWidth, personalTimelineWidth,
                     timeEngine.getReplayData().size(),
-                    mouseOffX, mouseOffY, 1. / scalingFactor);
+                    mouseOffX, mouseOffY, 1. / scalingFactor, frameRun);
                 inputList = input.AsInputList();
                 runningFromReplay = false;
             }
             relativeGuyIndex = inputList.getRelativeGuyIndex();
             interrupter = std::make_unique<hg::OperationInterrupter>();
 
-            if (levelLost || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken()))) {
+            if (levelLost || inputList.getGuyInput().getActionPause() || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken()))) {
                 frameRun = false;
                 futureRunResult =
                     async(

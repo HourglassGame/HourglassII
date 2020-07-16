@@ -10,6 +10,19 @@ static void updatePress(int &var, bool inputState)
 		: 0;
 }
 
+static void updateAbility(int &var, Ability &abilityCursor, Ability oldAbilityCursor, Ability abilityType, bool inputState)
+{
+	updatePress(var, inputState);
+	if (var == 1) {
+		if (oldAbilityCursor == abilityType) {
+			abilityCursor = Ability::NO_ABILITY;
+		}
+		else {
+			abilityCursor = abilityType;
+		}
+	}
+}
+
 Input::Input() :
 	left(),
 	right(),
@@ -22,6 +35,10 @@ Input::Input() :
 	shift_r(),
 	enter(),
 	use(),
+	ability_1(),
+	ability_2(),
+	ability_3(),
+	ability_4(),
 	mouseLeft(),
 	abilityCursor(),
 	abilityChanged(),
@@ -39,7 +56,8 @@ void Input::updateState(
 	bool waitingForWave,
 	int mouseXTimelineOffset, int mouseXOfEndOfTimeline,
 	int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
-	int mouseOffX, int mouseOffY, double mouseScale)
+	int mouseOffX, int mouseOffY, double mouseScale,
+	bool frameRunSinceLastUpdate)
 {
 	left = (glfwGetKey(windowglfw.w, GLFW_KEY_A) == GLFW_PRESS);
 	right = (glfwGetKey(windowglfw.w, GLFW_KEY_D) == GLFW_PRESS);
@@ -61,19 +79,15 @@ void Input::updateState(
 	updatePress(mouseLeft, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
 
 	Ability oldAbility = abilityCursor;
-	if (glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS) {
-		abilityCursor = Ability::TIME_JUMP;
+
+	updateAbility(ability_1, abilityCursor, oldAbility, Ability::TIME_JUMP, glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS);
+	updateAbility(ability_2, abilityCursor, oldAbility, Ability::TIME_REVERSE, glfwGetKey(windowglfw.w, GLFW_KEY_2) == GLFW_PRESS);
+	updateAbility(ability_3, abilityCursor, oldAbility, Ability::TIME_GUN, glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS);
+	updateAbility(ability_4, abilityCursor, oldAbility, Ability::TIME_PAUSE, glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS);
+
+	if (frameRunSinceLastUpdate && abilityCursor == oldAbility ) {
+		abilityCursor = Ability::NO_ABILITY;
 	}
-	if (glfwGetKey(windowglfw.w, GLFW_KEY_2) == GLFW_PRESS) {
-		abilityCursor = Ability::TIME_REVERSE;
-	}
-	if (glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS) {
-		abilityCursor = Ability::TIME_GUN;
-	}
-	if (glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS) {
-		abilityCursor = Ability::TIME_PAUSE;
-	}
-	abilityChanged = (abilityCursor != oldAbility);
 
 	if (mouseLeftPressed && mousePanel == ActivePanel::PERSONAL_TIME) {
 		int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));

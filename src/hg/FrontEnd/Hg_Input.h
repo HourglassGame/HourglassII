@@ -18,7 +18,8 @@ public:
 		bool waitingForWave,
 		int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline,
 		std::size_t personalTimelineLength, 
-		int mouseOffX, int mouseOffY, double mouseScale
+		int mouseOffX, int mouseOffY, double mouseScale,
+		bool frameRunSinceLastUpdate
 	);
 	InputList AsInputList() const;
 	FrameID getTimeCursor() const;
@@ -39,6 +40,10 @@ private:
 	int shift_r;
 	int enter;
 	int use;
+	int ability_1;
+	int ability_2;
+	int ability_3;
+	int ability_4;
 	int mouseLeft;
 	Ability abilityCursor;
 	bool abilityChanged;
