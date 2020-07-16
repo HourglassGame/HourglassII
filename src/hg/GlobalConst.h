@@ -44,6 +44,9 @@ namespace hg {
         "VK_LAYER_KHRONOS_validation"
     };
     inline hg::vec3<float> const UI_TEXT_COLOR{ 100.f / 255.f, 100.f / 255.f, 200.f / 255.f };
+    inline hg::vec3<float> const BUTTON_TEXT_COLOR{ 0.f / 255.f, 0.f / 255.f, 0.f / 255.f };
+    inline hg::vec3<float> const BUTTON_ACTIVE{ 100.f / 255.f, 220.f / 255.f, 100.f / 255.f };
+    inline hg::vec3<float> const BUTTON_INACTIVE{ 100.f / 255.f, 100.f / 255.f, 100.f / 255.f };
     inline bool const enableValidationLayers =
 #ifdef NDEBUG
         false

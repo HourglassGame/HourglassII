@@ -300,13 +300,13 @@ namespace hg {
                 sceneData->pipelineLayout.pipelineLayout,
                 sceneData->textures);
 
-            if (uiFrameStateLocal->shouldDrawInventory) {
-                DrawInventory(
-                    target,
-                    drawCommandBuffer,
-                    uiFrameStateLocal->pickups,
-                    uiFrameStateLocal->input.getAbilityCursor());
-            }
+			DrawInventory(
+				target,
+				drawCommandBuffer,
+				uiFrameStateLocal->pickups,
+				uiFrameStateLocal->shouldDrawInventory,
+				uiFrameStateLocal->paused,
+				uiFrameStateLocal->input.getAbilityCursor());
 
             DrawParadoxPressure(
                 target,
@@ -479,103 +479,161 @@ namespace hg {
             VulkanRenderTarget& target,
             VkCommandBuffer const& drawCommandBuffer,
             Pickups const& pickups,
+			bool shouldDrawItems,
+			bool paused,
             Ability abilityCursor)
         {
-            Pickups mpickups(pickups);
+			Pickups mpickups(pickups);
+			{
+				float const centerX = WINDOW_DEFAULT_X / 2.f;
+				float const centerY = WINDOW_DEFAULT_Y / 2.f;
+				float const sizeX = WINDOW_DEFAULT_X;
+				float const sizeY = WINDOW_DEFAULT_Y;
+				float const a = 2.f / sizeX; //scale x
+				float const b = 2.f / sizeY; //scale y
+				float const c = -a * centerX; //translate x
+				float const d = -b * centerY; //translate y
 
-            {
-                float const centerX = WINDOW_DEFAULT_X / 2.f;
-                float const centerY = WINDOW_DEFAULT_Y / 2.f;
-                float const sizeX = WINDOW_DEFAULT_X;
-                float const sizeY = WINDOW_DEFAULT_Y;
-                float const a = 2.f / sizeX; //scale x
-                float const b = 2.f / sizeY; //scale y
-                float const c = -a * centerX; //translate x
-                float const d = -b * centerY; //translate y
+				target.updateUniformBuffer(
+					UniformBufferObject{
+						//Out  x    y    z    v
+						  a, 0.0, 0.0, 0.0,//In x
+						0.0,   b, 0.0, 0.0,//In y
+						0.0, 0.0, 1.0, 0.0,//In z
+						  c,   d, 0.0, 1.0 //In v
+					}
+				);
 
-                target.updateUniformBuffer(
-                    UniformBufferObject{
-                        //Out  x    y    z    v
-                          a, 0.0, 0.0, 0.0,//In x
-                        0.0,   b, 0.0, 0.0,//In y
-                        0.0, 0.0, 1.0, 0.0,//In z
-                          c,   d, 0.0, 1.0 //In v
-                    }
-                );
-
-                std::array<VkViewport, 1> viewports{
-                    {
-                        static_cast<float>(0),
-                        static_cast<float>(0),
-                        static_cast<float>(swapChainExtent.width),
-                        static_cast<float>(swapChainExtent.height),
-                        0.0f,
-                        1.0f
-                    }
-                };
-                vkCmdSetViewport(
-                    drawCommandBuffer,
-                    0,
-                    gsl::narrow<uint32_t>(viewports.size()),
-                    viewports.data()
-                );
-            }
-            {
-                std::stringstream timeJump;
-                timeJump << (abilityCursor == Ability::TIME_JUMP ? "-->" : "   ") << "1) timeJumps: " << mpickups[Ability::TIME_JUMP];
-                hg::drawText(
-                    target,
-                    drawCommandBuffer,
-                    sceneData->pipelineLayout.pipelineLayout,
-                    texDescriptorSets.fontTexDescriptorSet,
-                    timeJump.str(),
-                    20.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 140.f,
-                    16.f,
-                    UI_TEXT_COLOR);
-            }
-            {
-                std::stringstream timeReverses;
-                timeReverses << (abilityCursor == Ability::TIME_REVERSE ? "-->" : "   ") << "2) timeReverses: " << mpickups[Ability::TIME_REVERSE];
-                hg::drawText(
-                    target,
-                    drawCommandBuffer,
-                    sceneData->pipelineLayout.pipelineLayout,
-                    texDescriptorSets.fontTexDescriptorSet,
-                    timeReverses.str(),
-                    20.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 110.f,
-                    16.f,
-                    UI_TEXT_COLOR);
-            }
-            {
-                std::stringstream timeGuns;
-                timeGuns << (abilityCursor == Ability::TIME_GUN ? "-->" : "   ") << "3) timeGuns: " << mpickups[Ability::TIME_GUN];
-                hg::drawText(
-                    target,
-                    drawCommandBuffer,
-                    sceneData->pipelineLayout.pipelineLayout,
-                    texDescriptorSets.fontTexDescriptorSet,
-                    timeGuns.str(),
-                    20.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 80.f,
-                    16.f,
-                    UI_TEXT_COLOR);
-            }
-            {
-                std::stringstream timePauses;
-                timePauses << (abilityCursor == Ability::TIME_PAUSE ? "-->" : "   ") << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
-                hg::drawText(
-                    target,
-                    drawCommandBuffer,
-                    sceneData->pipelineLayout.pipelineLayout,
-                    texDescriptorSets.fontTexDescriptorSet,
-                    timePauses.str(),
-                    20.f,
-                    static_cast<float>(hg::WINDOW_DEFAULT_Y* hg::UI_DIVIDE_Y) - 50.f,
-                    16.f,
-                    UI_TEXT_COLOR);
-            }
+				std::array<VkViewport, 1> viewports{
+					{
+						static_cast<float>(0),
+						static_cast<float>(0),
+						static_cast<float>(swapChainExtent.width),
+						static_cast<float>(swapChainExtent.height),
+						0.0f,
+						1.0f
+					}
+				};
+				vkCmdSetViewport(
+					drawCommandBuffer,
+					0,
+					gsl::narrow<uint32_t>(viewports.size()),
+					viewports.data()
+				);
+			}
+            
+			float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 260.f;
+			
+			{
+				drawRect(target, 
+					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.27f,
+					drawPos,
+					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.46f,
+					32,
+					paused ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
+					
+				std::stringstream pause;
+				pause << "Pause";
+				hg::drawText(
+					target,
+					drawCommandBuffer,
+					sceneData->pipelineLayout.pipelineLayout,
+					texDescriptorSets.fontTexDescriptorSet,
+					pause.str(),
+					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.40f,
+					drawPos + 6,
+					16.f,
+					BUTTON_TEXT_COLOR);
+				
+				drawPos = drawPos + 64.;
+			}
+			
+			if (shouldDrawItems) {
+				{
+					drawRect(target, 
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						drawPos,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
+						32,
+						abilityCursor == Ability::TIME_JUMP ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
+					std::stringstream timeJump;
+					timeJump << "1) timeJumps: " << mpickups[Ability::TIME_JUMP];
+					hg::drawText(
+						target,
+						drawCommandBuffer,
+						sceneData->pipelineLayout.pipelineLayout,
+						texDescriptorSets.fontTexDescriptorSet,
+						timeJump.str(),
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f - 30.f,
+						drawPos + 6,
+						16.f,
+						BUTTON_TEXT_COLOR);
+					drawPos = drawPos + 40.;
+				}
+				{
+					drawRect(target, 
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						drawPos,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
+						32,
+						abilityCursor == Ability::TIME_REVERSE ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
+					std::stringstream timeReverses;
+					timeReverses << "2) timeReverses: " << mpickups[Ability::TIME_REVERSE];
+					hg::drawText(
+						target,
+						drawCommandBuffer,
+						sceneData->pipelineLayout.pipelineLayout,
+						texDescriptorSets.fontTexDescriptorSet,
+						timeReverses.str(),
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f - 30.f,
+						drawPos + 6,
+						16.f,
+						BUTTON_TEXT_COLOR);
+					drawPos = drawPos + 40.;
+				}
+				{
+					drawRect(target, 
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						drawPos,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
+						32,
+						abilityCursor == Ability::TIME_GUN ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
+					std::stringstream timeGuns;
+					timeGuns << "3) timeGuns: " << mpickups[Ability::TIME_GUN];
+					hg::drawText(
+						target,
+						drawCommandBuffer,
+						sceneData->pipelineLayout.pipelineLayout,
+						texDescriptorSets.fontTexDescriptorSet,
+						timeGuns.str(),
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f - 30.f,
+						drawPos + 6,
+						16.f,
+						BUTTON_TEXT_COLOR);
+					drawPos = drawPos + 40.;
+				}
+				{
+					drawRect(target, 
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						drawPos,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
+						32,
+						abilityCursor == Ability::TIME_PAUSE ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
+					std::stringstream timePauses;
+					timePauses << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
+					hg::drawText(
+						target,
+						drawCommandBuffer,
+						sceneData->pipelineLayout.pipelineLayout,
+						texDescriptorSets.fontTexDescriptorSet,
+						timePauses.str(),
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f - 30.f,
+						drawPos + 6,
+						16.f,
+						BUTTON_TEXT_COLOR);
+					drawPos = drawPos + 40.;
+				}
+			}
         }
 
 
