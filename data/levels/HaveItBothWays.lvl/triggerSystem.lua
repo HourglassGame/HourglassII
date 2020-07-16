@@ -144,7 +144,7 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 11,
-            pickupType = 'timeReverse'
+            pickupType = 'timeJump'
         },
         bts.pickup{
             attachment = {platform = nil, xOffset = 26.75 * 3200, yOffset = 4.25 * 3200},
@@ -160,7 +160,7 @@ local tempStore =
             height = 1600,
             timeDirection = 'forwards',
             triggerID = 7,
-            pickupType = 'timeJump'
+            pickupType = 'timeReverse'
         },
     },
     protoButtons = {
