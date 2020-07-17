@@ -106,12 +106,7 @@ void Input::updateState(
 	}
 
 	if (abilityCursor == Ability::TIME_JUMP) {
-		if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS))
-		{
+		if (mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) {
 			int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
 			mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
 			abilityUse = true;
@@ -120,12 +115,7 @@ void Input::updateState(
 
 	updatePress(mouseLeftWorld, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
 	if (abilityCursor == Ability::TIME_GUN) {
-		if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) ||
-			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS))
-		{
+		if (mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) {
 			int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
 			mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
 		}
