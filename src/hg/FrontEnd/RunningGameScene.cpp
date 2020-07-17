@@ -293,7 +293,7 @@ run_game_scene(
             relativeGuyIndex = inputList.getRelativeGuyIndex();
             interrupter = std::make_unique<hg::OperationInterrupter>();
 
-            if (levelLost || inputList.getGuyInput().getActionPause() || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken()))) {
+            if (levelLost || (!runningFromReplay && inputList.getGuyInput().getActionPause()) || (paused && !(runNextPausedFrame || inputList.getGuyInput().getPauseActionTaken()))) {
                 frameRun = false;
                 futureRunResult =
                     async(
@@ -426,7 +426,7 @@ run_game_scene(
                     //      if game is going fast; Support proper audio rendering of timeline scrubbing.
                     //      Somehow support proper sound in Pause Time.
                     //      etc.
-                    if (!(paused || levelLost)) {
+                    if (!(paused || !frameRun)) {
                         PlayAudioGlitz(
                             getGlitzForDirection(timeEngine.getFrame(uiFrameState.drawnFrame)->getView(), uiFrameState.drawnTimeDirection),
                             audioPlayingState,

@@ -39,10 +39,11 @@ Input::Input() :
 	ability_2(),
 	ability_3(),
 	ability_4(),
-	mouseLeft(),
+	abilityUse(),
 	abilityCursor(),
 	abilityChanged(),
-	mouseTimelinePosition(),
+	mouseLeftWorld(),
+	mouseTimelinePosition(-1),
 	mousePersonalTimelinePosition(),
 	mouseX(),
 	mouseY(),
@@ -76,8 +77,6 @@ void Input::updateState(
 	double mX, mY;
 	glfwGetCursorPos(windowglfw.w, &mX, &mY);
 
-	updatePress(mouseLeft, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
-
 	Ability oldAbility = abilityCursor;
 
 	updateAbility(ability_1, abilityCursor, oldAbility, Ability::TIME_JUMP, glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS);
@@ -97,15 +96,46 @@ void Input::updateState(
 		mousePersonalTimelinePosition += 1;
 	}
 
-	if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
-		(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
-		(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||
-		(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) ||
-		(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS))
-	{
-		int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
-		mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
+	abilityUse = false;
+	if (abilityCursor == Ability::TIME_REVERSE || abilityCursor == Ability::TIME_PAUSE) {
+		abilityUse = true;
+		mouseTimelinePosition = -1;
 	}
+	if (abilityCursor == Ability::NO_ABILITY) {
+		mouseTimelinePosition = -1;
+	}
+
+	if (abilityCursor == Ability::TIME_JUMP) {
+		if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS))
+		{
+			int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
+			mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
+			abilityUse = true;
+		}
+	}
+
+	updatePress(mouseLeftWorld, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
+	if (abilityCursor == Ability::TIME_GUN) {
+		if ((mouseLeftPressed && mousePanel == ActivePanel::GLOBAL_TIME) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_5) == GLFW_PRESS) ||
+			(glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_6) == GLFW_PRESS))
+		{
+			int mousePosition = std::max(0, std::min(mouseXOfEndOfTimeline - 1, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
+			mouseTimelinePosition = static_cast<int>(mousePosition*timelineLength / static_cast<double>(mouseXOfEndOfTimeline));
+		}
+		
+		if (mouseLeftWorld == 1 && mouseTimelinePosition != -1) {
+			abilityUse = true;
+		}
+	}
+	
+
 	mouseX = static_cast<int>(std::round((mX - mouseOffX)*mouseScale));
 	mouseY = static_cast<int>(std::round((mY - mouseOffY)*mouseScale));
 }
@@ -121,7 +151,7 @@ InputList Input::AsInputList() const
 			boxLeft == 1,
 			boxRight == 1,
 			(shift == 1) || (shift_r == 1) || (enter == 1) || (use == 1), //portalUsed
-			mouseLeft == 1, //abilityUsed
+			abilityUse, //abilityUsed
 			abilityCursor,
 			FrameID(mouseTimelinePosition, UniverseID(timelineLength)),
 			mouseX,

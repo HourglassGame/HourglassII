@@ -44,9 +44,10 @@ private:
 	int ability_2;
 	int ability_3;
 	int ability_4;
-	int mouseLeft;
+	bool abilityUse;
 	Ability abilityCursor;
 	bool abilityChanged;
+	int mouseLeftWorld;
 	int mouseTimelinePosition;
 	int mousePersonalTimelinePosition;
 	int mouseX;
