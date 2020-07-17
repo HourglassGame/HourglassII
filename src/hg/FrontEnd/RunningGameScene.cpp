@@ -105,6 +105,14 @@ struct RunningLevelState {
     
 };
 
+bool PointInRectangle(double px, double py, float x, float y, float w, float h)
+{
+	return
+		(px <= x + w && px >= x)
+		&&
+		(py <= y + h && py >= y);
+}
+
 ActivePanel const getActivePanel(GLFWWindow &windowglfw)
 {
     ActivePanel mousePanel = ActivePanel::NONE;
@@ -136,6 +144,50 @@ ActivePanel const getActivePanel(GLFWWindow &windowglfw)
         }
     }
     return mousePanel;
+}
+
+ActiveButton const getActiveButton(GLFWWindow &windowglfw)
+{
+    ActivePanel mousePanel = ActivePanel::NONE;
+    // Todo, possibly include xFill and yFill.
+    double mouseX, mouseY;
+    glfwGetCursorPos(windowglfw.w, &mouseX, &mouseY);
+    int width, height;
+    glfwGetWindowSize(windowglfw.w, &width, &height);
+
+	float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - hg::BUTTON_AREA_HEIGHT;
+
+	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_X, drawPos,
+			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_WIDTH, hg::BUTTON_HEIGHT)) {
+		return ActiveButton::PAUSE;
+	}
+	drawPos = drawPos + hg::BUTTON_PAUSE_SPACING;
+
+	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+		return ActiveButton::TIME_JUMP;
+	}
+	drawPos = drawPos + hg::BUTTON_SPACING;
+
+	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+		return ActiveButton::TIME_REVERSE;
+	}
+	drawPos = drawPos + hg::BUTTON_SPACING;
+
+	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+		return ActiveButton::TIME_GUN;
+	}
+	drawPos = drawPos + hg::BUTTON_SPACING;
+
+	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+		return ActiveButton::TIME_PAUSE;
+	}
+	drawPos = drawPos + hg::BUTTON_SPACING;
+
+    return ActiveButton::NONE;
 }
 
 std::variant<
@@ -283,7 +335,7 @@ run_game_scene(
                 
                 ActivePanel mousePanel = getActivePanel(windowglfw);
 
-                input.updateState(/*window.getInputState(), */windowglfw, mousePanel, waitingForWave,
+                input.updateState(/*window.getInputState(), */windowglfw, mousePanel, getActiveButton(windowglfw), waitingForWave,
                     timelineOffset, timelineWidth, personalTimelineWidth,
                     timeEngine.getReplayData().size(),
                     mouseOffX, mouseOffY, 1. / scalingFactor, frameRun);
@@ -360,6 +412,10 @@ run_game_scene(
                     paused = !paused;
                 }
             }
+
+			if (input.getPausePressed()) {
+                paused = !paused;
+			}
 
             //Wait for wave
             // This would be better off in Hg_Input.cpp, but for now it interacts with too many other things.

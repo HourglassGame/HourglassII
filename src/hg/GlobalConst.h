@@ -39,6 +39,15 @@ namespace hg {
     inline static const int WINDOW_DEFAULT_X = 1260;
     inline static const int WINDOW_DEFAULT_Y = 840;
 
+	inline static const float BUTTON_AREA_HEIGHT = 260.;
+	inline static const float BUTTON_HEIGHT = 32.;
+	inline static const float BUTTON_SPACING = 40.;
+	inline static const float BUTTON_X = 0.12;
+	inline static const float BUTTON_WIDTH = 0.76;
+	inline static const float BUTTON_PAUSE_SPACING = 64.;
+	inline static const float BUTTON_PAUSE_X = 0.27;
+	inline static const float BUTTON_PAUSE_WIDTH = 0.46;
+
     inline int const MAX_FRAMES_IN_FLIGHT = 2;
     inline std::vector<const char*> const validationLayers{
         "VK_LAYER_KHRONOS_validation"

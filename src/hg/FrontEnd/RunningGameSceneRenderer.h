@@ -522,14 +522,14 @@ namespace hg {
 				);
 			}
             
-			float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - 260.f;
+			float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - BUTTON_AREA_HEIGHT;
 			
 			{
 				drawRect(target, 
-					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.27f,
+					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_PAUSE_X,
 					drawPos,
-					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.46f,
-					32,
+					static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_PAUSE_WIDTH,
+					BUTTON_HEIGHT,
 					paused ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
 					
 				std::stringstream pause;
@@ -545,16 +545,16 @@ namespace hg {
 					16.f,
 					BUTTON_TEXT_COLOR);
 				
-				drawPos = drawPos + 64.;
+				drawPos = drawPos + BUTTON_PAUSE_SPACING;
 			}
 			
 			if (shouldDrawItems) {
 				{
 					drawRect(target, 
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_X,
 						drawPos,
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
-						32,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_WIDTH,
+						BUTTON_HEIGHT,
 						abilityCursor == Ability::TIME_JUMP ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
 					std::stringstream timeJump;
 					timeJump << "1) timeJumps: " << mpickups[Ability::TIME_JUMP];
@@ -568,14 +568,14 @@ namespace hg {
 						drawPos + 6,
 						16.f,
 						BUTTON_TEXT_COLOR);
-					drawPos = drawPos + 40.;
+					drawPos = drawPos + BUTTON_SPACING;
 				}
 				{
 					drawRect(target, 
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_X,
 						drawPos,
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
-						32,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_WIDTH,
+						BUTTON_HEIGHT,
 						abilityCursor == Ability::TIME_REVERSE ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
 					std::stringstream timeReverses;
 					timeReverses << "2) timeReverses: " << mpickups[Ability::TIME_REVERSE];
@@ -589,14 +589,14 @@ namespace hg {
 						drawPos + 6,
 						16.f,
 						BUTTON_TEXT_COLOR);
-					drawPos = drawPos + 40.;
+					drawPos = drawPos + BUTTON_SPACING;
 				}
 				{
 					drawRect(target, 
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_X,
 						drawPos,
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
-						32,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_WIDTH,
+						BUTTON_HEIGHT,
 						abilityCursor == Ability::TIME_GUN ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
 					std::stringstream timeGuns;
 					timeGuns << "3) timeGuns: " << mpickups[Ability::TIME_GUN];
@@ -610,14 +610,14 @@ namespace hg {
 						drawPos + 6,
 						16.f,
 						BUTTON_TEXT_COLOR);
-					drawPos = drawPos + 40.;
+					drawPos = drawPos + BUTTON_SPACING;
 				}
 				{
 					drawRect(target, 
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.12f,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_X,
 						drawPos,
-						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.76f,
-						32,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_WIDTH,
+						BUTTON_HEIGHT,
 						abilityCursor == Ability::TIME_PAUSE ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
 					std::stringstream timePauses;
 					timePauses << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
@@ -631,7 +631,7 @@ namespace hg {
 						drawPos + 6,
 						16.f,
 						BUTTON_TEXT_COLOR);
-					drawPos = drawPos + 40.;
+					drawPos = drawPos + BUTTON_SPACING;
 				}
 			}
         }

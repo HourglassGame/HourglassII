@@ -23,6 +23,19 @@ static void updateAbility(int &var, Ability &abilityCursor, Ability oldAbilityCu
 	}
 }
 
+static void updateAbilityClick(bool clicked, Ability &abilityCursor, Ability oldAbilityCursor, Ability abilityType)
+{
+	if (!clicked) {
+		return;
+	}
+	if (oldAbilityCursor == abilityType) {
+		abilityCursor = Ability::NO_ABILITY;
+	}
+	else {
+		abilityCursor = abilityType;
+	}
+}
+
 Input::Input() :
 	left(),
 	right(),
@@ -43,6 +56,7 @@ Input::Input() :
 	abilityCursor(),
 	abilityChanged(),
 	mouseLeftWorld(),
+	mouseLeft(),
 	mouseRight(),
 	mouseTimelinePosition(-1),
 	mousePersonalTimelinePosition(),
@@ -55,6 +69,7 @@ Input::Input() :
 void Input::updateState(
 	GLFWWindow &windowglfw,
 	ActivePanel const mousePanel,
+	ActiveButton const hoveredButton,
 	bool waitingForWave,
 	int mouseXTimelineOffset, int mouseXOfEndOfTimeline,
 	int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
@@ -76,6 +91,7 @@ void Input::updateState(
 	bool mouseLeftPressed = (glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
 
 	updatePress(mouseLeftWorld, mouseLeftPressed && mousePanel == ActivePanel::WORLD);
+	updatePress(mouseLeft, mouseLeftPressed);
 	updatePress(mouseRight, glfwGetMouseButton(windowglfw.w, GLFW_MOUSE_BUTTON_RIGHT));
 
 	double mX, mY;
@@ -88,9 +104,16 @@ void Input::updateState(
 	updateAbility(ability_3, abilityCursor, oldAbility, Ability::TIME_GUN, glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS);
 	updateAbility(ability_4, abilityCursor, oldAbility, Ability::TIME_PAUSE, glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS);
 
+	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_JUMP), abilityCursor, oldAbility, Ability::TIME_JUMP);
+	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_REVERSE), abilityCursor, oldAbility, Ability::TIME_REVERSE);
+	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_GUN), abilityCursor, oldAbility, Ability::TIME_GUN);
+	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_PAUSE), abilityCursor, oldAbility, Ability::TIME_PAUSE);
+
 	if (frameRunSinceLastUpdate && abilityCursor == oldAbility) {
 		abilityCursor = Ability::NO_ABILITY;
 	}
+
+	pausePressed = (mouseLeft == 1 && hoveredButton == ActiveButton::PAUSE);
 
 	if (mouseLeftPressed && mousePanel == ActivePanel::PERSONAL_TIME) {
 		int mousePosition = std::max(0, std::min(mouseXOfEndOfPersonalTimeline, static_cast<int>(std::round(mX)) - mouseXTimelineOffset));
@@ -168,6 +191,11 @@ FrameID Input::getTimeCursor() const
 Ability Input::getAbilityCursor() const
 {
 	return abilityCursor;
+}
+
+bool Input::getPausePressed() const
+{
+	return pausePressed;
 }
 
 }
