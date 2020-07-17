@@ -48,6 +48,7 @@ private:
 	Ability abilityCursor;
 	bool abilityChanged;
 	int mouseLeftWorld;
+	int mouseRight;
 	int mouseTimelinePosition;
 	int mousePersonalTimelinePosition;
 	int mouseX;
