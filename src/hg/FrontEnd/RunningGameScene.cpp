@@ -155,6 +155,9 @@ ActiveButton const getActiveButton(GLFWWindow &windowglfw)
     int width, height;
     glfwGetWindowSize(windowglfw.w, &width, &height);
 
+	mouseX = mouseX * hg::WINDOW_DEFAULT_X / width;
+	mouseY = mouseY * hg::WINDOW_DEFAULT_Y / height;
+
 	float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - hg::BUTTON_AREA_HEIGHT;
 
 	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_X, drawPos,
