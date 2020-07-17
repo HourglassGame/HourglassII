@@ -516,12 +516,15 @@ UIFrameState runStep(
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
     ActivePanel mousePanel = getActivePanel(windowglfw);
-    if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel != ActivePanel::PERSONAL_TIME) {
+	bool lookAroundTimeline((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || ((!runningFromReplay && input.AsInputList().getGuyInput().getActionPause()) && mousePanel == ActivePanel::GLOBAL_TIME));
+
+	if (lookAroundTimeline) {
         drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
         drawnTimeDirection = TimeDirection::FORWARDS;
     }
-    else {
-        if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel == ActivePanel::PERSONAL_TIME) {
+
+    {
+		if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel == ActivePanel::PERSONAL_TIME) {
             guyIndex = mousePosToGuyIndex(windowglfw, timeEngine);
             relativeGuyIndex = timeEngine.getGuyFrames().size() - 2 - guyIndex;
         }
@@ -538,15 +541,17 @@ UIFrameState runStep(
             }
 
             hg::GuyOutputInfo const &currentGuy(findCurrentGuy(guyFrame->getView().getGuyInformation(), guyIndex));
-
-            drawnTimeDirection = currentGuy.getTimeDirection();
-            drawnFrame = hg::FrameID(guyFrame);
-            inertia.save(drawnFrame, drawnTimeDirection);
+			
+			if (!lookAroundTimeline) {
+				drawnTimeDirection = currentGuy.getTimeDirection();
+				drawnFrame = hg::FrameID(guyFrame);
+				inertia.save(drawnFrame, drawnTimeDirection);
+			}
 
             shouldDrawInventory = true;
             pickups = currentGuy.getPickups();
         }
-        else {
+        else if (!lookAroundTimeline) {
             if (frameRun) {
                 inertia.run();
             }
