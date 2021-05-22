@@ -21,7 +21,7 @@ namespace hg {
 
     inline static const int SPEED_OF_TIME_OVERRIDE = 24; // -1 disables the override.
     inline static const int SPEED_OF_TIME_FUTURE_DEFAULT = 0; // -1 defaults to the speed of time of the level.
-    inline static const int PARADOX_PRESSURE_MAX = 12000000;
+    inline static const int PARADOX_PRESSURE_MAX = 25000000;
     inline static const int PARADOX_PRESSURE_ADD_MIN = 13400;
     inline static const int PARADOX_PRESSURE_DECAY_BUILDUP = 40;
     inline static const int PARADOX_PRESSURE_DECAY_MAX = 12000;
