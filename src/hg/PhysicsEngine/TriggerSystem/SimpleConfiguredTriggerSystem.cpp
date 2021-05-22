@@ -1498,6 +1498,7 @@ namespace hg {
 		lua_pop(L, 1);
 
 		bool const useTriggerArrival{readFieldWithDefault<bool>(L, "useTriggerArrival", -1, false)};
+		int const layer{ readFieldWithDefault<int>(L, "layer", -1, 1500) };
 		PlatformAndPos const x1{readField<PlatformAndPos>(L, "x1")};
 		PlatformAndPos const y1{readField<PlatformAndPos>(L, "y1")};
 		PlatformAndPos const x2{readField<PlatformAndPos>(L, "x2")};
@@ -1508,6 +1509,7 @@ namespace hg {
 			hasTriggerClause,
 			triggerClause,
 			useTriggerArrival,
+			layer,
 			x1,
 			y1,
 			x2,

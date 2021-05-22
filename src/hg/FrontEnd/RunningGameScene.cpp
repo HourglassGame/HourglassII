@@ -86,8 +86,8 @@ UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     GLFWWindow &windowglfw,
     std::size_t relativeGuyIndex,
-	hg::Input const &input,
-	bool const paused,
+    hg::Input const &input,
+    bool const paused,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     bool const runningFromReplay,
@@ -107,10 +107,10 @@ struct RunningLevelState {
 
 bool PointInRectangle(double px, double py, float x, float y, float w, float h)
 {
-	return
-		(px <= x + w && px >= x)
-		&&
-		(py <= y + h && py >= y);
+    return
+        (px <= x + w && px >= x)
+        &&
+        (py <= y + h && py >= y);
 }
 
 ActivePanel const getActivePanel(GLFWWindow &windowglfw)
@@ -155,40 +155,40 @@ ActiveButton const getActiveButton(GLFWWindow &windowglfw)
     int width, height;
     glfwGetWindowSize(windowglfw.w, &width, &height);
 
-	mouseX = mouseX * hg::WINDOW_DEFAULT_X / width;
-	mouseY = mouseY * hg::WINDOW_DEFAULT_Y / height;
+    mouseX = mouseX * hg::WINDOW_DEFAULT_X / width;
+    mouseY = mouseY * hg::WINDOW_DEFAULT_Y / height;
 
-	float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - hg::BUTTON_AREA_HEIGHT;
+    float drawPos = static_cast<float>(hg::WINDOW_DEFAULT_Y * hg::UI_DIVIDE_Y) - hg::BUTTON_AREA_HEIGHT;
 
-	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_X, drawPos,
-			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_WIDTH, hg::BUTTON_HEIGHT)) {
-		return ActiveButton::PAUSE;
-	}
-	drawPos = drawPos + hg::BUTTON_PAUSE_SPACING;
+    if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_X, drawPos,
+            static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_PAUSE_WIDTH, hg::BUTTON_HEIGHT)) {
+        return ActiveButton::PAUSE;
+    }
+    drawPos = drawPos + hg::BUTTON_PAUSE_SPACING;
 
-	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
-			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
-		return ActiveButton::TIME_JUMP;
-	}
-	drawPos = drawPos + hg::BUTTON_SPACING;
+    if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+            static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+        return ActiveButton::TIME_JUMP;
+    }
+    drawPos = drawPos + hg::BUTTON_SPACING;
 
-	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
-			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
-		return ActiveButton::TIME_REVERSE;
-	}
-	drawPos = drawPos + hg::BUTTON_SPACING;
+    if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+            static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+        return ActiveButton::TIME_REVERSE;
+    }
+    drawPos = drawPos + hg::BUTTON_SPACING;
 
-	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
-			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
-		return ActiveButton::TIME_GUN;
-	}
-	drawPos = drawPos + hg::BUTTON_SPACING;
+    if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+            static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+        return ActiveButton::TIME_GUN;
+    }
+    drawPos = drawPos + hg::BUTTON_SPACING;
 
-	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
-			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
-		return ActiveButton::TIME_PAUSE;
-	}
-	drawPos = drawPos + hg::BUTTON_SPACING;
+    if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+            static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+        return ActiveButton::TIME_PAUSE;
+    }
+    drawPos = drawPos + hg::BUTTON_SPACING;
 
     return ActiveButton::NONE;
 }
@@ -312,7 +312,31 @@ run_game_scene(
         switch (state) {
         case RunState::AWAITING_INPUT:
         {
+            // Input is processed for replays as it also controls the meta-UI (such as the pause button).
+            int width, height;
+            glfwGetWindowSize(windowglfw.w, &width, &height);
+
+            hg::Wall const& wall(timeEngine.getWall());
+            double xScale = (width * (1. - hg::UI_DIVIDE_X)) / wall.roomWidth();
+            double yScale = (height * hg::UI_DIVIDE_Y) / wall.roomHeight();
+            double scalingFactor(std::min(xScale, yScale));
+            double xFill = scalingFactor / xScale;
+            double yFill = scalingFactor / yScale;
+            int mouseOffX = static_cast<int>(width * (hg::UI_DIVIDE_X + (1. - xFill) * (1. - hg::UI_DIVIDE_X) / 2.));
+            int mouseOffY = static_cast<int>(height * ((1. - yFill) * hg::UI_DIVIDE_Y / 2.));
+            int timelineOffset = static_cast<int>(width * (hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
+            int timelineWidth = static_cast<int>(width * ((1.f - hg::UI_DIVIDE_X) - 2.f * hg::TIMELINE_PAD_X));
+            int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, static_cast<int>(timelineWidth * timeEngine.getReplayData().size() / timeEngine.getTimelineLength())) : timelineWidth;
+
+            ActivePanel mousePanel = getActivePanel(windowglfw);
+
+            // Update input list and send it to simulation, either from the input above or a replay file.
             hg::InputList inputList;
+            input.updateState(/*window.getInputState(), */windowglfw, mousePanel, getActiveButton(windowglfw), waitingForWave,
+                timelineOffset, timelineWidth, personalTimelineWidth,
+                timeEngine.getReplayData().size(),
+                mouseOffX, mouseOffY, 1. / scalingFactor, frameRun);
+
             if (currentReplayIt != currentReplayEnd) {
                 if (!paused) {
                     inputList = *currentReplayIt;
@@ -321,27 +345,6 @@ run_game_scene(
                 runningFromReplay = true;
             }
             else {
-                int width, height;
-                glfwGetWindowSize(windowglfw.w, &width, &height);
-
-                hg::Wall const &wall(timeEngine.getWall());
-                double xScale = (width*(1. - hg::UI_DIVIDE_X)) / wall.roomWidth();
-                double yScale = (height*hg::UI_DIVIDE_Y) / wall.roomHeight();
-                double scalingFactor(std::min(xScale, yScale));
-                double xFill = scalingFactor / xScale;
-                double yFill = scalingFactor / yScale;
-                int mouseOffX = static_cast<int>(width*(hg::UI_DIVIDE_X + (1. - xFill)*(1. - hg::UI_DIVIDE_X) / 2.));
-                int mouseOffY = static_cast<int>(height*((1. - yFill)*hg::UI_DIVIDE_Y / 2.));
-                int timelineOffset = static_cast<int>(width*(hg::UI_DIVIDE_X + hg::TIMELINE_PAD_X));
-                int timelineWidth = static_cast<int>(width*((1.f - hg::UI_DIVIDE_X) - 2.f*hg::TIMELINE_PAD_X));
-                int personalTimelineWidth = (timeEngine.getReplayData().size() > 0) ? std::min(timelineWidth, static_cast<int>(timelineWidth*timeEngine.getReplayData().size() / timeEngine.getTimelineLength())) : timelineWidth;
-                
-                ActivePanel mousePanel = getActivePanel(windowglfw);
-
-                input.updateState(/*window.getInputState(), */windowglfw, mousePanel, getActiveButton(windowglfw), waitingForWave,
-                    timelineOffset, timelineWidth, personalTimelineWidth,
-                    timeEngine.getReplayData().size(),
-                    mouseOffX, mouseOffY, 1. / scalingFactor, frameRun);
                 inputList = input.AsInputList();
                 runningFromReplay = false;
             }
@@ -416,9 +419,9 @@ run_game_scene(
                 }
             }
 
-			if (input.getPausePressed()) {
+            if (input.getPausePressed()) {
                 paused = !paused;
-			}
+            }
 
             //Wait for wave
             // This would be better off in Hg_Input.cpp, but for now it interacts with too many other things.
@@ -458,8 +461,8 @@ run_game_scene(
                             timeEngine,
                             windowglfw,
                             relativeGuyIndex,
-							input,
-							paused,
+                            input,
+                            paused,
                             inertia,
                             waveInfo,
                             runningFromReplay,
@@ -557,8 +560,8 @@ UIFrameState runStep(
     hg::TimeEngine &timeEngine,
     GLFWWindow &windowglfw,
     std::size_t relativeGuyIndex,
-	hg::Input const &input,
-	bool const paused,
+    hg::Input const &input,
+    bool const paused,
     hg::Inertia &inertia,
     hg::TimeEngine::RunResult const &waveInfo,
     bool const runningFromReplay,
@@ -575,15 +578,15 @@ UIFrameState runStep(
     std::size_t guyIndex = timeEngine.getGuyFrames().size() - 2 - relativeGuyIndex;
 
     ActivePanel mousePanel = getActivePanel(windowglfw);
-	bool lookAroundTimeline((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || ((!runningFromReplay && input.AsInputList().getGuyInput().getActionPause()) && mousePanel == ActivePanel::GLOBAL_TIME));
+    bool lookAroundTimeline((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) || ((!runningFromReplay && input.AsInputList().getGuyInput().getActionPause()) && mousePanel == ActivePanel::GLOBAL_TIME));
 
-	if (lookAroundTimeline) {
+    if (lookAroundTimeline) {
         drawnFrame = mousePosToFrameID(windowglfw, timeEngine);
         drawnTimeDirection = TimeDirection::FORWARDS;
     }
 
     {
-		if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel == ActivePanel::PERSONAL_TIME) {
+        if ((glfwGetKey(windowglfw.w, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS) && mousePanel == ActivePanel::PERSONAL_TIME) {
             guyIndex = mousePosToGuyIndex(windowglfw, timeEngine);
             relativeGuyIndex = timeEngine.getGuyFrames().size() - 2 - guyIndex;
         }
@@ -600,12 +603,12 @@ UIFrameState runStep(
             }
 
             hg::GuyOutputInfo const &currentGuy(findCurrentGuy(guyFrame->getView().getGuyInformation(), guyIndex));
-			
-			if (!lookAroundTimeline) {
-				drawnTimeDirection = currentGuy.getTimeDirection();
-				drawnFrame = hg::FrameID(guyFrame);
-				inertia.save(drawnFrame, drawnTimeDirection);
-			}
+            
+            if (!lookAroundTimeline) {
+                drawnTimeDirection = currentGuy.getTimeDirection();
+                drawnFrame = hg::FrameID(guyFrame);
+                inertia.save(drawnFrame, drawnTimeDirection);
+            }
 
             shouldDrawInventory = true;
             pickups = currentGuy.getPickups();
@@ -666,7 +669,7 @@ UIFrameState runStep(
         for (Frame *frame : updateSet) {
             std::set<int> const &changedGuyIndicies = frameGuys[getFrameNumber(frame)];
             std::vector<int> &rgs_frameGuyData = run_game_scene_frameGuyData[getFrameNumber(frame)];
-			for (std::set<int>::iterator it = changedGuyIndicies.begin(); it != changedGuyIndicies.end(); ++it) {
+            for (std::set<int>::iterator it = changedGuyIndicies.begin(); it != changedGuyIndicies.end(); ++it) {
                 int gi = *it;
                 if (gi < maxNewGuyIndex) {
                     while (run_game_scene_guyFrameData.size() <= gi) {
@@ -725,8 +728,8 @@ UIFrameState runStep(
             shouldDrawGuyPositionColours,
             shouldDrawInventory,
             pickups,
-			input,
-			paused,
+            input,
+            paused,
             relativeGuyIndex,
             waveInfo,
             runningFromReplay,

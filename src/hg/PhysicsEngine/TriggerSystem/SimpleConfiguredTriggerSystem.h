@@ -1353,7 +1353,7 @@ namespace hg {
 			return std::tie(
 				triggerID_, 
 				//hasTriggerClause_, triggerClause_,
-				useTriggerArrival_, x1_, y1_, x2_, y2_
+				useTriggerArrival_, layer_, x1_, y1_, x2_, y2_
 			);
 		}
 	public:
@@ -1362,6 +1362,7 @@ namespace hg {
 			bool const hasTriggerClause,
 			TriggerClause const triggerClause,
 			bool const useTriggerArrival,
+			int const layer,
 			PlatformAndPos const &x1,
 			PlatformAndPos const &y1,
 			PlatformAndPos const &x2,
@@ -1371,6 +1372,7 @@ namespace hg {
 			hasTriggerClause_(hasTriggerClause),
 			triggerClause_(triggerClause),
 			useTriggerArrival_(useTriggerArrival),
+			layer_(layer),
 			x1_(x1),
 			y1_(y1),
 			x2_(x2),
@@ -1452,7 +1454,7 @@ namespace hg {
 				}()
 			};
 			auto const colour{ active ? asPackedColour(0, 180, 0) : asPackedColour(180, 0, 0) };
-			auto [forGlitz, revGlitz] = calculateBidirectionalGlitz(1500, obj, colour, colour);
+			auto [forGlitz, revGlitz] = calculateBidirectionalGlitz(layer_, obj, colour, colour);
 
 			forwardsGlitz.emplace_back(std::move(forGlitz));
 			reverseGlitz.emplace_back(std::move(revGlitz));
@@ -1476,6 +1478,7 @@ namespace hg {
 		bool hasTriggerClause_;
 		TriggerClause triggerClause_;
 		bool useTriggerArrival_;
+		int layer_;
 		PlatformAndPos x1_;
 		PlatformAndPos y1_;
 		PlatformAndPos x2_;

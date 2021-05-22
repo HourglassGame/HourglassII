@@ -111,6 +111,7 @@ local function wireGlitz(p)
         triggerID = p.triggerID,
         triggerClause = p.triggerClause,
         useTriggerArrival = p.useTriggerArrival,
+        layer = p.layer,
         x1 = clonePlatformAndPos(p.x1),
         y1 = clonePlatformAndPos(p.y1),
         x2 = clonePlatformAndPos(p.x2),
