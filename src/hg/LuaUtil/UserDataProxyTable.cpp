@@ -143,6 +143,16 @@ struct LuaRef {
         return val == LUA_NOREF ? nullptr : &val;
     }
     
+    LuaRef(LuaRef const &) = default;
+    LuaRef(LuaRef &&) = default;
+    LuaRef &operator=(LuaRef const &) = default;
+    LuaRef &operator=(LuaRef &&) = default;
+
+    LuaRef &operator=(std::nullptr_t) {
+        val = LUA_NOREF;
+        return *this;
+    }
+
     LuaRef(int val = LUA_NOREF) : val(val) {}
 
     int val;
