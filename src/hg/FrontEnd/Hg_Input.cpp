@@ -177,7 +177,7 @@ InputList Input::AsInputList() const
 			(shift == 1) || (shift_r == 1) || (enter == 1) || (use == 1), //portalUsed
 			abilityUse, //abilityUsed
 			abilityCursor,
-			FrameID(mouseTimelinePosition, UniverseID(timelineLength)),
+			getTimeCursor(),
 			mouseX,
 			mouseY),
 		mousePersonalTimelinePosition);
@@ -185,7 +185,7 @@ InputList Input::AsInputList() const
 
 FrameID Input::getTimeCursor() const
 {
-	return FrameID(mouseTimelinePosition, UniverseID(timelineLength));
+	return mouseTimelinePosition == -1 ? FrameID() : FrameID(mouseTimelinePosition, UniverseID(timelineLength));
 }
 
 Ability Input::getAbilityCursor() const
