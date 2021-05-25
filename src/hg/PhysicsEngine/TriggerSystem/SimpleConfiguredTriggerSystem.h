@@ -106,8 +106,8 @@ namespace hg {
 				offDestination,
 				hasButtonTriggerID,
 				buttonTriggerID,
-				//hasTriggerClause,
-				//triggerClause,
+				hasTriggerClause,
+				triggerClause,
 				lastStateTriggerID
 			);
 		}
@@ -184,8 +184,8 @@ namespace hg {
 				destinationDirection,
 				illegalDestination,
 				chargeTriggerID,
-				//hasTriggerClause,
-				//triggerClause,
+				hasTriggerClause,
+				triggerClause,
 				fallable,
 				isLaser,
 				winner
@@ -226,8 +226,8 @@ namespace hg {
 		auto comparison_tuple() const noexcept -> decltype(auto) {
 			return std::tie(
 				triggerID,
-				triggerSubindex
-				//triggerClause
+				triggerSubindex,
+				triggerClause
 			);
 		}
 
@@ -1352,7 +1352,7 @@ namespace hg {
 		auto comparison_tuple() const {
 			return std::tie(
 				triggerID_, 
-				//hasTriggerClause_, triggerClause_,
+				hasTriggerClause_, triggerClause_,
 				useTriggerArrival_, layer_, x1_, y1_, x2_, y2_
 			);
 		}

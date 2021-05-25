@@ -9,7 +9,7 @@
 #include "hg/mp/std/map"
 
 namespace hg {
-enum class TriggerOperator : unsigned int {
+enum class TriggerOperator : unsigned char {
 	TRIGGER = 0,
 	TRIGGER_OUT = 1,
 	CONSTANT = 2,
@@ -29,9 +29,16 @@ enum class TriggerOperator : unsigned int {
 };
 
 class TriggerClause {
-public:
+private:
+	auto comparison_tuple() const noexcept {
+		return std::tie(
+			clauseValues,
+			clauseOps
+			//maxEvalDepth: Intentionally not including this, as it is just a cached value that has a value always implied by clauseValues and clauseOps.
+		);
+	}
 
-	std::tuple<std::vector<int>, std::vector<TriggerOperator>, int> processClauseString(std::string &rawClause)
+	static std::tuple<std::vector<int>, std::vector<TriggerOperator>, int> processClauseString(std::string &rawClause)
 	{
 		std::istringstream iss(rawClause);
 		std::vector<std::string> splitClause(std::istream_iterator<std::string>{iss}, std::istream_iterator<std::string>());
@@ -114,13 +121,19 @@ public:
 
 		return { clauseValues, clauseOps, maxEvalDepth };
 	}
+	explicit TriggerClause(std::tuple<std::vector<int>, std::vector<TriggerOperator>, int> &&processedClause) :
+		clauseValues(std::move(std::get<0>(processedClause))),
+		clauseOps(std::move(std::get<1>(processedClause))),
+		maxEvalDepth(std::move(std::get<2>(processedClause)))
+	{
+	}
+public:
+	explicit TriggerClause(std::string &rawClause) :
+		TriggerClause(processClauseString(rawClause))
+	{
+	}
 
-	TriggerClause(std::string &rawClause) :
-		clauseValues(std::get<0>(processClauseString(rawClause))),
-		clauseOps(std::get<1>(processClauseString(rawClause))),
-		maxEvalDepth(std::get<2>(processClauseString(rawClause))) {}
-
-	int doBinaryOperation(TriggerOperator op, int val1, int val2) const {
+	static int doBinaryOperation(TriggerOperator op, int val1, int val2) {
 		switch (op) {
 		case TriggerOperator::AND: {
 			if (val2 != 0 && val1 != 0) {
@@ -298,17 +311,11 @@ public:
 		return val1;
 	}
 
-	//bool operator==(TriggerClause const &o) const noexcept {
-	//    return comparison_tuple() == o.comparison_tuple();
-	//}
+	bool operator==(TriggerClause const &o) const noexcept {
+		return comparison_tuple() == o.comparison_tuple();
+	}
 
 private:
-	//auto comparison_tuple() const noexcept -> decltype(auto) {
-	//    return std::tie(
-	//        clauseValues,
-	//        clauseOps
-	//    );
-	//}
 
 	std::vector<int> const clauseValues;
 	std::vector<TriggerOperator> const clauseOps;
