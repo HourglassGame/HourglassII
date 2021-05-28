@@ -58,7 +58,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 9 * 3200,
+                        desiredPosition = 7.5 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18

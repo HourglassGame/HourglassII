@@ -2533,7 +2533,7 @@ template <
 
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				if (bottom[i].first) // Push boxes up
 				{
@@ -2604,7 +2604,7 @@ template <
 
 		for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i)
 		{
-			if (!squished[i] && boxCollidable(boxType[i]) && oldBoxList[i].getTimeDirection() == boxDirection)
+			if (!squished[i] && oldBoxList[i].getTimeDirection() == boxDirection)
 			{
 				if (right[i].first)
 				{
