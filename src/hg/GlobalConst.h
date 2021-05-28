@@ -3,6 +3,12 @@
 #include "hg/Util/Maths.h"
 #include <vector>
 namespace hg {
+	inline static const uint32_t IMAGE_MAX_SETS =
+		21 //Glitz Images MAGIC
+		+ 2 * 2 * 2 * 2/*Wall Blocks*/
+		+ 2 * 2 /*Wall Corners*/
+		;//TODO; set this to match count of descriptors used in renderer
+
     inline static const int FRAMERATE = 60;
     inline static const int BOMB_TIMER = 60 * 3;
     inline static const int GRAVITY = 17;

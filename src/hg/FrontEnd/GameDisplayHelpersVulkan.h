@@ -591,11 +591,7 @@ std::vector<VulkanUpdatableTextureSimple> createTimelineTextures(
     return timelineTextures;
 }
 inline VulkanDescriptorPool createSamplerDescriptorPool(VkDevice const device) {
-    uint32_t const maxSets =
-        21 //Glitz Images MAGIC
-        + 2 * 2 * 2 * 2/*Wall Blocks*/
-        + 2 * 2 /*Wall Corners*/
-        ;//TODO; set this to match count of descriptors used in renderer
+    uint32_t const maxSets = hg::IMAGE_MAX_SETS; //TODO; set this to match count of descriptors used in renderer
 
     VkDescriptorPoolSize poolSize = {};
     poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
