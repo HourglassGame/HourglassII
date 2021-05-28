@@ -26,10 +26,15 @@ inline mt::std::string formatTime(int const frames) {
 	return { s.begin(), s.end() };
 }
 
-inline mt::std::string getBoxImage(BoxType boxType, TimeDirection timeDiretion) {
+inline mt::std::string getBoxImage(BoxType boxType, int state, TimeDirection timeDiretion) {
 	if (timeDiretion == TimeDirection::FORWARDS) {
 		if (boxType == BoxType::BALLOON) {
-			return mt::std::string("global.balloon");
+			if (state == 1) {
+				return mt::std::string("global.balloon");
+			}
+			else {
+				return mt::std::string("global.balloon_move");
+			}
 		}
 		if (boxType == BoxType::BOMB) {
 			return mt::std::string("global.bomb");
@@ -41,7 +46,12 @@ inline mt::std::string getBoxImage(BoxType boxType, TimeDirection timeDiretion) 
 	}
 	else {
 		if (boxType == BoxType::BALLOON) {
-			return mt::std::string("global.balloon_r");
+			if (state == 1) {
+				return mt::std::string("global.balloon_r");
+			}
+			else {
+				return mt::std::string("global.balloon_move_r");
+			}
 		}
 		if (boxType == BoxType::BOMB) {
 			return mt::std::string("global.bomb_r");

@@ -592,7 +592,7 @@ std::vector<VulkanUpdatableTextureSimple> createTimelineTextures(
 }
 inline VulkanDescriptorPool createSamplerDescriptorPool(VkDevice const device) {
     uint32_t const maxSets =
-        19 //Glitz Images MAGIC
+        21 //Glitz Images MAGIC
         + 2 * 2 * 2 * 2/*Wall Blocks*/
         + 2 * 2 /*Wall Corners*/
         ;//TODO; set this to match count of descriptors used in renderer
@@ -637,6 +637,10 @@ struct GameDisplayTexDescriptorSets final {
     VkDescriptorSet balloonTexDescriptorSet;
 
     VkDescriptorSet balloonRTexDescriptorSet;
+
+    VkDescriptorSet balloonMoveTexDescriptorSet;
+
+    VkDescriptorSet balloonMoveRTexDescriptorSet;
 
     VkDescriptorSet powerupJumpTexDescriptorSet;
 
@@ -687,6 +691,8 @@ struct GameDisplayTextures final {
         TEXTURE(bombRTex, "GlitzData/bomb_r.png")
         TEXTURE(balloonTex, "GlitzData/balloon.png")
         TEXTURE(balloonRTex, "GlitzData/balloon_r.png")
+        TEXTURE(balloonMoveTex, "GlitzData/balloon_move.png")
+        TEXTURE(balloonMoveRTex, "GlitzData/balloon_move_r.png")
         TEXTURE(powerupJumpTex, "GlitzData/powerup_jump.png")
 
         TEXTURE(rhinoLeftStopTex, "GlitzData/rhino_left_stop.png")
@@ -714,6 +720,8 @@ struct GameDisplayTextures final {
             , bombRTexDescriptorSet
             , balloonTexDescriptorSet
             , balloonRTexDescriptorSet
+            , balloonMoveTexDescriptorSet
+            , balloonMoveRTexDescriptorSet
             , powerupJumpTexDescriptorSet
             , rhinoLeftStopTexDescriptorSet
             , rhinoLeftStopRTexDescriptorSet
@@ -757,6 +765,12 @@ struct GameDisplayTextures final {
 
     VulkanTextureSimple balloonTex;
     VkDescriptorSet balloonTexDescriptorSet;
+
+    VulkanTextureSimple balloonMoveRTex;
+    VkDescriptorSet balloonMoveRTexDescriptorSet;
+
+    VulkanTextureSimple balloonMoveTex;
+    VkDescriptorSet balloonMoveTexDescriptorSet;
 
     VulkanTextureSimple powerupJumpTex;
     VkDescriptorSet powerupJumpTexDescriptorSet;
@@ -871,6 +885,12 @@ public:
         }
         else if (key == "global.balloon_r") {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->balloonRTexDescriptorSet, 0, nullptr);
+        }
+        else if (key == "global.balloon_move") {
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->balloonMoveTexDescriptorSet, 0, nullptr);
+        }
+        else if (key == "global.balloon_move_r") {
+            vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->balloonMoveRTexDescriptorSet, 0, nullptr);
         }
         else if (key == "global.powerup_jump") {
             vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->powerupJumpTexDescriptorSet, 0, nullptr);

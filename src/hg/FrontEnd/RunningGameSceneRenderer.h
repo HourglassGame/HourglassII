@@ -131,6 +131,8 @@ namespace hg {
               , sceneData->textures.bombRTexDescriptorSet
               , sceneData->textures.balloonTexDescriptorSet
               , sceneData->textures.balloonRTexDescriptorSet
+              , sceneData->textures.balloonMoveTexDescriptorSet
+              , sceneData->textures.balloonMoveRTexDescriptorSet
               , sceneData->textures.powerupJumpTexDescriptorSet
               , sceneData->textures.rhinoLeftStopTexDescriptorSet
               , sceneData->textures.rhinoLeftStopRTexDescriptorSet

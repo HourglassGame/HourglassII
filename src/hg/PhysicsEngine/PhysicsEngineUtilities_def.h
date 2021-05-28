@@ -931,6 +931,7 @@ void guyStep(
 					int height(guyArrivalList[i].getHeight());
 					int dropWidth(guyArrivalList[i].getBoxCarryWidth());
 					int dropHeight(guyArrivalList[i].getBoxCarryHeight());
+					int dropGap(dropHeight);
 
 					int gX(x[i]);
 					int gY(y[i]);
@@ -939,21 +940,17 @@ void guyStep(
 						startDropHeight = gY + height; // -1 causes paradox issues when dropping off cliffs..
 					}
 					if (carry[i] == BoxType::BALLOON) {
-						startDropHeight = startDropHeight - height;
+						startDropHeight = gY + height - dropHeight;
+						dropGap = height;
 					}
 					int dropY = startDropHeight;
-					if (carry[i] == BoxType::BALLOON) {
-						if (dropY + dropHeight > gY + height * 3 / 4) {
-							dropY = gY - dropHeight + height * 3 / 4;
-						}
-					}
 					//std::cerr << "== Guy Dropping Box == " << gX << ", " << gY << "\n";
 
-					while (dropY >= startDropHeight - dropHeight && !droppable)
+					while (dropY >= startDropHeight - dropGap && !droppable)
 					{
 						//std::cerr << "Try: " << gX << ", " << gY << "\n";
 						// Track next attempted drop height
-						int nextDropY = startDropHeight - dropHeight - 1;
+						int nextDropY = startDropHeight - dropGap - 1;
 
 						// Initialize bounds on drops based on movement direction
 						int leftBound, rightBound;
@@ -1224,7 +1221,7 @@ void guyStep(
 					
 					for (; nextBoxIt != nextBoxEnd; ++nextBoxIt, ++nextBoxNormalDepartureIt)
 					{
-						if (*nextBoxNormalDepartureIt)
+						if (*nextBoxNormalDepartureIt && canPickupBoxTypeState(nextBoxIt->object.getBoxType(), nextBoxIt->object.getState()))
 						{
 							int boxX = nextBoxIt->object.getX();
 							int boxY = nextBoxIt->object.getY();
@@ -2006,6 +2003,7 @@ template <
 		mp::std::vector<int> &xTemp,
 		mp::std::vector<int> &yTemp,
 		mp::std::vector<char> &squished,
+		mp::std::vector<char>& boxSupported,
 		mp::std::vector<int> const &width,
 		mp::std::vector<int> const &height,
 		mp::std::vector<BoxType> const &boxType,
@@ -2327,9 +2325,11 @@ template <
 				// Stop sideways movement if the floor was hit (ceiling for balloons)
 				if (bottom[i].first && boxType[i] != BoxType::BALLOON) {
 					x[i] = xTemp[i];
+					boxSupported[i] = true;
 				}
 				if (top[i].first && boxType[i] == BoxType::BALLOON) {
 					x[i] = xTemp[i];
+					boxSupported[i] = true;
 				}
 
 				// Track the movement of things that the box is sitting on.
@@ -2359,18 +2359,21 @@ template <
 									if (yTemp[i] + height[i] / 2 < pY + pHeight / 2) { // box above platform
 										y[i] = pY - height[i];
 										bottom[i] = std::make_pair(true, y[i]);
-										if (firstTimeThrough && boxType[i] != BoxType::BALLOON) {
-											x[i] = xTemp[i]; // Stop movement
-											int movement = static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
-											//std::cerr << "Box platform hit " << i << ": " << y[i] << ", move " << movement << "\n";
-											if (movement > 0) {
-												if (movement > maxRightMove) {
-													maxRightMove = movement;
+										if (boxType[i] != BoxType::BALLOON) {
+											boxSupported[i] = true;
+											if (firstTimeThrough) {
+												x[i] = xTemp[i]; // Stop movement
+												int movement = static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+												//std::cerr << "Box platform hit " << i << ": " << y[i] << ", move " << movement << "\n";
+												if (movement > 0) {
+													if (movement > maxRightMove) {
+														maxRightMove = movement;
+													}
 												}
-											}
-											else if (movement < 0) {
-												if (-movement > maxLeftMove) {
-													maxLeftMove = -movement;
+												else if (movement < 0) {
+													if (-movement > maxLeftMove) {
+														maxLeftMove = -movement;
+													}
 												}
 											}
 										}
@@ -2378,17 +2381,20 @@ template <
 									else {
 										y[i] = pY + pHeight;
 										top[i] = std::make_pair(true, y[i]);
-										if (firstTimeThrough && boxType[i] == BoxType::BALLOON) {
-											x[i] = xTemp[i]; // Stop movement
-											int movement = static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
-											if (movement > 0) {
-												if (movement > maxRightMove) {
-													maxRightMove = movement;
+										if (boxType[i] == BoxType::BALLOON) {
+											boxSupported[i] = true;
+											if (firstTimeThrough) {
+												x[i] = xTemp[i]; // Stop movement
+												int movement = static_cast<int>(pDirection * oldBoxList[i].getTimeDirection()) * platform.getXspeed();
+												if (movement > 0) {
+													if (movement > maxRightMove) {
+														maxRightMove = movement;
+													}
 												}
-											}
-											else if (movement < 0) {
-												if (-movement > maxLeftMove) {
-													maxLeftMove = -movement;
+												else if (movement < 0) {
+													if (-movement > maxLeftMove) {
+														maxLeftMove = -movement;
+													}
 												}
 											}
 										}
@@ -2728,6 +2734,7 @@ template <
 	mp::std::vector<BoxType> boxType(oldBoxList.size(), pool);
 	mp::std::vector<int> state(oldBoxList.size(), pool);
 	mp::std::vector<char> squished(oldBoxList.size(), pool);
+	mp::std::vector<char> boxSupported(oldBoxList.size(), pool);
 
 	// Check with triggers if the box should arrive at all
 	for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
@@ -2863,8 +2870,8 @@ template <
 		}
 	}
 
-	boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
-	boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
+	boxInteractionBoundLoop(TimeDirection::FORWARDS, env, x, y, xTemp, yTemp, squished, boxSupported, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
+	boxInteractionBoundLoop(TimeDirection::REVERSE, env, x, y, xTemp, yTemp, squished, boxSupported, width, height, boxType, oldBoxList, nextPlatform, boxGlitzAdder, pool);
 
 	// Update box state
 	for (std::size_t i(0), isize(boost::size(oldBoxList)); i < isize; ++i) {
@@ -2879,6 +2886,10 @@ template <
 						oldBoxList[i].getTimeDirection());
 				}
 			}
+		}
+		if (boxType[i] == BoxType::BALLOON) {
+			// Allow balloons against the ceiling to be picked up.
+			state[i] = 1 ? boxSupported[i] : 0;
 		}
 	}
 

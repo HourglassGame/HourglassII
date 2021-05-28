@@ -23,6 +23,14 @@ bool getBoxPickupPriority(BoxType currentBoxType, BoxType newBoxType) {
 	return false;
 }
 
+bool canPickupBoxTypeState(BoxType currentBoxType, int boxState) {
+	if (currentBoxType == BoxType::BALLOON) {
+		// Only pickup ballons resting against something.
+		return boxState == 1;
+	}
+	return true;
+}
+
 bool getBoxPickupCollision(int gx, int gy, int gw, int gh, int bx, int by, int bw, int bh, BoxType boxType) {
 	if (boxType == BoxType::CRATE || boxType == BoxType::LIGHT || boxType == BoxType::BOMB) {
 		// Crates can only be picked up if their base is above the feet of the Guy.
@@ -56,6 +64,9 @@ int getBoxCarryGravity(int baseGravity, BoxType boxType, int boxHeight) {
 int getBoxPickupState(BoxType boxType, int boxState) {
 	if (boxType == BoxType::BOMB) {
 		return boxState;
+	}
+	if (boxType == BoxType::BALLOON) {
+		return 1; // Draw straight balloon.
 	}
 	return 0;
 }

@@ -64,6 +64,12 @@ struct MainMenuSceneSharedVulkanData {
         , balloonRTex("GlitzData/balloon_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
         , balloonRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, balloonRTex))
 
+        , balloonMoveTex("GlitzData/balloon_move.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+        , balloonMoveTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, balloonMoveTex))
+
+        , balloonMoveRTex("GlitzData/balloon_move_r.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+        , balloonMoveRTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, balloonMoveRTex))
+
         , powerupJumpTex("GlitzData/powerup_jump.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
         , powerupJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, powerupJumpTex))
 
@@ -108,6 +114,8 @@ struct MainMenuSceneSharedVulkanData {
                 , bombRTexDescriptorSet
                 , balloonTexDescriptorSet
                 , balloonRTexDescriptorSet
+                , balloonMoveTexDescriptorSet
+                , balloonMoveRTexDescriptorSet
                 , powerupJumpTexDescriptorSet
                 , rhinoLeftStopTexDescriptorSet
                 , rhinoLeftStopRTexDescriptorSet
@@ -164,6 +172,12 @@ struct MainMenuSceneSharedVulkanData {
 
     VulkanTextureSimple balloonRTex;
     VkDescriptorSet balloonRTexDescriptorSet;
+
+    VulkanTextureSimple balloonMoveTex;
+    VkDescriptorSet balloonMoveTexDescriptorSet;
+
+    VulkanTextureSimple balloonMoveRTex;
+    VkDescriptorSet balloonMoveRTexDescriptorSet;
 
     VulkanTextureSimple powerupJumpTex;
     VkDescriptorSet powerupJumpTexDescriptorSet;

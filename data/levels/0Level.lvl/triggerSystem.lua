@@ -43,8 +43,8 @@ local tempStore =
     },
     protoCollisions = {
         {
-            width = 3 * 3200,
-            height = 5 * 3200,
+            width = 4 * 3200,
+            height = 3 * 3200,
             timeDirection = 'forwards',
             lastStateTriggerID = 2,
             buttonTriggerID = 1,
@@ -58,7 +58,7 @@ local tempStore =
                         deceleration = 18
                     },
                     yDestination = {
-                        desiredPosition = 10 * 3200,
+                        desiredPosition = 9 * 3200,
                         maxSpeed = 300,
                         acceleration = 20,
                         deceleration = 18

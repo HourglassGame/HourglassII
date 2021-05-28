@@ -44,16 +44,16 @@ public:
 			h = h * 7 / 5;
 		}
 		//Glitz sameDirectionGlitzDebug(mt::std::make_unique<ImageGlitz>(
-		//		drawOrder + static_cast<int>(boxType), getBoxImage(BoxType::CRATE, TimeDirection::FORWARDS),
+		//		drawOrder + static_cast<int>(boxType), getBoxImage(BoxType::CRATE, state, TimeDirection::FORWARDS),
 		//		position.a, position.b, width, height));
 		//forwardsGlitz->push_back(sameDirectionGlitzDebug);
 
 		Glitz sameDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::FORWARDS),
+				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, state, TimeDirection::FORWARDS),
 				x, y, w, h), pausedCarry);
 
 		Glitz oppositeDirectionGlitz(mt::std::make_unique<ImageGlitz>(
-				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, TimeDirection::REVERSE),
+				drawOrder + static_cast<int>(boxType), getBoxImage(boxType, state, TimeDirection::REVERSE),
 				x, y, w, h), pausedCarry);
 		
 		forwardsGlitz->push_back(
