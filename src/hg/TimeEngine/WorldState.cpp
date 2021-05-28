@@ -180,7 +180,10 @@ bool WorldState::canPropagateFrame(Frame *frame, unsigned speedOfTimeFilter, uns
 	//for (int f : newArrivalGuyByFrame_[getFrameNumber(frame)]) {
 	//	std::cerr << "Arrived " << f << "\n";
 	//}
-	return processedGuyByFrame_[getFrameNumber(frame)] != newArrivalGuyByFrame_[getFrameNumber(frame)];
+	if (hg::PROPAGATE_CHANGED_FUTURE_GUY_FRAME) {
+		return processedGuyByFrame_[getFrameNumber(frame)] != newArrivalGuyByFrame_[getFrameNumber(frame)];
+	}
+	return false;
 }
 
 PhysicsEngine::FrameDepartureT
