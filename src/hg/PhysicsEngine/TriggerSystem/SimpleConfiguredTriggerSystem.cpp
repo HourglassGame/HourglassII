@@ -951,6 +951,29 @@ namespace hg {
 			height
 		));
 	}
+	
+	ProtoMutator toProtoElevator(
+		lua_State *const L,
+		std::vector<std::pair<int, std::vector<int>>> const &triggerOffsetsAndDefaults)
+	{
+		int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
+		assert(triggerID < triggerOffsetsAndDefaults.size());
+		int const buttonTriggerID(lua_index_to_C_index(readField<int>(L, "buttonTriggerID")));
+		assert(buttonTriggerID < triggerOffsetsAndDefaults.size());
+		return ProtoMutator(
+			mt::std::make_unique<ProtoElevatorImpl>(
+				readField<TimeDirection>(L, "timeDirection"),
+				readField<Attachment>(L, "attachment"),
+				readField<int>(L, "width"),
+				readField<int>(L, "height"),
+				triggerID,
+				buttonTriggerID,
+				readField<int>(L, "acceleration"),
+				readField<int>(L, "maxSpeed")
+			)
+		);
+	}
+	
 	template<>
 	Powerup to<Powerup>(lua_State *L, int index) {
 		try {
@@ -1001,11 +1024,14 @@ namespace hg {
 		else if (type == "spikes") {
 			return toProtoSpikes(L);
 		}
+		else if (type == "elevator") {
+			return toProtoElevator(L, triggerOffsetsAndDefaults);
+		}
 		else if (type == "powerup") {
 			return toProtoPowerup(L, triggerOffsetsAndDefaults);
 		}
 		else {
-			BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(R"(ProtoMutators must have a type in {"pickup", "spikes", "powerup"})"));
+			BOOST_THROW_EXCEPTION(LuaInterfaceError() << basic_error_message_info(R"(ProtoMutators must have a type in {"pickup", "spikes", "elevator", "powerup"})"));
 		}
 	}
 
@@ -1938,6 +1964,108 @@ namespace hg {
 	}
 
 
+	void ElevatorFrameStateImpl::addMutator(
+		mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+		mp::std::vector<Collision> const &collisions,
+		mp::std::vector<MutatorArea> &mutators,
+		mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+		boost::transformed_range<
+			GetBase<ExplosionConstPtr>,
+			mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
+	)
+	{
+		// Check persistence
+		assert(proto->triggerID < std::size(triggerArrivals));
+		auto const &triggerArrival{triggerArrivals[proto->triggerID]};
+		if (not (0 < std::size(triggerArrival) && triggerArrival[0] == 1)) {
+			exploded = true;
+			active = false;
+			return;
+		}
+		
+		auto[x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->attachment, collisions);
+		PnV = {x,y,xspeed,yspeed};
+		if (checkExplosion(explosionArrivals, x, y, proto->width, proto->height)) {
+			exploded = true;
+			active = false;
+			return;
+		}
+		
+		//std::cerr << "buttonTriggerID " << proto->buttonTriggerID << "\n";
+		// Check activation
+		assert(proto->buttonTriggerID < std::size(triggerArrivals));
+		auto const &buttonTriggerArrival{triggerArrivals[proto->buttonTriggerID]};
+		if (0 < std::size(buttonTriggerArrival) && buttonTriggerArrival[0] == 1) {
+			mutators.emplace_back(
+				x, y,
+				proto->width, proto->height,
+				xspeed, yspeed,
+				0, //collisionOverlap
+				proto->timeDirection);
+			activeMutators.emplace_back(this);
+		}
+		else {
+			active = false;
+		}
+	}
+
+	void ElevatorFrameStateImpl::calculateGlitz(
+		mt::std::vector<Glitz> &forwardsGlitz,
+		mt::std::vector<Glitz> &reverseGlitz,
+		mt::std::vector<GlitzPersister> &persistentGlitz) const
+	{
+		assert(proto);
+		{
+			auto const colour = (exploded ? asPackedColour(65, 65, 65) : (active ? asPackedColour(0, 175, 200) : asPackedColour(0, 80, 80)));
+			auto const [forGlitz, revGlitz] = calculateBidirectionalGlitz(400, PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, proto->width, proto->height, proto->timeDirection, colour, colour);
+			forwardsGlitz.push_back(forGlitz);
+			reverseGlitz.push_back(revGlitz);
+		}
+	}
+
+	void ElevatorFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const {
+		// Exploded elevators are -1, make sure that whatever modifies their trigger state keeps this in mind.
+		outputTriggers[proto->triggerID] = mt::std::vector<int>{not exploded};
+	}
+	boost::optional<Guy> ElevatorFrameStateImpl::effect(Guy const &guy) {
+		if (!active) {
+			return {guy};
+		}
+		int yspeed = guy.getYspeed();
+		if (yspeed < PnV.yspeed && yspeed > PnV.yspeed - proto->maxSpeed) {
+			yspeed -= proto->acceleration;
+			if (yspeed < PnV.yspeed - proto->maxSpeed) {
+				yspeed = PnV.yspeed - proto->maxSpeed;
+			}
+		}
+		return {Guy(
+			guy.getIndex(),
+			guy.getX(), guy.getY(),
+			guy.getXspeed(), yspeed,
+			guy.getWalkSpeed(),
+			guy.getJumpHold(),
+			guy.getAction(),
+			guy.getWidth(), guy.getHeight(),
+			guy.getJumpSpeed(),
+
+			guy.getIllegalPortal(),
+			guy.getArrivalBasis(),
+			guy.getSupported(),
+			guy.getSupportedSpeed(),
+
+			guy.getPickups(),
+			guy.getFacing(),
+
+			guy.getBoxCarrying(),
+			guy.getBoxCarryWidth(),
+			guy.getBoxCarryHeight(),
+			guy.getBoxCarryState(),
+			guy.getBoxCarryDirection(),
+
+			guy.getTimeDirection(),
+			guy.getTimePaused()
+		)};
+	}
 
 
 	void PowerupFrameStateImpl::addMutator(

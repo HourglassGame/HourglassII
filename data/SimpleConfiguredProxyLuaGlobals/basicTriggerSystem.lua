@@ -79,6 +79,19 @@ local function pickup(p)
         pickupNumber = p.pickupNumber,
     }
 end
+local function elevator(p)
+    return {
+        type = 'elevator',
+        timeDirection = p.timeDirection,
+        attachment = cloneAttachment(p.attachment),
+        width = p.width,
+        height = p.height,
+        triggerID = p.triggerID,
+        buttonTriggerID = p.buttonTriggerID or p.triggerID,
+        acceleration = p.acceleration,
+        maxSpeed = p.maxSpeed
+    }
+end
 local function powerup(p)
     return {
         type = 'powerup',
@@ -169,6 +182,7 @@ return {
     stickyLaserSwitch = stickyLaserSwitch,
     multiStickySwitch = multiStickySwitch,
     pickup = pickup,
+    elevator = elevator,
     powerup = powerup,
     spikes = spikes,
     --trampoline = trampoline,

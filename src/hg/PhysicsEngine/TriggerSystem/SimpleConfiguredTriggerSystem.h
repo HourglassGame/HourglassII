@@ -1019,6 +1019,50 @@ namespace hg {
 	};
 
 
+	struct ProtoElevatorImpl;
+
+	struct ElevatorFrameStateImpl final : MutatorFrameStateImpl {
+	private:
+		ProtoElevatorImpl const *proto;
+		bool active;
+		bool exploded;
+		PositionAndVelocity2D PnV;//If active, initialised by addMutator
+	public:
+		ElevatorFrameStateImpl(ProtoElevatorImpl const &proto) noexcept :
+			proto(&proto),
+			active(true),
+			exploded(false)
+		{}
+		std::size_t clone_size() const final {
+			return sizeof *this;
+		}
+		MutatorFrameStateImpl *perform_clone(void *memory) const final {
+			return new (memory) ElevatorFrameStateImpl(*this);
+		}
+		~ElevatorFrameStateImpl() final {}
+
+		void addMutator(
+			mp::std::vector<mp::std::vector<int>> const &triggerArrivals,
+			mp::std::vector<Collision> const &collisions,
+			mp::std::vector<MutatorArea> &mutators,
+			mp::std::vector<MutatorFrameStateImpl *> &activeMutators,
+			boost::transformed_range<
+				GetBase<ExplosionConstPtr>,
+				mt::boost::container::vector<ExplosionConstPtr> const> const &explosionArrivals
+		) final;
+
+		void calculateGlitz(
+			mt::std::vector<Glitz> &forwardsGlitz,
+			mt::std::vector<Glitz> &reverseGlitz,
+			mt::std::vector<GlitzPersister> &persistentGlitz) const final;
+		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
+		boost::optional<Guy> effect(Guy const &guy) final;
+		boost::optional<Box> effect(Box const &box) final {
+			return box;
+		}
+	};
+
+
 	struct ProtoPowerupImpl;
 
 	struct PowerupFrameStateImpl final : MutatorFrameStateImpl {
@@ -1114,6 +1158,7 @@ namespace hg {
 		1000 ProtoPickupImpl
 		2000 ProtoSpikesImpl
 		3000 ProtoPowerupImpl
+		4000 ProtoElevatorImpl
 		*/
 		virtual int order_ranking() const = 0;
 		virtual bool operator==(ProtoMutatorImpl const &o) const = 0;
@@ -1224,6 +1269,70 @@ namespace hg {
 		}
 		bool operator==(ProtoMutatorImpl const &o) const final {
 			ProtoSpikesImpl const &actual_other(*boost::polymorphic_downcast<ProtoSpikesImpl const*>(&o));
+			return comparison_tuple() == actual_other.comparison_tuple();
+		}
+	};
+
+	struct ProtoElevatorImpl final : ProtoMutatorImpl {
+	private:
+		auto comparison_tuple() const -> decltype(auto) {
+			return std::tie(
+				timeDirection,
+				attachment,
+				width,
+				height,
+				triggerID,
+				buttonTriggerID,
+				acceleration,
+				maxSpeed
+			);
+		}
+	public:
+		MutatorFrameState getFrameState(hg::memory_pool<hg::user_allocator_tbb_alloc> &pool) const final {
+			return MutatorFrameState(new (pool) ElevatorFrameStateImpl(*this), pool);
+		}
+		std::size_t clone_size() const final {
+			return sizeof *this;
+		}
+		ProtoMutatorImpl *perform_clone(void *memory) const final {
+			return new (memory) ProtoElevatorImpl(*this);
+		}
+
+		~ProtoElevatorImpl() final {}
+		ProtoElevatorImpl(
+			TimeDirection const timeDirection,
+			Attachment const &attachment,
+			int const width,
+			int const height,
+			int const triggerID,
+			int const buttonTriggerID,
+			int const acceleration,
+			int const maxSpeed
+		) :
+			timeDirection(timeDirection),
+			attachment(attachment),
+			width(width),
+			height(height),
+			triggerID(triggerID),
+			buttonTriggerID(buttonTriggerID),
+			acceleration(acceleration),
+			maxSpeed(maxSpeed)
+		{}
+
+		TimeDirection timeDirection;
+		Attachment attachment;
+		int width;
+		int height;
+		int triggerID;
+		int buttonTriggerID;
+		int acceleration;
+		int maxSpeed;
+
+		int order_ranking() const final {
+			return 4000;
+		}
+		bool operator==(ProtoMutatorImpl const &o) const final {
+			ProtoElevatorImpl const &actual_other(*boost::polymorphic_downcast<ProtoElevatorImpl const*>(&o));
 			return comparison_tuple() == actual_other.comparison_tuple();
 		}
 	};
