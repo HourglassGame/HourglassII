@@ -18,6 +18,7 @@
 #include <locale>
 #include <codecvt>
 #include <sstream>
+#include <cmath>
 #include <gsl/gsl>
 #include "VulkanRenderer.h"
 #include "hg/Util/memory_util.h"
@@ -686,7 +687,7 @@ namespace hg {
             vec3<float> backgroundColor{ 50.f / 255.f, 50.f / 255.f, 50.f / 255.f };
             vec3<float> pressureColor{ (200.f + 50.f * pressureProportion) / 255.f, 200.f / 255.f, 200.f / 255.f };
 
-            drawRect(target, 
+            drawRect(target,
                 static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.35f,
                 top,
                 static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f,
@@ -700,7 +701,7 @@ namespace hg {
                 pressureColor, 0);
 
             std::stringstream pressureStr;
-            pressureStr << "Pressure: " << static_cast<int>(static_cast<float>(100 * paradoxPressure) /  static_cast<float>(hg::PARADOX_PRESSURE_MAX)) << "%";
+            pressureStr << "Pressure: " << static_cast<int>(std::round(100.f * pressureProportion)) << "%";
             hg::drawText(
                 target,
                 drawCommandBuffer,
