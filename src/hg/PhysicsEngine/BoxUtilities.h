@@ -54,6 +54,13 @@ int getBoxVertAirResistence(BoxType boxType) {
 	return hg::VERT_AIR_RESISTANCE;
 }
 
+int getBoxCarryVertAirResistence(BoxType boxType) {
+	if (boxType == BoxType::BALLOON) {
+		return 5 * hg::VERT_AIR_RESISTANCE;
+	}
+	return hg::VERT_AIR_RESISTANCE;
+}
+
 int getBoxCarryGravity(int baseGravity, BoxType boxType, int boxHeight) {
 	if (boxType == BoxType::BALLOON) {
 		return baseGravity * 2000 / boxHeight;
