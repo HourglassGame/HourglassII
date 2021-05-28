@@ -969,7 +969,8 @@ namespace hg {
 				triggerID,
 				buttonTriggerID,
 				readField<int>(L, "acceleration"),
-				readField<int>(L, "maxSpeed")
+				readField<int>(L, "maxSpeed"),
+				readField<bool>(L, "requireJump")
 			)
 		);
 	}
@@ -2032,7 +2033,7 @@ namespace hg {
 			return {guy};
 		}
 		int yspeed = guy.getYspeed();
-		if (yspeed < PnV.yspeed && yspeed > PnV.yspeed - proto->maxSpeed) {
+		if ((yspeed < PnV.yspeed || !proto->requireJump) && yspeed > PnV.yspeed - proto->maxSpeed) {
 			yspeed -= proto->acceleration;
 			if (yspeed < PnV.yspeed - proto->maxSpeed) {
 				yspeed = PnV.yspeed - proto->maxSpeed;

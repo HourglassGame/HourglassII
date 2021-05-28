@@ -1284,7 +1284,8 @@ namespace hg {
 				triggerID,
 				buttonTriggerID,
 				acceleration,
-				maxSpeed
+				maxSpeed,
+				requireJump
 			);
 		}
 	public:
@@ -1307,7 +1308,8 @@ namespace hg {
 			int const triggerID,
 			int const buttonTriggerID,
 			int const acceleration,
-			int const maxSpeed
+			int const maxSpeed,
+			int const requireJump
 		) :
 			timeDirection(timeDirection),
 			attachment(attachment),
@@ -1316,7 +1318,8 @@ namespace hg {
 			triggerID(triggerID),
 			buttonTriggerID(buttonTriggerID),
 			acceleration(acceleration),
-			maxSpeed(maxSpeed)
+			maxSpeed(maxSpeed),
+			requireJump(requireJump)
 		{}
 
 		TimeDirection timeDirection;
@@ -1327,6 +1330,7 @@ namespace hg {
 		int buttonTriggerID;
 		int acceleration;
 		int maxSpeed;
+		int requireJump;
 
 		int order_ranking() const final {
 			return 4000;

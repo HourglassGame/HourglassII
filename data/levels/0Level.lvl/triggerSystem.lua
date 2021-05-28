@@ -106,6 +106,7 @@ local tempStore =
 			triggerID = 5,
 			acceleration = 30,
 			maxSpeed = 450,
+			requireJump = false,
 		},
 	},
 	protoButtons = {
