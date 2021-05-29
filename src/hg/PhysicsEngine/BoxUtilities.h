@@ -49,21 +49,21 @@ bool getBoxLimitedJump(BoxType boxType) {
 
 int getBoxVertAirResistence(BoxType boxType) {
 	if (boxType == BoxType::BALLOON) {
-		return 62 * hg::VERT_AIR_RESISTANCE;
+		return hg::VERT_AIR_RESISTANCE * 7 / 10;
 	}
 	return hg::VERT_AIR_RESISTANCE;
 }
 
 int getBoxCarryVertAirResistence(BoxType boxType) {
 	if (boxType == BoxType::BALLOON) {
-		return 5 * hg::VERT_AIR_RESISTANCE;
+		return hg::VERT_AIR_RESISTANCE * 7 / 10;
 	}
 	return hg::VERT_AIR_RESISTANCE;
 }
 
 int getBoxCarryGravity(int baseGravity, BoxType boxType, int boxHeight) {
 	if (boxType == BoxType::BALLOON) {
-		return baseGravity * 2000 / boxHeight;
+		return baseGravity * (2000 - boxHeight / 100) / boxHeight;
 	}
 	return baseGravity;
 }

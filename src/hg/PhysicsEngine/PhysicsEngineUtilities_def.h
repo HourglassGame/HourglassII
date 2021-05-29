@@ -828,6 +828,7 @@ void guyStep(
 		//std::cerr << jumpHold[i] << ", " << yspeed[i] << "\n";
 
 		// Soft speed limit
+		//std::cerr << CubeAndDivide(guyArrivalList[i].getYspeed(), getBoxCarryVertAirResistence(guyArrivalList[i].getBoxCarrying())) << ", " << yspeed[i] << "\n";
 		yspeed[i] -= CubeAndDivide(guyArrivalList[i].getYspeed(), getBoxCarryVertAirResistence(guyArrivalList[i].getBoxCarrying()));
 
 		supported.push_back(0);

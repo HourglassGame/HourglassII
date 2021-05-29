@@ -50,8 +50,8 @@ initialArrivals =
 {
 	{type = "box", x = 2.5 * 3200, y = 7 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
 	{type = "box", x = 28.5 * 3200, y = 7 * 3200, xspeed = 0, yspeed = 0, size = 3200, timeDirection = "forwards"},
-	{type = "box", boxType = "balloon", x = 14.25 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 1600, height = 3200, timeDirection = "forwards"},
-	{type = "box", boxType = "balloon", x = 17.25 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 1600, height = 3200, timeDirection = "forwards"},
+	{type = "box", boxType = "balloon", x = 14.1 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 1.3 * 1600, height = 1.3 * 3200, timeDirection = "forwards"},
+	{type = "box", boxType = "balloon", x = 17.25 * 3200, y = 10 * 3200, xspeed = 0, yspeed = 0, width = 1.3 * 1600, height = 1.3 * 3200, timeDirection = "forwards"},
 }
 triggerSystem =
 {
