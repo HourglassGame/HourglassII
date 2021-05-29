@@ -153,12 +153,13 @@ namespace hg {
 	struct ButtonSegment final {
 	private:
 		auto comparison_tuple() const {
-			return std::tie(attachment, width, height);
+			return std::tie(attachment, width, height, pressForceReq);
 		}
 	public:
 		Attachment attachment;
 		int width;
 		int height;
+		int pressForceReq;
 		bool operator==(ButtonSegment const &o) const noexcept {
 			return comparison_tuple() == o.comparison_tuple();
 		}
@@ -533,6 +534,7 @@ namespace hg {
 				attachment,
 				width,
 				height,
+				pressForceReq,
 				triggerID,
 				stateTriggerID,
 				extraTriggerIDs
@@ -556,6 +558,7 @@ namespace hg {
 			Attachment const attachment,
 			int const width,
 			int const height,
+			int const pressForceReq,
 			int const triggerID,
 			int const stateTriggerID,
 			std::vector<int> extraTriggerIDs
@@ -564,6 +567,7 @@ namespace hg {
 			attachment(attachment),
 			width(width),
 			height(height),
+			pressForceReq(pressForceReq),
 			triggerID(triggerID),
 			stateTriggerID(stateTriggerID),
 			extraTriggerIDs(std::move(extraTriggerIDs))
@@ -573,6 +577,7 @@ namespace hg {
 		Attachment attachment;
 		int width;
 		int height;
+		int pressForceReq;
 		int triggerID;
 		int stateTriggerID;
 		std::vector<int> extraTriggerIDs;
@@ -595,6 +600,7 @@ namespace hg {
 				attachment,
 				width,
 				height,
+				pressForceReq,
 				triggerID,
 				stateTriggerID,
 				extraTriggerIDs
@@ -617,6 +623,7 @@ namespace hg {
 			Attachment const attachment,
 			int const width,
 			int const height,
+			int const pressForceReq,
 			int const triggerID,
 			int const stateTriggerID,
 			std::vector<int> extraTriggerIDs
@@ -625,6 +632,7 @@ namespace hg {
 			attachment(attachment),
 			width(width),
 			height(height),
+			pressForceReq(pressForceReq),
 			triggerID(triggerID),
 			stateTriggerID(stateTriggerID),
 			extraTriggerIDs(std::move(extraTriggerIDs))
@@ -634,6 +642,7 @@ namespace hg {
 		Attachment attachment;
 		int width;
 		int height;
+		int pressForceReq;
 		int triggerID;
 		int stateTriggerID;
 		std::vector<int> extraTriggerIDs;
@@ -790,6 +799,7 @@ namespace hg {
 			Attachment const attachment,
 			int const beamLength,
 			int const beamDirection,
+			int const pressForceReq,
 			int const triggerID,
 			int const stateTriggerID,
 			std::vector<int> extraTriggerIDs
@@ -834,7 +844,8 @@ namespace hg {
 						bOffset - (backwards ? beamLength : 0)
 					),
 					aSize,
-					bSize
+					bSize,
+					pressForceReq
 				};
 			}
 			{
@@ -849,7 +860,8 @@ namespace hg {
 						bOffset - (backwards ? emitterLength : 0)
 					),
 					aSize,
-					bSize
+					bSize,
+					pressForceReq
 				};
 			}
 		}

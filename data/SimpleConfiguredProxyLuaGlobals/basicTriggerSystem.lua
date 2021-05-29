@@ -9,13 +9,14 @@ local function momentarySwitch(p)
 		attachment = cloneAttachment(p.attachment),
 		width = p.width,
 		height = p.height,
+		pressForceReq = p.pressForceReq or 0,
 		triggerID = p.triggerID,
 		stateTriggerID = p.stateTriggerID,
 		extraTriggerIDs = p.extraTriggerIDs,
 	}
 end
 local function cloneButtonSegment(bs)
-	return {attachment = cloneAttachment(bs.attachment), width = bs.width, height = bs.height}
+	return {attachment = cloneAttachment(bs.attachment), width = bs.width, height = bs.height, pressForceReq = bs.pressForceReq or 0}
 end
 local function toggleSwitch(p)
 	return {
@@ -35,6 +36,7 @@ local function stickySwitch(p)
 		attachment = cloneAttachment(p.attachment),
 		width = p.width,
 		height = p.height,
+		pressForceReq = p.pressForceReq or 0,
 		triggerID = p.triggerID,
 		stateTriggerID = p.stateTriggerID,
 		extraTriggerIDs = p.extraTriggerIDs,
@@ -47,6 +49,7 @@ local function stickyLaserSwitch(p)
 		attachment = cloneAttachment(p.attachment),
 		beamLength = p.beamLength,
 		beamDirection = p.beamDirection,
+		pressForceReq = p.pressForceReq or 0,
 		triggerID = p.triggerID,
 		stateTriggerID = p.stateTriggerID,
 		extraTriggerIDs = p.extraTriggerIDs,

@@ -1192,6 +1192,7 @@ namespace hg {
 		Attachment const attachment(readField<Attachment>(L, "attachment"));
 		int const width(readField<int>(L, "width"));
 		int const height(readField<int>(L, "height"));
+		int const pressForceReq(readField<int>(L, "pressForceReq"));
 		int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
 		int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
 
@@ -1224,6 +1225,7 @@ namespace hg {
 			attachment,
 			width,
 			height,
+			pressForceReq,
 			triggerID,
 			stateTriggerID,
 			std::move(extraTriggerIDs)
@@ -1241,6 +1243,7 @@ namespace hg {
 		Attachment const attachment(readField<Attachment>(L, "attachment"));
 		int const width(readField<int>(L, "width"));
 		int const height(readField<int>(L, "height"));
+		int const pressForceReq(readField<int>(L, "pressForceReq"));
 		int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
 		int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
 
@@ -1273,6 +1276,7 @@ namespace hg {
 			attachment,
 			width,
 			height,
+			pressForceReq,
 			triggerID,
 			stateTriggerID,
 			std::move(extraTriggerIDs)
@@ -1289,7 +1293,8 @@ namespace hg {
 			return {
 				readField<Attachment>(L, "attachment", index),
 				readField<int>(L, "width", index),
-				readField<int>(L, "height", index)
+				readField<int>(L, "height", index),
+				readField<int>(L, "pressForceReq", index)
 			};
 		}
 		catch (LuaError &e) {
@@ -1428,6 +1433,7 @@ namespace hg {
 		Attachment const attachment(readField<Attachment>(L, "attachment"));
 		int const beamLength(readField<int>(L, "beamLength"));
 		int const beamDirection(readField<int>(L, "beamDirection"));
+		int const pressForceReq(readField<int>(L, "pressForceReq"));
 
 		int const triggerID(lua_index_to_C_index(readField<int>(L, "triggerID")));
 		int const stateTriggerID(lua_index_to_C_index(readFieldWithDefault<int>(L, "stateTriggerID", -1, gsl::narrow<int>(C_index_to_lua_index(triggerID)))));
@@ -1458,6 +1464,7 @@ namespace hg {
 			attachment,
 			beamLength,
 			beamDirection,
+			pressForceReq,
 			triggerID,
 			stateTriggerID,
 			std::move(extraTriggerIDs)
@@ -2238,8 +2245,19 @@ namespace hg {
 			);
 	}
 
+	int getBoxPressForce(BoxType boxType)
+	{
+		if (boxType == BoxType::CRATE || boxType == BoxType::BOMB) {
+			return hg::PRESS_HEAVY_BOX;
+		}
+		if (boxType == BoxType::LIGHT) {
+			return hg::PRESS_LIGHT_BOX;
+		}
+		return hg::PRESS_FORCE_GUY;
+	}
+
 	bool checkPressed(
-		int const x, int const y, int const xspeed, int const yspeed, int const width, int const height, TimeDirection const timeDirection,
+		int const x, int const y, int const xspeed, int const yspeed, int const width, int const height, int const pressForceReq, TimeDirection const timeDirection,
 		mt::std::map<Frame*, ObjectList<Normal>> const &departures)
 	{
 
@@ -2264,7 +2282,8 @@ namespace hg {
 		for(auto &&[_, objectList]:departures) {
 			(void)_;
 			for (auto &&box : objectList.getList<Box>()) {
-				if (temporalIntersectingExclusive(
+				//std::cerr << static_cast<int>(box.getBoxType()) << ", " << getBoxPressForce(box.getBoxType()) << ", " << pressForceReq << "\n";
+				if (getBoxPressForce(box.getBoxType()) >= pressForceReq && temporalIntersectingExclusive(
 						x, y, xspeed, yspeed, width, height, timeDirection,
 						box.getX(), box.getY(), box.getXspeed(), box.getYspeed(), box.getWidth(), box.getHeight(), box.getTimeDirection()
 					))
@@ -2272,8 +2291,9 @@ namespace hg {
 					return true;
 				}
 			}
+			
 			for (auto &&guy : objectList.getList<Guy>()) {
-				if (temporalIntersectingExclusive(
+				if (getBoxPressForce(guy.getBoxCarrying()) >= pressForceReq && temporalIntersectingExclusive(
 						x, y, xspeed, yspeed, width, height, timeDirection,
 						guy.getX(), guy.getY(), guy.getXspeed(), guy.getYspeed(), guy.getWidth(), guy.getHeight(), guy.getTimeDirection()
 					))
@@ -2308,7 +2328,8 @@ namespace hg {
 		}
 		else {
 			state = std::min(
-				checkPressed(x, y, xspeed, yspeed, proto->width, proto->height, proto->timeDirection, departures) ? oldState+1 : 0,
+				checkPressed(x, y, xspeed, yspeed, proto->width, proto->height,
+					proto->pressForceReq, proto->timeDirection, departures) ? oldState+1 : 0,
 				2);
 			justPressed = oldState == 0 && state != 0;
 			justReleased = oldState != 0 && state == 0;
@@ -2369,7 +2390,9 @@ namespace hg {
 		state = std::min(
 			oldState != 0 ?
 			  oldState + 1
-			: (checkPressed(x, y, xspeed, yspeed, proto->width, proto->height, proto->timeDirection, departures) ? 1 : 0),
+			: (checkPressed(x, y, xspeed, yspeed, proto->width, proto->height,
+					proto->pressForceReq, proto->timeDirection, departures
+				) ? 1 : 0),
 			2);
 		justPressed = oldState == 0 && state != 0;
 	}
@@ -2450,10 +2473,12 @@ namespace hg {
 		auto const stateTriggerValue{triggerArrivals[proto->stateTriggerID][0]};
 
 		auto const firstPressed{checkPressed(
-			firstPnV.x, firstPnV.y, firstPnV.xspeed, firstPnV.yspeed, proto->first.width, proto->first.height, proto->timeDirection,
+			firstPnV.x, firstPnV.y, firstPnV.xspeed, firstPnV.yspeed,
+			proto->first.width, proto->first.height, proto->first.pressForceReq, proto->timeDirection,
 			departures)};
 		auto const secondPressed{checkPressed(
-			secondPnV.x, secondPnV.y, secondPnV.xspeed, secondPnV.yspeed, proto->second.width, proto->second.height, proto->timeDirection,
+			secondPnV.x, secondPnV.y, secondPnV.xspeed, secondPnV.yspeed,
+			proto->second.width, proto->second.height, proto->second.pressForceReq, proto->timeDirection,
 			departures)};
 		switchState = 
 			(firstPressed && secondPressed) ?
@@ -2610,7 +2635,7 @@ namespace hg {
 					(individualState[i] == -1 || checkExplosion(explosionArrivals, PnV.x, PnV.y, button.width, button.height)) ? 
 						-1 :
 						checkPressed(
-							PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, proto->timeDirection,
+							PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, button.pressForceReq, proto->timeDirection,
 							departures));
 				if (individualState[i] != 1) {
 					state = false;
@@ -2749,7 +2774,9 @@ namespace hg {
 			switchState = std::min(
 				oldState != 0 ?
 				   oldState + 1
-				 : (checkPressed(beamPnV.x, beamPnV.y, beamPnV.xspeed, beamPnV.yspeed, proto->beam.width, proto->beam.height, proto->timeDirection, departures) ? 1 : 0),
+				 : (checkPressed(beamPnV.x, beamPnV.y, beamPnV.xspeed, beamPnV.yspeed,
+						proto->beam.width, proto->beam.height, proto->beam.pressForceReq, proto->timeDirection, departures
+					) ? 1 : 0),
 				2);
 			justPressed = oldState == 0 && switchState != 0;
 		}

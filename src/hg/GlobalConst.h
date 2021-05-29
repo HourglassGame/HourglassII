@@ -58,6 +58,11 @@ namespace hg {
 	inline static const float BUTTON_PAUSE_X = 0.27;
 	inline static const float BUTTON_PAUSE_WIDTH = 0.46;
 
+	// TODO move this somewhere better?
+	inline static const float PRESS_FORCE_GUY = 0;
+	inline static const float PRESS_LIGHT_BOX = 1;
+	inline static const float PRESS_HEAVY_BOX = 2;
+
 	inline int const MAX_FRAMES_IN_FLIGHT = 2;
 	inline std::vector<const char*> const validationLayers{
 		"VK_LAYER_KHRONOS_validation"
