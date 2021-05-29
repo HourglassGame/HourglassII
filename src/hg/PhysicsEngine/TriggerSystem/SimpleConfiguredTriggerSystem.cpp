@@ -2003,7 +2003,7 @@ namespace hg {
 		// Check activation
 		assert(proto->buttonTriggerID < std::size(triggerArrivals));
 		auto const &buttonTriggerArrival{triggerArrivals[proto->buttonTriggerID]};
-		if (0 < std::size(buttonTriggerArrival) && buttonTriggerArrival[0] == 1) {
+		if (0 < std::size(buttonTriggerArrival) && buttonTriggerArrival[0] > 0) {
 			mutators.emplace_back(
 				x, y,
 				proto->width, proto->height,
@@ -2024,7 +2024,7 @@ namespace hg {
 	{
 		assert(proto);
 		{
-			auto const colour = (exploded ? asPackedColour(65, 65, 65) : (active ? asPackedColour(0, 175, 200) : asPackedColour(0, 80, 80)));
+			auto const colour = (exploded ? asPackedColour(65, 65, 65) : (active ? asPackedColour(0, 175, 200) : asPackedColour(60, 100, 100)));
 			auto const [forGlitz, revGlitz] = calculateBidirectionalGlitz(400, PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, proto->width, proto->height, proto->timeDirection, colour, colour);
 			forwardsGlitz.push_back(forGlitz);
 			reverseGlitz.push_back(revGlitz);
@@ -2103,7 +2103,7 @@ namespace hg {
 		*/
 		assert(proto->triggerID < std::size(triggerArrivals));
 		auto const &triggerArrival{triggerArrivals[proto->triggerID]};
-		if (0 < std::size(triggerArrival) && triggerArrival[0] == 1) {
+		if (0 < std::size(triggerArrival) && triggerArrival[0] > 0) {
 			auto[x, y, xspeed, yspeed] = snapAttachment(proto->timeDirection, proto->attachment, collisions);
 			PnV = {x,y,xspeed,yspeed};
 			mutators.emplace_back(
