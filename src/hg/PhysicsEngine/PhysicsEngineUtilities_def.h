@@ -237,7 +237,7 @@ template <
 		{
 			if (oldIllegalPortal != -1 && portals[i].getIndex() == oldIllegalPortal)
 			{
-				illegalPortal = i;
+				illegalPortal = portals[i].getIndex();
 			}
 			else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, width, height, boxType, 0, oldIllegalPortal, -1, timeDirection), false))
 			{
@@ -1398,9 +1398,10 @@ void guyStep(
 						nextPortal[j].getWidth(), nextPortal[j].getHeight(),
 						nextPortal[j].getCollisionOverlap()))
 					{
+						//std::cerr << "Index " << nextPortal[j].getIndex() << ", Portal Illegal " << nextPortal[j].getIllegalDestination() << ", My Illegal " << guyArrivalList[i].getIllegalPortal() << "\n";
 						if (guyArrivalList[i].getIllegalPortal() != -1 && nextPortal[j].getIndex() == guyArrivalList[i].getIllegalPortal())
 						{
-							illegalPortal[i] = j;
+							illegalPortal[i] = nextPortal[j].getIndex();
 						}
 						else if (triggerFrameState.shouldPort(
 							j,
