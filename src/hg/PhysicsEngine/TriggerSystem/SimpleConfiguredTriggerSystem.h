@@ -1025,9 +1025,7 @@ namespace hg {
 			mt::std::vector<GlitzPersister> &persistentGlitz) const final;
 		void fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const final;
 		boost::optional<Guy> effect(Guy const &guy) final;
-		boost::optional<Box> effect(Box const &box) final {
-			return box;
-		}
+		boost::optional<Box> effect(Box const &box) final;
 	};
 
 

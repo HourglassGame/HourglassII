@@ -1970,6 +1970,24 @@ namespace hg {
 		#endif
 		return {};
 	}
+	boost::optional<Box> SpikesFrameStateImpl::effect(Box const &box) {
+		if (box.getBoxType() !=  BoxType::BALLOON) {
+			return box;
+		}
+		deathGlitz.push_back(
+			{
+				box.getX(),
+				box.getY(),
+				box.getXspeed(),
+				box.getYspeed(),
+				box.getWidth(),
+				box.getHeight(),
+				box.getTimeDirection()
+			}
+			
+		);
+		return {};
+	}
 
 
 	void ElevatorFrameStateImpl::addMutator(

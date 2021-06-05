@@ -50,8 +50,8 @@ local tempStore =
 			pickupType = 'timeJump'
 		},
 		bts.spikes{
-			attachment = {platform = nil, xOffset = 1 * 3200, yOffset = 18.5 * 3200},
-			width = 30 * 3200,
+			attachment = {platform = nil, xOffset = 28 * 3200, yOffset = 11 * 3200},
+			width = 2 * 3200,
 			height = 0.5 * 3200,
 			timeDirection = 'forwards',
 		},
