@@ -18,6 +18,7 @@ public:
 		ActivePanel const mousePanel,
 		ActiveButton const hoveredButton,
 		bool waitingForWave,
+		bool cancelAction,
 		int mouseXTimelineOffset, int mouseXOfEndOfTimeline, int mouseXOfEndOfPersonalTimeline,
 		std::size_t personalTimelineLength, 
 		int mouseOffX, int mouseOffY, double mouseScale,
@@ -29,6 +30,7 @@ public:
 	void setTimelineLength(int timelineLength_) { this->timelineLength = timelineLength_; }
 
 	bool getPausePressed() const;
+	bool getInCancelAbsorbingState() const;
 	bool getAbilityChanged() const { return abilityChanged; }
 
 private:

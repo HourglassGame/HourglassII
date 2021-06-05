@@ -10,15 +10,20 @@ static void updatePress(int &var, bool inputState)
 		: 0;
 }
 
-static void updateAbility(int &var, Ability &abilityCursor, Ability oldAbilityCursor, Ability abilityType, bool inputState)
+static void updateAbility(int &var, Ability &abilityCursor, Ability oldAbilityCursor, Ability abilityType, bool inputState, bool cancelAction)
 {
 	updatePress(var, inputState);
-	if (var == 1) {
-		if (oldAbilityCursor == abilityType) {
-			abilityCursor = Ability::NO_ABILITY;
-		}
-		else {
-			abilityCursor = abilityType;
+	if (cancelAction) {
+		abilityCursor = Ability::NO_ABILITY;
+	}
+	else {
+		if (var == 1) {
+			if (oldAbilityCursor == abilityType) {
+				abilityCursor = Ability::NO_ABILITY;
+			}
+			else {
+				abilityCursor = abilityType;
+			}
 		}
 	}
 }
@@ -71,6 +76,7 @@ void Input::updateState(
 	ActivePanel const mousePanel,
 	ActiveButton const hoveredButton,
 	bool waitingForWave,
+	bool cancelAction,
 	int mouseXTimelineOffset, int mouseXOfEndOfTimeline,
 	int mouseXOfEndOfPersonalTimeline, std::size_t personalTimelineLength,
 	int mouseOffX, int mouseOffY, double mouseScale,
@@ -99,10 +105,10 @@ void Input::updateState(
 
 	Ability oldAbility = abilityCursor;
 
-	updateAbility(ability_1, abilityCursor, oldAbility, Ability::TIME_JUMP, glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS);
-	updateAbility(ability_2, abilityCursor, oldAbility, Ability::TIME_REVERSE, glfwGetKey(windowglfw.w, GLFW_KEY_2) == GLFW_PRESS);
-	updateAbility(ability_3, abilityCursor, oldAbility, Ability::TIME_GUN, glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS);
-	updateAbility(ability_4, abilityCursor, oldAbility, Ability::TIME_PAUSE, glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS);
+	updateAbility(ability_1, abilityCursor, oldAbility, Ability::TIME_JUMP, glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS, cancelAction);
+	updateAbility(ability_2, abilityCursor, oldAbility, Ability::TIME_REVERSE, glfwGetKey(windowglfw.w, GLFW_KEY_2) == GLFW_PRESS, cancelAction);
+	updateAbility(ability_3, abilityCursor, oldAbility, Ability::TIME_GUN, glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS, cancelAction);
+	updateAbility(ability_4, abilityCursor, oldAbility, Ability::TIME_PAUSE, glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS, cancelAction);
 
 	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_JUMP), abilityCursor, oldAbility, Ability::TIME_JUMP);
 	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_REVERSE), abilityCursor, oldAbility, Ability::TIME_REVERSE);
@@ -197,6 +203,12 @@ bool Input::getPausePressed() const
 {
 	return pausePressed;
 }
+
+bool Input::getInCancelAbsorbingState() const
+{
+	return (abilityCursor != Ability::NO_ABILITY);
+}
+
 
 }
 
