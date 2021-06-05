@@ -8,11 +8,11 @@
 #include "GLFWWindow.h"
 
 namespace hg {
-    std::variant<LoadLevelFunction, SceneAborted_tag>
-    run_level_selection_scene(
-        GLFWWindow &windowglfw,
-        VulkanEngine& vulkanEng,
-        VulkanRenderer& vkRenderer,
-        std::string &levelName);
+	std::variant<LoadLevelFunction, SceneAborted_tag>
+	run_level_selection_scene(
+		GLFWWindow &windowglfw,
+		VulkanEngine& vulkanEng,
+		VulkanRenderer& vkRenderer,
+		std::string &levelName);
 }
 #endif //HG_LEVEL_SELECTION_SCENE_H

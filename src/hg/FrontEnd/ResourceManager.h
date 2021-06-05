@@ -10,13 +10,13 @@
 namespace hg {
 
 struct LevelResources final {
-    boost::container::map<std::string, sf::Image> images;
-    boost::container::map<std::string, sf::SoundBuffer> sounds;
+	boost::container::map<std::string, sf::Image> images;
+	boost::container::map<std::string, sf::SoundBuffer> sounds;
 };
 
 
 struct LevelUIData final {
-    LevelResources resources;
+	LevelResources resources;
 };
 
 LevelResources loadLevelResources(std::string const &levelPath, std::string const &globalsPath);

@@ -5,13 +5,13 @@
 #include "GLFWWindow.h"
 
 namespace hg {
-    struct LoadedLevel;
-    class TimeEngine;
-    void run_post_level_scene(
-        GLFWWindow &windowglfw,
-        hg::VulkanEngine &eng,
-        VulkanRenderer& vkRenderer,
-        TimeEngine const &initialTimeEngine,
-        LoadedLevel const &finalLevel);
+	struct LoadedLevel;
+	class TimeEngine;
+	void run_post_level_scene(
+		GLFWWindow &windowglfw,
+		hg::VulkanEngine &eng,
+		VulkanRenderer& vkRenderer,
+		TimeEngine const &initialTimeEngine,
+		LoadedLevel const &finalLevel);
 }
 #endif // HG_POST_LEVEL_SCENE_H

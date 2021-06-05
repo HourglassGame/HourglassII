@@ -37,64 +37,64 @@
 #include <system_error>
 namespace hg {
 
-    class VulkanEngine final {
-        static void framebufferResizeCallback(GLFWwindow* const window, int const width, int const height);
+	class VulkanEngine final {
+		static void framebufferResizeCallback(GLFWwindow* const window, int const width, int const height);
 
-    public:
-        VulkanEngine(
-            GLFWwindow &w
-        );
+	public:
+		VulkanEngine(
+			GLFWwindow &w
+		);
 
-        void recreateSwapChain(VulkanRenderer &renderer);
+		void recreateSwapChain(VulkanRenderer &renderer);
 
-        bool framebufferResizedCheck();
+		bool framebufferResizedCheck();
 
-        void drawFrame(VulkanRenderer &renderer);
+		void drawFrame(VulkanRenderer &renderer);
 
-        void idle(VulkanRenderer &vkRenderer);
+		void idle(VulkanRenderer &vkRenderer);
 
-        bool waitForFences(std::vector<int> const &frameNumbers) {
-            //TODO
-        }
-        VulkanEngine(VulkanEngine const&) = delete;
-        VulkanEngine(VulkanEngine &&) = delete;
-        VulkanEngine &operator=(VulkanEngine const&) = delete;
-        VulkanEngine &operator=(VulkanEngine &&) = delete;
-        ~VulkanEngine() noexcept {
-            vkDeviceWaitIdle(device.h()); //Something like this is needed, but maybe not this exact implementation
-        }
-    private:
-        GLFWwindow *w;
+		bool waitForFences(std::vector<int> const &frameNumbers) {
+			//TODO
+		}
+		VulkanEngine(VulkanEngine const&) = delete;
+		VulkanEngine(VulkanEngine &&) = delete;
+		VulkanEngine &operator=(VulkanEngine const&) = delete;
+		VulkanEngine &operator=(VulkanEngine &&) = delete;
+		~VulkanEngine() noexcept {
+			vkDeviceWaitIdle(device.h()); //Something like this is needed, but maybe not this exact implementation
+		}
+	private:
+		GLFWwindow *w;
 
-        tbb::queuing_mutex frameBufferSizeMutex;
-        VkExtent2D oldFramebufferSize;
-        VkExtent2D newFramebufferSize;
-        VulkanInstance instance;
-        VulkanDebugCallbackHG debugCallback;
-    public:
-        VulkanSurface surface;
-        PossiblePhysicalDevice physicalDevice;
-        VulkanDeviceHG device;
-        VulkanSwapChainHG swapChain;
-    private:
-        std::vector<VkImage> swapChainImages;
-        std::vector<VulkanImageView> swapChainImageViews;
-    public:
-        VulkanRenderPassHG renderPass;
-    private:
-        std::vector<VulkanFramebufferHG> swapChainFramebuffers;
+		tbb::queuing_mutex frameBufferSizeMutex;
+		VkExtent2D oldFramebufferSize;
+		VkExtent2D newFramebufferSize;
+		VulkanInstance instance;
+		VulkanDebugCallbackHG debugCallback;
+	public:
+		VulkanSurface surface;
+		PossiblePhysicalDevice physicalDevice;
+		VulkanDeviceHG device;
+		VulkanSwapChainHG swapChain;
+	private:
+		std::vector<VkImage> swapChainImages;
+		std::vector<VulkanImageView> swapChainImageViews;
+	public:
+		VulkanRenderPassHG renderPass;
+	private:
+		std::vector<VulkanFramebufferHG> swapChainFramebuffers;
 
-        //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
-        //vkAcquireNextImageKHR has finished/vkQueueSubmit can start
-        std::vector<VulkanSemaphoreHG> imageAvailableSemaphores;
-        //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
-        //vkQueueSubmit has finished/vkQueuePresentKHR can start
-        std::vector<VulkanSemaphoreHG> renderFinishedSemaphores;
-        //1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
-        //vkQueueSubmit has finished/vkAcquireNextImageKHR for next frame can start
-        //(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
-        std::vector<VulkanFenceHG> inFlightFences;
-        std::size_t currentFrame;
-    };
+		//1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
+		//vkAcquireNextImageKHR has finished/vkQueueSubmit can start
+		std::vector<VulkanSemaphoreHG> imageAvailableSemaphores;
+		//1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
+		//vkQueueSubmit has finished/vkQueuePresentKHR can start
+		std::vector<VulkanSemaphoreHG> renderFinishedSemaphores;
+		//1 per acquired image (up to MAX_FRAMES_IN_FLIGHT),
+		//vkQueueSubmit has finished/vkAcquireNextImageKHR for next frame can start
+		//(to limit frames-in-flight to MAX_FRAMES_IN_FLIGHT)
+		std::vector<VulkanFenceHG> inFlightFences;
+		std::size_t currentFrame;
+	};
 }
 #endif // !HG_VULKANENGINE_H

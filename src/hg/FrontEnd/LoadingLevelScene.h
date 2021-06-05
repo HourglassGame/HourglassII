@@ -9,11 +9,11 @@
 #include "GLFWWindow.h"
 
 namespace hg {
-    std::variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
-        GLFWWindow &windowglfw,
-        LoadLevelFunction const &levelLoadingFunction,
-        VulkanEngine& vulkanEng,
-        VulkanRenderer& vkRenderer);
+	std::variant<hg::LoadedLevel, LoadingCanceled_tag> load_level_scene(
+		GLFWWindow &windowglfw,
+		LoadLevelFunction const &levelLoadingFunction,
+		VulkanEngine& vulkanEng,
+		VulkanRenderer& vkRenderer);
 }
 
 #endif // HG_LOADING_LEVEL_SCENE_H
