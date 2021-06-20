@@ -99,7 +99,7 @@ inline VkPipelineLayoutCreateInfo makePipelineLayoutCreateInfo(
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	//TODO: Make 2 set layouts: one for projection uniform and one
-	//	  for texture.
+	//      for texture.
 	pipelineLayoutInfo.setLayoutCount = gsl::narrow<uint32_t>(descriptorSetLayouts.size());
 	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
 	/*

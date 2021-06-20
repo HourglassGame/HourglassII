@@ -359,8 +359,6 @@ private:
 		vkCmdBeginRenderPass(drawCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->graphicsPipeline.h());
 
-		vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, sceneData->pipelineLayout.pipelineLayout, 1, 1, &sceneData->fontTexDescriptorSet, 0, nullptr);
-
 		reallyDoRender(preDrawCommandBuffer, drawCommandBuffer, target, targetFrameBuffer);
 
 		vkCmdEndRenderPass(drawCommandBuffer);
@@ -387,11 +385,11 @@ private:
 
 			target.updateUniformBuffer(
 				UniformBufferObject{
-					//Out  x	y	z	v
-						   a, 0.0, 0.0, 0.0,//In x
-						 0.0,   b, 0.0, 0.0,//In y
-						 0.0, 0.0, 1.0, 0.0,//In z
-						   c,   d, 0.0, 1.0 //In v
+					//Out  x    y    z    v
+					       a, 0.0, 0.0, 0.0,//In x
+					     0.0,   b, 0.0, 0.0,//In y
+					     0.0, 0.0, 1.0, 0.0,//In z
+					       c,   d, 0.0, 1.0 //In v
 				}
 			);
 		}
