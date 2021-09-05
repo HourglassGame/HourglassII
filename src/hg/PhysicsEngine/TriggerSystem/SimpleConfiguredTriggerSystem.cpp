@@ -2003,7 +2003,7 @@ namespace hg {
 		// Check persistence
 		assert(proto->triggerID < std::size(triggerArrivals));
 		auto const &triggerArrival{triggerArrivals[proto->triggerID]};
-		if (not (0 < std::size(triggerArrival) && triggerArrival[0] == 1)) {
+		if (! (0 < std::size(triggerArrival) && triggerArrival[0] == 1)) {
 			exploded = true;
 			active = false;
 			return;
@@ -2051,7 +2051,7 @@ namespace hg {
 
 	void ElevatorFrameStateImpl::fillTrigger(mp::std::map<std::size_t, mt::std::vector<int>> &outputTriggers) const {
 		// Exploded elevators are -1, make sure that whatever modifies their trigger state keeps this in mind.
-		outputTriggers[proto->triggerID] = mt::std::vector<int>{not exploded};
+		outputTriggers[proto->triggerID] = mt::std::vector<int>{! exploded};
 	}
 	boost::optional<Guy> ElevatorFrameStateImpl::effect(Guy const &guy) {
 		if (!active) {

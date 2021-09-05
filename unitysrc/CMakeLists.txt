@@ -1,24 +1,54 @@
-cmake_minimum_required (VERSION 3.12)
-
-#set(SFML_DIR "${PROJECT_SOURCE_DIR}/ext/SFML/lib/cmake/SFML") #maybe
-
-set(CXXGSL_INCLUDE_DIRS "" CACHE FILEPATH "The location of the C++ Guidelines Support Library headers")
+set(HOURGLASSII_EXT_DIR "${PROJECT_SOURCE_DIR}/ext")
 
 set(SFML_STATIC_LIBRARIES TRUE)
-find_package(SFML 2.5.1 COMPONENTS graphics audio REQUIRED)
+find_package(
+    SFML 2.5.1
+    REQUIRED
+    COMPONENTS graphics audio
+    CONFIG
+    HINTS "${HOURGLASSII_EXT_DIR}"
+)
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.72.0 COMPONENTS filesystem thread serialization REQUIRED)
+find_package(
+    Boost 1.77.0
+    REQUIRED
+    COMPONENTS headers filesystem thread serialization
+    CONFIG
+    HINTS "${HOURGLASSII_EXT_DIR}"
+)
 
-find_package(TBB REQUIRED)
+find_package(
+    TBB 2020.3.0 #Latest is now oneAPI TBB 2021.3.0; Not using this yet because oneAPI TBB (v2020.1...2020.3) appears to be incompatible with C++20 mode on MSVC 2019 (v16.11.2)
+    REQUIRED
+    CONFIG
+    HINTS "${HOURGLASSII_EXT_DIR}"
+)
 
-find_package(glfw3 CONFIG REQUIRED)
+find_package(
+    glfw3 3.3.4
+    REQUIRED
+    CONFIG
+    HINTS "${HOURGLASSII_EXT_DIR}"
+)
+
+find_package(
+    Microsoft.GSL 3.1.0 #Lastest is 3.1.0; but there are much more recent changes in the main branch of the git repository
+    REQUIRED
+    CONFIG
+    HINTS "${HOURGLASSII_EXT_DIR}"
+)
 
 find_package(Vulkan REQUIRED)
 
 add_executable(HourglassII WIN32 MACOSX_BUNDLE)
+
+set_target_properties(sfml-graphics sfml-audio sfml-system PROPERTIES
+    MAP_IMPORTED_CONFIG_MINSIZEREL Release
+    MAP_IMPORTED_CONFIG_RELWITHDEBINFO Release
+)
 
 #TODO: Separate into Debug and Release, and per-platform config?
 target_compile_definitions(HourglassII
@@ -42,10 +72,6 @@ target_compile_definitions(HourglassII
 target_include_directories(HourglassII PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../src/
 )
-
-set_target_properties(HourglassII PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON)
 
 target_sources(HourglassII
     PRIVATE
@@ -72,19 +98,18 @@ target_compile_options(HourglassII
         /Zc:inline
         /Zc:throwingNew)
 
-target_link_libraries(HourglassII sfml-graphics sfml-audio)
-target_link_libraries(HourglassII Boost::headers Boost::filesystem Boost::thread Boost::serialization)
-target_link_libraries(HourglassII TBB::tbb TBB::tbbmalloc)
-target_link_libraries(HourglassII glfw)
-target_link_libraries(HourglassII Vulkan::Vulkan)
-
-target_include_directories(HourglassII PRIVATE ${CXXGSL_INCLUDE_DIRS})
+target_link_libraries(HourglassII PRIVATE sfml-graphics sfml-audio)
+target_link_libraries(HourglassII PRIVATE Boost::headers Boost::filesystem Boost::thread Boost::serialization)
+target_link_libraries(HourglassII PRIVATE TBB::tbb TBB::tbbmalloc)
+target_link_libraries(HourglassII PRIVATE glfw)
+target_link_libraries(HourglassII PRIVATE Vulkan::Vulkan)
+target_link_libraries(HourglassII PRIVATE Microsoft.GSL::GSL)
 
 set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
 
 file(GLOB_RECURSE GLSL_SOURCE_FILES
     "${CMAKE_SOURCE_DIR}/shadersrc/*.glsl"
-    )
+)
 
 message(${GLSL_SOURCE_FILES})
 
@@ -105,7 +130,7 @@ endforeach()
 
 file(GLOB_RECURSE DATA_SOURCE_FILES
     "${CMAKE_SOURCE_DIR}/data/*"
-    )
+)
 
 STRING(LENGTH "${CMAKE_SOURCE_DIR}/" CMAKE_SOURCE_DIR_LEN)
 

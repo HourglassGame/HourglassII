@@ -1,5 +1,6 @@
 #ifndef HG_TBB_ALLOCATOR_H
 #define HG_TBB_ALLOCATOR_H
+#include <cstdint>
 #include <tbb/scalable_allocator.h>
 #include <utility>
 namespace hg {
@@ -26,7 +27,7 @@ public:
     typedef typename tbb_alloc::reference reference;
     typedef typename tbb_alloc::const_reference const_reference;
 
-    pointer allocate(size_type n, void const *u = nullptr) { return alloc.allocate(n, u); }
+    pointer allocate(size_type n) { return alloc.allocate(n); }
     void deallocate(pointer p, size_type n) { alloc.deallocate(p, n); }
     size_type max_size() const { return alloc.max_size(); }
 
@@ -56,8 +57,8 @@ private:
     typedef Alloc<void>::type tbb_alloc;
     tbb_alloc alloc;
 public:
-    typedef tbb_alloc::pointer          pointer;
-    typedef tbb_alloc::const_pointer    const_pointer;
+    //typedef tbb_alloc::pointer          pointer;
+    //typedef tbb_alloc::const_pointer    const_pointer;
     typedef void       *void_pointer;
     typedef void const *const_void_pointer;
     typedef tbb_alloc::value_type value_type;

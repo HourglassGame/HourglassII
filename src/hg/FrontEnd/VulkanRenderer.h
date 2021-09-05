@@ -73,10 +73,10 @@ namespace hg {
 	class VulkanRenderer {
 	public:
 		VulkanRenderer() :
-			sceneMutex()
-		   ,scene()
-		   ,frameKeepAlives(MAX_FRAMES_IN_FLIGHT)
-		   ,sceneKeepAlives()
+			 sceneMutex()
+			,scene()
+			,frameKeepAlives(MAX_FRAMES_IN_FLIGHT)
+			,sceneKeepAlives()
 		{}
 		void updateSwapChainData(
 			VkRenderPass const renderPass,

@@ -1,9 +1,10 @@
 /ext/bin
-/ext/boost
-/ext/glfw
-/ext/GSL
+/ext/Boost
+/ext/glfw3
+/ext/Microsoft.GSL
 /ext/SFML
-/ext/tbb
+/ext/TBB
+/ext/Contents.txt
 
 /ide/msvc2015/HourglassII/x64
 /ide/msvc2015/HourglassII/HourglassII/x64

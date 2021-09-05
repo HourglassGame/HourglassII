@@ -3,6 +3,7 @@
 #include "hg/mt/std/vector"
 #include <memory>
 #include <cassert>
+#include <cstdint>
 
 #include <tbb/scalable_allocator.h>
 namespace hg {

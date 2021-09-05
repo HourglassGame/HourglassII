@@ -8,6 +8,7 @@
 #include <boost/preprocessor/repetition.hpp>
 #include <boost/preprocessor/punctuation/paren.hpp>
 
+#include <cstdint>
 #include <tbb/scalable_allocator.h>
 #include "scalable_allocator.h"
 

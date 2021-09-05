@@ -51,8 +51,6 @@
 
 #include <fstream>
 
-#include <boost/bind.hpp>
-
 #include <cstddef>
 #include <utility>
 
