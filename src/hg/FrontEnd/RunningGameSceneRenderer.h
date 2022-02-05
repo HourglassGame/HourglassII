@@ -139,6 +139,7 @@ namespace hg {
 			  , sceneData->textures.rhinoRightStopTexDescriptorSet
 			  , sceneData->textures.rhinoRightStopRTexDescriptorSet
 			  , sceneData->textures.timeGunTexDescriptorSet
+			  , sceneData->textures.reverseGunTexDescriptorSet
 			  , sceneData->textures.timeJumpTexDescriptorSet
 			  , sceneData->textures.timePauseTexDescriptorSet
 			  , sceneData->textures.timeReverseTexDescriptorSet
@@ -619,9 +620,30 @@ namespace hg {
 						drawPos,
 						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_WIDTH,
 						BUTTON_HEIGHT,
+						abilityCursor == Ability::REVERSE_GUN ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
+					std::stringstream reverseGuns;
+					reverseGuns << "4) reverseGuns: " << mpickups[Ability::REVERSE_GUN];
+					hg::drawText(
+						target,
+						drawCommandBuffer,
+						sceneData->pipelineLayout.pipelineLayout,
+						texDescriptorSets.fontTexDescriptorSet,
+						reverseGuns.str(),
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*0.3f - 30.f,
+						drawPos + 6,
+						16.f,
+						BUTTON_TEXT_COLOR);
+					drawPos = drawPos + BUTTON_SPACING;
+				}
+				{
+					drawRect(target, 
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_X,
+						drawPos,
+						static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*BUTTON_WIDTH,
+						BUTTON_HEIGHT,
 						abilityCursor == Ability::TIME_PAUSE ? BUTTON_ACTIVE : BUTTON_INACTIVE, 0);
 					std::stringstream timePauses;
-					timePauses << "4) timePauses: " << mpickups[Ability::TIME_PAUSE];
+					timePauses << "5) timePauses: " << mpickups[Ability::TIME_PAUSE];
 					hg::drawText(
 						target,
 						drawCommandBuffer,

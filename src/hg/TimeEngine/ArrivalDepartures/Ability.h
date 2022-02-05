@@ -6,7 +6,8 @@ enum class Ability : int {
 	TIME_JUMP = 1,
 	TIME_REVERSE = 2,
 	TIME_GUN = 3,
-	TIME_PAUSE = 4
+	REVERSE_GUN = 4,
+	TIME_PAUSE = 5
 };
 }
 #endif //HG_ABILITY_H

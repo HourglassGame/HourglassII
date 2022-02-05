@@ -1,5 +1,6 @@
 #ifndef HG_GUY_H
 #define HG_GUY_H
+#include "hg/GlobalConst.h"
 #include "TimeDirection.h"
 #include "Ability.h"
 #include "FacingDirection.h"
@@ -39,7 +40,8 @@ private:
 		switch (ab) {
 			case Ability::TIME_JUMP: return Ability::TIME_REVERSE;
 			case Ability::TIME_REVERSE: return Ability::TIME_GUN;
-			case Ability::TIME_GUN: return Ability::TIME_PAUSE;
+			case Ability::TIME_GUN: return Ability::REVERSE_GUN;
+			case Ability::REVERSE_GUN: return Ability::TIME_PAUSE;
 			case Ability::TIME_PAUSE: return Ability::NO_ABILITY;
 			case Ability::NO_ABILITY: Expects(false); break;
 		}
@@ -84,7 +86,8 @@ class Pickups final : boost::totally_ordered<Pickups> {
 			case Ability::TIME_JUMP: return p.pickups[0];
 			case Ability::TIME_REVERSE : return p.pickups[1];
 			case Ability::TIME_GUN : return p.pickups[2];
-			case Ability::TIME_PAUSE : return p.pickups[3];
+			case Ability::REVERSE_GUN : return p.pickups[3];
+			case Ability::TIME_PAUSE : return p.pickups[4];
 			case Ability::NO_ABILITY: Expects(false); break;
 		}
 		Expects(false);
@@ -139,7 +142,7 @@ public:
 		return comparison_tuple() < second.comparison_tuple();
 	}
 private:
-	std::array<int, 4> pickups;
+	std::array<int, hg::PICKUP_TYPES> pickups;
 };
 
 class Guy final : boost::totally_ordered<Guy>

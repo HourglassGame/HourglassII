@@ -140,6 +140,8 @@ mt::std::string abilityToString(Ability ability)
 		return mt::std::string("timeReverse");
 	case Ability::TIME_GUN:
 		return mt::std::string("timeGun");
+	case Ability::REVERSE_GUN:
+		return mt::std::string("reverseGun");
 	case Ability::TIME_PAUSE:
 		return mt::std::string("timePause");
 	}

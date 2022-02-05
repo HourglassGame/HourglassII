@@ -403,6 +403,9 @@ Ability to<Ability>(lua_State *L, int index) {
         else if (strcmp(abilityString, "timeGun") == 0) {
             return Ability::TIME_GUN;
         }
+        else if (strcmp(abilityString, "reverseGun") == 0) {
+            return Ability::REVERSE_GUN;
+        }
         else if (strcmp(abilityString, "timePause") == 0) {
             return Ability::TIME_PAUSE;
         }

@@ -1862,15 +1862,20 @@ void guyStep(
 		GuyInput const &input = playerInput[relativeIndex];
 
 		auto timeGun(newPickups[i].find(Ability::TIME_GUN));
+		auto reverseGun(newPickups[i].find(Ability::REVERSE_GUN));
 
 		if (input.getAbilityUsed()
-			&& input.getAbilityCursor() == Ability::TIME_GUN
+			&& ((input.getAbilityCursor() == Ability::TIME_GUN
 			&& timeGun != newPickups[i].end()
-			&& timeGun->second != 0)
+			&& timeGun->second != 0) || 
+			(input.getAbilityCursor() == Ability::REVERSE_GUN
+			&& reverseGun != newPickups[i].end()
+			&& reverseGun->second != 0)))
 		{
 			// Make map of guys which are legal to shoot. Illegal ones are invisible to raytrace
 			mp::std::vector<char> shootable(pool);
 			shootable.reserve(boost::size(guyArrivalList));
+			TimeDirection gunDirection = (input.getAbilityCursor() == Ability::REVERSE_GUN) ? TimeDirection::REVERSE : TimeDirection::FORWARDS;
 
 			for (std::size_t j(0); j != size; ++j)
 			{
@@ -1927,7 +1932,7 @@ void guyStep(
 							carryState[shot.targetId],
 							carryDirection[shot.targetId],
 
-							guyArrivalList[shot.targetId].getTimeDirection(),
+							guyArrivalList[shot.targetId].getTimeDirection() * gunDirection,
 							newTimePaused[shot.targetId]
 							),
 						targetTime
@@ -1939,7 +1944,26 @@ void guyStep(
 			{
 				assert(shot.targetId != std::numeric_limits<std::size_t>::max());
 				assert(shot.targetId >= 0 && shot.targetId < boost::size(nextBox));
-				nextBox[shot.targetId].frame = targetTime;
+				if (gunDirection == TimeDirection::FORWARDS) {
+					nextBox[shot.targetId].frame = targetTime;
+				}
+				else {
+					// Replace with backwards box
+					nextBox[shot.targetId] = ObjectAndTime<Box, Frame*>(
+						Box(
+							nextBox[shot.targetId].object.getX(),
+							nextBox[shot.targetId].object.getY(),
+							nextBox[shot.targetId].object.getXspeed(),
+							nextBox[shot.targetId].object.getYspeed(),
+							nextBox[shot.targetId].object.getWidth(),
+							nextBox[shot.targetId].object.getHeight(),
+							nextBox[shot.targetId].object.getBoxType(),
+							nextBox[shot.targetId].object.getState(),
+							nextBox[shot.targetId].object.getIllegalPortal(),
+							nextBox[shot.targetId].object.getArrivalBasis(),
+							nextBox[shot.targetId].object.getTimeDirection() * gunDirection),
+						targetTime);
+				}
 				nextBoxNormalDeparture[shot.targetId] = false;
 			}
 			else
@@ -1948,9 +1972,17 @@ void guyStep(
 				assert(shot.targetId == std::numeric_limits<std::size_t>::max());
 			}
 
-			if (timeGun->second > 0)
-			{
-				newPickups[i][Ability::TIME_GUN] = timeGun->second - 1;
+			if (gunDirection == TimeDirection::FORWARDS) {
+				if (timeGun->second > 0)
+				{
+					newPickups[i][Ability::TIME_GUN] = timeGun->second - 1;
+				}
+			}
+			else {
+				if (reverseGun->second > 0)
+				{
+					newPickups[i][Ability::REVERSE_GUN] = reverseGun->second - 1;
+				}
 			}
 		}
 	}

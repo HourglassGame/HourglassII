@@ -57,6 +57,7 @@ Input::Input() :
 	ability_2(),
 	ability_3(),
 	ability_4(),
+	ability_5(),
 	abilityUse(),
 	abilityCursor(),
 	abilityChanged(),
@@ -108,11 +109,13 @@ void Input::updateState(
 	updateAbility(ability_1, abilityCursor, oldAbility, Ability::TIME_JUMP, glfwGetKey(windowglfw.w, GLFW_KEY_1) == GLFW_PRESS, cancelAction);
 	updateAbility(ability_2, abilityCursor, oldAbility, Ability::TIME_REVERSE, glfwGetKey(windowglfw.w, GLFW_KEY_2) == GLFW_PRESS, cancelAction);
 	updateAbility(ability_3, abilityCursor, oldAbility, Ability::TIME_GUN, glfwGetKey(windowglfw.w, GLFW_KEY_3) == GLFW_PRESS, cancelAction);
-	updateAbility(ability_4, abilityCursor, oldAbility, Ability::TIME_PAUSE, glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS, cancelAction);
+	updateAbility(ability_4, abilityCursor, oldAbility, Ability::REVERSE_GUN, glfwGetKey(windowglfw.w, GLFW_KEY_4) == GLFW_PRESS, cancelAction);
+	updateAbility(ability_5, abilityCursor, oldAbility, Ability::TIME_PAUSE, glfwGetKey(windowglfw.w, GLFW_KEY_5) == GLFW_PRESS, cancelAction);
 
 	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_JUMP), abilityCursor, oldAbility, Ability::TIME_JUMP);
 	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_REVERSE), abilityCursor, oldAbility, Ability::TIME_REVERSE);
 	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_GUN), abilityCursor, oldAbility, Ability::TIME_GUN);
+	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::REVERSE_GUN), abilityCursor, oldAbility, Ability::REVERSE_GUN);
 	updateAbilityClick((mouseLeft == 1 && hoveredButton == ActiveButton::TIME_PAUSE), abilityCursor, oldAbility, Ability::TIME_PAUSE);
 
 	if (frameRunSinceLastUpdate && abilityCursor == oldAbility) {
@@ -151,7 +154,7 @@ void Input::updateState(
 		}
 	}
 
-	if (abilityCursor == Ability::TIME_GUN) {
+	if (abilityCursor == Ability::TIME_GUN || abilityCursor == Ability::REVERSE_GUN) {
 		if (mouseRight == 1) {
 			abilityCursor = Ability::NO_ABILITY;
 		}

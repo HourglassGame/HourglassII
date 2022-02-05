@@ -184,6 +184,12 @@ ActiveButton const getActiveButton(GLFWWindow &windowglfw)
 
 	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
 			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
+		return ActiveButton::REVERSE_GUN;
+	}
+	drawPos = drawPos + hg::BUTTON_SPACING;
+	
+	if (PointInRectangle(mouseX, mouseY, static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_X, drawPos,
+			static_cast<float>(hg::WINDOW_DEFAULT_X*hg::UI_DIVIDE_X)*hg::BUTTON_WIDTH, hg::BUTTON_HEIGHT)) {
 		return ActiveButton::TIME_PAUSE;
 	}
 	drawPos = drawPos + hg::BUTTON_SPACING;

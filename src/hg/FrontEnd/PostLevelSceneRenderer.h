@@ -100,6 +100,7 @@ public:
 			, sceneData->textures.rhinoRightStopTexDescriptorSet
 			, sceneData->textures.rhinoRightStopRTexDescriptorSet
 			, sceneData->textures.timeGunTexDescriptorSet
+			, sceneData->textures.reverseGunTexDescriptorSet
 			, sceneData->textures.timeJumpTexDescriptorSet
 			, sceneData->textures.timePauseTexDescriptorSet
 			, sceneData->textures.timeReverseTexDescriptorSet

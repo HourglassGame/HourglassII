@@ -650,6 +650,8 @@ struct GameDisplayTexDescriptorSets final {
 
 	VkDescriptorSet timeGunTexDescriptorSet;
 
+	VkDescriptorSet reverseGunTexDescriptorSet;
+	
 	VkDescriptorSet timeJumpTexDescriptorSet;
 
 	VkDescriptorSet timePauseTexDescriptorSet;
@@ -697,6 +699,7 @@ struct GameDisplayTextures final {
 		TEXTURE(rhinoRightStopRTex, "GlitzData/rhino_right_stop_r.png")
 
 		TEXTURE(timeGunTex, "GlitzData/time_gun.png")
+		TEXTURE(reverseGunTex, "GlitzData/reverse_gun.png")
 		TEXTURE(timeJumpTex, "GlitzData/time_jump.png")
 		TEXTURE(timePauseTex, "GlitzData/time_pause.png")
 		TEXTURE(timeReverseTex, "GlitzData/time_reverse.png")
@@ -724,6 +727,7 @@ struct GameDisplayTextures final {
 			, rhinoRightStopTexDescriptorSet
 			, rhinoRightStopRTexDescriptorSet
 			, timeGunTexDescriptorSet
+			, reverseGunTexDescriptorSet
 			, timeJumpTexDescriptorSet
 			, timePauseTexDescriptorSet
 			, timeReverseTexDescriptorSet
@@ -785,6 +789,9 @@ struct GameDisplayTextures final {
 
 	VulkanTextureSimple timeGunTex;
 	VkDescriptorSet timeGunTexDescriptorSet;
+
+	VulkanTextureSimple reverseGunTex;
+	VkDescriptorSet reverseGunTexDescriptorSet;
 
 	VulkanTextureSimple timeJumpTex;
 	VkDescriptorSet timeJumpTexDescriptorSet;
@@ -905,6 +912,9 @@ public:
 		}
 		else if (key == "global.time_gun") {
 			vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->timeGunTexDescriptorSet, 0, nullptr);
+		}
+		else if (key == "global.reverse_gun") {
+			vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->reverseGunTexDescriptorSet, 0, nullptr);
 		}
 		else if (key == "global.time_jump") {
 			vkCmdBindDescriptorSets(drawCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 1, 1, &textures->timeJumpTexDescriptorSet, 0, nullptr);

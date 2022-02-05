@@ -1765,6 +1765,7 @@ namespace hg {
 			{Ability::TIME_JUMP, "global.time_jump"},
 			{Ability::TIME_REVERSE, "global.time_reverse"},
 			{Ability::TIME_GUN, "global.time_gun"},
+			{Ability::REVERSE_GUN, "global.reverse_gun"},
 			{Ability::TIME_PAUSE, "global.time_pause"}
 		};
 

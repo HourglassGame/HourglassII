@@ -8,7 +8,7 @@
 
 namespace hg {
 enum class ActivePanel { NONE, WORLD, GLOBAL_TIME, PERSONAL_TIME };
-enum class ActiveButton { NONE, PAUSE, TIME_JUMP, TIME_REVERSE, TIME_GUN, TIME_PAUSE };
+enum class ActiveButton { NONE, PAUSE, TIME_JUMP, TIME_REVERSE, TIME_GUN, REVERSE_GUN, TIME_PAUSE };
 
 class Input final {
 public:
@@ -49,6 +49,7 @@ private:
 	int ability_2;
 	int ability_3;
 	int ability_4;
+	int ability_5;
 	bool abilityUse;
 	Ability abilityCursor;
 	bool abilityChanged;

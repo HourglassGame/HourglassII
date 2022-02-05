@@ -88,6 +88,9 @@ struct MainMenuSceneSharedVulkanData {
 		, timeGunTex("GlitzData/time_gun.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
 		, timeGunTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeGunTex))
 
+		, reverseGunTex("GlitzData/reverse_gun.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
+		, reverseGunTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, reverseGunTex))
+
 		, timeJumpTex("GlitzData/time_jump.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)
 		, timeJumpTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, timeJumpTex))
 
@@ -122,6 +125,7 @@ struct MainMenuSceneSharedVulkanData {
 				, rhinoRightStopTexDescriptorSet
 				, rhinoRightStopRTexDescriptorSet
 				, timeGunTexDescriptorSet
+				, reverseGunTexDescriptorSet
 				, timeJumpTexDescriptorSet
 				, timePauseTexDescriptorSet
 				, timeReverseTexDescriptorSet
@@ -196,6 +200,9 @@ struct MainMenuSceneSharedVulkanData {
 
 	VulkanTextureSimple timeGunTex;
 	VkDescriptorSet timeGunTexDescriptorSet;
+
+	VulkanTextureSimple reverseGunTex;
+	VkDescriptorSet reverseGunTexDescriptorSet;
 
 	VulkanTextureSimple timeJumpTex;
 	VkDescriptorSet timeJumpTexDescriptorSet;

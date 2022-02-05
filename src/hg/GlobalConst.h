@@ -4,11 +4,13 @@
 #include <vector>
 namespace hg {
 	inline static const uint32_t IMAGE_MAX_SETS =
-		21 //Glitz Images MAGIC
+		22 //Glitz Images MAGIC
 		+ 2 * 2 * 2 * 2/*Wall Blocks*/
 		+ 2 * 2 /*Wall Corners*/
 		;//TODO; set this to match count of descriptors used in renderer
 
+	inline static const int PICKUP_TYPES = 5;
+	
 	// Setting this to true means that the current player always exists, however it means
 	// that propagation in the future can happen, which is a little inconsistent.
 	inline static const bool PROPAGATE_CHANGED_FUTURE_GUY_FRAME = true;
@@ -49,7 +51,7 @@ namespace hg {
 	inline static const int WINDOW_DEFAULT_X = 1260;
 	inline static const int WINDOW_DEFAULT_Y = 840;
 
-	inline static const float BUTTON_AREA_HEIGHT = 260.;
+	inline static const float BUTTON_AREA_HEIGHT = 280.;
 	inline static const float BUTTON_HEIGHT = 32.;
 	inline static const float BUTTON_SPACING = 40.;
 	inline static const float BUTTON_X = 0.12;
