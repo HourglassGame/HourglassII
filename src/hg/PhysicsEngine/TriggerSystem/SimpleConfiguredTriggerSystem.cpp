@@ -2651,7 +2651,7 @@ namespace hg {
 				auto const &button{proto->buttons[i]};
 				auto const &PnV{PnVs[i]};
 				individualState.push_back(
-					(individualState[i] == -1 || checkExplosion(explosionArrivals, PnV.x, PnV.y, button.width, button.height)) ? 
+					(stateTriggerValues[i] == -1 || checkExplosion(explosionArrivals, PnV.x, PnV.y, button.width, button.height)) ?
 						-1 :
 						checkPressed(
 							PnV.x, PnV.y, PnV.xspeed, PnV.yspeed, button.width, button.height, button.pressForceReq, proto->timeDirection,
@@ -2693,8 +2693,12 @@ namespace hg {
 		outputTriggers[proto->triggerID] = mt::std::vector<int>{switchState};
 		mt::std::vector<int> stateTriggerData;
 		stateTriggerData.reserve(individualState.size());
-		boost::push_back(stateTriggerData, individualState |  boost::adaptors::transformed([](char val) {return val ? 1 : 0;}));
+		boost::push_back(stateTriggerData, individualState);
 		outputTriggers[proto->stateTriggerID] = std::move(stateTriggerData);
+
+		//for (std::size_t i{ 0 }, end{ outputTriggers[proto->stateTriggerID].size() }; i != end; ++i) {
+		//	std::cerr << i << ", " << outputTriggers[proto->stateTriggerID][i] << "\n";
+		//}
 		for (auto const extraTriggerID : proto->extraTriggerIDs) {
 			outputTriggers[extraTriggerID] = mt::std::vector<int>{switchState};
 		}
