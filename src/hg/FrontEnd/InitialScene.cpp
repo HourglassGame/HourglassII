@@ -503,7 +503,7 @@ int run_hourglassii() {
 				int page = 0;
 				while (true) {
 					std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page, 10);
+						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page, 12);
 
 					if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
 						break;

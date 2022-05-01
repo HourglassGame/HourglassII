@@ -446,7 +446,7 @@ namespace hg {
 				);
 			}
 
-			float drawPos = 200.f;
+			float drawPos = 150.f;
 			int optPos = 0;
 			int itemMin = (*uiFrameStateLocal).page * (*uiFrameStateLocal).perPage;
 			int itemMax = itemMin + (*uiFrameStateLocal).perPage;
@@ -553,14 +553,6 @@ namespace hg {
 						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
 						menuDrawn = false;
 					}
-					//if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) {
-					//	selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
-					//	menuDrawn = false;
-					//}
-					//if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
-					//	selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
-					//	menuDrawn = false;
-					//}
 					if (key == GLFW_KEY_ESCAPE) {
 						return SceneAborted_tag{};
 					}
@@ -572,7 +564,6 @@ namespace hg {
 	std::variant<std::size_t, SceneAborted_tag> run_selection_page_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
-		int page,
 		int perPage,
 		std::vector<std::string> const &options,
 		VulkanEngine& vulkanEng,
@@ -620,6 +611,8 @@ namespace hg {
 		int selectedItem = defaultOption;
 
 		while (true) {
+			int page = selectedItem / perPage;
+			//std::cout << "page: " << std::to_string(page) << ", selectedItem: " << std::to_string(selectedItem) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 			renderer.setUiFrameState(selectedItem, page, perPage, options);
 			//drawOptionSelection(window, options[selectedItem]);
 			bool menuDrawn = true;
@@ -643,6 +636,22 @@ namespace hg {
 					if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
 						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
 						menuDrawn = false;
+					}
+					if (key == GLFW_KEY_LEFT|| key == GLFW_KEY_A) {
+						if (selectedItem - perPage >= 0) {
+							selectedItem = selectedItem - perPage;
+							menuDrawn = false;
+						}
+					}
+					if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) {
+						if (selectedItem + perPage < static_cast<int>(options.size())) {
+							selectedItem = selectedItem + perPage;
+							menuDrawn = false;
+						} else if (page < static_cast<int>(options.size()) / perPage) {
+							// Go to the last page if we are not on it.
+							selectedItem = static_cast<int>(options.size()) - 1;
+							menuDrawn = false;
+						}
 					}
 					if (key == GLFW_KEY_ESCAPE) {
 						return SceneAborted_tag{};
