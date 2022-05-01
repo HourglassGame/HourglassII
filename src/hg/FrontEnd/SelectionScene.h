@@ -15,6 +15,12 @@ namespace hg
 		std::vector<std::string> const &options,
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer);
+	std::variant<std::size_t, SceneAborted_tag> run_page_selection_scene(
+		GLFWWindow &windowglfw,
+		int defaultOption,
+		std::vector<std::string> const &options,
+		VulkanEngine& vulkanEng,
+		VulkanRenderer& vkRenderer);
 }
 #endif
 

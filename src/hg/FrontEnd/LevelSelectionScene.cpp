@@ -49,7 +49,10 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	GLFWWindow &windowglfw,
 	VulkanEngine &vulkanEng,
 	VulkanRenderer &vkRenderer,
-	std::string &levelName)
+	std::string &levelName,
+	int position,
+	int page,
+	int perPage)
 {
 	std::vector<boost::filesystem::path> levelPaths;
 	for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
@@ -79,8 +82,9 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 		}
 	}
 
-	std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_scene(
-		windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer);
+	std::variant<std::size_t, SceneAborted_tag> selectedOption = (perPage > 1 ?
+		run_page_selection_scene(windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer) :
+		run_selection_scene(windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer));
 
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))
 	{
@@ -95,6 +99,8 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 		auto levelPathString = selectedPath.string();
 		return LoadLevelFunction{
 			selectedPath.filename().string(),
+			position,
+			page,
 			move_function<TimeEngine(hg::OperationInterrupter &)>(
 				CachingTimeEngineLoader(selectedPath)),
 			move_function<LoadedLevel(TimeEngine &&)>(

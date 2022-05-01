@@ -331,4 +331,85 @@ namespace hg {
 			}
 		}
 	}
+
+	std::variant<std::size_t, SceneAborted_tag> run_page_selection_scene(
+		GLFWWindow &windowglfw,
+		int defaultOption,
+		std::vector<std::string> const &options,
+		VulkanEngine& vulkanEng,
+		VulkanRenderer& vkRenderer)
+	{
+		SelectionSceneRenderer renderer{
+			vulkanEng.physicalDevice,
+			vulkanEng.device.h(),
+			vulkanEng.surface.surface,
+			vulkanEng.renderPass.h(),
+			vulkanEng.swapChain.extent(),
+			vulkanEng.device.graphicsQ()
+		};
+
+		vkRenderer.StartScene(renderer);
+
+		struct RendererCleanupEnforcer final {
+			decltype(vkRenderer)& vkRenderer_;
+			~RendererCleanupEnforcer() noexcept {
+				vkRenderer_.EndScene();
+			}
+		} RendererCleanupEnforcer_obj{ vkRenderer };
+
+		if (options.empty()) //If no options available, just display a blank screen until the user escapes out.
+		{
+			//window.clear();
+			//window.display();
+			while (true) {
+				glfwPollEvents();
+				if (glfwWindowShouldClose(windowglfw.w)) {
+					//window.close();
+					throw WindowClosed_exception{};
+				}
+
+				if (windowglfw.hasLastKey()) {
+					int key = windowglfw.useLastKey();
+					if (key == GLFW_KEY_ESCAPE) {
+						return SceneAborted_tag{};
+					}
+				}
+			}
+		}
+
+		//TODO: Use size_t rather than int.
+		int selectedItem = defaultOption;
+
+		while (true) {
+			renderer.setUiFrameState(std::string{ options[selectedItem] });
+			//drawOptionSelection(window, options[selectedItem]);
+			bool menuDrawn = true;
+			while (menuDrawn) {
+				glfwPollEvents();
+
+				if (glfwWindowShouldClose(windowglfw.w)) {
+					//window.close();
+					throw WindowClosed_exception{};
+				}
+
+				if (windowglfw.hasLastKey()) {
+					int key = windowglfw.useLastKey();
+					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+						return static_cast<std::size_t>(selectedItem);
+					}
+					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
+						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
+						menuDrawn = false;
+					}
+					if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
+						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
+						menuDrawn = false;
+					}
+					if (key == GLFW_KEY_ESCAPE) {
+						return SceneAborted_tag{};
+					}
+				}
+			}
+		}
+	}
 }

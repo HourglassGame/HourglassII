@@ -5,7 +5,7 @@
 #include "VulkanRenderer.h"
 namespace hg {
 struct MenuItem final {
-	std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
+	std::variant<LevelSelect_tag, RunALevel_tag, RunAReplay_tag, Exit_tag> tag;
 	std::string text;
 };
 
@@ -449,7 +449,7 @@ private:
 	std::unique_ptr<MainMenuUIFrameState> mainMenuUiFrameState;
 };
 
-std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag>
+std::variant<LevelSelect_tag, RunALevel_tag, RunAReplay_tag, Exit_tag>
 run_main_menu(
 	GLFWWindow &windowglfw, 
 	VulkanEngine &vulkanEng, 
@@ -457,6 +457,7 @@ run_main_menu(
 {
 	int currentItem = 0;
 	std::vector<MenuItem> const menu {
+		{LevelSelect_tag{}, "Level Select"},
 		{RunALevel_tag{}, "Run Level"},
 		{RunAReplay_tag{}, "Run Replay"},
 		{Exit_tag{}, "Exit"}

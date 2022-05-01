@@ -13,6 +13,9 @@ namespace hg {
 		GLFWWindow &windowglfw,
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer,
-		std::string &levelName);
+		std::string &levelName,
+		int position,
+		int page,
+		int perPage);
 }
 #endif //HG_LEVEL_SELECTION_SCENE_H
