@@ -495,6 +495,31 @@ int run_hourglassii() {
 						game_scene_result = runLevel(windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
 				}
 			}
+
+			// Select levels
+			if (std::holds_alternative<LevelSelect_tag>(main_menu_result)) {
+				std::string levelName = "";
+				int position = 0;
+				int page = 0;
+				while (true) {
+					std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
+						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page, 10);
+
+					if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
+						break;
+					}
+					else {
+						assert(std::holds_alternative<LoadLevelFunction>(selected_level));
+					}
+					levelName = std::get<LoadLevelFunction>(selected_level).levelName;
+					position = std::get<LoadLevelFunction>(selected_level).position;
+					page = std::get<LoadLevelFunction>(selected_level).page;
+					move_function<std::vector<InputList>()> replayLoader;
+
+					std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
+						game_scene_result = runLevel(windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
+				}
+			}
 		}
 	}
 	catch (WindowClosed_exception const&) {

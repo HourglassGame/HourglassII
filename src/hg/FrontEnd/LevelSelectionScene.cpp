@@ -81,9 +81,11 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 			break;
 		}
 	}
+	position = levelIndex;
+	page = position % perPage;
 
 	std::variant<std::size_t, SceneAborted_tag> selectedOption = (perPage > 1 ?
-		run_page_selection_scene(windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer) :
+		run_selection_page_scene(windowglfw, levelIndex, page, perPage, optionStrings, vulkanEng, vkRenderer) :
 		run_selection_scene(windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer));
 
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))
