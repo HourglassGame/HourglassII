@@ -558,7 +558,7 @@ namespace hg {
 		}
 	}
 
-	std::variant<std::size_t, SceneAborted_tag> run_selection_page_scene(
+	std::variant<std::string, SceneAborted_tag> run_selection_page_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
 		int defaultPage,
@@ -620,11 +620,15 @@ namespace hg {
 					//window.close();
 					throw WindowClosed_exception{};
 				}
-
+				
+				if (selectedItem >= static_cast<int>(levelMenuConf[selectedPage].options.size())) {
+					selectedItem = static_cast<int>(levelMenuConf[selectedPage].options.size()) - 1;
+				}
+				
 				if (windowglfw.hasLastKey()) {
 					int key = windowglfw.useLastKey();
 					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
-						return static_cast<std::size_t>(selectedItem);
+						return levelMenuConf[selectedPage].options[selectedItem].name;
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
 						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));

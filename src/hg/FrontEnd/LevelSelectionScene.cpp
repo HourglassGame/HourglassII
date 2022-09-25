@@ -53,6 +53,12 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	int position,
 	int page)
 {
+	//std::vector<boost::filesystem::path> levelPaths;
+	//for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
+	//	if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
+	//		levelPaths.push_back(entry.path());
+	//	}
+	//}
 	//boost::sort(
 	//	levelPaths,
 	//	[](boost::filesystem::path const& l,boost::filesystem::path const& r)
@@ -92,23 +98,18 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 
-	std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer);
+	std::variant<std::string, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer);
+	// Todo update position and page
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))
 	{
 		return SceneAborted_tag{};
 	}
 	else
 	{
-		assert(std::holds_alternative<std::size_t>(selectedOption));
+		assert(std::holds_alternative<std::string>(selectedOption));
 	}
 	
-	std::vector<boost::filesystem::path> levelPaths;
-	for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
-		if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
-			levelPaths.push_back(entry.path());
-		}
-	}
-	boost::filesystem::path selectedPath{ levelPaths[std::get<std::size_t>(selectedOption)] };
+	boost::filesystem::path selectedPath{ boost::filesystem::path(std::string("levels/") + std::get<std::string>(selectedOption) + std::string(".lvl"))};
 	{
 		auto levelPathString = selectedPath.string();
 		return LoadLevelFunction{
