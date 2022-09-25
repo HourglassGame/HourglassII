@@ -51,47 +51,48 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	VulkanRenderer &vkRenderer,
 	std::string &levelName,
 	int position,
-	int page,
-	int perPage)
+	int page)
 {
-	std::vector<boost::filesystem::path> levelPaths;
-	for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
-		if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
-			levelPaths.push_back(entry.path());
-		}
-	}
-
-	boost::sort(
-		levelPaths,
-		[](boost::filesystem::path const& l,boost::filesystem::path const& r)
-		{
-			return natural_less(l.stem().string(), r.stem().string());
-		});
-
-
-	std::vector<std::string> optionStrings;
-	boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
-
-	int levelIndex = 0;
-	std::regex e(".lvl");
-	levelName = std::regex_replace(levelName, e, "");
-	for (auto it = optionStrings.begin(); it != optionStrings.end(); ++it) {
-		if (*it == levelName) {
-			levelIndex = static_cast<int>(it - optionStrings.begin());
-			break;
-		}
-	}
+	//boost::sort(
+	//	levelPaths,
+	//	[](boost::filesystem::path const& l,boost::filesystem::path const& r)
+	//	{
+	//		return natural_less(l.stem().string(), r.stem().string());
+	//	});
+	//
+	//std::vector<std::string> optionStrings;
+	//boost::push_back(optionStrings, levelPaths | boost::adaptors::transformed([](auto const &path) {return path.stem().string();}));
+	//int levelIndex = 0;
+	//std::regex e(".lvl");
+	//levelName = std::regex_replace(levelName, e, "");
+	//for (auto it = optionStrings.begin(); it != optionStrings.end(); ++it) {
+	//	if (*it == levelName) {
+	//		levelIndex = static_cast<int>(it - optionStrings.begin());
+	//		break;
+	//	}
+	//}
 	
-	std::vector<hg::PageState> levelMenuConf;
+	std::vector<hg::PageState> levelMenuConf = std::vector<hg::PageState>();
+
+	// Page 1
+	std::vector<hg::LevelState> pageOneLevels = std::vector<hg::LevelState>();
+	pageOneLevels.push_back(hg::LevelState("1EasyStart", 0));
+	pageOneLevels.push_back(hg::LevelState("2OpenAndClosed", 1));
+	pageOneLevels.push_back(hg::LevelState("3StandardBoxPuzzle", 2));
+	pageOneLevels.push_back(hg::LevelState("4NotSoStandard", 2));
+	pageOneLevels.push_back(hg::LevelState("5GoingUp", 3));
+	levelMenuConf.push_back(hg::PageState("Page 1", 2, pageOneLevels));
+
+	// Page 2
+	std::vector<hg::LevelState> pageTwoLevels = std::vector<hg::LevelState>();
+	pageTwoLevels.push_back(hg::LevelState("13FishInABarrel", 0));
+	pageTwoLevels.push_back(hg::LevelState("14WrongWay", 0));
+	pageTwoLevels.push_back(hg::LevelState("15Reverse", 1));
+	levelMenuConf.push_back(hg::PageState("Page 2", 2, pageTwoLevels));
 	
-	position = levelIndex;
-	page = position / perPage;
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 
-	std::variant<std::size_t, SceneAborted_tag> selectedOption = (perPage > 1 ?
-		run_selection_page_scene(windowglfw, levelIndex, perPage, levelMenuConf, vulkanEng, vkRenderer) :
-		run_selection_scene(windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer));
-
+	std::variant<std::size_t, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer);
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))
 	{
 		return SceneAborted_tag{};
@@ -99,6 +100,13 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	else
 	{
 		assert(std::holds_alternative<std::size_t>(selectedOption));
+	}
+	
+	std::vector<boost::filesystem::path> levelPaths;
+	for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
+		if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
+			levelPaths.push_back(entry.path());
+		}
 	}
 	boost::filesystem::path selectedPath{ levelPaths[std::get<std::size_t>(selectedOption)] };
 	{

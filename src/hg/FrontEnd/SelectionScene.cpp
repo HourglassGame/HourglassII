@@ -2,13 +2,6 @@
 #include "RunningGameSceneRenderer.h"
 namespace hg {
 
-	struct SelectionPageFrameState {
-		int selectedItem;
-		int page;
-		int perPage;
-		std::vector<PageState> pages;
-	};
-
 	struct SelectionSceneSharedVulkanData {
 		explicit SelectionSceneSharedVulkanData(
 			PossiblePhysicalDevice const &physicalDevice,
@@ -363,9 +356,9 @@ namespace hg {
 			}
 			return { preDrawCommandBuffer, drawCommandBuffer };
 		}
-		void setUiFrameState(int selectedItem, int page, int perPage, std::vector<PageState> const &levelMenuConf) {
+		void setUiFrameState(int selectedItem, int selectedPage, std::vector<PageState> const &levelMenuConf) {
 			std::lock_guard lock{ selectionSceneUiFrameStateMutex };
-			selectionPageSceneUiFrameState = std::make_unique<SelectionPageFrameState>(selectedItem, page, perPage, std::move(levelMenuConf));
+			selectionPageSceneUiFrameState = std::make_unique<SelectionPageFrameState>(selectedItem, selectedPage, std::move(levelMenuConf));
 		}
 	private:
 
@@ -448,17 +441,21 @@ namespace hg {
 
 			float drawPos = 150.f;
 			int optPos = 0;
-			int itemMin = (*uiFrameStateLocal).page * (*uiFrameStateLocal).perPage;
-			int itemMax = itemMin + (*uiFrameStateLocal).perPage;
 			int selectedItem = (*uiFrameStateLocal).selectedItem;
-			for (auto it = ((*uiFrameStateLocal).pages).begin(); it != ((*uiFrameStateLocal).pages).end(); ++it, ++optPos) {
-				//if (optPos >= itemMin && optPos < itemMax) {
-				//	drawText(
-				//		target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-				//		*it, 400.f, drawPos, 32.f, 
-				//		(selectedItem == optPos ? vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } : vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f }));
-				//	drawPos += 42.f;
-				//}
+			
+			PageState pageInfo = (*uiFrameStateLocal).pages[(*uiFrameStateLocal).page];
+			drawText(
+				target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+				pageInfo.name, 400.f, drawPos, 32.f, 
+				vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+			drawPos += 42.f;
+			
+			for (auto it = (pageInfo.options).begin(); it != (pageInfo.options).end(); ++it, ++optPos) {
+				drawText(
+					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+					(*it).name, 400.f, drawPos, 32.f, 
+					(selectedItem == optPos ? vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } : vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f }));
+				drawPos += 42.f;
 			}
 		}
 		std::optional<SelectionPageFrameState> copyUiFrameState() {
@@ -564,7 +561,7 @@ namespace hg {
 	std::variant<std::size_t, SceneAborted_tag> run_selection_page_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
-		int perPage,
+		int defaultPage,
 		std::vector<PageState> const &levelMenuConf,
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer)
@@ -609,11 +606,11 @@ namespace hg {
 
 		//TODO: Use size_t rather than int.
 		int selectedItem = defaultOption;
+		int selectedPage = defaultPage;
 
 		while (true) {
-			int page = selectedItem / perPage;
 			//std::cout << "page: " << std::to_string(page) << ", selectedItem: " << std::to_string(selectedItem) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
-			renderer.setUiFrameState(selectedItem, page, perPage, levelMenuConf);
+			renderer.setUiFrameState(selectedItem, selectedPage, levelMenuConf);
 			//drawOptionSelection(window, levelMenuConf[selectedItem]);
 			bool menuDrawn = true;
 			while (menuDrawn) {
@@ -630,26 +627,22 @@ namespace hg {
 						return static_cast<std::size_t>(selectedItem);
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
-						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf.size()));
+						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
 						menuDrawn = false;
 					}
 					if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
-						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(levelMenuConf.size()));
+						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
 						menuDrawn = false;
 					}
 					if (key == GLFW_KEY_LEFT|| key == GLFW_KEY_A) {
-						if (selectedItem - perPage >= 0) {
-							selectedItem = selectedItem - perPage;
+						if (selectedPage > 0) {
+							selectedPage = selectedPage - 1;
 							menuDrawn = false;
 						}
 					}
 					if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) {
-						if (selectedItem + perPage < static_cast<int>(levelMenuConf.size())) {
-							selectedItem = selectedItem + perPage;
-							menuDrawn = false;
-						} else if (page < static_cast<int>(levelMenuConf.size()) / perPage) {
-							// Go to the last page if we are not on it.
-							selectedItem = static_cast<int>(levelMenuConf.size()) - 1;
+						if (selectedPage < static_cast<int>(levelMenuConf.size()) - 1) {
+							selectedPage = selectedPage + 1;
 							menuDrawn = false;
 						}
 					}

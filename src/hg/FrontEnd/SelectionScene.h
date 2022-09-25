@@ -9,17 +9,23 @@
 #include <string>
 namespace hg
 {
-	struct LevelState {
+	struct LevelState final {
 		std::string name;
 		int completeThreshold;
 	};
 
-	struct PageState {
+	struct PageState final {
 		std::string name;
 		int nextUnlockThreshold;
 		std::vector<LevelState> options;
 	};
 	
+	struct SelectionPageFrameState {
+		int selectedItem;
+		int page;
+		std::vector<PageState> pages;
+	};
+
 	std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
@@ -29,7 +35,7 @@ namespace hg
 	std::variant<std::size_t, SceneAborted_tag> run_selection_page_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
-		int perPage,
+		int defaultPage,
 		std::vector<PageState> const &levelMenuConf,
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer);
