@@ -81,12 +81,15 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 			break;
 		}
 	}
+	
+	std::vector<hg::PageState> levelMenuConf;
+	
 	position = levelIndex;
 	page = position / perPage;
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 
 	std::variant<std::size_t, SceneAborted_tag> selectedOption = (perPage > 1 ?
-		run_selection_page_scene(windowglfw, levelIndex, perPage, optionStrings, vulkanEng, vkRenderer) :
+		run_selection_page_scene(windowglfw, levelIndex, perPage, levelMenuConf, vulkanEng, vkRenderer) :
 		run_selection_scene(windowglfw, levelIndex, optionStrings, vulkanEng, vkRenderer));
 
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))

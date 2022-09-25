@@ -6,7 +6,7 @@ namespace hg {
 		int selectedItem;
 		int page;
 		int perPage;
-		std::vector<std::string> options;
+		std::vector<PageState> pages;
 	};
 
 	struct SelectionSceneSharedVulkanData {
@@ -363,9 +363,9 @@ namespace hg {
 			}
 			return { preDrawCommandBuffer, drawCommandBuffer };
 		}
-		void setUiFrameState(int selectedItem, int page, int perPage, std::vector<std::string> const &options) {
+		void setUiFrameState(int selectedItem, int page, int perPage, std::vector<PageState> const &levelMenuConf) {
 			std::lock_guard lock{ selectionSceneUiFrameStateMutex };
-			selectionPageSceneUiFrameState = std::make_unique<SelectionPageFrameState>(selectedItem, page, perPage, std::move(options));
+			selectionPageSceneUiFrameState = std::make_unique<SelectionPageFrameState>(selectedItem, page, perPage, std::move(levelMenuConf));
 		}
 	private:
 
@@ -451,14 +451,14 @@ namespace hg {
 			int itemMin = (*uiFrameStateLocal).page * (*uiFrameStateLocal).perPage;
 			int itemMax = itemMin + (*uiFrameStateLocal).perPage;
 			int selectedItem = (*uiFrameStateLocal).selectedItem;
-			for (auto it = ((*uiFrameStateLocal).options).begin(); it != ((*uiFrameStateLocal).options).end(); ++it, ++optPos) {
-				if (optPos >= itemMin && optPos < itemMax) {
-					drawText(
-						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-						*it, 400.f, drawPos, 32.f, 
-						(selectedItem == optPos ? vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } : vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f }));
-					drawPos += 42.f;
-				}
+			for (auto it = ((*uiFrameStateLocal).pages).begin(); it != ((*uiFrameStateLocal).pages).end(); ++it, ++optPos) {
+				//if (optPos >= itemMin && optPos < itemMax) {
+				//	drawText(
+				//		target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+				//		*it, 400.f, drawPos, 32.f, 
+				//		(selectedItem == optPos ? vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } : vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f }));
+				//	drawPos += 42.f;
+				//}
 			}
 		}
 		std::optional<SelectionPageFrameState> copyUiFrameState() {
@@ -565,7 +565,7 @@ namespace hg {
 		GLFWWindow &windowglfw,
 		int defaultOption,
 		int perPage,
-		std::vector<std::string> const &options,
+		std::vector<PageState> const &levelMenuConf,
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer)
 	{
@@ -587,7 +587,7 @@ namespace hg {
 			}
 		} RendererCleanupEnforcer_obj{ vkRenderer };
 
-		if (options.empty()) //If no options available, just display a blank screen until the user escapes out.
+		if (levelMenuConf.empty()) //If no pages available, just display a blank screen until the user escapes out.
 		{
 			//window.clear();
 			//window.display();
@@ -613,8 +613,8 @@ namespace hg {
 		while (true) {
 			int page = selectedItem / perPage;
 			//std::cout << "page: " << std::to_string(page) << ", selectedItem: " << std::to_string(selectedItem) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
-			renderer.setUiFrameState(selectedItem, page, perPage, options);
-			//drawOptionSelection(window, options[selectedItem]);
+			renderer.setUiFrameState(selectedItem, page, perPage, levelMenuConf);
+			//drawOptionSelection(window, levelMenuConf[selectedItem]);
 			bool menuDrawn = true;
 			while (menuDrawn) {
 				glfwPollEvents();
@@ -630,11 +630,11 @@ namespace hg {
 						return static_cast<std::size_t>(selectedItem);
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
-						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(options.size()));
+						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf.size()));
 						menuDrawn = false;
 					}
 					if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
-						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(options.size()));
+						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(levelMenuConf.size()));
 						menuDrawn = false;
 					}
 					if (key == GLFW_KEY_LEFT|| key == GLFW_KEY_A) {
@@ -644,12 +644,12 @@ namespace hg {
 						}
 					}
 					if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) {
-						if (selectedItem + perPage < static_cast<int>(options.size())) {
+						if (selectedItem + perPage < static_cast<int>(levelMenuConf.size())) {
 							selectedItem = selectedItem + perPage;
 							menuDrawn = false;
-						} else if (page < static_cast<int>(options.size()) / perPage) {
+						} else if (page < static_cast<int>(levelMenuConf.size()) / perPage) {
 							// Go to the last page if we are not on it.
-							selectedItem = static_cast<int>(options.size()) - 1;
+							selectedItem = static_cast<int>(levelMenuConf.size()) - 1;
 							menuDrawn = false;
 						}
 					}
