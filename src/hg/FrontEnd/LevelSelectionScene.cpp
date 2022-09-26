@@ -77,7 +77,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	//		break;
 	//	}
 	//}
-	
+
 	std::vector<hg::PageState> levelMenuConf = std::vector<hg::PageState>();
 
 	// Page 1

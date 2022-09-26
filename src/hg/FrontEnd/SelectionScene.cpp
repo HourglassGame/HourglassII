@@ -1,5 +1,7 @@
 #include "SelectionScene.h"
 #include "RunningGameSceneRenderer.h"
+#include "hg/Util/unlock_util.h"
+
 namespace hg {
 
 	struct SelectionSceneSharedVulkanData {
@@ -454,7 +456,13 @@ namespace hg {
 				drawText(
 					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
 					(*it).name, 400.f, drawPos, 32.f, 
-					(selectedItem == optPos ? vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } : vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f }));
+					(selectedItem == optPos ? 
+						(IsLevelUnlocked((*it).name) ? 
+							vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
+							vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
+						(IsLevelUnlocked((*it).name) ? 
+							vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
+							vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
 				drawPos += 42.f;
 			}
 		}
@@ -621,13 +629,9 @@ namespace hg {
 					throw WindowClosed_exception{};
 				}
 				
-				if (selectedItem >= static_cast<int>(levelMenuConf[selectedPage].options.size())) {
-					selectedItem = static_cast<int>(levelMenuConf[selectedPage].options.size()) - 1;
-				}
-				
 				if (windowglfw.hasLastKey()) {
 					int key = windowglfw.useLastKey();
-					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+					if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && IsLevelUnlocked(levelMenuConf[selectedPage].options[selectedItem].name)) {
 						return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
@@ -652,6 +656,11 @@ namespace hg {
 					}
 					if (key == GLFW_KEY_ESCAPE) {
 						return SceneAborted_tag{};
+					}
+					
+					// Fix page change
+					if (selectedItem >= static_cast<int>(levelMenuConf[selectedPage].options.size())) {
+						selectedItem = static_cast<int>(levelMenuConf[selectedPage].options.size()) - 1;
 					}
 				}
 			}
