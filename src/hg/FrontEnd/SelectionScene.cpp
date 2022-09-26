@@ -558,7 +558,7 @@ namespace hg {
 		}
 	}
 
-	std::variant<std::string, SceneAborted_tag> run_selection_page_scene(
+	std::variant<LevelSelectionReturn, SceneAborted_tag> run_selection_page_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
 		int defaultPage,
@@ -628,7 +628,7 @@ namespace hg {
 				if (windowglfw.hasLastKey()) {
 					int key = windowglfw.useLastKey();
 					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
-						return levelMenuConf[selectedPage].options[selectedItem].name;
+						return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
 						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));

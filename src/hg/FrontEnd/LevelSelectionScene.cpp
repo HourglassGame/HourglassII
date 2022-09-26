@@ -98,7 +98,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 
-	std::variant<std::string, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer);
+	std::variant<LevelSelectionReturn, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer);
 	// Todo update position and page
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))
 	{
@@ -106,16 +106,16 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	}
 	else
 	{
-		assert(std::holds_alternative<std::string>(selectedOption));
+		assert(std::holds_alternative<LevelSelectionReturn>(selectedOption));
 	}
 	
-	boost::filesystem::path selectedPath{ boost::filesystem::path(std::string("levels/") + std::get<std::string>(selectedOption) + std::string(".lvl"))};
+	boost::filesystem::path selectedPath{ boost::filesystem::path(std::string("levels/") + std::get<LevelSelectionReturn>(selectedOption).name + std::string(".lvl"))};
 	{
 		auto levelPathString = selectedPath.string();
 		return LoadLevelFunction{
 			selectedPath.filename().string(),
-			position,
-			page,
+			std::get<LevelSelectionReturn>(selectedOption).position,
+			std::get<LevelSelectionReturn>(selectedOption).page,
 			move_function<TimeEngine(hg::OperationInterrupter &)>(
 				CachingTimeEngineLoader(selectedPath)),
 			move_function<LoadedLevel(TimeEngine &&)>(

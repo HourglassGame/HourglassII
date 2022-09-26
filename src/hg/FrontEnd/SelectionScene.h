@@ -26,13 +26,19 @@ namespace hg
 		std::vector<PageState> pages;
 	};
 
+	struct LevelSelectionReturn {
+		std::string name;
+		int position;
+		int page;
+	};
+
 	std::variant<std::size_t, SceneAborted_tag> run_selection_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
 		std::vector<std::string> const &options,
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer);
-	std::variant<std::string, SceneAborted_tag> run_selection_page_scene(
+	std::variant<LevelSelectionReturn, SceneAborted_tag> run_selection_page_scene(
 		GLFWWindow &windowglfw,
 		int defaultOption,
 		int defaultPage,
