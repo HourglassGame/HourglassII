@@ -6,7 +6,7 @@
 #include "GLFWWindow.h"
 
 namespace hg {
-	std::variant<LevelSelect_tag, RunALevel_tag, RunAReplay_tag, Exit_tag> run_main_menu(
+	std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> run_main_menu(
 		GLFWWindow &windowglfw,
 		VulkanEngine &vulkanEng,
 		VulkanRenderer &vkRenderer);

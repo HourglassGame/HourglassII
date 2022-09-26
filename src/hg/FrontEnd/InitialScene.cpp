@@ -420,13 +420,11 @@ int run_hourglassii() {
 		// so on, so forth, need full list.
 
 		while (true) {
-			std::variant<LevelSelect_tag, RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(windowglfw, vulkanEng, vkRenderer);
+			std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(windowglfw, vulkanEng, vkRenderer);
 			if (std::holds_alternative<Exit_tag>(main_menu_result)) {
 				return EXIT_SUCCESS;
 			}
 			else if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
-			}
-			else if (std::holds_alternative<LevelSelect_tag>(main_menu_result)) {
 			}
 			else {
 				assert(std::holds_alternative<RunALevel_tag>(main_menu_result));
@@ -473,31 +471,6 @@ int run_hourglassii() {
 
 			// Run a Level
 			if (std::holds_alternative<RunALevel_tag>(main_menu_result)) {
-				std::string levelName = "";
-				int position = 0;
-				int page = 0;
-				while (true) {
-					std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page);
-
-					if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
-						break;
-					}
-					else {
-						assert(std::holds_alternative<LoadLevelFunction>(selected_level));
-					}
-					levelName = std::get<LoadLevelFunction>(selected_level).levelName;
-					position = std::get<LoadLevelFunction>(selected_level).position;
-					page = std::get<LoadLevelFunction>(selected_level).page;
-					move_function<std::vector<InputList>()> replayLoader;
-
-					std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
-						game_scene_result = runLevel(windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
-				}
-			}
-
-			// Select levels
-			if (std::holds_alternative<LevelSelect_tag>(main_menu_result)) {
 				std::string levelName = "";
 				int position = 0;
 				int page = 0;

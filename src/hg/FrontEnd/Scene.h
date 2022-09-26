@@ -7,11 +7,6 @@
 #include "LoadedLevel.h"
 namespace hg {
 	struct WindowClosed_exception final {};
-	struct LevelSelect_tag final {
-		LevelSelect_tag() = default;
-		LevelSelect_tag(LevelSelect_tag const&) = default;
-		LevelSelect_tag(LevelSelect_tag &&) noexcept = default;
-	};
 	struct RunALevel_tag final {
 		RunALevel_tag() = default;
 		RunALevel_tag(RunALevel_tag const&) = default;
