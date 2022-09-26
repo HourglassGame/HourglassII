@@ -87,14 +87,14 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	pageOneLevels.push_back(hg::LevelState("3StandardBoxPuzzle.lvl", "3 - Standard Box Puzzle", 2));
 	pageOneLevels.push_back(hg::LevelState("4NotSoStandard.lvl", "4 - Not So Standard", 2));
 	pageOneLevels.push_back(hg::LevelState("5GoingUp.lvl", "5 - Going Up", 3));
-	levelMenuConf.push_back(hg::PageState("Page 1", 2, pageOneLevels));
+	levelMenuConf.push_back(hg::PageState("Page 1", 0, pageOneLevels));
 
 	// Page 2
 	std::vector<hg::LevelState> pageTwoLevels = std::vector<hg::LevelState>();
 	pageTwoLevels.push_back(hg::LevelState("13FishInABarrel.lvl", "13 - Fish in a Barrel", 0));
 	pageTwoLevels.push_back(hg::LevelState("14WrongWay.lvl", "14 - Wrong Way", 0));
 	pageTwoLevels.push_back(hg::LevelState("15Reverse.lvl", "15 - Reverse", 1));
-	levelMenuConf.push_back(hg::PageState("Page 2", 2, pageTwoLevels));
+	levelMenuConf.push_back(hg::PageState("Page 2", 3, pageTwoLevels));
 	
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 

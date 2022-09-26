@@ -446,28 +446,47 @@ namespace hg {
 			int selectedItem = (*uiFrameStateLocal).selectedItem;
 			
 			PageState pageInfo = (*uiFrameStateLocal).pages[(*uiFrameStateLocal).page];
-			drawText(
-				target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-				pageInfo.name, 400.f, drawPos, 32.f, 
-				vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
-			drawPos += 42.f;
 			
-			int completedLevels = 0;
-			for (auto it = (pageInfo.options).begin(); it != (pageInfo.options).end(); ++it, ++optPos) {
-				if (IsLevelComplete((*it).name)) {
-					completedLevels += 1;
+			int completedOnPrevPages = 0;
+			for (size_t p = 0; p < (*uiFrameStateLocal).page; ++p) {
+				for (auto it = ((*uiFrameStateLocal).pages[p].options).begin(); it != ((*uiFrameStateLocal).pages[p].options).end(); ++it) {
+					if (IsLevelComplete((*it).name)) {
+						completedOnPrevPages += 1;
+					}
 				}
+			}
+			if (completedOnPrevPages < pageInfo.prevLevelsRequired) {
 				drawText(
 					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-					(*it).humanName, 400.f, drawPos, 32.f, 
-					(selectedItem == optPos ? 
-						((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
-							vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
-							vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
-						((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
-							vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
-							vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
+					pageInfo.name + " (Locked, " + std::to_string(completedOnPrevPages) + " / " + std::to_string(pageInfo.prevLevelsRequired) + " levels required)",
+					400.f, drawPos, 32.f, 
+					vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
 				drawPos += 42.f;
+			} else {
+				drawText(
+					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+					pageInfo.name, 400.f, drawPos, 32.f, 
+					vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+				drawPos += 42.f;
+				
+				int completedLevels = 0;
+				for (auto it = (pageInfo.options).begin(); it != (pageInfo.options).end(); ++it, ++optPos) {
+					if (IsLevelComplete((*it).name)) {
+						completedLevels += 1;
+					}
+					drawText(
+						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+						(IsLevelComplete((*it).name) ? (*it).humanName + std::string(" (done)") : (*it).humanName),
+						400.f, drawPos, 32.f, 
+						(selectedItem == optPos ? 
+							((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
+								vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
+								vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
+							((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
+								vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
+								vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
+					drawPos += 42.f;
+				}
 			}
 		}
 		std::optional<SelectionPageFrameState> copyUiFrameState() {
@@ -636,14 +655,24 @@ namespace hg {
 				if (windowglfw.hasLastKey()) {
 					int key = windowglfw.useLastKey();
 					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
-						int completedLevels = 0;
-						for (auto it = (levelMenuConf[selectedPage].options).begin(); it != (levelMenuConf[selectedPage].options).end(); ++it) {
-							if (IsLevelComplete((*it).name)) {
-								completedLevels += 1;
+						int completedOnPrevPages = 0;
+						for (size_t p = 0; p < selectedPage; ++p) {
+							for (auto it = (levelMenuConf[p].options).begin(); it != (levelMenuConf[p].options).end(); ++it) {
+								if (IsLevelComplete((*it).name)) {
+									completedOnPrevPages += 1;
+								}
 							}
 						}
-						if (IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name) || completedLevels >= levelMenuConf[selectedPage].options[selectedItem].unlockRequirement) {
-							return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
+						if (completedOnPrevPages >= levelMenuConf[selectedPage].prevLevelsRequired) {
+							int completedLevels = 0;
+							for (auto it = (levelMenuConf[selectedPage].options).begin(); it != (levelMenuConf[selectedPage].options).end(); ++it) {
+								if (IsLevelComplete((*it).name)) {
+									completedLevels += 1;
+								}
+							}
+							if (IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name) || completedLevels >= levelMenuConf[selectedPage].options[selectedItem].unlockRequirement) {
+								return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
+							}
 						}
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {

@@ -17,7 +17,7 @@ namespace hg
 
 	struct PageState final {
 		std::string name;
-		int nextUnlockThreshold;
+		int prevLevelsRequired;
 		std::vector<LevelState> options;
 	};
 	
