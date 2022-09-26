@@ -11,7 +11,7 @@ namespace hg
 {
 	struct LevelState final {
 		std::string name;
-		int completeThreshold;
+		int unlockRequirement;
 	};
 
 	struct PageState final {

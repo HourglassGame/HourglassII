@@ -452,15 +452,19 @@ namespace hg {
 				vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
 			drawPos += 42.f;
 			
+			int completedLevels = 0;
 			for (auto it = (pageInfo.options).begin(); it != (pageInfo.options).end(); ++it, ++optPos) {
+				if (IsLevelComplete((*it).name)) {
+					completedLevels += 1;
+				}
 				drawText(
 					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
 					(*it).name, 400.f, drawPos, 32.f, 
 					(selectedItem == optPos ? 
-						(IsLevelUnlocked((*it).name) ? 
+						((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
 							vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
 							vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
-						(IsLevelUnlocked((*it).name) ? 
+						((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
 							vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
 							vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
 				drawPos += 42.f;
@@ -631,8 +635,16 @@ namespace hg {
 				
 				if (windowglfw.hasLastKey()) {
 					int key = windowglfw.useLastKey();
-					if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && IsLevelUnlocked(levelMenuConf[selectedPage].options[selectedItem].name)) {
-						return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
+					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+						int completedLevels = 0;
+						for (auto it = (levelMenuConf[selectedPage].options).begin(); it != (levelMenuConf[selectedPage].options).end(); ++it) {
+							if (IsLevelComplete((*it).name)) {
+								completedLevels += 1;
+							}
+						}
+						if (IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name) || completedLevels >= levelMenuConf[selectedPage].options[selectedItem].unlockRequirement) {
+							return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
+						}
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
 						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
