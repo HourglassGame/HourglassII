@@ -11,6 +11,7 @@ namespace hg
 {
 	struct LevelState final {
 		std::string name;
+		std::string humanName;
 		int unlockRequirement;
 	};
 

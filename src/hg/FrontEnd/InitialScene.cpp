@@ -5,6 +5,7 @@
 #include "hg/GlobalConst.h"
 #include "hg/LuaUtil/LuaError.h"
 #include "hg/Util/move_function.h"
+#include "hg/Util/unlock_util.h"
 #include "MainMenuScene.h"
 #include "ReplayIO.h"
 #include "LevelSelectionScene.h"
@@ -491,6 +492,10 @@ int run_hourglassii() {
 
 					std::variant<GameAborted_tag, GameWon_tag, ReloadLevel_tag, move_function<std::vector<hg::InputList>()>>
 						game_scene_result = runLevel(windowglfw, vulkanEng, vkRenderer, selected_level, replayLoader);
+					
+					if (std::holds_alternative<GameWon_tag>(game_scene_result)) {
+						MarkLevelAsComplete(levelName);
+					}
 				}
 			}
 		}

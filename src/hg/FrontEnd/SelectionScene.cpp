@@ -459,7 +459,7 @@ namespace hg {
 				}
 				drawText(
 					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-					(*it).name, 400.f, drawPos, 32.f, 
+					(*it).humanName, 400.f, drawPos, 32.f, 
 					(selectedItem == optPos ? 
 						((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
 							vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :

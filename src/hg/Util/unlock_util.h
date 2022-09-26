@@ -7,5 +7,10 @@ inline bool IsLevelComplete(
 {
 	return boost::filesystem::exists(std::string("saves/") + name);
 }
+inline void MarkLevelAsComplete(
+	std::string name)
+{
+	boost::filesystem::ofstream(std::string("saves/") + name);
+}
 }
 #endif // !HG_UNLOCK_UTIL_H

@@ -82,18 +82,18 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 
 	// Page 1
 	std::vector<hg::LevelState> pageOneLevels = std::vector<hg::LevelState>();
-	pageOneLevels.push_back(hg::LevelState("1EasyStart", 0));
-	pageOneLevels.push_back(hg::LevelState("2OpenAndClosed", 1));
-	pageOneLevels.push_back(hg::LevelState("3StandardBoxPuzzle", 2));
-	pageOneLevels.push_back(hg::LevelState("4NotSoStandard", 2));
-	pageOneLevels.push_back(hg::LevelState("5GoingUp", 3));
+	pageOneLevels.push_back(hg::LevelState("1EasyStart.lvl", "1 - Easy Start", 0));
+	pageOneLevels.push_back(hg::LevelState("2OpenAndClosed.lvl", "2 - Open and Closed", 1));
+	pageOneLevels.push_back(hg::LevelState("3StandardBoxPuzzle.lvl", "3 - Standard Box Puzzle", 2));
+	pageOneLevels.push_back(hg::LevelState("4NotSoStandard.lvl", "4 - Not So Standard", 2));
+	pageOneLevels.push_back(hg::LevelState("5GoingUp.lvl", "5 - Going Up", 3));
 	levelMenuConf.push_back(hg::PageState("Page 1", 2, pageOneLevels));
 
 	// Page 2
 	std::vector<hg::LevelState> pageTwoLevels = std::vector<hg::LevelState>();
-	pageTwoLevels.push_back(hg::LevelState("13FishInABarrel", 0));
-	pageTwoLevels.push_back(hg::LevelState("14WrongWay", 0));
-	pageTwoLevels.push_back(hg::LevelState("15Reverse", 1));
+	pageTwoLevels.push_back(hg::LevelState("13FishInABarrel.lvl", "13 - Fish in a Barrel", 0));
+	pageTwoLevels.push_back(hg::LevelState("14WrongWay.lvl", "14 - Wrong Way", 0));
+	pageTwoLevels.push_back(hg::LevelState("15Reverse.lvl", "15 - Reverse", 1));
 	levelMenuConf.push_back(hg::PageState("Page 2", 2, pageTwoLevels));
 	
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
@@ -109,7 +109,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 		assert(std::holds_alternative<LevelSelectionReturn>(selectedOption));
 	}
 	
-	boost::filesystem::path selectedPath{ boost::filesystem::path(std::string("levels/") + std::get<LevelSelectionReturn>(selectedOption).name + std::string(".lvl"))};
+	boost::filesystem::path selectedPath{ boost::filesystem::path(std::string("levels/") + std::get<LevelSelectionReturn>(selectedOption).name)};
 	{
 		auto levelPathString = selectedPath.string();
 		return LoadLevelFunction{
