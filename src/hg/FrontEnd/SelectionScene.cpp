@@ -474,18 +474,28 @@ namespace hg {
 					if (IsLevelComplete((*it).name)) {
 						completedLevels += 1;
 					}
-					drawText(
-						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-						(IsLevelComplete((*it).name) ? (*it).humanName + std::string(" (done)") : (*it).humanName),
-						400.f, drawPos, 32.f, 
-						(selectedItem == optPos ? 
-							((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
-								vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
-								vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
-							((IsLevelComplete((*it).name) || completedLevels >= (*it).unlockRequirement) ? 
-								vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
-								vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
-					drawPos += 42.f;
+					bool unlocked = IsLevelComplete((*it).name);
+					if (!unlocked) {
+						if (std::holds_alternative<int>((*it).unlockRequirement)) {
+							unlocked = (completedLevels >= std::get<int>((*it).unlockRequirement));
+						} else {
+							unlocked = IsLevelComplete(std::get<std::string>((*it).unlockRequirement));
+						}
+					}
+					if (unlocked) {
+						drawText(
+							target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+							(IsLevelComplete((*it).name) ? (*it).humanName + std::string(" (done)") : (*it).humanName),
+							400.f, drawPos, 32.f, 
+							(selectedItem == optPos ? 
+								(IsLevelComplete((*it).name) ? 
+									vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
+									vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
+								(IsLevelComplete((*it).name) ? 
+									vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
+									vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
+						drawPos += 42.f;
+					}
 				}
 			}
 		}
@@ -670,7 +680,15 @@ namespace hg {
 									completedLevels += 1;
 								}
 							}
-							if (IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name) || completedLevels >= levelMenuConf[selectedPage].options[selectedItem].unlockRequirement) {
+							bool unlocked = IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
+							if (!unlocked) {
+								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
+									unlocked = (completedLevels >= std::get<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								} else {
+									unlocked = IsLevelComplete(std::get<std::string>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								}
+							}
+							if (unlocked) {
 								return LevelSelectionReturn(levelMenuConf[selectedPage].options[selectedItem].name, selectedItem, selectedPage);
 							}
 						}

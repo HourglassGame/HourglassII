@@ -12,7 +12,7 @@ namespace hg
 	struct LevelState final {
 		std::string name;
 		std::string humanName;
-		int unlockRequirement;
+		std::variant<int, std::string> unlockRequirement;
 	};
 
 	struct PageState final {

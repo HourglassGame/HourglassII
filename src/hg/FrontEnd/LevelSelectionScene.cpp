@@ -86,7 +86,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	pageOneLevels.push_back(hg::LevelState("2OpenAndClosed.lvl", "2 - Open and Closed", 1));
 	pageOneLevels.push_back(hg::LevelState("3StandardBoxPuzzle.lvl", "3 - Standard Box Puzzle", 2));
 	pageOneLevels.push_back(hg::LevelState("4NotSoStandard.lvl", "4 - Not So Standard", 2));
-	pageOneLevels.push_back(hg::LevelState("5GoingUp.lvl", "5 - Going Up", 3));
+	pageOneLevels.push_back(hg::LevelState("5GoingUp.lvl", "5 - Going Up", "1EasyStart.lvl"));
 	levelMenuConf.push_back(hg::PageState("Page 1", 0, pageOneLevels));
 
 	// Page 2
