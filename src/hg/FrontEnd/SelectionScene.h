@@ -25,6 +25,7 @@ namespace hg
 		int selectedItem;
 		int page;
 		std::vector<PageState> pages;
+		bool unlockAll;
 	};
 
 	struct LevelSelectionReturn {
@@ -45,7 +46,8 @@ namespace hg
 		int defaultPage,
 		std::vector<PageState> const &levelMenuConf,
 		VulkanEngine& vulkanEng,
-		VulkanRenderer& vkRenderer);
+		VulkanRenderer& vkRenderer,
+		bool unlockAll);
 }
 #endif
 

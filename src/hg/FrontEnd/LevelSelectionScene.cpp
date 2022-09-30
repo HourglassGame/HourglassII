@@ -51,7 +51,8 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	VulkanRenderer &vkRenderer,
 	std::string &levelName,
 	int position,
-	int page)
+	int page,
+	bool unlockAll)
 {
 	//std::vector<boost::filesystem::path> levelPaths;
 	//for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
@@ -98,7 +99,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	
 	//std::cout << "page: " << std::to_string(page) << ", position: " << std::to_string(position) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
 
-	std::variant<LevelSelectionReturn, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer);
+	std::variant<LevelSelectionReturn, SceneAborted_tag> selectedOption = run_selection_page_scene(windowglfw, position, page, levelMenuConf, vulkanEng, vkRenderer, unlockAll);
 	// Todo update position and page
 	if (std::holds_alternative<SceneAborted_tag>(selectedOption))
 	{

@@ -12,6 +12,11 @@ namespace hg {
 		RunALevel_tag(RunALevel_tag const&) = default;
 		RunALevel_tag(RunALevel_tag &&) noexcept = default;
 	};
+	struct RunALevelUnlocked_tag final {
+		RunALevelUnlocked_tag() = default;
+		RunALevelUnlocked_tag(RunALevelUnlocked_tag const&) = default;
+		RunALevelUnlocked_tag(RunALevelUnlocked_tag &&) noexcept = default;
+	};
 	struct RunAReplay_tag final {
 		RunAReplay_tag() = default;
 		RunAReplay_tag(RunAReplay_tag const&) = default;

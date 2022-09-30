@@ -421,11 +421,13 @@ int run_hourglassii() {
 		// so on, so forth, need full list.
 
 		while (true) {
-			std::variant<RunALevel_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(windowglfw, vulkanEng, vkRenderer);
+			std::variant<RunALevel_tag, RunALevelUnlocked_tag, RunAReplay_tag, Exit_tag> const main_menu_result = run_main_menu(windowglfw, vulkanEng, vkRenderer);
 			if (std::holds_alternative<Exit_tag>(main_menu_result)) {
 				return EXIT_SUCCESS;
 			}
 			else if (std::holds_alternative<RunAReplay_tag>(main_menu_result)) {
+			}
+			else if (std::holds_alternative<RunALevelUnlocked_tag>(main_menu_result)) {
 			}
 			else {
 				assert(std::holds_alternative<RunALevel_tag>(main_menu_result));
@@ -438,7 +440,7 @@ int run_hourglassii() {
 				int page = 0;
 				while (true) {
 					std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page);
+						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page, false);
 
 					if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
 						break;
@@ -471,13 +473,13 @@ int run_hourglassii() {
 			}
 
 			// Run a Level
-			if (std::holds_alternative<RunALevel_tag>(main_menu_result)) {
+			if (std::holds_alternative<RunALevel_tag>(main_menu_result) || std::holds_alternative<RunALevelUnlocked_tag>(main_menu_result)) {
 				std::string levelName = "";
 				int position = 0;
 				int page = 0;
 				while (true) {
 					std::variant<LoadLevelFunction, SceneAborted_tag> selected_level
-						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page);
+						= run_level_selection_scene(windowglfw, vulkanEng, vkRenderer, levelName, position, page, std::holds_alternative<RunALevelUnlocked_tag>(main_menu_result));
 
 					if (std::holds_alternative<SceneAborted_tag>(selected_level)) {
 						break;

@@ -358,9 +358,9 @@ namespace hg {
 			}
 			return { preDrawCommandBuffer, drawCommandBuffer };
 		}
-		void setUiFrameState(int selectedItem, int selectedPage, std::vector<PageState> const &levelMenuConf) {
+		void setUiFrameState(int selectedItem, int selectedPage, std::vector<PageState> const &levelMenuConf, bool unlockAll) {
 			std::lock_guard lock{ selectionSceneUiFrameStateMutex };
-			selectionPageSceneUiFrameState = std::make_unique<SelectionPageFrameState>(selectedItem, selectedPage, std::move(levelMenuConf));
+			selectionPageSceneUiFrameState = std::make_unique<SelectionPageFrameState>(selectedItem, selectedPage, std::move(levelMenuConf), unlockAll);
 		}
 	private:
 
@@ -455,7 +455,7 @@ namespace hg {
 					}
 				}
 			}
-			if (completedOnPrevPages < pageInfo.prevLevelsRequired) {
+			if (completedOnPrevPages < pageInfo.prevLevelsRequired && !(*uiFrameStateLocal).unlockAll) {
 				drawText(
 					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
 					pageInfo.name + " (Locked, " + std::to_string(completedOnPrevPages) + " / " + std::to_string(pageInfo.prevLevelsRequired) + " levels required)",
@@ -474,7 +474,7 @@ namespace hg {
 					if (IsLevelComplete((*it).name)) {
 						completedLevels += 1;
 					}
-					bool unlocked = IsLevelComplete((*it).name);
+					bool unlocked = (*uiFrameStateLocal).unlockAll || IsLevelComplete((*it).name);
 					if (!unlocked) {
 						if (std::holds_alternative<int>((*it).unlockRequirement)) {
 							unlocked = (completedLevels >= std::get<int>((*it).unlockRequirement));
@@ -488,10 +488,10 @@ namespace hg {
 							(IsLevelComplete((*it).name) ? (*it).humanName + std::string(" (done)") : (*it).humanName),
 							400.f, drawPos, 32.f, 
 							(selectedItem == optPos ? 
-								(IsLevelComplete((*it).name) ? 
+								((*uiFrameStateLocal).unlockAll || IsLevelComplete((*it).name) ?
 									vec3<float>{ 128.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
 									vec3<float>{  90.f / 255.f, 180.f / 255.f, 180.f / 255.f } ) :
-								(IsLevelComplete((*it).name) ? 
+								((*uiFrameStateLocal).unlockAll || IsLevelComplete((*it).name) ?
 									vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f } :
 									vec3<float>{ 160.f / 255.f, 160.f / 255.f, 160.f / 255.f } )));
 						drawPos += 42.f;
@@ -605,7 +605,8 @@ namespace hg {
 		int defaultPage,
 		std::vector<PageState> const &levelMenuConf,
 		VulkanEngine& vulkanEng,
-		VulkanRenderer& vkRenderer)
+		VulkanRenderer& vkRenderer,
+		bool unlockAll)
 	{
 		SelectionPageSceneRenderer renderer{
 			vulkanEng.physicalDevice,
@@ -651,7 +652,7 @@ namespace hg {
 
 		while (true) {
 			//std::cout << "page: " << std::to_string(page) << ", selectedItem: " << std::to_string(selectedItem) << ", perPage: " << std::to_string(perPage) << "\n" << std::flush;
-			renderer.setUiFrameState(selectedItem, selectedPage, levelMenuConf);
+			renderer.setUiFrameState(selectedItem, selectedPage, levelMenuConf, unlockAll);
 			//drawOptionSelection(window, levelMenuConf[selectedItem]);
 			bool menuDrawn = true;
 			while (menuDrawn) {
@@ -680,7 +681,7 @@ namespace hg {
 									completedLevels += 1;
 								}
 							}
-							bool unlocked = IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
+							bool unlocked = unlockAll || IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
 							if (!unlocked) {
 								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
 									unlocked = (completedLevels >= std::get<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));

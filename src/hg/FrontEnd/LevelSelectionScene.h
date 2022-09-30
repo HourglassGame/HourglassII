@@ -15,6 +15,7 @@ namespace hg {
 		VulkanRenderer& vkRenderer,
 		std::string &levelName,
 		int position,
-		int page);
+		int page,
+		bool unlockAll);
 }
 #endif //HG_LEVEL_SELECTION_SCENE_H
