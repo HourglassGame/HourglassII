@@ -665,6 +665,14 @@ namespace hg {
 				
 				if (windowglfw.hasLastKey()) {
 					int key = windowglfw.useLastKey();
+					
+					int completedLevels = 0;
+					for (auto it = (levelMenuConf[selectedPage].options).begin(); it != (levelMenuConf[selectedPage].options).end(); ++it) {
+						if (IsLevelComplete((*it).name)) {
+							completedLevels += 1;
+						}
+					}
+					
 					if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
 						int completedOnPrevPages = 0;
 						for (size_t p = 0; p < selectedPage; ++p) {
@@ -675,12 +683,6 @@ namespace hg {
 							}
 						}
 						if (completedOnPrevPages >= levelMenuConf[selectedPage].prevLevelsRequired) {
-							int completedLevels = 0;
-							for (auto it = (levelMenuConf[selectedPage].options).begin(); it != (levelMenuConf[selectedPage].options).end(); ++it) {
-								if (IsLevelComplete((*it).name)) {
-									completedLevels += 1;
-								}
-							}
 							bool unlocked = unlockAll || IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
 							if (!unlocked) {
 								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
@@ -695,32 +697,79 @@ namespace hg {
 						}
 					}
 					if (key == GLFW_KEY_UP || key == GLFW_KEY_W) {
-						selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
+						int tries = static_cast<int>(levelMenuConf[selectedPage].options.size());
+						bool unlocked = false;
+						do {
+							selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
+							unlocked = unlockAll || IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
+							if (!unlocked) {
+								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
+									unlocked = (completedLevels >= std::get<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								} else {
+									unlocked = IsLevelComplete(std::get<std::string>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								}
+							}
+							tries -= 1;
+						} while (!unlocked && tries);
 						menuDrawn = false;
 					}
 					if (key == GLFW_KEY_DOWN || key == GLFW_KEY_S) {
-						selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
+						int tries = static_cast<int>(levelMenuConf[selectedPage].options.size());
+						bool unlocked = false;
+						do {
+							selectedItem = flooredModulo(selectedItem + 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
+							unlocked = unlockAll || IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
+							if (!unlocked) {
+								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
+									unlocked = (completedLevels >= std::get<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								} else {
+									unlocked = IsLevelComplete(std::get<std::string>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								}
+							}
+							tries -= 1;
+						} while (!unlocked && tries);
 						menuDrawn = false;
 					}
+					
+					bool needPageFix = false;
 					if (key == GLFW_KEY_LEFT|| key == GLFW_KEY_A) {
 						if (selectedPage > 0) {
 							selectedPage = selectedPage - 1;
 							menuDrawn = false;
+							needPageFix = true;
 						}
 					}
 					if (key == GLFW_KEY_RIGHT || key == GLFW_KEY_D) {
 						if (selectedPage < static_cast<int>(levelMenuConf.size()) - 1) {
 							selectedPage = selectedPage + 1;
 							menuDrawn = false;
+							needPageFix = true;
 						}
 					}
 					if (key == GLFW_KEY_ESCAPE) {
 						return SceneAborted_tag{};
 					}
 					
-					// Fix page change
-					if (selectedItem >= static_cast<int>(levelMenuConf[selectedPage].options.size())) {
-						selectedItem = static_cast<int>(levelMenuConf[selectedPage].options.size()) - 1;
+					// Fix level out of bounds on change
+					if (needPageFix) {
+						int tries = static_cast<int>(levelMenuConf[selectedPage].options.size());
+						if (selectedItem >= tries) {
+							selectedItem = tries;
+						}
+						bool unlocked = false;
+						selectedItem += 1; // Lazy counteraction for do loop.
+						do {
+							selectedItem = flooredModulo(selectedItem - 1, static_cast<int>(levelMenuConf[selectedPage].options.size()));
+							unlocked = unlockAll || IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
+							if (!unlocked) {
+								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
+									unlocked = (completedLevels >= std::get<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								} else {
+									unlocked = IsLevelComplete(std::get<std::string>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement));
+								}
+							}
+							tries -= 1;
+						} while (!unlocked && tries);
 					}
 				}
 			}
