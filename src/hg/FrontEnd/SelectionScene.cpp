@@ -446,20 +446,71 @@ namespace hg {
 			int selectedItem = (*uiFrameStateLocal).selectedItem;
 			
 			PageState pageInfo = (*uiFrameStateLocal).pages[(*uiFrameStateLocal).page];
-			
+
+			int completedOnPrevPagesPrev = 0;
 			int completedOnPrevPages = 0;
-			for (size_t p = 0; p < (*uiFrameStateLocal).page; ++p) {
+			int completedOnPrevPagesNext = 0;
+			for (size_t p = 0; p <= (*uiFrameStateLocal).page; ++p) {
 				for (auto it = ((*uiFrameStateLocal).pages[p].options).begin(); it != ((*uiFrameStateLocal).pages[p].options).end(); ++it) {
 					if (IsLevelComplete((*it).name)) {
-						completedOnPrevPages += 1;
+						if (p < (*uiFrameStateLocal).page) {
+							completedOnPrevPages += 1;
+						}
+						if (p < (*uiFrameStateLocal).page - 1) {
+							completedOnPrevPagesPrev += 1;
+						}
+						completedOnPrevPagesNext += 1;
 					}
 				}
 			}
+
+			// Draw previous page namw.
+			if ((*uiFrameStateLocal).page > 0) {
+				PageState pageInfoPrev = (*uiFrameStateLocal).pages[(*uiFrameStateLocal).page - 1];
+				if (completedOnPrevPagesPrev < pageInfoPrev.prevLevelsRequired && !(*uiFrameStateLocal).unlockAll) {
+					drawText(
+						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+						pageInfoPrev.name + " (" + std::to_string(completedOnPrevPagesPrev) + " / " + std::to_string(pageInfoPrev.prevLevelsRequired) + ")",
+						150.0f, drawPos + 6.0f, 24.f,
+						vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+				} else {
+					drawText(
+						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+						pageInfoPrev.name, 150.0f, drawPos + 6.0f, 24.f,
+						vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+				}
+			}
+
+			// Draw next page name.
+			if ((*uiFrameStateLocal).page < (*uiFrameStateLocal).pages.size() - 1) {
+				PageState pageInfoNext = (*uiFrameStateLocal).pages[(*uiFrameStateLocal).page + 1];
+				if (completedOnPrevPagesNext < pageInfoNext.prevLevelsRequired && !(*uiFrameStateLocal).unlockAll) {
+					drawText(
+						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+						pageInfoNext.name + " (" + std::to_string(completedOnPrevPagesNext) + " / " + std::to_string(pageInfoNext.prevLevelsRequired) + ")",
+						800.0f, drawPos + 6.0f, 24.f,
+						vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+				}
+				else {
+					drawText(
+						target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+						pageInfoNext.name, 800.0f, drawPos + 6.0f, 24.f,
+						vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+				}
+			}
+
+			// Draw current page, and availible levels.
 			if (completedOnPrevPages < pageInfo.prevLevelsRequired && !(*uiFrameStateLocal).unlockAll) {
 				drawText(
 					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
-					pageInfo.name + " (Locked, " + std::to_string(completedOnPrevPages) + " / " + std::to_string(pageInfo.prevLevelsRequired) + " levels required)",
+					pageInfo.name,
 					400.f, drawPos, 32.f, 
+					vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
+				drawPos += 42.f;
+				drawText(
+					target, drawCommandBuffer, sceneData->pipelineLayout.pipelineLayout, sceneData->fontTexDescriptorSet,
+					"(Locked, " + std::to_string(completedOnPrevPages) + " / " + std::to_string(pageInfo.prevLevelsRequired) + " levels required)",
+					400.f, drawPos, 32.f,
 					vec3<float>{ 255.f / 255.f, 255.f / 255.f, 255.f / 255.f });
 				drawPos += 42.f;
 			} else {
