@@ -682,7 +682,7 @@ namespace hg {
 								}
 							}
 						}
-						if (completedOnPrevPages >= levelMenuConf[selectedPage].prevLevelsRequired) {
+						if (unlockAll || completedOnPrevPages >= levelMenuConf[selectedPage].prevLevelsRequired) {
 							bool unlocked = unlockAll || IsLevelComplete(levelMenuConf[selectedPage].options[selectedItem].name);
 							if (!unlocked) {
 								if (std::holds_alternative<int>(levelMenuConf[selectedPage].options[selectedItem].unlockRequirement)) {
