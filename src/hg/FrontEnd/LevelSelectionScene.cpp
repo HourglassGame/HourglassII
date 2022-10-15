@@ -62,6 +62,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	pageLevels.push_back(hg::LevelState("FlowUphill.lvl", "Flow Uphill", 0));
 	pageLevels.push_back(hg::LevelState("GetDown.lvl", "Get Down", 0));
 	pageLevels.push_back(hg::LevelState("GetDown_hard.lvl", "Get Down (bonus)", "GetDown.lvl"));
+	pageLevels.push_back(hg::LevelState("Staircase.lvl", "Staircase", 0));
 	levelMenuConf.push_back(hg::PageState("New Levels", 0, pageLevels));
 	
 	// Page 1

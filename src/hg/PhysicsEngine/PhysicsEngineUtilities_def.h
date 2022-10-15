@@ -239,7 +239,7 @@ template <
 			{
 				illegalPortal = portals[i].getIndex();
 			}
-			else if (triggerFrameState.shouldPort(i, Box(x, y, xspeed, yspeed, width, height, boxType, 0, oldIllegalPortal, -1, timeDirection), false))
+			else if (triggerFrameState.shouldPort(portals[i].getIndex(), Box(x, y, xspeed, yspeed, width, height, boxType, 0, oldIllegalPortal, -1, timeDirection), false))
 			{
 				FrameT portalTime(
 					portals[i].getRelativeTime() ?
@@ -1404,7 +1404,7 @@ void guyStep(
 							illegalPortal[i] = nextPortal[j].getIndex();
 						}
 						else if (triggerFrameState.shouldPort(
-							j,
+							nextPortal[j].getIndex(),
 							Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i],
 								walkSpeed[i], jumpHold[i], action[i], newWidth[i], newHeight[i],
 								newJumpSpeed[i],
@@ -1432,10 +1432,12 @@ void guyStep(
 							if (nextPortal[j].getRelativeDirection())
 							{
 								nextTimeDirection *= nextPortal[j].getDestinationDirection();
+								carryDirection[i] *= nextPortal[j].getDestinationDirection();
 							}
 							else
 							{
 								nextTimeDirection = nextPortal[j].getDestinationDirection();
+								carryDirection[i] = nextPortal[j].getDestinationDirection();
 							}
 
 							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
@@ -1519,7 +1521,7 @@ void guyStep(
 							nextPortal[j].getX(), nextPortal[j].getY(),
 							nextPortal[j].getWidth(), nextPortal[j].getHeight(),
 							nextPortal[j].getCollisionOverlap())
-							&& (triggerFrameState.shouldPort(j,
+							&& (triggerFrameState.shouldPort(nextPortal[j].getIndex(),
 								Guy(relativeIndex, x[i], y[i], xspeed[i], yspeed[i],
 									walkSpeed[i], jumpHold[i], action[i], newWidth[i], newHeight[i],
 									newJumpSpeed[i],
@@ -1547,10 +1549,12 @@ void guyStep(
 							if (nextPortal[j].getRelativeDirection())
 							{
 								nextTimeDirection *= nextPortal[j].getDestinationDirection();
+								carryDirection[i] *= nextPortal[j].getDestinationDirection();
 							}
 							else
 							{
 								nextTimeDirection = nextPortal[j].getDestinationDirection();
+								carryDirection[i] = nextPortal[j].getDestinationDirection();
 							}
 
 							nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;
@@ -1703,10 +1707,12 @@ void guyStep(
 					if (nextPortal[i].getRelativeDirection())
 					{
 						nextTimeDirection *= nextPortal[i].getDestinationDirection();
+						carryDirection[shot.targetId] *= nextPortal[i].getDestinationDirection();
 					}
 					else
 					{
 						nextTimeDirection = nextPortal[i].getDestinationDirection();
+						carryDirection[shot.targetId] = nextPortal[i].getDestinationDirection();
 					}
 
 					nextTime = portalTime ? nextFrame(portalTime, nextTimeDirection) : nullptr;

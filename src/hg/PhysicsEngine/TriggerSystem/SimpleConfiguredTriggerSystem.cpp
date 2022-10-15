@@ -409,10 +409,11 @@ namespace hg {
 		auto const [forGlitz, revGlitz] = calculateBidirectionalGlitz(350, portal.getX(), portal.getY(), portal.getXspeed(), portal.getYspeed(), portal.getWidth(), portal.getHeight(), portal.getTimeDirection(), colour, colour);
 		
 		mt::std::string text;
+		int writeOffset = -2400;
 		if (portal.getWinner()) {
 			text = active ? "Win" : "Inactive";
 		}
-		else if (portal.getRelativeTime() && portal.getTimeDestination() > 0) {
+		else if (portal.getRelativeTime() && portal.getTimeDestination() >= 0) {
 			text = "+" + formatTime(portal.getTimeDestination());
 		}
 		else {
@@ -429,17 +430,62 @@ namespace hg {
 		auto textGlitz = Glitz(mt::std::make_unique<TextGlitz>(
 			440,
 			text,
-			portal.getX() + portal.getWidth()/2-1600,
-			portal.getY() - 2400,
+			portal.getX() + portal.getWidth()/2 - 1600,
+			portal.getY() + writeOffset,
 			2000,
 			asPackedColour(0,0,0)
 		));
 		forwardsGlitz.push_back(forGlitz);
 		reverseGlitz.push_back(revGlitz);
 
-		forwardsGlitz.push_back(textGlitz);
-		reverseGlitz.push_back(textGlitz);
+		// Don't draw time for port
+		if (!portal.getRelativeTime() || portal.getTimeDestination() != 0) {
+			forwardsGlitz.push_back(textGlitz);
+			reverseGlitz.push_back(textGlitz);
+			writeOffset -= 2400;
+		}
 
+		// Draw unusual portal time direction changes (either relative reverse, or fixed set)
+		if (!portal.getWinner()) {
+			if (!portal.getRelativeDirection()) {
+				if (portal.getDestinationDirection() == TimeDirection::FORWARDS) {
+					textGlitz = Glitz(mt::std::make_unique<TextGlitz>(
+						440,
+						"Set Forwards",
+						portal.getX() + portal.getWidth()/2 - 3000,
+						portal.getY() + writeOffset,
+						2000,
+						asPackedColour(0,0,0)
+					));
+					forwardsGlitz.push_back(textGlitz);
+					reverseGlitz.push_back(textGlitz);
+				} else {
+					textGlitz = Glitz(mt::std::make_unique<TextGlitz>(
+						440,
+						"Set Reverse",
+						portal.getX() + portal.getWidth()/2 - 3000,
+						portal.getY() + writeOffset,
+						2000,
+						asPackedColour(0,0,0)
+					));
+					forwardsGlitz.push_back(textGlitz);
+					reverseGlitz.push_back(textGlitz);
+				}
+			} else if (portal.getDestinationDirection() != TimeDirection::FORWARDS) {
+				textGlitz = Glitz(mt::std::make_unique<TextGlitz>(
+					440,
+					"Reverse",
+					portal.getX() + portal.getWidth()/2 - 3000,
+					portal.getY() + writeOffset,
+					2000,
+					asPackedColour(0,0,0)
+				));
+				forwardsGlitz.push_back(textGlitz);
+				reverseGlitz.push_back(textGlitz);
+			}
+		}
+
+		// Draw charge uses
 		if (charges != -1) {
 			std::stringstream ss;
 			ss << "Uses " << charges;
