@@ -346,6 +346,7 @@ namespace hg {
 			protoPortal.destinationDirection,// TimeDirection destinationDirection,
 			protoPortal.illegalDestination,// int illegalDestination,
 			protoPortal.fallable,// bool fallable,
+			protoPortal.guyOnly,// bool guyOnly,
 			protoPortal.isLaser,// bool isLaser,
 			protoPortal.winner// bool winner
 		);
@@ -871,6 +872,7 @@ namespace hg {
 			TriggerClause triggerClause;
 			int illegalDestination;
 			bool fallable;
+			bool guyOnly;
 			bool isLaser;
 			bool winner;
 		};
@@ -928,7 +930,8 @@ namespace hg {
 		int const chargeTriggerID = (!lua_isnil(L, -1) ? lua_index_to_C_index(to<int>(L)) : -1);
 		lua_pop(L, 1);
 
-		bool const fallable(readField<bool>(L, "fallable"));
+		bool const fallable(readFieldWithDefault<bool>(L, "fallable", -1, false));
+		bool const guyOnly(readFieldWithDefault<bool>(L, "guyOnly", -1, false));
 		bool const isLaser(readFieldWithDefault<bool>(L, "isLaser", -1, false));
 		int const xaim(isLaser?readField<int>(L, "xaim"):0);
 		int const yaim(isLaser?readField<int>(L, "yaim"):0);
@@ -954,6 +957,7 @@ namespace hg {
 			hasTriggerClause,
 			triggerClause,
 			fallable,
+			guyOnly,
 			isLaser,
 			winner
 		};

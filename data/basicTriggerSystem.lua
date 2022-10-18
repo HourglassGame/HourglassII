@@ -179,7 +179,8 @@ local function calculatePortals(forwardsGlitz, reverseGlitz, protoPortals, colli
             relativeDirection = (protoPortal.relativeDirection ~= nil) or true,
             destinationDirection = protoPortal.destinationDirection or 'forwards',
             illegalDestination = protoPortal.illegalDestination,
-            fallable = protoPortal.fallable,
+            fallable = (protoPortal.fallable or false),
+            guyOnly = (protoPortal.guyOnly or false),
             isLaser = (protoPortal.isLaser or false),
             winner = false
         }

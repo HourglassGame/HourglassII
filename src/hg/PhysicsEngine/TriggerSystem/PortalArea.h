@@ -30,6 +30,7 @@ class PortalArea final {
 			destinationDirection_,
 			illegalDestination_,
 			fallable_,
+			guyOnly_,
 			isLaser_,
 			winner_
 		);
@@ -56,6 +57,7 @@ public:
 		TimeDirection destinationDirection,
 		int illegalDestination,
 		bool fallable,
+		bool guyOnly,
 		bool isLaser,
 		bool winner
 		) :
@@ -79,6 +81,7 @@ public:
 			destinationDirection_(destinationDirection),
 			illegalDestination_(illegalDestination),
 			fallable_(fallable),
+			guyOnly_(guyOnly),
 			isLaser_(isLaser),
 			winner_(winner)
 	{
@@ -122,6 +125,7 @@ public:
 	
 	int getIllegalDestination() const { return illegalDestination_; }
 	bool getFallable() const { return fallable_; }
+	bool getGuyOnly() const { return guyOnly_; }
 	bool getIsLaser() const { return isLaser_; }
 	bool getWinner() const { return winner_; }
 	
@@ -149,6 +153,7 @@ public:
 		HG_PORTAL_AREA_PRINT(destinationDirection_) << ',';
 		HG_PORTAL_AREA_PRINT(illegalDestination_) << ',';
 		HG_PORTAL_AREA_PRINT(fallable_) << ',';
+		HG_PORTAL_AREA_PRINT(guyOnly_) << ',';
 		HG_PORTAL_AREA_PRINT(isLaser_) << ',';
 		HG_PORTAL_AREA_PRINT(winner_);
 #undef HG_PORTAL_AREA_PRINT
@@ -193,6 +198,7 @@ private:
 	TimeDirection destinationDirection_;
 	int illegalDestination_;
 	bool fallable_;
+	bool guyOnly_;
 	bool isLaser_;
 	bool winner_;
 };

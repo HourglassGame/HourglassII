@@ -206,6 +206,7 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
 	lua_pop(L, 1);
 	
 	bool fallable(readField<bool>(L, "fallable"));
+	bool guyOnly(readField<bool>(L, "guyOnly"));
 	bool isLaser(readField<bool>(L, "isLaser"));
 	bool winner(readField<bool>(L, "winner"));
 	int xaim = 0;
@@ -236,6 +237,7 @@ PortalArea toPortal(lua_State *L, std::size_t arrivalLocationsSize)
 			destinationDirection,
 			illegalDestination,
 			fallable,
+			guyOnly,
 			isLaser,
 			winner);
 }
@@ -395,6 +397,7 @@ DirectLuaTriggerFrameState::calculatePhysicsAffectingStuff(
 			--at its destination after travelling though this portal
 			illegalDestination = <positive number or nil>,
 			fallable = <boolean>,
+			guyOnly = <boolean>,
 			winner = <boolean>
 		}
 	*/

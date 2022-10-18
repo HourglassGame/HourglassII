@@ -228,7 +228,7 @@ template <
 	// fall through portals
 	for (unsigned i = 0; i < portals.size(); ++i)
 	{
-		if (portals[i].getFallable() &&
+		if (portals[i].getFallable() && !portals[i].getGuyOnly() &&
 			(!portals[i].getIsLaser()) &&
 			IntersectingRectanglesInclusiveCollisionOverlap(x, y, width, height,
 			portals[i].getX(), portals[i].getY(),
@@ -1390,7 +1390,8 @@ void guyStep(
 			{
 				for (unsigned int j = 0; j < nextPortal.size(); ++j)
 				{
-					if (nextPortal[j].getFallable() && 
+					if (nextPortal[j].getFallable() &&
+						(carry[i] == BoxType::NONE || !nextPortal[j].getGuyOnly()) &&
 						(!nextPortal[j].getIsLaser()) &&
 						IntersectingRectanglesInclusiveCollisionOverlap(
 						x[i], y[i], newWidth[i], newHeight[i],
@@ -1516,6 +1517,7 @@ void guyStep(
 					for (unsigned int j = 0; j < nextPortal.size(); ++j)
 					{
 						if ((!nextPortal[j].getIsLaser()) &&
+							(carry[i] == BoxType::NONE || !nextPortal[j].getGuyOnly()) &&
 							IntersectingRectanglesInclusiveCollisionOverlap(
 							x[i], y[i], newWidth[i], newHeight[i],
 							nextPortal[j].getX(), nextPortal[j].getY(),
@@ -1679,7 +1681,7 @@ void guyStep(
 			// Should be a different glitz adder?
 			guyGlitzAdder.addLaserGlitz(sx, sy, shot.px, shot.py, nextPortal[i].getXaim(), nextPortal[i].getYaim(), nextPortal[i].getTimeDirection());
 
-			if (shot.targetType == PhysicsObjectType::GUY)
+			if ((shot.targetType == PhysicsObjectType::GUY) && (carry[shot.targetId] == BoxType::NONE || !nextPortal[i].getGuyOnly()))
 			{
 				assert(shot.targetId != std::numeric_limits<std::size_t>::max());
 				assert(shot.targetId >= 0 && shot.targetId < boost::size(guyArrivalList));
@@ -1773,7 +1775,7 @@ void guyStep(
 
 				finishedWith[shot.targetId] = true;
 			}
-			else if (shot.targetType == PhysicsObjectType::BOX)
+			else if ((shot.targetType == PhysicsObjectType::BOX) && !nextPortal[i].getGuyOnly())
 			{
 				assert(shot.targetId != std::numeric_limits<std::size_t>::max());
 				assert(shot.targetId >= 0 && shot.targetId < boost::size(nextBox));

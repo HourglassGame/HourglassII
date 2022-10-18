@@ -188,6 +188,7 @@ namespace hg {
 				hasTriggerClause,
 				triggerClause,
 				fallable,
+				guyOnly,
 				isLaser,
 				winner
 			);
@@ -214,6 +215,7 @@ namespace hg {
 		bool hasTriggerClause;
 		TriggerClause triggerClause;
 		bool fallable;
+		bool guyOnly;
 		bool isLaser;
 		bool winner;
 
