@@ -42,6 +42,7 @@ public:
 		TextGlitz const &actual_other(*boost::polymorphic_downcast<TextGlitz const *>(&o));
 		return comparison_tuple() == actual_other.comparison_tuple();
 	}
+	bool operator!=(GlitzImplementation const& o) const = delete;
 private:
 	virtual int order_ranking() const override {
 		return 2;
