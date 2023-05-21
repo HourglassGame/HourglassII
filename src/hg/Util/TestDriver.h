@@ -4,6 +4,7 @@
 #include <boost/noncopyable.hpp>
 #include <vector>
 #include <tuple>
+#include <string>
 namespace hg {
 #if 0
 struct TestMonitor {
