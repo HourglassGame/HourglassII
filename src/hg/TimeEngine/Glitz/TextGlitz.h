@@ -40,9 +40,11 @@ public:
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		TextGlitz const &actual_other(*boost::polymorphic_downcast<TextGlitz const *>(&o));
-		return comparison_tuple() == actual_other.comparison_tuple();
+		return *this == actual_other;
 	}
-	bool operator!=(GlitzImplementation const& o) const = delete;
+	bool operator==(TextGlitz const& o) const {
+		return comparison_tuple() == o.comparison_tuple();
+	}
 private:
 	virtual int order_ranking() const override {
 		return 2;
