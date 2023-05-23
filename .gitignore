@@ -6,15 +6,6 @@
 /ext/TBB
 /ext/Contents.txt
 
-/ide/msvc2015/HourglassII/x64
-/ide/msvc2015/HourglassII/HourglassII/x64
-/ide/msvc2015/HourglassII/HourglassIIUnity/x64
-
-
-/ide/msvc2017/HourglassII/x64
-/ide/msvc2017/HourglassII/HourglassII/x64
-/ide/msvc2017/HourglassII/HourglassIIUnity/x64
-
 *.VC.db
 *.ncrunchsolution
 *.crunchsolution.cache
@@ -24,11 +15,3 @@
 *.vs
 *.sdf
 *.opensdf
-/data/replay
-/data/replayLogOut
-/ext/MSVCToolpackv0.7z
-/ext/readme.txt
-/data/levels - Shortcut.lnk
-/data/shaders/demo.frag.glsl.spv
-/data/shaders/demo.vert.glsl.spv
-/data/saves
