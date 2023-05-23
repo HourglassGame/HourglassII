@@ -10,7 +10,6 @@
 #include "lua/lapi.cpp"
 #include "lua/lauxlib.cpp"
 #include "lua/lbaselib.cpp"
-#include "lua/lbitlib.cpp"
 #include "lua/lcode.cpp"
 #include "lua/lcorolib.cpp"
 #include "lua/lctype.cpp"
@@ -40,7 +39,6 @@
 #include "lua/lutf8lib.cpp"
 #include "lua/lvm.cpp"
 #include "lua/lzio.cpp"
-
 
 #undef LUA_LIB
 #undef LUA_CORE
