@@ -2,7 +2,7 @@ set(HOURGLASSII_EXT_DIR "${PROJECT_SOURCE_DIR}/ext")
 
 set(SFML_STATIC_LIBRARIES TRUE)
 find_package(
-    SFML 2.5.1
+    SFML 2.5.1 #EXACT
     REQUIRED
     COMPONENTS graphics audio
     CONFIG
@@ -13,7 +13,7 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(
-    Boost 1.77.0
+    Boost 1.82.0 #EXACT
     REQUIRED
     COMPONENTS headers filesystem thread serialization
     CONFIG
@@ -21,28 +21,28 @@ find_package(
 )
 
 find_package(
-    TBB 2020.3.0 #Latest is now oneAPI TBB 2021.3.0; Not using this yet because oneAPI TBB (v2020.1...2020.3) appears to be incompatible with C++20 mode on MSVC 2019 (v16.11.2)
+    TBB 2021.9.0 #EXACT
     REQUIRED
     CONFIG
     HINTS "${HOURGLASSII_EXT_DIR}"
 )
 
 find_package(
-    glfw3 3.3.4
+    glfw3 3.3.8 #EXACT
     REQUIRED
     CONFIG
     HINTS "${HOURGLASSII_EXT_DIR}"
 )
 
 find_package(
-    Microsoft.GSL 3.1.0 #Lastest is 3.1.0; but there are much more recent changes in the main branch of the git repository
+    Microsoft.GSL 4.0.0 #EXACT
     REQUIRED
     CONFIG
     HINTS "${HOURGLASSII_EXT_DIR}"
 )
 
 find_package(
-    Vulkan
+    Vulkan #1.3.246 EXACT
     REQUIRED
     COMPONENTS glslangValidator)
 

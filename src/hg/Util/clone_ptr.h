@@ -2,7 +2,7 @@
 #define HG_CLONE_PTR_H
 #include <boost/swap.hpp>
 #include "default_clone.h"
-#include <gsl/gsl_assert>
+#include <gsl/assert>
 namespace hg {
 //It is desirable for this to be a smart reference
 //(rather than a smart pointer)

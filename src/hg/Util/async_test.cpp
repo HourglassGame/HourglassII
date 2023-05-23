@@ -1,6 +1,5 @@
 #include "async.h"
 #include "TestDriver.h"
-#include <tbb/task_scheduler_init.h>
 namespace hg {
 namespace async_test {
 namespace {
@@ -15,7 +14,8 @@ namespace {
         auto test = ([] {
             //Running test in newly created thread so task_scheduler_init is able to operate independently
             //from the main codebase.
-            tbb::task_scheduler_init init(1);
+            //tbb::task_scheduler_init init(1); //No longer exists. TODO: Is there another way to force TBB into single threaded mode?
+                                                //Not that it is particularly relevant right now, as the current implementation of hg::async does not use TBB
             std::atomic<int> counter(0);
             async([&] {
                 async([&] {

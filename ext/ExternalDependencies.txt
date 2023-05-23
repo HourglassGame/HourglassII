@@ -1,10 +1,9 @@
 ==== HourglassII External Dependencies Configuration ====
 HourglassII depends on the following libraries:
 
-Boost version 1.72.0 -- https://www.boost.org/users/history/version_1_72_0.html
-SFML version 2.5.1 -- http://www.sfml-dev.org/download.php
-Threading Building Blocks version 2020.1-- https://github.com/intel/tbb/releases/tag/v2020.1
-OpenALSoft 1.20.1 -- https://github.com/kcat/openal-soft/releases/tag/openal-soft-1.20.1
-GLFW 3.3.2 -- https://www.glfw.org/download.html
-GSL 202f332702ccaddd67894d5fdcaf91fa2cbd38eb -- https://github.com/Microsoft/GSL/
-Vulkan (LunarG Vulkan SDK 1.2.135.0) -- https://vulkan.lunarg.com/sdk/home
+Boost 1.82.0 -- https://www.boost.org/users/history/version_1_82_0.html
+SFML 2.5.1 -- http://www.sfml-dev.org/download.php
+oneTBB 2021.9.0 -- https://github.com/oneapi-src/oneTBB/releases/tag/v2021.9.0
+GLFW 3.3.8 -- https://www.glfw.org/download
+Microsoft.GSL 4.0.0 -- https://github.com/microsoft/GSL/releases/tag/v4.0.0
+Vulkan (LunarG Vulkan SDK 1.3.246.1) -- https://vulkan.lunarg.com/sdk/home

@@ -16,9 +16,6 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
-#include <tbb/task_scheduler_init.h>
-
-
 
 namespace hg {
 
@@ -67,7 +64,6 @@ int main_entry(int argc, char *argv[])
 
     initialiseCurrentPath(args);
     GlobalResourceHolder global_resources;
-    //tbb::task_scheduler_init tbb_init(1);
 
     if (!hg::getTestDriver().passesAllTests()) {
         std::cerr << "Failed self-check! Aborting." << std::endl;

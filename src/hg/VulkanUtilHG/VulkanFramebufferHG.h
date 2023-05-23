@@ -2,7 +2,7 @@
 #define HG_VULKANFRAMEBUFFERHG_H
 
 #include "hg/VulkanUtil/VulkanFramebuffer.h"
-#include <gsl/gsl_util>
+#include <gsl/util>
 #include <vulkan/vulkan.h>
 #include <array>
 

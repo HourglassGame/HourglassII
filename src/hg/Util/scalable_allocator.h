@@ -14,22 +14,26 @@ private:
     typedef typename Alloc<T>::type tbb_alloc;
     tbb_alloc alloc;
 public:
-    typedef typename tbb_alloc::pointer          pointer;
-    typedef typename tbb_alloc::const_pointer    const_pointer;
+    using propagate_on_container_move_assignment = tbb_alloc::propagate_on_container_move_assignment;
+    typedef typename tbb_alloc::value_type *pointer;
+    typedef typename tbb_alloc::value_type const *const_pointer;
     typedef void       *void_pointer;
     typedef void const *const_void_pointer;
     typedef typename tbb_alloc::value_type value_type;
-    typedef typename tbb_alloc::size_type size_type;
-    typedef typename tbb_alloc::difference_type difference_type;
+    typedef typename std::size_t size_type;
+    typedef typename std::ptrdiff_t difference_type;
     template<typename U> struct rebind final
         { typedef tbb_scalable_allocator<U> other; };
 
-    typedef typename tbb_alloc::reference reference;
-    typedef typename tbb_alloc::const_reference const_reference;
+    typedef typename tbb_alloc::value_type &reference;
+    typedef typename tbb_alloc::value_type const &const_reference;
 
     pointer allocate(size_type n) { return alloc.allocate(n); }
     void deallocate(pointer p, size_type n) { alloc.deallocate(p, n); }
-    size_type max_size() const { return alloc.max_size(); }
+    size_type max_size() const {
+        size_type absolutemax = static_cast<size_type>(-1) / sizeof(value_type);
+        return (absolutemax > 0 ? absolutemax : 1);
+    }
 
     tbb_scalable_allocator() : alloc() {}
     tbb_scalable_allocator(tbb_scalable_allocator const &)

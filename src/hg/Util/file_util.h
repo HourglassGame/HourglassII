@@ -1,6 +1,7 @@
 #ifndef HG_FILE_UTIL_H
 #define HG_FILE_UTIL_H
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <sstream>
 #include <vector>
 namespace hg {

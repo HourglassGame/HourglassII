@@ -1,6 +1,7 @@
 #ifndef HG_UNLOCK_UTIL_H
 #define HG_UNLOCK_UTIL_H
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <string_view>
 namespace hg {
 inline bool IsLevelComplete(
