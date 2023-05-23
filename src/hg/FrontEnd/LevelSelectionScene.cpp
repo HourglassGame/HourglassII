@@ -87,7 +87,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 	std::vector<hg::LevelState> unsortedLevels = std::vector<hg::LevelState>();
 	
 	std::vector<boost::filesystem::path> levelPaths;
-	for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"), boost::filesystem::directory_iterator())) {
+	for (auto entry: boost::make_iterator_range(boost::filesystem::directory_iterator("static/levels/"), boost::filesystem::directory_iterator())) {
 		if (is_directory(entry.status()) && entry.path().extension()==".lvl") {
 			levelPaths.push_back(entry.path());
 		}
@@ -144,7 +144,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 		assert(std::holds_alternative<LevelSelectionReturn>(selectedOption));
 	}
 	
-	boost::filesystem::path selectedPath{ boost::filesystem::path(std::string("levels/") + std::get<LevelSelectionReturn>(selectedOption).name)};
+	boost::filesystem::path selectedPath{ boost::filesystem::path("static/levels") /= std::get<LevelSelectionReturn>(selectedOption).name };
 	{
 		auto levelPathString = selectedPath.string();
 		return LoadLevelFunction{
@@ -157,7 +157,7 @@ std::variant<LoadLevelFunction, SceneAborted_tag> run_level_selection_scene(
 				[levelPathString](TimeEngine &&timeEngine) -> LoadedLevel {
 					return {
 						std::move(timeEngine),
-						loadLevelResources(levelPathString, "GlitzData")
+						loadLevelResources(levelPathString, "static/GlitzData")
 					};
 				}
 			)

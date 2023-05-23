@@ -120,7 +120,7 @@ int run_hourglassii() {
 		auto const windowTitle{ "Hourglass II" };
 		sf::Image window_icon_image;
 
-		if (!window_icon_image.loadFromFile("images/HourglassSwirl_64x64.png")) {
+		if (!window_icon_image.loadFromFile("static/images/HourglassSwirl_64x64.png")) {
 			throw std::exception("Couldn't load window icon");
 		}
 

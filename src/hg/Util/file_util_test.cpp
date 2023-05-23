@@ -10,7 +10,7 @@ namespace {
     bool test_loadFileIntoVectorCRLF()
     {
         std::size_t num_newlines(10);
-        auto const fileVec{ loadFileIntoVector("test/loadFileIntoVectorCRLFTest.bin") };
+        auto const fileVec{ loadFileIntoVector("static/test/loadFileIntoVectorCRLFTest.bin") };
         auto const makeRepeatedVec = [](auto const& toRepeat, std::size_t const times)
         {
             std::vector<char> out;

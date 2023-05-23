@@ -297,7 +297,7 @@ run_game_scene(
 	//Saves a replay continuously, but in a less nice format.
 	//Gets rewritten whenever the level is reset.
 	//Useful for tracking down crashes.
-	std::ofstream replayLogOut("replayLogOut");
+	std::ofstream replayLogOut("user/replayLogOut");
 
 	auto interrupter = std::make_unique<hg::OperationInterrupter>();
 	boost::future<hg::TimeEngine::RunResult> futureRunResult;
@@ -410,7 +410,7 @@ run_game_scene(
 				}
 				//Load replay
 				if (key == GLFW_KEY_L) {
-					return move_function<std::vector<InputList>()>([] {return loadReplay("replay"); });
+					return move_function<std::vector<InputList>()>([] {return loadReplay("user/replay"); });
 				}
 				//Interrupt replay and begin Playing
 				if (key == GLFW_KEY_C) {
@@ -419,7 +419,7 @@ run_game_scene(
 				}
 				//Save replay
 				if (key == GLFW_KEY_K) {
-					saveReplay("replay", receivedInputs);
+					saveReplay("user/replay", receivedInputs);
 				}
 				//Generate a replay from replayLogIn
 				if (key == GLFW_KEY_G) {
@@ -553,7 +553,7 @@ run_game_scene(
 				catch (hg::PlayerVictoryException const &) {
 					//TODO: Leave this scene properly before entering post_level_scene.
 					//(to avoid excessive memory use)
-					saveReplay("replay", receivedInputs); // Save replay on win
+					saveReplay("user/replay", receivedInputs); // Save replay on win
 					vkRenderer.EndScene();
 					run_post_level_scene(/*window, */windowglfw, eng, vkRenderer, initialTimeEngine, loadedLevel);
 					//TODO -- Check run_post_level_scene return values (once it gets return values)
@@ -763,11 +763,11 @@ void saveReplayLog(std::ostream &toAppendTo, hg::InputList const &toAppend)
 
 void generateReplay()
 {
-	std::ifstream replayLogIn("replayLogIn");
+	std::ifstream replayLogIn("user/replayLogIn");
 	if (replayLogIn.is_open()) {
 		std::vector<hg::InputList> replay;
 		replay.assign(std::istream_iterator<hg::InputList>(replayLogIn), std::istream_iterator<hg::InputList>());
-		saveReplay("replay", replay);
+		saveReplay("user/replay", replay);
 	}
 }
 }

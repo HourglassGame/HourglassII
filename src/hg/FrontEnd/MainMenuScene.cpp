@@ -37,7 +37,7 @@ struct MainMenuSceneSharedVulkanData {
 
 		//, timelineTextureDescriptorPool(createTimelineTextureDescriptorPool(device))
 		//, timelineTextures(createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
-		, fontTex("unifont.png", physicalDevice.physicalDevice, device, commandPool.h(), graphicsQueue, true)
+		, fontTex("static/unifont.png", physicalDevice.physicalDevice, device, commandPool.h(), graphicsQueue, true)
 		, fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 #if 0
 		, boxTex("GlitzData/box.png", device, physicalDevice, commandPool.h(), graphicsQueue, false)

@@ -17,7 +17,7 @@ namespace hg {
 		VulkanEngine& vulkanEng,
 		VulkanRenderer& vkRenderer)
 	{
-		boost::filesystem::path win_replay = boost::filesystem::path("levels") / levelName / "win.replay";
+		boost::filesystem::path win_replay = boost::filesystem::path("static/levels") / levelName / "win.replay";
 		//Get levels/levelName.lvl/win.replay
 		
 		//Add list of files: replays/levelName/*.replay (Sorted)
@@ -29,7 +29,7 @@ namespace hg {
 			includesWinReplay = true;
 		}
 		{
-			boost::filesystem::path replaysPath = boost::filesystem::path("replays/") / boost::filesystem::path(levelName).stem();
+			boost::filesystem::path replaysPath = boost::filesystem::path("static/replays/") / boost::filesystem::path(levelName).stem();
 			if (exists(replaysPath) && is_directory(replaysPath)) {
 				boost::push_back(
 					optionList,

@@ -41,7 +41,10 @@ find_package(
     HINTS "${HOURGLASSII_EXT_DIR}"
 )
 
-find_package(Vulkan REQUIRED)
+find_package(
+    Vulkan
+    REQUIRED
+    COMPONENTS glslangValidator)
 
 add_executable(HourglassII WIN32 MACOSX_BUNDLE)
 
@@ -105,57 +108,44 @@ target_link_libraries(HourglassII PRIVATE glfw)
 target_link_libraries(HourglassII PRIVATE Vulkan::Vulkan)
 target_link_libraries(HourglassII PRIVATE Microsoft.GSL::GSL)
 
-set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
-
 file(GLOB_RECURSE GLSL_SOURCE_FILES
     "${CMAKE_SOURCE_DIR}/shadersrc/*.glsl"
 )
 
-message(${GLSL_SOURCE_FILES})
-
 foreach(GLSL ${GLSL_SOURCE_FILES})
   get_filename_component(FILE_NAME ${GLSL} NAME)
-  set(SPIRV "${CMAKE_CURRENT_BINARY_DIR}/data/shaders/${FILE_NAME}.spv")
+  set(SPIRV "${CMAKE_CURRENT_BINARY_DIR}/data/compiled/shaders/${FILE_NAME}.spv")
   add_custom_command(
     OUTPUT ${SPIRV}
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/data/shaders/"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/data/compiled/shaders"
     #glslangValidator.exe only support SPIR-V output at an experimental level
     #at time of writing, and does not perform any optimization etc.
     #In the future it might be worth using a different compiler or even a different
     #shader source language.
-    COMMAND ${GLSL_VALIDATOR} -V ${GLSL} -o ${SPIRV}
+    COMMAND ${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} -V ${GLSL} -o ${SPIRV}
     DEPENDS ${GLSL})
   list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach()
 
-#file(GLOB_RECURSE DATA_SOURCE_FILES
-#    "${CMAKE_SOURCE_DIR}/data/*"
-#)
-
-#STRING(LENGTH "${CMAKE_SOURCE_DIR}/" CMAKE_SOURCE_DIR_LEN)
-
-#foreach(DATA_SOURCE_FILE ${DATA_SOURCE_FILES})
-#    string(SUBSTRING ${DATA_SOURCE_FILE} ${CMAKE_SOURCE_DIR_LEN} -1 DATA_SOURCE_FILE_REL)
-#    list(APPEND DATA_SOURCE_FILES_REL ${DATA_SOURCE_FILE_REL})
-#endforeach()
-
-#foreach(DATA_SOURCE_FILE_REL ${DATA_SOURCE_FILES_REL})
-#    set(DATA_TARGET_FILE "${CMAKE_CURRENT_BINARY_DIR}/${DATA_SOURCE_FILE_REL}")
-#    list(APPEND DATA_TARGET_FILES ${DATA_TARGET_FILE})
-#endforeach()
-
-#add_custom_command(
-#    OUTPUT ${DATA_TARGET_FILES}
-#    COMMAND ${CMAKE_COMMAND} -E copy_directory
-#        "${CMAKE_SOURCE_DIR}/data"
-#        "$<TARGET_FILE_DIR:HourglassII>/data"
-#    DEPENDS ${DATA_SOURCE_FILES}
-#)
 #Still not copying DLLs, this needs to be done for a full hands-off build from source to be runnable
 
 #Relevant DLLs are:
 #openal.dll (use openal-soft; https://openal-soft.org/)
 #tbb.dll
 #tbbmalloc.dll
-#add_custom_target(HourglassIIPackage ALL VERBATIM DEPENDS ${DATA_TARGET_FILES} ${SPIRV_BINARY_FILES})
-#add_dependencies(HourglassIIPackage HourglassII)
+add_custom_target(
+    HourglassIIPackage ALL VERBATIM
+
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/data"
+
+    #TODO: Add an option to copy the data directory, rather than symlinking to it.
+    COMMAND
+        ${CMAKE_COMMAND} -E create_symlink
+            "${CMAKE_SOURCE_DIR}/data"
+            "${CMAKE_CURRENT_BINARY_DIR}/data/static"
+
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/data/user"
+
+    DEPENDS ${SPIRV_BINARY_FILES}
+)
+add_dependencies(HourglassIIPackage HourglassII)

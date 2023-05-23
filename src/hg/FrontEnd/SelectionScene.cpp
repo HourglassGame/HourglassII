@@ -22,7 +22,7 @@ namespace hg {
 		, graphicsPipeline(device, swapChainExtent, pipelineLayout.pipelineLayout, renderPass)
 		, samplerDescriptorPool(createSamplerDescriptorPool(device))
 		, renderTargets(createRenderTargets(physicalDevice.physicalDevice, device, pipelineLayout.pipelineLayout, projUniformDescriptorSetLayout.descriptorSetLayout, preDrawCommandBuffers, drawCommandBuffers))
-		, fontTex("unifont.png", physicalDevice.physicalDevice, device, commandPool.h(), graphicsQueue, true)
+		, fontTex("static/unifont.png", physicalDevice.physicalDevice, device, commandPool.h(), graphicsQueue, true)
 		, fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 		{}
 

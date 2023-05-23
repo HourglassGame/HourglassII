@@ -28,7 +28,7 @@ namespace hg{
             
             std::size_t imageSizeBytes{textureImage.getSize().x*textureImage.getSize().y * 4};
 
-            if (filename == "unifont.png") {
+            if (filename == "static/unifont.png") {
                 //Hack. Remove this!
                 for (auto x{0}; x != textureImage.getSize().x; ++x) {
                     for (auto y{0}; y != textureImage.getSize().y; ++y) {

@@ -1,5 +1,4 @@
 #include "LevelLoader.h"
-#include <fstream>
 #include <vector>
 
 #include "hg/LuaUtil/SimpleLuaCpp.h"
@@ -58,7 +57,7 @@ static TriggerSystem loadSimpleConfiguredTriggerSystem(lua_State *L, path const 
 		[&levelPath](std::string const &packageName) {
 			return LuaModule(
 				packageName,
-				loadFileIntoVector(translateToActualPath(packageName, levelPath, path{"SimpleConfiguredProxyLuaGlobals"})));
+				loadFileIntoVector(translateToActualPath(packageName, levelPath, path{"static/SimpleConfiguredProxyLuaGlobals"})));
 		}));
 
 	lua_getfield(L, -1, "speedOfTimeTriggerID");

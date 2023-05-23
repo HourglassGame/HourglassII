@@ -461,7 +461,7 @@ inline multi_array<std::optional<VulkanTextureSimple>, 2, 2, 2, 2> loadWallBlock
 			for (int left(0); left <= 1; ++left) {
 				for (int bottom(0); bottom <= 1; ++bottom) {
 					std::stringstream filename;
-					filename << "Tilesets/" << tilesetName << right << top << left << bottom << ".png";
+					filename << "static/Tilesets/" << tilesetName << right << top << left << bottom << ".png";
 					wallBlockImages[right][top][left][bottom] = std::optional<VulkanTextureSimple>{
 						VulkanTextureSimple{
 							filename.str(),
@@ -514,7 +514,7 @@ inline multi_array<std::optional<VulkanTextureSimple>, 2, 2> loadWallCornerImage
 	for (int bottom(0); bottom <= 1; ++bottom) {
 		for (int right(0); right <= 1; ++right) {
 			std::stringstream filename;
-			filename << "Tilesets/" << tilesetName << (bottom ? "B" : "T") << (right ? "R" : "L") << ".png";
+			filename << "static/Tilesets/" << tilesetName << (bottom ? "B" : "T") << (right ? "R" : "L") << ".png";
 			cornerImages[bottom][right] = std::optional<VulkanTextureSimple>{
 				VulkanTextureSimple{
 					filename.str(),
@@ -678,32 +678,32 @@ struct GameDisplayTextures final {
 
 		, timelineTextureDescriptorPool(createTimelineTextureDescriptorPool(device))
 		, timelineTextures(createTimelineTextures(physicalDevice, device, gsl::narrow<int>(getTimelineTextureWidth(swapChainExtent)), gsl::narrow<int>(getTimelineTextureHeight()), timelineTextureDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout))
-		, fontTex("unifont.png", physicalDevice, device, commandPool, graphicsQueue, true)
+		, fontTex("static/unifont.png", physicalDevice, device, commandPool, graphicsQueue, true)
 		, fontTexDescriptorSet(createDescriptorSet(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, fontTex))
 
-		TEXTURE(boxTex, "GlitzData/box.png")
-		TEXTURE(boxRTex, "GlitzData/box_r.png")
-		TEXTURE(boxlightTex, "GlitzData/boxlight.png")
-		TEXTURE(boxlightRTex, "GlitzData/boxlight_r.png")
-		TEXTURE(bombTex, "GlitzData/bomb.png")
-		TEXTURE(bombRTex, "GlitzData/bomb_r.png")
-		TEXTURE(balloonTex, "GlitzData/balloon.png")
-		TEXTURE(balloonRTex, "GlitzData/balloon_r.png")
-		TEXTURE(balloonMoveTex, "GlitzData/balloon_move.png")
-		TEXTURE(balloonMoveRTex, "GlitzData/balloon_move_r.png")
-		TEXTURE(powerupJumpTex, "GlitzData/powerup_jump.png")
+		TEXTURE(boxTex, "static/GlitzData/box.png")
+		TEXTURE(boxRTex, "static/GlitzData/box_r.png")
+		TEXTURE(boxlightTex, "static/GlitzData/boxlight.png")
+		TEXTURE(boxlightRTex, "static/GlitzData/boxlight_r.png")
+		TEXTURE(bombTex, "static/GlitzData/bomb.png")
+		TEXTURE(bombRTex, "static/GlitzData/bomb_r.png")
+		TEXTURE(balloonTex, "static/GlitzData/balloon.png")
+		TEXTURE(balloonRTex, "static/GlitzData/balloon_r.png")
+		TEXTURE(balloonMoveTex, "static/GlitzData/balloon_move.png")
+		TEXTURE(balloonMoveRTex, "static/GlitzData/balloon_move_r.png")
+		TEXTURE(powerupJumpTex, "static/GlitzData/powerup_jump.png")
 
-		TEXTURE(rhinoLeftStopTex, "GlitzData/rhino_left_stop.png")
-		TEXTURE(rhinoLeftStopRTex, "GlitzData/rhino_left_stop_r.png")
-		TEXTURE(rhinoRightStopTex, "GlitzData/rhino_right_stop.png")
-		TEXTURE(rhinoRightStopRTex, "GlitzData/rhino_right_stop_r.png")
+		TEXTURE(rhinoLeftStopTex, "static/GlitzData/rhino_left_stop.png")
+		TEXTURE(rhinoLeftStopRTex, "static/GlitzData/rhino_left_stop_r.png")
+		TEXTURE(rhinoRightStopTex, "static/GlitzData/rhino_right_stop.png")
+		TEXTURE(rhinoRightStopRTex, "static/GlitzData/rhino_right_stop_r.png")
 
-		TEXTURE(timeGunTex, "GlitzData/time_gun.png")
-		TEXTURE(reverseGunTex, "GlitzData/reverse_gun.png")
-		TEXTURE(timeJumpTex, "GlitzData/time_jump.png")
-		TEXTURE(timePauseTex, "GlitzData/time_pause.png")
-		TEXTURE(timeReverseTex, "GlitzData/time_reverse.png")
-		TEXTURE(trampolineTex, "GlitzData/trampoline.png")
+		TEXTURE(timeGunTex, "static/GlitzData/time_gun.png")
+		TEXTURE(reverseGunTex, "static/GlitzData/reverse_gun.png")
+		TEXTURE(timeJumpTex, "static/GlitzData/time_jump.png")
+		TEXTURE(timePauseTex, "static/GlitzData/time_pause.png")
+		TEXTURE(timeReverseTex, "static/GlitzData/time_reverse.png")
+		TEXTURE(trampolineTex, "static/GlitzData/trampoline.png")
 
 		, wallBlockImages(loadWallBlockImages(physicalDevice, device, commandPool, graphicsQueue))
 		, wallBlockDescriptorSets(loadWallBlockDescriptorSets(device, samplerDescriptorPool.descriptorPool, textureDescriptorSetLayout.descriptorSetLayout, wallBlockImages))

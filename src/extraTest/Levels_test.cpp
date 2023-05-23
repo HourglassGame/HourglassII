@@ -79,7 +79,7 @@ bool testLevelsLoad() {
     //TODO -- make this test only run in an "expensive tests" run (rather than hardcoding 'test_levels_load = false')
     //TODO -- get rid of hard-coded progress display.
     bool testPassed = true;
-    for (auto const& entry : boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
+    for (auto const& entry : boost::make_iterator_range(boost::filesystem::directory_iterator("static/levels/"),
         boost::filesystem::directory_iterator()))
     {
         if (is_directory(entry.status())
@@ -128,7 +128,7 @@ bool testLevels() {
     //TODO -- make this test only run in an "expensive tests" run
     //TODO -- get rid of hard-coded progress display.
     bool testPassed = true;
-    for (auto const& entry : boost::make_iterator_range(boost::filesystem::directory_iterator("levels/"),
+    for (auto const& entry : boost::make_iterator_range(boost::filesystem::directory_iterator("static/levels/"),
         boost::filesystem::directory_iterator()))
     {
         ;

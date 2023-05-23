@@ -38,10 +38,10 @@ namespace {
             demoFragSpvHolder(),
             demoVertSpvHolder()
         {
-            demoFragSpvHolder = hg::reinterpretToUint32Vector(hg::loadFileIntoVector("shaders/demo.frag.glsl.spv"));
+            demoFragSpvHolder = hg::reinterpretToUint32Vector(hg::loadFileIntoVector("compiled/shaders/demo.frag.glsl.spv"));
             hg::demoFragSpv = &demoFragSpvHolder;
 
-            demoVertSpvHolder = hg::reinterpretToUint32Vector(hg::loadFileIntoVector("shaders/demo.vert.glsl.spv"));
+            demoVertSpvHolder = hg::reinterpretToUint32Vector(hg::loadFileIntoVector("compiled/shaders/demo.vert.glsl.spv"));
             hg::demoVertSpv = &demoVertSpvHolder;
         }
     private:
