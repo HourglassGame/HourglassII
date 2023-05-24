@@ -3,7 +3,6 @@
 
 #include "ArrivalDepartures/TimeDirection.h"
 #include "UniverseID.h"
-#include <boost/operators.hpp>
 #include <tuple>
 
 #include "Frame_fwd.h"
@@ -11,6 +10,7 @@
 #include <cstddef>
 #include <istream>
 #include <ostream>
+#include <compare>
 
 namespace boost {
 	namespace serialization {
@@ -29,7 +29,7 @@ std::ostream &operator<<(std::ostream &os, FrameID const &toPrint);
 std::istream &operator>>(std::istream &is, FrameID &toRead);
 //Class following original intention of FrameID. May be too slow for back-end use,
 //Compliments Frame * by not requiring a central authority (ie the base universe) to be used
-class FrameID final : boost::totally_ordered<FrameID>
+class FrameID final
 {
 public:
 	//Creates a nullframe
@@ -48,8 +48,7 @@ public:
 	// returns a frameID using frameNumber as 'distance' from the start of the universe in
 	FrameID arbitraryFrameInUniverse(int frameNumber) const;
 
-	bool operator==(FrameID const &o) const;
-	bool operator<(FrameID const &o) const;
+	std::strong_ordering operator<=>(FrameID const &o) const = default;
 
 	bool isValidFrame() const;
 	int getFrameNumber() const;
@@ -74,9 +73,6 @@ private:
 	//positiong of frame within universeID_
 	int frame;
 	UniverseID universeID;
-	auto comparison_tuple() const -> decltype(auto) {
-		return std::tie(frame, universeID);
-	}
 };
 
 inline std::ostream &operator<<(std::ostream &os, FrameID const &toPrint)

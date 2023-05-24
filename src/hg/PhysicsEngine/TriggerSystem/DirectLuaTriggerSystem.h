@@ -99,7 +99,7 @@ class DirectLuaTriggerSystem final :
 	public TriggerSystemImplementation
 {
 
-	auto comparison_tuple() const -> decltype(auto)
+	auto comparison_tuple() const
 	{
 		//Doesn't include luaStates_, since luaStates_ is just a cache.
 		return std::tie(compiledMainChunk_, compiledExtraChunks_, triggerOffsetsAndDefaults_, arrivalLocationsSize_);

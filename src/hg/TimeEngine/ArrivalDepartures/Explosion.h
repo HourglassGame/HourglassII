@@ -1,16 +1,15 @@
 #ifndef HG_EXPLOSION_H
 #define HG_EXPLOSION_H
 #include "TimeDirection.h"
-#include <boost/operators.hpp>
 #include "ConstPtr_of_fwd.h"
 #include <tuple>
 #include <ostream>
+#include <compare>
 namespace hg {
 
 class Explosion;
 std::ostream &operator<<(std::ostream &str, Explosion const &e);
-class Explosion final : boost::totally_ordered<Explosion>
-{
+class Explosion final {
 public:
 	explicit Explosion(int x, int y,
 		int width, int height,
@@ -28,8 +27,7 @@ public:
 	int getRadiusGrow() const { return radiusGrow; }
 	TimeDirection getTimeDirection() const { return timeDirection; }
 
-	bool operator==(Explosion const &o) const;
-	bool operator<(Explosion const &o) const;
+	std::strong_ordering operator<=>(Explosion const& o) const = default;
 
 private:
 	int x;
@@ -40,18 +38,12 @@ private:
 	int radiusMax;
 	int radiusGrow;
 	TimeDirection timeDirection;
-	
-	auto comparison_tuple() const noexcept
-	{
-		return std::tie(
-			x, y, width, height, radius, radiusMax, radiusGrow, timeDirection);
-	}
+
 	//For debugging
 	friend std::ostream &operator<<(std::ostream &str, Explosion const &e);
 };
 
-class ExplosionConstPtr final : boost::totally_ordered<ExplosionConstPtr>
-{
+class ExplosionConstPtr final {
 public:
 	explicit ExplosionConstPtr(Explosion const &explosion) : explosion_(&explosion) {}
 	typedef Explosion base_type;
@@ -67,7 +59,7 @@ public:
 	TimeDirection getTimeDirection()const { return explosion_->getTimeDirection(); }
 
 	bool operator==(ExplosionConstPtr const &o) const { return *explosion_ == *o.explosion_; }
-	bool operator< (ExplosionConstPtr const &o) const { return *explosion_ <  *o.explosion_; }
+	std::strong_ordering operator<=>(ExplosionConstPtr const &o) const { return *explosion_ <=> *o.explosion_; }
 
 private:
 	Explosion const *explosion_;

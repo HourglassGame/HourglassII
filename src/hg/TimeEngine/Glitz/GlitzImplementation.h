@@ -1,5 +1,6 @@
 #ifndef HG_GLITZ_IMPLEMENTATION_H
 #define HG_GLITZ_IMPLEMENTATION_H
+#include <compare>
 namespace hg {
 class LayeredCanvas;
 class GlitzImplementation {
@@ -21,7 +22,7 @@ public:
 	//ImageGlitz: 3
 	//CircleGlitz: 4
 	virtual int order_ranking() const = 0;
-	virtual bool operator<(GlitzImplementation const &o) const = 0;
+	virtual std::strong_ordering operator<=>(GlitzImplementation const &o) const = 0;
 	virtual bool operator==(GlitzImplementation const &o) const = 0;
 };
 }

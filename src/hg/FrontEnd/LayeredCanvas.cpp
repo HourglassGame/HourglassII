@@ -3,6 +3,7 @@
 #include "hg/Util/clone_ptr.h"
 #include <boost/range/algorithm/stable_sort.hpp>
 #include <algorithm>
+#include <compare>
 
 namespace hg {
 
@@ -108,8 +109,8 @@ namespace lc_internal {
 	};
 	class DrawCall {
 	public:
-		bool operator<(DrawCall const &o) const {
-			return layer < o.layer;
+		std::weak_ordering operator<=>(DrawCall const &o) const {
+			return layer <=> o.layer;
 		}
 		void drawTo(Canvas &canvas) const {
 			drawer->drawTo(canvas);

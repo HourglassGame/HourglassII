@@ -42,19 +42,4 @@ GuyInput::GuyInput(
 		yCursor(yCursor)
 {
 }
-bool GuyInput::operator==(GuyInput const &o) const noexcept
-{
-	return moveLeft == o.moveLeft
-		&& moveRight == o.moveRight
-		&& jump == o.jump
-		&& boxAction == o.boxAction
-		&& boxLeft == o.boxLeft
-		&& boxRight == o.boxRight
-		&& portalUsed == o.portalUsed
-		&& abilityUsed == o.abilityUsed
-		&& abilityCursor == o.abilityCursor
-		&& timeCursor == o.timeCursor
-		&& xCursor == o.xCursor
-		&& yCursor == o.yCursor;
-}
 } //namespace hg

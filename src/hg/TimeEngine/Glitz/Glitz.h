@@ -1,7 +1,6 @@
 #ifndef HG_GLITZ_H
 #define HG_GLITZ_H
 #include "hg/FrontEnd/LayeredCanvas.h"
-#include <boost/operators.hpp>
 #include <tuple>
 #include "hg/Util/clone_ptr.h"
 #include "hg/Util/memory_source_clone.h"
@@ -11,8 +10,9 @@
 #include "GlitzImplementation.h"
 #include "hg/mt/std/memory"
 #include <cassert>
+#include <compare>
 namespace hg {
-class Glitz final : boost::totally_ordered<Glitz> {
+class Glitz final {
 public:
 	explicit Glitz(mt::std::unique_ptr<GlitzImplementation> impl)
 	  : impl(impl.release()),
@@ -42,8 +42,8 @@ public:
 	//LineGlitz = 1
 	//TextGlitz = 2
 	//ImageGlitz = 3
-	bool operator<(Glitz const &o) const {
-		return comparison_tuple() < o.comparison_tuple();
+	std::strong_ordering operator<=>(Glitz const &o) const {
+		return comparison_tuple() <=> o.comparison_tuple();
 	}
 	bool operator==(Glitz const &o) const {
 		return comparison_tuple() == o.comparison_tuple();

@@ -54,13 +54,4 @@ Guy::Guy(
 		timePaused(timePaused)
 {
 }
-
-bool Guy::operator==(Guy const &o) const
-{
-	return equality_tuple() == o.equality_tuple();
-}
-bool Guy::operator<(Guy const &o) const
-{
-	return index < o.index;
-}
 }//namespace hg

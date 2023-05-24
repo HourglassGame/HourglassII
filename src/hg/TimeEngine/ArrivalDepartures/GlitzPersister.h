@@ -1,18 +1,18 @@
 #ifndef HG_GLITZ_PERSISTER_H
 #define HG_GLITZ_PERSISTER_H
 #include "TimeDirection.h"
-#include <boost/operators.hpp>
 #include "hg/mt/std/string"
 #include "hg/mt/std/memory"
-#include <tuple>
 #include "hg/TimeEngine/ObjectAndTime.h"
 #include "hg/TimeEngine/Glitz/Glitz.h"
 #include "hg/TimeEngine/Frame_fwd.h"
 #include "ConstPtr_of_fwd.h"
+#include <tuple>
+#include <compare>
 
 namespace hg {
 class GlitzPersister;
-struct GlitzPersisterImpl : private boost::totally_ordered<GlitzPersisterImpl>
+struct GlitzPersisterImpl
 {
 	virtual ObjectAndTime<GlitzPersister, Frame *> runStep(Frame *frame) const = 0;
 	virtual Glitz getForwardsGlitz() const = 0;
@@ -24,10 +24,10 @@ struct GlitzPersisterImpl : private boost::totally_ordered<GlitzPersisterImpl>
 	
 	virtual int order_ranking() const = 0;
 	virtual bool operator==(GlitzPersisterImpl const &o) const = 0;
-	virtual bool operator<(GlitzPersisterImpl const &o) const = 0;
+	virtual std::strong_ordering operator<=>(GlitzPersisterImpl const &o) const = 0;
 };
 
-class GlitzPersister final : boost::totally_ordered<GlitzPersister>
+class GlitzPersister final
 {
 public:
 	explicit GlitzPersister(mt::std::unique_ptr<GlitzPersisterImpl> impl) :
@@ -46,22 +46,22 @@ public:
 	bool operator==(GlitzPersister const &o) const {
 		return comparison_tuple() == o.comparison_tuple();
 	}
-	bool operator<(GlitzPersister const &o) const {
-		return comparison_tuple() < o.comparison_tuple();
+	std::strong_ordering operator<=>(GlitzPersister const &o) const {
+		return comparison_tuple() <=> o.comparison_tuple();
 	}
 private:
 	clone_ptr<GlitzPersisterImpl, memory_source_clone<GlitzPersisterImpl, multi_thread_memory_source>> impl;
-	typedef
-	  std::tuple<
-		decltype(impl->order_ranking()),
-		GlitzPersisterImpl const &>
-	  comparison_tuple_type;
+	using comparison_tuple_type =
+		std::tuple<
+			decltype(impl->order_ranking()),
+			GlitzPersisterImpl const &>
+	;
 	comparison_tuple_type comparison_tuple() const {
 		return comparison_tuple_type(impl->order_ranking(), *impl);
 	}
 };
 
-class GlitzPersisterConstPtr final : boost::totally_ordered<GlitzPersisterConstPtr>
+class GlitzPersisterConstPtr final
 {
 public:
 	explicit GlitzPersisterConstPtr(GlitzPersister const &glitzPersister) : glitzPersister(&glitzPersister) {}
@@ -73,7 +73,7 @@ public:
 	Glitz getReverseGlitz() const { return glitzPersister->getReverseGlitz(); }
 	
 	bool operator==(GlitzPersisterConstPtr const &o) const { return *glitzPersister == *o.glitzPersister; }
-	bool operator< (GlitzPersisterConstPtr const &o) const { return *glitzPersister <  *o.glitzPersister; }
+	std::strong_ordering operator<=>(GlitzPersisterConstPtr const &o) const { return *glitzPersister <=> *o.glitzPersister; }
 private:
 	GlitzPersister const *glitzPersister;
 };
@@ -104,13 +104,13 @@ public:
 		return 0;
 	}
 	bool operator==(GlitzPersisterImpl const &o) const override;
-	bool operator<(GlitzPersisterImpl const &o) const override;
+	std::strong_ordering operator<=>(GlitzPersisterImpl const &o) const override;
 private:
 	Glitz forwardsGlitz;
 	Glitz reverseGlitz;
 	int framesLeft; // peristers with framesLeft = -1 are permantent
 	TimeDirection timeDirection;
-	auto comparison_tuple() const -> decltype(auto)
+	auto comparison_tuple() const
 	{
 		return std::tie(
 			forwardsGlitz, reverseGlitz,
@@ -146,7 +146,7 @@ public:
 		return 1;
 	}
 	bool operator==(GlitzPersisterImpl const &o) const override;
-	bool operator<(GlitzPersisterImpl const &o) const override;
+	std::strong_ordering operator<=>(GlitzPersisterImpl const &o) const override;
 	
 	//Mostly private. Only accessible via AudioGlitzPersister_access key, which can only be created by
 	//AudioGlitzPersister.
@@ -162,7 +162,7 @@ private:
 	unsigned currentFrame;
 	TimeDirection timeDirection;
 
-	auto comparison_tuple() const -> decltype(auto)
+	auto comparison_tuple() const
 	{
 		return std::tie(
 			key,

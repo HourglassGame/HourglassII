@@ -29,9 +29,9 @@ public:
 	virtual RectangleGlitz *perform_clone(void *memory) const override {
 		return new (memory) RectangleGlitz(*this);
 	}
-	virtual bool operator<(GlitzImplementation const &right) const override {
+	virtual std::strong_ordering operator<=>(GlitzImplementation const &right) const override {
 		RectangleGlitz const &actual_right(*boost::polymorphic_downcast<RectangleGlitz const*>(&right));
-		return comparison_tuple() < actual_right.comparison_tuple();
+		return comparison_tuple() <=> actual_right.comparison_tuple();
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		RectangleGlitz const &actual_other(*boost::polymorphic_downcast<RectangleGlitz const*>(&o));

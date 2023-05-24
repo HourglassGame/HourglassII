@@ -5,15 +5,6 @@ namespace hg {
 	template<typename Object, typename FrameT>
 	struct ObjectAndTime final
 	{
-	private:
-		auto comparison_tuple() const -> decltype(auto)
-		{
-			return std::tie(
-				object,
-				frame
-			);
-		}
-	public:
 		ObjectAndTime(
 			Object const &nobject,
 			FrameT nframe) :
@@ -21,9 +12,7 @@ namespace hg {
 				frame(nframe) {}
 		Object object;
 		FrameT frame;
-		bool operator==(ObjectAndTime const &o) const {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(ObjectAndTime const& o) const = default;
 	};
 }
 #endif //HG_OBJECT_AND_TIME

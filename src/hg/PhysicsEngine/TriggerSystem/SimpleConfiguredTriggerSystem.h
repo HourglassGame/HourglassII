@@ -40,14 +40,16 @@ namespace hg {
 		int height;
 		TimeDirection timeDirection;
 	};
+
 	std::tuple<Glitz, Glitz> calculateBidirectionalGlitz(
 		int const layer,
 		DynamicArea const &dynamicArea,
 		unsigned const forwardsColour,
 		unsigned const reverseColour);
+
 	struct AxisCollisionDestination final {
 	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
+		auto comparison_tuple() const noexcept {
 			return std::tie(
 				desiredPosition,
 				acceleration,
@@ -80,38 +82,12 @@ namespace hg {
 		}
 	};
 	struct CollisionDestination final {
-	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
-			return std::tie(
-				xDestination,
-				yDestination
-			);
-		}
 	public:
 		AxisCollisionDestination xDestination;
 		AxisCollisionDestination yDestination;
-		bool operator==(CollisionDestination const &o) const noexcept {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(CollisionDestination const& o) const noexcept = default;
 	};
 	struct ProtoCollision final {
-	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
-			return std::tie(
-				timeDirection,
-				width,
-				height,
-				collisionType,
-				onDestination,
-				offDestination,
-				hasButtonTriggerID,
-				buttonTriggerID,
-				hasTriggerClause,
-				triggerClause,
-				lastStateTriggerID
-			);
-		}
-	public:
 		TimeDirection timeDirection;
 		int width;
 		int height;
@@ -125,76 +101,24 @@ namespace hg {
 		TriggerClause triggerClause;
 		int lastStateTriggerID;
 
-		bool operator==(ProtoCollision const &o) const noexcept {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(ProtoCollision const& o) const noexcept = default;
 	};
 	struct Attachment final {
-	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
-			return std::tie(
-				hasPlatform,
-				platform,
-				xOffset,
-				yOffset
-			);
-		}
-	public:
-
 		bool hasPlatform;
 		int platform;
 		int xOffset;
 		int yOffset;
 
-		bool operator==(Attachment const &o) const noexcept {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(Attachment const& o) const noexcept = default;
 	};
 	struct ButtonSegment final {
-	private:
-		auto comparison_tuple() const {
-			return std::tie(attachment, width, height, pressForceReq);
-		}
-	public:
 		Attachment attachment;
 		int width;
 		int height;
 		int pressForceReq;
-		bool operator==(ButtonSegment const &o) const noexcept {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(ButtonSegment const& o) const noexcept = default;
 	};
 	struct ProtoPortal final {
-	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
-			return std::tie(
-				attachment,
-				index,
-				xaim,
-				yaim,
-				width,
-				height,
-				collisionOverlap,
-				timeDirection,
-				destinationIndex,
-				xDestination,
-				yDestination,
-				relativeTime,
-				timeDestination,
-				relativeDirection,
-				destinationDirection,
-				illegalDestination,
-				chargeTriggerID,
-				hasTriggerClause,
-				triggerClause,
-				fallable,
-				guyOnly,
-				isLaser,
-				winner
-			);
-		}
-	public:
-
 		Attachment attachment;
 		int index;
 		int xaim;
@@ -219,23 +143,10 @@ namespace hg {
 		bool isLaser;
 		bool winner;
 
-		bool operator==(ProtoPortal const &o) const noexcept {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(ProtoPortal const& o) const noexcept = default;
 	};
 
 	struct ProtoTriggerMod final {
-	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
-			return std::tie(
-				triggerID,
-				triggerSubindex,
-				triggerClause
-			);
-		}
-
-	public:
-
 		int const triggerID;
 		int const triggerSubindex;
 		TriggerClause const triggerClause;
@@ -256,9 +167,7 @@ namespace hg {
 			outputTriggers[triggerID][triggerSubindex] = triggerClause.executeOnArrivalAndOut(triggerArrivals, outputTriggers, getFrameNumber(currentFrame));
 			//std::cerr << "trigger " << outputTriggers[triggerID][triggerSubindex] << ", frame " << getFrameNumber(currentFrame) << "\n";
 		}
-		bool operator==(ProtoTriggerMod const &o) const noexcept {
-			return comparison_tuple() == o.comparison_tuple();
-		}
+		bool operator==(ProtoTriggerMod const& o) const noexcept = default;
 	};
 
 	struct ButtonFrameStateImpl {
@@ -596,7 +505,7 @@ namespace hg {
 
 	struct ProtoStickySwitchImpl final : ProtoButtonImpl {
 	private:
-		auto comparison_tuple() const noexcept -> decltype(auto) {
+		auto comparison_tuple() const noexcept {
 			return std::tie(
 				timeDirection,
 				attachment,
@@ -1177,7 +1086,7 @@ namespace hg {
 	};
 	struct ProtoPickupImpl final : ProtoMutatorImpl {
 	private:
-		auto comparison_tuple() const -> decltype(auto) {
+		auto comparison_tuple() const {
 			return std::tie(
 				timeDirection,
 				attachment,
@@ -1239,7 +1148,7 @@ namespace hg {
 
 	struct ProtoSpikesImpl final : ProtoMutatorImpl {
 	private:
-		auto comparison_tuple() const -> decltype(auto) {
+		auto comparison_tuple() const {
 			return std::tie(
 				timeDirection,
 				attachment,
@@ -1287,7 +1196,7 @@ namespace hg {
 
 	struct ProtoElevatorImpl final : ProtoMutatorImpl {
 	private:
-		auto comparison_tuple() const -> decltype(auto) {
+		auto comparison_tuple() const {
 			return std::tie(
 				timeDirection,
 				attachment,
@@ -1863,7 +1772,7 @@ namespace hg {
 	class SimpleConfiguredTriggerSystem final :
 		public TriggerSystemImplementation
 	{
-		auto comparison_tuple() const -> decltype(auto)
+		auto comparison_tuple() const
 		{
 			return std::tie(
 				protoPortals_,

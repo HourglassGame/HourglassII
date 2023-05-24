@@ -26,10 +26,10 @@ bool StaticGlitzPersister::operator==(GlitzPersisterImpl const &o) const
 	StaticGlitzPersister const &actual_other(*boost::polymorphic_downcast<StaticGlitzPersister const*>(&o));
 	return comparison_tuple() == actual_other.comparison_tuple();
 }
-bool StaticGlitzPersister::operator<(GlitzPersisterImpl const &o) const
+std::strong_ordering StaticGlitzPersister::operator<=>(GlitzPersisterImpl const &o) const
 {
 	StaticGlitzPersister const &actual_other(*boost::polymorphic_downcast<StaticGlitzPersister const*>(&o));
-	return comparison_tuple() < actual_other.comparison_tuple();
+	return comparison_tuple() <=> actual_other.comparison_tuple();
 }
 
 AudioGlitzPersister::AudioGlitzPersister(
@@ -84,10 +84,10 @@ bool AudioGlitzPersister::operator==(GlitzPersisterImpl const &o) const
 	AudioGlitzPersister const &actual_other(*boost::polymorphic_downcast<AudioGlitzPersister const*>(&o));
 	return comparison_tuple() == actual_other.comparison_tuple();
 }
-bool AudioGlitzPersister::operator<(GlitzPersisterImpl const &o) const
+std::strong_ordering AudioGlitzPersister::operator<=>(GlitzPersisterImpl const &o) const
 {
 	AudioGlitzPersister const &actual_other(*boost::polymorphic_downcast<AudioGlitzPersister const*>(&o));
-	return comparison_tuple() < actual_other.comparison_tuple();
+	return comparison_tuple() <=> actual_other.comparison_tuple();
 }
 
 

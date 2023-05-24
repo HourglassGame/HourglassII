@@ -11,14 +11,9 @@ value(value)
 	    && "the max value is reserved for representing invalid/null indices");
 }
 
-bool TriggerData::operator==(TriggerData const &o) const
-{
-	return std::tie(index, value) == std::tie(o.index, o.value);
-}
-
-bool TriggerData::operator<(TriggerData const &o) const
+std::weak_ordering TriggerData::operator<=>(TriggerData const &o) const
 {
 	//TriggerData sorted by index only.
-	return index < o.index;
+	return index <=> o.index;
 }
 }

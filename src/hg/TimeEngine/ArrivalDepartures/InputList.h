@@ -3,7 +3,6 @@
 #include "hg/TimeEngine/FrameID.h"
 #include "Ability.h"
 
-#include <boost/operators.hpp>
 #include <istream>
 #include <ostream>
 #include <boost/serialization/version.hpp>
@@ -20,7 +19,7 @@ namespace hg {
 class InputList;
 std::ostream &operator<<(std::ostream &os, InputList const &toPrint);
 std::istream &operator>>(std::istream &is, InputList &toRead);
-class GuyInput final : boost::equality_comparable<GuyInput> {
+class GuyInput final {
 public:
 	GuyInput() noexcept;
 	GuyInput(
@@ -37,7 +36,7 @@ public:
 		int xCursor,
 		int yCursor) noexcept;
 
-	bool operator==(GuyInput const &o) const noexcept;
+	bool operator==(GuyInput const &o) const noexcept = default;
 
 	bool getMoveLeft()   const noexcept { return moveLeft; }
 	bool getMoveRight()  const noexcept { return moveRight; }
@@ -75,7 +74,7 @@ private:
 	int yCursor;
 
 };
-class InputList final : boost::equality_comparable<InputList>
+class InputList final
 {
 public:
 	InputList()  noexcept :
@@ -86,10 +85,8 @@ public:
 		guyInput(guyInput), relativeGuyIndex(relativeGuyIndex)
 	{}
 
-	bool operator==(InputList const &o) const noexcept {
-		return guyInput == o.guyInput
-			&& relativeGuyIndex == o.relativeGuyIndex;
-	}
+	bool operator==(InputList const& o) const noexcept = default;
+
 	GuyInput const &getGuyInput() const noexcept {
 		return guyInput;
 	}

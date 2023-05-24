@@ -24,16 +24,6 @@ Explosion::Explosion(Explosion const &o, hg::TimeDirection timeDirection) :
 {
 }
 
-bool Explosion::operator==(Explosion const &o) const
-{
-	return comparison_tuple() == o.comparison_tuple();
-}
-
-bool Explosion::operator<(Explosion const &o) const
-{
-	return comparison_tuple() <  o.comparison_tuple();
-}
-
 std::ostream &operator<<(std::ostream &str, Explosion const &e)
 {
 	return 

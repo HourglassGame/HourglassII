@@ -119,8 +119,7 @@ namespace {
             l->LogDestruction(p); //TODO: bad result occurs if this throws! Need to ensure test environment has sufficient resources
         }
 
-        bool operator==(LoggingAllocator const &o) const {return l == o.l && operationsToFail == o.operationsToFail;}
-        bool operator!=(LoggingAllocator const &o) const {return !(*this == o);}
+        bool operator==(LoggingAllocator const& o) const = default;
         typedef std::false_type is_always_equal;
     };
 

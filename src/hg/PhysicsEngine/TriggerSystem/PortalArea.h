@@ -7,34 +7,6 @@ namespace hg {
 class PortalArea;
 std::ostream &operator<<(std::ostream &os, PortalArea const &toPrint);
 class PortalArea final {
-	auto comparison_tuple() const -> decltype(auto)
-	{
-		return std::tie(
-			index_,
-			x_,
-			y_,
-			xaim_,
-			yaim_,
-			width_,
-			height_,
-			xspeed_,
-			yspeed_,
-			collisionOverlap_,
-			timeDirection_,
-			destinationIndex_,
-			xDestination_,
-			yDestination_,
-			relativeTime_,
-			timeDestination_,
-			relativeDirection_,
-			destinationDirection_,
-			illegalDestination_,
-			fallable_,
-			guyOnly_,
-			isLaser_,
-			winner_
-		);
-	}
 public:
 	PortalArea(
 		int index,
@@ -160,9 +132,7 @@ public:
 		os << '}';
 		return os;
 	}
-	bool operator==(PortalArea const &o) const {
-		return comparison_tuple() == o.comparison_tuple();
-	}
+	bool operator==(PortalArea const& o) const = default;
 private:
 	//The Illegal-Portal system explained:
 	//The motivation for Illegal-Portal is that we sometimes want fallable

@@ -7,41 +7,31 @@
 #include <map>
 #include <boost/container/map.hpp>
 #include <tuple>
-#include <boost/operators.hpp>
 #include <SFML/Audio/Sound.hpp>
 #include <boost/fusion/adapted/struct/define_struct.hpp>
 #include <boost/range/adaptor/map.hpp>
 #include <boost/fusion/sequence/comparison.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <gsl/gsl>
+#include <compare>
 namespace hg {
 enum class AudioAction {
 	Start,
 	Stop
 };
 
-struct AudioGlitzObject final : boost::totally_ordered<AudioGlitzObject> {
+struct AudioGlitzObject final {
 private:
-	auto comparison_tuple() const -> decltype(auto)
-	{
-		return std::tie(key, index);
-	}
 public:
 	AudioGlitzObject(std::string key, int index)
-	: boost::totally_ordered<AudioGlitzObject>(),
-	  key(std::move(key)),
-	  index(std::move(index))
+	: key(std::move(key))
+	, index(std::move(index))
 	{
 	}
 
 	std::string key;
 	int index;
-	bool operator==(AudioGlitzObject const &o) const {
-		return comparison_tuple() == o.comparison_tuple();
-	}
-	bool operator<(AudioGlitzObject const &o) const {
-		return comparison_tuple() < o.comparison_tuple();
-	}
+	std::strong_ordering operator<=>(AudioGlitzObject const& o) const = default;
 };
 
 struct AudioStateChange final {

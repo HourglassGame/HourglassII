@@ -1,10 +1,10 @@
 #ifndef HG_BOX_H
 #define HG_BOX_H
 #include "TimeDirection.h"
-#include <boost/operators.hpp>
 #include "ConstPtr_of_fwd.h"
 #include <tuple>
 #include <ostream>
+#include <compare>
 namespace hg {
 enum class BoxType : int {
 	NONE = 0,
@@ -16,7 +16,7 @@ enum class BoxType : int {
 
 class Box;
 std::ostream &operator<<(std::ostream &str, Box const &b);
-class Box final : boost::totally_ordered<Box>
+class Box final
 {
 public:
 	explicit Box(int x, int y,
@@ -42,8 +42,7 @@ public:
 	int getArrivalBasis()  const { return arrivalBasis; }
 	TimeDirection getTimeDirection() const { return timeDirection; }
 
-	bool operator==(Box const &o) const;
-	bool operator<(Box const &o) const;
+	std::strong_ordering operator<=>(Box const& o) const = default;
 
 private:
 	int x;
@@ -59,18 +58,12 @@ private:
 	int arrivalBasis;
 
 	TimeDirection timeDirection;
-	
-	auto comparison_tuple() const noexcept
-	{
-		return std::tie(
-			x, y, xspeed, yspeed, width, height, boxType,
-			state, illegalPortal, arrivalBasis, timeDirection);
-	}
+
 	//For debugging
 	friend std::ostream &operator<<(std::ostream &str, Box const &b);
 };
 
-class BoxConstPtr final : boost::totally_ordered<BoxConstPtr>
+class BoxConstPtr final
 {
 public:
 	explicit BoxConstPtr(Box const &box) : box_(&box) {}
@@ -91,7 +84,7 @@ public:
 		getTimeDirection()const { return box_->getTimeDirection(); }
 
 	bool operator==(BoxConstPtr const &o) const { return *box_ == *o.box_; }
-	bool operator< (BoxConstPtr const &o) const { return *box_ <  *o.box_; }
+	std::strong_ordering operator<=>(BoxConstPtr const &o) const { return *box_ <=> *o.box_; }
 
 private:
 	Box const *box_;

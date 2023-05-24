@@ -5,6 +5,7 @@
 #include "hg/mt/std/string"
 #include "hg/FrontEnd/LayeredCanvas.h"
 #include <tuple>
+#include <memory>
 namespace hg {
 class ImageGlitz final : public GlitzImplementation {
 	auto comparison_tuple() const {
@@ -30,9 +31,9 @@ public:
 	virtual ImageGlitz *perform_clone(void *memory) const override {
 		return new (memory) ImageGlitz(*this);
 	}
-	virtual bool operator<(GlitzImplementation const &right) const override {
+	virtual std::strong_ordering operator<=>(GlitzImplementation const &right) const override {
 		ImageGlitz const &actual_right(*boost::polymorphic_downcast<ImageGlitz const*>(&right));
-		return comparison_tuple() < actual_right.comparison_tuple();
+		return comparison_tuple() <=> actual_right.comparison_tuple();
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		ImageGlitz const &actual_other(*boost::polymorphic_downcast<ImageGlitz const*>(&o));

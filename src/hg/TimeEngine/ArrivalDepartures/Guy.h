@@ -5,7 +5,6 @@
 #include "Ability.h"
 #include "FacingDirection.h"
 #include "Box.h"
-#include <boost/operators.hpp>
 #include "hg/mt/std/map"
 #include <cstdlib>
 #include "SortWeakerThanEquality_fwd.h"
@@ -15,6 +14,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <boost/range/algorithm/count_if.hpp>
 #include <tuple>
+#include <compare>
 namespace hg {
 enum class GuyAction : int {
 	IDLE = 0,
@@ -73,12 +73,7 @@ public:
 	}
 };
 
-class Pickups final : boost::totally_ordered<Pickups> {
-	struct NeqZero{
-		bool operator()(int a) const {
-			return a != 0;
-		}
-	};
+class Pickups final {
 	template<typename PickupsT>
 	static MatchConstness<PickupsT, int> &operatorIdxImpl(PickupsT &p, Ability const ab) {
 		Expects(ab != Ability::NO_ABILITY);
@@ -97,9 +92,6 @@ class Pickups final : boost::totally_ordered<Pickups> {
 		auto const it{ PickupsIt<MatchConstness<PickupsT, Pickups>>(p, ab) };
 		if (it != p.end() && it->first == ab) return it;
 		else return p.end();
-	}
-	auto comparison_tuple() const noexcept {
-		return std::tie(pickups);
 	}
 public:
 	explicit Pickups() noexcept : pickups() {}
@@ -135,17 +127,12 @@ public:
 		return operatorIdxImpl(*this, ab);
 	}
 
-	bool operator==(Pickups const &o) const noexcept {
-		return comparison_tuple() == o.comparison_tuple();
-	}
-	bool operator<(Pickups const &second) const noexcept {
-		return comparison_tuple() < second.comparison_tuple();
-	}
+	std::strong_ordering operator<=>(Pickups const& second) const noexcept = default;
 private:
 	std::array<int, hg::PICKUP_TYPES> pickups;
 };
 
-class Guy final : boost::totally_ordered<Guy>
+class Guy final
 {
 public:
 	Guy(std::size_t index,
@@ -199,17 +186,15 @@ public:
 	int getBoxCarryWidth()    const { return boxCarryWidth; }
 	int getBoxCarryHeight()   const { return boxCarryHeight; }
 	int getBoxCarryState()    const { return boxCarryState; }
-	TimeDirection 
+	TimeDirection
 		getBoxCarryDirection() const { return boxCarryDirection; }
 
 	TimeDirection
 		getTimeDirection() const { return timeDirection; }
 	bool getTimePaused()    const { return timePaused; }
 
+	std::strong_ordering operator<=>(Guy const&) const = default;
 
-	bool operator==(Guy const &o) const;
-	bool operator<(Guy const &second) const;
-	
 private:
 	std::size_t index;
 	int x;
@@ -218,10 +203,10 @@ private:
 	int yspeed;
 	int walkSpeed;
 	int jumpHold;
+	GuyAction action;
 	int width;
 	int height;
 	int jumpSpeed;
-	GuyAction action;
 
 	int illegalPortal;
 	int arrivalBasis;
@@ -239,20 +224,9 @@ private:
 
 	TimeDirection timeDirection;
 	bool timePaused;
-
-	auto equality_tuple() const -> decltype(auto)
-	{
-		return std::tie(
-			index, 
-			x, y, xspeed, yspeed, walkSpeed, jumpHold, action, width, height, jumpSpeed,
-			illegalPortal, arrivalBasis, supported, supportedSpeed,
-			pickups, facing,
-			boxCarrying, boxCarryWidth, boxCarryHeight, boxCarryState, boxCarryDirection,
-			timeDirection, timePaused);
-	}
 };
 
-class GuyConstPtr final : boost::totally_ordered<GuyConstPtr>
+class GuyConstPtr final
 {
 public:
 	GuyConstPtr(Guy const &guy) : guy_(&guy) {}
@@ -292,7 +266,7 @@ public:
 	bool getTimePaused()    const { return guy_->getTimePaused(); }
 
 	bool operator==(GuyConstPtr const &o) const { return *guy_ == *o.guy_; }
-	bool operator<(GuyConstPtr const &o) const { return *guy_ < *o.guy_; }
+	std::strong_ordering operator<=>(GuyConstPtr const &o) const { return *guy_ <=> *o.guy_; }
 private:
 	Guy const *guy_;
 };

@@ -7,16 +7,6 @@ namespace hg {
 class ArrivalLocation;
 std::ostream &operator<<(std::ostream &os, ArrivalLocation const &toPrint);
 class ArrivalLocation final {
-	auto comparison_tuple() const noexcept
-	{
-		return std::tie(
-			x_,
-			y_,
-			xspeed_,
-			yspeed_,
-			timeDirection_
-		);
-	}
 public:
 	ArrivalLocation(
 		int x,
@@ -46,9 +36,7 @@ public:
 		#undef HG_ARRIVAL_LOCATION_PRINT
 		return os;
 	}
-	bool operator==(ArrivalLocation const &o) const noexcept {
-		return comparison_tuple() == o.comparison_tuple();
-	}
+	bool operator==(ArrivalLocation const& o) const noexcept = default;
 private:
 	int x_;
 	int y_;

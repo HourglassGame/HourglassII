@@ -13,7 +13,7 @@ namespace hg {
 //       since GlitzImplementation is designed
 //       for graphics rather than sound.
 class AudioGlitz final : public GlitzImplementation {
-	auto comparison_tuple() const -> decltype(auto) {
+	auto comparison_tuple() const {
 		return std::tie(key, n);
 	}
 public:
@@ -39,9 +39,9 @@ public:
 	//unique return value for order_ranking.
 	//This is used to sort glitz for arrival/departure analysis
 	//(for persistent glitz).
-	virtual bool operator<(GlitzImplementation const &o) const override {
+	virtual std::strong_ordering operator<=>(GlitzImplementation const &o) const override {
 		AudioGlitz const &actual_other(*boost::polymorphic_downcast<AudioGlitz const*>(&o));
-		return comparison_tuple() < actual_other.comparison_tuple();
+		return comparison_tuple() <=> actual_other.comparison_tuple();
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		AudioGlitz const &actual_other(*boost::polymorphic_downcast<AudioGlitz const*>(&o));

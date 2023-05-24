@@ -1,7 +1,6 @@
 #ifndef HG_FRAME_UPDATE_SET_H
 #define HG_FRAME_UPDATE_SET_H
 
-#include <boost/operators.hpp>
 #include <vector>
 
 namespace hg {
@@ -29,7 +28,7 @@ class Frame;
 //My measurements show that this is approximately 5x faster than
 //a simple set implementation overall in typical high-propagation use.
 //(I have not done conclusive tests by any means).
-class FrameUpdateSet final : boost::equality_comparable<FrameUpdateSet> {
+class FrameUpdateSet final {
 public:
 	typedef std::vector<Frame *> SetType;
 

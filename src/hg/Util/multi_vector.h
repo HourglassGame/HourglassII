@@ -5,9 +5,9 @@
 #include <boost/range/numeric.hpp>
 #include <functional>
 #include <boost/container/vector.hpp>
-#include <boost/operators.hpp>
 #include <boost/range/algorithm/equal.hpp>
 #include <boost/swap.hpp>
+#include <compare>
 
 //TODO: add 'memory region iterators' for use in the implementation
 //(Rather than getPosi etc)
@@ -150,7 +150,7 @@ private:
      //boost::container::vector<T, Allocator> data;
     T *data_;
 public:
-    class simple_const_iterator_proxy final : boost::totally_ordered<simple_const_iterator_proxy>
+    class simple_const_iterator_proxy final
     {
     private:
         multi_vector const *const this_;
@@ -182,9 +182,9 @@ public:
         {
             return pos == o.pos;
         }
-        bool operator<(simple_const_iterator_proxy const &o) const
+        std::weak_ordering operator<=>(simple_const_iterator_proxy const &o) const
         {
-            return pos < o.pos;
+            return pos <=> o.pos;
         }
         
         simple_const_iterator_proxy &operator+=(difference_type const dif)
@@ -567,12 +567,12 @@ public:
     //TODO: Support inserting multiple values
     void insert(std::size_t axis, std::size_t position/*=end,multi_vector(*_ref?*)<T, N_dims-1> newValues=array_of_default_T*/);
     
-    auto operator[](std::size_t const i) -> decltype(auto)
+    auto operator[](std::size_t const i)
     {
         return op_index_proxy<N_dims,T>{data_, this}[i];
     }
     
-    auto operator[](std::size_t const i) const -> decltype(auto)
+    auto operator[](std::size_t const i) const
     {
         return op_index_proxy<N_dims,T const>{data_, this}[i];
     }

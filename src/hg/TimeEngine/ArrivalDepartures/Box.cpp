@@ -31,16 +31,6 @@ Box::Box(Box const &o, hg::TimeDirection timeDirection) :
 {
 }
 
-bool Box::operator==(Box const &o) const
-{
-	return comparison_tuple() == o.comparison_tuple();
-}
-
-bool Box::operator<(Box const &o) const
-{
-	return comparison_tuple() <  o.comparison_tuple();
-}
-
 std::ostream &operator<<(std::ostream &str, Box const &b)
 {
 	return 

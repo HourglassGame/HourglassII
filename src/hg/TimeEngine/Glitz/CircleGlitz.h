@@ -29,9 +29,9 @@ public:
 	virtual CircleGlitz *perform_clone(void *memory) const override {
 		return new (memory) CircleGlitz(*this);
 	}
-	virtual bool operator<(GlitzImplementation const &right) const override {
+	virtual std::strong_ordering operator<=>(GlitzImplementation const &right) const override {
 		CircleGlitz const &actual_right(*boost::polymorphic_downcast<CircleGlitz const*>(&right));
-		return comparison_tuple() < actual_right.comparison_tuple();
+		return comparison_tuple() <=> actual_right.comparison_tuple();
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		CircleGlitz const &actual_other(*boost::polymorphic_downcast<CircleGlitz const*>(&o));

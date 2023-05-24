@@ -15,22 +15,6 @@ class Collision;
 std::ostream &operator<<(std::ostream &os, Collision const &toPrint);
 class Collision final
 {
-	auto comparison_tuple() const
-	{
-		return std::tie(
-			x_,
-			y_,
-			xspeed_,
-			yspeed_,
-			prevXspeed_,
-			prevYspeed_,
-			width_,
-			height_,
-			functional_,
-			collisionType_,
-			timeDirection_
-		);
-	}
 public:
 	Collision(
 		int x, int y,
@@ -76,9 +60,7 @@ public:
 		#undef HG_COLLISION_PRINT
 		return os;
 	}
-	bool operator==(Collision const &o) const {
-		return comparison_tuple() == o.comparison_tuple();
-	}
+	bool operator==(Collision const& o) const = default;
 private:
 	int x_;
 	int y_;

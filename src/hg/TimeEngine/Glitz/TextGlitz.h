@@ -34,9 +34,9 @@ public:
 		return new (memory) TextGlitz(*this);
 	}
 	
-	virtual bool operator<(GlitzImplementation const &right) const override {
+	virtual std::strong_ordering operator<=>(GlitzImplementation const &right) const override {
 		TextGlitz const &actual_right(*boost::polymorphic_downcast<TextGlitz const *>(&right));
-		return comparison_tuple() < actual_right.comparison_tuple();
+		return comparison_tuple() <=> actual_right.comparison_tuple();
 	}
 	virtual bool operator==(GlitzImplementation const &o) const override {
 		TextGlitz const &actual_other(*boost::polymorphic_downcast<TextGlitz const *>(&o));

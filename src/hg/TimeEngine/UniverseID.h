@@ -2,7 +2,6 @@
 #define HG_UNIVERSE_ID_H
 
 #include <boost/range.hpp>
-#include <boost/operators.hpp>
 #include <istream>
 #include <ostream>
 #include <vector>
@@ -33,8 +32,7 @@ public:
 	//timelineLength is always length of top-level universe
 	explicit UniverseID(int timelineLength);
 
-	bool operator==(UniverseID const &o) const;
-	bool operator <(UniverseID const &o) const;
+	std::strong_ordering operator<=>(UniverseID const &o) const = default;
 private:
 	friend class boost::serialization::access;
 	template<class Archive>

@@ -12,16 +12,6 @@ UniverseID::UniverseID(int timelineLength) :
 {
 }
 
-bool UniverseID::operator==(UniverseID const &o) const
-{
-	return timelineLength == o.timelineLength;
-}
-
-bool UniverseID::operator<(UniverseID const &o) const
-{
-	return timelineLength < o.timelineLength;
-}
-
 FrameID getEntryFrame(UniverseID const &universe, TimeDirection direction)
 {
 	assert(getTimelineLength(universe) >= 0);

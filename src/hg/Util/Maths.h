@@ -9,6 +9,7 @@ template<typename T> struct vec2 final
 {
     T a;
     T b;
+    bool operator==(vec2 const&) const = default;
 };
 //Should be very standard layout, for interop with Vulkan etc.
 static_assert(sizeof(vec2<float>) == 2 * sizeof(float));
@@ -74,15 +75,6 @@ inline vec2<T> operator/(vec2<T> l, T const &r) {
 }
 
 template<typename T>
-inline bool operator==(vec2<T> const &l, vec2<T> const &r) {
-    return std::tie(l.a, l.b) == std::tie(r.a, r.b);
-}
-template<typename T>
-inline bool operator!=(vec2<T> const &l, vec2<T> const &r) {
-    return !(l == r);
-}
-
-template<typename T>
 inline T magnitude(vec2<T> const &vec) {
     return std::sqrt(vec.a*vec.a + vec.b*vec.b);
 }
@@ -117,6 +109,7 @@ template<typename T> struct vec3 final {
     T a;
     T b;
     T c;
+    bool operator==(vec3 const&) const = default;
 };
 //Should be very standard layout, for interop with Vulkan etc.
 static_assert(sizeof(vec3<float>) == 3 * sizeof(float));
@@ -187,15 +180,6 @@ inline vec3<T> &operator/=(vec3<T> &l, T const &r) {
 template<typename T>
 inline vec3<T> operator/(vec3<T> l, T const &r) {
     return l /= r;
-}
-
-template<typename T>
-inline bool operator==(vec3<T> const &l, vec3<T> const &r) {
-    return std::tie(l.a, l.b, l.c) == std::tie(r.a, r.b, r.c);
-}
-template<typename T>
-inline bool operator!=(vec3<T> const &l, vec3<T> const &r) {
-    return !(l == r);
 }
 
 template<typename T>
